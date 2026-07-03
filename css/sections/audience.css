@@ -1,0 +1,12 @@
+/* ============================================================
+   PARA QUEM É — blocos numerados 01 / 02 / 03
+   ============================================================ */
+.audience__label{margin-bottom:clamp(36px,7vw,60px)}
+.aud__item{
+  padding-block:clamp(32px,6vw,52px);border-top:1px solid var(--line);
+  display:grid;grid-template-columns:1fr;gap:16px;
+}
+@media(min-width:820px){.aud__item{grid-template-columns:110px 1fr}}
+.aud__num{font-family:var(--font-mono);font-weight:700;font-size:clamp(1rem,4vw,1.35rem);color:var(--emerald-dark);letter-spacing:.02em}
+.aud__title{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.5rem,6.5vw,2.6rem);line-height:1;letter-spacing:-.025em}
+.aud__text{margin-top:16px;font-size:clamp(1rem,4vw,1.2rem);color:var(--ink-60);line-height:1.45;max-width:44ch}

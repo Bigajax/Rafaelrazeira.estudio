@@ -1,0 +1,70 @@
+/* ============================================================
+   CASES — headline + grid de 3 projetos
+   ============================================================ */
+.cases__head{
+  font-family:var(--font-body);font-weight:700;text-transform:uppercase;
+  font-size:clamp(13px,1.6vw,16px);letter-spacing:.28em;line-height:1.5;
+  text-align:center;margin-bottom:clamp(44px,7vw,84px);
+}
+.cases__grid{display:grid;grid-template-columns:1fr;gap:clamp(40px,7vw,72px);max-width:1300px;margin-inline:auto}
+@media(min-width:760px){.cases__grid{grid-template-columns:repeat(3,1fr);gap:clamp(24px,3vw,48px)}}
+
+.case__media{aspect-ratio:4/5;border-radius:14px;overflow:hidden;background:var(--black)}
+.case__media img{width:100%;height:100%;object-fit:cover}
+.case__placeholder{
+  width:100%;height:100%;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;
+  background:
+    radial-gradient(120% 120% at 30% 0%,rgba(16,185,129,.22),transparent 55%),
+    linear-gradient(160deg,#141414,#0a0a0a);
+  color:rgba(255,255,255,.85);
+}
+.case__placeholder span{
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.1rem,4vw,1.5rem);letter-spacing:-.02em;line-height:1;
+}
+/* —— Vídeo dentro de mockup de iPhone —— */
+.case__stage{
+  width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  padding:clamp(20px,4vw,32px);
+  background:
+    radial-gradient(120% 120% at 30% 0%,rgba(16,185,129,.22),transparent 55%),
+    linear-gradient(160deg,#141414,#0a0a0a);
+}
+.phone{
+  position:relative;height:100%;aspect-ratio:392/800;max-width:100%;
+  padding:9px;                             /* espessura da moldura */
+  background:linear-gradient(160deg,#2a2a2e,#131315);
+  border-radius:clamp(30px,4.5vw,44px);
+  box-shadow:
+    inset 0 0 0 1.5px rgba(255,255,255,.09), /* brilho da borda de titânio */
+    0 30px 60px -22px rgba(0,0,0,.75),
+    0 8px 24px -12px rgba(16,185,129,.18);   /* eco esmeralda sutil */
+}
+.phone__screen{
+  width:100%;height:100%;overflow:hidden;background:#000;
+  border-radius:clamp(22px,3.6vw,36px);
+  display:flex;flex-direction:column;
+}
+/* Barra de status (horário + sinal/wifi/bateria) — o vídeo começa abaixo dela,
+   então o header da página gravada aparece inteiro */
+.phone__statusbar{
+  flex:none;height:8.5%;min-height:26px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 11%;background:var(--off-white);color:var(--black);
+}
+.phone__time{font-family:var(--font-body);font-weight:600;font-size:clamp(8px,2vw,11px);letter-spacing:.02em}
+.phone__icons{height:34%;min-height:9px;width:auto;display:block}
+.phone__screen video{flex:1;min-height:0;width:100%;object-fit:cover;display:block}
+.phone__island{
+  position:absolute;top:calc(9px + 8px);left:50%;transform:translateX(-50%);
+  width:24%;height:clamp(12px,2vw,18px);
+  background:#000;border-radius:999px;z-index:2;
+}
+
+.case__cat{
+  margin-top:20px;font-family:var(--font-body);font-size:13px;font-weight:600;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--emerald-dark);
+}
+.case__name{margin-top:10px;font-family:var(--font-body);font-weight:700;text-transform:uppercase;font-size:clamp(1.1rem,1.5vw,1.35rem);letter-spacing:.01em}
+.case__result{margin-top:10px;font-size:clamp(.95rem,1.2vw,1.05rem);color:var(--ink-60);line-height:1.5;max-width:38ch}

@@ -1,0 +1,22 @@
+/* HERO — status, tagline, headline gigante (3 linhas), sub + botão */
+import { CONFIG } from "../config.js";
+
+export function hero(){
+  const h = CONFIG.hero;
+  const lines = h.headline.map(l => `<span>${l}</span>`).join("<br>");
+  return `
+  <section class="hero" id="hero">
+    <div class="wrap">
+      <div class="eyebrow reveal">
+        <span class="dot"></span><span class="status">${h.status}</span>
+        <span class="eyebrow__dash" aria-hidden="true">—</span>
+        <span class="eyebrow__tagline">${h.tagline}</span>
+      </div>
+      <h1 class="hero__headline reveal">${lines}</h1>
+      <div class="hero__bottom">
+        <a href="#contato" class="btn-outline reveal"><span class="arrow">↗</span> ${h.cta}</a>
+        <p class="hero__sub reveal">${h.subheadline}</p>
+      </div>
+    </div>
+  </section>`;
+}

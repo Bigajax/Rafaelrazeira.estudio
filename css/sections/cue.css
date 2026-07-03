@@ -1,0 +1,13 @@
+/* ============================================================
+   CUE — "conheça mais" com setinha, convite discreto para rolar
+   ============================================================ */
+.cue{width:100%;display:flex;justify-content:center;text-align:center;padding-block:clamp(24px,4vw,40px)}
+.cue a{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;margin-inline:auto;
+  font-family:var(--font-body);font-weight:700;font-size:12px;
+  letter-spacing:.02em;text-transform:uppercase;color:#b6b6b3;
+  transition:color .25s;
+}
+.cue a:hover{color:var(--black)}
+.cue__arrow{font-size:.75em;line-height:1;animation:cue-bob 2.2s ease-in-out infinite}
+@keyframes cue-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}

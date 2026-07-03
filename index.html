@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Rafael Razeira Estúdio — Landing pages de alto padrão</title>
+<meta name="description" content="Estúdio boutique de design. Landing pages de alto padrão que posicionam sua marca com autoridade e convertem visitantes em clientes." />
+
+<!-- Open Graph -->
+<meta property="og:title" content="Rafael Razeira Estúdio — Tenha uma página que vende" />
+<meta property="og:description" content="Landing pages de alto padrão que posicionam sua marca com autoridade e convertem visitantes em clientes." />
+<meta property="og:type" content="website" />
+<meta name="theme-color" content="#0A0A0A" />
+
+<!-- Favicon: monograma RR em esmeralda -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230A0A0A'/%3E%3Ctext x='50' y='68' font-family='Archivo,Arial' font-size='52' font-weight='900' fill='%2310B981' text-anchor='middle'%3ERR%3C/text%3E%3C/svg%3E" />
+
+<!-- Fontes: display (Archivo 900) + corpo (Inter) + utilitária mono (Space Mono) -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+<!-- CSS: base (compartilhado) + um arquivo por seção -->
+<link rel="stylesheet" href="css/base.css" />
+<link rel="stylesheet" href="css/sections/header.css" />
+<link rel="stylesheet" href="css/sections/hero.css" />
+<link rel="stylesheet" href="css/sections/marquee.css" />
+<link rel="stylesheet" href="css/sections/cue.css" />
+<link rel="stylesheet" href="css/sections/about.css" />
+<link rel="stylesheet" href="css/sections/brandband.css" />
+<link rel="stylesheet" href="css/sections/cases.css" />
+<link rel="stylesheet" href="css/sections/values.css" />
+<link rel="stylesheet" href="css/sections/founder.css" />
+<link rel="stylesheet" href="css/sections/audience.css" />
+<link rel="stylesheet" href="css/sections/testimonials.css" />
+<link rel="stylesheet" href="css/sections/contact.css" />
+<link rel="stylesheet" href="css/sections/footer.css" />
+<link rel="stylesheet" href="css/sections/pill.css" />
+</head>
+<body>
+
+<!-- Linhas verticais de grid no fundo (decorativo) -->
+<div class="grid-lines" aria-hidden="true">
+  <span></span><span></span><span></span><span></span><span></span>
+</div>
+
+<!-- A página inteira é montada aqui pelos módulos de js/sections/*.js -->
+<div id="app"></div>
+
+<!-- Ponto de entrada (ES module): monta as seções na ordem e liga as interações -->
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

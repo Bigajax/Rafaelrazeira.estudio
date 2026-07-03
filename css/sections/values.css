@@ -1,0 +1,19 @@
+/* ============================================================
+   VALORES — seção escura: palavras grandes em cinza + parágrafo
+   ============================================================ */
+.values{background:var(--black);color:var(--off-white)}
+.values__words{border-top:1px solid var(--line-dark)}
+.values__words li{
+  list-style:none;border-bottom:1px solid var(--line-dark);
+  padding-block:clamp(10px,2.4vw,20px);
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  /* 9vw garante que "POSICIONAMENTO" caiba em telas de 360px sem cortar */
+  font-size:clamp(1.7rem,9vw,6rem);line-height:1;letter-spacing:-.03em;
+  color:rgba(255,255,255,.30);transition:color .3s;
+}
+.values__words li:hover{color:#fff}
+.values__para{
+  margin-top:clamp(32px,6vw,56px);max-width:34ch;
+  font-size:clamp(1.15rem,4.6vw,1.6rem);line-height:1.35;font-weight:500;color:rgba(255,255,255,.72);
+}
+.values__para b{color:#fff;font-weight:600}

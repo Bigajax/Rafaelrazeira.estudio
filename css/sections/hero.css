@@ -1,0 +1,47 @@
+/* ============================================================
+   HERO — status + tagline, headline gigante, sub + botão
+   ============================================================ */
+.hero{padding-top:calc(64px + clamp(28px,9vw,72px));padding-bottom:clamp(40px,9vw,90px)}
+/* Mobile: respiro extra na base para o pill flutuante não cobrir o subtítulo */
+@media(max-width:640px){
+  .hero{padding-bottom:calc(clamp(40px,9vw,90px) + 76px)}
+  .hero__headline{line-height:.88}
+  .hero__bottom{gap:20px}
+}
+.hero__headline{
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  /* limitado também pela ALTURA (16vh): headline + CTA + sub cabem na 1ª dobra em qualquer monitor */
+  font-size:min(clamp(3.4rem,18.5vw,11rem),16vh);
+  line-height:.9;letter-spacing:-.04em;
+  margin-top:clamp(22px,5vw,40px);
+}
+.hero__bottom{
+  display:flex;flex-wrap:wrap;gap:clamp(24px,5vw,48px);
+  align-items:flex-end;justify-content:flex-end;margin-top:clamp(28px,6vw,56px);
+}
+.hero__sub{
+  max-width:min(46ch,100%);margin-left:auto;
+  font-size:clamp(1.05rem,4.4vw,1.5rem);line-height:1.35;font-weight:500;color:var(--ink-60);
+}
+.hero__sub b{color:var(--black);font-weight:600}
+
+/* —— Desktop: duas colunas (headline à esquerda; sub em caixa alta + botão à direita) —— */
+@media(min-width:1024px){
+  .hero .wrap{
+    display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);
+    column-gap:clamp(32px,4vw,72px);align-items:center;
+  }
+  .hero .eyebrow{grid-column:1/-1}
+  .hero__headline{grid-column:1}
+  .hero__bottom{
+    grid-column:2;margin-top:0;
+    flex-direction:column-reverse;align-items:flex-end;justify-content:center;
+    gap:clamp(32px,4vw,56px);
+  }
+  .hero__sub{
+    margin-left:0;text-align:right;text-transform:uppercase;
+    font-size:clamp(1.2rem,1.6vw,1.75rem);line-height:1.32;max-width:31ch;
+    color:var(--black);font-weight:500;
+  }
+  .hero__sub b{font-weight:500}
+}

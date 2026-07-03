@@ -1,0 +1,22 @@
+/* ============================================================
+   BRANDBAND — nome da marca gigante rolando devagar
+   (tipografia regular, sem peso black: presença, não grito)
+   ============================================================ */
+.brandband{
+  overflow:hidden;white-space:nowrap;position:relative;z-index:1;
+  padding-block:clamp(24px,4vw,56px);
+}
+.brandband__track{display:inline-flex;will-change:transform;animation:brandband 24s linear infinite}
+.brandband__track span{
+  font-family:var(--font-body);font-weight:400;text-transform:uppercase;
+  font-size:clamp(3.5rem,11.5vw,13rem);line-height:1;letter-spacing:-.03em;
+  padding:0 .35em;color:var(--black);
+}
+/* Mobile: letreiro maior e mais rápido — presença em vez de sobra de espaço */
+@media(max-width:640px){
+  .brandband{padding-block:20px}
+  .brandband__track{animation-duration:18s}
+  .brandband__track span{font-size:15vw}
+}
+/* sentido invertido: desliza da esquerda para a direita (contraponto à faixa do hero) */
+@keyframes brandband{from{transform:translateX(-50%)}to{transform:translateX(0)}}

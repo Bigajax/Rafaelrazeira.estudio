@@ -1,0 +1,12 @@
+{
+  "name": "rafael-razeira-estudio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Landing page one-page — HTML + CSS + JS puro, sem build",
+  "scripts": {
+    "dev": "serve . -l 3000"
+  },
+  "devDependencies": {
+    "serve": "^14.2.4"
+  }
+}
