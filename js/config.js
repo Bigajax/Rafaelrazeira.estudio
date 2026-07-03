@@ -154,8 +154,13 @@ const CONFIG = {
        }
    O envio é um POST JSON com: nome, email, whatsapp, empresa, cargo, necessidade.
    ============================================================ */
-const FORM_ENDPOINT = ""; // ⬅ cole sua URL aqui (deixe "" para modo demo)
-const FORM_HEADERS  = { "Content-Type": "application/json" };
+const FORM_ENDPOINT = "https://mxfakodcmpphgasmdlna.supabase.co/rest/v1/briefings";
+const FORM_HEADERS  = {
+  "Content-Type": "application/json",
+  "apikey": "sb_publishable_8SVQEwGP2XG346NsQcRXgg_kn5Z1M7Z",
+  "Authorization": "Bearer sb_publishable_8SVQEwGP2XG346NsQcRXgg_kn5Z1M7Z",
+  "Prefer": "return=minimal",
+};
 
 /* ⚠️ Não precisa mexer daqui para baixo — apenas disponibiliza o conteúdo p/ a página. */
 export { CONFIG, FORM_ENDPOINT, FORM_HEADERS };

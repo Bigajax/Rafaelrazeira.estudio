@@ -1,0 +1,30 @@
+-- ============================================================
+-- Tabela de leads do formulário de briefing
+-- Cole este script inteiro em: Supabase → SQL Editor → Run
+-- ============================================================
+
+create table if not exists public.briefings (
+  id            uuid primary key default gen_random_uuid(),
+  created_at    timestamptz not null default now(),
+  nome          text not null,
+  email         text not null,
+  whatsapp      text not null,
+  empresa       text,
+  cargo         text,
+  necessidade   text,
+  inicio        text,
+  investimento  text,
+  canal         text,
+  origem        text
+);
+
+-- Liga o Row Level Security (ninguém acessa nada por padrão)
+alter table public.briefings enable row level security;
+
+-- Permite APENAS INSERIR para visitantes anônimos (o site).
+-- Ninguém consegue LER os leads com a chave pública — só você, logado no painel.
+create policy "site pode inserir briefings"
+  on public.briefings
+  for insert
+  to anon
+  with check (true);
