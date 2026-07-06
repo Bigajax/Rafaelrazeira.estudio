@@ -1,0 +1,89 @@
+/* ============================================================
+   PÁGINAS LEGAIS (/termos e /privacidade) — layout de leitura:
+   coluna única ~720px, mesma identidade da landing (tokens em base.css)
+   ============================================================ */
+
+/* Topo: marca à esquerda, volta ao site à direita */
+.legal-top{
+  max-width:var(--maxw);margin:0 auto;padding:clamp(20px,4vw,32px) var(--pad);
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  border-bottom:1px solid var(--line);position:relative;z-index:1;
+}
+.legal-top .brand{
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(15px,4vw,19px);letter-spacing:-.01em;white-space:nowrap;
+}
+.legal-top .brand small{font-weight:800;color:var(--ink-40);font-size:1em}
+.legal-top .back{
+  font-family:var(--font-mono);font-weight:700;font-size:clamp(11px,3vw,13px);
+  letter-spacing:.06em;text-transform:uppercase;color:var(--ink-60);
+  white-space:nowrap;transition:color .2s;
+}
+.legal-top .back:hover{color:var(--emerald-dark)}
+@media(max-width:480px){
+  .legal-top .brand{font-size:14px}
+  .legal-top .back{font-size:11px;letter-spacing:.03em}
+}
+
+/* Coluna de leitura */
+.legal-doc{
+  position:relative;z-index:1;
+  max-width:calc(720px + 2*var(--pad));margin:0 auto;
+  padding:clamp(40px,8vw,80px) var(--pad) clamp(48px,8vw,88px);
+}
+.legal-doc .l-meta{
+  font-family:var(--font-mono);font-size:clamp(11px,3vw,13px);
+  letter-spacing:.06em;text-transform:uppercase;color:var(--ink-60);
+}
+.legal-doc .l-meta b{color:var(--emerald-dark);font-weight:700}
+.legal-doc h1{
+  margin-top:clamp(16px,3vw,24px);
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(2.2rem,9vw,3.8rem);line-height:.94;letter-spacing:-.03em;
+}
+.legal-doc .l-intro{
+  margin-top:clamp(20px,4vw,28px);font-size:clamp(1.02rem,4vw,1.15rem);
+  color:var(--ink-60);line-height:1.6;
+}
+.legal-doc .l-intro b{color:var(--black);font-weight:600}
+
+/* Seções numeradas */
+.l-sec{margin-top:clamp(36px,6vw,56px);padding-top:clamp(24px,4vw,32px);border-top:1px solid var(--line)}
+.l-num{font-family:var(--font-mono);font-weight:700;font-size:13px;color:var(--emerald-dark);letter-spacing:.04em}
+.l-sec h2{
+  margin-top:6px;font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.25rem,5.4vw,1.7rem);line-height:1.05;letter-spacing:-.02em;
+}
+.l-sec p{margin-top:14px;font-size:clamp(1rem,3.9vw,1.08rem);color:var(--ink-60);line-height:1.65}
+.l-sec b{color:var(--black);font-weight:600}
+.l-sec a{color:var(--black);font-weight:600;border-bottom:1.5px solid var(--emerald);transition:color .2s}
+.l-sec a:hover{color:var(--emerald-dark)}
+
+/* Listas com marcador da marca */
+.l-list{list-style:none;margin-top:14px}
+.l-list li{
+  display:flex;gap:12px;align-items:flex-start;
+  padding-block:9px;font-size:clamp(1rem,3.9vw,1.08rem);color:var(--ink-60);line-height:1.55;
+}
+.l-list li::before{content:"→";font-family:var(--font-mono);font-weight:700;color:var(--emerald);flex:none;line-height:1.55}
+
+/* Nota informativa + rodapé */
+.l-note{
+  margin-top:clamp(40px,7vw,64px);padding-top:clamp(20px,4vw,28px);border-top:1px solid var(--line);
+  font-family:var(--font-mono);font-size:12px;line-height:1.7;
+  letter-spacing:.02em;color:var(--ink-40);
+}
+.legal-footer{
+  max-width:var(--maxw);margin:0 auto;padding:clamp(24px,4vw,36px) var(--pad);
+  border-top:1px solid var(--line);position:relative;z-index:1;
+  display:flex;flex-wrap:wrap;gap:10px 32px;
+  font-family:var(--font-mono);font-size:clamp(11px,3vw,12px);
+  letter-spacing:.04em;text-transform:uppercase;color:var(--ink-60);
+}
+.legal-footer a{transition:color .2s}
+.legal-footer a:hover{color:var(--emerald-dark)}
+
+@media print{
+  .grid-lines{display:none}
+  .legal-top .back{display:none}
+}

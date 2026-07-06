@@ -1,0 +1,38 @@
+/* ============================================================
+   BANNER DE CONSENTIMENTO DE COOKIES — barra escura fixa na base,
+   acima do pill. Some após a escolha (aceitar/recusar).
+   ============================================================ */
+.consent{
+  position:fixed;left:0;right:0;bottom:0;z-index:70;
+  display:flex;flex-wrap:wrap;gap:14px 24px;align-items:center;justify-content:center;
+  padding:16px clamp(20px,5vw,40px);
+  background:rgba(10,10,10,.94);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  border-top:1px solid rgba(255,255,255,.12);
+  color:var(--off-white);
+}
+.consent__text{
+  font-size:clamp(12px,3.4vw,14px);line-height:1.5;color:rgba(255,255,255,.75);
+  max-width:60ch;text-align:center;
+}
+.consent__text a{
+  color:var(--off-white);font-weight:600;
+  border-bottom:1.5px solid var(--emerald);white-space:nowrap;
+}
+.consent__text a:hover{color:var(--emerald)}
+.consent__actions{display:flex;gap:10px;flex:none}
+.consent__btn{
+  border-radius:999px;padding:11px 24px;
+  font-family:var(--font-mono);font-weight:700;font-size:12px;
+  letter-spacing:.06em;text-transform:uppercase;
+  transition:background .2s,color .2s,border-color .2s;
+}
+.consent__btn--ok{border:none;background:var(--emerald);color:#fff}
+.consent__btn--ok:hover{background:var(--emerald-dark)}
+.consent__btn--no{border:1.5px solid rgba(255,255,255,.35);background:transparent;color:rgba(255,255,255,.75)}
+.consent__btn--no:hover{border-color:var(--off-white);color:var(--off-white)}
+@media(max-width:560px){
+  .consent{flex-direction:column;padding-bottom:14px}
+  .consent__actions{width:100%}
+  .consent__btn{flex:1;padding:13px}
+}

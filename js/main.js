@@ -25,6 +25,8 @@ import { initHeroFit }    from "./lib/herofit.js";
 import { initForm }       from "./lib/form.js";
 import { initPill }       from "./lib/pill.js";
 import { initCaseVideos } from "./lib/videos.js";
+import { initConsent }    from "./lib/consent.js";
+import { initTracking }   from "./lib/tracking.js";
 
 // Ordem das seções DENTRO do <main> (não inclui header/footer/pill)
 const page = [ hero, marquee, cue, about, brandband, process, cases, audience, values, founder, testimonials, contact, marquee ];
@@ -42,3 +44,4 @@ initHeroFit();
 initForm();
 initPill();
 initCaseVideos();
+initConsent(initTracking);   // Meta Pixel só carrega após o aceite de cookies

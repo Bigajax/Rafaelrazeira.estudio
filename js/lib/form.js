@@ -2,6 +2,7 @@
    - Sem FORM_ENDPOINT: modo demo (loga no console e mostra sucesso).
    - Com FORM_ENDPOINT: faz POST JSON com os dados do lead. */
 import { CONFIG, FORM_ENDPOINT, FORM_HEADERS } from "../config.js";
+import { trackLead } from "./tracking.js";
 
 /* —— Dropdowns customizados (efeito vidro ao abrir as opções) —— */
 function initDropdowns(){
@@ -103,6 +104,12 @@ export function initForm(){
         console.log("[briefing] configure FORM_ENDPOINT em js/config.js para enviar de verdade:", payload);
         await new Promise(r => setTimeout(r, 500));
       }
+      // Lead deduplicado (Pixel + CAPI, mesmo event_id) — só com consentimento;
+      // fire-and-forget: falha de tracking nunca afeta o envio.
+      const eventId = (crypto.randomUUID && crypto.randomUUID()) ||
+                      `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+      trackLead(eventId, { email: payload.email, phone: payload.whatsapp });
+
       form.classList.add("hide");
       document.getElementById("form-success").classList.add("show");
       // Avança o stepper: 01 concluído → 02 (agendar conversa) ativo

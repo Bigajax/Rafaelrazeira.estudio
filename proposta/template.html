@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Proposta — [CLIENTE] · Rafael Razeira Estúdio</title>
+
+<!-- ============================================================
+     PROPOSTA COMERCIAL — TEMPLATE
+     ------------------------------------------------------------
+     Como usar:
+     1. Duplique este arquivo como proposta/nome-do-cliente.html
+     2. Busque por "[" e substitua TODOS os placeholders:
+        [CLIENTE]            → nome curto do projeto (aparece 3x:
+                               título da aba, headline e link do WhatsApp)
+        [NOME DO CLIENTE]    → nome da pessoa
+        [EMPRESA]            → nome da empresa
+        [DD/MM/AAAA]         → data de envio
+        [VALOR]              → ex.: 2.500
+        [OBJETIVO DA PÁGINA] → ex.: gerar contatos no WhatsApp
+        [DIAGNÓSTICO — ...]  → resumo da call (seção 01)
+        [79–99]              → mensalidade da hospedagem gerenciada (seção 06)
+        [200–300]            → taxa única da entrega com transferência (seção 06)
+     3. Envie o link. Para PDF: Ctrl+P → Salvar como PDF.
+     ============================================================ -->
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230A0A0A'/%3E%3Ctext x='50' y='68' font-family='Archivo,Arial' font-size='52' font-weight='900' fill='%2310B981' text-anchor='middle'%3ERR%3C/text%3E%3C/svg%3E" />
+
+<!-- Mesmas fontes da landing -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+<style>
+/* ——— Tokens copiados de css/base.css da landing ——— */
+:root{
+  --emerald:#10B981;
+  --emerald-dark:#065F46;
+  --emerald-light:#D1FAE5;
+  --off-white:#FAFAF7;
+  --black:#0A0A0A;
+  --ink-60:rgba(10,10,10,.60);
+  --ink-40:rgba(10,10,10,.40);
+  --line:rgba(10,10,10,.10);
+  --maxw:1040px;                       /* proposta é documento: coluna mais estreita que a landing */
+  --pad:clamp(20px,6vw,72px);
+  --font-display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --font-body:"Inter",system-ui,-apple-system,sans-serif;
+  --font-mono:"Space Mono",ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font-body);background:var(--off-white);color:var(--black);
+  line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+b{font-weight:600}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--emerald);outline-offset:3px}
+
+/* ——— Linhas verticais de grid (assinatura da landing) ——— */
+.grid-lines{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  max-width:var(--maxw);margin:0 auto;
+  display:flex;justify-content:space-between;padding:0 var(--pad);
+}
+.grid-lines span{width:1px;background:var(--line)}
+.grid-lines span:first-child,.grid-lines span:last-child{opacity:0}
+@media(max-width:640px){.grid-lines span:nth-child(2),.grid-lines span:nth-child(4){display:none}}
+.doc{position:relative;z-index:1;max-width:var(--maxw);margin:0 auto;padding:0 var(--pad)}
+
+/* ——— Header ——— */
+.doc-header{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding-block:clamp(20px,4vw,32px);border-bottom:1px solid var(--line);
+}
+.brand{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(15px,4vw,19px);letter-spacing:-.01em;white-space:nowrap}
+.brand small{font-weight:800;color:var(--ink-40);letter-spacing:.01em;font-size:1em}
+.doc-header .date{font-family:var(--font-mono);font-size:clamp(11px,3vw,13px);color:var(--ink-60);white-space:nowrap}
+
+/* ——— Abertura ——— */
+.opening{padding-block:clamp(44px,9vw,96px)}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:12px;flex-wrap:wrap;
+  font-family:var(--font-mono);font-size:clamp(11px,3vw,13px);
+  letter-spacing:.06em;text-transform:uppercase;color:var(--ink-60);
+}
+.status{color:var(--emerald-dark);font-weight:700}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--emerald);flex:none;position:relative}
+.dot::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--emerald);animation:pulse 2.2s ease-out infinite}
+@keyframes pulse{0%{transform:scale(1);opacity:.6}70%{transform:scale(2.6);opacity:0}100%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.dot::after{animation:none}}
+.opening h1{
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(2.5rem,9.5vw,5.5rem);line-height:.92;letter-spacing:-.035em;
+  margin-top:clamp(20px,4vw,32px);
+}
+.opening h1 .quiet{color:var(--ink-40)}
+.opening .meta{
+  margin-top:clamp(24px,4vw,36px);font-size:clamp(1rem,4vw,1.15rem);color:var(--ink-60);max-width:52ch;
+}
+.opening .meta b{color:var(--black)}
+
+/* ——— Seções numeradas (mesma gramática do COMO FUNCIONA da landing) ——— */
+.sec{padding-block:clamp(40px,7vw,72px);border-top:1px solid var(--line)}
+@media(min-width:820px){.sec{display:grid;grid-template-columns:110px 1fr;gap:16px}}
+.sec .num{
+  font-family:var(--font-mono);font-weight:700;font-size:clamp(1rem,4vw,1.35rem);
+  color:var(--emerald-dark);letter-spacing:.02em;margin-bottom:12px;
+}
+.sec h2{
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.5rem,6.5vw,2.4rem);line-height:1.02;letter-spacing:-.025em;
+}
+.sec .body{margin-top:clamp(16px,3vw,24px);max-width:62ch}
+.sec p{font-size:clamp(1rem,4vw,1.15rem);color:var(--ink-60);line-height:1.55}
+.sec p + p{margin-top:12px}
+
+/* Listas: entregas (seta esmeralda) e exclusões (traço cinza) */
+.list{list-style:none}
+.list li{
+  display:flex;gap:14px;align-items:flex-start;
+  padding-block:14px;border-bottom:1px solid var(--line);
+  font-size:clamp(1rem,4vw,1.1rem);line-height:1.5;color:var(--ink-60);
+}
+.list li:last-child{border-bottom:none}
+.list li::before{font-family:var(--font-mono);font-weight:700;flex:none;line-height:1.5}
+.list--in  li::before{content:"→";color:var(--emerald)}
+.list--out li::before{content:"—";color:var(--ink-40)}
+.list b{color:var(--black)}
+
+/* Passos (04) */
+.steps{list-style:none;counter-reset:passo}
+.steps li{padding-block:18px;border-bottom:1px solid var(--line)}
+.steps li:last-child{border-bottom:none}
+.steps .s-num{font-family:var(--font-mono);font-weight:700;font-size:13px;color:var(--emerald-dark)}
+.steps h3{
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.05rem,4.4vw,1.3rem);letter-spacing:-.01em;margin-top:4px;
+}
+.steps p{margin-top:6px;font-size:clamp(.95rem,3.8vw,1.05rem)}
+
+/* ——— Investimento ——— */
+.price{
+  font-family:var(--font-display);font-weight:900;letter-spacing:-.03em;
+  font-size:clamp(2.6rem,11vw,4.5rem);line-height:1;margin-top:clamp(12px,2vw,20px);
+}
+.price small{font-size:.38em;font-weight:800;letter-spacing:0;color:var(--ink-40);text-transform:uppercase;white-space:nowrap}
+.split{margin-top:clamp(20px,4vw,28px);border-top:1px solid var(--line)}
+.split div{
+  display:flex;justify-content:space-between;gap:16px;align-items:baseline;
+  padding-block:14px;border-bottom:1px solid var(--line);
+}
+.split .tag{font-family:var(--font-mono);font-weight:700;font-size:clamp(11px,3vw,13px);letter-spacing:.06em;text-transform:uppercase;color:var(--emerald-dark);white-space:nowrap}
+.split .desc{font-size:clamp(.95rem,3.8vw,1.05rem);color:var(--ink-60);text-align:right}
+
+/* Bloco de garantia — mesmo tratamento do "RISCO ZERO" da landing */
+.guarantee{
+  display:block;margin-top:clamp(28px,5vw,40px);
+  background:var(--emerald-light);color:var(--black);
+  border-radius:24px;padding:clamp(24px,5vw,40px);
+  box-shadow:0 24px 60px -24px rgba(6,95,70,.35);
+}
+.guarantee .g-label{
+  font-family:var(--font-mono);font-size:12px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--emerald-dark);
+}
+.guarantee h3{
+  margin-top:12px;font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.5rem,6.5vw,2.2rem);line-height:.98;letter-spacing:-.03em;
+}
+.guarantee p{margin-top:14px;font-size:clamp(1rem,4vw,1.1rem);line-height:1.5;color:rgba(10,10,10,.72);max-width:58ch}
+.guarantee p b{color:var(--black)}
+
+/* ——— Hospedagem (06): dois formatos lado a lado ——— */
+.host-cards{margin-top:clamp(20px,4vw,28px);display:grid;gap:16px}
+@media(min-width:720px){.host-cards{grid-template-columns:1fr 1fr}}
+.host{border:1.5px solid var(--line);border-radius:20px;padding:clamp(20px,4.5vw,28px)}
+.host--rec{border-color:var(--emerald);box-shadow:0 12px 32px -20px rgba(16,185,129,.45)}
+.host .h-tag{font-family:var(--font-mono);font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--emerald-dark)}
+.host h3{
+  margin-top:10px;font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.1rem,4.6vw,1.35rem);line-height:1.02;letter-spacing:-.015em;
+}
+.host .h-price{
+  margin-top:10px;font-family:var(--font-display);font-weight:900;letter-spacing:-.02em;
+  font-size:clamp(1.5rem,6vw,1.9rem);line-height:1;
+}
+.host .h-price small{font-size:.55em;font-weight:800;color:var(--ink-40);text-transform:uppercase;letter-spacing:0;white-space:nowrap}
+.host p{margin-top:12px;font-size:clamp(.95rem,3.8vw,1.02rem)}
+.host-note{margin-top:clamp(16px,3vw,22px)}
+@media print{.host-cards{break-inside:avoid}}
+
+/* ——— Próximos passos + aceite ——— */
+.next{list-style:none;counter-reset:np}
+.next li{
+  counter-increment:np;display:flex;gap:14px;align-items:flex-start;
+  padding-block:14px;border-bottom:1px solid var(--line);
+  font-size:clamp(1rem,4vw,1.1rem);color:var(--ink-60);line-height:1.5;
+}
+.next li:last-child{border-bottom:none}
+.next li::before{
+  content:counter(np,decimal-leading-zero);
+  font-family:var(--font-mono);font-weight:700;color:var(--emerald-dark);flex:none;line-height:1.5;
+}
+.next b{color:var(--black)}
+.cta-wrap{margin-top:clamp(28px,5vw,40px)}
+.btn-accept{
+  display:inline-flex;align-items:center;justify-content:center;gap:12px;width:100%;
+  border:none;border-radius:999px;background:var(--emerald);color:#fff;
+  padding:clamp(20px,4vw,24px) 36px;
+  font-family:var(--font-display);font-weight:900;font-size:clamp(15px,4vw,17px);
+  letter-spacing:.03em;text-transform:uppercase;
+  box-shadow:0 12px 32px -12px rgba(16,185,129,.5);
+  transition:background .25s,box-shadow .25s,transform .1s;
+}
+.btn-accept:hover{background:var(--emerald-dark);box-shadow:0 16px 36px -12px rgba(6,95,70,.6)}
+.btn-accept:active{transform:scale(.99)}
+@media(min-width:560px){.btn-accept{width:auto}}
+.cta-note{margin-top:14px;font-family:var(--font-mono);font-size:12px;color:var(--ink-40);letter-spacing:.04em;text-transform:uppercase}
+
+/* ——— Rodapé ——— */
+.doc-footer{
+  margin-top:clamp(40px,7vw,72px);padding-block:clamp(24px,4vw,36px);
+  border-top:1px solid var(--line);
+  display:flex;flex-wrap:wrap;gap:8px 24px;
+  font-family:var(--font-mono);font-size:clamp(11px,3vw,12px);
+  letter-spacing:.04em;text-transform:uppercase;color:var(--ink-60);
+}
+
+/* ——— Impressão / PDF (A4) ——— */
+@page{size:A4;margin:16mm}
+@media print{
+  body{background:#fff}
+  .grid-lines,.cta-wrap{display:none}
+  .dot::after{animation:none}
+  .doc{max-width:none;padding:0}
+  .opening{padding-block:28px 36px}
+  .sec{padding-block:24px;break-inside:avoid}
+  .guarantee{
+    box-shadow:none;border:1.5px solid var(--emerald-dark);
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;
+    break-inside:avoid;
+  }
+  .doc-footer{margin-top:32px}
+}
+</style>
+</head>
+<body>
+
+<div class="grid-lines" aria-hidden="true">
+  <span></span><span></span><span></span><span></span><span></span>
+</div>
+
+<div class="doc">
+
+  <header class="doc-header">
+    <div class="brand">RAFAEL RAZEIRA <small>ESTÚDIO</small></div>
+    <div class="date">[DD/MM/AAAA]</div>
+  </header>
+
+  <section class="opening">
+    <div class="eyebrow">
+      <span class="dot"></span><span class="status">PROPOSTA COMERCIAL</span>
+      <span aria-hidden="true">—</span>
+      <span>VALIDADE: 7 DIAS</span>
+    </div>
+    <h1>UMA PÁGINA<br>QUE VENDE.<br><span class="quiet">PARA [CLIENTE].</span></h1>
+    <p class="meta">Preparada para <b>[NOME DO CLIENTE]</b> — <b>[EMPRESA]</b>. Este documento resume o que conversamos, o que será entregue, o investimento e as garantias. Ele foi construído com o mesmo sistema visual que a sua página vai receber.</p>
+  </section>
+
+  <section class="sec">
+    <div class="num">01</div>
+    <div>
+      <h2>O QUE ENTENDI DO SEU NEGÓCIO</h2>
+      <div class="body">
+        <p>[DIAGNÓSTICO — resuma em 3 a 5 linhas o que o cliente contou na call: o que ele vende, para quem, como os clientes chegam hoje e qual o objetivo da página. Use as palavras dele. Esta seção mostra que você ouviu — é ela que vende.]</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="num">02</div>
+    <div>
+      <h2>O QUE SERÁ ENTREGUE</h2>
+      <div class="body">
+        <ul class="list list--in">
+          <li><span><b>1 landing page completa</b> — estratégia, texto (copywriting) e design, pensados para o objetivo definido: <b>[OBJETIVO DA PÁGINA]</b>.</span></li>
+          <li><span><b>Página responsiva</b> — perfeita no celular, tablet e computador.</span></li>
+          <li><span><b>Publicação no seu domínio</b>, pronta para receber visitantes e anúncios.</span></li>
+          <li><span><b>2 rodadas de revisão</b> inclusas após a apresentação da primeira versão.</span></li>
+          <li><span><b>Otimização básica de velocidade e SEO</b> (títulos, descrições, carregamento).</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="num">03</div>
+    <div>
+      <h2>O QUE NÃO ESTÁ INCLUSO</h2>
+      <div class="body">
+        <ul class="list list--out">
+          <li><span>Gestão de tráfego pago (anúncios) e verba de mídia.</span></li>
+          <li><span>Criação de logotipo ou identidade visual completa.</span></li>
+          <li><span>Produção de fotos e vídeos.</span></li>
+          <li><span>Custos de registro e renovação do domínio (~R$ 40/ano, pago diretamente por você no Registro.br).</span></li>
+          <li><span>Manutenção e hospedagem após a publicação — veja os formatos na seção 06.</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="num">04</div>
+    <div>
+      <h2>COMO FUNCIONA</h2>
+      <div class="body">
+        <ol class="steps">
+          <li>
+            <span class="s-num">01</span>
+            <h3>BRIEFING E ANÁLISE</h3>
+            <p>Você preenche o briefing e envia os materiais (logo, fotos, depoimentos). O prazo começa a contar a partir do recebimento completo.</p>
+          </li>
+          <li>
+            <span class="s-num">02</span>
+            <h3>DESIGN E COPY EM ATÉ 7 DIAS ÚTEIS</h3>
+            <p>Estratégia, texto e design da página ficam prontos e são apresentados a você em uma chamada rápida.</p>
+          </li>
+          <li>
+            <span class="s-num">03</span>
+            <h3>APROVAÇÃO E PUBLICAÇÃO</h3>
+            <p>Você revisa, aprova e a página vai ao ar. O saldo só é quitado depois do seu OK.</p>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="num">05</div>
+    <div>
+      <h2>INVESTIMENTO</h2>
+      <div class="body">
+        <div class="price">R$ [VALOR] <small>· em 2 parcelas</small></div>
+        <div class="split">
+          <div>
+            <span class="tag">ENTRADA — 50%</span>
+            <span class="desc">para reservar a vaga e iniciar o projeto</span>
+          </div>
+          <div>
+            <span class="tag">SALDO — 50%</span>
+            <span class="desc">na aprovação do design, antes da publicação</span>
+          </div>
+        </div>
+        <aside class="guarantee">
+          <span class="g-label">GARANTIA</span>
+          <h3>RISCO ZERO PARA COMEÇAR.</h3>
+          <p>Se a primeira direção visual apresentada não for aprovada, a entrada é <b>devolvida integralmente</b>. O saldo só existe <b>depois que você aprovar o design</b>.</p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="num">06</div>
+    <div>
+      <h2>DEPOIS DA PUBLICAÇÃO: HOSPEDAGEM</h2>
+      <div class="body">
+        <p>O site precisa de um lugar para ficar no ar. Você escolhe um dos dois formatos:</p>
+        <div class="host-cards">
+          <div class="host host--rec">
+            <span class="h-tag">OPÇÃO A — RECOMENDADA</span>
+            <h3>HOSPEDAGEM GERENCIADA</h3>
+            <div class="h-price">R$ [79–99]<small>/mês</small></div>
+            <p>Eu cuido de tudo: hospedagem em infraestrutura profissional, certificado de segurança (SSL), monitoramento e <b>1 ajuste pequeno por mês</b> (trocar um texto, uma foto, um preço). Você não precisa entender nada técnico — se algo acontecer, é comigo.</p>
+          </div>
+          <div class="host">
+            <span class="h-tag">OPÇÃO B</span>
+            <h3>ENTREGA COM TRANSFERÊNCIA</h3>
+            <div class="h-price">R$ [200–300]<small> · taxa única</small></div>
+            <p>Transfiro o código e o projeto para as suas contas, com um guia de acesso. A partir daí, a manutenção e os custos de infraestrutura ficam por sua conta.</p>
+          </div>
+        </div>
+        <p class="host-note">Em ambos os formatos, o domínio (ex.: suaempresa.com.br) é registrado <b>no seu nome</b> e é seu — eu apenas configuro.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="num">07</div>
+    <div>
+      <h2>PRÓXIMOS PASSOS</h2>
+      <div class="body">
+        <ol class="next">
+          <li><span>Você confirma o <b>aceite desta proposta</b> — pelo botão abaixo, por WhatsApp ou e-mail.</span></li>
+          <li><span>Envio do <b>contrato</b> para assinatura e dos dados para o pagamento da entrada.</span></li>
+          <li><span>Com a entrada confirmada, você recebe o <b>briefing</b> — e o prazo de 7 dias úteis começa assim que ele voltar completo.</span></li>
+        </ol>
+        <div class="cta-wrap">
+          <a class="btn-accept" href="https://wa.me/5544999997219?text=Ol%C3%A1%20Rafael%2C%20aceito%20a%20proposta%20do%20projeto%20[CLIENTE]" target="_blank" rel="noopener">ACEITAR PROPOSTA <span aria-hidden="true">→</span></a>
+          <p class="cta-note">Abre o WhatsApp com a mensagem de aceite pronta.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="doc-footer">
+    <span>RAFAEL RAZEIRA ESTÚDIO</span>
+    <span>rafael.rbarbon@gmail.com</span>
+    <span>(44) 99999-7219</span>
+    <span>@rafaelrazeira.estudio</span>
+  </footer>
+
+</div>
+
+</body>
+</html>

@@ -149,8 +149,8 @@ const CONFIG = {
     whatsapp: { display:"(44) 99999-7219", url:"https://wa.me/5544999997219" },
     location: "ESTAMOS NO BRASIL",   // ⬅ troque pela sua cidade (ex.: "ESTAMOS EM CAMPINAS, SP")
     legal: [
-      { label:"TERMOS DE USO",            url:"#" },   // ⬅ aponte para as páginas quando existirem
-      { label:"POLÍTICA DE PRIVACIDADE",  url:"#" },
+      { label:"TERMOS DE USO",            url:"/termos" },
+      { label:"POLÍTICA DE PRIVACIDADE",  url:"/privacidade" },
     ],
   },
 
