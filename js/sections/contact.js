@@ -34,6 +34,14 @@ export function contact(){
       <p class="contact__scarcity reveal">${c.scarcity}</p>
       <a href="mailto:${c.email}" class="contact__email reveal"><span class="arrow">→</span> ${c.email}</a>
 
+      <aside class="guarantee reveal">
+        <span class="guarantee__label">${c.guarantee.label}</span>
+        <h3 class="guarantee__title">${c.guarantee.title}</h3>
+        <p class="guarantee__text">${c.guarantee.text}</p>
+      </aside>
+
+      <p class="contact__pricing reveal">${c.pricing}</p>
+
       <div class="form-card reveal">
         <div class="stepper">
           <div class="step step--active"><small>${c.steps[0].num}.</small><span>${c.steps[0].label}</span></div>

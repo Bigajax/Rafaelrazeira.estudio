@@ -66,5 +66,12 @@
   margin-top:20px;font-family:var(--font-body);font-size:13px;font-weight:600;
   letter-spacing:.06em;text-transform:uppercase;color:var(--emerald-dark);
 }
+/* Rótulo de transparência (ex.: "ESTUDO DE REDESIGN") — acima do título */
+.case__tag{
+  display:inline-block;margin-top:12px;padding:5px 10px;
+  border:1px solid var(--line);border-radius:6px;
+  font-family:var(--font-mono);font-size:11px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ink-60);
+}
 .case__name{margin-top:10px;font-family:var(--font-body);font-weight:700;text-transform:uppercase;font-size:clamp(1.1rem,1.5vw,1.35rem);letter-spacing:.01em}
 .case__result{margin-top:10px;font-size:clamp(.95rem,1.2vw,1.05rem);color:var(--ink-60);line-height:1.5;max-width:38ch}

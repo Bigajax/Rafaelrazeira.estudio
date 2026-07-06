@@ -36,6 +36,7 @@ export function cases(){
     <article class="case reveal">
       <div class="case__media">${media(it)}</div>
       <div class="case__cat">${it.category}</div>
+      ${it.tag ? `<div class="case__tag">${it.tag}</div>` : ""}
       <h3 class="case__name">${it.name}</h3>
       <p class="case__result">${it.result}</p>
     </article>`).join("");

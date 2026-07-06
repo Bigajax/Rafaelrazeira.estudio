@@ -21,8 +21,8 @@ const CONFIG = {
     status: "AGENDA ABERTA",                                   // sinal (bolinha pulsante esmeralda)
     tagline: "POSICIONAMENTO · CONVERSÃO · NOVOS NEGÓCIOS",
     headline: ["TENHA", "UMA PÁGINA", "QUE VENDE."],           // 3 linhas da headline gigante
-    subheadline: "Landing pages de alto padrão que posicionam sua marca com <b>autoridade</b> e convertem visitantes em <b>clientes</b>.",
-    cta: "VAMOS CONVERSAR",
+    subheadline: "Landing page estratégica, no ar em <b>7 dias úteis</b>. Você só quita depois de <b>aprovar o design</b>.",
+    cta: "QUERO MINHA PÁGINA EM 7 DIAS",
   },
 
   // Uma frase ("...") ou várias (["...", "..."]) — elas se alternam na faixa
@@ -42,15 +42,28 @@ const CONFIG = {
     cta: "VAMOS CONVERSAR",
   },
 
+  // Como funciona — o processo em 3 passos (sequência real: briefing → design → publicação)
+  process: {
+    label: "COMO FUNCIONA.",
+    steps: [
+      { num:"01", title:"BRIEFING E ANÁLISE",   text:"Você conta o seu negócio e o objetivo da página. Eu analiso o projeto e confirmo se somos o fit certo — só então o trabalho começa." },
+      { num:"02", title:"DESIGN E COPY EM ATÉ 7 DIAS ÚTEIS", text:"A partir do briefing aprovado, estratégia, texto e design da sua página ficam prontos em até 7 dias úteis." },
+      { num:"03", title:"APROVAÇÃO E PUBLICAÇÃO", text:"Você revisa e aprova a página antes de ela ir ao ar. O saldo só é quitado depois do seu OK." },
+    ],
+    // Resumo da garantia — linha curta no fim da seção, leva ao bloco completo no contato
+    note: "ENTRADA DE 50% · SALDO SÓ APÓS APROVAR O DESIGN",
+  },
+
   cases: {
     headline: "CONHEÇA ALGUNS CASES RAFAEL RAZEIRA™",
     // video: gravação vertical (mp4) → aparece dentro de um mockup de iPhone, em loop.
     // img: imagem estática (assets/case-1.jpg) → usada se não houver vídeo.
     // Deixe os dois "" para exibir o placeholder estilizado.
+    // tag: rótulo acima do título (ex.: "ESTUDO DE REDESIGN"). Deixe "" para ocultar.
     items: [
-      { video:"assets/case-1.mp4", img:"", category:"LANDING PAGE · FINTECH", name:"Goldsand",   result:"Lista de espera para conta digital que rende 7% ao ano — página enxuta, feita para converter visita em cadastro." },
-      { video:"assets/case-2.mp4", img:"", category:"LANDING PAGE · EDTECH",  name:"Legend.org", result:"Feedback de trabalhos com IA para professores — identidade escura que transmite tecnologia com credibilidade." },
-      { video:"assets/case-3.mp4", img:"", category:"LANDING PAGE · SAAS",    name:"Ditto",      result:"Copy de produto com uma só fonte de verdade — página B2B com tipografia forte, à altura de 8.000 equipes." },
+      { video:"assets/case-1.mp4", img:"", tag:"ESTUDO DE REDESIGN", category:"LANDING PAGE · CREATOR ECONOMY",     name:"Uppbeat",  result:"Música e efeitos livres de royalties, aprovados por 4 milhões de criadores — página vibrante, feita para converter visita em cadastro." },
+      { video:"assets/case-2.mp4", img:"", tag:"ESTUDO DE REDESIGN", category:"LANDING PAGE · SOFTWARE CRIATIVO",   name:"Affinity", result:"Suíte de design profissional, gratuita para pessoas físicas — página escura de tipografia editorial, à altura de uma marca criativa." },
+      { video:"assets/case-3.mp4", img:"", tag:"ESTUDO DE REDESIGN", category:"LANDING PAGE · INFRAESTRUTURA DE IA", name:"Aria",     result:"Inteligência de engenharia em cada camada da rede — visual técnico em preto e vermelho para um produto que enxerga o que o hardware comum não vê." },
     ],
   },
 
@@ -97,6 +110,13 @@ const CONFIG = {
     intro: "Conduzo projetos estratégicos para empresas que precisam elevar autoridade, clareza e percepção de valor.",
     scarcity: "Trabalho com vagas limitadas por mês e todos os projetos passam por análise.",
     email: "rafael.rbarbon@gmail.com",
+    // Bloco de garantia — aparece destacado logo antes do formulário
+    guarantee: {
+      label: "GARANTIA",
+      title: "RISCO ZERO PARA COMEÇAR.",
+      text:  "Você inicia o projeto com <b>50% de entrada</b> e só quita o saldo <b>depois de aprovar o design</b>. Se a primeira direção visual não for aprovada, a entrada é <b>devolvida integralmente</b>.",
+    },
+    pricing: "Projetos a partir de <b>R$ 1.500</b>.",   // microcopy acima do formulário
     steps: [
       { num:"01", label:"FORMULÁRIO" },
       { num:"02", label:"AGENDAR CONVERSA" },
@@ -109,7 +129,7 @@ const CONFIG = {
       cargo:   { label:"Qual seu cargo?",   options:["Fundador(a) / Sócio(a)","CEO / Diretor(a)","Marketing","Autônomo(a) / Profissional liberal","Outro"] },
       need:    { label:"O que você precisa?", options:["Landing page","Identidade visual","Outro"] },
       inicio:  { label:"Qual expectativa de início?", options:["Imediatamente","Nos próximos 30 dias","Em 1 a 3 meses","Ainda estou planejando"] },
-      investimento: { label:"Qual expectativa de investimento?", options:["De R$ 399 a R$ 1.000","De R$ 1.000 a R$ 2.500","De R$ 2.500 a R$ 5.000","Acima de R$ 5.000"] },
+      investimento: { label:"Qual expectativa de investimento?", options:["R$ 1.500 a R$ 3.000","R$ 3.000 a R$ 5.000","Acima de R$ 5.000","Quero entender o investimento"] },
       canal:   { label:"Como conheceu o estúdio?", options:["Instagram","Indicação","Google","Outro"] },
       submit:  "ENVIAR E AGENDAR",
       note:    "Resposta em até 24h úteis. Seus dados ficam seguros.",

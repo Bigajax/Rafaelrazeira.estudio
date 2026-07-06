@@ -28,9 +28,38 @@
   background:rgba(255,255,255,.12);
 }
 
+/* —— Bloco de garantia (risco reverso) — destaque esmeralda antes do formulário —— */
+.guarantee{
+  position:relative;display:block;margin-top:clamp(40px,7vw,64px);max-width:1080px;
+  background:var(--emerald-light);color:var(--black);
+  border-radius:24px;padding:clamp(24px,5vw,44px);
+  box-shadow:0 24px 60px -24px rgba(6,95,70,.55);
+}
+.guarantee__label{
+  display:inline-block;font-family:var(--font-mono);font-size:12px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--emerald-dark);
+}
+.guarantee__title{
+  margin-top:12px;font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.6rem,6.5vw,2.8rem);line-height:.98;letter-spacing:-.03em;
+}
+.guarantee__text{
+  margin-top:16px;max-width:58ch;
+  font-size:clamp(1rem,4vw,1.15rem);line-height:1.5;color:rgba(10,10,10,.72);
+}
+.guarantee__text b{color:var(--black);font-weight:600}
+
+/* Microcopy de investimento — âncora de preço logo acima do formulário */
+.contact__pricing{
+  margin-top:clamp(24px,4vw,32px);
+  font-family:var(--font-mono);font-size:clamp(13px,3.4vw,15px);font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.6);
+}
+.contact__pricing b{color:var(--off-white);font-weight:700}
+
 /* —— Card do formulário: vidro escuro —— */
 .form-card{
-  position:relative;margin-top:clamp(40px,7vw,64px);max-width:1080px;
+  position:relative;margin-top:clamp(16px,3vw,24px);max-width:1080px;
   background:rgba(255,255,255,.07);
   -webkit-backdrop-filter:blur(24px) saturate(140%);
   backdrop-filter:blur(24px) saturate(140%);
