@@ -51,30 +51,34 @@ export function contact(){
         <form id="briefing-form" novalidate>
           <input type="text" name="_gotcha" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
 
-          <div class="field">
-            <label for="f-nome">${f.nome.label}</label>
-            <input id="f-nome" name="nome" type="text" placeholder="${f.nome.placeholder}" required autocomplete="name" />
-          </div>
-          <div class="field">
-            <label for="f-email">${f.email.label}</label>
-            <input id="f-email" name="email" type="email" placeholder="${f.email.placeholder}" required autocomplete="email" />
-          </div>
-          <div class="field">
-            <label for="f-whats">${f.whatsapp.label}</label>
-            <input id="f-whats" name="whatsapp" type="tel" inputmode="tel" placeholder="${f.whatsapp.placeholder}" required autocomplete="tel" />
-          </div>
-          <div class="field">
-            <label for="f-empresa">${f.empresa.label}</label>
-            <input id="f-empresa" name="empresa" type="text" placeholder="${f.empresa.placeholder}" autocomplete="organization" />
-          </div>
+          <!-- Passo 1 — seus dados -->
+          <fieldset class="fstep is-active" data-fstep="1">
+            <div class="field">
+              <label for="f-nome">${f.nome.label}</label>
+              <input id="f-nome" name="nome" type="text" placeholder="${f.nome.placeholder}" required autocomplete="name" aria-describedby="err-nome" />
+              <p class="field__err" id="err-nome" hidden>${f.nome.err}</p>
+            </div>
+            <div class="field">
+              <label for="f-whats">${f.whatsapp.label}</label>
+              <input id="f-whats" name="whatsapp" type="tel" inputmode="tel" placeholder="${f.whatsapp.placeholder}" required autocomplete="tel" aria-describedby="err-whats" />
+              <p class="field__err" id="err-whats" hidden>${f.whatsapp.err}</p>
+            </div>
+            <div class="field">
+              <label for="f-email">${f.email.label}</label>
+              <input id="f-email" name="email" type="email" placeholder="${f.email.placeholder}" required autocomplete="email" aria-describedby="err-email" />
+              <p class="field__err" id="err-email" hidden>${f.email.err}</p>
+            </div>
+            <button type="button" class="btn-submit" id="btn-continue">${f.continueBtn} <span class="arrow">→</span></button>
+          </fieldset>
 
-          ${dropdown("cargo", "cargo", f.cargo)}
-          ${dropdown("need", "necessidade", f.need)}
-          ${dropdown("inicio", "inicio", f.inicio)}
-          ${dropdown("invest", "investimento", f.investimento)}
-          ${dropdown("canal", "canal", f.canal)}
+          <!-- Passo 2 — sobre o projeto -->
+          <fieldset class="fstep" data-fstep="2">
+            ${dropdown("need", "necessidade", f.need)}
+            ${dropdown("invest", "investimento", f.investimento)}
+            <button type="submit" class="btn-submit">${f.submit} <span class="arrow">→</span></button>
+            <button type="button" class="btn-voltar" id="btn-back">${f.backBtn}</button>
+          </fieldset>
 
-          <button type="submit" class="btn-submit">${f.submit} <span class="arrow">→</span></button>
           <p class="form-note">${f.note}</p>
         </form>
 

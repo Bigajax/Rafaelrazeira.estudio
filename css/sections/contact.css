@@ -83,6 +83,31 @@
 .step--muted{color:rgba(255,255,255,.4)}
 .step--muted small{color:rgba(255,255,255,.4)}
 
+/* —— Formulário em 2 passos —— */
+.fstep{border:none;margin:0;padding:0;display:none}
+.fstep.is-active{display:block}
+.fstep .btn-submit{margin-top:clamp(8px,2vw,12px)}
+
+/* Erro inline por campo */
+.field__err{
+  margin-top:8px;font-size:13px;font-weight:500;color:#FCA5A5;
+}
+.field input.is-invalid{
+  border-color:rgba(248,113,113,.75);
+  box-shadow:0 0 0 4px rgba(248,113,113,.15);
+}
+
+/* Voltar (link discreto no passo 2) */
+.btn-voltar{
+  display:block;margin:14px auto 0;background:none;border:none;
+  font-family:var(--font-mono);font-weight:700;font-size:12px;
+  letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.45);
+  transition:color .2s;
+}
+.btn-voltar:hover{color:var(--off-white)}
+
+.form-note--erro{color:#FCA5A5}
+
 /* Campos */
 .field{margin-bottom:clamp(18px,3.5vw,26px)}
 .field label{display:block;font-size:clamp(.95rem,3.6vw,1.1rem);font-weight:600;margin-bottom:10px;color:var(--off-white)}

@@ -77,6 +77,13 @@ export function initTracking(){
   observarGarantia();
 }
 
+/* InitiateCheckout — sinal intermediário: visitante avançou do passo 1
+   para o passo 2 do formulário. Só browser; Lead continua sendo a conversão. */
+export function trackInitiateCheckout(){
+  if (!consentido()) return;
+  window.fbq && window.fbq("track", "InitiateCheckout");
+}
+
 /* Lead deduplicado: mesmo event_id no Pixel (browser) e no CAPI (servidor).
    Fire-and-forget — falha de tracking nunca bloqueia o formulário. */
 export function trackLead(eventId, dados){
