@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Briefing — Rafael Razeira Estúdio</title>
+<meta name="description" content="Briefing da sua landing page. Responda no seu jeito de falar e envie direto pelo WhatsApp — suas respostas ficam salvas no aparelho." />
+<meta name="robots" content="noindex" />
+<meta name="theme-color" content="#0A0A0A" />
+
+<link rel="icon" type="image/png" href="/assets/favicon.png" />
+<link rel="apple-touch-icon" href="/assets/favicon.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+<link rel="stylesheet" href="css/base.css" />
+<link rel="stylesheet" href="css/briefing.css" />
+</head>
+<body class="briefing-page dark">
+
+<div class="grid-lines" aria-hidden="true">
+  <span></span><span></span><span></span><span></span><span></span>
+</div>
+
+<header class="bf-header wrap">
+  <a class="bf-logo" href="/">RAFAEL RAZEIRA <span>— ESTÚDIO</span></a>
+  <span class="eyebrow"><span class="dot"></span><span class="status">BRIEFING</span></span>
+</header>
+
+<main class="wrap" id="app">
+
+  <!-- ==================== ABERTURA ==================== -->
+  <section class="bf-hero">
+    <p class="eyebrow"><span class="dot"></span><span class="status">ETAPA 01 — BRIEFING E ANÁLISE</span><span class="eyebrow__dash">—</span><span class="eyebrow__tagline">SUA PÁGINA EM 7 DIAS APÓS O BRIEFING COMPLETO</span></p>
+    <h1 class="bf-head">SEU NEGÓCIO,<br />NAS SUAS<br />PALAVRAS.</h1>
+    <p class="bf-intro">Responda com sinceridade e no seu jeito de falar — <b>quanto mais detalhe, melhor a página</b>. O prazo de 7 dias úteis começa quando o briefing chegar completo, junto com os materiais do bloco 06.</p>
+    <p class="bf-autosave"><span class="bf-autosave__icon" aria-hidden="true">✓</span> Suas respostas ficam salvas neste aparelho. Pode preencher aos poucos e enviar quando terminar.</p>
+  </section>
+
+  <form id="bf-form" novalidate>
+
+    <!-- ==================== IDENTIFICAÇÃO ==================== -->
+    <section class="bf-card" aria-labelledby="t-00">
+      <p class="bf-num">00</p>
+      <h2 class="bf-title" id="t-00">Quem está respondendo</h2>
+
+      <div class="field">
+        <label for="q-nome">Seu nome</label>
+        <input id="q-nome" type="text" autocomplete="name" placeholder="Como prefere ser chamado" data-save />
+      </div>
+      <div class="field">
+        <label for="q-empresa">Empresa ou projeto</label>
+        <input id="q-empresa" type="text" autocomplete="organization" placeholder="Nome do negócio que a página vai apresentar" data-save />
+      </div>
+    </section>
+
+    <!-- ==================== 1. SOBRE O NEGÓCIO ==================== -->
+    <section class="bf-card" aria-labelledby="t-01">
+      <p class="bf-num">01</p>
+      <h2 class="bf-title" id="t-01">Sobre o negócio</h2>
+
+      <div class="field">
+        <label for="q-vende">O que você vende, em uma frase?</label>
+        <textarea id="q-vende" rows="2" placeholder="Ex.: consultoria financeira para médicos que querem investir melhor" data-save></textarea>
+      </div>
+      <div class="field">
+        <label for="q-historia">Há quanto tempo o negócio existe e qual a história resumida?</label>
+        <textarea id="q-historia" rows="3" placeholder="Conte como começou, do seu jeito" data-save></textarea>
+      </div>
+      <div class="field">
+        <label for="q-diferencial">O que te diferencia dos concorrentes? Por que alguém escolhe você?</label>
+        <textarea id="q-diferencial" rows="3" placeholder="O que os clientes elogiam, o que só você faz" data-save></textarea>
+      </div>
+    </section>
+
+    <!-- ==================== 2. PÚBLICO ==================== -->
+    <section class="bf-card" aria-labelledby="t-02">
+      <p class="bf-num">02</p>
+      <h2 class="bf-title" id="t-02">Público</h2>
+
+      <div class="field">
+        <label for="q-cliente">Quem é o seu cliente ideal?</label>
+        <textarea id="q-cliente" rows="2" placeholder="Profissão, idade aproximada, situação de vida" data-save></textarea>
+      </div>
+      <div class="field">
+        <label for="q-problema">Qual o principal problema ou desejo dele quando te procura?</label>
+        <textarea id="q-problema" rows="2" placeholder="O que ele quer resolver ou conquistar" data-save></textarea>
+      </div>
+      <div class="field">
+        <label for="q-objecoes">Quais dúvidas ou objeções ele costuma ter antes de fechar?</label>
+        <textarea id="q-objecoes" rows="2" placeholder='Ex.: "é caro?", "funciona pra mim?", "e se não der certo?"' data-save></textarea>
+      </div>
+    </section>
+
+    <!-- ==================== 3. OFERTA E OBJETIVO ==================== -->
+    <section class="bf-card" aria-labelledby="t-03">
+      <p class="bf-num">03</p>
+      <h2 class="bf-title" id="t-03">Oferta e objetivo da página</h2>
+
+      <div class="field">
+        <label for="q-oferta">O que exatamente a página deve vender ou oferecer?</label>
+        <textarea id="q-oferta" rows="2" placeholder="O serviço, produto ou pacote principal" data-save></textarea>
+      </div>
+      <div class="field">
+        <label for="q-acao">Qual ação o visitante deve tomar?</label>
+        <textarea id="q-acao" rows="2" placeholder="Chamar no WhatsApp, agendar, comprar, preencher formulário…" data-save></textarea>
+      </div>
+      <div class="field">
+        <label for="q-preco">Existe preço, condição ou promessa específica que deve aparecer?</label>
+        <textarea id="q-preco" rows="2" placeholder="Ex.: primeira consulta gratuita, parcelamento, garantia" data-save></textarea>
+      </div>
+      <div class="field">
+        <label for="q-origem">De onde virão os visitantes?</label>
+        <textarea id="q-origem" rows="2" placeholder="Anúncios, Instagram, Google, indicação…" data-save></textarea>
+      </div>
+    </section>
+
+    <!-- ==================== 4. PROVA E CREDIBILIDADE ==================== -->
+    <section class="bf-card" aria-labelledby="t-04">
+      <p class="bf-num">04</p>
+      <h2 class="bf-title" id="t-04">Prova e credibilidade</h2>
+
+      <div class="field">
+        <label for="q-depoimentos">Você tem depoimentos de clientes? Quantos e em qual formato?</label>
+        <textarea id="q-depoimentos" rows="2" placeholder="Prints, textos, vídeos, avaliações no Google…" data-save></textarea>
+        <div class="bf-upload bf-upload--inline" data-upload="depoimentos" hidden>
+          <input type="file" multiple accept="image/*,video/*,.pdf" hidden />
+          <button type="button" class="bf-upload__btn bf-upload__btn--sm"><span class="bf-upload__icon" aria-hidden="true">↑</span> ANEXAR PRINTS OU VÍDEOS</button>
+          <ul class="bf-files"></ul>
+        </div>
+      </div>
+      <div class="field">
+        <label for="q-numeros">Números, resultados, certificações ou registros que geram confiança?</label>
+        <textarea id="q-numeros" rows="2" placeholder="Ex.: OAB, CRM, anos de mercado, clientes atendidos" data-save></textarea>
+      </div>
+    </section>
+
+    <!-- ==================== 5. ESTILO E REFERÊNCIAS ==================== -->
+    <section class="bf-card" aria-labelledby="t-05">
+      <p class="bf-num">05</p>
+      <h2 class="bf-title" id="t-05">Estilo e referências</h2>
+
+      <div class="field">
+        <label for="q-referencias">2 ou 3 sites/páginas que você acha bonitos — e o que gosta neles</label>
+        <textarea id="q-referencias" rows="3" placeholder="Cole os links e diga o que chamou sua atenção em cada um" data-save></textarea>
+      </div>
+      <div class="field">
+        <label for="q-naoquer">Algo que você NÃO quer de jeito nenhum na página?</label>
+        <textarea id="q-naoquer" rows="2" placeholder="Cores, estilos, palavras ou clichês que quer evitar" data-save></textarea>
+      </div>
+      <div class="field">
+        <label for="q-marca">Sua marca tem cores e logotipo definidos?</label>
+        <textarea id="q-marca" rows="2" placeholder="Se sim, quais cores? O logo está em boa qualidade?" data-save></textarea>
+        <div class="bf-upload bf-upload--inline" data-upload="marca" hidden>
+          <input type="file" multiple accept="image/*,.pdf,.svg,.zip" hidden />
+          <button type="button" class="bf-upload__btn bf-upload__btn--sm"><span class="bf-upload__icon" aria-hidden="true">↑</span> ANEXAR LOGOTIPO</button>
+          <ul class="bf-files"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 6. MATERIAIS ==================== -->
+    <section class="bf-card" aria-labelledby="t-06">
+      <p class="bf-num">06</p>
+      <h2 class="bf-title" id="t-06">Materiais para enviar junto</h2>
+      <p class="bf-hint">Marque o que você já tem em mãos — e <b>envie aqui mesmo</b> pelo botão abaixo. O que faltar pode ir depois pela conversa do WhatsApp.</p>
+
+      <label class="bf-check"><input type="checkbox" id="m-logo" data-save /><span class="bf-check__box" aria-hidden="true"></span><span>Logotipo em boa qualidade (PNG com fundo transparente, se tiver)</span></label>
+      <label class="bf-check"><input type="checkbox" id="m-fotos" data-save /><span class="bf-check__box" aria-hidden="true"></span><span>Fotos suas / do negócio / do produto em boa resolução</span></label>
+      <label class="bf-check"><input type="checkbox" id="m-depoimentos" data-save /><span class="bf-check__box" aria-hidden="true"></span><span>Depoimentos (prints, textos ou vídeos)</span></label>
+      <label class="bf-check"><input type="checkbox" id="m-textos" data-save /><span class="bf-check__box" aria-hidden="true"></span><span>Textos de apoio que já existam (bio, descrição de serviços)</span></label>
+      <label class="bf-check"><input type="checkbox" id="m-dominio" data-save /><span class="bf-check__box" aria-hidden="true"></span><span>Acesso ou dados do domínio e hospedagem, se já existirem</span></label>
+
+      <!-- Upload direto (Cloudinary) — só aparece se estiver configurado em js/briefing.js -->
+      <div class="bf-upload" data-upload="materiais" hidden>
+        <input type="file" multiple accept="image/*,video/*,.pdf,.svg,.zip" hidden />
+        <button type="button" class="bf-upload__btn">
+          <span class="bf-upload__icon" aria-hidden="true">↑</span> ENVIAR FOTOS E MATERIAIS
+        </button>
+        <p class="bf-upload__hint">Fotos e prints até 10MB cada (foto de celular cabe tranquilo) — vídeos até 100MB. Ficou grande demais? Manda depois pelo WhatsApp.</p>
+        <ul class="bf-files"></ul>
+      </div>
+    </section>
+
+    <!-- ==================== 7. APROVAÇÃO ==================== -->
+    <section class="bf-card" aria-labelledby="t-07">
+      <p class="bf-num">07</p>
+      <h2 class="bf-title" id="t-07">Aprovação</h2>
+
+      <div class="field">
+        <label for="q-aprova">Quem aprova o projeto?</label>
+        <textarea id="q-aprova" rows="2" placeholder="Se houver sócio, incluir desde o início" data-save></textarea>
+      </div>
+      <div class="field">
+        <label for="q-horario">Melhor dia e horário para a chamada de apresentação da página</label>
+        <textarea id="q-horario" rows="2" placeholder="Ex.: terças e quintas depois das 18h" data-save></textarea>
+      </div>
+    </section>
+
+  </form>
+
+  <!-- ==================== ENCERRAMENTO ==================== -->
+  <section class="bf-outro">
+    <p class="bf-outro__note">Dúvida em alguma pergunta? <b>Deixa em branco e me avisa</b> — resolvemos juntos na conversa.</p>
+    <div class="bf-outro__actions">
+      <button type="button" class="bf-copy" id="btn-copiar">Copiar respostas</button>
+      <a class="bf-copy" href="#" id="btn-email">Enviar por e-mail</a>
+      <button type="button" class="bf-clear" id="btn-limpar">Apagar respostas salvas</button>
+    </div>
+    <p class="bf-copied" id="copiado" hidden>Respostas copiadas — é só colar no WhatsApp ou e-mail.</p>
+  </section>
+
+</main>
+
+<footer class="bf-footer wrap">
+  <p>RAFAEL RAZEIRA — ESTÚDIO · <a href="/">rafaelrazeira.com</a></p>
+</footer>
+
+<!-- Aviso rápido acima do pill (validação do envio) -->
+<div class="bf-toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- Pill flutuante: progresso ao vivo + envio pelo WhatsApp -->
+<button type="button" class="pill bf-pill" id="btn-enviar">
+  <span class="bf-pill__count" id="pill-count">0/19</span>
+  <span class="divider" aria-hidden="true"></span>
+  <span>ENVIAR BRIEFING</span>
+  <span class="arrow" aria-hidden="true">→</span>
+</button>
+
+<script src="js/briefing.js" defer></script>
+</body>
+</html>
