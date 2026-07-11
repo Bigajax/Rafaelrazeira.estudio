@@ -11,6 +11,7 @@ import { cue }          from "./sections/cue.js";
 import { about }        from "./sections/about.js";
 import { brandband }    from "./sections/brandband.js";
 import { process }      from "./sections/process.js";
+import { included }     from "./sections/included.js";
 import { cases }        from "./sections/cases.js";
 import { values }       from "./sections/values.js";
 import { founder }      from "./sections/founder.js";
@@ -29,7 +30,7 @@ import { initConsent }    from "./lib/consent.js";
 import { initTracking }   from "./lib/tracking.js";
 
 // Ordem das seções DENTRO do <main> (não inclui header/footer/pill)
-const page = [ hero, marquee, cue, about, brandband, process, cases, audience, values, founder, testimonials, contact, marquee ];
+const page = [ hero, marquee, cue, about, brandband, process, included, cases, audience, values, founder, testimonials, contact, marquee ];
 
 const app = document.getElementById("app");
 app.innerHTML =

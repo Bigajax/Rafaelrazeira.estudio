@@ -10,7 +10,7 @@ export function about(){
       <div class="section-label reveal">${a.label}</div>
       <div class="about__text reveal">
         ${text}
-        <a href="#contato" class="about__cta"><span class="arrow" aria-hidden="true">↗</span> ${a.cta}</a>
+        <a href="#contato" class="about__cta" data-cta="about" data-cta-dest="form"><span class="arrow" aria-hidden="true">↗</span> ${a.cta}</a>
       </div>
     </div>
   </section>`;

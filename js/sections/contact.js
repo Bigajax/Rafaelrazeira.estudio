@@ -41,6 +41,7 @@ export function contact(){
       </aside>
 
       <p class="contact__pricing reveal">${c.pricing}</p>
+      <p class="contact__pricing-note reveal">${c.pricingNote}</p>
 
       <div class="form-card reveal">
         <div class="stepper">
@@ -64,18 +65,26 @@ export function contact(){
               <p class="field__err" id="err-whats" hidden>${f.whatsapp.err}</p>
             </div>
             <div class="field">
-              <label for="f-email">${f.email.label}</label>
-              <input id="f-email" name="email" type="email" placeholder="${f.email.placeholder}" required autocomplete="email" aria-describedby="err-email" />
-              <p class="field__err" id="err-email" hidden>${f.email.err}</p>
+              <label for="f-insta">${f.instagram.label}</label>
+              <input id="f-insta" name="instagram" type="text" placeholder="${f.instagram.placeholder}" autocomplete="url" />
             </div>
             <button type="button" class="btn-submit" id="btn-continue">${f.continueBtn} <span class="arrow">→</span></button>
           </fieldset>
 
           <!-- Passo 2 — sobre o projeto -->
           <fieldset class="fstep" data-fstep="2">
-            ${dropdown("need", "necessidade", f.need)}
-            ${dropdown("invest", "investimento", f.investimento)}
-            <button type="submit" class="btn-submit">${f.submit} <span class="arrow">→</span></button>
+            <div class="field">
+              <label for="f-vende">${f.vende.label}</label>
+              <input id="f-vende" name="vende" type="text" placeholder="${f.vende.placeholder}" aria-describedby="err-vende" />
+              <p class="field__err" id="err-vende" hidden>${f.vende.err}</p>
+            </div>
+            ${dropdown("objetivo", "objetivo", f.objetivo)}
+            ${dropdown("identidade", "identidade", f.identidade)}
+            <div class="field">
+              <label for="f-detalhes">${f.detalhes.label}</label>
+              <textarea id="f-detalhes" name="detalhes" rows="3" placeholder="${f.detalhes.placeholder}"></textarea>
+            </div>
+            <button type="submit" class="btn-submit" data-cta="form" data-cta-dest="form">${f.submit} <span class="arrow">→</span></button>
             <button type="button" class="btn-voltar" id="btn-back">${f.backBtn}</button>
           </fieldset>
 
@@ -86,8 +95,8 @@ export function contact(){
           <h3>${f.successTitle}</h3>
           <p>${f.successText}</p>
           <a class="btn-submit form-success__cta" id="schedule-cta"
-             href="${c.schedule.url || `${CONFIG.footer.whatsapp.url}?text=${encodeURIComponent("Olá, Rafael! Acabei de enviar o briefing pelo site e quero agendar nossa conversa.")}`}"
-             target="_blank" rel="noopener">${c.schedule.cta} <span class="arrow">→</span></a>
+             href="${c.schedule.url || `${CONFIG.footer.whatsapp.url}?text=${encodeURIComponent("Olá, Rafael! Acabei de enviar meu projeto pelo site e quero adiantar a conversa.")}`}"
+             target="_blank" rel="noopener" data-cta="final" data-cta-dest="whatsapp">${c.schedule.cta} <span class="arrow">→</span></a>
         </div>
       </div>
     </div>

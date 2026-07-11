@@ -1,9 +1,11 @@
-/* HERO — status, tagline, headline gigante (3 linhas), sub + botão */
-import { CONFIG } from "../config.js";
+/* HERO — status, tagline, headline gigante em lockup de cartaz,
+   sub + CTA duplo (formulário primário / WhatsApp discreto) */
+import { CONFIG, WHATSAPP_NUMBER } from "../config.js";
 
 export function hero(){
   const h = CONFIG.hero;
   const lines = h.headline.map(l => `<span class="hero__line">${l}</span>`).join("<br>");
+  const waLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(h.whatsMsg)}`;
   return `
   <section class="hero" id="hero">
     <div class="wrap">
@@ -14,7 +16,11 @@ export function hero(){
       </div>
       <h1 class="hero__headline reveal">${lines}</h1>
       <div class="hero__bottom">
-        <a href="#contato" class="btn-outline reveal"><span class="arrow">↗</span> ${h.cta}</a>
+        <div class="hero__ctas reveal">
+          <a href="#contato" class="btn-outline" data-cta="hero" data-cta-dest="form"><span class="arrow">↗</span> ${h.cta}</a>
+          <a href="${waLink}" class="hero__whats" target="_blank" rel="noopener"
+             data-cta="whatsapp" data-cta-dest="whatsapp">${h.ctaWhats} <span class="arrow" aria-hidden="true">→</span></a>
+        </div>
         <p class="hero__sub reveal">${h.subheadline}</p>
       </div>
     </div>

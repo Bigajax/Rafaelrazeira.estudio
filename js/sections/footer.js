@@ -13,7 +13,7 @@ export function footer(){
       <nav class="footer__social" aria-label="Redes e contato">
         <a href="${f.instagram.url}" target="_blank" rel="noopener">INSTAGRAM</a>
         <a href="mailto:${f.email}">E-MAIL</a>
-        <a href="${f.whatsapp.url}" target="_blank" rel="noopener">WHATSAPP</a>
+        <a href="${f.whatsapp.url}" target="_blank" rel="noopener" data-cta="footer" data-cta-dest="whatsapp">WHATSAPP</a>
       </nav>
       <p class="footer__location">${f.location}</p>
       <div class="footer__bar">

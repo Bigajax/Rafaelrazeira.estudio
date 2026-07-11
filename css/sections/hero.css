@@ -28,6 +28,23 @@
 }
 .hero__sub b{color:var(--black);font-weight:600}
 
+/* CTA duplo: botão primário (formulário) + linha discreta do WhatsApp */
+.hero__ctas{display:flex;flex-direction:column;gap:16px;align-items:stretch;flex:1;min-width:min(100%,320px)}
+.hero__whats{
+  align-self:center;display:inline-flex;align-items:center;gap:8px;padding:6px 2px;
+  font-family:var(--font-mono);font-weight:700;font-size:clamp(11px,3vw,13px);
+  letter-spacing:.06em;text-transform:uppercase;color:var(--ink-60);
+  border-bottom:1.5px solid transparent;
+  transition:color .2s,border-color .2s;
+}
+.hero__whats:hover{color:var(--emerald-dark);border-color:var(--emerald)}
+.hero__whats .arrow{transition:transform .2s}
+.hero__whats:hover .arrow{transform:translateX(3px)}
+/* Tablet: botão volta ao tamanho natural, par centrado */
+@media(min-width:560px) and (max-width:1023px){
+  .hero__ctas{align-items:center}
+}
+
 /* —— Desktop: duas colunas (headline à esquerda; sub em caixa alta + botão à direita) —— */
 @media(min-width:1024px){
   .hero .wrap{
@@ -47,4 +64,6 @@
     color:var(--black);font-weight:500;
   }
   .hero__sub b{font-weight:500}
+  .hero__ctas{flex:none;align-items:flex-end;min-width:0}
+  .hero__whats{align-self:flex-end}
 }

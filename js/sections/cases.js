@@ -43,8 +43,13 @@ export function cases(){
   return `
   <section class="cases" id="cases">
     <div class="wrap">
+      <p class="cases__eyebrow reveal">${c.label}</p>
       <h2 class="cases__head reveal">${c.headline}</h2>
+      <p class="cases__intro reveal">${c.intro}</p>
       <div class="cases__grid">${items}</div>
+      <div class="cases__ctawrap reveal">
+        <a href="#contato" class="cases__cta" data-cta="cases" data-cta-dest="form"><span class="arrow" aria-hidden="true">→</span> ${c.cta}</a>
+      </div>
     </div>
   </section>`;
 }

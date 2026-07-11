@@ -1,10 +1,21 @@
 /* ============================================================
    CASES — headline + grid de 3 projetos
    ============================================================ */
+/* Transparência: estes projetos são estudos autorais, não clientes */
+.cases__eyebrow{
+  font-family:var(--font-mono);font-weight:700;font-size:clamp(11px,3vw,13px);
+  letter-spacing:.12em;text-transform:uppercase;color:var(--emerald-dark);
+  text-align:center;margin-bottom:14px;
+}
 .cases__head{
   font-family:var(--font-body);font-weight:700;text-transform:uppercase;
   font-size:clamp(13px,1.6vw,16px);letter-spacing:.28em;line-height:1.5;
-  text-align:center;margin-bottom:clamp(44px,7vw,84px);
+  text-align:center;margin-bottom:0;
+}
+.cases__intro{
+  max-width:58ch;margin:16px auto clamp(44px,7vw,84px);
+  text-align:center;font-size:clamp(.95rem,3.6vw,1.1rem);
+  line-height:1.55;color:var(--ink-60);
 }
 .cases__grid{display:grid;grid-template-columns:1fr;gap:clamp(40px,7vw,72px);max-width:1300px;margin-inline:auto}
 @media(min-width:760px){.cases__grid{grid-template-columns:repeat(3,1fr);gap:clamp(24px,3vw,48px)}}
@@ -75,3 +86,15 @@
 }
 .case__name{margin-top:10px;font-family:var(--font-body);font-weight:700;text-transform:uppercase;font-size:clamp(1.1rem,1.5vw,1.35rem);letter-spacing:.01em}
 .case__result{margin-top:10px;font-size:clamp(.95rem,1.2vw,1.05rem);color:var(--ink-60);line-height:1.5;max-width:38ch}
+
+/* CTA da seção — mesma linguagem mono do resumo do processo */
+.cases__ctawrap{text-align:center;margin-top:clamp(40px,7vw,72px)}
+.cases__cta{
+  display:inline-flex;align-items:center;gap:12px;padding:8px 4px;
+  font-family:var(--font-mono);font-weight:700;font-size:clamp(12px,3.2vw,14px);
+  letter-spacing:.06em;text-transform:uppercase;color:var(--emerald-dark);
+  transition:color .2s;
+}
+.cases__cta .arrow{transition:transform .2s}
+.cases__cta:hover{color:var(--black)}
+.cases__cta:hover .arrow{transform:translateX(4px)}

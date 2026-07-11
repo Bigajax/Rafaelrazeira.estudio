@@ -56,6 +56,11 @@
   letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.6);
 }
 .contact__pricing b{color:var(--off-white);font-weight:700}
+/* Por que "a partir de": o que faz o valor variar */
+.contact__pricing-note{
+  margin-top:10px;max-width:52ch;
+  font-size:clamp(.9rem,3.4vw,1rem);line-height:1.5;color:rgba(255,255,255,.5);
+}
 
 /* —— Card do formulário: vidro escuro —— */
 .form-card{
@@ -120,6 +125,21 @@
 }
 .field input::placeholder{color:rgba(255,255,255,.35)}
 .field input:focus{
+  outline:none;border-color:var(--emerald);background:rgba(255,255,255,.12);
+  box-shadow:0 0 0 4px rgba(16,185,129,.2);
+}
+
+/* Textarea (campo livre de detalhes) — mesma receita dos inputs */
+.field textarea{
+  width:100%;border:1px solid rgba(255,255,255,.16);border-radius:14px;
+  background:rgba(255,255,255,.07);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  padding:16px;font-family:inherit;font-size:16px;color:var(--off-white);
+  resize:none;min-height:96px;
+  transition:border-color .2s,box-shadow .2s,background .2s;
+}
+.field textarea::placeholder{color:rgba(255,255,255,.35)}
+.field textarea:focus{
   outline:none;border-color:var(--emerald);background:rgba(255,255,255,.12);
   box-shadow:0 0 0 4px rgba(16,185,129,.2);
 }

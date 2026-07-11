@@ -1,8 +1,9 @@
 /* Formulário de briefing em 2 passos:
-   01 Seus dados (nome, WhatsApp, e-mail) → 02 Sobre o projeto (necessidade, investimento).
+   01 Seus dados (nome, WhatsApp, Instagram/site opcional)
+   → 02 Sobre o projeto (o que vende, objetivo, identidade, detalhes).
    - Validação inline por campo (sem alert) — mensagens em CONFIG.contact.form.*.err
    - Avançar de passo dispara InitiateCheckout (com consentimento); Lead só no envio.
-   - Sem FORM_ENDPOINT: modo demo. Com FORM_ENDPOINT: POST JSON com os 5 campos. */
+   - Sem FORM_ENDPOINT: modo demo. Com FORM_ENDPOINT: POST JSON com os campos. */
 import { CONFIG, FORM_ENDPOINT, FORM_HEADERS } from "../config.js";
 import { trackLead, trackInitiateCheckout } from "./tracking.js";
 
@@ -63,7 +64,6 @@ function initWhatsMask(form){
 }
 
 /* —— Validação inline —— */
-const emailValido = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
 const whatsValido = (v) => { const d = v.replace(/\D/g, ""); return d.length === 10 || d.length === 11; };
 
 function marcarErro(input, errEl, invalido){
@@ -75,10 +75,14 @@ function marcarErro(input, errEl, invalido){
 function validarPasso1(form){
   const nomeOk  = marcarErro(form.nome,     document.getElementById("err-nome"),  !form.nome.value.trim());
   const whatsOk = marcarErro(form.whatsapp, document.getElementById("err-whats"), !whatsValido(form.whatsapp.value));
-  const emailOk = marcarErro(form.email,    document.getElementById("err-email"), !emailValido(form.email.value));
   if (!nomeOk)  { form.nome.focus();     return false; }
   if (!whatsOk) { form.whatsapp.focus(); return false; }
-  if (!emailOk) { form.email.focus();    return false; }
+  return true;
+}
+
+function validarPasso2(form){
+  const vendeOk = marcarErro(form.vende, document.getElementById("err-vende"), !form.vende.value.trim());
+  if (!vendeOk){ form.vende.focus(); return false; }
   return true;
 }
 
@@ -106,7 +110,7 @@ export function initForm(){
   }
 
   // limpa o erro do campo enquanto digita
-  [["nome","err-nome"],["whatsapp","err-whats"],["email","err-email"]].forEach(([campo, errId]) => {
+  [["nome","err-nome"],["whatsapp","err-whats"],["vende","err-vende"]].forEach(([campo, errId]) => {
     form[campo].addEventListener("input", () => {
       form[campo].classList.remove("is-invalid");
       document.getElementById(errId).hidden = true;
@@ -125,13 +129,17 @@ export function initForm(){
     e.preventDefault();
     if (form._gotcha.value) return; // honeypot preenchido = bot
     if (!validarPasso1(form)){ irParaPasso(1); return; }
+    if (!validarPasso2(form)) return;
 
     const payload = {
       nome: form.nome.value.trim(),
-      email: form.email.value.trim(),
       whatsapp: form.whatsapp.value.trim(),
-      necessidade: form.necessidade.value,
-      investimento: form.investimento.value,
+      instagram: form.instagram.value.trim(),
+      vende: form.vende.value.trim(),
+      objetivo: form.objetivo.value,
+      identidade: form.identidade.value,
+      detalhes: form.detalhes.value.trim(),
+      email: "",                       // coluna legada (not null) no Supabase
       origem: "landing-rafael-razeira",
     };
 
@@ -155,7 +163,7 @@ export function initForm(){
       // fire-and-forget: falha de tracking nunca afeta o envio.
       const eventId = (crypto.randomUUID && crypto.randomUUID()) ||
                       `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-      trackLead(eventId, { email: payload.email, phone: payload.whatsapp });
+      trackLead(eventId, { phone: payload.whatsapp });
 
       form.classList.add("hide");
       const stepper = document.querySelector(".form-card .stepper");

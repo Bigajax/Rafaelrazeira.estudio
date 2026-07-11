@@ -1,0 +1,31 @@
+/* ============================================================
+   O QUE ESTÁ INCLUSO — romaneio de entregas em 2 colunas:
+   número mono + título display + linha fina por item.
+   Mais compacto que o "Como funciona" (que tem passos gigantes) —
+   aqui a informação é lista de conferência, não narrativa.
+   ============================================================ */
+.inc__head{
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.9rem,7.5vw,4rem);line-height:.96;letter-spacing:-.03em;
+  max-width:19ch;margin-bottom:clamp(36px,7vw,64px);
+}
+.inc__grid{
+  list-style:none;margin:0;padding:0;
+  display:grid;grid-template-columns:1fr;column-gap:clamp(32px,5vw,88px);
+}
+@media(min-width:760px){.inc__grid{grid-template-columns:1fr 1fr}}
+
+.inc__item{border-top:1px solid var(--line);padding-block:clamp(22px,4vw,34px)}
+.inc__num{
+  font-family:var(--font-mono);font-weight:700;font-size:13px;
+  letter-spacing:.04em;color:var(--emerald-dark);
+}
+.inc__num::after{content:" /";color:var(--ink-40)}
+.inc__title{
+  margin-top:10px;font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.15rem,4.6vw,1.5rem);line-height:1.05;letter-spacing:-.015em;
+}
+.inc__text{
+  margin-top:10px;font-size:clamp(.95rem,3.6vw,1.05rem);
+  line-height:1.5;color:var(--ink-60);max-width:44ch;
+}

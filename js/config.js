@@ -10,6 +10,11 @@
    • Imagens: coloque o arquivo em /assets e aponte o caminho
      (ex.: img: "assets/case-1.jpg"). Deixe "" para o placeholder.
    ============================================================ */
+
+/* ⬇ Número do WhatsApp usado em TODOS os botões do site
+   (hero, footer e pós-envio). Formato: DDI + DDD + número, só dígitos. */
+const WHATSAPP_NUMBER = "5544999997219";
+
 const CONFIG = {
   brand: {
     name: "RAFAEL RAZEIRA",       // aparece no header e no footer
@@ -20,9 +25,11 @@ const CONFIG = {
   hero: {
     status: "AGENDA ABERTA",                                   // sinal (bolinha pulsante esmeralda)
     tagline: "POSICIONAMENTO · CONVERSÃO · NOVOS NEGÓCIOS",
-    headline: ["TENHA", "UMA PÁGINA", "QUE VENDE."],           // 3 linhas da headline gigante
-    subheadline: "Landing page estratégica, no ar em <b>7 dias úteis</b>. Você só quita depois de <b>aprovar o design</b>.",
-    cta: "QUERO MINHA PÁGINA EM 7 DIAS",
+    headline: ["TRANSFORME", "SEU SERVIÇO EM UMA", "PÁGINA PRONTA PARA", "RECEBER CLIENTES."],
+    subheadline: "Estratégia, copy, design e publicação em até <b>7 dias úteis</b>. Você <b>aprova o design</b> antes de quitar o saldo.",
+    cta: "QUERO UMA ANÁLISE DO MEU PROJETO",
+    ctaWhats: "PREFIRO CONVERSAR PELO WHATSAPP",
+    whatsMsg: "Olá, Rafael. Vi seu trabalho e gostaria de entender como uma landing page poderia funcionar para o meu negócio.",
   },
 
   // Uma frase ("...") ou várias (["...", "..."]) — elas se alternam na faixa
@@ -54,8 +61,25 @@ const CONFIG = {
     note: "ENTRADA DE 50% · SALDO SÓ APÓS APROVAR O DESIGN",
   },
 
+  // O que está incluso — o "romaneio" do projeto: tudo que sai do estúdio com a página
+  included: {
+    label: "O QUE ESTÁ INCLUSO.",
+    headline: "TUDO O QUE SUA LANDING PAGE PRECISA PARA IR AO AR.",
+    items: [
+      { num:"01", title:"ESTRATÉGIA DA OFERTA",       text:"Definição da mensagem, estrutura e objetivo principal da página." },
+      { num:"02", title:"COPY COMPLETA",              text:"Textos desenvolvidos para comunicar valor e conduzir o visitante." },
+      { num:"03", title:"DESIGN PERSONALIZADO",       text:"Identidade visual criada especificamente para o posicionamento da marca." },
+      { num:"04", title:"DESENVOLVIMENTO RESPONSIVO", text:"Página otimizada para computador, tablet e celular." },
+      { num:"05", title:"PUBLICAÇÃO E CONFIGURAÇÃO",  text:"Página publicada, domínio conectado e formulários funcionando." },
+      { num:"06", title:"MENSURAÇÃO",                 text:"Configuração dos principais eventos para acompanhar visitas e contatos." },
+    ],
+  },
+
   cases: {
+    label: "ESTUDOS AUTORAIS DE REDESIGN",
     headline: "CONHEÇA ALGUNS CASES RAFAEL RAZEIRA™",
+    intro: "Projetos desenvolvidos para demonstrar como marcas reais poderiam melhorar clareza, posicionamento e experiência digital.",
+    cta: "QUERO UMA PÁGINA PARA O MEU NEGÓCIO",
     // video: gravação vertical (mp4) → aparece dentro de um mockup de iPhone, em loop.
     // img: imagem estática (assets/case-1.jpg) → usada se não houver vídeo.
     // Deixe os dois "" para exibir o placeholder estilizado.
@@ -106,45 +130,48 @@ const CONFIG = {
 
   contact: {
     status: "AGENDA ABERTA",
-    headline: "VAMOS CONVERSAR SOBRE O SEU PROJETO.",
-    intro: "Conduzo projetos estratégicos para empresas que precisam elevar autoridade, clareza e percepção de valor.",
+    headline: "VAMOS ENTENDER SE O PROJETO FAZ SENTIDO.",
+    intro: "Conte brevemente sobre o seu negócio. Eu analiso o projeto e retorno pelo WhatsApp em até 24 horas úteis.",
     scarcity: "Trabalho com vagas limitadas por mês e todos os projetos passam por análise.",
     email: "rafael.rbarbon@gmail.com",
     // Bloco de garantia — aparece destacado logo antes do formulário
     guarantee: {
       label: "GARANTIA",
       title: "RISCO ZERO PARA COMEÇAR.",
-      text:  "Você inicia o projeto com <b>50% de entrada</b> e só quita o saldo <b>depois de aprovar o design</b>. Se a primeira direção visual não for aprovada, a entrada é <b>devolvida integralmente</b>.",
+      text:  "Você inicia o projeto com <b>50% de entrada</b> e quita o saldo somente depois de <b>aprovar a direção visual</b>. Caso a primeira proposta não seja aprovada e nenhuma continuidade seja solicitada, a entrada será <b>devolvida integralmente</b>.",
     },
     pricing: "Projetos a partir de <b>R$ 1.500</b>.",   // microcopy acima do formulário
+    pricingNote: "O valor final depende da complexidade, quantidade de seções, integrações e materiais disponíveis.",
     steps: [
       { num:"01", label:"SEUS DADOS" },
       { num:"02", label:"SOBRE O PROJETO" },
     ],
     form: {
-      nome:    { label:"Qual seu nome?",   placeholder:"Seu nome",        err:"Digite seu nome." },
-      email:   { label:"Seu e-mail",       placeholder:"seu@email.com",   err:"Digite um e-mail válido." },
-      whatsapp:{ label:"WhatsApp com DDD",  placeholder:"(12) 12345-6789", err:"Digite o WhatsApp com DDD (10 a 11 dígitos)." },
-      need:    { label:"O que você precisa?", options:["Landing page","Identidade visual","Outro"] },
-      investimento: { label:"Qual expectativa de investimento?", options:["R$ 1.500 a R$ 3.000","R$ 3.000 a R$ 5.000","Acima de R$ 5.000","Quero entender o investimento"] },
+      nome:      { label:"Qual seu nome?",    placeholder:"Seu nome",        err:"Digite seu nome." },
+      whatsapp:  { label:"WhatsApp com DDD",   placeholder:"(12) 12345-6789", err:"Digite o WhatsApp com DDD (10 a 11 dígitos)." },
+      instagram: { label:"Instagram ou site (opcional)", placeholder:"@seuperfil ou seusite.com.br" },
+      vende:     { label:"O que você vende?", placeholder:"Ex.: consultoria, estética, mentoria, arquitetura…", err:"Conte o que você vende." },
+      objetivo:  { label:"Qual é o principal objetivo da página?", options:["Gerar contatos no WhatsApp","Vender um produto ou serviço","Divulgar um lançamento","Agendar atendimentos","Outro"] },
+      identidade:{ label:"Já possui identidade visual?", options:["Sim, completa","Tenho logo e algumas peças","Ainda não tenho"] },
+      detalhes:  { label:"Quer contar mais algum detalhe? (opcional)", placeholder:"Prazos, referências, links — o que achar útil." },
       continueBtn: "CONTINUAR",
       backBtn: "← Voltar",
-      submit:  "ENVIAR E AGENDAR",
-      note:    "Resposta em até 24h úteis. Seus dados ficam seguros.",
-      successTitle: "BRIEFING RECEBIDO!",
-      successText:  "Agora escolha o melhor horário para a nossa conversa — é rápido e sem compromisso.",
+      submit:  "ENVIAR MEU PROJETO",
+      note:    "Sem compromisso. Seus dados serão usados apenas para responder sobre o projeto.",
+      successTitle: "PROJETO RECEBIDO!",
+      successText:  "Vou analisar e te retorno pelo WhatsApp em até 24 horas úteis. Quer adiantar a conversa?",
     },
     /* Passo 02 — agendamento após o envio.
        url: cole aqui seu Calendly/Cal.com (ex.: "https://calendly.com/rafael/30min").
        Vazio = o botão abre o WhatsApp com mensagem pronta. */
-    schedule: { url: "", cta: "AGENDAR PELO WHATSAPP" },
+    schedule: { url: "", cta: "CHAMAR NO WHATSAPP" },
   },
 
   footer: {
     name: "RAFAEL RAZEIRA ESTÚDIO",
     email: "rafael.rbarbon@gmail.com",
     instagram: { handle:"@rafaelrazeira", url:"https://instagram.com/rafaelrazeira" },
-    whatsapp: { display:"(44) 99999-7219", url:"https://wa.me/5544999997219" },
+    whatsapp: { display:"(44) 99999-7219", url:`https://wa.me/${WHATSAPP_NUMBER}` },
     location: "ESTAMOS NO BRASIL",   // ⬅ troque pela sua cidade (ex.: "ESTAMOS EM CAMPINAS, SP")
     legal: [
       { label:"TERMOS DE USO",            url:"/termos" },
@@ -152,7 +179,7 @@ const CONFIG = {
     ],
   },
 
-  pillText: "VAMOS CONVERSAR",
+  pillText: "ANALISAR MEU PROJETO",
 };
 
 /* ============================================================
@@ -170,7 +197,10 @@ const CONFIG = {
          "Authorization": "Bearer SUA_ANON_KEY",
          "Prefer": "return=minimal"
        }
-   O envio é um POST JSON com: nome, email, whatsapp, empresa, cargo, necessidade.
+   O envio é um POST JSON com: nome, whatsapp, instagram, vende,
+   objetivo, identidade, detalhes (+ origem).
+   ⚠️ Formulário novo (jul/2026): rode a migração no fim de
+      supabase/briefings.sql ANTES de publicar, senão o insert falha.
    ============================================================ */
 const FORM_ENDPOINT = "https://mxfakodcmpphgasmdlna.supabase.co/rest/v1/briefings";
 const FORM_HEADERS  = {
@@ -181,4 +211,4 @@ const FORM_HEADERS  = {
 };
 
 /* ⚠️ Não precisa mexer daqui para baixo — apenas disponibiliza o conteúdo p/ a página. */
-export { CONFIG, FORM_ENDPOINT, FORM_HEADERS };
+export { CONFIG, FORM_ENDPOINT, FORM_HEADERS, WHATSAPP_NUMBER };

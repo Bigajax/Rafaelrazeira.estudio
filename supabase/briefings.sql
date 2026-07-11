@@ -28,3 +28,17 @@ create policy "site pode inserir briefings"
   for insert
   to anon
   with check (true);
+
+-- ============================================================
+-- ⚠️ MIGRAÇÃO OBRIGATÓRIA (jul/2026) — formulário novo.
+-- Rode este bloco ANTES de publicar o site atualizado, senão
+-- todo envio do formulário falha (colunas inexistentes).
+-- Campos novos: instagram/site, o que vende, objetivo da página,
+-- identidade visual e detalhes. E-mail saiu do formulário.
+-- ============================================================
+alter table public.briefings alter column email drop not null;
+alter table public.briefings add column if not exists instagram  text;
+alter table public.briefings add column if not exists vende      text;
+alter table public.briefings add column if not exists objetivo   text;
+alter table public.briefings add column if not exists identidade text;
+alter table public.briefings add column if not exists detalhes   text;

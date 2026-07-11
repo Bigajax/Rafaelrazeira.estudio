@@ -7,7 +7,7 @@ export function header(){
   <header class="site-header">
     <div class="wrap">
       <a href="#top" class="logo"><b>${b.name}</b> <span class="suffix">${b.suffix}</span></a>
-      <a href="#contato" class="nav-cta">${b.navCta} <span class="arrow">↗</span></a>
+      <a href="#contato" class="nav-cta" data-cta="header" data-cta-dest="form">${b.navCta} <span class="arrow">↗</span></a>
     </div>
   </header>`;
 }

@@ -6,6 +6,9 @@
      META_CAPI_ACCESS_TOKEN, lida só pelo servidor (api/meta-capi.js).
    • Nada roda sem cookie_consent = "accepted" (js/lib/consent.js).
    Eventos: PageView (load) · ViewContent (bloco da garantia, 1x/sessão)
+            · ClickCTA (custom — 1 evento por clique em elementos [data-cta],
+              com location/destination; pill vira "sticky_mobile" no mobile)
+            · InitiateCheckout (passo 1 → 2 do formulário)
             · Lead (submit do formulário, browser + servidor, mesmo event_id)
    ============================================================ */
 import { getConsent } from "./consent.js";
@@ -67,6 +70,23 @@ function observarGarantia(){
   obs.observe(alvo);
 }
 
+/* ClickCTA — separa "clicou no anúncio por curiosidade" de "demonstrou
+   interesse na página". Cada CTA marca data-cta="<location>" e
+   data-cta-dest="<form|whatsapp>"; um único listener delegado garante
+   exatamente 1 evento por clique. Só roda após o consentimento. */
+function observarCliquesCTA(){
+  document.addEventListener("click", (e) => {
+    const el = e.target.closest && e.target.closest("[data-cta]");
+    if (!el || !window.fbq) return;
+    let location = el.dataset.cta;
+    if (location === "pill" && window.innerWidth < 1024) location = "sticky_mobile";
+    window.fbq("trackCustom", "ClickCTA", {
+      location,
+      destination: el.dataset.ctaDest || "form",
+    });
+  });
+}
+
 /* Chamado pelo main.js após o aceite (ou no load, se já aceito antes) */
 export function initTracking(){
   if (!consentido()) return;
@@ -75,6 +95,7 @@ export function initTracking(){
   window.fbq("init", PIXEL_ID);
   window.fbq("track", "PageView");
   observarGarantia();
+  observarCliquesCTA();
 }
 
 /* InitiateCheckout — sinal intermediário: visitante avançou do passo 1

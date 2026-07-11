@@ -1,7 +1,7 @@
-/* Lockup de cartaz no mobile/tablet: cada linha da headline é
-   redimensionada para preencher exatamente a largura da coluna
-   ("TENHA" maior, "UMA PÁGINA" e "QUE VENDE." menores, todas alinhadas).
-   No desktop (≥1024px) a headline volta ao tamanho definido no CSS. */
+/* Lockup de cartaz: cada linha da headline é redimensionada para
+   preencher exatamente a largura da coluna ("TRANSFORME" maior,
+   linhas longas menores, todas alinhadas). No desktop o tamanho do
+   CSS vira TETO — linha curta não passa dele, linha longa encolhe. */
 export function initHeroFit(){
   const head = document.querySelector(".hero__headline");
   if (!head) return;
@@ -9,15 +9,12 @@ export function initHeroFit(){
   if (!lines.length) return;
 
   const fit = () => {
-    if (window.innerWidth >= 1024){
-      lines.forEach(l => { l.style.fontSize = ""; });
-      return;
-    }
     const target = head.clientWidth;
+    const cap = window.innerWidth >= 1024 ? parseFloat(getComputedStyle(head).fontSize) : Infinity;
     lines.forEach(l => {
       l.style.fontSize = "100px";                      // base de medição
       const w = l.getBoundingClientRect().width;
-      if (w > 0) l.style.fontSize = `${(100 * target / w * .995).toFixed(2)}px`;
+      if (w > 0) l.style.fontSize = `${Math.min(100 * target / w * .995, cap).toFixed(2)}px`;
     });
   };
 

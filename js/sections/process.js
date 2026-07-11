@@ -16,7 +16,7 @@ export function process(){
     <div class="wrap">
       <div class="section-label process__label reveal">${p.label}</div>
       <ol class="proc__list">${steps}</ol>
-      ${p.note ? `<a href="#contato" class="proc__note reveal"><span class="arrow" aria-hidden="true">→</span> ${p.note}</a>` : ""}
+      ${p.note ? `<a href="#contato" class="proc__note reveal" data-cta="process" data-cta-dest="form"><span class="arrow" aria-hidden="true">→</span> ${p.note}</a>` : ""}
     </div>
   </section>`;
 }
