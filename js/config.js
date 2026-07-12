@@ -33,7 +33,8 @@ const CONFIG = {
   hero: {
     status: "AGENDA ABERTA",                                   // sinal (bolinha pulsante esmeralda)
     tagline: "POSICIONAMENTO · CONVERSÃO · NOVOS NEGÓCIOS",
-    headline: ["TRANSFORME", "SEU SERVIÇO EM UMA", "PÁGINA PRONTA PARA", "RECEBER CLIENTES."],
+    // <em>…</em> na headline = destaque em esmeralda (css/sections/hero.css)
+    headline: ["TRANSFORME", "SEU SERVIÇO EM UMA", "PÁGINA PRONTA PARA", "<em>RECEBER CLIENTES.</em>"],
     subheadline: "Estratégia, copy, design e publicação em até <b>7 dias úteis</b>. Você <b>aprova o design</b> antes de quitar o saldo.",
     cta: "QUERO UMA ANÁLISE DO MEU PROJETO",
     ctaWhats: "PREFIRO CONVERSAR PELO WHATSAPP",

@@ -19,6 +19,8 @@
    para preencher a largura da coluna (lockup de cartaz). Bloco em vez de
    <br>: a altura de cada linha é a dela mesma — sem os vãos do tamanho-base */
 .hero__line{display:block;width:fit-content;white-space:nowrap;line-height:1.02}
+/* Grifo esmeralda na parte mais importante da headline (<em> no config) */
+.hero__headline em{font-style:normal;color:var(--emerald)}
 .hero__bottom{
   display:flex;flex-wrap:wrap;gap:clamp(24px,5vw,48px);
   align-items:flex-end;justify-content:flex-end;margin-top:clamp(28px,6vw,56px);
