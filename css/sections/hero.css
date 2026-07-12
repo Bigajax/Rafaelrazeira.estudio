@@ -30,6 +30,8 @@
   font-size:clamp(1.05rem,4.4vw,1.5rem);line-height:1.35;font-weight:500;color:var(--ink-60);
 }
 .hero__sub b{color:var(--black);font-weight:600}
+/* Grifo esmeralda no subtítulo (<em> no config) — mesmo verde da headline */
+.hero__sub em{font-style:normal;color:var(--emerald);font-weight:600}
 
 /* Cue "conheça mais" dentro do hero — logo abaixo do subtítulo */
 .hero__cue{padding-block:0;margin-top:clamp(28px,7vw,48px)}
@@ -73,6 +75,7 @@
     color:var(--black);font-weight:500;
   }
   .hero__sub b{font-weight:500}
+  .hero__sub em{font-weight:500}
   .hero__ctas{flex:none;align-items:flex-end;min-width:0}
   .hero__whats{align-self:flex-end}
   .hero__cue{grid-column:1/-1;margin-top:clamp(32px,5vw,56px)}
