@@ -64,6 +64,30 @@ function mpDistinctId(){
   }catch(e){ return "anon"; }
 }
 
+/* $browser/$os pelo user agent — para segmentar o funil por dispositivo.
+   "Instagram" vem primeiro: o navegador interno do IG é o segmento que
+   mais importa para os anúncios (UA dele também contém "Safari"/"Chrome"). */
+function mpDispositivo(){
+  const ua = navigator.userAgent || "";
+  let os = "";
+  if (/Windows/i.test(ua))            os = "Windows";
+  else if (/Android/i.test(ua))       os = "Android";
+  else if (/iPhone|iPad|iPod/i.test(ua)) os = "iOS";
+  else if (/Macintosh/i.test(ua))     os = "Mac OS X";
+  else if (/Linux/i.test(ua))         os = "Linux";
+  let browser = "";
+  if (/Instagram/i.test(ua))          browser = "Instagram";
+  else if (/FBAN|FBAV/i.test(ua))     browser = "Facebook";
+  else if (/Edg\//i.test(ua))         browser = "Microsoft Edge";
+  else if (/SamsungBrowser/i.test(ua)) browser = "Samsung Internet";
+  else if (/OPR\/|Opera/i.test(ua))   browser = "Opera";
+  else if (/Chrome|CriOS/i.test(ua))  browser = "Chrome";
+  else if (/FxiOS|Firefox/i.test(ua)) browser = "Firefox";
+  else if (/Safari/i.test(ua))        browser = "Safari";
+  return { $browser: browser, $os: os };
+}
+const MP_DISPOSITIVO = mpDispositivo();
+
 function mpTrack(evento, props){
   if (!MIXPANEL_TOKEN || !consentido()) return;
   const utm = {};
@@ -81,6 +105,7 @@ function mpTrack(evento, props){
       $insert_id: (props && props.$insert_id) || idAleatorio(),
       $current_url: location.href,
       $referrer: document.referrer || "",
+      ...MP_DISPOSITIVO,
       ...utm,
       ...props,
     },
