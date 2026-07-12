@@ -4,7 +4,7 @@ import { CONFIG, WHATSAPP_NUMBER } from "../config.js";
 
 export function hero(){
   const h = CONFIG.hero;
-  const lines = h.headline.map(l => `<span class="hero__line">${l}</span>`).join("<br>");
+  const lines = h.headline.map(l => `<span class="hero__line">${l}</span>`).join("");
   const waLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(h.whatsMsg)}`;
   return `
   <section class="hero" id="hero">
