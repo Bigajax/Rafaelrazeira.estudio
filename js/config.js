@@ -35,7 +35,7 @@ const CONFIG = {
     tagline: "POSICIONAMENTO · CONVERSÃO · NOVOS NEGÓCIOS",
     // <em>…</em> na headline = destaque em esmeralda (css/sections/hero.css)
     headline: ["TRANSFORME", "SEU SERVIÇO EM UMA", "PÁGINA PRONTA PARA", "<em>RECEBER CLIENTES.</em>"],
-    subheadline: "Estratégia, copy, design e publicação em até <b>7 dias úteis</b>. Você <b>aprova o design</b> antes de quitar o saldo.",
+    subheadline: "Sua página completa — estratégia, copy e design — <b>no ar em até 7 dias úteis</b>. O saldo, você só quita <b>depois de aprovar</b>.",
     cta: "QUERO UMA ANÁLISE DO MEU PROJETO",
     ctaWhats: "PREFIRO CONVERSAR PELO WHATSAPP",
     whatsMsg: "Olá, Rafael. Vi seu trabalho e gostaria de entender como uma landing page poderia funcionar para o meu negócio.",

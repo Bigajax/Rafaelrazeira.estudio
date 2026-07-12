@@ -31,6 +31,9 @@
 }
 .hero__sub b{color:var(--black);font-weight:600}
 
+/* Cue "conheça mais" dentro do hero — logo abaixo do subtítulo */
+.hero__cue{padding-block:0;margin-top:clamp(28px,7vw,48px)}
+
 /* CTA duplo: botão primário (formulário) + linha discreta do WhatsApp */
 .hero__ctas{display:flex;flex-direction:column;gap:16px;align-items:stretch;flex:1;min-width:min(100%,320px)}
 /* Botão sempre em UMA linha: fonte e respiros escalam com a largura da tela */
@@ -72,4 +75,5 @@
   .hero__sub b{font-weight:500}
   .hero__ctas{flex:none;align-items:flex-end;min-width:0}
   .hero__whats{align-self:flex-end}
+  .hero__cue{grid-column:1/-1;margin-top:clamp(32px,5vw,56px)}
 }

@@ -23,6 +23,9 @@ export function hero(){
         </div>
         <p class="hero__sub reveal">${h.subheadline}</p>
       </div>
+      <div class="cue hero__cue reveal">
+        <a href="#about"><span class="cue__arrow" aria-hidden="true">▾</span> ${CONFIG.cue}</a>
+      </div>
     </div>
   </section>`;
 }
