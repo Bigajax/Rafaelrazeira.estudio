@@ -33,6 +33,9 @@
 
 /* CTA duplo: botão primário (formulário) + linha discreta do WhatsApp */
 .hero__ctas{display:flex;flex-direction:column;gap:16px;align-items:stretch;flex:1;min-width:min(100%,320px)}
+/* Botão sempre em UMA linha: fonte e respiros escalam com a largura da tela */
+.hero__ctas .btn-outline{white-space:nowrap;gap:10px;padding:20px 14px;font-size:clamp(10.5px,3.2vw,14px)}
+@media(min-width:560px){.hero__ctas .btn-outline{gap:16px;padding:20px 28px}}
 .hero__whats{
   align-self:center;display:inline-flex;align-items:center;gap:8px;padding:6px 2px;
   font-family:var(--font-mono);font-weight:700;font-size:clamp(11px,3vw,13px);
