@@ -15,6 +15,14 @@
    (hero, footer e pós-envio). Formato: DDI + DDD + número, só dígitos. */
 const WHATSAPP_NUMBER = "5544999997219";
 
+/* ⬇ Mixpanel — funil próprio, espelha os mesmos eventos do Meta Pixel
+   (PageView → ClickCTA → InitiateCheckout → Lead + ViewContent).
+   Crie um projeto em mixpanel.com → Settings → Project Settings e cole
+   o "Project Token" aqui. Vazio = desligado (nenhuma chamada é feita).
+   Criou o projeto com residência de dados na UE? Troque o host
+   MP_URL em js/lib/tracking.js para api-eu.mixpanel.com. */
+const MIXPANEL_TOKEN = "56f4afa648bf59c45e417b084fdb4aa4";
+
 const CONFIG = {
   brand: {
     name: "RAFAEL RAZEIRA",       // aparece no header e no footer
@@ -211,4 +219,4 @@ const FORM_HEADERS  = {
 };
 
 /* ⚠️ Não precisa mexer daqui para baixo — apenas disponibiliza o conteúdo p/ a página. */
-export { CONFIG, FORM_ENDPOINT, FORM_HEADERS, WHATSAPP_NUMBER };
+export { CONFIG, FORM_ENDPOINT, FORM_HEADERS, WHATSAPP_NUMBER, MIXPANEL_TOKEN };

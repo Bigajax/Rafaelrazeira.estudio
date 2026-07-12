@@ -1,9 +1,12 @@
 /* ============================================================
-   META PIXEL + CONVERSIONS API — tracking condicionado a consentimento.
+   META PIXEL + CONVERSIONS API + MIXPANEL — tracking condicionado
+   a consentimento.
    ------------------------------------------------------------
    • PIXEL_ID: troque abaixo se o dataset mudar (Events Manager).
    • O token do CAPI NUNCA fica aqui — vive na variável de ambiente
      META_CAPI_ACCESS_TOKEN, lida só pelo servidor (api/meta-capi.js).
+   • Mixpanel: espelha os mesmos eventos via API HTTP (sem lib externa),
+     sem nenhum dado pessoal — liga colando MIXPANEL_TOKEN em js/config.js.
    • Nada roda sem cookie_consent = "accepted" (js/lib/consent.js).
    Eventos: PageView (load) · ViewContent (bloco da garantia, 1x/sessão)
             · ClickCTA (custom — 1 evento por clique em elementos [data-cta],
@@ -12,9 +15,11 @@
             · Lead (submit do formulário, browser + servidor, mesmo event_id)
    ============================================================ */
 import { getConsent } from "./consent.js";
+import { MIXPANEL_TOKEN } from "../config.js";
 
 const PIXEL_ID      = "2445872572575348";   // ⬅ Pixel/Dataset ID
 const CAPI_ENDPOINT = "/api/meta-capi";     // função serverless (Vercel)
+const MP_URL        = "https://api.mixpanel.com/track?ip=1"; // residência UE: api-eu.mixpanel.com
 
 const consentido = () => getConsent() === "accepted";
 
@@ -43,6 +48,53 @@ function getFbc(){
   return "";
 }
 
+/* ---------- Mixpanel — funil próprio via API HTTP ----------
+   Sem dado pessoal: o distinct_id é um UUID aleatório do aparelho.
+   UTMs da URL vão junto para segmentar o funil por campanha/criativo.
+   Fire-and-forget: falha de rede nunca afeta a página. */
+const idAleatorio = () =>
+  (crypto.randomUUID && crypto.randomUUID()) ||
+  `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+
+function mpDistinctId(){
+  try{
+    let id = localStorage.getItem("mp_distinct_id");
+    if (!id){ id = idAleatorio(); localStorage.setItem("mp_distinct_id", id); }
+    return id;
+  }catch(e){ return "anon"; }
+}
+
+function mpTrack(evento, props){
+  if (!MIXPANEL_TOKEN || !consentido()) return;
+  const utm = {};
+  try{
+    const q = new URLSearchParams(location.search);
+    ["utm_source","utm_medium","utm_campaign","utm_content","utm_term"]
+      .forEach(k => { const v = q.get(k); if (v) utm[k] = v; });
+  }catch(e){}
+  const corpo = [{
+    event: evento,
+    properties: {
+      token: MIXPANEL_TOKEN,
+      distinct_id: mpDistinctId(),
+      time: Math.floor(Date.now() / 1000),
+      $insert_id: (props && props.$insert_id) || idAleatorio(),
+      $current_url: location.href,
+      $referrer: document.referrer || "",
+      ...utm,
+      ...props,
+    },
+  }];
+  try{
+    // form-urlencoded (não JSON): evita preflight de CORS, exigência da API no browser
+    fetch(MP_URL, {
+      method: "POST",
+      keepalive: true,
+      body: new URLSearchParams({ data: JSON.stringify(corpo) }),
+    }).catch(() => {});
+  }catch(e){}
+}
+
 /* Loader oficial do fbevents.js (só chega aqui com consentimento) */
 function carregarPixel(){
   if (window.fbq) return;
@@ -65,6 +117,7 @@ function observarGarantia(){
       obs.disconnect();
       try{ sessionStorage.setItem("meta_vc_garantia", "1"); }catch(e){}
       window.fbq && window.fbq("track", "ViewContent", { content_name: "garantia-risco-zero" });
+      mpTrack("ViewContent", { content_name: "garantia-risco-zero" });
     });
   }, { threshold: 0.4 });
   obs.observe(alvo);
@@ -77,13 +130,12 @@ function observarGarantia(){
 function observarCliquesCTA(){
   document.addEventListener("click", (e) => {
     const el = e.target.closest && e.target.closest("[data-cta]");
-    if (!el || !window.fbq) return;
+    if (!el) return;
     let location = el.dataset.cta;
     if (location === "pill" && window.innerWidth < 1024) location = "sticky_mobile";
-    window.fbq("trackCustom", "ClickCTA", {
-      location,
-      destination: el.dataset.ctaDest || "form",
-    });
+    const dados = { location, destination: el.dataset.ctaDest || "form" };
+    window.fbq && window.fbq("trackCustom", "ClickCTA", dados);
+    mpTrack("ClickCTA", dados);
   });
 }
 
@@ -94,6 +146,7 @@ export function initTracking(){
   carregarPixel();
   window.fbq("init", PIXEL_ID);
   window.fbq("track", "PageView");
+  mpTrack("PageView");
   observarGarantia();
   observarCliquesCTA();
 }
@@ -103,6 +156,7 @@ export function initTracking(){
 export function trackInitiateCheckout(){
   if (!consentido()) return;
   window.fbq && window.fbq("track", "InitiateCheckout");
+  mpTrack("InitiateCheckout");
 }
 
 /* Lead deduplicado: mesmo event_id no Pixel (browser) e no CAPI (servidor).
@@ -110,6 +164,7 @@ export function trackInitiateCheckout(){
 export function trackLead(eventId, dados){
   if (!consentido()) return;
   window.fbq && window.fbq("track", "Lead", {}, { eventID: eventId });
+  mpTrack("Lead", { $insert_id: eventId });   // mesmo id do Meta p/ cruzar os números
   try{
     fetch(CAPI_ENDPOINT, {
       method: "POST",
