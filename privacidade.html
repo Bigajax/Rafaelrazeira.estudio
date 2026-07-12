@@ -24,7 +24,7 @@
 </header>
 
 <main class="legal-doc">
-  <p class="l-meta"><b>POLÍTICA DE PRIVACIDADE</b> — ÚLTIMA ATUALIZAÇÃO: 06/07/2026</p>
+  <p class="l-meta"><b>POLÍTICA DE PRIVACIDADE</b> — ÚLTIMA ATUALIZAÇÃO: 12/07/2026</p>
   <h1>COMO CUIDAMOS DOS SEUS DADOS.</h1>
   <p class="l-intro">Esta política explica, em linguagem simples, quais dados pessoais este site coleta, para que eles são usados e quais são os seus direitos, conforme a <b>Lei Geral de Proteção de Dados (LGPD — Lei nº 13.709/2018)</b>.</p>
 
@@ -63,7 +63,7 @@
   <section class="l-sec">
     <span class="l-num">04</span>
     <h2>BASE LEGAL</h2>
-    <p>Tratamos seus dados com fundamento no seu <b>consentimento</b> (ao enviar o formulário e ao aceitar cookies de mensuração), na <b>execução de procedimentos preliminares a contrato</b> a seu pedido (quando você solicita uma proposta) e no <b>legítimo interesse</b> do estúdio em divulgar e aprimorar seus serviços — sempre respeitando seus direitos e expectativas.</p>
+    <p>Tratamos seus dados com fundamento no seu <b>consentimento</b> (ao enviar o formulário), na <b>execução de procedimentos preliminares a contrato</b> a seu pedido (quando você solicita uma proposta) e no <b>legítimo interesse</b> do estúdio em divulgar e aprimorar seus serviços — inclusive na medição de visitas e anúncios descrita na seção 08, que você pode desativar a qualquer momento. Sempre respeitando seus direitos e expectativas.</p>
   </section>
 
   <section class="l-sec">
@@ -102,8 +102,10 @@
   <section class="l-sec">
     <span class="l-num">08</span>
     <h2>COOKIES E RASTREAMENTO</h2>
-    <p>Cookies são pequenos arquivos gravados no seu navegador que permitem reconhecer sua visita. Este site usa (ou passará a usar) o <b>Meta Pixel</b> e a <b>API de Conversões da Meta</b> para medir o desempenho de anúncios — por exemplo, saber que uma visita veio de um anúncio e resultou no envio do formulário — e o <b>Mixpanel</b> para estatísticas anônimas de navegação dentro do site. Nada disso roda sem o seu aceite no aviso de cookies.</p>
-    <p>Você pode <b>bloquear ou apagar cookies nas configurações do seu navegador</b> (procure por "cookies" ou "dados de navegação" nas preferências de privacidade). Também é possível ajustar suas preferências de anúncios diretamente nas configurações da sua conta Meta (Facebook/Instagram). O site continua funcionando sem cookies de mensuração — apenas as estatísticas de anúncios deixam de ser registradas.</p>
+    <p>Cookies são pequenos arquivos gravados no seu navegador que permitem reconhecer sua visita. Este site usa o <b>Meta Pixel</b> e a <b>API de Conversões da Meta</b> para medir o desempenho de anúncios — por exemplo, saber que uma visita veio de um anúncio e resultou no envio do formulário — e o <b>Mixpanel</b> para estatísticas de navegação com identificador aleatório, sem nome, contato ou qualquer dado pessoal seu.</p>
+    <p>Essa medição roda por padrão, com fundamento no legítimo interesse do estúdio em saber se seus anúncios e sua página funcionam. <b>Você pode desativá-la agora, neste navegador, com um clique:</b></p>
+    <p><button type="button" id="optout-btn" class="l-optout"></button></p>
+    <p>Além disso, você pode <b>bloquear ou apagar cookies nas configurações do seu navegador</b> (procure por "cookies" ou "dados de navegação" nas preferências de privacidade) e ajustar suas preferências de anúncios nas configurações da sua conta Meta (Facebook/Instagram). O site continua funcionando normalmente sem a medição — apenas as estatísticas deixam de ser registradas.</p>
   </section>
 
   <section class="l-sec">
@@ -121,6 +123,30 @@
   <a href="/termos">TERMOS DE USO</a>
   <a href="mailto:rafael.rbarbon@gmail.com">RAFAEL.RBARBON@GMAIL.COM</a>
 </footer>
+
+<!-- Opt-out de medição: grava a escolha em localStorage("cookie_consent").
+     "declined" desliga Pixel, CAPI e Mixpanel (lido por js/lib/tracking.js). -->
+<script>
+(function(){
+  var btn = document.getElementById("optout-btn");
+  if (!btn) return;
+  var KEY = "cookie_consent";
+  function estado(){ try{ return localStorage.getItem(KEY); }catch(e){ return null; } }
+  function render(){
+    var off = estado() === "declined";
+    btn.textContent = off ? "Medição desativada — clique para reativar" : "Desativar medição neste navegador";
+    btn.classList.toggle("is-off", off);
+  }
+  btn.addEventListener("click", function(){
+    try{
+      if (estado() === "declined") localStorage.removeItem(KEY);
+      else localStorage.setItem(KEY, "declined");
+    }catch(e){}
+    render();
+  });
+  render();
+})();
+</script>
 
 </body>
 </html>

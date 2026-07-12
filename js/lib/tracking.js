@@ -7,7 +7,8 @@
      META_CAPI_ACCESS_TOKEN, lida só pelo servidor (api/meta-capi.js).
    • Mixpanel: espelha os mesmos eventos via API HTTP (sem lib externa),
      sem nenhum dado pessoal — liga colando MIXPANEL_TOKEN em js/config.js.
-   • Nada roda sem cookie_consent = "accepted" (js/lib/consent.js).
+   • Modelo OPT-OUT: a medição roda desde o load para todos; quem desativar
+     na Política de Privacidade (cookie_consent = "declined") sai de tudo.
    Eventos: PageView (load) · ViewContent (bloco da garantia, 1x/sessão)
             · ClickCTA (custom — 1 evento por clique em elementos [data-cta],
               com location/destination; pill vira "sticky_mobile" no mobile)
@@ -21,7 +22,8 @@ const PIXEL_ID      = "2445872572575348";   // ⬅ Pixel/Dataset ID
 const CAPI_ENDPOINT = "/api/meta-capi";     // função serverless (Vercel)
 const MP_URL        = "https://api.mixpanel.com/track?ip=1"; // residência UE: api-eu.mixpanel.com
 
-const consentido = () => getConsent() === "accepted";
+/* Opt-out: rastreia a menos que a pessoa tenha desativado explicitamente */
+const consentido = () => getConsent() !== "declined";
 
 function getCookie(nome){
   const m = document.cookie.match(new RegExp("(?:^|; )" + nome + "=([^;]*)"));
