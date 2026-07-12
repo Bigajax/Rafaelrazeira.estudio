@@ -1,35 +1,49 @@
 /* ============================================================
-   HERO — status + tagline, headline gigante, sub + botão
+   HERO — status + tagline, headline em lockup de cartaz,
+   promessa → prova (sub) → ação (CTA sólido + WhatsApp discreto).
+   O pill flutuante fica escondido enquanto o hero está na tela
+   (js/lib/pill.js) — aqui o CTA do hero é o único chamado.
    ============================================================ */
-.hero{padding-top:calc(64px + clamp(28px,9vw,72px));padding-bottom:clamp(40px,9vw,90px)}
-/* Mobile: respiro extra na base para o pill flutuante não cobrir o subtítulo */
-@media(max-width:640px){
-  .hero{padding-bottom:calc(clamp(40px,9vw,90px) + 76px)}
-  .hero__headline{line-height:.88}
-  .hero__bottom{gap:20px}
-}
+.hero{padding-top:calc(64px + clamp(24px,7vw,72px));padding-bottom:clamp(40px,9vw,90px)}
+
 .hero__headline{
   font-family:var(--font-display);font-weight:900;text-transform:uppercase;
-  /* limitado também pela ALTURA (16vh): headline + CTA + sub cabem na 1ª dobra em qualquer monitor */
+  /* limitado também pela ALTURA (16vh): headline + sub + CTA cabem na 1ª dobra */
   font-size:min(clamp(3.4rem,18.5vw,11rem),16vh);
-  line-height:.9;letter-spacing:-.04em;
-  margin-top:clamp(22px,5vw,40px);
+  letter-spacing:-.04em;
+  margin-top:clamp(16px,4vw,40px);
 }
-/* Cada linha não quebra: abaixo de 1024px o js/lib/herofit.js dimensiona
-   cada uma para preencher a largura da coluna (lockup de cartaz) */
-.hero__line{display:inline-block;white-space:nowrap;line-height:.92}
+/* Cada linha é um bloco justo (width:fit-content): o js/lib/herofit.js
+   dimensiona cada uma para preencher a coluna; a altura da linha é a do
+   próprio bloco (lockup compacto, sem vãos do <br>) */
+.hero__line{display:block;width:fit-content;white-space:nowrap;line-height:1.02}
+
 .hero__bottom{
-  display:flex;flex-wrap:wrap;gap:clamp(24px,5vw,48px);
-  align-items:flex-end;justify-content:flex-end;margin-top:clamp(28px,6vw,56px);
+  display:flex;flex-direction:column;gap:clamp(20px,4.5vw,32px);
+  margin-top:clamp(24px,5.5vw,56px);
 }
 .hero__sub{
-  max-width:min(46ch,100%);margin-left:auto;
+  max-width:min(46ch,100%);
   font-size:clamp(1.05rem,4.4vw,1.5rem);line-height:1.35;font-weight:500;color:var(--ink-60);
 }
 .hero__sub b{color:var(--black);font-weight:600}
 
-/* CTA duplo: botão primário (formulário) + linha discreta do WhatsApp */
-.hero__ctas{display:flex;flex-direction:column;gap:16px;align-items:stretch;flex:1;min-width:min(100%,320px)}
+/* CTA primário — sólido esmeralda: mesma linguagem de ação do formulário */
+.hero__ctas{display:flex;flex-direction:column;gap:14px;align-items:stretch}
+.hero__cta{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  padding:19px 14px;border-radius:999px;
+  background:var(--emerald);color:#fff;
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(11px,3.6vw,16px);letter-spacing:.02em;white-space:nowrap;
+  box-shadow:0 12px 32px -12px rgba(16,185,129,.5);
+  transition:background .25s,transform .1s,box-shadow .25s;
+}
+.hero__cta:hover{background:var(--emerald-dark);box-shadow:0 16px 36px -12px rgba(6,95,70,.6)}
+.hero__cta:active{transform:scale(.99)}
+.hero__cta .arrow{font-size:1.15em;transition:transform .25s}
+.hero__cta:hover .arrow{transform:translateX(3px)}
+
 .hero__whats{
   align-self:center;display:inline-flex;align-items:center;gap:8px;padding:6px 2px;
   font-family:var(--font-mono);font-weight:700;font-size:clamp(11px,3vw,13px);
@@ -40,12 +54,14 @@
 .hero__whats:hover{color:var(--emerald-dark);border-color:var(--emerald)}
 .hero__whats .arrow{transition:transform .2s}
 .hero__whats:hover .arrow{transform:translateX(3px)}
-/* Tablet: botão volta ao tamanho natural, par centrado */
+
+/* Tablet: botão no tamanho natural, par centrado */
 @media(min-width:560px) and (max-width:1023px){
   .hero__ctas{align-items:center}
+  .hero__cta{padding:20px 36px}
 }
 
-/* —— Desktop: duas colunas (headline à esquerda; sub em caixa alta + botão à direita) —— */
+/* —— Desktop: duas colunas (headline à esquerda; sub + CTAs à direita) —— */
 @media(min-width:1024px){
   .hero .wrap{
     display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);
@@ -55,15 +71,15 @@
   .hero__headline{grid-column:1}
   .hero__bottom{
     grid-column:2;margin-top:0;
-    flex-direction:column-reverse;align-items:flex-end;justify-content:center;
-    gap:clamp(32px,4vw,56px);
+    align-items:flex-end;gap:clamp(28px,3.5vw,44px);
   }
   .hero__sub{
-    margin-left:0;text-align:right;text-transform:uppercase;
+    text-align:right;text-transform:uppercase;
     font-size:clamp(1.2rem,1.6vw,1.75rem);line-height:1.32;max-width:31ch;
     color:var(--black);font-weight:500;
   }
   .hero__sub b{font-weight:500}
-  .hero__ctas{flex:none;align-items:flex-end;min-width:0}
+  .hero__ctas{align-items:flex-end}
+  .hero__cta{padding:20px 36px;font-size:16px}
   .hero__whats{align-self:flex-end}
 }
