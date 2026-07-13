@@ -20,6 +20,7 @@ import { contact }      from "./sections/contact.js";
 import { footer }       from "./sections/footer.js";
 import { pill }         from "./sections/pill.js";
 
+import { initLoader }     from "./lib/loader.js";
 import { initReveal }     from "./lib/reveal.js";
 import { initHeroFit }    from "./lib/herofit.js";
 import { initForm }       from "./lib/form.js";
@@ -39,6 +40,7 @@ app.innerHTML =
   pill();
 
 // Interações (rodam depois do HTML montado)
+initLoader();   // tela de carregamento — sai em pixel dissolve quando tudo pintou
 initReveal();
 initHeroFit();
 initForm();

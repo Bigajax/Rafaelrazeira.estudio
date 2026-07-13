@@ -6,14 +6,14 @@
 @media(max-width:640px){
   .hero{padding-bottom:calc(clamp(40px,9vw,90px) + 76px)}
   .hero__headline{line-height:.88}
-  .hero__bottom{gap:20px}
+  .hero__bottom{gap:18px}
 }
 .hero__headline{
   font-family:var(--font-display);font-weight:900;text-transform:uppercase;
   /* limitado também pela ALTURA (16vh): headline + CTA + sub cabem na 1ª dobra em qualquer monitor */
   font-size:min(clamp(3.4rem,18.5vw,11rem),16vh);
   line-height:.9;letter-spacing:-.04em;
-  margin-top:clamp(22px,5vw,40px);
+  margin-top:clamp(18px,4vw,40px);
 }
 /* Cada linha é um bloco justo: o js/lib/herofit.js dimensiona cada uma
    para preencher a largura da coluna (lockup de cartaz). Bloco em vez de
@@ -21,12 +21,13 @@
 .hero__line{display:block;width:fit-content;white-space:nowrap;line-height:1.02}
 /* Grifo esmeralda na parte mais importante da headline (<em> no config) */
 .hero__headline em{font-style:normal;color:var(--emerald)}
+/* Ordem no mobile = ordem de leitura: subtítulo (o motivo) ANTES do CTA (o pedido) */
 .hero__bottom{
-  display:flex;flex-wrap:wrap;gap:clamp(24px,5vw,48px);
-  align-items:flex-end;justify-content:flex-end;margin-top:clamp(28px,6vw,56px);
+  display:flex;flex-wrap:wrap;gap:clamp(20px,5vw,48px);
+  align-items:flex-end;justify-content:flex-end;margin-top:clamp(22px,5vw,56px);
 }
 .hero__sub{
-  max-width:min(46ch,100%);margin-left:auto;
+  max-width:min(46ch,100%);
   font-size:clamp(1.05rem,4.4vw,1.5rem);line-height:1.35;font-weight:500;color:var(--ink-60);
 }
 .hero__sub b{color:var(--black);font-weight:600}
@@ -41,6 +42,13 @@
 /* Botão sempre em UMA linha: fonte e respiros escalam com a largura da tela */
 .hero__ctas .btn-outline{white-space:nowrap;gap:10px;padding:20px 14px;font-size:clamp(10.5px,3.2vw,14px)}
 @media(min-width:560px){.hero__ctas .btn-outline{gap:16px;padding:20px 28px}}
+/* Prova sob o botão: responde compromisso, espera e preço no momento do clique */
+.hero__proof{
+  font-family:var(--font-mono);font-size:clamp(9.5px,2.6vw,11px);font-weight:400;
+  letter-spacing:.05em;text-transform:uppercase;color:var(--ink-40);
+  text-align:center;line-height:1.7;margin-top:-4px;
+}
+.hero__proof span{white-space:nowrap}
 .hero__whats{
   align-self:center;display:inline-flex;align-items:center;gap:8px;padding:6px 2px;
   font-family:var(--font-mono);font-weight:700;font-size:clamp(11px,3vw,13px);
@@ -66,7 +74,7 @@
   .hero__headline{grid-column:1}
   .hero__bottom{
     grid-column:2;margin-top:0;
-    flex-direction:column-reverse;align-items:flex-end;justify-content:center;
+    flex-direction:column;align-items:flex-end;justify-content:center;
     gap:clamp(32px,4vw,56px);
   }
   .hero__sub{
@@ -77,6 +85,7 @@
   .hero__sub b{font-weight:500}
   .hero__sub em{font-weight:500}
   .hero__ctas{flex:none;align-items:flex-end;min-width:0}
+  .hero__proof{text-align:right}
   .hero__whats{align-self:flex-end}
   .hero__cue{grid-column:1/-1;margin-top:clamp(32px,5vw,56px)}
 }

@@ -23,6 +23,7 @@
 
 <!-- CSS: base (compartilhado) + um arquivo por seção -->
 <link rel="stylesheet" href="css/base.css" />
+<link rel="stylesheet" href="css/sections/loader.css" />
 <link rel="stylesheet" href="css/sections/header.css" />
 <link rel="stylesheet" href="css/sections/hero.css" />
 <link rel="stylesheet" href="css/sections/marquee.css" />
@@ -40,7 +41,16 @@
 <link rel="stylesheet" href="css/sections/footer.css" />
 <link rel="stylesheet" href="css/sections/pill.css" />
 </head>
-<body>
+<body class="loading">
+
+<!-- Tela de carregamento: estática para pintar preto no 1º frame.
+     A saída (pixel dissolve) é conduzida por js/lib/loader.js -->
+<div class="loader" id="loader" aria-hidden="true">
+  <div class="loader__center">
+    <img class="loader__logo" src="assets/logo-loader.png" alt="" />
+    <p class="loader__text">Carregando…</p>
+  </div>
+</div>
 
 <!-- Linhas verticais de grid no fundo (decorativo) -->
 <div class="grid-lines" aria-hidden="true">

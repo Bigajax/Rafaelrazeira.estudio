@@ -34,10 +34,12 @@ const CONFIG = {
     status: "AGENDA ABERTA",                                   // sinal (bolinha pulsante esmeralda)
     tagline: "POSICIONAMENTO · CONVERSÃO · NOVOS NEGÓCIOS",
     // <em>…</em> na headline = destaque em esmeralda (css/sections/hero.css)
-    headline: ["TRANSFORME", "SEU SERVIÇO EM UMA", "PÁGINA PRONTA PARA", "<em>RECEBER CLIENTES.</em>"],
+    headline: ["SUA PÁGINA", "DE VENDAS NO AR", "EM ATÉ <em>7 DIAS ÚTEIS.</em>"],
     // <em>…</em> no subtítulo = destaque em esmeralda (css/sections/hero.css)
-    subheadline: "Sua página completa, com <em>estratégia, copy e design</em>, <b>no ar em até 7 dias úteis</b>. O saldo, você só quita <b>depois de aprovar</b>.",
-    cta: "QUERO UMA ANÁLISE DO MEU PROJETO",
+    subheadline: "<em>Estratégia, copy e design</em> sob medida para o seu serviço. O saldo, você só quita <b>depois de aprovar</b>.",
+    cta: "QUERO MINHA ANÁLISE GRATUITA",
+    // Linha de prova sob o CTA — responde às 3 dúvidas de quem acabou de clicar no anúncio
+    proof: "SEM COMPROMISSO · RETORNO EM ATÉ 24H · SALDO SÓ APÓS APROVAR",
     ctaWhats: "PREFIRO CONVERSAR PELO WHATSAPP",
     whatsMsg: "Olá, Rafael. Vi seu trabalho e gostaria de entender como uma landing page poderia funcionar para o meu negócio.",
   },

@@ -19,9 +19,11 @@
   font-family:var(--font-mono);font-weight:700;font-size:clamp(11px,3.2vw,13px);
   letter-spacing:.04em;text-transform:uppercase;transition:opacity .2s;
 }
-/* Mobile: esconde o sufixo "ESTÚDIO" para logo e CTA caberem lado a lado */
+/* Mobile: sufixo "ESTÚDIO" desce para a linha de baixo, espaçado
+   para acompanhar a largura do nome (lockup em duas linhas) */
 @media(max-width:460px){
-  .logo .suffix{display:none}
+  .logo b{display:block}
+  .logo .suffix{display:block;font-size:9px;letter-spacing:.36em;margin-top:3px}
 }
 .nav-cta:hover{opacity:.55}
 .nav-cta .arrow{color:var(--emerald-dark)}
