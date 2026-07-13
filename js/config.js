@@ -140,6 +140,24 @@ const CONFIG = {
     ],
   },
 
+  /* Projetos Fundadores — acesso antecipado ao estúdio (antes do contato).
+     Tom: exclusividade e parceria — nunca desconto por necessidade. */
+  founders: {
+    status: "PRIMEIROS CASES",
+    title: "Estou selecionando apenas alguns projetos para fazer parte do portfólio inicial do estúdio.",
+    text: "Nos próximos projetos, quero trabalhar com empresas que tenham potencial para se tornarem grandes cases. Em troca da autorização para divulgar o projeto e compartilhar os resultados, ofereço uma condição especial de lançamento.",
+    benefits: [
+      "Condição especial de lançamento",
+      "Projeto totalmente personalizado",
+      "Direito a usar o projeto como case",
+      "Depoimento após a entrega",
+      "Atendimento direto comigo",
+    ],
+    limited: "Essa condição é válida apenas para um número limitado de empresas.",
+    ctaLine: "Quero fazer parte dos primeiros cases",
+    cta: "SOLICITAR ANÁLISE GRATUITA",
+  },
+
   contact: {
     status: "AGENDA ABERTA",
     headline: "VAMOS ENTENDER SE O PROJETO FAZ SENTIDO.",

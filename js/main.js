@@ -16,6 +16,7 @@ import { values }       from "./sections/values.js";
 import { founder }      from "./sections/founder.js";
 import { audience }     from "./sections/audience.js";
 import { testimonials } from "./sections/testimonials.js";
+import { founders }     from "./sections/founders.js";
 import { contact }      from "./sections/contact.js";
 import { footer }       from "./sections/footer.js";
 import { pill }         from "./sections/pill.js";
@@ -30,7 +31,7 @@ import { initTracking }   from "./lib/tracking.js";
 
 // Ordem das seções DENTRO do <main> (não inclui header/footer/pill)
 // (o cue "conheça mais" agora vive dentro do hero — js/sections/hero.js)
-const page = [ hero, marquee, about, brandband, process, included, cases, audience, values, founder, testimonials, contact, marquee ];
+const page = [ hero, marquee, about, brandband, process, included, cases, audience, values, founder, testimonials, founders, contact, marquee ];
 
 const app = document.getElementById("app");
 app.innerHTML =
