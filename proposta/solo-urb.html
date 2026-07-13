@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Proposta — Sölo Urb · Rafael Razeira Estúdio</title>
+
+<!-- ============================================================
+     PROPOSTA COMERCIAL — SÖLO URB (e-commerce)
+     Base: proposta/star-point.html · Condição de fundadores
+     Para PDF: Ctrl+P → Salvar como PDF (o mockup vivo não sai
+     na impressão; o restante é 100% imprimível).
+     ============================================================ -->
+
+<link rel="icon" type="image/png" href="/assets/favicon.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+<style>
+/* ——— Tokens copiados de css/base.css da landing ——— */
+:root{
+  --emerald:#10B981;
+  --emerald-dark:#065F46;
+  --emerald-light:#D1FAE5;
+  --off-white:#FAFAF7;
+  --black:#0A0A0A;
+  --ink-60:rgba(10,10,10,.60);
+  --ink-40:rgba(10,10,10,.40);
+  --line:rgba(10,10,10,.10);
+  --maxw:1040px;
+  --pad:clamp(20px,6vw,72px);
+  --font-display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --font-body:"Inter",system-ui,-apple-system,sans-serif;
+  --font-mono:"Space Mono",ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font-body);background:var(--off-white);color:var(--black);
+  line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+b{font-weight:600}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--emerald);outline-offset:3px}
+
+.grid-lines{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  max-width:var(--maxw);margin:0 auto;
+  display:flex;justify-content:space-between;padding:0 var(--pad);
+}
+.grid-lines span{width:1px;background:var(--line)}
+.grid-lines span:first-child,.grid-lines span:last-child{opacity:0}
+@media(max-width:640px){.grid-lines span:nth-child(2),.grid-lines span:nth-child(4){display:none}}
+.doc{position:relative;z-index:1;max-width:var(--maxw);margin:0 auto;padding:0 var(--pad)}
+
+/* ——— Header ——— */
+.doc-header{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding-block:clamp(20px,4vw,32px);border-bottom:1px solid var(--line);
+}
+.brand{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(15px,4vw,19px);letter-spacing:-.01em;white-space:nowrap}
+.brand small{font-weight:800;color:var(--ink-40);letter-spacing:.01em;font-size:1em}
+.doc-header .date{font-family:var(--font-mono);font-size:clamp(11px,3vw,13px);color:var(--ink-60);white-space:nowrap}
+
+/* ——— Abertura ——— */
+.opening{padding-block:clamp(44px,9vw,96px)}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:12px;flex-wrap:wrap;
+  font-family:var(--font-mono);font-size:clamp(11px,3vw,13px);
+  letter-spacing:.06em;text-transform:uppercase;color:var(--ink-60);
+}
+.status{color:var(--emerald-dark);font-weight:700}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--emerald);flex:none;position:relative}
+.dot::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--emerald);animation:pulse 2.2s ease-out infinite}
+@keyframes pulse{0%{transform:scale(1);opacity:.6}70%{transform:scale(2.6);opacity:0}100%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.dot::after{animation:none}}
+.opening h1{
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(2.5rem,9.5vw,5.5rem);line-height:.92;letter-spacing:-.035em;
+  margin-top:clamp(20px,4vw,32px);
+}
+.opening h1 em{font-style:normal;color:var(--emerald)}
+.opening .meta{
+  margin-top:clamp(24px,4vw,36px);font-size:clamp(1rem,4vw,1.15rem);color:var(--ink-60);max-width:52ch;
+}
+.opening .meta b{color:var(--black)}
+
+/* ——— Mockup vivo: a loja real em notebook + smartphone ———
+   Cada moldura tem LARGURA FIXA e a escala do iframe calculada para o
+   miolo exato (largura − bordas) — nunca misturar escala fixa com vw,
+   senão o site renderiza maior que a moldura e aparece cortado. */
+.mockup{
+  margin-top:clamp(36px,7vw,64px);
+  display:flex;align-items:flex-end;justify-content:center;gap:clamp(16px,3vw,32px);
+}
+.mockup iframe{border:none;transform-origin:0 0;pointer-events:none;background:#fff}
+.laptop{flex:none;max-width:100%}
+.laptop .screen{
+  width:600px;max-width:100%;aspect-ratio:16/10;overflow:hidden;
+  border:8px solid var(--black);border-radius:14px 14px 0 0;
+  background:var(--black);
+}
+.laptop .screen iframe{width:1280px;height:900px;transform:scale(.45625)}   /* 584/1280 */
+.laptop .base{
+  height:12px;margin:0 -22px;
+  background:linear-gradient(#111,#2a2a2a);border-radius:0 0 12px 12px;
+}
+.phone{flex:none}
+.phone .screen{
+  width:148px;aspect-ratio:390/800;overflow:hidden;
+  border:5px solid var(--black);border-radius:20px;
+  background:var(--black);box-shadow:0 24px 48px -24px rgba(10,10,10,.35);
+}
+.phone .screen iframe{width:390px;height:844px;transform:scale(.353846)}    /* 138/390 */
+/* Mobile/tablet: empilha os aparelhos, centralizados, com tamanhos exatos */
+@media(max-width:979px){
+  .mockup{flex-direction:column;align-items:center;gap:24px}
+  .laptop .screen{width:320px;border-width:6px;border-radius:10px 10px 0 0}
+  .laptop .screen iframe{transform:scale(.240625)}                          /* 308/1280 */
+  .laptop .base{height:10px;margin:0 -14px}
+  .phone .screen{width:132px;border-width:4px;border-radius:16px}
+  .phone .screen iframe{transform:scale(.317948)}                           /* 124/390 */
+}
+/* Telas muito estreitas (<340px) */
+@media(max-width:339px){
+  .laptop .screen{width:264px}
+  .laptop .screen iframe{transform:scale(.196875)}                          /* 252/1280 */
+}
+.mockup-note{
+  margin-top:14px;text-align:center;
+  font-family:var(--font-mono);font-size:clamp(10px,2.8vw,12px);
+  letter-spacing:.08em;text-transform:uppercase;color:var(--ink-40);
+}
+
+/* ——— Seções numeradas ——— */
+.sec{padding-block:clamp(40px,7vw,72px);border-top:1px solid var(--line)}
+@media(min-width:820px){.sec{display:grid;grid-template-columns:110px 1fr;gap:16px}}
+.sec .num{
+  font-family:var(--font-mono);font-weight:700;font-size:clamp(1rem,4vw,1.35rem);
+  color:var(--emerald-dark);letter-spacing:.02em;margin-bottom:12px;
+}
+.sec h2{
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.5rem,6.5vw,2.4rem);line-height:1.02;letter-spacing:-.025em;
+}
+.sec .body{margin-top:clamp(16px,3vw,24px);max-width:62ch}
+.sec .body--wide{max-width:none}
+.sec p{font-size:clamp(1rem,4vw,1.15rem);color:var(--ink-60);line-height:1.55}
+.sec p + p{margin-top:12px}
+.sec p b{color:var(--black)}
+
+/* Inclusos: cards elegantes em grade, check esmeralda */
+.grid-list{list-style:none;display:grid;gap:12px;margin-top:4px}
+@media(min-width:680px){.grid-list{grid-template-columns:1fr 1fr}}
+.grid-list li{
+  display:flex;gap:12px;align-items:flex-start;
+  border:1px solid var(--line);border-radius:14px;
+  padding:16px 18px;background:#fff;
+  font-size:clamp(.98rem,3.8vw,1.05rem);line-height:1.45;color:var(--ink-60);
+  transition:border-color .3s,box-shadow .3s;
+}
+.grid-list li:hover{border-color:rgba(16,185,129,.5);box-shadow:0 10px 24px -18px rgba(16,185,129,.55)}
+.grid-list .check{color:var(--emerald);font-family:var(--font-mono);font-weight:700;flex:none;line-height:1.45}
+.grid-list b{color:var(--black)}
+
+/* Exclusões: lista sóbria, traço cinza */
+.list{list-style:none}
+.list li{
+  display:flex;gap:14px;align-items:flex-start;
+  padding-block:14px;border-bottom:1px solid var(--line);
+  font-size:clamp(1rem,4vw,1.1rem);line-height:1.5;color:var(--ink-60);
+}
+.list li:last-child{border-bottom:none}
+.list li::before{font-family:var(--font-mono);font-weight:700;flex:none;line-height:1.5}
+.list--out li::before{content:"—";color:var(--ink-40)}
+.list-note{margin-top:16px;font-size:clamp(.9rem,3.4vw,.98rem);color:var(--ink-40)}
+
+/* ——— Condição especial (fundadores) — card esmeralda ——— */
+.founding{
+  display:block;
+  background:var(--emerald-light);color:var(--black);
+  border-radius:24px;padding:clamp(24px,5vw,44px);
+  box-shadow:0 24px 60px -24px rgba(6,95,70,.35);
+}
+.founding .f-label{
+  display:inline-flex;align-items:center;gap:10px;
+  font-family:var(--font-mono);font-size:12px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--emerald-dark);
+}
+.founding h3{
+  margin-top:12px;font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.5rem,6.5vw,2.3rem);line-height:.98;letter-spacing:-.03em;
+}
+.founding p{margin-top:14px;font-size:clamp(1rem,4vw,1.1rem);line-height:1.55;color:rgba(10,10,10,.72);max-width:58ch}
+.founding p b{color:var(--black)}
+.founding ul{list-style:none;margin-top:18px}
+.founding li{
+  display:flex;gap:12px;align-items:flex-start;
+  padding-block:10px;border-top:1px solid rgba(6,95,70,.15);
+  font-size:clamp(.98rem,3.8vw,1.05rem);color:rgba(10,10,10,.78);line-height:1.5;
+}
+.founding li::before{content:"•";color:var(--emerald-dark);font-weight:700;flex:none}
+
+/* ——— Investimento: valor de tabela + condição fundadores ——— */
+.price-compare{margin-top:clamp(8px,2vw,16px)}
+.price-row{
+  display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;
+  padding-block:14px;border-bottom:1px solid var(--line);
+}
+.price-row .p-tag{
+  font-family:var(--font-mono);font-weight:700;font-size:clamp(11px,3vw,13px);
+  letter-spacing:.06em;text-transform:uppercase;color:var(--ink-40);flex:none;min-width:210px;
+}
+.price-row--main .p-tag{color:var(--emerald-dark)}
+.price-normal{
+  font-family:var(--font-display);font-weight:800;font-size:clamp(1.3rem,5vw,1.7rem);
+  color:var(--ink-40);text-decoration:line-through;text-decoration-thickness:2px;
+}
+.price-main{
+  font-family:var(--font-display);font-weight:900;letter-spacing:-.03em;
+  font-size:clamp(2.6rem,11vw,4.2rem);line-height:1;
+}
+.price-main small{font-size:.34em;font-weight:800;letter-spacing:0;color:var(--ink-40);text-transform:uppercase;white-space:nowrap}
+.split{margin-top:clamp(20px,4vw,28px);border-top:1px solid var(--line)}
+.split div{
+  display:flex;justify-content:space-between;gap:16px;align-items:baseline;
+  padding-block:14px;border-bottom:1px solid var(--line);
+}
+.split .tag{font-family:var(--font-mono);font-weight:700;font-size:clamp(11px,3vw,13px);letter-spacing:.06em;text-transform:uppercase;color:var(--emerald-dark);white-space:nowrap}
+.split .desc{font-size:clamp(.95rem,3.8vw,1.05rem);color:var(--ink-60);text-align:right}
+
+.guarantee{
+  display:block;margin-top:clamp(28px,5vw,40px);
+  border:1.5px solid var(--emerald);border-radius:20px;
+  padding:clamp(20px,4.5vw,32px);
+}
+.guarantee .g-label{
+  font-family:var(--font-mono);font-size:12px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--emerald-dark);
+}
+.guarantee p{margin-top:10px;font-size:clamp(1rem,4vw,1.1rem);line-height:1.5;color:var(--ink-60);max-width:58ch}
+.guarantee p b{color:var(--black)}
+
+/* ——— Hospedagem: dois formatos lado a lado ——— */
+.host-cards{margin-top:clamp(20px,4vw,28px);display:grid;gap:16px}
+@media(min-width:720px){.host-cards{grid-template-columns:1fr 1fr}}
+.host{border:1.5px solid var(--line);border-radius:20px;padding:clamp(20px,4.5vw,28px);background:#fff}
+.host--rec{border-color:var(--emerald);box-shadow:0 12px 32px -20px rgba(16,185,129,.45)}
+.host .h-tag{font-family:var(--font-mono);font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--emerald-dark)}
+.host h3{
+  margin-top:10px;font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.1rem,4.6vw,1.35rem);line-height:1.02;letter-spacing:-.015em;
+}
+.host .h-price{
+  margin-top:10px;font-family:var(--font-display);font-weight:900;letter-spacing:-.02em;
+  font-size:clamp(1.5rem,6vw,1.9rem);line-height:1;
+}
+.host .h-price small{font-size:.55em;font-weight:800;color:var(--ink-40);text-transform:uppercase;letter-spacing:0;white-space:nowrap}
+.host p{margin-top:12px;font-size:clamp(.95rem,3.8vw,1.02rem)}
+.host-note{margin-top:clamp(16px,3vw,22px)}
+@media print{.host-cards{break-inside:avoid}}
+
+/* ——— Próximos passos ——— */
+.next{list-style:none;counter-reset:np}
+.next li{
+  counter-increment:np;display:flex;gap:14px;align-items:flex-start;
+  padding-block:14px;border-bottom:1px solid var(--line);
+  font-size:clamp(1rem,4vw,1.1rem);color:var(--ink-60);line-height:1.5;
+}
+.next li:last-child{border-bottom:none}
+.next li::before{
+  content:counter(np,decimal-leading-zero);
+  font-family:var(--font-mono);font-weight:700;color:var(--emerald-dark);flex:none;line-height:1.5;
+}
+.next b{color:var(--black)}
+
+/* ——— Prazo ——— */
+.deadline{
+  font-family:var(--font-display);font-weight:900;letter-spacing:-.02em;
+  font-size:clamp(1.6rem,7vw,2.6rem);line-height:1.05;text-transform:uppercase;
+}
+.deadline em{font-style:normal;color:var(--emerald)}
+
+/* ——— CTA final ——— */
+.closing{padding-block:clamp(48px,9vw,96px);border-top:1px solid var(--line);text-align:center}
+.closing h2{
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.8rem,8vw,3.4rem);line-height:1;letter-spacing:-.03em;
+  max-width:22ch;margin-inline:auto;
+}
+.closing h2 em{font-style:normal;color:var(--emerald)}
+.cta-wrap{margin-top:clamp(28px,5vw,40px)}
+.btn-accept{
+  display:inline-flex;align-items:center;justify-content:center;gap:12px;width:100%;
+  border:none;border-radius:999px;background:var(--emerald);color:#fff;
+  padding:clamp(20px,4vw,24px) 48px;
+  font-family:var(--font-display);font-weight:900;font-size:clamp(15px,4vw,17px);
+  letter-spacing:.03em;text-transform:uppercase;
+  box-shadow:0 12px 32px -12px rgba(16,185,129,.5);
+  transition:background .25s,box-shadow .25s,transform .1s;
+}
+.btn-accept:hover{background:var(--emerald-dark);box-shadow:0 16px 36px -12px rgba(6,95,70,.6)}
+.btn-accept:active{transform:scale(.99)}
+@media(min-width:560px){.btn-accept{width:auto}}
+.cta-note{margin-top:14px;font-family:var(--font-mono);font-size:12px;color:var(--ink-40);letter-spacing:.04em;text-transform:uppercase}
+
+/* ——— Rodapé ——— */
+.doc-footer{
+  padding-block:clamp(24px,4vw,36px);
+  border-top:1px solid var(--line);
+  display:flex;flex-wrap:wrap;gap:8px 24px;
+  font-family:var(--font-mono);font-size:clamp(11px,3vw,12px);
+  letter-spacing:.04em;text-transform:uppercase;color:var(--ink-60);
+}
+
+/* ——— Impressão / PDF (A4) ——— */
+@page{size:A4;margin:16mm}
+@media print{
+  body{background:#fff}
+  .grid-lines,.cta-wrap,.mockup,.mockup-note{display:none}
+  .dot::after{animation:none}
+  .doc{max-width:none;padding:0}
+  .opening{padding-block:28px 36px}
+  .sec{padding-block:24px;break-inside:avoid}
+  .founding,.guarantee{
+    box-shadow:none;border:1.5px solid var(--emerald-dark);
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;
+    break-inside:avoid;
+  }
+  .grid-list li{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<div class="grid-lines" aria-hidden="true">
+  <span></span><span></span><span></span><span></span><span></span>
+</div>
+
+<div class="doc">
+
+  <header class="doc-header">
+    <div class="brand">RAFAEL RAZEIRA <small>ESTÚDIO</small></div>
+    <div class="date">13/07/2026</div>
+  </header>
+
+  <!-- 1 · HERO -->
+  <section class="opening">
+    <div class="eyebrow">
+      <span class="dot"></span><span class="status">PROPOSTA COMERCIAL</span>
+      <span aria-hidden="true">—</span>
+      <span>VALIDADE: 7 DIAS</span>
+    </div>
+    <h1>E-COMMERCE EXCLUSIVO PARA A <em>SÖLO URB.</em></h1>
+    <p class="meta">Uma loja online desenvolvida para fortalecer a marca, aumentar as vendas e oferecer uma experiência premium aos clientes da <b>Sölo Urb</b>.</p>
+
+    <div class="mockup" aria-hidden="true">
+      <div class="laptop">
+        <div class="screen"><iframe src="https://s-lo-urb.vercel.app/" loading="lazy" tabindex="-1" title=""></iframe></div>
+        <div class="base"></div>
+      </div>
+      <div class="phone">
+        <div class="screen"><iframe src="https://s-lo-urb.vercel.app/" loading="lazy" tabindex="-1" title=""></iframe></div>
+      </div>
+    </div>
+    <p class="mockup-note">Pré-visualização real do projeto — ao vivo, em notebook e smartphone</p>
+  </section>
+
+  <!-- 2 · O QUE ESTÁ INCLUSO -->
+  <section class="sec">
+    <div class="num">01</div>
+    <div>
+      <h2>O QUE ESTÁ INCLUSO</h2>
+      <div class="body body--wide">
+        <ul class="grid-list">
+          <li><span class="check">✓</span><span><b>Design exclusivo</b>, criado para a identidade da Sölo Urb</span></li>
+          <li><span class="check">✓</span><span><b>Desenvolvimento completo</b> da loja online</span></li>
+          <li><span class="check">✓</span><span><b>Página inicial personalizada</b></span></li>
+          <li><span class="check">✓</span><span><b>Categorias de produtos</b></span></li>
+          <li><span class="check">✓</span><span><b>Página de produto</b></span></li>
+          <li><span class="check">✓</span><span><b>Carrinho de compras</b></span></li>
+          <li><span class="check">✓</span><span><b>Checkout</b></span></li>
+          <li><span class="check">✓</span><span><b>Integração com pagamento</b></span></li>
+          <li><span class="check">✓</span><span><b>Cálculo de frete</b></span></li>
+          <li><span class="check">✓</span><span><b>Painel administrativo</b> para gerenciar a loja</span></li>
+          <li><span class="check">✓</span><span><b>Cadastro inicial de até 30 produtos</b></span></li>
+          <li><span class="check">✓</span><span><b>Versão mobile</b> impecável</span></li>
+          <li><span class="check">✓</span><span><b>Publicação do projeto</b></span></li>
+          <li><span class="check">✓</span><span><b>2 rodadas de revisão</b> após a apresentação da primeira versão</span></li>
+          <li><span class="check">✓</span><span><b>Treinamento de uso do painel</b> + 30 dias de suporte pós-publicação</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 · O QUE NÃO ESTÁ INCLUSO -->
+  <section class="sec">
+    <div class="num">02</div>
+    <div>
+      <h2>O QUE NÃO ESTÁ INCLUSO</h2>
+      <div class="body">
+        <ul class="list list--out">
+          <li><span>Domínio</span></li>
+          <li><span>Hospedagem</span></li>
+          <li><span>ERP</span></li>
+          <li><span>Emissão fiscal</span></li>
+          <li><span>Integrações avançadas</span></li>
+          <li><span>Cadastro acima de 30 produtos</span></li>
+          <li><span>Produção de conteúdo contínua</span></li>
+        </ul>
+        <p class="list-note">Qualquer um desses itens pode ser conversado em uma etapa futura, como evolução da loja.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 · CONDIÇÃO ESPECIAL -->
+  <section class="sec">
+    <div class="num">03</div>
+    <div>
+      <h2>CONDIÇÃO ESPECIAL</h2>
+      <div class="body body--wide">
+        <aside class="founding">
+          <span class="f-label">◆ PRIMEIROS CASES</span>
+          <h3>PROJETO SELECIONADO PARA O PORTFÓLIO INICIAL DO ESTÚDIO.</h3>
+          <p>A Sölo Urb foi escolhida como uma das <b>primeiras marcas</b> para compor o portfólio do Rafael Razeira Estúdio.</p>
+          <p>Por isso, este projeto possui uma <b>condição especial de lançamento</b>. Em troca, será necessário:</p>
+          <ul>
+            <li><span>Autorização para utilizar o projeto como case.</span></li>
+            <li><span>Autorização para divulgação nas redes sociais e no portfólio.</span></li>
+            <li><span>Depoimento após a entrega.</span></li>
+            <li><span>Marcação do estúdio quando o projeto for divulgado (quando possível).</span></li>
+          </ul>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 · INVESTIMENTO -->
+  <section class="sec">
+    <div class="num">04</div>
+    <div>
+      <h2>INVESTIMENTO</h2>
+      <div class="body">
+        <div class="price-compare">
+          <div class="price-row">
+            <span class="p-tag">VALOR DE TABELA</span>
+            <span class="price-normal">R$ 5.900</span>
+          </div>
+          <div class="price-row price-row--main">
+            <span class="p-tag">CONDIÇÃO ESPECIAL — PRIMEIROS CASES</span>
+            <span class="price-main">R$ 3.490 <small>· em 3 parcelas</small></span>
+          </div>
+        </div>
+        <div class="split">
+          <div>
+            <span class="tag">40% NO INÍCIO</span>
+            <span class="desc">para reservar a vaga e iniciar o projeto</span>
+          </div>
+          <div>
+            <span class="tag">30% NA APROVAÇÃO DO LAYOUT</span>
+            <span class="desc">quando o design da loja for aprovado por você</span>
+          </div>
+          <div>
+            <span class="tag">30% NA PUBLICAÇÃO</span>
+            <span class="desc">com a loja pronta, no ar e funcionando</span>
+          </div>
+        </div>
+        <aside class="guarantee">
+          <span class="g-label">RISCO ZERO</span>
+          <p>Se a primeira direção visual apresentada não for aprovada, a entrada é <b>devolvida integralmente</b>. As parcelas seguintes só existem <b>conforme você aprova cada etapa</b>.</p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 · PRAZO -->
+  <section class="sec">
+    <div class="num">05</div>
+    <div>
+      <h2>PRAZO</h2>
+      <div class="body">
+        <p class="deadline">ENTREGA ESTIMADA ENTRE <em>15 E 25 DIAS ÚTEIS</em></p>
+        <p style="margin-top:14px">contados a partir da aprovação do briefing e do recebimento dos materiais da marca (logo, fotos e informações dos produtos).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 · DEPOIS DA PUBLICAÇÃO: HOSPEDAGEM -->
+  <section class="sec">
+    <div class="num">06</div>
+    <div>
+      <h2>DEPOIS DA PUBLICAÇÃO: HOSPEDAGEM</h2>
+      <div class="body body--wide">
+        <p>A loja precisa de um lugar para ficar no ar. Você escolhe um dos dois formatos:</p>
+        <div class="host-cards">
+          <div class="host host--rec">
+            <span class="h-tag">OPÇÃO A — RECOMENDADA</span>
+            <h3>HOSPEDAGEM GERENCIADA</h3>
+            <div class="h-price">R$ 119<small>/mês</small></div>
+            <p>Eu cuido de tudo: hospedagem em infraestrutura profissional, certificado de segurança (SSL), monitoramento e <b>1 ajuste pequeno por mês</b> (trocar um banner, um texto, um destaque). Se algo acontecer, é comigo.</p>
+          </div>
+          <div class="host">
+            <span class="h-tag">OPÇÃO B</span>
+            <h3>ENTREGA COM TRANSFERÊNCIA</h3>
+            <div class="h-price">R$ 350<small> · taxa única</small></div>
+            <p>Transfiro o projeto e os acessos para as contas da Sölo Urb, com um guia de uso. A partir daí, a manutenção e os custos de infraestrutura ficam por conta da marca.</p>
+          </div>
+        </div>
+        <p class="host-note">Em ambos os formatos, o domínio (ex.: solourb.com.br) é registrado <b>no nome da Sölo Urb</b> e é seu — eu apenas configuro (~R$ 40/ano no Registro.br).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 · PRÓXIMOS PASSOS -->
+  <section class="sec">
+    <div class="num">07</div>
+    <div>
+      <h2>PRÓXIMOS PASSOS</h2>
+      <div class="body">
+        <ol class="next">
+          <li><span>Você confirma o <b>aceite desta proposta</b> — pelo botão abaixo, por WhatsApp ou e-mail.</span></li>
+          <li><span>Envio dos dados para o <b>pagamento dos 40% de início</b> e alinhamos o briefing.</span></li>
+          <li><span>Com os materiais da marca em mãos, o <b>prazo começa a contar</b> — e a Sölo Urb acompanha cada etapa.</span></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 · CTA -->
+  <section class="closing">
+    <h2>UMA LOJA ONLINE À ALTURA DA <em>SÖLO URB.</em></h2>
+    <div class="cta-wrap">
+      <a class="btn-accept" href="https://wa.me/5544999997219?text=Ol%C3%A1%20Rafael%2C%20aceito%20a%20proposta%20do%20e-commerce%20da%20S%C3%B6lo%20Urb.%20Vamos%20come%C3%A7ar%3F" target="_blank" rel="noopener">VAMOS CONSTRUIR ESSE PROJETO JUNTOS <span aria-hidden="true">→</span></a>
+      <p class="cta-note">Abre o WhatsApp com a mensagem de aceite pronta.</p>
+    </div>
+  </section>
+
+  <footer class="doc-footer">
+    <span>RAFAEL RAZEIRA ESTÚDIO</span>
+    <span>rafael.rbarbon@gmail.com</span>
+    <span>(44) 99999-7219</span>
+    <span>@rafaelrazeira.estudio</span>
+  </footer>
+
+</div>
+
+</body>
+</html>
