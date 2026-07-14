@@ -76,6 +76,8 @@ a{color:inherit;text-decoration:none}
   letter-spacing:.06em;text-transform:uppercase;color:var(--ink-60);
 }
 .status{color:var(--emerald-dark);font-weight:700}
+#validade.urgente{color:#DC2626;font-weight:700}
+#validade.urgente::before{content:"⏳ "}
 .dot{width:12px;height:12px;border-radius:50%;background:var(--emerald);flex:none;position:relative}
 .dot::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--emerald);animation:pulse 2.2s ease-out infinite}
 @keyframes pulse{0%{transform:scale(1);opacity:.6}70%{transform:scale(2.6);opacity:0}100%{opacity:0}}
@@ -100,6 +102,7 @@ a{color:inherit;text-decoration:none}
   display:flex;align-items:flex-end;justify-content:center;gap:clamp(16px,3vw,32px);
 }
 .mockup iframe{border:none;transform-origin:0 0;pointer-events:none;background:#fff}
+.mockup img{display:block;width:100%;height:100%;object-fit:cover;object-position:top}
 .laptop{flex:none;max-width:100%}
 .laptop .screen{
   width:600px;max-width:100%;aspect-ratio:16/10;overflow:hidden;
@@ -360,22 +363,24 @@ a{color:inherit;text-decoration:none}
     <div class="eyebrow">
       <span class="dot"></span><span class="status">PROPOSTA COMERCIAL</span>
       <span aria-hidden="true">—</span>
-      <span>VALIDADE: 7 DIAS</span>
+      <span id="validade">VALIDADE: 7 DIAS</span>
     </div>
     <h1>SUA PAIXÃO PELO FUTEBOL MERECE UMA VITRINE À ALTURA DA <em>XAVIER'S SPORTS.</em></h1>
     <p class="meta">Uma vitrine digital completa para as camisas da <b>Xavier's Sports</b> — clubes, seleções, atuais e retrô — onde cada camisa vira uma conversa no WhatsApp com a mensagem já pronta.</p>
 
-    <!-- TROCAR http://localhost:3000 pela URL de produção após publicar -->
+    <!-- Capturas reais do projeto (o site ainda não está publicado).
+         Após o deploy do Xavier's Sports, pode-se voltar ao iframe vivo:
+         <iframe src="URL-DE-PRODUCAO" loading="lazy" tabindex="-1"></iframe> -->
     <div class="mockup" aria-hidden="true">
       <div class="laptop">
-        <div class="screen"><iframe src="http://localhost:3000" loading="lazy" tabindex="-1" title=""></iframe></div>
+        <div class="screen"><img src="/assets/proposta/xavier-desktop.png" alt="" loading="lazy" /></div>
         <div class="base"></div>
       </div>
       <div class="phone">
-        <div class="screen"><iframe src="http://localhost:3000" loading="lazy" tabindex="-1" title=""></iframe></div>
+        <div class="screen"><img src="/assets/proposta/xavier-mobile.png" alt="" loading="lazy" /></div>
       </div>
     </div>
-    <p class="mockup-note">Pré-visualização real do projeto — ao vivo, em notebook e smartphone</p>
+    <p class="mockup-note">Pré-visualização real do projeto — em notebook e smartphone</p>
   </section>
 
   <!-- 2 · OBJETIVO -->
@@ -570,6 +575,31 @@ a{color:inherit;text-decoration:none}
   </footer>
 
 </div>
+
+<script>
+/* Validade dinâmica: conta os dias restantes a partir da data da
+   proposta (14/07/2026 + 7 dias) e cria urgência nos últimos dias.
+   Sem JS, fica o texto estático "VALIDADE: 7 DIAS". */
+(function(){
+  var el = document.getElementById("validade");
+  if (!el) return;
+  var fim = new Date("2026-07-21T23:59:59-03:00");
+  var dias = Math.ceil((fim - new Date()) / 86400000);
+  if (dias > 7) return;                       // antes da data da proposta
+  if (dias >= 4) {
+    el.textContent = "VALIDADE: RESTAM " + dias + " DIAS";
+  } else if (dias >= 2) {
+    el.textContent = "RESTAM APENAS " + dias + " DIAS";
+    el.classList.add("urgente");
+  } else if (dias === 1) {
+    el.textContent = "ÚLTIMO DIA DESTA CONDIÇÃO";
+    el.classList.add("urgente");
+  } else {
+    el.textContent = "VALIDADE ENCERRADA — CONSULTE NOVAS CONDIÇÕES";
+    el.classList.add("urgente");
+  }
+})();
+</script>
 
 </body>
 </html>
