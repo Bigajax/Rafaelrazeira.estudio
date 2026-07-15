@@ -72,16 +72,16 @@
 .phone__feed{flex:1;min-height:0;overflow:hidden;container-type:size}
 .phone__feed img{
   display:block;width:100%;height:auto;
-  animation:case-scroll 26s ease-in-out infinite alternate;
+  animation:case-scroll 20s linear infinite alternate;
   animation-play-state:paused;
 }
 .case.is-inview .phone__feed img{animation-play-state:running}
 /* Defasa cada card para as rolagens não ficarem sincronizadas */
-.cases__grid .case:nth-child(2) .phone__feed img{animation-delay:1.6s}
-.cases__grid .case:nth-child(3) .phone__feed img{animation-delay:3.2s}
+.cases__grid .case:nth-child(2) .phone__feed img{animation-delay:.5s}
+.cases__grid .case:nth-child(3) .phone__feed img{animation-delay:1s}
 @keyframes case-scroll{
-  0%,6%{transform:translateY(0)}
-  94%,100%{transform:translateY(min(0px,calc(100cqh - 100%)))}
+  0%,2%{transform:translateY(0)}
+  98%,100%{transform:translateY(min(0px,calc(100cqh - 100%)))}
 }
 @media (prefers-reduced-motion:reduce){.phone__feed img{animation:none}}
 .phone__island{
