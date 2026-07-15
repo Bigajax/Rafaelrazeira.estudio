@@ -23,6 +23,8 @@ alter table public.briefings enable row level security;
 
 -- Permite APENAS INSERIR para visitantes anônimos (o site).
 -- Ninguém consegue LER os leads com a chave pública — só você, logado no painel.
+-- (drop + create: o script inteiro pode ser rodado de novo sem erro)
+drop policy if exists "site pode inserir briefings" on public.briefings;
 create policy "site pode inserir briefings"
   on public.briefings
   for insert
@@ -42,3 +44,10 @@ alter table public.briefings add column if not exists vende      text;
 alter table public.briefings add column if not exists objetivo   text;
 alter table public.briefings add column if not exists identidade text;
 alter table public.briefings add column if not exists detalhes   text;
+
+-- ============================================================
+-- ⚠️ MIGRAÇÃO OBRIGATÓRIA (jul/2026) — campo "O que você precisa?"
+-- no passo 2 do formulário. Rode ANTES de publicar, senão o envio
+-- falha (coluna inexistente).
+-- ============================================================
+alter table public.briefings add column if not exists tipo_projeto text;

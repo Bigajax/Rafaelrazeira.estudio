@@ -187,11 +187,13 @@ export function trackInitiateCheckout(){
 }
 
 /* Lead deduplicado: mesmo event_id no Pixel (browser) e no CAPI (servidor).
+   tipo_projeto vai como custom property no Lead (segmentação no Meta).
    Fire-and-forget — falha de tracking nunca bloqueia o formulário. */
 export function trackLead(eventId, dados){
   if (!consentido()) return;
-  window.fbq && window.fbq("track", "Lead", {}, { eventID: eventId });
-  mpTrack("Lead", { $insert_id: eventId });   // mesmo id do Meta p/ cruzar os números
+  const props = dados.tipo_projeto ? { tipo_projeto: dados.tipo_projeto } : {};
+  window.fbq && window.fbq("track", "Lead", props, { eventID: eventId });
+  mpTrack("Lead", { $insert_id: eventId, ...props });   // mesmo id do Meta p/ cruzar os números
   try{
     fetch(CAPI_ENDPOINT, {
       method: "POST",

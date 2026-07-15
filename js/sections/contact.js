@@ -74,6 +74,17 @@ export function contact(){
           <!-- Passo 2 — sobre o projeto -->
           <fieldset class="fstep" data-fstep="2">
             <div class="field">
+              <label id="lb-tipo">${f.tipoProjeto.label}</label>
+              <div class="choices" role="radiogroup" aria-labelledby="lb-tipo" aria-describedby="err-tipo">
+                ${f.tipoProjeto.options.map(o => `
+                <label class="choice">
+                  <input type="radio" name="tipo_projeto" value="${o}" />
+                  <span>${o}</span>
+                </label>`).join("")}
+              </div>
+              <p class="field__err" id="err-tipo" hidden>${f.tipoProjeto.err}</p>
+            </div>
+            <div class="field">
               <label for="f-vende">${f.vende.label}</label>
               <input id="f-vende" name="vende" type="text" placeholder="${f.vende.placeholder}" aria-describedby="err-vende" />
               <p class="field__err" id="err-vende" hidden>${f.vende.err}</p>

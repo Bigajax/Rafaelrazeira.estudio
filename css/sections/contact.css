@@ -144,6 +144,25 @@
   box-shadow:0 0 0 4px rgba(16,185,129,.2);
 }
 
+/* —— Seleção única em pills (tipo de projeto) — mesma receita de vidro
+      dos inputs; selecionada segue o .dd__opt.is-selected.
+      (".choice" e não ".pill": .pill já é o CTA flutuante em base.css) —— */
+.choices{display:flex;flex-wrap:wrap;gap:10px}
+.choice{position:relative;display:block;cursor:pointer}
+.choice input{position:absolute;inset:0;opacity:0;pointer-events:none}
+.choice span{
+  display:inline-block;border:1px solid rgba(255,255,255,.16);border-radius:999px;
+  background:rgba(255,255,255,.07);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  padding:12px 16px;font-size:15px;color:var(--off-white);
+  transition:border-color .2s,box-shadow .2s,background .2s,color .2s;
+}
+.choice:hover span{background:rgba(16,185,129,.22)}
+.choice input:checked + span{background:var(--off-white);border-color:var(--off-white);color:var(--black)}
+.choice input:focus-visible + span{border-color:var(--emerald);box-shadow:0 0 0 4px rgba(16,185,129,.2)}
+.choices.is-invalid .choice span{border-color:rgba(248,113,113,.75)}
+@media (max-width:520px){.choice{width:100%}.choice span{display:block}}
+
 /* —— Dropdown customizado (vidro ao abrir as perguntas) —— */
 .dd{position:relative}
 .dd__btn{

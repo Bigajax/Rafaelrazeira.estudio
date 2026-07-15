@@ -34,9 +34,9 @@ const CONFIG = {
     status: "AGENDA ABERTA",                                   // sinal (bolinha pulsante esmeralda)
     tagline: "POSICIONAMENTO · CONVERSÃO · NOVOS NEGÓCIOS",
     // <em>…</em> na headline = destaque em esmeralda (css/sections/hero.css)
-    headline: ["SUA PÁGINA", "DE VENDAS NO AR", "EM ATÉ <em>7 DIAS ÚTEIS.</em>"],
+    headline: ["SUA MARCA", "VENDENDO ONLINE", "EM ATÉ <em>7 DIAS ÚTEIS.</em>"],
     // <em>…</em> no subtítulo = destaque em esmeralda (css/sections/hero.css)
-    subheadline: "<em>Estratégia, copy e design</em> sob medida para o seu serviço. O saldo, você só quita <b>depois de aprovar</b>.",
+    subheadline: "<em>Landing pages, vitrines e lojas completas</em>: estratégia, copy e design sob medida. O saldo, você só quita <b>depois de aprovar</b>.",
     cta: "QUERO MINHA ANÁLISE GRATUITA",
     // Linha de prova sob o CTA — responde às 3 dúvidas de quem acabou de clicar no anúncio
     proof: "SEM COMPROMISSO · RETORNO EM ATÉ 24H · SALDO SÓ APÓS APROVAR",
@@ -46,8 +46,8 @@ const CONFIG = {
 
   // Uma frase ("...") ou várias (["...", "..."]) — elas se alternam na faixa
   marquee: [
-    "UMA PÁGINA FEITA PARA MARCAS QUE NÃO ACEITAM O COMUM.",
-    "UM SITE FEITO PARA VENDER.",
+    "PÁGINAS, VITRINES E LOJAS PARA MARCAS QUE NÃO ACEITAM O COMUM.",
+    "FEITO PARA VENDER.",
   ],
 
   cue: "CONHEÇA MAIS",   // convite para rolar, logo após a faixa
@@ -55,8 +55,8 @@ const CONFIG = {
   about: {
     label: "QUEM SOMOS.",
     paragraphs: [
-      "Um <b>estúdio boutique</b> de design que escolhe a dedo os projetos que assume, cuidando de cada detalhe com <b>rigor artesanal</b>.",
-      "<span class='muted'>Mais que páginas, entrego <b>posicionamento de mercado</b>: autoridade, reputação digital sólida e uma presença à altura do seu negócio.</span>",
+      "Um <b>estúdio boutique</b> de design: poucos projetos por vez, cada um com <b>rigor artesanal</b>.",
+      "<span class='muted'>Mais que páginas, <b>posicionamento de mercado</b>: autoridade e presença à altura do seu negócio.</span>",
     ],
     cta: "VAMOS CONVERSAR",
   },
@@ -65,9 +65,9 @@ const CONFIG = {
   process: {
     label: "COMO FUNCIONA.",
     steps: [
-      { num:"01", title:"BRIEFING E ANÁLISE",   text:"Você conta o seu negócio e o objetivo da página. Eu analiso o projeto e confirmo se somos o fit certo — só então o trabalho começa." },
-      { num:"02", title:"DESIGN E COPY EM ATÉ 7 DIAS ÚTEIS", text:"A partir do briefing aprovado, estratégia, texto e design da sua página ficam prontos em até 7 dias úteis." },
-      { num:"03", title:"APROVAÇÃO E PUBLICAÇÃO", text:"Você revisa e aprova a página antes de ela ir ao ar. O saldo só é quitado depois do seu OK." },
+      { num:"01", title:"BRIEFING E ANÁLISE",   text:"Você conta o seu negócio e o objetivo. Eu analiso e confirmo se somos o fit certo. Só então o trabalho começa." },
+      { num:"02", title:"DESIGN E COPY EM ATÉ 7 DIAS ÚTEIS", text:"A partir do briefing aprovado, estratégia, texto e design do seu projeto ficam prontos em até 7 dias úteis." },
+      { num:"03", title:"APROVAÇÃO E PUBLICAÇÃO", text:"Você revisa, aprova e o projeto vai ao ar. O saldo só é quitado depois do seu OK." },
     ],
     // Resumo da garantia — linha curta no fim da seção, leva ao bloco completo no contato
     note: "ENTRADA DE 50% · SALDO SÓ APÓS APROVAR O DESIGN",
@@ -76,13 +76,13 @@ const CONFIG = {
   // O que está incluso — o "romaneio" do projeto: tudo que sai do estúdio com a página
   included: {
     label: "O QUE ESTÁ INCLUSO.",
-    headline: "TUDO O QUE SUA LANDING PAGE PRECISA PARA IR AO AR.",
+    headline: "TUDO O QUE SEU PROJETO PRECISA PARA IR AO AR.",
     items: [
       { num:"01", title:"ESTRATÉGIA DA OFERTA",       text:"Definição da mensagem, estrutura e objetivo principal da página." },
       { num:"02", title:"COPY COMPLETA",              text:"Textos desenvolvidos para comunicar valor e conduzir o visitante." },
       { num:"03", title:"DESIGN PERSONALIZADO",       text:"Identidade visual criada especificamente para o posicionamento da marca." },
       { num:"04", title:"DESENVOLVIMENTO RESPONSIVO", text:"Página otimizada para computador, tablet e celular." },
-      { num:"05", title:"PUBLICAÇÃO E CONFIGURAÇÃO",  text:"Página publicada, domínio conectado e formulários funcionando." },
+      { num:"05", title:"PUBLICAÇÃO E CONFIGURAÇÃO",  text:"Página ou loja publicada, domínio conectado, formulários e checkout funcionando." },
       { num:"06", title:"MENSURAÇÃO",                 text:"Configuração dos principais eventos para acompanhar visitas e contatos." },
     ],
   },
@@ -111,22 +111,21 @@ const CONFIG = {
     headline: "O estrategista por trás de páginas que posicionam e vendem",
     paragraphs: [
       "Trabalho lado a lado com fundadores e marcas em crescimento, unindo design, posicionamento e conversão em cada projeto.",
-      "Cada página é mais que design: é a oportunidade de alinhar criatividade, estratégia e resultado — transformando ideias em ferramentas de crescimento para negócios.",
-      "Acredito que design de impacto não é apenas bonito, mas estratégico: conecta marcas ao seu público e posiciona negócios como líderes em seus mercados.",
+      "Design de impacto não é só bonito: conecta a marca ao público certo e posiciona o negócio como líder no seu mercado.",
     ],
   },
 
   values: {
     words: ["POSICIONAMENTO", "CONVERSÃO", "AUTORIDADE", "DIFERENCIAÇÃO"],
-    paragraph: "É isso que a sua marca conquista ao criar sua página comigo: <b>uma presença digital que transmite autoridade, gera oportunidades e destaca você no mercado.</b>",
+    paragraph: "É o que a sua marca conquista comigo: <b>presença digital que transmite autoridade, gera oportunidades e destaca você no mercado.</b>",
   },
 
   audience: {
     label: "PARA QUEM É ESTE TRABALHO",
     blocks: [
-      { title:"PROFISSIONAIS QUE VALORIZAM REPUTAÇÃO", text:"Para quem sabe que cada detalhe comunica autoridade — e que a credibilidade online precisa refletir o prestígio offline." },
-      { title:"MARCAS QUE QUEREM CRESCER",            text:"Para negócios prontos para escalar e que precisam de uma presença digital à altura da ambição." },
-      { title:"NEGÓCIOS LANÇANDO OFERTAS",            text:"Para quem vai ao mercado com um produto ou serviço e precisa de uma página feita para converter." },
+      { title:"PROFISSIONAIS QUE VALORIZAM REPUTAÇÃO", text:"Para quem sabe que a credibilidade online precisa refletir o prestígio offline." },
+      { title:"MARCAS QUE QUEREM CRESCER",            text:"Para negócios prontos para escalar, com presença digital à altura da ambição." },
+      { title:"NEGÓCIOS LANÇANDO OFERTAS",            text:"Para quem vai ao mercado com um produto ou serviço e precisa de uma página, ou loja, feita para converter." },
     ],
   },
 
@@ -144,8 +143,8 @@ const CONFIG = {
      Tom: exclusividade e parceria — nunca desconto por necessidade. */
   founders: {
     status: "PRIMEIROS CASES",
-    title: "Estou selecionando apenas alguns projetos para fazer parte do portfólio inicial do estúdio.",
-    text: "Nos próximos projetos, quero trabalhar com empresas que tenham potencial para se tornarem grandes cases. Em troca da autorização para divulgar o projeto e compartilhar os resultados, ofereço uma condição especial de lançamento.",
+    title: "Estou selecionando os próximos cases do estúdio.",
+    text: "Empresas com potencial de virar grandes cases recebem uma condição especial de lançamento, em troca da autorização para divulgar o projeto e os resultados.",
     benefits: [
       "Condição especial de lançamento",
       "Projeto totalmente personalizado",
@@ -153,22 +152,22 @@ const CONFIG = {
       "Depoimento após a entrega",
       "Atendimento direto comigo",
     ],
-    limited: "Essa condição é válida apenas para um número limitado de empresas.",
+    limited: "Condição válida para um número limitado de empresas.",
     ctaLine: "Quero fazer parte dos primeiros cases",
     cta: "SOLICITAR ANÁLISE GRATUITA",
   },
 
   contact: {
     status: "AGENDA ABERTA",
-    headline: "VAMOS ENTENDER SE O PROJETO FAZ SENTIDO.",
-    intro: "Conte brevemente sobre o seu negócio. Eu analiso o projeto e retorno pelo WhatsApp em até 24 horas úteis.",
-    scarcity: "Trabalho com vagas limitadas por mês e todos os projetos passam por análise.",
+    headline: "SEU PROJETO COMEÇA AQUI.",
+    intro: "Conte sobre o seu negócio. Eu analiso e retorno pelo WhatsApp em até 24 horas úteis.",
+    scarcity: "Vagas limitadas por mês: todo projeto passa por análise.",
     email: "rafael.rbarbon@gmail.com",
     // Bloco de garantia — aparece destacado logo antes do formulário
     guarantee: {
       label: "GARANTIA",
       title: "RISCO ZERO PARA COMEÇAR.",
-      text:  "Você inicia o projeto com <b>50% de entrada</b> e quita o saldo somente depois de <b>aprovar a direção visual</b>. Caso a primeira proposta não seja aprovada e nenhuma continuidade seja solicitada, a entrada será <b>devolvida integralmente</b>.",
+      text:  "Você começa com <b>50% de entrada</b> e quita o saldo só depois de <b>aprovar a direção visual</b>. Não aprovou e não quis continuar? A entrada é <b>devolvida integralmente</b>.",
     },
     pricing: "Projetos a partir de <b>R$ 1.500</b>.",   // microcopy acima do formulário
     pricingNote: "O valor final depende da complexidade, quantidade de seções, integrações e materiais disponíveis.",
@@ -180,10 +179,16 @@ const CONFIG = {
       nome:      { label:"Qual seu nome?",    placeholder:"Seu nome",        err:"Digite seu nome." },
       whatsapp:  { label:"WhatsApp com DDD",   placeholder:"(12) 12345-6789", err:"Digite o WhatsApp com DDD (10 a 11 dígitos)." },
       instagram: { label:"Instagram ou site (opcional)", placeholder:"@seuperfil ou seusite.com.br" },
+      tipoProjeto: { label:"O que você precisa?", err:"Escolha uma opção para continuar.", options:[
+        "Landing page (página única de vendas ou captação)",
+        "Site institucional (3 a 5 páginas)",
+        "Loja virtual (catálogo + checkout)",
+        "Ainda não sei",
+      ]},
       vende:     { label:"O que você vende?", placeholder:"Ex.: consultoria, estética, mentoria, arquitetura…", err:"Conte o que você vende." },
       objetivo:  { label:"Qual é o principal objetivo da página?", options:["Gerar contatos no WhatsApp","Vender um produto ou serviço","Divulgar um lançamento","Agendar atendimentos","Outro"] },
       identidade:{ label:"Já possui identidade visual?", options:["Sim, completa","Tenho logo e algumas peças","Ainda não tenho"] },
-      detalhes:  { label:"Quer contar mais algum detalhe? (opcional)", placeholder:"Prazos, referências, links — o que achar útil." },
+      detalhes:  { label:"Quer contar mais algum detalhe? (opcional)", placeholder:"Prazos, referências, links: o que achar útil." },
       continueBtn: "CONTINUAR",
       backBtn: "← Voltar",
       submit:  "ENVIAR MEU PROJETO",
@@ -227,10 +232,11 @@ const CONFIG = {
          "Authorization": "Bearer SUA_ANON_KEY",
          "Prefer": "return=minimal"
        }
-   O envio é um POST JSON com: nome, whatsapp, instagram, vende,
-   objetivo, identidade, detalhes (+ origem).
-   ⚠️ Formulário novo (jul/2026): rode a migração no fim de
-      supabase/briefings.sql ANTES de publicar, senão o insert falha.
+   O envio é um POST JSON com: nome, whatsapp, instagram, tipo_projeto,
+   vende, objetivo, identidade, detalhes (+ origem).
+   ⚠️ Formulário novo (jul/2026): rode as migrações no fim de
+      supabase/briefings.sql ANTES de publicar, senão o insert falha
+      (inclui a coluna nova tipo_projeto).
    ============================================================ */
 const FORM_ENDPOINT = "https://mxfakodcmpphgasmdlna.supabase.co/rest/v1/briefings";
 const FORM_HEADERS  = {

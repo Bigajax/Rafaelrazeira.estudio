@@ -1,6 +1,7 @@
 /* Formulário de briefing em 2 passos:
    01 Seus dados (nome, WhatsApp, Instagram/site opcional)
-   → 02 Sobre o projeto (o que vende, objetivo, identidade, detalhes).
+   → 02 Sobre o projeto (tipo de projeto, o que vende, objetivo,
+     identidade, detalhes).
    - Validação inline por campo (sem alert) — mensagens em CONFIG.contact.form.*.err
    - Avançar de passo dispara InitiateCheckout (com consentimento); Lead só no envio.
    - Sem FORM_ENDPOINT: modo demo. Com FORM_ENDPOINT: POST JSON com os campos. */
@@ -81,6 +82,13 @@ function validarPasso1(form){
 }
 
 function validarPasso2(form){
+  // Tipo de projeto (pills) — obrigatório; o erro marca o grupo inteiro
+  const grupo  = form.querySelector(".choices");
+  const tipoOk = !!form.tipo_projeto.value;
+  grupo.classList.toggle("is-invalid", !tipoOk);
+  document.getElementById("err-tipo").hidden = tipoOk;
+  if (!tipoOk){ grupo.querySelector("input").focus(); return false; }
+
   const vendeOk = marcarErro(form.vende, document.getElementById("err-vende"), !form.vende.value.trim());
   if (!vendeOk){ form.vende.focus(); return false; }
   return true;
@@ -117,6 +125,14 @@ export function initForm(){
     });
   });
 
+  // limpa o erro do tipo de projeto ao escolher uma pill
+  form.querySelectorAll('input[name="tipo_projeto"]').forEach(r => {
+    r.addEventListener("change", () => {
+      form.querySelector(".choices").classList.remove("is-invalid");
+      document.getElementById("err-tipo").hidden = true;
+    });
+  });
+
   document.getElementById("btn-continue").addEventListener("click", () => {
     if (!validarPasso1(form)) return;
     irParaPasso(2);
@@ -135,6 +151,7 @@ export function initForm(){
       nome: form.nome.value.trim(),
       whatsapp: form.whatsapp.value.trim(),
       instagram: form.instagram.value.trim(),
+      tipo_projeto: form.tipo_projeto.value,
       vende: form.vende.value.trim(),
       objetivo: form.objetivo.value,
       identidade: form.identidade.value,
@@ -163,7 +180,7 @@ export function initForm(){
       // fire-and-forget: falha de tracking nunca afeta o envio.
       const eventId = (crypto.randomUUID && crypto.randomUUID()) ||
                       `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-      trackLead(eventId, { phone: payload.whatsapp });
+      trackLead(eventId, { phone: payload.whatsapp, tipo_projeto: payload.tipo_projeto });
 
       form.classList.add("hide");
       const stepper = document.querySelector(".form-card .stepper");
