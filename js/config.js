@@ -88,18 +88,18 @@ const CONFIG = {
   },
 
   cases: {
-    label: "ESTUDOS AUTORAIS DE REDESIGN",
+    label: "PROJETOS DO ESTÚDIO",
     headline: "CONHEÇA ALGUNS CASES RAFAEL RAZEIRA™",
-    intro: "Projetos desenvolvidos para demonstrar como marcas reais poderiam melhorar clareza, posicionamento e experiência digital.",
+    intro: "Três direções criadas no estúdio para negócios reais: cada página nasce do posicionamento da marca e é desenhada para converter.",
     cta: "QUERO UMA PÁGINA PARA O MEU NEGÓCIO",
     // video: gravação vertical (mp4) → aparece dentro de um mockup de iPhone, em loop.
-    // img: imagem estática (assets/case-1.jpg) → usada se não houver vídeo.
+    // img: captura mobile de página inteira (jpg) → rola sozinha dentro do mockup de iPhone.
     // Deixe os dois "" para exibir o placeholder estilizado.
-    // tag: rótulo acima do título (ex.: "ESTUDO DE REDESIGN"). Deixe "" para ocultar.
+    // tag: rótulo acima do título. Deixe "" para ocultar.
     items: [
-      { video:"assets/case-1.mp4", img:"", tag:"ESTUDO DE REDESIGN", category:"LANDING PAGE · CREATOR ECONOMY",     name:"Uppbeat",  result:"Música e efeitos livres de royalties, aprovados por 4 milhões de criadores — página vibrante, feita para converter visita em cadastro." },
-      { video:"assets/case-2.mp4", img:"", tag:"ESTUDO DE REDESIGN", category:"LANDING PAGE · SOFTWARE CRIATIVO",   name:"Affinity", result:"Suíte de design profissional, gratuita para pessoas físicas — página escura de tipografia editorial, à altura de uma marca criativa." },
-      { video:"assets/case-3.mp4", img:"", tag:"ESTUDO DE REDESIGN", category:"LANDING PAGE · INFRAESTRUTURA DE IA", name:"Aria",     result:"Inteligência de engenharia em cada camada da rede — visual técnico em preto e vermelho para um produto que enxerga o que o hardware comum não vê." },
+      { video:"", img:"assets/case-solourb.jpg",     tag:"", category:"E-COMMERCE · STREETWEAR & SNEAKERS",  name:"Sölo Urb",          result:"Concept store urbana com curadoria de sneakers, streetwear e relógios: vitrine em preto e branco que deixa o produto falar." },
+      { video:"", img:"assets/case-xavier.jpg",      tag:"", category:"VITRINE DIGITAL · CAMISAS DE FUTEBOL", name:"Xavier's Sports",   result:"Camisas de clubes e seleções, atuais e retrô: catálogo completo com pedido direto pelo WhatsApp, sem fricção de checkout." },
+      { video:"", img:"assets/case-lancellotti.jpg", tag:"", category:"LANDING PAGE · TATTOO & PIERCING",     name:"Lancellotti Tattoo", result:"Arte, identidade e expressão em cada detalhe: hero cinematográfico, acervo em galeria e orçamento guiado por etapas." },
     ],
   },
 

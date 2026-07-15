@@ -1,8 +1,8 @@
-/* CASES — headline + grid de projetos (vídeo em mockup de iPhone, imagem ou placeholder) */
+/* CASES — headline + grid de projetos (vídeo ou captura em mockup de iPhone, ou placeholder) */
 import { CONFIG } from "../config.js";
 
-function media(it){
-  if (it.video) return `
+function phone(inner){
+  return `
         <div class="case__stage">
           <div class="phone">
             <span class="phone__island" aria-hidden="true"></span>
@@ -21,12 +21,16 @@ function media(it){
                   <rect x="48" y="4.5" width="1.5" height="3" rx=".75"/>
                 </svg>
               </div>
-              <video src="${it.video}" muted loop playsinline preload="auto"
-                     aria-label="Demonstração em vídeo — ${it.name}"></video>
+              ${inner}
             </div>
           </div>
         </div>`;
-  if (it.img) return `<img src="${it.img}" alt="${it.name}" loading="lazy" width="800" height="1000" />`;
+}
+
+function media(it){
+  if (it.video) return phone(`<video src="${it.video}" muted loop playsinline preload="auto"
+                     aria-label="Demonstração em vídeo — ${it.name}"></video>`);
+  if (it.img) return phone(`<div class="phone__feed"><img src="${it.img}" alt="Página de ${it.name} aberta no celular" loading="lazy" /></div>`);
   return `<div class="case__placeholder"><span>${it.name}</span></div>`;
 }
 
