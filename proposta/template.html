@@ -22,7 +22,19 @@
         [DIAGNÓSTICO — ...]  → resumo da call (seção 01)
         [79–99]              → mensalidade da hospedagem gerenciada (seção 06)
         [200–300]            → taxa única da entrega com transferência (seção 06)
-     3. Envie o link. Para PDF: Ctrl+P → Salvar como PDF.
+     3. CHECKOUT NA PROPOSTA (opcional — Pix e cartão no modal):
+        a. Adicione a proposta na tabela PROPOSTAS de
+           api/proposta-pagamento.js (itens, valores, parcelas)
+        b. Troque [ID-PROPOSTA] no <body> pelo mesmo id da tabela
+        c. Preencha [VALOR_PIX] / [VALOR_CARTAO] / [ENTRADA] /
+           [ETAPA2] / [ETAPA3] / [X]% / [DIFERENÇA] no bloco FORMAS
+           DE PAGAMENTO da seção 05 (só exibição; o valor cobrado é
+           sempre o do servidor)
+        d. Se a proposta NÃO tiver checkout, apague o bloco
+           FORMAS DE PAGAMENTO e o data-proposta do <body>
+        Requer MP_ACCESS_TOKEN e MP_PUBLIC_KEY na Vercel
+        (ver proposta/CHECKOUT.md).
+     4. Envie o link. Para PDF: Ctrl+P → Salvar como PDF.
      ============================================================ -->
 
 <link rel="icon" type="image/png" href="/assets/favicon.png" />
@@ -31,6 +43,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+<!-- Checkout na proposta (modal Pix/cartão) — remova se não for usar -->
+<link rel="stylesheet" href="/css/proposta-checkout.css" />
+<script src="/js/proposta-checkout.js" defer></script>
 
 <style>
 /* ——— Tokens copiados de css/base.css da landing ——— */
@@ -173,6 +189,87 @@ a{color:inherit;text-decoration:none}
 .guarantee p{margin-top:14px;font-size:clamp(1rem,4vw,1.1rem);line-height:1.5;color:rgba(10,10,10,.72);max-width:58ch}
 .guarantee p b{color:var(--black)}
 
+/* ——— Formas de pagamento (05): cards de plano, estilo pricing page ———
+   Faixa de cabeçalho colorida + preço grande + lista com ✓ + botão.
+   O card recomendado (Pix à vista) sobe levemente e ganha a faixa cheia. */
+.pay-cards{margin-top:clamp(24px,4vw,32px);display:grid;gap:16px;align-items:stretch}
+@media(min-width:720px){.pay-cards{grid-template-columns:repeat(3,1fr)}}
+.pay{
+  display:flex;flex-direction:column;
+  border:1.5px solid var(--line);border-radius:20px;
+  background:#fff;overflow:hidden;
+}
+.pay--rec{
+  border-color:var(--emerald);
+  box-shadow:0 20px 44px -24px rgba(16,185,129,.55);
+}
+@media(min-width:720px){.pay--rec{transform:translateY(-8px)}}
+.pay-head{
+  padding:14px 16px;text-align:center;
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(.95rem,3.8vw,1.05rem);letter-spacing:-.01em;
+  background:var(--off-white);border-bottom:1.5px solid var(--line);
+  color:var(--black);
+}
+.pay--rec .pay-head{background:var(--emerald);border-color:var(--emerald);color:#fff}
+.pay--dark .pay-head{background:var(--black);border-color:var(--black);color:#fff}
+.pay--soft .pay-head{background:var(--emerald-light);border-color:var(--emerald-light);color:var(--emerald-dark)}
+.pay-body{display:flex;flex-direction:column;flex:1;padding:clamp(18px,4vw,24px)}
+/* Desconto com impacto: preço cheio riscado + selo −X% + economia */
+.pay-off{display:flex;align-items:center;gap:10px}
+.off-old{
+  font-family:var(--font-display);font-weight:800;white-space:nowrap;
+  font-size:clamp(1.05rem,4.2vw,1.25rem);color:var(--ink-40);
+  text-decoration:line-through;text-decoration-thickness:2px;
+}
+.off-pill{
+  font-family:var(--font-display);font-weight:900;font-size:13px;
+  letter-spacing:.02em;background:var(--emerald);color:#fff;
+  border-radius:999px;padding:4px 12px;
+}
+.pay-price{
+  margin-top:8px;font-family:var(--font-display);font-weight:900;letter-spacing:-.02em;
+  font-size:clamp(1.6rem,6.5vw,2rem);line-height:1;
+}
+.pay--rec .pay-price{color:var(--emerald-dark);font-size:clamp(1.9rem,7vw,2.3rem)}
+.pay-price{white-space:nowrap}
+.pay-price small{white-space:normal}
+.pay-price small{display:block;margin-top:6px;font-size:11px;font-weight:800;color:var(--ink-40);text-transform:uppercase;letter-spacing:.02em}
+.pay-save{
+  align-self:flex-start;margin-top:12px;
+  background:var(--emerald-light);color:var(--emerald-dark);
+  border-radius:999px;padding:6px 14px;
+  font-family:var(--font-mono);font-weight:700;font-size:11px;
+  letter-spacing:.08em;text-transform:uppercase;
+}
+.pay-feats{list-style:none;margin-top:14px;margin-bottom:18px}
+.pay-feats li{
+  display:flex;gap:10px;align-items:flex-start;
+  padding-block:8px;border-top:1px solid var(--line);
+  font-size:clamp(.88rem,3.4vw,.95rem);color:var(--ink-60);line-height:1.45;
+}
+.pay-feats li::before{content:"✓";font-family:var(--font-mono);font-weight:700;color:var(--emerald);flex:none;line-height:1.45}
+.pay-feats b{color:var(--black)}
+.btn-pay{
+  margin-top:auto;width:100%;
+  border:none;border-radius:999px;background:var(--emerald);color:#fff;
+  padding:14px 20px;cursor:pointer;
+  font-family:var(--font-display);font-weight:900;font-size:14px;
+  letter-spacing:.03em;text-transform:uppercase;
+  transition:background .25s,transform .1s;
+}
+.btn-pay:hover{background:var(--emerald-dark)}
+.btn-pay:active{transform:scale(.99)}
+.btn-pay:focus-visible{outline:2px solid var(--emerald-dark);outline-offset:2px}
+.btn-pay--ghost{background:#fff;color:var(--emerald-dark);border:1.5px solid var(--emerald)}
+.btn-pay--ghost:hover{background:var(--emerald-light)}
+.pay-note{margin-top:16px;font-family:var(--font-mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-40)}
+@media print{
+  .pay-cards .btn-pay{display:none}
+  .pay--rec{transform:none}
+  .pay-head{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
 /* ——— Hospedagem (06): dois formatos lado a lado ——— */
 .host-cards{margin-top:clamp(20px,4vw,28px);display:grid;gap:16px}
 @media(min-width:720px){.host-cards{grid-template-columns:1fr 1fr}}
@@ -247,7 +344,7 @@ a{color:inherit;text-decoration:none}
 }
 </style>
 </head>
-<body>
+<body data-proposta="[ID-PROPOSTA]">
 
 <div class="grid-lines" aria-hidden="true">
   <span></span><span></span><span></span><span></span><span></span>
@@ -359,6 +456,53 @@ a{color:inherit;text-decoration:none}
           <h3>RISCO ZERO PARA COMEÇAR.</h3>
           <p>Se a primeira direção visual apresentada não for aprovada, a entrada é <b>devolvida integralmente</b>. O saldo só existe <b>depois que você aprovar o design</b>.</p>
         </aside>
+
+        <!-- FORMAS DE PAGAMENTO — checkout direto na proposta.
+             Os valores abaixo são só exibição; o valor cobrado vem da
+             tabela em api/proposta-pagamento.js. Apague este bloco se
+             a proposta não tiver checkout online. -->
+        <div class="pay-cards">
+          <div class="pay pay--rec">
+            <div class="pay-head">Pix à vista</div>
+            <div class="pay-body">
+              <div class="pay-off">
+                <span class="off-old">R$ [VALOR_CARTAO]</span>
+                <span class="off-pill">−[X]%</span>
+              </div>
+              <div class="pay-price">R$ [VALOR_PIX] <small>pagamento único</small></div>
+              <span class="pay-save">Você economiza R$ [DIFERENÇA]</span>
+              <ul class="pay-feats">
+                <li><span>QR code aqui na página, confirmação na hora</span></li>
+                <li><span>Sem juros, sem parcelas pendentes</span></li>
+              </ul>
+              <button class="btn-pay" type="button" data-checkout-item="avista_pix">Pagar com Pix</button>
+            </div>
+          </div>
+          <div class="pay pay--dark">
+            <div class="pay-head">Cartão de crédito</div>
+            <div class="pay-body">
+              <div class="pay-price">R$ [VALOR_CARTAO] <small>em até 12x</small></div>
+              <ul class="pay-feats">
+                <li><span>Parcelas no seu limite, calculadas na hora</span></li>
+                <li><span>Juros do parcelamento por conta do comprador</span></li>
+                <li><span>Aprovação imediata</span></li>
+              </ul>
+              <button class="btn-pay btn-pay--ghost" type="button" data-checkout-item="avista_card">Pagar com cartão</button>
+            </div>
+          </div>
+          <div class="pay pay--soft">
+            <div class="pay-head">Pix em etapas</div>
+            <div class="pay-body">
+              <div class="pay-price">R$ [ENTRADA] <small>entrada · total R$ [VALOR_CARTAO]</small></div>
+              <ul class="pay-feats">
+                <li><span><b>R$ [ETAPA2]</b> na aprovação + <b>R$ [ETAPA3]</b> na entrega</span></li>
+                <li><span>Entrada com garantia Risco Zero</span></li>
+              </ul>
+              <button class="btn-pay btn-pay--ghost" type="button" data-checkout-item="entrada_pix">Pagar a entrada</button>
+            </div>
+          </div>
+        </div>
+        <p class="pay-note">Pagamento processado pelo Mercado Pago, sem sair desta página.</p>
       </div>
     </div>
   </section>

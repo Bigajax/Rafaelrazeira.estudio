@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Proposta — Baixudos.PR · Rafael Razeira Estúdio</title>
+
+<!-- ============================================================
+     PROPOSTA COMERCIAL — BAIXUDOS.PR · FASE 2 (OPERAÇÃO DE VENDAS)
+     Enviada em 16/07/2026 · Validade: 7 dias
+     Escopo: ingressos Sympla dentro do site + loja com checkout
+     Mercado Pago + painel de produtos e pedidos.
+     Para PDF: Ctrl+P → Salvar como PDF.
+     ============================================================ -->
+
+<link rel="icon" type="image/png" href="/assets/favicon.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+<!-- Checkout na proposta (modal Pix/cartão) -->
+<link rel="stylesheet" href="/css/proposta-checkout.css" />
+<script src="/js/proposta-checkout.js" defer></script>
+
+<style>
+/* ——— Tokens do sistema visual do estúdio ——— */
+:root{
+  --emerald:#10B981;
+  --emerald-dark:#065F46;
+  --emerald-light:#D1FAE5;
+  --off-white:#FAFAF7;
+  --black:#0A0A0A;
+  --ink-60:rgba(10,10,10,.60);
+  --ink-40:rgba(10,10,10,.40);
+  --line:rgba(10,10,10,.10);
+  --maxw:1040px;
+  --pad:clamp(20px,6vw,72px);
+  --font-display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --font-body:"Inter",system-ui,-apple-system,sans-serif;
+  --font-mono:"Space Mono",ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font-body);background:var(--off-white);color:var(--black);
+  line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+b{font-weight:600}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--emerald);outline-offset:3px}
+
+.grid-lines{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  max-width:var(--maxw);margin:0 auto;
+  display:flex;justify-content:space-between;padding:0 var(--pad);
+}
+.grid-lines span{width:1px;background:var(--line)}
+.grid-lines span:first-child,.grid-lines span:last-child{opacity:0}
+@media(max-width:640px){.grid-lines span:nth-child(2),.grid-lines span:nth-child(4){display:none}}
+.doc{position:relative;z-index:1;max-width:var(--maxw);margin:0 auto;padding:0 var(--pad)}
+
+/* ——— Header ——— */
+.doc-header{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding-block:clamp(20px,4vw,32px);border-bottom:1px solid var(--line);
+}
+.brand{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(15px,4vw,19px);letter-spacing:-.01em;white-space:nowrap}
+.brand small{font-weight:800;color:var(--ink-40);letter-spacing:.01em;font-size:1em}
+.doc-header .date{font-family:var(--font-mono);font-size:clamp(11px,3vw,13px);color:var(--ink-60);white-space:nowrap}
+
+/* ——— Abertura ——— */
+.opening{padding-block:clamp(44px,9vw,96px)}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:12px;flex-wrap:wrap;
+  font-family:var(--font-mono);font-size:clamp(11px,3vw,13px);
+  letter-spacing:.06em;text-transform:uppercase;color:var(--ink-60);
+}
+.status{color:var(--emerald-dark);font-weight:700}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--emerald);flex:none;position:relative}
+.dot::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--emerald);animation:pulse 2.2s ease-out infinite}
+@keyframes pulse{0%{transform:scale(1);opacity:.6}70%{transform:scale(2.6);opacity:0}100%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.dot::after{animation:none}}
+.opening h1{
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(2.5rem,9.5vw,5.5rem);line-height:.92;letter-spacing:-.035em;
+  margin-top:clamp(20px,4vw,32px);
+}
+.opening h1 em{font-style:normal;color:var(--emerald)}
+.opening .meta{
+  margin-top:clamp(24px,4vw,36px);font-size:clamp(1rem,4vw,1.15rem);color:var(--ink-60);max-width:52ch;
+}
+.opening .meta b{color:var(--black)}
+
+/* ——— Seções numeradas ——— */
+.sec{padding-block:clamp(40px,7vw,72px);border-top:1px solid var(--line)}
+@media(min-width:820px){.sec{display:grid;grid-template-columns:110px 1fr;gap:16px}}
+.sec .num{
+  font-family:var(--font-mono);font-weight:700;font-size:clamp(1rem,4vw,1.35rem);
+  color:var(--emerald-dark);letter-spacing:.02em;margin-bottom:12px;
+}
+.sec h2{
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.5rem,6.5vw,2.4rem);line-height:1.02;letter-spacing:-.025em;
+}
+.sec .body{margin-top:clamp(16px,3vw,24px);max-width:62ch}
+.sec .body--wide{max-width:none}
+.sec p{font-size:clamp(1rem,4vw,1.15rem);color:var(--ink-60);line-height:1.55}
+.sec p + p{margin-top:12px}
+.sec p b{color:var(--black)}
+
+/* ——— As novas funções: cada função tem dois lados ———
+   "quem compra" (experiência do público) e "quem administra"
+   (o que o Alexandre controla sem mexer em código). */
+.feat{
+  border:1px solid var(--line);border-radius:20px;background:#fff;
+  padding:clamp(20px,4.5vw,32px);
+  transition:border-color .3s,box-shadow .3s;
+}
+.feat:hover{border-color:rgba(16,185,129,.5);box-shadow:0 12px 32px -22px rgba(16,185,129,.55)}
+.feat + .feat{margin-top:16px}
+.feat .f-tag{
+  font-family:var(--font-mono);font-weight:700;font-size:11px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--emerald-dark);
+}
+.feat h3{
+  margin-top:8px;font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.2rem,5vw,1.6rem);line-height:1.02;letter-spacing:-.02em;
+}
+.feat > p{margin-top:10px;font-size:clamp(.98rem,3.8vw,1.08rem);color:var(--ink-60);line-height:1.55;max-width:62ch}
+.feat > p b{color:var(--black)}
+.feat-sides{margin-top:18px;display:grid;gap:14px}
+@media(min-width:720px){.feat-sides{grid-template-columns:1fr 1fr}}
+.side{border-top:2px solid var(--emerald);padding-top:12px}
+.side--adm{border-top-color:var(--black)}
+.side .s-label{
+  font-family:var(--font-mono);font-weight:700;font-size:11px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--emerald-dark);
+}
+.side--adm .s-label{color:var(--black)}
+.side ul{list-style:none;margin-top:8px}
+.side li{
+  display:flex;gap:10px;align-items:flex-start;
+  padding-block:6px;font-size:clamp(.92rem,3.6vw,1rem);
+  color:var(--ink-60);line-height:1.5;
+}
+.side li::before{content:"→";font-family:var(--font-mono);font-weight:700;color:var(--emerald);flex:none;line-height:1.5}
+.side--adm li::before{color:var(--ink-40)}
+.side b{color:var(--black)}
+/* Taxas explicadas: bloco esmeralda dentro do card de ingressos —
+   o ponto que mais importa para quem já perdeu margem com taxa opaca */
+.fee-note{
+  margin-top:18px;background:var(--emerald-light);border-radius:14px;
+  padding:clamp(16px,3.5vw,22px);
+}
+.fee-note .s-label{color:var(--emerald-dark)}
+.fee-note ul{list-style:none;margin-top:8px}
+.fee-note li{
+  display:flex;gap:10px;align-items:flex-start;
+  padding-block:6px;font-size:clamp(.92rem,3.6vw,1rem);
+  color:rgba(10,10,10,.72);line-height:1.5;
+}
+.fee-note li::before{content:"→";font-family:var(--font-mono);font-weight:700;color:var(--emerald-dark);flex:none;line-height:1.5}
+.fee-note b{color:var(--black)}
+
+/* Inclusos: cards em grade, check esmeralda */
+.grid-list{list-style:none;display:grid;gap:12px;margin-top:4px}
+@media(min-width:680px){.grid-list{grid-template-columns:1fr 1fr}}
+.grid-list li{
+  display:flex;gap:12px;align-items:flex-start;
+  border:1px solid var(--line);border-radius:14px;
+  padding:16px 18px;background:#fff;
+  font-size:clamp(.98rem,3.8vw,1.05rem);line-height:1.45;color:var(--ink-60);
+  transition:border-color .3s,box-shadow .3s;
+}
+.grid-list li:hover{border-color:rgba(16,185,129,.5);box-shadow:0 10px 24px -18px rgba(16,185,129,.55)}
+.grid-list .check{color:var(--emerald);font-family:var(--font-mono);font-weight:700;flex:none;line-height:1.45}
+.grid-list b{color:var(--black)}
+
+/* Exclusões: lista sóbria */
+.list{list-style:none}
+.list li{
+  display:flex;gap:14px;align-items:flex-start;
+  padding-block:14px;border-bottom:1px solid var(--line);
+  font-size:clamp(1rem,4vw,1.1rem);line-height:1.5;color:var(--ink-60);
+}
+.list li:last-child{border-bottom:none}
+.list li::before{font-family:var(--font-mono);font-weight:700;flex:none;line-height:1.5}
+.list--out li::before{content:"—";color:var(--ink-40)}
+.list b{color:var(--black)}
+.list-note{margin-top:16px;font-size:clamp(.9rem,3.4vw,.98rem);color:var(--ink-40)}
+
+/* Passos */
+.steps{list-style:none}
+.steps li{padding-block:18px;border-bottom:1px solid var(--line)}
+.steps li:last-child{border-bottom:none}
+.steps .s-num{font-family:var(--font-mono);font-weight:700;font-size:13px;color:var(--emerald-dark)}
+.steps h3{
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.05rem,4.4vw,1.3rem);letter-spacing:-.01em;margin-top:4px;
+}
+.steps p{margin-top:6px;font-size:clamp(.95rem,3.8vw,1.05rem)}
+
+/* ——— Investimento: valor de tabela + condição de fechamento ——— */
+.price-compare{margin-top:clamp(8px,2vw,16px)}
+.price-row{
+  display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;
+  padding-block:14px;border-bottom:1px solid var(--line);
+}
+.price-row .p-tag{
+  font-family:var(--font-mono);font-weight:700;font-size:clamp(11px,3vw,13px);
+  letter-spacing:.06em;text-transform:uppercase;color:var(--ink-40);flex:none;min-width:210px;
+}
+.price-row--main .p-tag{color:var(--emerald-dark)}
+.price-normal{
+  font-family:var(--font-display);font-weight:800;font-size:clamp(1.3rem,5vw,1.7rem);
+  color:var(--ink-40);text-decoration:line-through;text-decoration-thickness:2px;
+}
+.price-main{
+  font-family:var(--font-display);font-weight:900;letter-spacing:-.03em;
+  font-size:clamp(2.6rem,11vw,4.2rem);line-height:1;
+}
+.price-main small{font-size:.34em;font-weight:800;letter-spacing:0;color:var(--ink-40);text-transform:uppercase;white-space:nowrap}
+.split{margin-top:clamp(20px,4vw,28px);border-top:1px solid var(--line)}
+.split div{
+  display:flex;justify-content:space-between;gap:16px;align-items:baseline;
+  padding-block:14px;border-bottom:1px solid var(--line);
+}
+.split .tag{font-family:var(--font-mono);font-weight:700;font-size:clamp(11px,3vw,13px);letter-spacing:.06em;text-transform:uppercase;color:var(--emerald-dark);white-space:nowrap}
+.split .desc{font-size:clamp(.95rem,3.8vw,1.05rem);color:var(--ink-60);text-align:right}
+.split .desc b{font-family:var(--font-mono);font-weight:800;color:var(--black);white-space:nowrap}
+
+.guarantee{
+  display:block;margin-top:clamp(28px,5vw,40px);
+  border:1.5px solid var(--emerald);border-radius:20px;
+  padding:clamp(20px,4.5vw,32px);
+}
+.guarantee .g-label{
+  font-family:var(--font-mono);font-size:12px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--emerald-dark);
+}
+.guarantee p{margin-top:10px;font-size:clamp(1rem,4vw,1.1rem);line-height:1.5;color:var(--ink-60);max-width:58ch}
+.guarantee p b{color:var(--black)}
+
+/* ——— Formas de pagamento (06): cards de plano, estilo pricing page ———
+   Faixa de cabeçalho colorida + preço grande + lista com ✓ + botão.
+   O card recomendado (Pix à vista) sobe levemente e ganha a faixa cheia. */
+.pay-cards{margin-top:clamp(24px,4vw,32px);display:grid;gap:16px;align-items:stretch}
+@media(min-width:720px){.pay-cards{grid-template-columns:repeat(3,1fr)}}
+.pay{
+  display:flex;flex-direction:column;
+  border:1.5px solid var(--line);border-radius:20px;
+  background:#fff;overflow:hidden;
+}
+.pay--rec{
+  border-color:var(--emerald);
+  box-shadow:0 20px 44px -24px rgba(16,185,129,.55);
+}
+@media(min-width:720px){.pay--rec{transform:translateY(-8px)}}
+.pay-head{
+  padding:14px 16px;text-align:center;
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(.95rem,3.8vw,1.05rem);letter-spacing:-.01em;
+  background:var(--off-white);border-bottom:1.5px solid var(--line);
+  color:var(--black);
+}
+.pay--rec .pay-head{background:var(--emerald);border-color:var(--emerald);color:#fff}
+.pay--dark .pay-head{background:var(--black);border-color:var(--black);color:#fff}
+.pay--soft .pay-head{background:var(--emerald-light);border-color:var(--emerald-light);color:var(--emerald-dark)}
+.pay-body{display:flex;flex-direction:column;flex:1;padding:clamp(18px,4vw,24px)}
+/* Desconto com impacto: preço cheio riscado + selo −10% + economia */
+.pay-off{display:flex;align-items:center;gap:10px}
+.off-old{
+  font-family:var(--font-display);font-weight:800;white-space:nowrap;
+  font-size:clamp(1.05rem,4.2vw,1.25rem);color:var(--ink-40);
+  text-decoration:line-through;text-decoration-thickness:2px;
+}
+.off-pill{
+  font-family:var(--font-display);font-weight:900;font-size:13px;
+  letter-spacing:.02em;background:var(--emerald);color:#fff;
+  border-radius:999px;padding:4px 12px;
+}
+.pay-price{
+  margin-top:8px;font-family:var(--font-display);font-weight:900;letter-spacing:-.02em;
+  font-size:clamp(1.6rem,6.5vw,2rem);line-height:1;
+}
+.pay--rec .pay-price{color:var(--emerald-dark);font-size:clamp(1.9rem,7vw,2.3rem)}
+.pay-price{white-space:nowrap}
+.pay-price small{white-space:normal}
+.pay-price small{display:block;margin-top:6px;font-size:11px;font-weight:800;color:var(--ink-40);text-transform:uppercase;letter-spacing:.02em}
+.pay-save{
+  align-self:flex-start;margin-top:12px;
+  background:var(--emerald-light);color:var(--emerald-dark);
+  border-radius:999px;padding:6px 14px;
+  font-family:var(--font-mono);font-weight:700;font-size:11px;
+  letter-spacing:.08em;text-transform:uppercase;
+}
+.pay-feats{list-style:none;margin-top:14px;margin-bottom:18px}
+.pay-feats li{
+  display:flex;gap:10px;align-items:flex-start;
+  padding-block:8px;border-top:1px solid var(--line);
+  font-size:clamp(.88rem,3.4vw,.95rem);color:var(--ink-60);line-height:1.45;
+}
+.pay-feats li::before{content:"✓";font-family:var(--font-mono);font-weight:700;color:var(--emerald);flex:none;line-height:1.45}
+.pay-feats b{color:var(--black)}
+.btn-pay{
+  margin-top:auto;width:100%;
+  border:none;border-radius:999px;background:var(--emerald);color:#fff;
+  padding:14px 20px;cursor:pointer;
+  font-family:var(--font-display);font-weight:900;font-size:14px;
+  letter-spacing:.03em;text-transform:uppercase;
+  transition:background .25s,transform .1s;
+}
+.btn-pay:hover{background:var(--emerald-dark)}
+.btn-pay:active{transform:scale(.99)}
+.btn-pay:focus-visible{outline:2px solid var(--emerald-dark);outline-offset:2px}
+.btn-pay--ghost{background:#fff;color:var(--emerald-dark);border:1.5px solid var(--emerald)}
+.btn-pay--ghost:hover{background:var(--emerald-light)}
+.pay-note{margin-top:16px;font-family:var(--font-mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-40)}
+@media print{
+  .pay-cards .btn-pay{display:none}
+  .pay--rec{transform:none}
+  .pay-head{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
+/* ——— Prazo ——— */
+.deadline{
+  font-family:var(--font-display);font-weight:900;letter-spacing:-.02em;
+  font-size:clamp(1.6rem,7vw,2.6rem);line-height:1.05;text-transform:uppercase;
+}
+.deadline em{font-style:normal;color:var(--emerald)}
+
+/* ——— Hospedagem ——— */
+.host-cards{margin-top:clamp(20px,4vw,28px);display:grid;gap:16px}
+@media(min-width:720px){.host-cards{grid-template-columns:1fr 1fr}}
+.host{border:1.5px solid var(--line);border-radius:20px;padding:clamp(20px,4.5vw,28px);background:#fff}
+.host--rec{border-color:var(--emerald);box-shadow:0 12px 32px -20px rgba(16,185,129,.45)}
+.host .h-tag{font-family:var(--font-mono);font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--emerald-dark)}
+.host h3{
+  margin-top:10px;font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.1rem,4.6vw,1.35rem);line-height:1.02;letter-spacing:-.015em;
+}
+.host .h-price{
+  margin-top:10px;font-family:var(--font-display);font-weight:900;letter-spacing:-.02em;
+  font-size:clamp(1.5rem,6vw,1.9rem);line-height:1;
+}
+.host .h-price small{font-size:.55em;font-weight:800;color:var(--ink-40);text-transform:uppercase;letter-spacing:0;white-space:nowrap}
+.host p{margin-top:12px;font-size:clamp(.95rem,3.8vw,1.02rem)}
+.host-note{margin-top:clamp(16px,3vw,22px)}
+@media print{.host-cards{break-inside:avoid}}
+
+/* ——— Próximos passos ——— */
+.next{list-style:none;counter-reset:np}
+.next li{
+  counter-increment:np;display:flex;gap:14px;align-items:flex-start;
+  padding-block:14px;border-bottom:1px solid var(--line);
+  font-size:clamp(1rem,4vw,1.1rem);color:var(--ink-60);line-height:1.5;
+}
+.next li:last-child{border-bottom:none}
+.next li::before{
+  content:counter(np,decimal-leading-zero);
+  font-family:var(--font-mono);font-weight:700;color:var(--emerald-dark);flex:none;line-height:1.5;
+}
+.next b{color:var(--black)}
+
+/* ——— CTA final ——— */
+.closing{padding-block:clamp(48px,9vw,96px);border-top:1px solid var(--line);text-align:center}
+.closing h2{
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.8rem,8vw,3.4rem);line-height:1;letter-spacing:-.03em;
+  max-width:22ch;margin-inline:auto;
+}
+.closing h2 em{font-style:normal;color:var(--emerald)}
+.cta-wrap{margin-top:clamp(28px,5vw,40px)}
+.btn-accept{
+  display:inline-flex;align-items:center;justify-content:center;gap:12px;width:100%;
+  border:none;border-radius:999px;background:var(--emerald);color:#fff;
+  padding:clamp(20px,4vw,24px) 48px;
+  font-family:var(--font-display);font-weight:900;font-size:clamp(15px,4vw,17px);
+  letter-spacing:.03em;text-transform:uppercase;
+  box-shadow:0 12px 32px -12px rgba(16,185,129,.5);
+  transition:background .25s,box-shadow .25s,transform .1s;
+}
+.btn-accept:hover{background:var(--emerald-dark);box-shadow:0 16px 36px -12px rgba(6,95,70,.6)}
+.btn-accept:active{transform:scale(.99)}
+@media(min-width:560px){.btn-accept{width:auto}}
+.cta-note{margin-top:14px;font-family:var(--font-mono);font-size:12px;color:var(--ink-40);letter-spacing:.04em;text-transform:uppercase}
+
+/* ——— Rodapé ——— */
+.doc-footer{
+  padding-block:clamp(24px,4vw,36px);
+  border-top:1px solid var(--line);
+  display:flex;flex-wrap:wrap;gap:8px 24px;
+  font-family:var(--font-mono);font-size:clamp(11px,3vw,12px);
+  letter-spacing:.04em;text-transform:uppercase;color:var(--ink-60);
+}
+
+/* ——— Impressão / PDF (A4) ——— */
+@page{size:A4;margin:16mm}
+@media print{
+  body{background:#fff}
+  .grid-lines,.cta-wrap{display:none}
+  .dot::after{animation:none}
+  .doc{max-width:none;padding:0}
+  .opening{padding-block:28px 36px}
+  .sec{padding-block:24px;break-inside:avoid}
+  .feat{break-inside:avoid}
+  .guarantee{
+    box-shadow:none;border:1.5px solid var(--emerald-dark);
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;
+    break-inside:avoid;
+  }
+  .grid-list li{break-inside:avoid}
+}
+</style>
+</head>
+<body data-proposta="baixudos">
+
+<div class="grid-lines" aria-hidden="true">
+  <span></span><span></span><span></span><span></span><span></span>
+</div>
+
+<div class="doc">
+
+  <header class="doc-header">
+    <div class="brand">RAFAEL RAZEIRA <small>ESTÚDIO</small></div>
+    <div class="date">16/07/2026</div>
+  </header>
+
+  <!-- 1 · ABERTURA -->
+  <section class="opening">
+    <div class="eyebrow">
+      <span class="dot"></span><span class="status">PROPOSTA COMERCIAL</span>
+      <span aria-hidden="true">·</span>
+      <span>VALIDADE: 7 DIAS</span>
+    </div>
+    <h1>O SITE DA BAIXUDOS.PR AGORA <em>VENDE.</em></h1>
+    <p class="meta">Preparada para <b>Alexandre Henrique</b>, dono da marca <b>Baixudos.PR</b>. O portal oficial já está no ar como vitrine. Esta proposta é a segunda fase: transformar o site em <b>canal de vendas</b> — ingressos da 9ª edição comprados sem sair da página e a loja oficial com pagamento direto, tudo administrável sem tocar em uma linha de código.</p>
+  </section>
+
+  <!-- 2 · O QUE ENTENDI -->
+  <section class="sec">
+    <div class="num">01</div>
+    <div>
+      <h2>O QUE ENTENDI DA OPERAÇÃO</h2>
+      <div class="body">
+        <p>Nas edições anteriores, os ingressos foram vendidos por uma plataforma de terceiros — e a <b>taxa cobrada consumia parte do valor de cada ingresso</b>, sem clareza sobre quanto realmente sobrava para a Baixudos. Já os produtos oficiais fecham por WhatsApp, com cobrança e controle na mão.</p>
+        <p>Com a <b>9ª edição confirmada para 25 de outubro no Race Park Maringá Motorsport</b>, a operação precisa de três coisas: venda de ingresso pelo <b>site oficial da marca</b>, com taxa transparente e <b>validação por QR code na portaria</b>; loja com <b>pagamento na hora</b>; e gestão que o próprio time da Baixudos consiga tocar — trocar preço, abrir lote, cadastrar produto — <b>sem depender de ninguém de fora</b>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 · AS NOVAS FUNÇÕES -->
+  <section class="sec">
+    <div class="num">02</div>
+    <div>
+      <h2>AS NOVAS FUNÇÕES, EXPLICADAS</h2>
+      <div class="body body--wide">
+
+        <div class="feat">
+          <span class="f-tag">FUNÇÃO 01 · INGRESSOS</span>
+          <h3>INGRESSO COMPRADO DENTRO DO SITE</h3>
+          <p>Integração com a <b>Sympla</b>, a maior plataforma de eventos do Brasil. A grade de lotes aparece dentro da página da 9ª edição: o público escolhe o ingresso ali mesmo e paga com Pix ou cartão. O ingresso com QR code chega <b>automaticamente por e-mail</b>, segundos depois do Pix.</p>
+          <div class="feat-sides">
+            <div class="side">
+              <span class="s-label">QUEM COMPRA</span>
+              <ul>
+                <li><span>Escolhe lote e quantidade <b>sem sair do site</b> da Baixudos.</span></li>
+                <li><span>Paga com <b>Pix, cartão ou parcelado</b>.</span></li>
+                <li><span>Recebe o ingresso com <b>QR code na hora</b>, por e-mail e no app.</span></li>
+                <li><span>Na portaria, apresenta o QR code e <b>entra em segundos</b>.</span></li>
+              </ul>
+            </div>
+            <div class="side side--adm">
+              <span class="s-label">QUEM ADMINISTRA</span>
+              <ul>
+                <li><span>Troca <b>preço, data e horário</b> num painel simples, pelo celular.</span></li>
+                <li><span>O <b>2º lote abre sozinho</b> quando o 1º esgotar (ou em data marcada).</span></li>
+                <li><span>Cria <b>lote promocional ou cupom de desconto</b> no painel — e o site da Baixudos <b>reflete na hora</b>, sem mexer em nada.</span></li>
+                <li><span>Acompanha as <b>vendas em tempo real</b>.</span></li>
+                <li><span>Portaria valida com <b>app gratuito de check-in</b> — ingresso usado acusa na hora, funciona até sem internet.</span></li>
+                <li><span>O dinheiro cai <b>direto na conta bancária</b> da Baixudos.</span></li>
+              </ul>
+            </div>
+          </div>
+          <div class="fee-note">
+            <span class="s-label">TAXAS, SEM SURPRESA</span>
+            <ul>
+              <li><span>A Sympla cobra <b>10% de taxa de serviço por ingresso</b> — e você escolhe <b>repassar ao comprador</b>: um lote de R$ 60 é vendido a R$ 66, e a Baixudos recebe os <b>R$ 60 cheios</b>.</span></li>
+              <li><span>Sobra só a <b>taxa de processamento do pagamento (2% a 2,5%)</b>, descontada de cada venda — como em qualquer maquininha.</span></li>
+              <li><span><b>Nada é pago adiantado</b>: não tem mensalidade nem valor para publicar o evento. As taxas saem de cada ingresso vendido, e o restante é repassado à conta da Baixudos.</span></li>
+              <li><span>Ingressos de até R$ 39,90 pagam taxa mínima fixa de R$ 3,99.</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="feat">
+          <span class="f-tag">FUNÇÃO 02 · LOJA OFICIAL</span>
+          <h3>CHECKOUT COM MERCADO PAGO</h3>
+          <p>A loja deixa de ser catálogo com pedido por WhatsApp e passa a <b>vender de verdade</b>: carrinho, checkout e pagamento processado pelo <b>Mercado Pago</b> — a mesma segurança que o público já conhece do Mercado Livre.</p>
+          <div class="feat-sides">
+            <div class="side">
+              <span class="s-label">QUEM COMPRA</span>
+              <ul>
+                <li><span>Monta o carrinho com os produtos oficiais.</span></li>
+                <li><span>Paga com <b>Pix, cartão ou parcelado</b>, sem sair do fluxo.</span></li>
+                <li><span>Recebe a <b>confirmação automática</b> do pedido.</span></li>
+              </ul>
+            </div>
+            <div class="side side--adm">
+              <span class="s-label">QUEM ADMINISTRA</span>
+              <ul>
+                <li><span>Vê todos os <b>pedidos pagos num painel</b>, sem conferir comprovante.</span></li>
+                <li><span>Recebe <b>aviso de cada venda</b> e organiza entrega ou retirada no evento.</span></li>
+                <li><span>O valor cai na <b>conta Mercado Pago</b> da marca, com extrato de tudo.</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="feat">
+          <span class="f-tag">FUNÇÃO 03 · GESTÃO</span>
+          <h3>PAINEL DE PRODUTOS DA BAIXUDOS</h3>
+          <p>Área administrativa própria, desenhada para quem <b>não é técnico</b>: poucas telas, botões grandes, sem jargão. É onde a marca cuida da loja no dia a dia.</p>
+          <div class="feat-sides">
+            <div class="side side--adm">
+              <span class="s-label">O QUE DÁ PRA FAZER</span>
+              <ul>
+                <li><span><b>Cadastrar produto novo</b>: foto, nome, preço, tamanhos.</span></li>
+                <li><span>Alterar <b>preço e estoque</b> a qualquer momento.</span></li>
+                <li><span><b>Pausar ou esgotar</b> um produto com um toque.</span></li>
+              </ul>
+            </div>
+            <div class="side">
+              <span class="s-label">O QUE JÁ VAI PRONTO</span>
+              <ul>
+                <li><span><b>Cadastro inicial completo</b> dos produtos atuais, feito por mim.</span></li>
+                <li><span><b>Treinamento de uso</b> com o time da Baixudos.</span></li>
+                <li><span>Manual simples de consulta, em português claro.</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 · O QUE SERÁ ENTREGUE -->
+  <section class="sec">
+    <div class="num">03</div>
+    <div>
+      <h2>O QUE SERÁ ENTREGUE</h2>
+      <div class="body body--wide">
+        <ul class="grid-list">
+          <li><span class="check">✓</span><span><b>Venda de ingressos integrada à página do evento</b> (grade Sympla dentro do site)</span></li>
+          <li><span class="check">✓</span><span><b>Configuração completa do evento na Sympla</b>: lotes, preços, abertura automática do 2º lote</span></li>
+          <li><span class="check">✓</span><span><b>Estrutura de check-in da portaria</b>: app configurado, acessos da equipe e teste com ingresso de cortesia</span></li>
+          <li><span class="check">✓</span><span><b>Loja oficial completa</b>: catálogo, página de produto, carrinho e checkout</span></li>
+          <li><span class="check">✓</span><span><b>Integração de pagamento Mercado Pago</b> (Pix, cartão e parcelamento)</span></li>
+          <li><span class="check">✓</span><span><b>Painel administrativo</b> de produtos, preços, estoque e pedidos</span></li>
+          <li><span class="check">✓</span><span><b>Cadastro inicial de todos os produtos</b> da marca no lançamento</span></li>
+          <li><span class="check">✓</span><span><b>Configuração das contas</b> Sympla e Mercado Pago junto com você</span></li>
+          <li><span class="check">✓</span><span><b>Versão mobile impecável</b> — onde a maioria do público compra</span></li>
+          <li><span class="check">✓</span><span><b>2 rodadas de revisão</b> após a apresentação da primeira versão</span></li>
+          <li><span class="check">✓</span><span><b>Treinamento do painel</b> + manual de uso em linguagem simples</span></li>
+          <li><span class="check">✓</span><span><b>30 dias de suporte</b> após a publicação</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 · O QUE NÃO ESTÁ INCLUSO -->
+  <section class="sec">
+    <div class="num">04</div>
+    <div>
+      <h2>O QUE NÃO ESTÁ INCLUSO</h2>
+      <div class="body">
+        <ul class="list list--out">
+          <li><span><b>Taxas das plataformas</b> — Sympla e Mercado Pago descontam suas taxas de cada venda, automaticamente (detalhadas na seção 02).</span></li>
+          <li><span>Emissão de nota fiscal e integrações com ERP.</span></li>
+          <li><span>Logística de entrega dos produtos (frete, embalagem, postagem).</span></li>
+          <li><span>Gestão de tráfego pago (anúncios) e verba de mídia.</span></li>
+          <li><span>Produção de fotos e vídeos dos produtos.</span></li>
+          <li><span>Equipe e operação da portaria no dia do evento.</span></li>
+        </ul>
+        <p class="list-note">Qualquer um desses itens pode ser conversado como evolução futura do projeto.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 · COMO FUNCIONA -->
+  <section class="sec">
+    <div class="num">05</div>
+    <div>
+      <h2>COMO FUNCIONA</h2>
+      <div class="body">
+        <ol class="steps">
+          <li>
+            <span class="s-num">01</span>
+            <h3>CONTAS E ACESSOS</h3>
+            <p>Criamos juntos as contas Sympla e Mercado Pago da Baixudos (CNPJ + conta bancária). Eu conduzo, você só confirma os dados. O dinheiro fica em contas <b>no nome da marca</b> desde o primeiro dia.</p>
+          </li>
+          <li>
+            <span class="s-num">02</span>
+            <h3>DESENVOLVIMENTO</h3>
+            <p>Loja, checkout, painel administrativo e integração dos ingressos são construídos e apresentados a você em uma chamada.</p>
+          </li>
+          <li>
+            <span class="s-num">03</span>
+            <h3>APROVAÇÃO E PUBLICAÇÃO</h3>
+            <p>Você revisa, aprova e tudo vai ao ar no site oficial. A 9ª edição abre as vendas.</p>
+          </li>
+          <li>
+            <span class="s-num">04</span>
+            <h3>TREINAMENTO E ACOMPANHAMENTO</h3>
+            <p>Treinamento do painel com o time, teste real de check-in com ingresso de cortesia e 30 dias de suporte próximo.</p>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 · INVESTIMENTO -->
+  <section class="sec">
+    <div class="num">06</div>
+    <div>
+      <h2>INVESTIMENTO</h2>
+      <div class="body">
+        <div class="price-compare">
+          <div class="price-row">
+            <span class="p-tag">VALOR DE TABELA</span>
+            <span class="price-normal">R$ 5.900</span>
+          </div>
+          <div class="price-row price-row--main">
+            <span class="p-tag">CONDIÇÃO DE FECHAMENTO</span>
+            <span class="price-main">R$ 1.990 <small>· em 3 etapas</small></span>
+          </div>
+        </div>
+        <div class="split">
+          <div>
+            <span class="tag">ENTRADA</span>
+            <span class="desc"><b>R$ 790</b> · para reservar a agenda e iniciar o projeto</span>
+          </div>
+          <div>
+            <span class="tag">NA APROVAÇÃO</span>
+            <span class="desc"><b>R$ 600</b> · quando a loja e o painel forem aprovados por você</span>
+          </div>
+          <div>
+            <span class="tag">NA PUBLICAÇÃO</span>
+            <span class="desc"><b>R$ 600</b> · com tudo no ar, vendendo e testado</span>
+          </div>
+        </div>
+        <aside class="guarantee">
+          <span class="g-label">RISCO ZERO</span>
+          <p>Se a primeira versão apresentada não for aprovada, a entrada é <b>devolvida integralmente</b>. As parcelas seguintes só existem <b>conforme você aprova cada etapa</b>.</p>
+        </aside>
+
+        <!-- FORMAS DE PAGAMENTO — os valores cobrados vêm da tabela
+             "baixudos" em api/proposta-pagamento.js -->
+        <div class="pay-cards">
+          <div class="pay pay--rec">
+            <div class="pay-head">Pix à vista</div>
+            <div class="pay-body">
+              <div class="pay-off">
+                <span class="off-old">R$ 1.990</span>
+                <span class="off-pill">−10%</span>
+              </div>
+              <div class="pay-price">R$ 1.790 <small>pagamento único</small></div>
+              <span class="pay-save">Você economiza R$ 200</span>
+              <ul class="pay-feats">
+                <li><span>QR code aqui na página, confirmação na hora</span></li>
+                <li><span>Sem juros, sem parcelas pendentes</span></li>
+              </ul>
+              <button class="btn-pay" type="button" data-checkout-item="avista_pix">Pagar com Pix</button>
+            </div>
+          </div>
+          <div class="pay pay--dark">
+            <div class="pay-head">Cartão de crédito</div>
+            <div class="pay-body">
+              <div class="pay-price">R$ 1.990 <small>em até 12x</small></div>
+              <ul class="pay-feats">
+                <li><span>Parcelas no seu limite, calculadas na hora</span></li>
+                <li><span>Juros do parcelamento por conta do comprador</span></li>
+                <li><span>Aprovação imediata</span></li>
+              </ul>
+              <button class="btn-pay btn-pay--ghost" type="button" data-checkout-item="avista_card">Pagar com cartão</button>
+            </div>
+          </div>
+          <div class="pay pay--soft">
+            <div class="pay-head">Pix em etapas</div>
+            <div class="pay-body">
+              <div class="pay-price">R$ 790 <small>entrada · total R$&nbsp;1.990</small></div>
+              <ul class="pay-feats">
+                <li><span><b>R$&nbsp;600</b> na aprovação + <b>R$&nbsp;600</b> na entrega</span></li>
+                <li><span>Entrada com garantia Risco Zero</span></li>
+              </ul>
+              <button class="btn-pay btn-pay--ghost" type="button" data-checkout-item="entrada_pix">Pagar a entrada</button>
+            </div>
+          </div>
+        </div>
+        <p class="pay-note">Pagamento processado pelo Mercado Pago, sem sair desta página.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 · PRAZO -->
+  <section class="sec">
+    <div class="num">07</div>
+    <div>
+      <h2>PRAZO</h2>
+      <div class="body">
+        <p class="deadline">ENTREGA ESTIMADA ENTRE <em>15 E 25 DIAS ÚTEIS</em></p>
+        <p style="margin-top:14px">contados a partir das contas criadas e dos materiais recebidos (fotos e informações dos produtos, dados do evento). Bem antes da abertura de vendas da 9ª edição.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 · DEPOIS DA PUBLICAÇÃO -->
+  <section class="sec">
+    <div class="num">08</div>
+    <div>
+      <h2>DEPOIS DA PUBLICAÇÃO</h2>
+      <div class="body body--wide">
+        <p>Uma operação que vende de verdade precisa de alguém cuidando dela. Você escolhe um dos dois formatos:</p>
+        <div class="host-cards">
+          <div class="host host--rec">
+            <span class="h-tag">OPÇÃO A · RECOMENDADA</span>
+            <h3>HOSPEDAGEM GERENCIADA</h3>
+            <div class="h-price">R$ 119<small>/mês</small></div>
+            <p>Eu cuido de tudo: hospedagem em infraestrutura profissional, certificado de segurança (SSL), monitoramento e <b>1 ajuste pequeno por mês</b> (trocar um banner, um texto, um destaque). Se algo acontecer — inclusive na semana do evento — é comigo.</p>
+          </div>
+          <div class="host">
+            <span class="h-tag">OPÇÃO B</span>
+            <h3>ENTREGA COM TRANSFERÊNCIA</h3>
+            <div class="h-price">R$ 350<small> · taxa única</small></div>
+            <p>Transfiro o projeto e os acessos para as contas da Baixudos, com um guia de uso. A partir daí, a manutenção e os custos de infraestrutura ficam por conta da marca.</p>
+          </div>
+        </div>
+        <p class="host-note">Em ambos os formatos, o domínio, as contas Sympla e Mercado Pago e todo o dinheiro das vendas ficam <b>no nome da Baixudos</b> — eu apenas configuro.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 · PRÓXIMOS PASSOS -->
+  <section class="sec">
+    <div class="num">09</div>
+    <div>
+      <h2>PRÓXIMOS PASSOS</h2>
+      <div class="body">
+        <ol class="next">
+          <li><span>Você confirma o <b>aceite desta proposta</b>: pelo botão abaixo, por WhatsApp ou e-mail.</span></li>
+          <li><span>Envio dos dados para o <b>pagamento da entrada de R$ 790</b> e agendamos a criação das contas.</span></li>
+          <li><span>Com as contas criadas e os materiais em mãos, o <b>prazo começa a contar</b> — e a Baixudos acompanha cada etapa.</span></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 · CTA -->
+  <section class="closing">
+    <h2>A 9ª EDIÇÃO COM INGRESSOS <em>DENTRO DO SITE.</em></h2>
+    <div class="cta-wrap">
+      <a class="btn-accept" href="https://wa.me/5544999997219?text=Ol%C3%A1%20Rafael%2C%20aceito%20a%20proposta%20de%20ingressos%20%2B%20loja%20da%20Baixudos.PR.%20Vamos%20come%C3%A7ar%3F" target="_blank" rel="noopener">VAMOS COLOCAR ISSO PRA VENDER <span aria-hidden="true">→</span></a>
+      <p class="cta-note">Abre o WhatsApp com a mensagem de aceite pronta.</p>
+    </div>
+  </section>
+
+  <footer class="doc-footer">
+    <span>RAFAEL RAZEIRA ESTÚDIO</span>
+    <span>rafael.rbarbon@gmail.com</span>
+    <span>(44) 99999-7219</span>
+    <span>@rafaelrazeira.estudio</span>
+  </footer>
+
+</div>
+
+</body>
+</html>
