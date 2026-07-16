@@ -7,9 +7,10 @@
 <title>Proposta — Baixudos.PR · Rafael Razeira Estúdio</title>
 
 <!-- ============================================================
-     PROPOSTA COMERCIAL — BAIXUDOS.PR · FASE 2 (OPERAÇÃO DE VENDAS)
+     PROPOSTA COMERCIAL — BAIXUDOS.PR · PACOTE COMPLETO
      Enviada em 16/07/2026 · Validade: 7 dias
-     Escopo: ingressos Sympla dentro do site + loja com checkout
+     Escopo: portal oficial completo (todas as páginas e recursos)
+     + ingressos Sympla dentro do site + loja com checkout
      Mercado Pago + painel de produtos e pedidos.
      Para PDF: Ctrl+P → Salvar como PDF.
      ============================================================ -->
@@ -109,6 +110,19 @@ a{color:inherit;text-decoration:none}
 .sec p{font-size:clamp(1rem,4vw,1.15rem);color:var(--ink-60);line-height:1.55}
 .sec p + p{margin-top:12px}
 .sec p b{color:var(--black)}
+
+/* ——— Mapa do portal (02): ficha técnica, página por página ——— */
+.sitemap{margin-top:4px}
+.sitemap > div{padding-block:16px;border-bottom:1px solid var(--line)}
+.sitemap > div:last-child{border-bottom:none}
+@media(min-width:720px){.sitemap > div{display:grid;grid-template-columns:190px 1fr;gap:16px;align-items:baseline}}
+.sm-area{
+  font-family:var(--font-mono);font-weight:700;font-size:12px;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--emerald-dark);
+}
+.sm-desc{margin-top:6px;font-size:clamp(.95rem,3.7vw,1.05rem);color:var(--ink-60);line-height:1.55}
+@media(min-width:720px){.sm-desc{margin-top:0}}
+.sm-desc b{color:var(--black)}
 
 /* ——— As novas funções: cada função tem dois lados ———
    "quem compra" (experiência do público) e "quem administra"
@@ -436,7 +450,7 @@ a{color:inherit;text-decoration:none}
       <span>VALIDADE: 7 DIAS</span>
     </div>
     <h1>O SITE DA BAIXUDOS.PR AGORA <em>VENDE.</em></h1>
-    <p class="meta">Preparada para <b>Alexandre Henrique</b>, dono da marca <b>Baixudos.PR</b>. O portal oficial já está no ar como vitrine. Esta proposta é a segunda fase: transformar o site em <b>canal de vendas</b> — ingressos da 9ª edição comprados sem sair da página e a loja oficial com pagamento direto, tudo administrável sem tocar em uma linha de código.</p>
+    <p class="meta">Preparada para <b>Alexandre Henrique</b>, dono da marca <b>Baixudos.PR</b>. Esta proposta cobre o pacote completo: o <b>portal oficial da marca</b> — todas as páginas, o design exclusivo e os recursos, detalhados na seção 02 — mais a camada de vendas: <b>ingressos da 9ª edição comprados sem sair do site</b>, loja oficial com pagamento direto e gestão sem tocar em uma linha de código.</p>
   </section>
 
   <!-- 2 · O QUE ENTENDI -->
@@ -447,13 +461,59 @@ a{color:inherit;text-decoration:none}
       <div class="body">
         <p>Nas edições anteriores, os ingressos foram vendidos por uma plataforma de terceiros — e a <b>taxa cobrada consumia parte do valor de cada ingresso</b>, sem clareza sobre quanto realmente sobrava para a Baixudos. Já os produtos oficiais fecham por WhatsApp, com cobrança e controle na mão.</p>
         <p>Com a <b>9ª edição confirmada para 25 de outubro no Race Park Maringá Motorsport</b>, a operação precisa de três coisas: venda de ingresso pelo <b>site oficial da marca</b>, com taxa transparente e <b>validação por QR code na portaria</b>; loja com <b>pagamento na hora</b>; e gestão que o próprio time da Baixudos consiga tocar — trocar preço, abrir lote, cadastrar produto — <b>sem depender de ninguém de fora</b>.</p>
+        <p>E, antes de tudo, uma marca com <b>93 mil seguidores</b> precisa de uma casa oficial à altura. É por ela que esta proposta começa.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2b · O PORTAL, PÁGINA POR PÁGINA -->
+  <section class="sec">
+    <div class="num">02</div>
+    <div>
+      <h2>O PORTAL OFICIAL, PÁGINA POR PÁGINA</h2>
+      <div class="body body--wide">
+        <p>Tudo abaixo faz parte desta proposta — o site completo da marca, com design exclusivo desenvolvido para a identidade da Baixudos.PR:</p>
+        <div class="sitemap">
+          <div>
+            <span class="sm-area">Home</span>
+            <p class="sm-desc">A vitrine da marca: abertura cinematográfica com <b>vídeo das edições</b>, <b>contagem regressiva</b> para a 9ª edição, barra de credibilidade (8 edições, +93 mil seguidores), grade de experiências do evento, <b>edições anteriores com galeria de fotos</b>, parede de vídeos, depoimentos da comunidade, marcas parceiras, vitrine da loja, convite para a comunidade no WhatsApp e perguntas frequentes.</p>
+          </div>
+          <div>
+            <span class="sm-area">Evento</span>
+            <p class="sm-desc">Página da <b>9ª edição</b> com data, horário, local com mapa, galeria e a <b>compra de ingressos</b> — mais o histórico das edições realizadas.</p>
+          </div>
+          <div>
+            <span class="sm-area">Loja oficial</span>
+            <p class="sm-desc">Catálogo dos produtos da marca com <b>página individual de produto</b>, fotos, tamanhos e destaque na home.</p>
+          </div>
+          <div>
+            <span class="sm-area">Inscrição de veículo</span>
+            <p class="sm-desc">Formulário para quem quer <b>expor o projeto no evento</b>: dados do carro e do dono, entregues direto no WhatsApp da organização.</p>
+          </div>
+          <div>
+            <span class="sm-area">Parceiros</span>
+            <p class="sm-desc">Página comercial para <b>marcas expositoras e apoiadores</b>, com formulário de proposta de parceria.</p>
+          </div>
+          <div>
+            <span class="sm-area">Institucional</span>
+            <p class="sm-desc">Sobre a Baixudos.PR (a história da marca), página de contato e página de erro personalizada.</p>
+          </div>
+          <div>
+            <span class="sm-area">Legal & LGPD</span>
+            <p class="sm-desc">Política de privacidade, termos de uso, política de cookies e <b>banner de consentimento</b> — o site já nasce adequado à LGPD.</p>
+          </div>
+          <div>
+            <span class="sm-area">Base técnica</span>
+            <p class="sm-desc"><b>Mobile impecável</b> (navegação estilo aplicativo no celular), vídeos compatíveis com iPhone, botão de WhatsApp em todas as páginas, <b>SEO completo</b> (Google encontra e exibe o site direito) e carregamento rápido.</p>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- 3 · AS NOVAS FUNÇÕES -->
   <section class="sec">
-    <div class="num">02</div>
+    <div class="num">03</div>
     <div>
       <h2>AS NOVAS FUNÇÕES, EXPLICADAS</h2>
       <div class="body body--wide">
@@ -549,11 +609,14 @@ a{color:inherit;text-decoration:none}
 
   <!-- 4 · O QUE SERÁ ENTREGUE -->
   <section class="sec">
-    <div class="num">03</div>
+    <div class="num">04</div>
     <div>
       <h2>O QUE SERÁ ENTREGUE</h2>
       <div class="body body--wide">
         <ul class="grid-list">
+          <li><span class="check">✓</span><span><b>Portal oficial completo</b> — todas as páginas e recursos da seção 02, publicados no domínio da marca</span></li>
+          <li><span class="check">✓</span><span><b>Design exclusivo da Baixudos.PR</b> — criado para a identidade da marca, não é template</span></li>
+          <li><span class="check">✓</span><span><b>Conteúdo real carregado</b> — fotos, vídeos e textos das edições organizados no site</span></li>
           <li><span class="check">✓</span><span><b>Venda de ingressos integrada à página do evento</b> (grade Sympla dentro do site)</span></li>
           <li><span class="check">✓</span><span><b>Configuração completa do evento na Sympla</b>: lotes, preços, abertura automática do 2º lote</span></li>
           <li><span class="check">✓</span><span><b>Estrutura de check-in da portaria</b>: app configurado, acessos da equipe e teste com ingresso de cortesia</span></li>
@@ -573,12 +636,12 @@ a{color:inherit;text-decoration:none}
 
   <!-- 5 · O QUE NÃO ESTÁ INCLUSO -->
   <section class="sec">
-    <div class="num">04</div>
+    <div class="num">05</div>
     <div>
       <h2>O QUE NÃO ESTÁ INCLUSO</h2>
       <div class="body">
         <ul class="list list--out">
-          <li><span><b>Taxas das plataformas</b> — Sympla e Mercado Pago descontam suas taxas de cada venda, automaticamente (detalhadas na seção 02).</span></li>
+          <li><span><b>Taxas das plataformas</b> — Sympla e Mercado Pago descontam suas taxas de cada venda, automaticamente (detalhadas na seção 03).</span></li>
           <li><span>Emissão de nota fiscal e integrações com ERP.</span></li>
           <li><span>Logística de entrega dos produtos (frete, embalagem, postagem).</span></li>
           <li><span>Gestão de tráfego pago (anúncios) e verba de mídia.</span></li>
@@ -592,7 +655,7 @@ a{color:inherit;text-decoration:none}
 
   <!-- 6 · COMO FUNCIONA -->
   <section class="sec">
-    <div class="num">05</div>
+    <div class="num">06</div>
     <div>
       <h2>COMO FUNCIONA</h2>
       <div class="body">
@@ -624,7 +687,7 @@ a{color:inherit;text-decoration:none}
 
   <!-- 7 · INVESTIMENTO -->
   <section class="sec">
-    <div class="num">06</div>
+    <div class="num">07</div>
     <div>
       <h2>INVESTIMENTO</h2>
       <div class="body">
@@ -707,7 +770,7 @@ a{color:inherit;text-decoration:none}
 
   <!-- 8 · PRAZO -->
   <section class="sec">
-    <div class="num">07</div>
+    <div class="num">08</div>
     <div>
       <h2>PRAZO</h2>
       <div class="body">
@@ -719,7 +782,7 @@ a{color:inherit;text-decoration:none}
 
   <!-- 9 · DEPOIS DA PUBLICAÇÃO -->
   <section class="sec">
-    <div class="num">08</div>
+    <div class="num">09</div>
     <div>
       <h2>DEPOIS DA PUBLICAÇÃO</h2>
       <div class="body body--wide">
@@ -745,7 +808,7 @@ a{color:inherit;text-decoration:none}
 
   <!-- 10 · PRÓXIMOS PASSOS -->
   <section class="sec">
-    <div class="num">09</div>
+    <div class="num">10</div>
     <div>
       <h2>PRÓXIMOS PASSOS</h2>
       <div class="body">
