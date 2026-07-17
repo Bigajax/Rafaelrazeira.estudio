@@ -162,12 +162,16 @@ a{color:inherit;text-decoration:none}
 }
 @media(min-width:720px){.pay--rec{transform:translateY(-8px)}}
 .pay-head{
-  padding:14px 16px;text-align:center;
+  padding:10px 16px;text-align:center;
+  display:flex;align-items:center;justify-content:center;min-height:58px;
   font-family:var(--font-display);font-weight:900;text-transform:uppercase;
   font-size:clamp(.95rem,3.8vw,1.05rem);letter-spacing:-.01em;
   background:var(--off-white);border-bottom:1.5px solid var(--line);
   color:var(--black);
 }
+/* Zona de preço com altura reservada: alinha os checklists entre os 3 cards */
+.pay-top{display:flex;flex-direction:column;align-items:flex-start}
+@media(min-width:720px){.pay-top{min-height:132px}}
 .pay--rec .pay-head{background:var(--emerald);border-color:var(--emerald);color:#fff}
 .pay--dark .pay-head{background:var(--black);border-color:var(--black);color:#fff}
 .pay--soft .pay-head{background:var(--emerald-light);border-color:var(--emerald-light);color:var(--emerald-dark)}
@@ -476,12 +480,14 @@ a{color:inherit;text-decoration:none}
           <div class="pay pay--rec">
             <div class="pay-head">Pix à vista</div>
             <div class="pay-body">
-              <div class="pay-off">
-                <span class="off-old">R$ 2.990</span>
-                <span class="off-pill">−10%</span>
+              <div class="pay-top">
+                <div class="pay-off">
+                  <span class="off-old">R$ 2.990</span>
+                  <span class="off-pill">−10%</span>
+                </div>
+                <div class="pay-price">R$ 2.690 <small>pagamento único</small></div>
+                <span class="pay-save">Você economiza R$ 300</span>
               </div>
-              <div class="pay-price">R$ 2.690 <small>pagamento único</small></div>
-              <span class="pay-save">Você economiza R$ 300</span>
               <ul class="pay-feats">
                 <li><span>QR code aqui na página, confirmação na hora</span></li>
                 <li><span>Sem juros, sem parcelas pendentes</span></li>
@@ -492,7 +498,9 @@ a{color:inherit;text-decoration:none}
           <div class="pay pay--dark">
             <div class="pay-head">Cartão de crédito</div>
             <div class="pay-body">
-              <div class="pay-price">R$ 2.990 <small>em até 6x</small></div>
+              <div class="pay-top">
+                <div class="pay-price">R$ 2.990 <small>em até 6x no cartão</small></div>
+              </div>
               <ul class="pay-feats">
                 <li><span>Parcelas no seu limite, calculadas na hora</span></li>
                 <li><span>Juros do parcelamento por conta do comprador</span></li>
@@ -504,7 +512,9 @@ a{color:inherit;text-decoration:none}
           <div class="pay pay--soft">
             <div class="pay-head">Pix em etapas</div>
             <div class="pay-body">
-              <div class="pay-price">R$ 1.190 <small>entrada · total R$ 2.990</small></div>
+              <div class="pay-top">
+                <div class="pay-price">R$ 1.190 <small>entrada · total de R$&nbsp;2.990</small></div>
+              </div>
               <ul class="pay-feats">
                 <li><span><b>R$ 900</b> na aprovação + <b>R$ 900</b> na publicação</span></li>
                 <li><span>Entrada com garantia de devolução</span></li>
