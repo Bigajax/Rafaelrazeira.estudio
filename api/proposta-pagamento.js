@@ -44,7 +44,7 @@ const PROPOSTAS = {
       avista_pix: { label: "À vista no Pix, com desconto", valor: 2690, metodo: "pix" },
       avista_card: { label: "No cartão, em até 12x", valor: 2990, metodo: "card", maxParcelas: 12 },
       entrada_pix: { label: "Entrada do modelo em 3 etapas", valor: 1190, metodo: "pix" },
-      painel_pix: { label: "Módulo painel admin (contratação junto)", valor: 1290, metodo: "pix" },
+      painel_pix: { label: "Módulo painel da vitrine (contratação junto)", valor: 1290, metodo: "pix" },
     },
   },
 };
