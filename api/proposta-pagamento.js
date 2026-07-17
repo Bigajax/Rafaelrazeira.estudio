@@ -42,7 +42,7 @@ const PROPOSTAS = {
     titulo: "Rafael Razeira Estúdio — Vitrine Digital PR Grife",
     itens: {
       avista_pix: { label: "À vista no Pix, com desconto", valor: 2690, metodo: "pix" },
-      avista_card: { label: "No cartão, em até 12x", valor: 2990, metodo: "card", maxParcelas: 12 },
+      avista_card: { label: "No cartão, em até 6x", valor: 2990, metodo: "card", maxParcelas: 6 },
       entrada_pix: { label: "Entrada do modelo em 3 etapas", valor: 1190, metodo: "pix" },
       painel_pix: { label: "Módulo painel da vitrine (contratação junto)", valor: 1290, metodo: "pix" },
     },
