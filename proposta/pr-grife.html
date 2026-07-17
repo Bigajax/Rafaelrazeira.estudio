@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Proposta — PR Grife · Rafael Razeira Estúdio</title>
+
+<link rel="icon" type="image/png" href="/assets/favicon.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+<!-- Checkout na proposta (modal Pix/cartão) -->
+<link rel="stylesheet" href="/css/proposta-checkout.css" />
+<script src="/js/proposta-checkout.js" defer></script>
+
+<style>
+/* ——— Tokens copiados de css/base.css da landing ——— */
+:root{
+  --emerald:#10B981;
+  --emerald-dark:#065F46;
+  --emerald-light:#D1FAE5;
+  --off-white:#FAFAF7;
+  --black:#0A0A0A;
+  --ink-60:rgba(10,10,10,.60);
+  --ink-40:rgba(10,10,10,.40);
+  --line:rgba(10,10,10,.10);
+  --maxw:1040px;
+  --pad:clamp(20px,6vw,72px);
+  --font-display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --font-body:"Inter",system-ui,-apple-system,sans-serif;
+  --font-mono:"Space Mono",ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font-body);background:var(--off-white);color:var(--black);
+  line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+b{font-weight:600}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--emerald);outline-offset:3px}
+
+.grid-lines{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  max-width:var(--maxw);margin:0 auto;
+  display:flex;justify-content:space-between;padding:0 var(--pad);
+}
+.grid-lines span{width:1px;background:var(--line)}
+.grid-lines span:first-child,.grid-lines span:last-child{opacity:0}
+@media(max-width:640px){.grid-lines span:nth-child(2),.grid-lines span:nth-child(4){display:none}}
+.doc{position:relative;z-index:1;max-width:var(--maxw);margin:0 auto;padding:0 var(--pad)}
+
+.doc-header{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding-block:clamp(20px,4vw,32px);border-bottom:1px solid var(--line);
+}
+.brand{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(15px,4vw,19px);letter-spacing:-.01em;white-space:nowrap}
+.brand small{font-weight:800;color:var(--ink-40);letter-spacing:.01em;font-size:1em}
+.doc-header .date{font-family:var(--font-mono);font-size:clamp(11px,3vw,13px);color:var(--ink-60);white-space:nowrap}
+
+.opening{padding-block:clamp(44px,9vw,96px)}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:12px;flex-wrap:wrap;
+  font-family:var(--font-mono);font-size:clamp(11px,3vw,13px);
+  letter-spacing:.06em;text-transform:uppercase;color:var(--ink-60);
+}
+.status{color:var(--emerald-dark);font-weight:700}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--emerald);flex:none;position:relative}
+.dot::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--emerald);animation:pulse 2.2s ease-out infinite}
+@keyframes pulse{0%{transform:scale(1);opacity:.6}70%{transform:scale(2.6);opacity:0}100%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.dot::after{animation:none}}
+.opening h1{
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(2.5rem,9.5vw,5.5rem);line-height:.92;letter-spacing:-.035em;
+  margin-top:clamp(20px,4vw,32px);
+}
+.opening h1 .quiet{color:var(--ink-40)}
+.opening .meta{
+  margin-top:clamp(24px,4vw,36px);font-size:clamp(1rem,4vw,1.15rem);color:var(--ink-60);max-width:52ch;
+}
+.opening .meta b{color:var(--black)}
+
+.sec{padding-block:clamp(40px,7vw,72px);border-top:1px solid var(--line)}
+@media(min-width:820px){.sec{display:grid;grid-template-columns:110px 1fr;gap:16px}}
+.sec .num{
+  font-family:var(--font-mono);font-weight:700;font-size:clamp(1rem,4vw,1.35rem);
+  color:var(--emerald-dark);letter-spacing:.02em;margin-bottom:12px;
+}
+.sec h2{
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.5rem,6.5vw,2.4rem);line-height:1.02;letter-spacing:-.025em;
+}
+.sec .body{margin-top:clamp(16px,3vw,24px);max-width:62ch}
+.sec p{font-size:clamp(1rem,4vw,1.15rem);color:var(--ink-60);line-height:1.55}
+.sec p + p{margin-top:12px}
+
+.list{list-style:none}
+.list li{
+  display:flex;gap:14px;align-items:flex-start;
+  padding-block:14px;border-bottom:1px solid var(--line);
+  font-size:clamp(1rem,4vw,1.1rem);line-height:1.5;color:var(--ink-60);
+}
+.list li:last-child{border-bottom:none}
+.list li::before{font-family:var(--font-mono);font-weight:700;flex:none;line-height:1.5}
+.list--in  li::before{content:"→";color:var(--emerald)}
+.list--out li::before{content:"—";color:var(--ink-40)}
+.list b{color:var(--black)}
+
+.steps{list-style:none;counter-reset:passo}
+.steps li{padding-block:18px;border-bottom:1px solid var(--line)}
+.steps li:last-child{border-bottom:none}
+.steps .s-num{font-family:var(--font-mono);font-weight:700;font-size:13px;color:var(--emerald-dark)}
+.steps h3{
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.05rem,4.4vw,1.3rem);letter-spacing:-.01em;margin-top:4px;
+}
+.steps p{margin-top:6px;font-size:clamp(.95rem,3.8vw,1.05rem)}
+
+.price{
+  font-family:var(--font-display);font-weight:900;letter-spacing:-.03em;
+  font-size:clamp(2.6rem,11vw,4.5rem);line-height:1;margin-top:clamp(12px,2vw,20px);
+}
+.price small{font-size:.38em;font-weight:800;letter-spacing:0;color:var(--ink-40);text-transform:uppercase;white-space:nowrap}
+.split{margin-top:clamp(20px,4vw,28px);border-top:1px solid var(--line)}
+.split div{
+  display:flex;justify-content:space-between;gap:16px;align-items:baseline;
+  padding-block:14px;border-bottom:1px solid var(--line);
+}
+.split .tag{font-family:var(--font-mono);font-weight:700;font-size:clamp(11px,3vw,13px);letter-spacing:.06em;text-transform:uppercase;color:var(--emerald-dark);white-space:nowrap}
+.split .desc{font-size:clamp(.95rem,3.8vw,1.05rem);color:var(--ink-60);text-align:right}
+
+.guarantee{
+  display:block;margin-top:clamp(28px,5vw,40px);
+  background:var(--emerald-light);color:var(--black);
+  border-radius:24px;padding:clamp(24px,5vw,40px);
+  box-shadow:0 24px 60px -24px rgba(6,95,70,.35);
+}
+.guarantee .g-label{
+  font-family:var(--font-mono);font-size:12px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--emerald-dark);
+}
+.guarantee h3{
+  margin-top:12px;font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.5rem,6.5vw,2.2rem);line-height:.98;letter-spacing:-.03em;
+}
+.guarantee p{margin-top:14px;font-size:clamp(1rem,4vw,1.1rem);line-height:1.5;color:rgba(10,10,10,.72);max-width:58ch}
+.guarantee p b{color:var(--black)}
+
+.pay-cards{margin-top:clamp(24px,4vw,32px);display:grid;gap:16px;align-items:stretch}
+@media(min-width:720px){.pay-cards{grid-template-columns:repeat(3,1fr)}}
+.pay{
+  display:flex;flex-direction:column;
+  border:1.5px solid var(--line);border-radius:20px;
+  background:#fff;overflow:hidden;
+}
+.pay--rec{
+  border-color:var(--emerald);
+  box-shadow:0 20px 44px -24px rgba(16,185,129,.55);
+}
+@media(min-width:720px){.pay--rec{transform:translateY(-8px)}}
+.pay-head{
+  padding:14px 16px;text-align:center;
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(.95rem,3.8vw,1.05rem);letter-spacing:-.01em;
+  background:var(--off-white);border-bottom:1.5px solid var(--line);
+  color:var(--black);
+}
+.pay--rec .pay-head{background:var(--emerald);border-color:var(--emerald);color:#fff}
+.pay--dark .pay-head{background:var(--black);border-color:var(--black);color:#fff}
+.pay--soft .pay-head{background:var(--emerald-light);border-color:var(--emerald-light);color:var(--emerald-dark)}
+.pay-body{display:flex;flex-direction:column;flex:1;padding:clamp(18px,4vw,24px)}
+.pay-off{display:flex;align-items:center;gap:10px}
+.off-old{
+  font-family:var(--font-display);font-weight:800;white-space:nowrap;
+  font-size:clamp(1.05rem,4.2vw,1.25rem);color:var(--ink-40);
+  text-decoration:line-through;text-decoration-thickness:2px;
+}
+.off-pill{
+  font-family:var(--font-display);font-weight:900;font-size:13px;
+  letter-spacing:.02em;background:var(--emerald);color:#fff;
+  border-radius:999px;padding:4px 12px;
+}
+.pay-price{
+  margin-top:8px;font-family:var(--font-display);font-weight:900;letter-spacing:-.02em;
+  font-size:clamp(1.6rem,6.5vw,2rem);line-height:1;
+}
+.pay--rec .pay-price{color:var(--emerald-dark);font-size:clamp(1.9rem,7vw,2.3rem)}
+.pay-price{white-space:nowrap}
+.pay-price small{white-space:normal}
+.pay-price small{display:block;margin-top:6px;font-size:11px;font-weight:800;color:var(--ink-40);text-transform:uppercase;letter-spacing:.02em}
+.pay-save{
+  align-self:flex-start;margin-top:12px;
+  background:var(--emerald-light);color:var(--emerald-dark);
+  border-radius:999px;padding:6px 14px;
+  font-family:var(--font-mono);font-weight:700;font-size:11px;
+  letter-spacing:.08em;text-transform:uppercase;
+}
+.pay-feats{list-style:none;margin-top:14px;margin-bottom:18px}
+.pay-feats li{
+  display:flex;gap:10px;align-items:flex-start;
+  padding-block:8px;border-top:1px solid var(--line);
+  font-size:clamp(.88rem,3.4vw,.95rem);color:var(--ink-60);line-height:1.45;
+}
+.pay-feats li::before{content:"✓";font-family:var(--font-mono);font-weight:700;color:var(--emerald);flex:none;line-height:1.45}
+.pay-feats b{color:var(--black)}
+.btn-pay{
+  margin-top:auto;width:100%;
+  border:none;border-radius:999px;background:var(--emerald);color:#fff;
+  padding:14px 20px;cursor:pointer;
+  font-family:var(--font-display);font-weight:900;font-size:14px;
+  letter-spacing:.03em;text-transform:uppercase;
+  transition:background .25s,transform .1s;
+}
+.btn-pay:hover{background:var(--emerald-dark)}
+.btn-pay:active{transform:scale(.99)}
+.btn-pay:focus-visible{outline:2px solid var(--emerald-dark);outline-offset:2px}
+.btn-pay--ghost{background:#fff;color:var(--emerald-dark);border:1.5px solid var(--emerald)}
+.btn-pay--ghost:hover{background:var(--emerald-light)}
+.pay-note{margin-top:16px;font-family:var(--font-mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-40)}
+@media print{
+  .pay-cards .btn-pay{display:none}
+  .pay--rec{transform:none}
+  .pay-head{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
+.host-cards{margin-top:clamp(20px,4vw,28px);display:grid;gap:16px}
+@media(min-width:720px){.host-cards{grid-template-columns:1fr 1fr}}
+.host{border:1.5px solid var(--line);border-radius:20px;padding:clamp(20px,4.5vw,28px);background:#fff}
+.host--rec{border-color:var(--emerald);box-shadow:0 12px 32px -20px rgba(16,185,129,.45)}
+.host .h-tag{font-family:var(--font-mono);font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--emerald-dark)}
+.host h3{
+  margin-top:10px;font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.1rem,4.6vw,1.35rem);line-height:1.02;letter-spacing:-.015em;
+}
+.host .h-price{
+  margin-top:10px;font-family:var(--font-display);font-weight:900;letter-spacing:-.02em;
+  font-size:clamp(1.5rem,6vw,1.9rem);line-height:1;
+}
+.host .h-price small{font-size:.55em;font-weight:800;color:var(--ink-40);text-transform:uppercase;letter-spacing:0;white-space:nowrap}
+.host p{margin-top:12px;font-size:clamp(.95rem,3.8vw,1.02rem)}
+.host .btn-pay{margin-top:16px}
+.host-note{margin-top:clamp(16px,3vw,22px)}
+@media print{.host-cards{break-inside:avoid}}
+
+.next{list-style:none;counter-reset:np}
+.next li{
+  counter-increment:np;display:flex;gap:14px;align-items:flex-start;
+  padding-block:14px;border-bottom:1px solid var(--line);
+  font-size:clamp(1rem,4vw,1.1rem);color:var(--ink-60);line-height:1.5;
+}
+.next li:last-child{border-bottom:none}
+.next li::before{
+  content:counter(np,decimal-leading-zero);
+  font-family:var(--font-mono);font-weight:700;color:var(--emerald-dark);flex:none;line-height:1.5;
+}
+.next b{color:var(--black)}
+.cta-wrap{margin-top:clamp(28px,5vw,40px)}
+.btn-accept{
+  display:inline-flex;align-items:center;justify-content:center;gap:12px;width:100%;
+  border:none;border-radius:999px;background:var(--emerald);color:#fff;
+  padding:clamp(20px,4vw,24px) 36px;
+  font-family:var(--font-display);font-weight:900;font-size:clamp(15px,4vw,17px);
+  letter-spacing:.03em;text-transform:uppercase;
+  box-shadow:0 12px 32px -12px rgba(16,185,129,.5);
+  transition:background .25s,box-shadow .25s,transform .1s;
+}
+.btn-accept:hover{background:var(--emerald-dark);box-shadow:0 16px 36px -12px rgba(6,95,70,.6)}
+.btn-accept:active{transform:scale(.99)}
+@media(min-width:560px){.btn-accept{width:auto}}
+.cta-note{margin-top:14px;font-family:var(--font-mono);font-size:12px;color:var(--ink-40);letter-spacing:.04em;text-transform:uppercase}
+
+.doc-footer{
+  margin-top:clamp(40px,7vw,72px);padding-block:clamp(24px,4vw,36px);
+  border-top:1px solid var(--line);
+  display:flex;flex-wrap:wrap;gap:8px 24px;
+  font-family:var(--font-mono);font-size:clamp(11px,3vw,12px);
+  letter-spacing:.04em;text-transform:uppercase;color:var(--ink-60);
+}
+
+@page{size:A4;margin:16mm}
+@media print{
+  body{background:#fff}
+  .grid-lines,.cta-wrap{display:none}
+  .dot::after{animation:none}
+  .doc{max-width:none;padding:0}
+  .opening{padding-block:28px 36px}
+  .sec{padding-block:24px;break-inside:avoid}
+  .guarantee{
+    box-shadow:none;border:1.5px solid var(--emerald-dark);
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;
+    break-inside:avoid;
+  }
+  .doc-footer{margin-top:32px}
+}
+</style>
+</head>
+<body data-proposta="pr-grife">
+
+<div class="grid-lines" aria-hidden="true">
+  <span></span><span></span><span></span><span></span><span></span>
+</div>
+
+<div class="doc">
+
+  <header class="doc-header">
+    <div class="brand">RAFAEL RAZEIRA <small>ESTÚDIO</small></div>
+    <div class="date">17/07/2026</div>
+  </header>
+
+  <section class="opening">
+    <div class="eyebrow">
+      <span class="dot"></span><span class="status">PROPOSTA COMERCIAL</span>
+      <span aria-hidden="true">—</span>
+      <span>VALIDADE: 7 DIAS</span>
+    </div>
+    <h1>UMA VITRINE<br>QUE VENDE.<br><span class="quiet">PARA PR GRIFE.</span></h1>
+    <p class="meta">Preparada para <b>Estevão</b> — <b>PR Grife</b>, Maringá-PR. Este documento resume o que será entregue, o investimento e as garantias. E tem um detalhe importante: <b>a vitrine já está construída</b> — você pode ver tudo funcionando antes de decidir.</p>
+  </section>
+
+  <section class="sec">
+    <div class="num">01</div>
+    <div>
+      <h2>O QUE ENTENDI DO SEU NEGÓCIO</h2>
+      <div class="body">
+        <p>A PR Grife tem <b>3 anos de história</b> e uma marca forte em Maringá: multimarcas masculina de alto padrão (Lacoste, Tommy Hilfiger, Reserva, Colcci e outras), com <b>11 mil seguidores no Instagram</b>, entrega para todo o Brasil e um atendimento próximo que é o seu maior diferencial — incluindo o condicional.</p>
+        <p>Hoje toda essa audiência vende por <b>direct e WhatsApp</b>, sem um endereço próprio na internet. Quem vê um anúncio ou um story não tem onde explorar as peças com calma — e cada peça mostrada é trabalho manual seu. A vitrine resolve isso: o cliente navega, escolhe, e chega no seu WhatsApp <b>pronto para fechar</b>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="num">02</div>
+    <div>
+      <h2>A VITRINE, PÁGINA POR PÁGINA</h2>
+      <div class="body">
+        <ul class="list list--in">
+          <li><span><b>Home editorial</b> — hero com sua foto, faixa com os logos oficiais das 8 marcas, categorias, novidades, "Monte o look", condicional, loja física, Instagram e FAQ. Estética de grife: branco, dourado e tipografia editorial.</span></li>
+          <li><span><b>Catálogo completo</b> — todos os produtos com busca (nome, marca, cor, código), filtros por categoria, marca, tamanho, cor, preço e disponibilidade, e ordenação. Cada categoria tem endereço próprio para receber anúncios (ex.: /catalogo/camisas).</span></li>
+          <li><span><b>Página individual de cada produto</b> — galeria com zoom, tamanhos, cores, guia de medidas, disponibilidade e produtos relacionados. Link compartilhável de cada peça para stories e anúncios.</span></li>
+          <li><span><b>Minha seleção</b> — o cliente junta as peças que gostou e envia tudo de uma vez no seu WhatsApp, com tamanho e cor já escolhidos.</span></li>
+          <li><span><b>WhatsApp em tudo</b> — 7 mensagens automáticas diferentes (produto, look, condicional, seleção personalizada…) que chegam formatadas, com o produto, código, tamanho, valor e até a origem do anúncio.</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="num">03</div>
+    <div>
+      <h2>O QUE MAIS VAI JUNTO</h2>
+      <div class="body">
+        <ul class="list list--in">
+          <li><span><b>Logos oficiais das marcas</b> — extraídos dos canais oficiais de cada uma, em alta qualidade.</span></li>
+          <li><span><b>Mobile impecável</b> — a maioria do seu tráfego vem do Instagram; a vitrine foi desenhada primeiro para o celular.</span></li>
+          <li><span><b>Medição de resultados</b> — estrutura pronta para Meta Pixel, Google Analytics e Tag Manager, com os eventos que os anúncios precisam (visita, produto visto, clique no WhatsApp) e banner de consentimento LGPD.</span></li>
+          <li><span><b>Google pronto</b> — títulos, descrições, sitemap e dados da loja para aparecer nas buscas por moda masculina em Maringá.</span></li>
+          <li><span><b>2 rodadas de ajustes</b> com seus materiais oficiais (número do WhatsApp, endereço, horários, fotos e preços reais).</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="num">04</div>
+    <div>
+      <h2>MÓDULO OPCIONAL: PAINEL ADMIN</h2>
+      <div class="body">
+        <p>Com o painel, <b>você mesmo atualiza a vitrine</b>, sem depender de ninguém e sem mexer em código:</p>
+        <ul class="list list--in">
+          <li><span><b>Produtos</b> — adicionar, editar e pausar peças: fotos, preço, tamanhos, cores, selos ("Novo", "Últimas unidades") e disponibilidade.</span></li>
+          <li><span><b>Looks e destaques</b> — montar os looks da semana e escolher os favoritos da loja.</span></li>
+          <li><span><b>Dados da loja</b> — WhatsApp, horários, endereço e avisos do topo, editáveis a qualquer momento.</span></li>
+          <li><span><b>Acesso protegido por senha</b>, direto do celular.</span></li>
+        </ul>
+        <p>A vitrine já foi construída preparada para receber o painel — a ativação não mexe em nada do que está no ar.</p>
+        <div class="host-cards">
+          <div class="host host--rec">
+            <span class="h-tag">CONTRATANDO JUNTO COM A VITRINE</span>
+            <h3>PAINEL ADMIN</h3>
+            <div class="h-price">R$ 1.290<small> · pix</small></div>
+            <p>Entregue em até <b>10 dias úteis</b> após a publicação da vitrine, com um treinamento rápido em vídeo para você e sua equipe.</p>
+            <button class="btn-pay btn-pay--ghost" type="button" data-checkout-item="painel_pix">Adicionar painel admin</button>
+          </div>
+          <div class="host">
+            <span class="h-tag">CONTRATANDO DEPOIS</span>
+            <h3>PAINEL ADMIN</h3>
+            <div class="h-price">R$ 1.590<small> · pix</small></div>
+            <p>Pode ser contratado a qualquer momento — o valor menor de agora reflete o projeto já aberto e o time no contexto.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="num">05</div>
+    <div>
+      <h2>O QUE NÃO ESTÁ INCLUSO</h2>
+      <div class="body">
+        <ul class="list list--out">
+          <li><span>Gestão de tráfego pago (anúncios) e verba de mídia.</span></li>
+          <li><span>Produção de fotos e vídeos novos das peças.</span></li>
+          <li><span>Redesenho de logotipo ou identidade visual da PR Grife.</span></li>
+          <li><span>Custos de registro do domínio (~R$ 40/ano, pago diretamente por você no Registro.br).</span></li>
+          <li><span>Manutenção e hospedagem após a publicação — veja os formatos na seção 08.</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="num">06</div>
+    <div>
+      <h2>COMO FUNCIONA</h2>
+      <div class="body">
+        <ol class="steps">
+          <li>
+            <span class="s-num">01</span>
+            <h3>APRESENTAÇÃO — VOCÊ VÊ TUDO FUNCIONANDO</h3>
+            <p>A vitrine já está construída com as suas fotos reais. Em uma chamada rápida, você navega por tudo: home, catálogo, produtos e o fluxo até o WhatsApp.</p>
+          </li>
+          <li>
+            <span class="s-num">02</span>
+            <h3>AJUSTES COM SEUS DADOS OFICIAIS</h3>
+            <p>Você envia número do WhatsApp, endereço, horários, políticas e os produtos reais com preços. Aplico tudo em até <b>5 dias úteis</b>, com 2 rodadas de revisão.</p>
+          </li>
+          <li>
+            <span class="s-num">03</span>
+            <h3>PUBLICAÇÃO NO SEU DOMÍNIO</h3>
+            <p>A vitrine vai ao ar no seu endereço (ex.: prgrife.com.br), pronta para receber o link da bio e os anúncios. O saldo só é quitado depois do seu OK.</p>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="num">07</div>
+    <div>
+      <h2>INVESTIMENTO</h2>
+      <div class="body">
+        <div class="price">R$ 2.990 <small>· em até 3 etapas</small></div>
+        <div class="split">
+          <div>
+            <span class="tag">ENTRADA — R$ 1.190</span>
+            <span class="desc">no aceite, para reservar a agenda dos ajustes</span>
+          </div>
+          <div>
+            <span class="tag">ETAPA 2 — R$ 900</span>
+            <span class="desc">na aprovação da vitrine com seus dados oficiais</span>
+          </div>
+          <div>
+            <span class="tag">ETAPA 3 — R$ 900</span>
+            <span class="desc">na publicação no seu domínio</span>
+          </div>
+        </div>
+        <aside class="guarantee">
+          <span class="g-label">GARANTIA</span>
+          <h3>VOCÊ VÊ ANTES DE PAGAR.</h3>
+          <p>A vitrine é apresentada <b>funcionando, com as suas fotos</b>, antes de qualquer pagamento. E se após a primeira rodada de ajustes você não quiser seguir, a entrada é <b>devolvida integralmente</b>.</p>
+        </aside>
+
+        <div class="pay-cards">
+          <div class="pay pay--rec">
+            <div class="pay-head">Pix à vista</div>
+            <div class="pay-body">
+              <div class="pay-off">
+                <span class="off-old">R$ 2.990</span>
+                <span class="off-pill">−10%</span>
+              </div>
+              <div class="pay-price">R$ 2.690 <small>pagamento único</small></div>
+              <span class="pay-save">Você economiza R$ 300</span>
+              <ul class="pay-feats">
+                <li><span>QR code aqui na página, confirmação na hora</span></li>
+                <li><span>Sem juros, sem parcelas pendentes</span></li>
+              </ul>
+              <button class="btn-pay" type="button" data-checkout-item="avista_pix">Pagar com Pix</button>
+            </div>
+          </div>
+          <div class="pay pay--dark">
+            <div class="pay-head">Cartão de crédito</div>
+            <div class="pay-body">
+              <div class="pay-price">R$ 2.990 <small>em até 12x</small></div>
+              <ul class="pay-feats">
+                <li><span>Parcelas no seu limite, calculadas na hora</span></li>
+                <li><span>Juros do parcelamento por conta do comprador</span></li>
+                <li><span>Aprovação imediata</span></li>
+              </ul>
+              <button class="btn-pay btn-pay--ghost" type="button" data-checkout-item="avista_card">Pagar com cartão</button>
+            </div>
+          </div>
+          <div class="pay pay--soft">
+            <div class="pay-head">Pix em etapas</div>
+            <div class="pay-body">
+              <div class="pay-price">R$ 1.190 <small>entrada · total R$ 2.990</small></div>
+              <ul class="pay-feats">
+                <li><span><b>R$ 900</b> na aprovação + <b>R$ 900</b> na publicação</span></li>
+                <li><span>Entrada com garantia de devolução</span></li>
+              </ul>
+              <button class="btn-pay btn-pay--ghost" type="button" data-checkout-item="entrada_pix">Pagar a entrada</button>
+            </div>
+          </div>
+        </div>
+        <p class="pay-note">Pagamento processado pelo Mercado Pago, sem sair desta página.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="num">08</div>
+    <div>
+      <h2>DEPOIS DA PUBLICAÇÃO: HOSPEDAGEM</h2>
+      <div class="body">
+        <p>A vitrine precisa de um lugar para ficar no ar. Você escolhe um dos dois formatos:</p>
+        <div class="host-cards">
+          <div class="host host--rec">
+            <span class="h-tag">OPÇÃO A — RECOMENDADA</span>
+            <h3>HOSPEDAGEM GERENCIADA</h3>
+            <div class="h-price">R$ 119<small>/mês</small></div>
+            <p>Eu cuido de tudo: infraestrutura profissional, certificado de segurança (SSL), monitoramento e <b>1 ajuste pequeno por mês</b> (trocar uma foto, um preço, um aviso). Com o painel admin contratado, inclui também o banco de dados e o suporte ao painel. Se algo acontecer, é comigo.</p>
+          </div>
+          <div class="host">
+            <span class="h-tag">OPÇÃO B</span>
+            <h3>ENTREGA COM TRANSFERÊNCIA</h3>
+            <div class="h-price">R$ 350<small> · taxa única</small></div>
+            <p>Transfiro o código e o projeto para as suas contas, com um guia de acesso. A partir daí, a manutenção e os custos de infraestrutura ficam por sua conta.</p>
+          </div>
+        </div>
+        <p class="host-note">Em ambos os formatos, o domínio (ex.: prgrife.com.br) é registrado <b>no seu nome</b> e é seu — eu apenas configuro.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="num">09</div>
+    <div>
+      <h2>PRÓXIMOS PASSOS</h2>
+      <div class="body">
+        <ol class="next">
+          <li><span>Você confirma o <b>aceite desta proposta</b> — pelo botão abaixo, por WhatsApp ou e-mail.</span></li>
+          <li><span>Agendamos a <b>apresentação da vitrine funcionando</b> (15 minutos, pelo celular mesmo).</span></li>
+          <li><span>Com a entrada confirmada, você envia os <b>dados oficiais</b> — e em até 5 dias úteis a PR Grife está no ar.</span></li>
+        </ol>
+        <div class="cta-wrap">
+          <a class="btn-accept" href="https://wa.me/5544999997219?text=Ol%C3%A1%20Rafael%2C%20aceito%20a%20proposta%20do%20projeto%20PR%20Grife" target="_blank" rel="noopener">ACEITAR PROPOSTA <span aria-hidden="true">→</span></a>
+          <p class="cta-note">Abre o WhatsApp com a mensagem de aceite pronta.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="doc-footer">
+    <span>RAFAEL RAZEIRA ESTÚDIO</span>
+    <span>rafael.rbarbon@gmail.com</span>
+    <span>(44) 99999-7219</span>
+    <span>@rafaelrazeira.estudio</span>
+  </footer>
+
+</div>
+
+</body>
+</html>
