@@ -21,7 +21,7 @@
    id do item. Para criar uma proposta nova com checkout, adicione a
    entrada aqui e os botões no HTML (ver proposta/CHECKOUT.md).
    ============================================================ */
-const crypto = require("crypto");
+import crypto from "crypto";
 
 const MP_API = "https://api.mercadopago.com/v1/payments";
 
@@ -68,7 +68,7 @@ async function mpFetch(url, options) {
   return { ok: r.ok, status: r.status, body };
 }
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   const token = process.env.MP_ACCESS_TOKEN;
   const publicKey = process.env.MP_PUBLIC_KEY;
   if (!token || !publicKey) {

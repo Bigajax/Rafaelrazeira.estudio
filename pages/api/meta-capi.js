@@ -11,7 +11,7 @@
    Local: esta rota só roda na Vercel (ou `vercel dev`); com `npm run dev`
    (serve estático) a chamada falha em silêncio, por design fire-and-forget.
    ============================================================ */
-const crypto = require("crypto");
+import crypto from "crypto";
 
 const PIXEL_ID = "2445872572575348"; // ⬅ mesmo ID de js/lib/tracking.js
 const GRAPH_URL = `https://graph.facebook.com/v21.0/${PIXEL_ID}/events`;
@@ -26,7 +26,7 @@ function normPhone(p){
   return d;
 }
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   if (req.method !== "POST"){
     res.statusCode = 405;
     return res.end(JSON.stringify({ error: "method not allowed" }));

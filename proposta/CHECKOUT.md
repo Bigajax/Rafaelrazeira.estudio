@@ -11,12 +11,12 @@ próprio MP dentro do modal).
 proposta/baixudos.html          botões [data-checkout-item] + <body data-proposta>
 js/proposta-checkout.js         modal compartilhado (Pix + Brick de cartão)
 css/proposta-checkout.css       estilos do modal
-api/proposta-pagamento.js       função Vercel: config, criação e status
+pages/api/proposta-pagamento.js       função Vercel: config, criação e status
 ```
 
 - **O valor NUNCA está no HTML.** O browser só manda o id do item
   (`avista_pix`, `avista_card`, `entrada_pix`); o valor cobrado vem da
-  tabela `PROPOSTAS` dentro de `api/proposta-pagamento.js`. Os números
+  tabela `PROPOSTAS` dentro de `pages/api/proposta-pagamento.js`. Os números
   impressos na página são só exibição.
 - Cartão usa o **Brick CardPayment** do MP: os dados do cartão nunca
   passam pelo nosso servidor, só o token.
@@ -39,7 +39,7 @@ não precisa de webhook para o fluxo das propostas.
 
 ## Adicionar checkout a uma proposta nova
 
-1. `api/proposta-pagamento.js` → adicione a entrada na tabela:
+1. `pages/api/proposta-pagamento.js` → adicione a entrada na tabela:
 
 ```js
 nome-do-cliente: {
