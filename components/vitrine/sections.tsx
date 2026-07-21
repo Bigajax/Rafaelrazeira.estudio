@@ -67,6 +67,7 @@ export function Header() {
       <a href="#projetos">PROJETOS</a>
       <a href="#inclui">O QUE INCLUI</a>
       <a href="#faq">DÚVIDAS</a>
+      <Link href="/servicos">SERVIÇOS</Link>
       <a className={s.navcta} href="#oferta" data-cta="nav">CONTRATAR ↗</a>
     </nav>
   </header>;
@@ -334,7 +335,7 @@ export function FinalCTA() {
     </section>
     <footer className={s.footer}>
       <div className={s.brand}><b>RAFAEL RAZEIRA</b><span>ESTÚDIO</span></div>
-      <nav><Link href="/estudio/">INÍCIO</Link><Link href="/termos">TERMOS</Link><Link href="/privacidade">PRIVACIDADE</Link></nav>
+      <nav><Link href="/estudio/">INÍCIO</Link><Link href="/servicos">SERVIÇOS</Link><Link href="/termos">TERMOS</Link><Link href="/privacidade">PRIVACIDADE</Link></nav>
       <small>© 2026 RAFAEL RAZEIRA ESTÚDIO</small>
     </footer>
     <a className={s.pill} href={whatsapp} target="_blank" rel="noopener" data-cta="pill" data-cta-dest="whatsapp">FALAR COM RAFAEL ↗</a>
