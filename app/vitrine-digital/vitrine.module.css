@@ -159,9 +159,32 @@
 /* ---------- projetos ---------- */
 .projects { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 3vw, 48px); margin-top: 52px }
 .projects article { display: grid; gap: 10px; justify-items: start }
-.cover { position: relative; width: 100%; height: clamp(420px, 40vw, 560px); overflow: hidden; background: #141414 }
-.cover img { object-fit: cover; object-position: top; transition: transform .5s ease }
-.projects article:hover .cover img { transform: translateY(-14px) }
+
+/* moldura de navegador com a página real rolando em loop */
+.browser { width: 100%; border: 1px solid #262626; background: #0f0f0f }
+.browserBar { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid #262626 }
+.dots { display: flex; gap: 5px }
+.dots i { width: 8px; height: 8px; border-radius: 50%; background: #2c2c2c }
+.urlChip {
+  flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font: 10px var(--mono); letter-spacing: .04em; color: #8a8a84;
+  background: #1a1a1a; border: 1px solid #262626; border-radius: 100px; padding: 5px 12px;
+}
+.live { font: 700 9px var(--mono); letter-spacing: .1em; color: var(--green); white-space: nowrap }
+.cover {
+  display: block; position: relative; width: 100%;
+  height: clamp(420px, 40vw, 560px); overflow: hidden; background: #141414;
+  container-type: size;
+}
+.pageShot {
+  display: block; width: 100%; height: auto; will-change: transform;
+  animation: pageScroll var(--dur, 45s) ease-in-out infinite alternate;
+}
+.projects article:hover .pageShot { animation-play-state: paused }
+@keyframes pageScroll {
+  0%, 2.5% { transform: translateY(0) }
+  97.5%, 100% { transform: translateY(calc(100cqh - 100%)) }
+}
 .projects small { font: 10px var(--mono); letter-spacing: .12em; color: var(--green); margin-top: 12px }
 .projects h3 { font-size: clamp(24px, 2vw, 30px) }
 .projects p { font-size: 14px; max-width: 420px }

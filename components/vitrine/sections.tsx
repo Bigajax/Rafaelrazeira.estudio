@@ -56,7 +56,7 @@ export function Hero() {
       <div className={s.heroCopy}>
         <Eyebrow>● VITRINE DIGITAL PARA LOJAS</Eyebrow>
         <h1>TRANSFORME SEU INSTAGRAM EM UMA <em>LOJA ORGANIZADA.</em></h1>
-        <p className={s.lead}>Apresente seus produtos em um catálogo profissional e receba clientes mais preparados no WhatsApp.</p>
+        <p className={s.lead}>Apresente seus produtos em um catálogo profissional e receba no WhatsApp clientes que já chegam com o produto escolhido.</p>
         <div className={s.actions}>
           <Button href="#oferta" cta="hero">COMEÇAR COM R$500 ↗</Button>
           <a className={s.ghost} href="#projetos" data-cta="hero_projetos" data-cta-dest="projetos">VER PROJETOS ↓</a>
@@ -81,7 +81,7 @@ export function PainSolution() {
         <div>
           <Eyebrow>O PROBLEMA E A SOLUÇÃO</Eyebrow>
           <h2>SEU CLIENTE NÃO DEVERIA PROCURAR PRODUTOS NO MEIO DO FEED.</h2>
-          <p className={s.lead}>Stories desaparecem, publicações antigas ficam difíceis de encontrar e o atendimento começa com pedidos de fotos, preços e tamanhos.</p>
+          <p className={s.lead}>Stories desaparecem, publicações antigas ficam difíceis de encontrar e cada atendimento começa do zero: foto, preço e tamanho, um por um.</p>
         </div>
         <div className={s.shift}>
           <div className={s.shiftBefore}>
@@ -120,8 +120,8 @@ export function HowItWorks() {
             <Image src="/assets/demo/solo-maisvendidos.jpg" fill sizes="300px" alt="Catálogo da vitrine da Solo Urb com a grade de produtos e preços" />
           </div>
           <div className={s.howChat}>
-            <Chat>Olá! Vi o New Balance 990 Black Grey na vitrine. Tem disponível no tamanho 39?</Chat>
-            <Chat from="loja">Tem sim! Quer que eu separe o seu?</Chat>
+            <Chat>Oi! Vi na vitrine que o 9060 Rain Cloud está nas últimas unidades. Ainda tem no 39?</Chat>
+            <Chat from="loja">Tem sim, vou separar o seu! Prefere retirar na loja ou receber em casa?</Chat>
           </div>
         </div>
       </div>
@@ -129,9 +129,12 @@ export function HowItWorks() {
   </section>;
 }
 
+/* Captura da página inteira de cada site (600px de largura, 1.5x),
+   exibida em moldura de navegador com scroll automático em loop.
+   A duração acompanha a altura da página para o ritmo ser parecido. */
 const projects = [
-  { img: "/assets/case-xavier.jpg", name: "XAVIER'S SPORTS", tag: "CAMISAS ESPORTIVAS", copy: "Catálogo por clubes, seleções e modelos retrô, com pedido direto no WhatsApp." },
-  { img: "/assets/case-solourb.jpg", name: "SOLO URB", tag: "STREETWEAR E SNEAKERS", copy: "Lançamentos, categorias e páginas de produto com reserva pela sacola." },
+  { img: "/assets/case-xavier-full.jpg", w: 900, h: 16638, dur: "44s", url: "https://xavier-s-sports.vercel.app/", dom: "xavier-s-sports.vercel.app", name: "XAVIER'S SPORTS", tag: "CAMISAS ESPORTIVAS", copy: "Catálogo por clubes, seleções e modelos retrô, com pedido direto no WhatsApp." },
+  { img: "/assets/case-solourb-full.jpg", w: 900, h: 21356, dur: "56s", url: "https://s-lo-urb.vercel.app/", dom: "s-lo-urb.vercel.app", name: "SOLO URB", tag: "STREETWEAR E SNEAKERS", copy: "Lançamentos, categorias e páginas de produto com reserva pela sacola." },
 ];
 export function Projects() {
   return <section className={`${s.section} ${s.dark}`} id="projetos">
@@ -140,11 +143,21 @@ export function Projects() {
       <h2>UMA DIREÇÃO CRIADA PARA CADA LOJA.</h2>
       <div className={s.projects}>
         {projects.map(x => <article key={x.name}>
-          <div className={s.cover}><Image src={x.img} fill sizes="(max-width: 800px) 100vw, 44vw" alt={`Vitrine digital do projeto ${x.name}`} /></div>
+          <div className={s.browser}>
+            <div className={s.browserBar}>
+              <span className={s.dots} aria-hidden><i /><i /><i /></span>
+              <span className={s.urlChip}>{x.dom}</span>
+              <span className={s.live}>● NO AR</span>
+            </div>
+            <a className={s.cover} href={x.url} target="_blank" rel="noopener" aria-label={`Abrir o site do projeto ${x.name} em nova aba`}>
+              {/* img simples: o otimizador de imagem não lida bem com capturas de 20 mil pixels */}
+              <img className={s.pageShot} src={x.img} width={x.w} height={x.h} style={{ "--dur": x.dur } as React.CSSProperties} alt={`Página completa da vitrine da ${x.name}`} loading="lazy" decoding="async" />
+            </a>
+          </div>
           <small>{x.tag}</small>
           <h3>{x.name}</h3>
           <p>{x.copy}</p>
-          <a className={`${s.button} ${s.outlineDark}`} href={x.img} target="_blank" rel="noopener">ABRIR PROJETO ↗</a>
+          <a className={`${s.button} ${s.outlineDark}`} href={x.url} target="_blank" rel="noopener">ABRIR PROJETO ↗</a>
         </article>)}
       </div>
       <p className={s.note}>Alguns projetos são conceitos demonstrativos criados para apresentar possibilidades de aplicação.</p>
@@ -157,8 +170,8 @@ const included = [
   ["Página inicial e catálogo", "Categorias e produtos organizados."],
   ["Página de produto", "Fotos, descrição, preço e variações."],
   ["WhatsApp integrado", "Mensagem automática com o produto escolhido."],
-  ["Até 20 produtos", "Cadastro inicial incluso."],
-  ["Publicação completa", "Responsividade, domínio e uma rodada de ajustes."],
+  ["Até 20 produtos", "Eu cadastro tudo para você no lançamento."],
+  ["Publicação completa", "Sua página no ar, com domínio configurado e uma rodada de ajustes."],
 ];
 export function Included() {
   return <section className={s.section} id="inclui">
@@ -206,7 +219,7 @@ export function Offer() {
           <Button onClick={() => choose("Entrada de R$500")} cta="oferta_entrada">COMEÇAR COM R$500 ↗</Button>
           <Button onClick={() => choose("À vista R$999")} outline cta="oferta_avista">PAGAR R$999 À VISTA</Button>
           <a className={s.ghost} href={whatsapp} target="_blank" rel="noopener" data-cta="oferta_whats" data-cta-dest="whatsapp">TIRAR DÚVIDAS NO WHATSAPP</a>
-          <small className={s.micro}>O saldo é pago depois da apresentação e aprovação do projeto.</small>
+          <small className={s.micro}>Você paga o saldo somente depois da apresentação e aprovação do projeto.</small>
         </article>
         <form ref={formRef} onSubmit={submit} className={s.form} id="contratar">
           <p className={s.formTitle}>COMECE AGORA<br /><span>Plano escolhido: {plan}</span></p>
@@ -215,7 +228,7 @@ export function Offer() {
           <label>NOME DA LOJA<input name="loja" required /></label>
           <label>INSTAGRAM<input name="instagram" placeholder="@sualoja" required /></label>
           <button className={`${s.button} ${s.primary}`}>CONTINUAR CONTRATAÇÃO ↗</button>
-          <p className={s.micro} role="status">{status || "Nenhum dado de cartão é solicitado nesta etapa."}</p>
+          <p className={s.micro} role="status">{status || "Ao continuar, você confirma os detalhes comigo no WhatsApp. Não peço dados de cartão nesta etapa."}</p>
         </form>
       </div>
     </div>
@@ -226,7 +239,7 @@ const process = [
   ["Contratação", "Você paga R$500 e envia o briefing."],
   ["Criação", "Eu desenvolvo a estrutura, o design e o catálogo."],
   ["Aprovação", "Você revisa e solicita a rodada de ajustes."],
-  ["Publicação", "Após a aprovação e o saldo, a página entra no ar."],
+  ["Publicação", "Após a aprovação e o pagamento do saldo, a página entra no ar."],
 ];
 export function Process() {
   return <section className={`${s.section} ${s.dark}`}>
@@ -245,7 +258,7 @@ export function Process() {
 const faq = [
   ["A vitrine recebe pagamentos dos meus clientes?", "Não. A vitrine organiza o catálogo e leva o pedido pronto para o WhatsApp da loja, onde você combina pagamento e entrega."],
   ["Quantos produtos estão incluídos?", "Até 20 produtos no cadastro inicial. Novos cadastros podem ser combinados depois."],
-  ["Existe mensalidade?", "Não. O projeto custa R$999 uma única vez. Serviços externos, como domínio próprio, podem ter custos anuais próprios."],
+  ["Existe mensalidade?", "Não. O projeto custa R$999 uma única vez. Serviços externos, como domínio próprio, podem ter custo anual à parte."],
   ["Posso atualizar depois?", "Sim. Você pode solicitar atualizações pontuais ou combinar um pacote de manutenção quando precisar."],
   ["Quanto tempo demora?", "Até 7 dias úteis depois do envio de todos os materiais da loja."],
   ["Preciso pagar tudo antes?", "Não. São R$500 para iniciar e R$499 somente depois da apresentação e aprovação do projeto."],
@@ -265,7 +278,7 @@ export function FinalCTA() {
     <section className={`${s.section} ${s.dark} ${s.final}`}>
       <Eyebrow>AGENDA ABERTA</Eyebrow>
       <h2>SUA LOJA JÁ TEM PRODUTOS. AGORA PRECISA <em>FACILITAR A ESCOLHA.</em></h2>
-      <p className={s.lead}>Transforme o link da bio em uma vitrine profissional e receba clientes mais preparados no WhatsApp.</p>
+      <p className={s.lead}>Transforme o link da bio em uma vitrine profissional e atenda clientes que já escolheram o que querem.</p>
       <div className={s.actions}>
         <Button href="#oferta" cta="final">COMEÇAR MINHA VITRINE ↗</Button>
         <a className={s.ghost} href={whatsapp} target="_blank" rel="noopener" data-cta="final_whats" data-cta-dest="whatsapp">FALAR COM RAFAEL</a>
