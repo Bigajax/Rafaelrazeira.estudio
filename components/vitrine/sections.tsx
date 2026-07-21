@@ -61,7 +61,7 @@ export function Hero() {
           <Button href="#oferta" cta="hero">COMEÇAR COM R$500 ↗</Button>
           <a className={s.ghost} href="#projetos" data-cta="hero_projetos" data-cta-dest="projetos">VER PROJETOS ↓</a>
         </div>
-        <small className={s.micro}>PROJETO COMPLETO POR R$999 · ATÉ 20 PRODUTOS · ENTREGA EM ATÉ 7 DIAS ÚTEIS</small>
+        <small className={s.micro}>PROJETO COMPLETO POR R$999 · 20 PRODUTOS CADASTRADOS PARA VOCÊ · ENTREGA EM ATÉ 7 DIAS ÚTEIS</small>
       </div>
       <div className={s.heroVisual}>
         <div className={s.phone} role="img" aria-label="Demonstração da vitrine da Xavier's Sports: o cliente navega no catálogo, abre a camisa Brasil Retrô 2004, escolhe o tamanho M e envia o pedido pelo WhatsApp">
