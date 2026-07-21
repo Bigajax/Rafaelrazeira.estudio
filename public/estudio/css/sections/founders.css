@@ -1,0 +1,94 @@
+/* ============================================================
+   PROJETOS FUNDADORES — seção escura: card central com borda
+   esmeralda sutil, checklist de benefícios e CTA com glow.
+   Tom: acesso antecipado ao estúdio — exclusividade, não promoção.
+   ============================================================ */
+.founders{background:var(--black);color:var(--off-white)}
+.founders .wrap{display:flex;justify-content:center}
+
+.founders__card{
+  position:relative;max-width:880px;width:100%;
+  text-align:center;
+  border:1px solid rgba(16,185,129,.28);
+  border-radius:28px;
+  padding:clamp(40px,8vw,88px) clamp(24px,6vw,80px);
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(16,185,129,.06), transparent 55%),
+    rgba(255,255,255,.015);
+  transition:border-color .4s;
+}
+.founders__card:hover{border-color:rgba(16,185,129,.45)}
+
+/* Ícone discreto de diamante acima do eyebrow */
+.founders__icon{
+  display:block;font-size:15px;line-height:1;color:var(--emerald);
+  opacity:.85;margin-bottom:clamp(20px,4vw,28px);
+}
+.founders__eyebrow{justify-content:center}
+
+.founders__title{
+  margin:clamp(20px,4vw,32px) auto 0;max-width:24ch;
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.5rem,5.6vw,2.7rem);line-height:1.02;letter-spacing:-.03em;
+}
+.founders__text{
+  margin:clamp(20px,4vw,28px) auto 0;max-width:56ch;
+  font-size:clamp(1rem,4vw,1.15rem);line-height:1.55;color:rgba(255,255,255,.6);
+}
+
+/* Checklist de benefícios — 2 colunas no desktop, lista com respiro no mobile */
+.founders__benefits{
+  list-style:none;margin:clamp(32px,6vw,48px) auto 0;max-width:640px;
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;text-align:left;
+}
+.founders__benefit{
+  display:flex;align-items:center;gap:12px;
+  border:1px solid var(--line-dark);border-radius:14px;
+  padding:16px 18px;
+  font-size:clamp(.95rem,3.6vw,1.02rem);font-weight:500;color:rgba(255,255,255,.82);
+  transition:border-color .3s,transform .3s,background .3s;
+}
+.founders__benefit:hover{
+  border-color:rgba(16,185,129,.45);background:rgba(16,185,129,.05);
+  transform:translateY(-2px);
+}
+/* 5º item (ímpar) ocupa a linha inteira, centrado */
+.founders__benefit:last-child{grid-column:1/-1;justify-content:center}
+.founders__check{color:var(--emerald);font-weight:700;flex:none}
+
+/* Bloco de escassez — discreto, em mono, sem cara de liquidação */
+.founders__limited{
+  margin:clamp(28px,5vw,40px) auto 0;max-width:52ch;
+  font-family:var(--font-mono);font-size:clamp(11px,3vw,12.5px);font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;line-height:1.8;
+  color:rgba(255,255,255,.55);
+}
+
+.founders__action{margin-top:clamp(28px,5vw,40px)}
+.founders__cta-line{
+  font-size:clamp(1.02rem,4vw,1.2rem);font-weight:600;color:var(--off-white);
+}
+.founders__btn{
+  display:inline-flex;align-items:center;gap:14px;justify-content:center;
+  margin-top:20px;padding:20px clamp(24px,5vw,40px);
+  border:1.5px solid var(--emerald);border-radius:2px;
+  font-family:var(--font-mono);font-weight:700;font-size:clamp(11.5px,3.2vw,14px);
+  letter-spacing:.04em;text-transform:uppercase;color:var(--off-white);
+  background:rgba(16,185,129,.07);
+  box-shadow:0 0 28px -6px rgba(16,185,129,.35);
+  transition:background .3s,box-shadow .3s,color .3s;
+  white-space:nowrap;
+}
+.founders__btn:hover{
+  background:var(--emerald);color:var(--black);
+  box-shadow:0 0 44px -4px rgba(16,185,129,.6);
+}
+.founders__btn .arrow{color:var(--emerald);transition:color .3s,transform .25s}
+.founders__btn:hover .arrow{color:var(--black);transform:translate(3px,-3px)}
+
+/* Mobile: benefícios em coluna única, mantendo o respiro */
+@media(max-width:640px){
+  .founders__benefits{grid-template-columns:1fr;gap:10px}
+  .founders__benefit:last-child{justify-content:flex-start}
+  .founders__btn{width:100%}
+}

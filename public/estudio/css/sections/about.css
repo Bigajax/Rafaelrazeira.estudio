@@ -1,0 +1,27 @@
+/* ============================================================
+   QUEM SOMOS — label à esquerda, texto grande à direita
+   ============================================================ */
+.about .wrap{display:grid;grid-template-columns:1fr;gap:clamp(24px,5vw,40px)}
+@media(min-width:820px){.about .wrap{grid-template-columns:minmax(120px,180px) 1fr}}
+.about__text{font-size:clamp(1.5rem,6vw,2.6rem);line-height:1.2;font-weight:500;letter-spacing:-.02em}
+.about__text p+p{margin-top:1em}
+.about__text b{font-weight:700}
+.about__text .muted{color:var(--ink-60)}
+/* 2º parágrafo menor: o 1º é a tese, o 2º é o desdobramento (como a referência) */
+.about__text p:nth-of-type(2){font-size:.72em;line-height:1.35;letter-spacing:-.01em}
+/* Link de conversa com seta e sublinhado esmeralda, fechando a seção */
+.about__cta{
+  display:inline-flex;align-items:center;gap:12px;margin-top:clamp(40px,7vw,64px);
+  padding-bottom:8px;border-bottom:2px solid var(--emerald);
+  font-size:clamp(1.1rem,2.6vw,1.5rem);font-weight:600;letter-spacing:0;
+  transition:opacity .25s,gap .25s;
+}
+.about__cta:hover{opacity:.6;gap:18px}
+.about__cta .arrow{color:var(--emerald-dark);font-size:1.15em}
+
+/* —— Mobile: mais ar entre os blocos e texto um ponto maior —— */
+@media(max-width:640px){
+  .about .wrap{gap:20px}
+  .about__text{font-size:clamp(1.55rem,6.8vw,2rem);line-height:1.22}
+  .about__text p+p{margin-top:.9em}
+}

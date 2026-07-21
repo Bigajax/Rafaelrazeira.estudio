@@ -1,12 +1,22 @@
 {
   "name": "rafael-razeira-estudio",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
-  "description": "Landing page one-page — HTML + CSS + JS puro, sem build",
   "scripts": {
-    "dev": "serve . -l 3000"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "^15.5.20",
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
   },
   "devDependencies": {
-    "serve": "^14.2.4"
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.7.0"
   }
 }

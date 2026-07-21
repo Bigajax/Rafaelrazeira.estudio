@@ -1,0 +1,8 @@
+Coloque aqui as imagens dos cases e as capas dos depoimentos.
+
+Sugestão de nomes:
+  case-1.jpg, case-2.jpg, case-3.jpg      (mockups dos projetos — proporção ~4:5)
+  depoimento-1.jpg, depoimento-2.jpg      (capas dos vídeos — proporção ~9:13)
+
+Depois aponte o caminho em js/config.js, ex.:
+  img: "assets/case-1.jpg"

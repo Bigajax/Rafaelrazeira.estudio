@@ -1,0 +1,57 @@
+/* ============================================================
+   LOADER — tela de carregamento (logo + "CARREGANDO…") que se
+   desfaz em quadrados pretos, de baixo para cima (pixel dissolve).
+   O overlay é HTML estático no index.html: pinta preto no primeiro
+   frame, antes de qualquer JS. A grade de quadrados é montada por
+   js/lib/loader.js só na hora da saída.
+   ============================================================ */
+.loader{
+  position:fixed;inset:0;z-index:999;
+  background:#0A0A0A;
+  display:flex;align-items:center;justify-content:center;
+}
+/* trava o scroll enquanto o loader está na tela */
+body.loading{overflow:hidden}
+
+.loader__center{
+  position:relative;z-index:2;
+  display:flex;flex-direction:column;align-items:center;gap:0;
+  transition:opacity .35s ease;
+}
+.loader.leaving .loader__center{opacity:0}
+
+.loader__logo{
+  width:min(64vw,360px);height:auto;display:block;
+  /* funde as bordas da imagem (vinheta cinza) no preto do overlay */
+  -webkit-mask-image:radial-gradient(closest-side,#000 55%,transparent 98%);
+          mask-image:radial-gradient(closest-side,#000 55%,transparent 98%);
+}
+.loader__text{
+  margin-top:-6px;
+  font-family:var(--font-mono);font-size:11px;font-weight:400;
+  letter-spacing:.42em;text-indent:.42em;text-transform:uppercase;
+  color:rgba(255,255,255,.85);
+  animation:loader-pulse 1.6s ease-in-out infinite;
+}
+@keyframes loader-pulse{0%,100%{opacity:.85}50%{opacity:.35}}
+
+/* Grade da saída: cada célula é um "pixel" preto que some sozinho.
+   Enquanto a grade existe, ela é o fundo — o overlay fica transparente. */
+.loader__grid{
+  position:absolute;inset:0;z-index:1;
+  display:grid;overflow:hidden;
+}
+.loader.leaving{background:transparent}
+.loader__grid span{
+  background:#0A0A0A;
+  /* cobre as emendas subpixel entre as células (sem isso aparecem fiapos claros) */
+  box-shadow:0 0 0 1px #0A0A0A;
+  opacity:1;transition:opacity .22s ease;
+}
+.loader.leaving .loader__grid span{opacity:0}
+
+@media(prefers-reduced-motion:reduce){
+  .loader{transition:opacity .4s ease}
+  .loader.leaving{background:#0A0A0A;opacity:0}
+  .loader__text{animation:none}
+}

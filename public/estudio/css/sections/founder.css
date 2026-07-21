@@ -1,0 +1,60 @@
+/* ============================================================
+   FOUNDER — foto P&B central, nome gigante sobreposto,
+   letreiros clarinhos deslizando ao fundo
+   ============================================================ */
+/* fundo explícito na seção: é contra ele que o mix-blend do nome calcula o preto */
+.founder{position:relative;overflow:hidden;background:var(--off-white)}
+
+/* —— Letreiros de fundo (quase invisíveis, bem lentos) —— */
+/* sem z-index: a ordem no DOM já coloca o letreiro atrás e mantém o blend no mesmo contexto */
+.founder__bg{
+  position:absolute;inset:0;pointer-events:none;
+  display:flex;flex-direction:column;gap:clamp(20px,4vw,56px);
+  padding-top:clamp(16px,3vw,40px);
+}
+.founder__bgrow{white-space:nowrap;overflow:hidden}
+.founder__bgtrack{display:inline-flex;animation:founderbg 90s linear infinite}
+.founder__bgtrack--rev{animation-direction:reverse}
+.founder__bgtrack span{
+  font-family:var(--font-body);font-weight:700;text-transform:uppercase;
+  font-size:clamp(4rem,10vw,11rem);line-height:1.15;letter-spacing:-.02em;
+  color:rgba(10,10,10,.05);padding:0 .3em;
+}
+@keyframes founderbg{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* —— Foto central + nome estourado —— */
+.founder__stage{position:relative;z-index:1;display:flex;justify-content:center}
+.founder__photo{width:min(560px,86%);margin:0;border-radius:clamp(16px,3vw,24px);overflow:hidden}
+.founder__photo img{width:100%;height:auto;display:block;filter:grayscale(1)}
+/* nome alinhado ao grid de conteúdo (respeita as margens laterais da página) */
+.founder__name{position:absolute;inset:0 var(--pad);pointer-events:none;margin:0}
+.founder__first,.founder__last{
+  position:absolute;
+  /* grotesca bold (como a referência), não o display condensado */
+  font-family:var(--font-body);font-weight:700;text-transform:uppercase;
+  font-size:clamp(2.8rem,9.5vw,10rem);line-height:1;letter-spacing:-.02em;
+  /* esmeralda: legível sobre a foto escura e sobre o fundo claro */
+  color:var(--emerald);
+}
+/* nomes escalonados na metade de baixo da foto, um logo após o outro */
+.founder__first{left:0;top:46%}
+.founder__last{right:0;top:62%}
+/* Mobile: nomes grandes como a referência, escalonados na base da foto */
+@media(max-width:640px){
+  .founder__first,.founder__last{font-size:clamp(2.4rem,15vw,3.8rem)}
+  .founder__first{top:52%}
+  .founder__last{top:68%}
+  .founder__photo{width:88%}
+}
+
+/* —— Bio: headline grande + parágrafos deslocados à direita —— */
+.founder__body{position:relative;z-index:1;margin-top:clamp(56px,9vw,120px)}
+.founder__headline{
+  font-family:var(--font-body);font-weight:500;text-transform:uppercase;
+  font-size:clamp(1.9rem,4.4vw,4.2rem);line-height:1.08;letter-spacing:-.02em;
+  max-width:19ch;
+}
+.founder__text{margin-top:clamp(32px,6vw,72px);max-width:62ch}
+@media(min-width:900px){.founder__text{margin-left:38%}}
+.founder__text p{font-size:clamp(1.05rem,1.4vw,1.3rem);line-height:1.6}
+.founder__text p+p{margin-top:1em}

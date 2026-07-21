@@ -1,0 +1,59 @@
+/* ============================================================
+   FOOTER — escuro, redes no topo, nome gigante cortado na base
+   ============================================================ */
+.site-footer{
+  background:var(--black);color:var(--off-white);
+  padding-top:clamp(48px,7vw,96px);overflow:hidden;
+}
+
+/* Redes / contato */
+.footer__social{display:flex;flex-wrap:wrap;gap:clamp(24px,4vw,56px)}
+.footer__social a{
+  font-family:var(--font-body);font-weight:700;font-size:12px;
+  letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.55);
+  transition:color .25s;
+}
+.footer__social a:hover{color:#fff}
+
+/* Localização */
+.footer__location{
+  margin-top:clamp(48px,8vw,110px);
+  font-family:var(--font-body);font-weight:700;font-size:12px;
+  letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.35);
+}
+
+/* Barra: copyright + links legais */
+.footer__bar{
+  margin-top:clamp(56px,9vw,130px);
+  display:flex;flex-wrap:wrap;gap:16px 48px;align-items:center;justify-content:space-between;
+  font-family:var(--font-body);font-weight:700;font-size:11px;
+  letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.85);
+}
+.footer__legal{display:flex;flex-wrap:wrap;gap:16px 40px}
+.footer__legal a{transition:color .25s}
+.footer__legal a:hover{color:var(--emerald)}
+
+/* Nome gigante rolando, cortado na base (translateY empurra além da borda;
+   o overflow:hidden do footer faz o corte) */
+.footer__brand{margin-top:clamp(40px,6vw,80px);white-space:nowrap;overflow:hidden;transform:translateY(14%)}
+.footer__brandtrack{
+  display:inline-flex;will-change:transform;
+  animation:footerbrand 50s linear infinite;
+  transform-origin:left bottom;
+}
+.footer__brandtrack span{
+  font-family:var(--font-body);font-weight:400;text-transform:uppercase;
+  font-size:clamp(4rem,13vw,15rem);line-height:.78;letter-spacing:-.03em;color:#fff;
+}
+@keyframes footerbrand{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* —— Mobile: ritmo vertical mais curto e blocos bem separados —— */
+@media(max-width:640px){
+  .site-footer{padding-top:40px}
+  .footer__social{gap:18px 28px}
+  .footer__location{margin-top:36px}
+  .footer__bar{margin-top:44px;flex-direction:column;align-items:flex-start;gap:20px}
+  .footer__bar>span{color:rgba(255,255,255,.45)}   /* copyright recua, links legais ganham foco */
+  .footer__legal{gap:8px 28px}
+  .footer__brand{margin-top:32px}
+}

@@ -1,0 +1,26 @@
+/* ============================================================
+   COMO FUNCIONA — 3 passos numerados (mesma linguagem dos
+   blocos 01/02/03 da seção "para quem é")
+   ============================================================ */
+.process__label{margin-bottom:clamp(36px,7vw,60px)}
+.proc__list{list-style:none;margin:0;padding:0}
+.proc__step{
+  padding-block:clamp(32px,6vw,52px);border-top:1px solid var(--line);
+  display:grid;grid-template-columns:1fr;gap:16px;
+}
+.proc__step:last-child{border-bottom:1px solid var(--line)}
+@media(min-width:820px){.proc__step{grid-template-columns:110px 1fr}}
+.proc__num{font-family:var(--font-mono);font-weight:700;font-size:clamp(1rem,4vw,1.35rem);color:var(--emerald-dark);letter-spacing:.02em}
+.proc__title{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.4rem,6vw,2.4rem);line-height:1.02;letter-spacing:-.025em}
+.proc__text{margin-top:16px;font-size:clamp(1rem,4vw,1.2rem);color:var(--ink-60);line-height:1.45;max-width:52ch}
+
+/* Resumo da garantia — linha mono que leva ao bloco completo antes do formulário */
+.proc__note{
+  display:inline-flex;align-items:center;gap:12px;margin-top:clamp(28px,5vw,44px);
+  font-family:var(--font-mono);font-weight:700;font-size:clamp(12px,3.2vw,14px);
+  letter-spacing:.06em;text-transform:uppercase;color:var(--emerald-dark);
+  transition:color .2s;
+}
+.proc__note .arrow{transition:transform .2s}
+.proc__note:hover{color:var(--black)}
+.proc__note:hover .arrow{transform:translateX(4px)}

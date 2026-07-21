@@ -1,0 +1,138 @@
+/* ============================================================
+   BASE — tokens, reset e componentes compartilhados
+   (cores, tipografia, botões, pill, status, grid, animações)
+   Edite AQUI para mudanças globais. Estilos de cada seção ficam
+   em css/sections/<nome>.css
+   ============================================================ */
+:root{
+  /* —— Cor principal da marca: ESMERALDA —— */
+  --emerald:#10B981;         /* base — CTAs, status, destaques */
+  --emerald-dark:#065F46;    /* hover / fundos escuros de apoio */
+  --emerald-light:#D1FAE5;   /* fundo do CTA pill flutuante */
+
+  /* —— Neutros —— */
+  --off-white:#FAFAF7;
+  --black:#0A0A0A;
+  --ink-60:rgba(10,10,10,.60);
+  --ink-40:rgba(10,10,10,.40);
+  --line:rgba(10,10,10,.10);
+  --line-dark:rgba(255,255,255,.10);
+
+  /* —— Layout —— */
+  --maxw:1760px;   /* container largo, margens enxutas como a referência */
+  --pad:clamp(20px, 6vw, 72px);
+  --pill-h:88px;
+
+  /* —— Tipografia —— */
+  --font-display:"Archivo", "Arial Narrow", system-ui, sans-serif; /* headlines */
+  --font-body:"Inter", system-ui, -apple-system, sans-serif;        /* corpo */
+  --font-mono:"Space Mono", ui-monospace, monospace;                /* labels / dados */
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font-body);
+  background:var(--off-white);
+  color:var(--black);
+  line-height:1.5;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--emerald);outline-offset:3px}
+
+/* ---------- Linhas verticais de grid ---------- */
+.grid-lines{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  max-width:var(--maxw);margin:0 auto;
+  display:flex;justify-content:space-between;padding:0 var(--pad);
+}
+.grid-lines span{width:1px;background:var(--line)}
+.grid-lines span:first-child,.grid-lines span:last-child{opacity:0}
+@media (max-width:640px){ .grid-lines span:nth-child(2),.grid-lines span:nth-child(4){display:none} }
+
+/* conteúdo acima das linhas */
+.site-header,main,.site-footer,.pill{position:relative;z-index:1}
+
+/* ---------- Largura ---------- */
+.wrap{max-width:var(--maxw);margin:0 auto;padding-left:var(--pad);padding-right:var(--pad)}
+section{padding-block:clamp(64px,12vw,140px)}
+
+/* ---------- Eyebrow + status pulsante (ASSINATURA) ---------- */
+.eyebrow{
+  display:inline-flex;align-items:center;gap:12px;flex-wrap:wrap;
+  font-family:var(--font-mono);font-size:clamp(11px,3vw,13px);font-weight:400;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--ink-60);
+}
+.status{color:var(--emerald-dark);font-weight:700;white-space:nowrap}
+/* Mobile: tagline desce para a própria linha, sem o traço solto */
+@media(max-width:560px){
+  .eyebrow__dash{display:none}
+  .eyebrow__tagline{
+    flex-basis:100%;margin-top:2px;line-height:1.6;
+    font-size:10px;letter-spacing:.04em;   /* cabe numa linha só em telas ≥360px */
+  }
+}
+.dark .status{color:var(--emerald)}
+.dot{
+  width:12px;height:12px;border-radius:50%;background:var(--emerald);flex:none;position:relative;
+}
+.dot::after{
+  content:"";position:absolute;inset:0;border-radius:50%;background:var(--emerald);
+  animation:pulse 2.2s ease-out infinite;
+}
+@keyframes pulse{0%{transform:scale(1);opacity:.6}70%{transform:scale(2.6);opacity:0}100%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.dot::after{animation:none}}
+
+/* ---------- Label de seção (bold compacto, como a referência) ---------- */
+.section-label{
+  font-family:var(--font-body);font-weight:700;text-transform:uppercase;
+  font-size:clamp(12px,3.2vw,14px);letter-spacing:.02em;color:var(--black);
+}
+
+/* ---------- Botão outline ---------- */
+.btn-outline{
+  display:inline-flex;align-items:center;gap:16px;justify-content:center;
+  border:1.5px solid var(--black);padding:20px 28px;width:100%;
+  font-family:var(--font-mono);font-weight:700;font-size:clamp(12px,3.4vw,14px);
+  letter-spacing:.04em;text-transform:uppercase;background:transparent;color:var(--black);
+  transition:background .25s,color .25s;
+}
+@media(min-width:560px){.btn-outline{width:auto}}
+.btn-outline:hover{background:var(--black);color:var(--off-white)}
+.btn-outline .arrow{font-size:1.2em;transition:transform .25s}
+.btn-outline:hover .arrow{transform:translate(3px,-3px)}
+
+/* ---------- CTA PILL flutuante (fixo em todas as seções) ---------- */
+.pill{
+  position:fixed;left:50%;transform:translateX(-50%);bottom:clamp(16px,4vw,28px);z-index:50;
+  display:inline-flex;align-items:center;gap:8px;justify-content:center;
+  width:min(92vw,560px);padding:20px clamp(24px,6vw,40px);
+  background:var(--emerald-light);color:var(--black);border-radius:999px;
+  box-shadow:0 10px 40px -8px rgba(6,95,70,.45);
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(15px,4.2vw,19px);letter-spacing:.01em;
+  transition:transform .2s,box-shadow .2s,opacity .3s;
+}
+.pill:hover{transform:translateX(-50%) translateY(-2px);box-shadow:0 16px 48px -8px rgba(6,95,70,.55)}
+.pill .arrow{font-size:1.15em}
+.pill .divider{width:1px;height:22px;background:rgba(10,10,10,.25);margin:0 6px}
+/* Desktop: pill ancorado no canto inferior direito (como um botão flutuante) */
+@media(min-width:1024px){
+  .pill{left:auto;right:clamp(24px,3vw,48px);transform:none;width:auto;min-width:0;padding:20px 36px}
+  .pill:hover{transform:translateY(-2px)}
+}
+/* Mobile: pill mais compacto para cobrir menos conteúdo */
+@media(max-width:560px){
+  :root{--pill-h:60px}
+  .pill{width:auto;min-width:64vw;padding:14px 24px;font-size:14px;bottom:14px;white-space:nowrap}
+  .pill .divider{height:16px}
+}
+
+/* ---------- Reveal on scroll ---------- */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+.reveal.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}

@@ -1,0 +1,6 @@
+/* ============================================================
+   PILL — estilos do CTA flutuante ficam em base.css (.pill),
+   pois é um componente global reutilizado.
+   Este arquivo existe para overrides específicos, se precisar.
+   ============================================================ */
+.pill.is-hidden{opacity:0;pointer-events:none}

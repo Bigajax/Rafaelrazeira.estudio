@@ -1,0 +1,234 @@
+/* ============================================================
+   CONTATO / CTA FINAL — seção ESCURA: headline, escassez,
+   e-mail e formulário em glassmorphism sobre preto.
+   ============================================================ */
+.contact{position:relative;overflow:hidden;background:var(--black);color:var(--off-white)}
+.contact__head{
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(2.4rem,11vw,6.5rem);line-height:.92;letter-spacing:-.035em;margin-top:clamp(20px,4vw,28px);
+}
+.contact__intro{margin-top:clamp(24px,4vw,32px);max-width:54ch;font-size:clamp(1rem,4vw,1.15rem);line-height:1.4;color:rgba(255,255,255,.6)}
+.contact__scarcity{margin-top:16px;max-width:48ch;font-size:clamp(1rem,4vw,1.15rem);color:var(--off-white);font-weight:500;line-height:1.5}
+.contact__email{
+  display:inline-flex;gap:12px;align-items:center;margin-top:clamp(28px,5vw,40px);
+  font-family:var(--font-mono);font-size:clamp(1rem,4vw,1.25rem);font-weight:700;
+}
+.contact__email:hover{color:var(--emerald)}
+.contact__email .arrow{color:var(--emerald)}
+
+/* —— Brilho atrás do vidro (neutro: é ele que o blur revela) —— */
+.contact__glow{position:absolute;inset:0;pointer-events:none}
+.contact__glow span{position:absolute;border-radius:50%;filter:blur(90px)}
+.contact__glow span:first-child{
+  width:560px;height:560px;left:-8%;bottom:12%;
+  background:rgba(255,255,255,.07);
+}
+.contact__glow span:last-child{
+  width:480px;height:480px;right:0;bottom:-6%;
+  background:rgba(255,255,255,.12);
+}
+
+/* —— Bloco de garantia (risco reverso) — destaque esmeralda antes do formulário —— */
+.guarantee{
+  position:relative;display:block;margin-top:clamp(40px,7vw,64px);max-width:1080px;
+  background:var(--emerald-light);color:var(--black);
+  border-radius:24px;padding:clamp(24px,5vw,44px);
+  box-shadow:0 24px 60px -24px rgba(6,95,70,.55);
+}
+.guarantee__label{
+  display:inline-block;font-family:var(--font-mono);font-size:12px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--emerald-dark);
+}
+.guarantee__title{
+  margin-top:12px;font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.6rem,6.5vw,2.8rem);line-height:.98;letter-spacing:-.03em;
+}
+.guarantee__text{
+  margin-top:16px;max-width:58ch;
+  font-size:clamp(1rem,4vw,1.15rem);line-height:1.5;color:rgba(10,10,10,.72);
+}
+.guarantee__text b{color:var(--black);font-weight:600}
+
+/* Microcopy de investimento — âncora de preço logo acima do formulário */
+.contact__pricing{
+  margin-top:clamp(24px,4vw,32px);
+  font-family:var(--font-mono);font-size:clamp(13px,3.4vw,15px);font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.6);
+}
+.contact__pricing b{color:var(--off-white);font-weight:700}
+/* Por que "a partir de": o que faz o valor variar */
+.contact__pricing-note{
+  margin-top:10px;max-width:52ch;
+  font-size:clamp(.9rem,3.4vw,1rem);line-height:1.5;color:rgba(255,255,255,.5);
+}
+
+/* —— Card do formulário: vidro escuro —— */
+.form-card{
+  position:relative;margin-top:clamp(16px,3vw,24px);max-width:1080px;
+  background:rgba(255,255,255,.07);
+  -webkit-backdrop-filter:blur(24px) saturate(140%);
+  backdrop-filter:blur(24px) saturate(140%);
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:24px;padding:clamp(20px,5vw,40px);
+  box-shadow:0 24px 60px -24px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.12);
+}
+
+/* Stepper visual 01 → 02 */
+.stepper{
+  display:flex;gap:8px;border-radius:999px;padding:6px;margin-bottom:clamp(28px,5vw,40px);
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+}
+.step{
+  flex:1;display:flex;flex-direction:column;justify-content:center;gap:2px;
+  padding:12px 18px;border-radius:999px;line-height:1.3;font-family:var(--font-body);
+}
+.step small{display:block;font-weight:700;font-size:11px;letter-spacing:.08em}
+.step span{font-size:clamp(11px,3vw,13px);font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.step--active{background:var(--off-white);color:var(--black)}
+.step--muted{color:rgba(255,255,255,.4)}
+.step--muted small{color:rgba(255,255,255,.4)}
+
+/* —— Formulário em 2 passos —— */
+.fstep{border:none;margin:0;padding:0;display:none}
+.fstep.is-active{display:block}
+.fstep .btn-submit{margin-top:clamp(8px,2vw,12px)}
+
+/* Erro inline por campo */
+.field__err{
+  margin-top:8px;font-size:13px;font-weight:500;color:#FCA5A5;
+}
+.field input.is-invalid{
+  border-color:rgba(248,113,113,.75);
+  box-shadow:0 0 0 4px rgba(248,113,113,.15);
+}
+
+/* Voltar (link discreto no passo 2) */
+.btn-voltar{
+  display:block;margin:14px auto 0;background:none;border:none;
+  font-family:var(--font-mono);font-weight:700;font-size:12px;
+  letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.45);
+  transition:color .2s;
+}
+.btn-voltar:hover{color:var(--off-white)}
+
+.form-note--erro{color:#FCA5A5}
+
+/* Campos */
+.field{margin-bottom:clamp(18px,3.5vw,26px)}
+.field label{display:block;font-size:clamp(.95rem,3.6vw,1.1rem);font-weight:600;margin-bottom:10px;color:var(--off-white)}
+.field input{
+  width:100%;border:1px solid rgba(255,255,255,.16);border-radius:14px;
+  background:rgba(255,255,255,.07);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  padding:16px;font-family:inherit;font-size:16px;color:var(--off-white);
+  transition:border-color .2s,box-shadow .2s,background .2s;
+}
+.field input::placeholder{color:rgba(255,255,255,.35)}
+.field input:focus{
+  outline:none;border-color:var(--emerald);background:rgba(255,255,255,.12);
+  box-shadow:0 0 0 4px rgba(16,185,129,.2);
+}
+
+/* Textarea (campo livre de detalhes) — mesma receita dos inputs */
+.field textarea{
+  width:100%;border:1px solid rgba(255,255,255,.16);border-radius:14px;
+  background:rgba(255,255,255,.07);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  padding:16px;font-family:inherit;font-size:16px;color:var(--off-white);
+  resize:none;min-height:96px;
+  transition:border-color .2s,box-shadow .2s,background .2s;
+}
+.field textarea::placeholder{color:rgba(255,255,255,.35)}
+.field textarea:focus{
+  outline:none;border-color:var(--emerald);background:rgba(255,255,255,.12);
+  box-shadow:0 0 0 4px rgba(16,185,129,.2);
+}
+
+/* —— Seleção única em pills (tipo de projeto) — mesma receita de vidro
+      dos inputs; selecionada segue o .dd__opt.is-selected.
+      (".choice" e não ".pill": .pill já é o CTA flutuante em base.css) —— */
+.choices{display:flex;flex-wrap:wrap;gap:10px}
+.choice{position:relative;display:block;cursor:pointer}
+.choice input{position:absolute;inset:0;opacity:0;pointer-events:none}
+.choice span{
+  display:inline-block;border:1px solid rgba(255,255,255,.16);border-radius:999px;
+  background:rgba(255,255,255,.07);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  padding:12px 16px;font-size:15px;color:var(--off-white);
+  transition:border-color .2s,box-shadow .2s,background .2s,color .2s;
+}
+.choice:hover span{background:rgba(16,185,129,.22)}
+.choice input:checked + span{background:var(--off-white);border-color:var(--off-white);color:var(--black)}
+.choice input:focus-visible + span{border-color:var(--emerald);box-shadow:0 0 0 4px rgba(16,185,129,.2)}
+.choices.is-invalid .choice span{border-color:rgba(248,113,113,.75)}
+@media (max-width:520px){.choice{width:100%}.choice span{display:block}}
+
+/* —— Dropdown customizado (vidro ao abrir as perguntas) —— */
+.dd{position:relative}
+.dd__btn{
+  width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  border:1px solid rgba(255,255,255,.16);border-radius:14px;
+  background:rgba(255,255,255,.07);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  padding:16px;font-family:inherit;font-size:16px;color:var(--off-white);text-align:left;
+  transition:border-color .2s,box-shadow .2s,background .2s;
+}
+.dd__btn:focus-visible{outline:none;border-color:var(--emerald);box-shadow:0 0 0 4px rgba(16,185,129,.2)}
+.dd__chev{width:18px;height:18px;flex:none;color:rgba(255,255,255,.6);transition:transform .25s}
+.dd.open .dd__chev{transform:rotate(180deg)}
+.dd.open .dd__btn{border-color:var(--emerald);background:rgba(255,255,255,.12)}
+
+.dd__list{
+  position:absolute;left:0;right:0;top:calc(100% + 8px);z-index:30;
+  list-style:none;margin:0;padding:8px;max-height:300px;overflow:auto;
+  background:rgba(24,24,24,.72);
+  -webkit-backdrop-filter:blur(22px) saturate(140%);
+  backdrop-filter:blur(22px) saturate(140%);
+  border:1px solid rgba(255,255,255,.16);border-radius:16px;
+  box-shadow:0 24px 48px -12px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.12);
+  opacity:0;visibility:hidden;transform:translateY(-6px);pointer-events:none;
+  transition:opacity .22s,transform .22s,visibility .22s;
+}
+.dd.open .dd__list{opacity:1;visibility:visible;transform:none;pointer-events:auto}
+.dd__opt{
+  padding:13px 14px;border-radius:10px;font-size:15px;cursor:pointer;color:var(--off-white);
+  transition:background .15s,color .15s;
+}
+.dd__opt:hover{background:rgba(16,185,129,.22)}
+.dd__opt.is-selected{background:var(--off-white);color:var(--black)}
+
+/* Botão enviar (esmeralda) */
+.btn-submit{
+  width:100%;border:none;border-radius:999px;background:var(--emerald);color:#fff;padding:22px;
+  font-family:var(--font-display);font-weight:900;font-size:clamp(14px,3.8vw,16px);
+  letter-spacing:.03em;text-transform:uppercase;
+  display:inline-flex;align-items:center;justify-content:center;gap:12px;
+  box-shadow:0 12px 32px -12px rgba(16,185,129,.5);
+  transition:background .25s,transform .1s,box-shadow .25s;
+}
+.btn-submit:hover{background:var(--emerald-dark);box-shadow:0 16px 36px -12px rgba(6,95,70,.6)}
+.btn-submit:active{transform:scale(.99)}
+.btn-submit[disabled]{opacity:.7;cursor:progress}
+.form-note{margin-top:16px;text-align:center;font-family:var(--font-body);font-size:12px;font-weight:500;color:rgba(255,255,255,.4)}
+
+/* Sucesso */
+.form-success{display:none;text-align:center;padding:clamp(28px,6vw,48px) 12px}
+.form-success.show{display:block}
+.form-success h3{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.6rem,7vw,2.6rem);letter-spacing:-.02em}
+.form-success p{margin-top:12px;color:rgba(255,255,255,.6);max-width:40ch;margin-inline:auto}
+.form-success__cta{margin-top:clamp(24px,4vw,32px);width:auto;padding:18px 36px}
+.form-card form.hide{display:none}
+
+/* —— Mobile: card mais enxuto, toques maiores —— */
+@media(max-width:640px){
+  .form-card{padding:16px;border-radius:20px}
+  .stepper{padding:5px;gap:6px;margin-bottom:24px}
+  .step{padding:10px 14px}
+  .field{margin-bottom:16px}
+  .dd__opt{padding:14px}          /* alvo de toque maior */
+  .btn-submit{padding:19px}
+  .form-success__cta{width:100%}
+}
+
+/* honeypot escondido */
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}

@@ -1,0 +1,249 @@
+/* ============================================================
+   BRIEFING — página escura standalone (briefing.html)
+   Mesma linguagem da seção de contato: preto, cards glass,
+   labels mono numerados e pill flutuante como envio.
+   Depende de css/base.css (tokens, .wrap, .eyebrow, .dot, .pill).
+   ============================================================ */
+.briefing-page{
+  background:var(--black);
+  color:var(--off-white);
+  /* respiro para o pill flutuante não cobrir o fim do conteúdo */
+  padding-bottom:calc(var(--pill-h) + 48px);
+}
+.briefing-page .grid-lines span{background:var(--line-dark)}
+
+/* ---------- Header enxuto ---------- */
+.bf-header{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding-top:clamp(20px,4vw,32px);position:relative;z-index:1;
+}
+.bf-logo{
+  font-family:var(--font-mono);font-weight:700;font-size:clamp(12px,3.4vw,14px);
+  letter-spacing:.04em;white-space:nowrap;
+}
+.bf-logo span{color:rgba(255,255,255,.45);font-weight:400}
+.bf-header .eyebrow{color:rgba(255,255,255,.6)}
+
+/* ---------- Abertura ---------- */
+.bf-hero{padding-block:clamp(48px,10vw,96px) clamp(32px,6vw,56px)}
+.bf-hero .eyebrow{color:rgba(255,255,255,.6)}
+.bf-head{
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(2.6rem,12vw,6.5rem);line-height:.92;letter-spacing:-.035em;
+  margin-top:clamp(20px,4vw,28px);
+}
+.bf-intro{
+  margin-top:clamp(24px,4vw,32px);max-width:54ch;
+  font-size:clamp(1rem,4vw,1.15rem);line-height:1.5;color:rgba(255,255,255,.6);
+}
+.bf-intro b{color:var(--off-white);font-weight:600}
+.bf-autosave{
+  display:flex;gap:10px;align-items:baseline;margin-top:clamp(20px,4vw,28px);max-width:48ch;
+  font-size:clamp(.85rem,3.4vw,.95rem);line-height:1.5;color:rgba(255,255,255,.45);
+}
+.bf-autosave__icon{
+  flex:none;width:18px;height:18px;border-radius:50%;
+  display:inline-flex;align-items:center;justify-content:center;
+  background:rgba(16,185,129,.18);color:var(--emerald);
+  font-size:11px;font-weight:700;transform:translateY(3px);
+}
+
+/* ---------- Cards de bloco (vidro escuro, como o form da landing) ---------- */
+.bf-card{
+  position:relative;max-width:820px;margin-bottom:clamp(20px,4vw,32px);
+  background:rgba(255,255,255,.06);
+  -webkit-backdrop-filter:blur(24px) saturate(140%);
+  backdrop-filter:blur(24px) saturate(140%);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:24px;padding:clamp(20px,5vw,40px);
+  box-shadow:0 24px 60px -24px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.1);
+}
+.bf-card{padding-block:clamp(24px,5vw,40px)} /* sobrescreve o padding-block genérico de section */
+.bf-num{
+  font-family:var(--font-mono);font-weight:700;font-size:12px;
+  letter-spacing:.12em;color:var(--emerald);
+}
+.bf-title{
+  margin-top:8px;margin-bottom:clamp(20px,4vw,28px);
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.35rem,5.5vw,2rem);line-height:1;letter-spacing:-.02em;
+}
+.bf-hint{
+  margin:-10px 0 clamp(18px,3.5vw,24px);max-width:52ch;
+  font-size:clamp(.9rem,3.6vw,1rem);line-height:1.5;color:rgba(255,255,255,.55);
+}
+.bf-hint b{color:var(--off-white);font-weight:600}
+
+/* ---------- Campos (mesma receita do contato, + textarea) ---------- */
+.briefing-page .field{margin-bottom:clamp(18px,3.5vw,26px)}
+.briefing-page .field:last-child{margin-bottom:0}
+.briefing-page .field label{
+  display:block;font-size:clamp(.95rem,3.6vw,1.05rem);font-weight:600;
+  margin-bottom:10px;color:var(--off-white);line-height:1.4;
+}
+.briefing-page .field input,
+.briefing-page .field textarea{
+  width:100%;border:1px solid rgba(255,255,255,.16);border-radius:14px;
+  background:rgba(255,255,255,.07);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  padding:16px;font-family:inherit;font-size:16px;line-height:1.5;color:var(--off-white);
+  transition:border-color .2s,box-shadow .2s,background .2s;
+}
+.briefing-page .field textarea{resize:none;overflow:hidden;min-height:56px}
+.briefing-page .field input::placeholder,
+.briefing-page .field textarea::placeholder{color:rgba(255,255,255,.32)}
+.briefing-page .field input:focus,
+.briefing-page .field textarea:focus{
+  outline:none;border-color:var(--emerald);background:rgba(255,255,255,.12);
+  box-shadow:0 0 0 4px rgba(16,185,129,.2);
+}
+/* Campo respondido: fio esmeralda discreto à esquerda */
+.briefing-page .field input.is-filled,
+.briefing-page .field textarea.is-filled{border-left:3px solid var(--emerald)}
+
+/* ---------- Checklist de materiais ---------- */
+.bf-check{
+  display:flex;gap:14px;align-items:flex-start;cursor:pointer;
+  padding:14px 4px;border-top:1px solid rgba(255,255,255,.08);
+  font-size:clamp(.95rem,3.6vw,1.05rem);line-height:1.45;color:rgba(255,255,255,.75);
+}
+.bf-check:first-of-type{border-top:none}
+.bf-check input{position:absolute;opacity:0;width:1px;height:1px}
+.bf-check__box{
+  flex:none;width:24px;height:24px;border-radius:8px;margin-top:1px;
+  border:1.5px solid rgba(255,255,255,.3);background:rgba(255,255,255,.06);
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;color:transparent;
+  transition:background .2s,border-color .2s,color .2s;
+}
+.bf-check__box::after{content:"✓"}
+.bf-check input:checked + .bf-check__box{
+  background:var(--emerald);border-color:var(--emerald);color:var(--black);
+}
+.bf-check input:focus-visible + .bf-check__box{
+  outline:2px solid var(--emerald);outline-offset:3px;
+}
+.bf-check input:checked ~ span:last-child{color:var(--off-white)}
+
+/* ---------- Upload de arquivos (bloco 06) ---------- */
+.bf-upload{margin-top:clamp(20px,4vw,28px);padding-top:clamp(18px,3.5vw,24px);border-top:1px solid rgba(255,255,255,.08)}
+.bf-upload__btn{
+  display:flex;align-items:center;justify-content:center;gap:12px;width:100%;
+  padding:20px 24px;border-radius:14px;
+  border:1.5px dashed rgba(16,185,129,.5);background:rgba(16,185,129,.08);
+  font-family:var(--font-mono);font-weight:700;font-size:clamp(12px,3.4vw,14px);
+  letter-spacing:.04em;text-transform:uppercase;color:var(--emerald);
+  transition:background .2s,border-color .2s;
+}
+.bf-upload__btn:hover{background:rgba(16,185,129,.16);border-color:var(--emerald)}
+.bf-upload__icon{font-size:1.2em}
+.bf-upload__hint{
+  margin-top:12px;font-size:clamp(.8rem,3.2vw,.875rem);line-height:1.5;color:rgba(255,255,255,.45);
+}
+/* Variante inline: anexo discreto logo abaixo de uma pergunta */
+.bf-upload--inline{margin-top:12px;padding-top:0;border-top:none}
+.bf-upload--inline .bf-upload__btn{
+  width:auto;padding:12px 18px;border-radius:12px;gap:8px;font-size:12px;
+}
+
+.bf-files{list-style:none;margin-top:6px}
+.bf-file{
+  display:flex;align-items:center;gap:12px;padding:12px 2px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  font-size:clamp(.85rem,3.4vw,.95rem);color:rgba(255,255,255,.75);
+}
+.bf-file__thumb{
+  flex:none;width:36px;height:36px;border-radius:8px;object-fit:cover;
+  background:rgba(255,255,255,.08);
+}
+.bf-file__thumb--icon{
+  display:inline-flex;align-items:center;justify-content:center;
+  font-family:var(--font-mono);font-size:10px;font-weight:700;color:rgba(255,255,255,.5);
+}
+.bf-file__name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bf-file__status{flex:none;font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:.04em}
+.bf-file--enviando .bf-file__status{color:rgba(255,255,255,.5)}
+.bf-file--ok .bf-file__status{color:var(--emerald)}
+.bf-file--erro .bf-file__status{color:#FCA5A5}
+.bf-file__remove{
+  flex:none;background:none;border:none;width:32px;height:32px;border-radius:8px;
+  color:rgba(255,255,255,.4);font-size:16px;line-height:1;
+  transition:color .2s,background .2s;
+}
+.bf-file__remove:hover{color:#FCA5A5;background:rgba(255,255,255,.06)}
+/* Barra de progresso fininha por arquivo */
+.bf-file__bar{
+  position:relative;flex:none;width:64px;height:3px;border-radius:2px;
+  background:rgba(255,255,255,.12);overflow:hidden;
+}
+.bf-file__bar i{
+  position:absolute;inset:0;right:auto;width:0;background:var(--emerald);
+  transition:width .2s;
+}
+
+/* ---------- Encerramento ---------- */
+.bf-outro{max-width:820px;padding-block:clamp(16px,3vw,24px) 0}
+.bf-outro__note{
+  max-width:52ch;font-size:clamp(1rem,4vw,1.1rem);line-height:1.5;color:rgba(255,255,255,.6);
+}
+.bf-outro__note b{color:var(--off-white);font-weight:600}
+.bf-outro__actions{
+  display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;
+  margin-top:clamp(20px,4vw,28px);
+}
+.bf-copy,.bf-clear{
+  background:none;border:none;padding:10px 0;
+  font-family:var(--font-mono);font-weight:700;font-size:12px;
+  letter-spacing:.06em;text-transform:uppercase;
+  color:rgba(255,255,255,.6);text-decoration:underline;text-underline-offset:4px;
+  transition:color .2s;
+}
+.bf-copy:hover{color:var(--emerald)}
+.bf-clear{color:rgba(255,255,255,.35)}
+.bf-clear:hover{color:#FCA5A5}
+.bf-copied{
+  margin-top:12px;font-size:13px;font-weight:500;color:var(--emerald);
+}
+
+/* ---------- Footer ---------- */
+.bf-footer{
+  position:relative;z-index:1;padding-block:clamp(32px,6vw,48px) 0;
+  font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;
+  text-transform:uppercase;color:rgba(255,255,255,.35);
+}
+.bf-footer a{text-decoration:underline;text-underline-offset:3px}
+.bf-footer a:hover{color:var(--emerald)}
+
+/* ---------- Toast de validação (acima do pill) ---------- */
+.bf-toast{
+  position:fixed;left:50%;transform:translateX(-50%) translateY(6px);
+  bottom:calc(var(--pill-h) + clamp(28px,6vw,44px));z-index:60;
+  max-width:min(88vw,420px);padding:14px 20px;border-radius:14px;
+  background:rgba(24,24,24,.85);
+  -webkit-backdrop-filter:blur(18px) saturate(140%);
+  backdrop-filter:blur(18px) saturate(140%);
+  border:1px solid rgba(252,165,165,.35);
+  box-shadow:0 16px 40px -12px rgba(0,0,0,.7);
+  font-size:14px;font-weight:500;line-height:1.45;color:#FECACA;text-align:center;
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity .25s,transform .25s,visibility .25s;
+}
+.bf-toast.show{opacity:1;visibility:visible;transform:translateX(-50%)}
+
+/* Campo obrigatório em falta */
+.briefing-page .field input.is-invalid,
+.briefing-page .field textarea.is-invalid{
+  border-color:rgba(248,113,113,.75);
+  box-shadow:0 0 0 4px rgba(248,113,113,.15);
+}
+
+/* ---------- Pill: contador + envio ---------- */
+.bf-pill{border:none}
+.bf-pill__count{
+  font-family:var(--font-mono);font-weight:700;font-size:.8em;
+  letter-spacing:.04em;color:var(--emerald-dark);
+}
+/* Tudo respondido: pill acende esmeralda */
+.bf-pill.is-complete{background:var(--emerald);color:#fff}
+.bf-pill.is-complete .bf-pill__count{color:rgba(255,255,255,.85)}
+.bf-pill.is-complete .divider{background:rgba(255,255,255,.35)}

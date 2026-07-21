@@ -1,0 +1,14 @@
+/* ============================================================
+   MARQUEE — texto infinito em scroll horizontal
+   ============================================================ */
+.marquee{
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  padding-block:clamp(16px,3.5vw,26px);overflow:hidden;white-space:nowrap;
+  position:relative;z-index:1;background:var(--off-white);
+}
+.marquee__track{display:inline-flex;will-change:transform;animation:marquee 52s linear infinite}
+.marquee__track span{
+  font-family:var(--font-body);font-weight:500;text-transform:uppercase;
+  font-size:clamp(1.15rem,4.2vw,1.9rem);letter-spacing:.01em;padding:0 1.4em;
+}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
