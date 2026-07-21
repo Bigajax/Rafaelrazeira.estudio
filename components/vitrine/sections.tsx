@@ -34,6 +34,21 @@ export function Header() {
   </header>;
 }
 
+/* Demonstração no mockup do hero — vídeo real gravado na vitrine da Xavier's:
+   catálogo rolando → produto → tamanho M escolhido → pedido no WhatsApp.
+   Com reduced-motion ativo, mostra um frame estático da página do produto. */
+function VitrineDemo() {
+  const [video, setVideo] = useState(true);
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) setVideo(false);
+  }, []);
+  return <div className={s.screen}>
+    {video
+      ? <video className={s.demoVideo} src="/assets/demo/xavier-demo.mp4" autoPlay muted loop playsInline preload="auto" poster="/assets/demo/xavier-produto.jpg" />
+      : <Image className={s.shot} src="/assets/demo/xavier-produto.jpg" width={500} height={1600} alt="" />}
+  </div>;
+}
+
 const heroPoints = ["Design personalizado", "Catálogo organizado", "WhatsApp integrado", "Feita para celular"];
 export function Hero() {
   return <section className={s.hero}>
@@ -49,10 +64,10 @@ export function Hero() {
         <small className={s.micro}>PROJETO COMPLETO POR R$999 · ATÉ 20 PRODUTOS · ENTREGA EM ATÉ 7 DIAS ÚTEIS</small>
       </div>
       <div className={s.heroVisual}>
-        <div className={s.phone}>
-          <Image src="/assets/case-xavier.jpg" fill sizes="330px" priority alt="Vitrine digital da Xavier's Sports aberta no celular" />
+        <div className={s.phone} role="img" aria-label="Demonstração da vitrine da Xavier's Sports: o cliente navega no catálogo, abre a camisa Brasil Retrô 2004, escolhe o tamanho M e envia o pedido pelo WhatsApp">
+          <VitrineDemo />
         </div>
-        <div className={s.heroChat}><Chat>Vi a camisa retrô do Brasil na vitrine. Tem na M?</Chat></div>
+        <small className={s.demoTag}>DEMONSTRAÇÃO REAL · XAVIER&apos;S SPORTS</small>
       </div>
     </div>
     <ul className={s.heroPoints}>{heroPoints.map(x => <li key={x}>{x}</li>)}</ul>
