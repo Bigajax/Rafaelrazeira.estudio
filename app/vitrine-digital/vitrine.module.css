@@ -8,10 +8,15 @@
   --green: #10b981;
   --pale: #c9f7df;
   --black: #090909;
+  --night: #0b1411;
   --off: #f5f5f0;
   --ink: #494949;
   --line: #dcdcd4;
   --line-dark: #262626;
+  /* material autêntico das conversas: papel de parede e bolha do WhatsApp */
+  --wa-paper: #ece5dd;
+  --wa-bubble: #dcf8c6;
+  --wa-tick: #53bdeb;
   --pad: clamp(20px, 5vw, 64px);
   --display: var(--font-display), Arial, sans-serif;
   --body: var(--font-body), Arial, sans-serif;
@@ -107,27 +112,47 @@
 .heroPoints li { padding: 18px 18px 22px 0; font: 700 12px var(--mono) }
 .heroPoints li::before { content: "✓ "; color: var(--green) }
 
-/* ---------- balões de conversa (assinatura da página) ---------- */
-.chat {
-  background: #fff; border: 1px solid var(--line);
-  border-radius: 16px 16px 16px 4px;
-  padding: 12px 16px 14px; max-width: 320px;
-  box-shadow: 0 10px 30px #00000014;
+/* ---------- fio de conversa (assinatura da página) ----------
+   Faixas com o material real do WhatsApp: papel de parede com rabisco,
+   bolha branca de quem chega, bolha verde de quem envia, hora e confere. */
+.chatStrip {
+  display: grid; gap: 10px; justify-items: start;
+  width: min(430px, 100%);
+  padding: 16px 16px 14px;
+  border: 1px solid #ddd3c6;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Cg fill='none' stroke='%23000' stroke-opacity='.03' stroke-width='1.4'%3E%3Cpath d='M26 26c3-6 13-4 13 3 0 5-8 9-13 13-5-4-13-8-13-13 0-7 10-9 13-3z'/%3E%3Crect x='96' y='18' width='24' height='20' rx='3'/%3E%3Cpath d='M100 18v-4a8 8 0 0 1 16 0v4'/%3E%3Cpath d='M34 104l4 9 10 1-7 7 2 10-9-5-9 5 2-10-7-7 10-1z'/%3E%3Cpath d='M100 96h16l10 10-18 18-18-18z'/%3E%3Ccircle cx='113' cy='104' r='2.4'/%3E%3C/g%3E%3C/svg%3E"),
+    var(--wa-paper);
+  background-size: 108px 108px, auto;
 }
-.chat small { font: 9px var(--mono); letter-spacing: .1em; color: #8b8b84 }
-.chat p { font-size: 14px; line-height: 1.45; color: var(--black); margin-top: 3px }
-.chatLoja { background: var(--pale); border-color: transparent; border-radius: 16px 16px 4px 16px; margin-left: 42px }
+.stripLabel { font: 700 9px var(--mono); letter-spacing: .12em; color: #85796a }
+.stripNote { font: 10px/1.6 var(--mono); letter-spacing: .02em; color: #6d6355; margin-top: 2px; max-width: 340px }
+.bubble {
+  max-width: 330px;
+  background: #fff; border-radius: 12px 12px 12px 4px;
+  padding: 8px 12px 7px;
+  box-shadow: 0 1px 1px #00000012;
+}
+.bubble p { font-size: 14px; line-height: 1.45; color: var(--black) }
+.bubbleOut { justify-self: end; background: var(--wa-bubble); border-radius: 12px 12px 4px 12px }
+.bubbleMeta {
+  display: flex; justify-content: flex-end; align-items: center; gap: 5px;
+  margin-top: 2px; font: 9px var(--mono); color: #8a8071;
+}
+.bubbleMeta b { font-weight: 400; font-size: 11px; letter-spacing: -.14em; padding-right: .14em }
+.tickRead { color: var(--wa-tick) }
+.tickSent { color: #a79d8d }
+.typing { display: inline-flex; gap: 4px; padding: 7px 4px }
+.typing i { width: 6px; height: 6px; border-radius: 50%; background: #a79d8d; animation: blink 1.1s ease-in-out infinite }
+.typing i:nth-child(2) { animation-delay: .18s }
+.typing i:nth-child(3) { animation-delay: .36s }
+@keyframes blink { 0%, 70%, 100% { opacity: .3 } 35% { opacity: 1 } }
 
 /* ---------- dor e solução ---------- */
 .split { display: grid; grid-template-columns: 1.05fr .95fr; gap: clamp(36px, 5vw, 90px); align-items: center; margin-top: 8px }
-.shift { display: grid; gap: 14px }
-.shiftBefore {
-  border: 1px dashed #b9b9b0; padding: 22px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
-}
-.shiftBefore small, .shiftAfter small { font: 9px var(--mono); letter-spacing: .12em; width: 100%; color: #8b8b84 }
-.shiftBefore span { font: 12px var(--mono); color: #6d6d66; border: 1px solid var(--line); padding: 8px 12px; border-radius: 100px }
-.shiftAfter { background: var(--black); color: #fff; padding: 26px; box-shadow: 14px 14px 0 var(--pale) }
-.shiftAfter small { color: var(--green) }
+.shift { display: grid; gap: 18px; justify-items: start }
+.shiftAfter { background: var(--night); color: #fff; padding: 26px; box-shadow: 14px 14px 0 var(--pale) }
+.shiftAfter small { font: 9px var(--mono); letter-spacing: .12em; width: 100%; color: var(--green) }
 .shiftAfter p { color: #e8e8e2; font-size: 15px; margin-top: 8px }
 .site .manifesto {
   font-family: var(--display); font-stretch: 118%; font-weight: 800;
@@ -151,8 +176,8 @@
 }
 .howChat { display: grid; gap: 10px; margin-top: -70px; position: relative; z-index: 2; justify-self: start }
 
-/* ---------- seções escuras ---------- */
-.dark { background: var(--black); color: #fff }
+/* ---------- seções escuras: quase-preto com cast esmeralda ---------- */
+.dark { background: var(--night); color: #fff }
 .dark p { color: #a8a8a2 }
 .dark h3 { color: #fff }
 
@@ -160,20 +185,35 @@
 .projects { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 3vw, 48px); margin-top: 52px }
 .projects article { display: grid; gap: 10px; justify-items: start }
 
-/* moldura de navegador com a página real rolando em loop */
-.browser { width: 100%; border: 1px solid #262626; background: #0f0f0f }
-.browserBar { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid #262626 }
+/* MacBook com a página real rolando em loop na tela */
+.laptop { width: 100%; display: grid; justify-items: center }
+.lapScreen {
+  width: 88%; overflow: hidden;
+  border: 7px solid #17181a; border-bottom: 0; border-radius: 14px 14px 0 0;
+  background: #17181a;
+}
+.deck {
+  position: relative; width: 100%; height: 14px;
+  background: linear-gradient(#41454c, #24262b 55%, #17181a);
+  border-radius: 2px 2px 11px 11px;
+  box-shadow: inset 0 1px 0 #5a5f67;
+}
+.deck::before {
+  content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 13%; height: 6px; background: #131417; border-radius: 0 0 8px 8px;
+}
+.browserBar { display: flex; align-items: center; gap: 12px; padding: 8px 12px; background: #101114; border-bottom: 1px solid #26282c }
 .dots { display: flex; gap: 5px }
-.dots i { width: 8px; height: 8px; border-radius: 50%; background: #2c2c2c }
+.dots i { width: 8px; height: 8px; border-radius: 50%; background: #2e3136 }
 .urlChip {
   flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   font: 10px var(--mono); letter-spacing: .04em; color: #8a8a84;
-  background: #1a1a1a; border: 1px solid #262626; border-radius: 100px; padding: 5px 12px;
+  background: #1a1c20; border: 1px solid #26282c; border-radius: 100px; padding: 5px 12px;
 }
 .live { font: 700 9px var(--mono); letter-spacing: .1em; color: var(--green); white-space: nowrap }
 .cover {
   display: block; position: relative; width: 100%;
-  height: clamp(420px, 40vw, 560px); overflow: hidden; background: #141414;
+  aspect-ratio: 16 / 10; overflow: hidden; background: #141414;
   container-type: size;
 }
 .pageShot {
@@ -213,7 +253,8 @@
 .pricecard { background: var(--off); padding: clamp(28px, 3.5vw, 48px); box-shadow: 16px 16px 0 var(--black) }
 .pricecard > small { font: 10px var(--mono); letter-spacing: .14em }
 .price { font-family: var(--display); font-stretch: 118%; font-weight: 800; font-size: 22px; margin: 14px 0 6px }
-.price strong { font-size: clamp(64px, 6vw, 88px); letter-spacing: -.02em }
+/* numeral condensado: materialidade de etiqueta de preço */
+.price strong { font-stretch: 75%; font-weight: 900; font-size: clamp(76px, 7vw, 108px); letter-spacing: -.01em }
 .installments { font: 12px/1.7 var(--mono); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 14px 0; margin: 10px 0 6px }
 .installments b { color: var(--black) }
 .pricecard .button { width: 100%; margin-top: 12px }
@@ -224,6 +265,8 @@
 .check li:last-child { border-bottom: 0 }
 .check li::before { content: "✓"; color: var(--green); margin-right: 12px }
 
+.formCol { display: grid; gap: 18px; align-content: start; justify-items: stretch }
+.formCol .chatStrip { justify-self: end; width: min(360px, 100%) }
 .form { background: #fff; border: 1px solid #b5e4cb; padding: clamp(26px, 3vw, 40px); display: grid; gap: 15px; scroll-margin-top: 90px }
 .formTitle { font-family: var(--display); font-stretch: 118%; font-weight: 800; font-size: 22px; color: var(--black) }
 .formTitle span { font: 11px var(--mono); font-stretch: normal; color: var(--ink) }
@@ -258,7 +301,7 @@
 .final .actions { justify-content: center }
 .final .ghost { color: #fff }
 .footer {
-  background: var(--black); color: #fff;
+  background: var(--night); color: #fff;
   padding: 48px var(--pad) 56px; border-top: 1px solid var(--line-dark);
   display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap;
 }
@@ -274,7 +317,7 @@
 .bar {
   position: fixed; z-index: 60; left: 0; right: 0; bottom: 0;
   display: none; align-items: center; justify-content: space-between; gap: 14px;
-  background: var(--black); color: #fff;
+  background: var(--night); color: #fff;
   padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
   font: 700 12px var(--mono);
   transition: transform .25s ease;
@@ -289,11 +332,11 @@
   .header nav.open { display: flex }
   .menu { display: block }
   .heroGrid, .split, .offerGrid { grid-template-columns: 1fr }
+  .heroGrid { gap: 24px }
   .heroVisual { justify-items: start; padding: 10px 0 16px }
   .demoTag { justify-self: start }
   .heroPoints { grid-template-columns: 1fr 1fr }
   .projects { grid-template-columns: 1fr }
-  .cover { height: clamp(420px, 90vw, 540px) }
   .grid { grid-template-columns: 1fr 1fr }
   .process { grid-template-columns: 1fr 1fr }
   .howVisual { justify-items: start }
@@ -304,17 +347,33 @@
 }
 
 @media (max-width: 600px) {
-  .site h1 { font-size: clamp(38px, 10.5vw, 48px) }
+  .site h1 { font-size: clamp(34px, 9.4vw, 42px) }
   .site h2 { font-size: clamp(32px, 8.6vw, 42px) }
   .section { padding: 64px 20px }
-  .hero { padding-top: 40px }
-  .phone { height: 540px }
+  /* hero compacto: o topo do celular com a demonstração entra na primeira dobra */
+  .hero { padding-top: 26px }
+  .heroCopy .lead { margin-top: 14px; font-size: 16px }
+  .heroCopy .actions { margin-top: 20px }
+  .heroCopy .micro { margin-top: 14px; font-size: 10px }
+  .heroGrid { gap: 14px }
+  .heroVisual { justify-items: center; padding-bottom: 10px }
+  .demoTag { justify-self: center }
+  .phone { height: 500px }
+  .heroPoints { margin-top: 26px }
   .grid, .process { grid-template-columns: 1fr }
   .heroPoints li { font-size: 11px }
   .site .manifesto { font-size: clamp(24px, 7vw, 34px) }
   .howChat { margin-left: 12px }
   .actions { gap: 16px }
   .actions .button { width: 100% }
+  /* sombras duras menores e com folga para não sangrar na borda da tela */
+  .shiftAfter { box-shadow: 10px 10px 0 var(--pale); margin-right: 10px }
+  .pricecard { box-shadow: 10px 10px 0 var(--black); margin-right: 10px }
+  .phone { box-shadow: 14px 14px 0 var(--pale) }
+  .phoneSmall { box-shadow: 12px 12px 0 var(--pale) }
+  /* cards do processo sem o vão de ar do layout em colunas */
+  .process li { padding: 20px }
+  .process h3 { margin-top: 14px }
 }
 
 @media (prefers-reduced-motion: reduce) {

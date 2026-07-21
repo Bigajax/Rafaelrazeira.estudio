@@ -16,8 +16,46 @@ const Button = ({ href, children, outline = false, onClick, cta, dest }: { href?
     ? <a className={`${s.button} ${outline ? s.outline : s.primary}`} href={href} data-cta={cta} data-cta-dest={dest}>{children}</a>
     : <button type="button" className={`${s.button} ${outline ? s.outline : s.primary}`} onClick={onClick} data-cta={cta} data-cta-dest={dest}>{children}</button>;
 
-const Chat = ({ children, from = "cliente" }: { children: React.ReactNode; from?: "cliente" | "loja" }) =>
-  <div className={`${s.chat} ${from === "loja" ? s.chatLoja : ""}`}><small>{from === "loja" ? "SUA LOJA" : "CLIENTE"}</small><p>{children}</p></div>;
+/* ---------- fio de conversa (assinatura da página) ----------
+   Uma única venda contada em balões de WhatsApp reais que atravessam a
+   página: sem resposta na seção do problema, resolvida no como funciona,
+   e na oferta quem manda a mensagem é o lojista. O confere (✓ cinza sem
+   resposta, ✓✓ azul lida) carrega o argumento. Cada balão revela no
+   scroll com "digitando…"; sem JS ou com reduced motion o texto já vem
+   visível, então nada fica escondido. */
+function Bubble({ out = false, time, tick, delay = 0, children }: { out?: boolean; time: string; tick?: "sent" | "read"; delay?: number; children: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [typing, setTyping] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (el.getBoundingClientRect().top < window.innerHeight) return;
+    setTyping(true);
+    let t: ReturnType<typeof setTimeout>;
+    const io = new IntersectionObserver(([x]) => {
+      if (!x.isIntersecting) return;
+      io.disconnect();
+      t = setTimeout(() => setTyping(false), 650 + delay);
+    }, { rootMargin: "-12% 0px" });
+    io.observe(el);
+    return () => { io.disconnect(); clearTimeout(t); };
+  }, [delay]);
+  return <div ref={ref} className={`${s.bubble} ${out ? s.bubbleOut : ""}`}>
+    {typing
+      ? <span className={s.typing} aria-hidden><i /><i /><i /></span>
+      : <>
+        <p>{children}</p>
+        <span className={s.bubbleMeta}>{time}{tick && <b className={tick === "read" ? s.tickRead : s.tickSent}>{tick === "read" ? "✓✓" : "✓"}</b>}</span>
+      </>}
+  </div>;
+}
+
+const ChatStrip = ({ label, note, children }: { label: string; note?: string; children: React.ReactNode }) =>
+  <div className={s.chatStrip}>
+    <small className={s.stripLabel}>{label}</small>
+    {children}
+    {note && <small className={s.stripNote}>{note}</small>}
+  </div>;
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -84,10 +122,10 @@ export function PainSolution() {
           <p className={s.lead}>Stories desaparecem, publicações antigas ficam difíceis de encontrar e cada atendimento começa do zero: foto, preço e tamanho, um por um.</p>
         </div>
         <div className={s.shift}>
-          <div className={s.shiftBefore}>
-            <small>HOJE</small>
-            <span>Stories que somem</span><span>Feed antigo</span><span>Fotos no direct</span><span>Preço por mensagem</span>
-          </div>
+          <ChatStrip label="HOJE · O CLIENTE ESPERANDO NO DIRECT" note="Visualizado só às 21:40. A vontade de comprar não espera duas horas.">
+            <Bubble out time="19:02" tick="sent">oi! ainda tem a camisa do story? qual o preço?</Bubble>
+            <Bubble out time="19:04" tick="sent" delay={700}>tem foto de outros modelos? não achei no feed</Bubble>
+          </ChatStrip>
           <div className={s.shiftAfter}>
             <small>COM A VITRINE</small>
             <p>Seus produtos ficam organizados em um único link. O cliente navega, escolhe e chama sua loja com o produto definido.</p>
@@ -120,8 +158,10 @@ export function HowItWorks() {
             <Image src="/assets/demo/solo-maisvendidos.jpg" fill sizes="300px" alt="Catálogo da vitrine da Solo Urb com a grade de produtos e preços" />
           </div>
           <div className={s.howChat}>
-            <Chat>Oi! Vi na vitrine que o 9060 Rain Cloud está nas últimas unidades. Ainda tem no 39?</Chat>
-            <Chat from="loja">Tem sim, vou separar o seu! Prefere retirar na loja ou receber em casa?</Chat>
+            <ChatStrip label="COM A VITRINE · O PEDIDO CHEGA PRONTO" note="A mesma noite, sem uma foto sequer no direct: o cliente escolheu sozinho.">
+              <Bubble time="19:11">escolhi pela vitrine: 9060 Rain Cloud, tamanho 39. ainda tem?</Bubble>
+              <Bubble out time="19:12" tick="read" delay={700}>tem sim! separei o seu, te mando o Pix</Bubble>
+            </ChatStrip>
           </div>
         </div>
       </div>
@@ -129,12 +169,12 @@ export function HowItWorks() {
   </section>;
 }
 
-/* Captura da página inteira de cada site (600px de largura, 1.5x),
-   exibida em moldura de navegador com scroll automático em loop.
+/* Captura desktop da página inteira de cada site (1440px de largura),
+   exibida na tela de um MacBook com scroll automático em loop.
    A duração acompanha a altura da página para o ritmo ser parecido. */
 const projects = [
-  { img: "/assets/case-xavier-full.jpg", w: 900, h: 16638, dur: "44s", url: "https://xavier-s-sports.vercel.app/", dom: "xavier-s-sports.vercel.app", name: "XAVIER'S SPORTS", tag: "CAMISAS ESPORTIVAS", copy: "Catálogo por clubes, seleções e modelos retrô, com pedido direto no WhatsApp." },
-  { img: "/assets/case-solourb-full.jpg", w: 900, h: 21356, dur: "56s", url: "https://s-lo-urb.vercel.app/", dom: "s-lo-urb.vercel.app", name: "SOLO URB", tag: "STREETWEAR E SNEAKERS", copy: "Lançamentos, categorias e páginas de produto com reserva pela sacola." },
+  { img: "/assets/case-xavier-desk.jpg", w: 1440, h: 8965, dur: "36s", url: "https://xavier-s-sports.vercel.app/", dom: "xavier-s-sports.vercel.app", name: "XAVIER'S SPORTS", tag: "CAMISAS ESPORTIVAS", copy: "Catálogo por clubes, seleções e modelos retrô, com pedido direto no WhatsApp." },
+  { img: "/assets/case-solourb-desk.jpg", w: 1440, h: 11263, dur: "44s", url: "https://s-lo-urb.vercel.app/", dom: "s-lo-urb.vercel.app", name: "SOLO URB", tag: "STREETWEAR E SNEAKERS", copy: "Lançamentos, categorias e páginas de produto com reserva pela sacola." },
 ];
 export function Projects() {
   return <section className={`${s.section} ${s.dark}`} id="projetos">
@@ -143,16 +183,19 @@ export function Projects() {
       <h2>UMA DIREÇÃO CRIADA PARA CADA LOJA.</h2>
       <div className={s.projects}>
         {projects.map(x => <article key={x.name}>
-          <div className={s.browser}>
-            <div className={s.browserBar}>
-              <span className={s.dots} aria-hidden><i /><i /><i /></span>
-              <span className={s.urlChip}>{x.dom}</span>
-              <span className={s.live}>● NO AR</span>
+          <div className={s.laptop}>
+            <div className={s.lapScreen}>
+              <div className={s.browserBar}>
+                <span className={s.dots} aria-hidden><i /><i /><i /></span>
+                <span className={s.urlChip}>{x.dom}</span>
+                <span className={s.live}>● NO AR</span>
+              </div>
+              <a className={s.cover} href={x.url} target="_blank" rel="noopener" aria-label={`Abrir o site do projeto ${x.name} em nova aba`}>
+                {/* img simples: o otimizador de imagem não lida bem com capturas de 10 mil pixels */}
+                <img className={s.pageShot} src={x.img} width={x.w} height={x.h} style={{ "--dur": x.dur } as React.CSSProperties} alt={`Página completa da vitrine da ${x.name}`} loading="lazy" decoding="async" />
+              </a>
             </div>
-            <a className={s.cover} href={x.url} target="_blank" rel="noopener" aria-label={`Abrir o site do projeto ${x.name} em nova aba`}>
-              {/* img simples: o otimizador de imagem não lida bem com capturas de 20 mil pixels */}
-              <img className={s.pageShot} src={x.img} width={x.w} height={x.h} style={{ "--dur": x.dur } as React.CSSProperties} alt={`Página completa da vitrine da ${x.name}`} loading="lazy" decoding="async" />
-            </a>
+            <div className={s.deck} aria-hidden />
           </div>
           <small>{x.tag}</small>
           <h3>{x.name}</h3>
@@ -221,15 +264,20 @@ export function Offer() {
           <a className={s.ghost} href={whatsapp} target="_blank" rel="noopener" data-cta="oferta_whats" data-cta-dest="whatsapp">TIRAR DÚVIDAS NO WHATSAPP</a>
           <small className={s.micro}>Você paga o saldo somente depois da apresentação e aprovação do projeto.</small>
         </article>
-        <form ref={formRef} onSubmit={submit} className={s.form} id="contratar">
-          <p className={s.formTitle}>COMECE AGORA<br /><span>Plano escolhido: {plan}</span></p>
-          <label>NOME<input name="nome" autoComplete="name" required /></label>
-          <label>WHATSAPP<input name="whatsapp" type="tel" autoComplete="tel" required /></label>
-          <label>NOME DA LOJA<input name="loja" required /></label>
-          <label>INSTAGRAM<input name="instagram" placeholder="@sualoja" required /></label>
-          <button className={`${s.button} ${s.primary}`}>CONTINUAR CONTRATAÇÃO ↗</button>
-          <p className={s.micro} role="status">{status || "Ao continuar, você confirma os detalhes comigo no WhatsApp. Não peço dados de cartão nesta etapa."}</p>
-        </form>
+        <div className={s.formCol}>
+          <ChatStrip label="SUA PRÓXIMA MENSAGEM">
+            <Bubble out time="19:15" tick="read">Rafael, quero uma vitrine dessas pra minha loja</Bubble>
+          </ChatStrip>
+          <form ref={formRef} onSubmit={submit} className={s.form} id="contratar">
+            <p className={s.formTitle}>COMECE AGORA<br /><span>Plano escolhido: {plan}</span></p>
+            <label>NOME<input name="nome" autoComplete="name" required /></label>
+            <label>WHATSAPP<input name="whatsapp" type="tel" autoComplete="tel" required /></label>
+            <label>NOME DA LOJA<input name="loja" required /></label>
+            <label>INSTAGRAM<input name="instagram" placeholder="@sualoja" required /></label>
+            <button className={`${s.button} ${s.primary}`}>CONTINUAR CONTRATAÇÃO ↗</button>
+            <p className={s.micro} role="status">{status || "Ao continuar, você confirma os detalhes comigo no WhatsApp. Não peço dados de cartão nesta etapa."}</p>
+          </form>
+        </div>
       </div>
     </div>
   </section>;
