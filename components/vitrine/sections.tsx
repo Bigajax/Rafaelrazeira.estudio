@@ -117,10 +117,10 @@ export function HowItWorks() {
         </div>
         <div className={s.howVisual}>
           <div className={s.phoneSmall}>
-            <Image src="/assets/case-solourb.jpg" fill sizes="300px" alt="Vitrine digital da Solo Urb aberta no celular" />
+            <Image src="/assets/demo/solo-maisvendidos.jpg" fill sizes="300px" alt="Catálogo da vitrine da Solo Urb com a grade de produtos e preços" />
           </div>
           <div className={s.howChat}>
-            <Chat>Olá! Vi o New Balance 9060 na vitrine. Tem disponível no tamanho 39?</Chat>
+            <Chat>Olá! Vi o New Balance 990 Black Grey na vitrine. Tem disponível no tamanho 39?</Chat>
             <Chat from="loja">Tem sim! Quer que eu separe o seu?</Chat>
           </div>
         </div>
