@@ -243,7 +243,7 @@ export function Offer() {
   function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const f = new FormData(e.currentTarget);
-    trackLead(plan);
+    trackLead(plan, String(f.get("whatsapp") || ""));
     setStatus("Tudo certo. Abrindo o WhatsApp para concluir a contratação…");
     const text = encodeURIComponent(`Olá, Rafael! Quero contratar a Vitrine Digital.\nNome: ${f.get("nome")}\nLoja: ${f.get("loja")}\nInstagram: ${f.get("instagram")}\nWhatsApp: ${f.get("whatsapp")}\nPlano: ${plan}`);
     window.open(`https://wa.me/5544999997219?text=${text}`, "_blank", "noopener");

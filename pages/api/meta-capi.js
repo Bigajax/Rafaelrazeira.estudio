@@ -54,6 +54,15 @@ export default async function handler(req, res) {
   if (b.fbp) user_data.fbp = String(b.fbp);
   if (b.fbc) user_data.fbc = String(b.fbc);
 
+  /* custom_data opcional (a vitrine manda valor da oferta e plano;
+     a landing principal segue mandando só o essencial) */
+  const custom_data = {};
+  if (b.value != null && !Number.isNaN(Number(b.value))){
+    custom_data.value = Number(b.value);
+    custom_data.currency = String(b.currency || "BRL");
+  }
+  if (b.plano) custom_data.plano = String(b.plano);
+
   const payload = {
     data: [{
       event_name: "Lead",
@@ -62,6 +71,7 @@ export default async function handler(req, res) {
       action_source: "website",
       event_source_url: String(b.event_source_url || ""),
       user_data,
+      ...(Object.keys(custom_data).length ? { custom_data } : {}),
     }],
   };
   if (process.env.META_TEST_EVENT_CODE) payload.test_event_code = process.env.META_TEST_EVENT_CODE;
