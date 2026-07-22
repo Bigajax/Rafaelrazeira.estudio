@@ -21,6 +21,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
 
+<!-- Checkout na proposta (modal Pix/cartão) -->
+<link rel="stylesheet" href="/css/proposta-checkout.css" />
+<script src="/js/proposta-checkout.js" defer></script>
+
 <style>
 /* ——— Tokens copiados de css/base.css da landing ——— */
 :root{
@@ -255,6 +259,72 @@ a{color:inherit;text-decoration:none}
 .guarantee p{margin-top:10px;font-size:clamp(1rem,4vw,1.1rem);line-height:1.5;color:var(--ink-60);max-width:58ch}
 .guarantee p b{color:var(--black)}
 
+/* ——— Formas de pagamento: cards Pix + cartão (checkout Mercado Pago) ——— */
+.pay-cards{margin-top:clamp(24px,4vw,32px);display:grid;gap:16px;align-items:stretch}
+@media(min-width:720px){.pay-cards{grid-template-columns:repeat(3,1fr)}}
+.pay-cards--duo{grid-template-columns:1fr}
+@media(min-width:720px){.pay-cards--duo{grid-template-columns:repeat(2,1fr)}}
+.pay{
+  display:flex;flex-direction:column;
+  border:1.5px solid var(--line);border-radius:20px;
+  background:#fff;overflow:hidden;
+}
+.pay--rec{
+  border-color:var(--emerald);
+  box-shadow:0 20px 44px -24px rgba(16,185,129,.55);
+}
+@media(min-width:720px){.pay--rec{transform:translateY(-8px)}}
+.pay-head{
+  padding:10px 16px;text-align:center;
+  display:flex;align-items:center;justify-content:center;min-height:58px;
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(.95rem,3.8vw,1.05rem);letter-spacing:-.01em;
+  background:var(--off-white);border-bottom:1.5px solid var(--line);
+  color:var(--black);
+}
+/* Zona de preço com altura reservada: alinha os checklists entre os cards */
+.pay-top{display:flex;flex-direction:column;align-items:flex-start}
+@media(min-width:720px){.pay-top{min-height:132px}}
+.pay--rec .pay-head{background:var(--emerald);border-color:var(--emerald);color:#fff}
+.pay--dark .pay-head{background:var(--black);border-color:var(--black);color:#fff}
+.pay--soft .pay-head{background:var(--emerald-light);border-color:var(--emerald-light);color:var(--emerald-dark)}
+.pay-body{display:flex;flex-direction:column;flex:1;padding:clamp(18px,4vw,24px)}
+.pay-price{
+  margin-top:8px;font-family:var(--font-display);font-weight:900;letter-spacing:-.02em;
+  font-size:clamp(1.6rem,6.5vw,2rem);line-height:1;
+}
+.pay--rec .pay-price{color:var(--emerald-dark);font-size:clamp(1.9rem,7vw,2.3rem)}
+.pay-price{white-space:nowrap}
+.pay-price small{white-space:normal}
+.pay-price small{display:block;margin-top:6px;font-size:11px;font-weight:800;color:var(--ink-40);text-transform:uppercase;letter-spacing:.02em}
+.pay-feats{list-style:none;margin-top:14px;margin-bottom:18px}
+.pay-feats li{
+  display:flex;gap:10px;align-items:flex-start;
+  padding-block:8px;border-top:1px solid var(--line);
+  font-size:clamp(.88rem,3.4vw,.95rem);color:var(--ink-60);line-height:1.45;
+}
+.pay-feats li::before{content:"✓";font-family:var(--font-mono);font-weight:700;color:var(--emerald);flex:none;line-height:1.45}
+.pay-feats b{color:var(--black)}
+.btn-pay{
+  margin-top:auto;width:100%;
+  border:none;border-radius:999px;background:var(--emerald);color:#fff;
+  padding:14px 20px;cursor:pointer;
+  font-family:var(--font-display);font-weight:900;font-size:14px;
+  letter-spacing:.03em;text-transform:uppercase;
+  transition:background .25s,transform .1s;
+}
+.btn-pay:hover{background:var(--emerald-dark)}
+.btn-pay:active{transform:scale(.99)}
+.btn-pay:focus-visible{outline:2px solid var(--emerald-dark);outline-offset:2px}
+.btn-pay--ghost{background:#fff;color:var(--emerald-dark);border:1.5px solid var(--emerald)}
+.btn-pay--ghost:hover{background:var(--emerald-light)}
+.pay-note{margin-top:16px;font-family:var(--font-mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-40)}
+@media print{
+  .pay-cards .btn-pay{display:none}
+  .pay--rec{transform:none}
+  .pay-head{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
 /* ——— Hospedagem: dois formatos lado a lado ——— */
 .host-cards{margin-top:clamp(20px,4vw,28px);display:grid;gap:16px}
 @media(min-width:720px){.host-cards{grid-template-columns:1fr 1fr}}
@@ -345,7 +415,7 @@ a{color:inherit;text-decoration:none}
 }
 </style>
 </head>
-<body>
+<body data-proposta="xavier-sports">
 
 <div class="grid-lines" aria-hidden="true">
   <span></span><span></span><span></span><span></span><span></span>
@@ -478,29 +548,60 @@ a{color:inherit;text-decoration:none}
       <div class="body">
         <p>São <b>mais de 20 páginas</b>, catálogo com filtros, favoritos, central de trocas e painel administrativo: um escopo bem acima de um site institucional simples.</p>
         <div class="price-compare">
-          <div class="price-row">
-            <span class="p-tag">VALOR DE TABELA</span>
-            <span class="price-normal">R$ 3.490</span>
-          </div>
           <div class="price-row price-row--main">
-            <span class="p-tag">CONDIÇÃO ESPECIAL · PRIMEIROS CASES</span>
-            <span class="price-main">R$ 2.290 <small>· em 2 parcelas de R$ 1.145</small></span>
+            <span class="p-tag">VALOR TOTAL DO PROJETO</span>
+            <span class="price-main">R$ 1.000,00</span>
           </div>
         </div>
         <div class="split">
           <div>
-            <span class="tag">50% NO INÍCIO</span>
-            <span class="desc">para reservar a vaga e iniciar o projeto</span>
+            <span class="tag">ENTRADA</span>
+            <span class="desc">R$ 200,00 via Pix para início do projeto</span>
           </div>
           <div>
-            <span class="tag">50% NA APROVAÇÃO FINAL</span>
-            <span class="desc">somente depois do seu OK, antes da publicação</span>
+            <span class="tag">PARCELAMENTO</span>
+            <span class="desc">4x de R$ 200,00 no cartão de crédito</span>
+          </div>
+          <div>
+            <span class="tag">TOTAL</span>
+            <span class="desc">R$ 1.000,00</span>
           </div>
         </div>
+        <p class="host-note">O início do projeto será confirmado após o pagamento da entrada de R$ 200,00 via Pix. O saldo restante será pago em quatro parcelas de R$ 200,00 no cartão de crédito.</p>
         <aside class="guarantee">
           <span class="g-label">RISCO ZERO</span>
           <p>Se a primeira direção visual apresentada não for aprovada, a entrada é <b>devolvida integralmente</b>. O saldo só existe <b>depois que você aprovar o projeto</b>.</p>
         </aside>
+
+        <div class="pay-cards pay-cards--duo">
+          <div class="pay pay--rec">
+            <div class="pay-head">Entrada no Pix</div>
+            <div class="pay-body">
+              <div class="pay-top">
+                <div class="pay-price">R$ 200,00 <small>entrada para início do projeto</small></div>
+              </div>
+              <ul class="pay-feats">
+                <li><span>QR code aqui na página, confirmação na hora</span></li>
+                <li><span>O início do projeto é confirmado após a entrada</span></li>
+              </ul>
+              <button class="btn-pay" type="button" data-checkout-item="entrada_pix">Pagar entrada no Pix</button>
+            </div>
+          </div>
+          <div class="pay pay--dark">
+            <div class="pay-head">Saldo no cartão</div>
+            <div class="pay-body">
+              <div class="pay-top">
+                <div class="pay-price">R$ 800,00 <small>em 4x de R$ 200,00 no cartão</small></div>
+              </div>
+              <ul class="pay-feats">
+                <li><span><b>4x de R$ 200,00</b>, calculadas na hora</span></li>
+                <li><span>Aprovação imediata</span></li>
+              </ul>
+              <button class="btn-pay btn-pay--ghost" type="button" data-checkout-item="saldo_card">Pagar saldo no cartão</button>
+            </div>
+          </div>
+        </div>
+        <p class="pay-note">Pagamento processado pelo Mercado Pago, sem sair desta página.</p>
       </div>
     </div>
   </section>
@@ -551,7 +652,7 @@ a{color:inherit;text-decoration:none}
       <div class="body">
         <ol class="next">
           <li><span>Você confirma o <b>aceite desta proposta</b> pelo botão abaixo, por WhatsApp ou e-mail.</span></li>
-          <li><span>Envio dos dados para o <b>pagamento dos 50% de início</b> e você me passa o número oficial do WhatsApp e as regras de troca e envio.</span></li>
+          <li><span>Envio dos dados para o <b>pagamento da entrada</b> e você me passa o número oficial do WhatsApp e as regras de troca e envio.</span></li>
           <li><span>Reviso o catálogo com você, publico a vitrine e a <b>Xavier's Sports entra em campo</b>.</span></li>
         </ol>
       </div>

@@ -47,6 +47,13 @@ const PROPOSTAS = {
       painel_pix: { label: "Módulo painel da vitrine (contratação junto)", valor: 1290, metodo: "pix" },
     },
   },
+  "xavier-sports": {
+    titulo: "Rafael Razeira Estúdio — Vitrine Digital Xavier's Sports",
+    itens: {
+      entrada_pix: { label: "Entrada para início do projeto", valor: 200, metodo: "pix" },
+      saldo_card: { label: "Saldo do projeto no cartão, em 4x", valor: 800, metodo: "card", maxParcelas: 4 },
+    },
+  },
 };
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
