@@ -27,8 +27,9 @@ const MP_API = "https://api.mercadopago.com/v1/payments";
 
 /* ——— Tabela de propostas ———
    valor em REAIS (número). metodo: "pix" | "card".
-   maxParcelas só se aplica a card; juros do parcelamento correm por
-   conta do comprador (padrão do MP quando não há parcelas sem juros). */
+   maxParcelas só se aplica a card. Se o parcelamento é com ou sem juros
+   depende da configuração da conta no painel do Mercado Pago
+   (Configurações > Custos de parcelamento), não do código. */
 const PROPOSTAS = {
   baixudos: {
     titulo: "Rafael Razeira Estúdio — Projeto Baixudos.PR",
