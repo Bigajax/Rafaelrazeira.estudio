@@ -84,6 +84,22 @@
 .meta { margin-top: clamp(24px, 4vw, 36px); font-size: clamp(1rem, 4vw, 1.15rem); color: var(--ink); max-width: 54ch }
 .meta b { color: var(--black) }
 
+/* ---------- Mockup da loja no hero (MacBook + iPhone) ---------- */
+.mockup { margin-top: clamp(36px, 7vw, 64px); display: flex; align-items: flex-end; justify-content: center; gap: clamp(16px, 3vw, 32px) }
+.mockup img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top }
+.laptop { flex: none; max-width: 100% }
+.laptopScreen { width: 600px; max-width: 100%; aspect-ratio: 16 / 10; overflow: hidden; border: 8px solid var(--black); border-radius: 14px 14px 0 0; background: var(--black) }
+.laptopBase { height: 12px; margin: 0 -22px; background: linear-gradient(#111, #2a2a2a); border-radius: 0 0 12px 12px }
+.phone { flex: none }
+.phoneScreen { width: 148px; aspect-ratio: 390 / 800; overflow: hidden; border: 5px solid var(--black); border-radius: 20px; background: var(--black); box-shadow: 0 24px 48px -24px rgba(9, 9, 9, .35) }
+@media (max-width: 640px) {
+  .mockup { flex-direction: column; align-items: center; gap: 24px }
+  .laptopScreen { width: 320px; border-width: 6px; border-radius: 10px 10px 0 0 }
+  .laptopBase { height: 10px; margin: 0 -14px }
+  .phoneScreen { width: 132px; border-width: 4px; border-radius: 16px }
+}
+.mockupNote { margin-top: 14px; text-align: center; font: clamp(10px, 2.8vw, 12px) var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-40) }
+
 /* ---------- Seções numeradas ---------- */
 .sec { padding-block: clamp(40px, 7vw, 72px); border-top: 1px solid var(--line) }
 @media (min-width: 820px) { .sec { display: grid; grid-template-columns: 110px 1fr; gap: 16px } }

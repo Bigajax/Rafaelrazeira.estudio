@@ -91,6 +91,24 @@ export default function PropostaPisadaDeOuro() {
             Preparada para <b>Débora</b>, da <b>Pisada de Ouro</b>. Este documento resume o que a loja precisa,
             o que será entregue, o investimento, o prazo e os planos mensais opcionais. Simples de ler, fácil de aprovar.
           </p>
+
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <div className={s.mockup} aria-hidden="true">
+            <div className={s.laptop}>
+              <div className={s.laptopScreen}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/assets/proposta/pisada-desktop.png" alt="" />
+              </div>
+              <div className={s.laptopBase} />
+            </div>
+            <div className={s.phone}>
+              <div className={s.phoneScreen}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/assets/proposta/pisada-mobile.png" alt="" />
+              </div>
+            </div>
+          </div>
+          <p className={s.mockupNote}>Prévia real da loja em notebook e celular</p>
         </section>
 
         {/* 01 · Contexto */}
