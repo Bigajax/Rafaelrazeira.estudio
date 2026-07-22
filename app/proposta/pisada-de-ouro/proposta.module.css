@@ -1,0 +1,278 @@
+/* ============================================================
+   /proposta/pisada-de-ouro — documento comercial do estúdio.
+   Identidade herdada: off-white, preto, esmeralda, Archivo (wdth),
+   Inter, Space Mono. Mesma gramática de seções numeradas do
+   template de propostas, agora em React/Next.
+   ============================================================ */
+
+.page {
+  --green: #10b981;
+  --green-dark: #065f46;
+  --pale: #c9f7df;
+  --off: #f5f5f0;
+  --black: #090909;
+  --ink: rgba(9, 9, 9, .6);
+  --ink-40: rgba(9, 9, 9, .4);
+  --line: rgba(9, 9, 9, .1);
+  --maxw: 1040px;
+  --pad: clamp(20px, 6vw, 72px);
+  --display: var(--font-display), "Arial Narrow", system-ui, sans-serif;
+  --body: var(--font-body), system-ui, -apple-system, sans-serif;
+  --mono: var(--font-mono), ui-monospace, monospace;
+  background: var(--off);
+  color: var(--black);
+  font-family: var(--body);
+  line-height: 1.5;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+.page * { box-sizing: border-box }
+.page a { color: inherit; text-decoration: none }
+.page b { font-weight: 600 }
+.page s { text-decoration-thickness: 2px }
+.page :focus-visible { outline: 2px solid var(--green); outline-offset: 3px }
+
+/* ---------- Linhas verticais de grid (assinatura) ---------- */
+.gridLines {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  max-width: var(--maxw); margin: 0 auto;
+  display: flex; justify-content: space-between; padding: 0 var(--pad);
+}
+.gridLines span { width: 1px; background: var(--line) }
+.gridLines span:first-child, .gridLines span:last-child { opacity: 0 }
+@media (max-width: 640px) {
+  .gridLines span:nth-child(2), .gridLines span:nth-child(4) { display: none }
+}
+.doc { position: relative; z-index: 1; max-width: var(--maxw); margin: 0 auto; padding: 0 var(--pad) }
+
+/* ---------- Header ---------- */
+.header {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding-block: clamp(20px, 4vw, 32px); border-bottom: 1px solid var(--line);
+}
+.brand {
+  font-family: var(--display); font-weight: 900; text-transform: uppercase;
+  font-size: clamp(15px, 4vw, 19px); letter-spacing: -.01em; white-space: nowrap;
+}
+.brand small { font-weight: 800; color: var(--ink-40); font-size: 1em }
+.date { font: clamp(11px, 3vw, 13px) var(--mono); color: var(--ink); white-space: nowrap }
+
+/* ---------- Abertura ---------- */
+.opening { padding-block: clamp(44px, 9vw, 96px) }
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  font: clamp(11px, 3vw, 13px) var(--mono); letter-spacing: .06em;
+  text-transform: uppercase; color: var(--ink);
+}
+.status { color: var(--green-dark); font-weight: 700 }
+.dot { width: 12px; height: 12px; border-radius: 50%; background: var(--green); flex: none; position: relative }
+.dot::after {
+  content: ""; position: absolute; inset: 0; border-radius: 50%;
+  background: var(--green); animation: pulse 2.2s ease-out infinite;
+}
+@keyframes pulse { 0% { transform: scale(1); opacity: .6 } 70% { transform: scale(2.6); opacity: 0 } 100% { opacity: 0 } }
+@media (prefers-reduced-motion: reduce) { .dot::after { animation: none } }
+
+.h1 {
+  font-family: var(--display); font-weight: 900; font-stretch: 106%;
+  text-transform: uppercase; font-size: clamp(2.5rem, 9.5vw, 5.5rem);
+  line-height: .92; letter-spacing: -.035em; margin: clamp(20px, 4vw, 32px) 0 0;
+  text-wrap: balance;
+}
+.quiet { color: var(--ink-40) }
+.accent { color: var(--green) }
+.meta { margin-top: clamp(24px, 4vw, 36px); font-size: clamp(1rem, 4vw, 1.15rem); color: var(--ink); max-width: 54ch }
+.meta b { color: var(--black) }
+
+/* ---------- Seções numeradas ---------- */
+.sec { padding-block: clamp(40px, 7vw, 72px); border-top: 1px solid var(--line) }
+@media (min-width: 820px) { .sec { display: grid; grid-template-columns: 110px 1fr; gap: 16px } }
+.num { font: 700 clamp(1rem, 4vw, 1.35rem) var(--mono); color: var(--green-dark); letter-spacing: .02em; margin-bottom: 12px }
+.h2 {
+  font-family: var(--display); font-weight: 900; font-stretch: 118%;
+  text-transform: uppercase; font-size: clamp(1.5rem, 6.5vw, 2.4rem);
+  line-height: 1.02; letter-spacing: -.025em; margin: 0; text-wrap: balance;
+}
+.body { margin-top: clamp(16px, 3vw, 24px); max-width: 64ch }
+.body p { font-size: clamp(1rem, 4vw, 1.15rem); color: var(--ink); line-height: 1.55; margin: 0 }
+.body p + p { margin-top: 12px }
+.leadIn { margin-bottom: clamp(18px, 3vw, 24px) }
+
+/* ---------- Listas ---------- */
+.list { list-style: none; margin: 0; padding: 0 }
+.list li {
+  display: flex; gap: 14px; align-items: flex-start;
+  padding-block: 14px; border-bottom: 1px solid var(--line);
+  font-size: clamp(1rem, 4vw, 1.1rem); line-height: 1.5; color: var(--ink);
+}
+.list li:last-child { border-bottom: none }
+.list li::before { font: 700 1em var(--mono); flex: none; line-height: 1.5 }
+.listIn li::before { content: "→"; color: var(--green) }
+.listOut li::before { content: "—"; color: var(--ink-40) }
+.listTodo li::before { content: "○"; color: var(--green-dark) }
+.list b { color: var(--black) }
+
+/* ---------- Passos da jornada ---------- */
+.steps { list-style: none; counter-reset: passo; margin: 0; padding: 0 }
+.steps li { position: relative; padding: 18px 0 18px 56px; border-bottom: 1px solid var(--line) }
+.steps li:last-child { border-bottom: none }
+.steps li::before {
+  counter-increment: passo; content: counter(passo, decimal-leading-zero);
+  position: absolute; left: 0; top: 18px;
+  font: 700 13px var(--mono); color: #fff;
+  width: 34px; height: 34px; border-radius: 50%; background: var(--green-dark);
+  display: flex; align-items: center; justify-content: center;
+}
+.steps li:last-child::before { background: var(--green) }
+.steps h3 {
+  font-family: var(--display); font-weight: 900; text-transform: uppercase;
+  font-size: clamp(1.05rem, 4.4vw, 1.3rem); letter-spacing: -.01em; margin: 0;
+}
+.steps p { margin: 4px 0 0; font-size: clamp(.95rem, 3.8vw, 1.05rem); color: var(--ink); line-height: 1.5 }
+
+/* ---------- Investimento ---------- */
+.wasLine { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin: 0 }
+.was { font-family: var(--display); font-weight: 800; font-size: clamp(1.1rem, 4.5vw, 1.4rem); color: var(--ink-40) }
+.wasTag { font: 700 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-40) }
+.price {
+  font-family: var(--display); font-weight: 900; letter-spacing: -.03em;
+  font-size: clamp(2.6rem, 11vw, 4.5rem); line-height: 1; margin-top: clamp(8px, 2vw, 14px);
+}
+.price small { font-size: .28em; font-weight: 800; letter-spacing: .02em; color: var(--green-dark); text-transform: uppercase; white-space: nowrap }
+.split { margin-top: clamp(20px, 4vw, 28px); border-top: 1px solid var(--line) }
+.split > div {
+  display: flex; justify-content: space-between; gap: 16px; align-items: baseline;
+  padding-block: 14px; border-bottom: 1px solid var(--line);
+}
+.tag { font: 700 clamp(11px, 3vw, 13px) var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--green-dark); white-space: nowrap }
+.desc { font-size: clamp(.95rem, 3.8vw, 1.05rem); color: var(--ink); text-align: right }
+.desc b { color: var(--black) }
+
+/* ---------- Formas de pagamento ---------- */
+.payLabel { display: block; margin-top: clamp(26px, 4vw, 34px); font: 700 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--green-dark) }
+.payCards { margin-top: 16px; display: grid; gap: 16px; align-items: stretch }
+@media (min-width: 560px) { .payCards { grid-template-columns: 1fr 1fr } }
+.payCardsOne { margin-top: 16px; display: flex; justify-content: center }
+.payCardsOne > * { width: 100% }
+@media (min-width: 560px) { .payCardsOne > * { max-width: calc(50% - 8px) } }
+.payCard { border: 1.5px solid var(--line); border-radius: 18px; overflow: hidden; background: #fff; display: flex; flex-direction: column }
+.payCardRec { border-color: var(--green); box-shadow: 0 22px 48px -26px rgba(16, 185, 129, .55) }
+
+.payHead {
+  padding: 13px 16px; text-align: center; border-bottom: 1.5px solid var(--line); background: var(--off);
+  font-family: var(--display); font-weight: 900; text-transform: uppercase;
+  font-size: clamp(.95rem, 2.4vw, 1.05rem); letter-spacing: -.005em; color: var(--black);
+}
+.payHeadRec { background: var(--green); border-color: var(--green); color: #fff }
+.payHeadDark { background: var(--black); border-color: var(--black); color: #fff }
+
+.payBody { display: flex; flex-direction: column; flex: 1; padding: clamp(20px, 4vw, 26px) }
+.payCtx {
+  display: flex; align-items: center; gap: 10px; min-height: 26px; margin-bottom: 4px;
+  font: 700 11px var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-40);
+}
+.offOld { font-family: var(--display); font-weight: 800; font-size: clamp(1.05rem, 3.2vw, 1.2rem); color: var(--ink-40); letter-spacing: 0; white-space: nowrap }
+.offPill { font-family: var(--display); font-weight: 900; font-size: 12px; letter-spacing: .02em; background: var(--green); color: #fff; border-radius: 999px; padding: 3px 10px }
+.payPrice { font-family: var(--display); font-weight: 900; letter-spacing: -.02em; font-size: clamp(1.85rem, 5.2vw, 2.25rem); line-height: 1 }
+.payCardRec .payPrice { color: var(--green-dark) }
+.payPrice small { display: inline-block; margin-left: 6px; font-size: .3em; font-weight: 800; color: var(--ink-40); text-transform: uppercase; letter-spacing: .04em; vertical-align: baseline }
+.paySave { align-self: flex-start; margin-top: 12px; background: var(--pale); color: var(--green-dark); border-radius: 999px; padding: 6px 12px; font: 700 11px var(--mono); letter-spacing: .05em; text-transform: uppercase }
+.payFeats { list-style: none; margin: 16px 0 0; padding: 15px 0 0; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 9px; flex: 1 }
+.payFeats li { display: flex; gap: 10px; align-items: flex-start; font-size: clamp(.86rem, 2.2vw, .94rem); color: var(--ink); line-height: 1.4 }
+.payFeats li::before { content: "✓"; font: 700 1em var(--mono); color: var(--green); flex: none; line-height: 1.4 }
+.payFeats b { color: var(--black) }
+.btnPay {
+  margin-top: 16px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
+  border: none; border-radius: 999px; background: var(--green); color: #fff; padding: 14px 16px; cursor: pointer;
+  font-family: var(--display); font-weight: 900; font-size: 13px; letter-spacing: .04em;
+  text-transform: uppercase; text-align: center; white-space: nowrap; transition: background .25s, transform .1s;
+}
+.btnPay:hover { background: var(--green-dark) }
+.btnPay:active { transform: scale(.99) }
+.btnPayGhost { background: #fff; color: var(--green-dark); border: 1.5px solid var(--green) }
+.btnPayGhost:hover { background: var(--pale) }
+.payNote { margin: clamp(16px, 3vw, 20px) 0 0; font-size: clamp(.95rem, 3.8vw, 1.02rem); color: var(--ink); line-height: 1.5 }
+.payNote b { color: var(--black) }
+
+/* ---------- Destaque (prazo) ---------- */
+.highlight {
+  display: block; margin-top: clamp(28px, 5vw, 40px);
+  background: var(--pale); color: var(--black);
+  border-radius: 24px; padding: clamp(24px, 5vw, 40px);
+  box-shadow: 0 24px 60px -24px rgba(6, 95, 70, .35);
+}
+.gLabel { font: 700 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--green-dark) }
+.highlight h3 {
+  margin: 12px 0 0; font-family: var(--display); font-weight: 900; font-stretch: 118%;
+  text-transform: uppercase; font-size: clamp(1.5rem, 6.5vw, 2.2rem);
+  line-height: .98; letter-spacing: -.03em;
+}
+.highlight p { margin: 14px 0 0; font-size: clamp(1rem, 4vw, 1.1rem); line-height: 1.5; color: rgba(9, 9, 9, .72); max-width: 58ch }
+.highlight p b { color: var(--black) }
+
+/* ---------- Planos mensais ---------- */
+.planCards { margin-top: clamp(20px, 4vw, 28px); display: grid; gap: 16px }
+@media (min-width: 720px) { .planCards { grid-template-columns: 1fr 1fr } }
+.plan { border: 1.5px solid var(--line); border-radius: 20px; padding: clamp(22px, 4.5vw, 30px); display: flex; flex-direction: column }
+.planRec { border-color: var(--green); box-shadow: 0 16px 40px -24px rgba(16, 185, 129, .5) }
+.pTag { font: 700 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--green-dark) }
+.plan h3 {
+  margin: 10px 0 0; font-family: var(--display); font-weight: 900; text-transform: uppercase;
+  font-size: clamp(1.1rem, 4.6vw, 1.4rem); line-height: 1.02; letter-spacing: -.015em;
+}
+.pPrice { margin-top: 10px; font-family: var(--display); font-weight: 900; letter-spacing: -.02em; font-size: clamp(1.7rem, 7vw, 2.2rem); line-height: 1 }
+.planRec .pPrice { color: var(--green-dark) }
+.pPrice small { font-size: .42em; font-weight: 800; color: var(--ink-40); text-transform: uppercase; letter-spacing: .02em }
+.feats { list-style: none; margin: 16px 0 0; padding: 16px 0 0; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px; flex: 1 }
+.feats li { display: flex; gap: 11px; align-items: flex-start; font-size: clamp(.9rem, 3.6vw, .98rem); color: var(--ink); line-height: 1.45 }
+.feats li::before { content: "✓"; font: 700 1em var(--mono); color: var(--green); flex: none; line-height: 1.45 }
+.feats b { color: var(--black) }
+.pNote { margin: 16px 0 0; font: 11px/1.5 var(--mono); letter-spacing: .03em; color: var(--ink-40) }
+
+/* ---------- Encerramento + próximos passos ---------- */
+.closing {
+  font-family: var(--display); font-weight: 900; font-stretch: 106%;
+  text-transform: uppercase; font-size: clamp(1.35rem, 5.5vw, 2rem);
+  line-height: 1.05; letter-spacing: -.02em; color: var(--black);
+  max-width: 24ch; margin: 0 0 clamp(24px, 4vw, 32px);
+}
+.closing em { font-style: normal; color: var(--green-dark) }
+.next { list-style: none; counter-reset: np; margin: 0; padding: 0 }
+.next li {
+  counter-increment: np; display: flex; gap: 14px; align-items: flex-start;
+  padding-block: 14px; border-bottom: 1px solid var(--line);
+  font-size: clamp(1rem, 4vw, 1.1rem); color: var(--ink); line-height: 1.5;
+}
+.next li:last-child { border-bottom: none }
+.next li::before { content: counter(np, decimal-leading-zero); font: 700 1em var(--mono); color: var(--green-dark); flex: none; line-height: 1.5 }
+.next b { color: var(--black) }
+.linkWa {
+  display: inline-flex; align-items: center; gap: 8px; margin-top: clamp(22px, 3vw, 28px);
+  font: 700 13px var(--mono); letter-spacing: .04em; text-transform: uppercase;
+  color: var(--green-dark); border-bottom: 1.5px solid var(--green); padding-bottom: 3px;
+  transition: color .2s;
+}
+.linkWa:hover { color: var(--green) }
+
+/* ---------- Rodapé ---------- */
+.footer {
+  margin-top: clamp(40px, 7vw, 72px); padding-block: clamp(24px, 4vw, 36px);
+  border-top: 1px solid var(--line);
+  display: flex; flex-wrap: wrap; gap: 8px 24px;
+  font: clamp(11px, 3vw, 12px) var(--mono); letter-spacing: .04em;
+  text-transform: uppercase; color: var(--ink);
+}
+
+/* ---------- Impressão / PDF ---------- */
+@media print {
+  .page { background: #fff }
+  .gridLines, .btnPay, .linkWa { display: none }
+  .dot::after { animation: none }
+  .doc { max-width: none; padding: 0 }
+  .opening { padding-block: 28px 36px }
+  .sec { padding-block: 24px; break-inside: avoid }
+  .highlight { box-shadow: none; border: 1.5px solid var(--green-dark); -webkit-print-color-adjust: exact; print-color-adjust: exact; break-inside: avoid }
+  .planCards, .payCards, .steps { break-inside: avoid }
+  .payCardRec { transform: none }
+  .footer { margin-top: 32px }
+}

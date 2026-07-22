@@ -55,6 +55,15 @@ const PROPOSTAS = {
       saldo_card: { label: "Saldo do projeto no cartão, em 4x", valor: 800, metodo: "card", maxParcelas: 4 },
     },
   },
+  "pisada-de-ouro": {
+    titulo: "Rafael Razeira Estúdio — E-commerce Pisada de Ouro",
+    whatsapp: "5544999997219",
+    itens: {
+      avista_pix: { label: "À vista no Pix, com 10% de desconto", valor: 2691, metodo: "pix" },
+      entrada_pix: { label: "Entrada no Pix (mais R$ 1.495 na entrega)", valor: 1495, metodo: "pix" },
+      avista_card: { label: "No cartão, em até 6x", valor: 2990, metodo: "card", maxParcelas: 6 },
+    },
+  },
 };
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
