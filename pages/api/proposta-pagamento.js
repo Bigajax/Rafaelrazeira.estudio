@@ -49,6 +49,7 @@ const PROPOSTAS = {
   },
   "xavier-sports": {
     titulo: "Rafael Razeira Estúdio — Vitrine Digital Xavier's Sports",
+    whatsapp: "5544999997219",
     itens: {
       entrada_pix: { label: "Entrada para início do projeto", valor: 200, metodo: "pix" },
       saldo_card: { label: "Saldo do projeto no cartão, em 4x", valor: 800, metodo: "card", maxParcelas: 4 },
@@ -104,6 +105,7 @@ export default async function handler(req, res) {
     return json(res, 200, {
       publicKey,
       titulo: p.titulo,
+      whatsapp: p.whatsapp || null,
       itens: Object.entries(p.itens).map(([id, i]) => ({
         id,
         label: i.label,

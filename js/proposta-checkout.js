@@ -102,20 +102,42 @@
     body.appendChild(el("p", "ck-error", msg));
   }
 
-  function showSuccess(body, metodo) {
+  function showSuccess(body, metodo, item) {
     body.innerHTML = "";
     var s = el("div", "ck-success");
     s.appendChild(el("div", "ck-success-mark", "✓"));
     s.appendChild(el("h3", "ck-title", "Pagamento confirmado"));
+    var whats = config && config.whatsapp;
+    var base = metodo === "pix" ? "Recebi a confirmação do Pix. " : "Cartão aprovado. ";
     s.appendChild(
       el(
         "p",
         "ck-text",
-        metodo === "pix"
-          ? "Recebi a confirmação do Pix. Vou te chamar no WhatsApp para os próximos passos — obrigado pela confiança!"
-          : "Cartão aprovado. Vou te chamar no WhatsApp para os próximos passos — obrigado pela confiança!"
+        base +
+          (whats
+            ? "Toque no botão abaixo para me avisar no WhatsApp e já seguimos com os próximos passos."
+            : "Vou te chamar no WhatsApp para os próximos passos. Obrigado pela confiança!")
       )
     );
+    if (whats) {
+      var msg =
+        "Olá! Acabei de efetuar o pagamento da proposta" +
+        (item ? ": " + item.label + " (" + brl(item.valor) + ")" : "") +
+        ". Podemos seguir com os próximos passos?";
+      var href =
+        "https://wa.me/" +
+        String(config.whatsapp).replace(/\D/g, "") +
+        "?text=" +
+        encodeURIComponent(msg);
+      var wa = el("a", "ck-btn", "Avisar no WhatsApp");
+      wa.href = href;
+      wa.target = "_blank";
+      wa.rel = "noopener";
+      wa.style.textDecoration = "none";
+      s.appendChild(wa);
+      // tenta abrir sozinho; se o navegador bloquear, o botão acima resolve
+      try { window.open(href, "_blank", "noopener"); } catch (_) {}
+    }
     body.appendChild(s);
   }
 
@@ -198,7 +220,7 @@
           if (j.status === "approved") {
             clearInterval(pollTimer);
             pollTimer = null;
-            showSuccess(body, "pix");
+            showSuccess(body, "pix", item);
           } else if (j.status === "cancelled" || j.status === "expired") {
             clearInterval(pollTimer);
             pollTimer = null;
@@ -280,12 +302,12 @@
                 .then(function (r) {
                   if (!r.ok) throw new Error(r.j.error || "recusado");
                   if (r.j.status === "approved") {
-                    showSuccess(body, "card");
+                    showSuccess(body, "card", item);
                   } else if (r.j.status === "in_process" || r.j.status === "pending") {
                     body.innerHTML = "";
                     var s = el("div", "ck-success");
                     s.appendChild(el("h3", "ck-title", "Pagamento em análise"));
-                    s.appendChild(el("p", "ck-text", "O banco está analisando a compra. Você recebe a confirmação por e-mail em instantes — e eu te aviso no WhatsApp."));
+                    s.appendChild(el("p", "ck-text", "O banco está analisando a compra. Você recebe a confirmação por e-mail em instantes, e eu te aviso no WhatsApp."));
                     body.appendChild(s);
                   } else {
                     showError(body, cardDeclineMessage(r.j.status_detail));
