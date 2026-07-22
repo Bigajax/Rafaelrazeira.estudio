@@ -80,8 +80,6 @@ a{color:inherit;text-decoration:none}
   letter-spacing:.06em;text-transform:uppercase;color:var(--ink-60);
 }
 .status{color:var(--emerald-dark);font-weight:700}
-#validade.urgente{color:#DC2626;font-weight:700}
-#validade.urgente::before{content:"⏳ "}
 .dot{width:12px;height:12px;border-radius:50%;background:var(--emerald);flex:none;position:relative}
 .dot::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--emerald);animation:pulse 2.2s ease-out infinite}
 @keyframes pulse{0%{transform:scale(1);opacity:.6}70%{transform:scale(2.6);opacity:0}100%{opacity:0}}
@@ -387,10 +385,14 @@ a{color:inherit;text-decoration:none}
 .btn-accept:active{transform:scale(.99)}
 @media(min-width:560px){.btn-accept{width:auto}}
 .cta-note{margin-top:14px;font-family:var(--font-mono);font-size:12px;color:var(--ink-40);letter-spacing:.04em;text-transform:uppercase}
-.cta-lead{max-width:52ch;margin:0 auto;font-size:clamp(1rem,4vw,1.1rem);line-height:1.55;color:var(--ink-60)}
-.cta-lead b{color:var(--black)}
-.cta-alt{margin-top:18px;font-size:clamp(.9rem,3.6vw,1rem);color:var(--ink-60)}
-.cta-alt a{color:var(--emerald-dark);font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.cta-alt{margin-top:clamp(22px,3vw,28px)}
+.cta-alt a{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--font-mono);font-weight:700;font-size:13px;letter-spacing:.04em;text-transform:uppercase;
+  color:var(--emerald-dark);border-bottom:1.5px solid var(--emerald);padding-bottom:3px;
+  text-decoration:none;transition:color .2s;
+}
+.cta-alt a:hover{color:var(--emerald)}
 @media print{.cta-alt{display:none}}
 
 /* ——— Rodapé ——— */
@@ -437,8 +439,6 @@ a{color:inherit;text-decoration:none}
   <section class="opening">
     <div class="eyebrow">
       <span class="dot"></span><span class="status">PROPOSTA COMERCIAL</span>
-      <span aria-hidden="true">·</span>
-      <span id="validade">VALIDADE: 7 DIAS</span>
     </div>
     <h1>SUA PAIXÃO PELO FUTEBOL MERECE UMA VITRINE À ALTURA DA <em>XAVIER'S SPORTS.</em></h1>
     <p class="meta">Uma vitrine digital completa para as camisas da <b>Xavier's Sports</b>: clubes, seleções, atuais e retrô. Cada camisa vira uma conversa no WhatsApp com a mensagem já pronta.</p>
@@ -669,8 +669,7 @@ a{color:inherit;text-decoration:none}
   <section class="closing">
     <h2>VAMOS COLOCAR A <em>XAVIER'S SPORTS</em> EM CAMPO.</h2>
     <div class="cta-wrap">
-      <p class="cta-lead">Você paga direto na proposta, pelo Pix ou pelo cartão, na seção de investimento. Assim que o pagamento é confirmado, o WhatsApp abre sozinho para a gente seguir.</p>
-      <p class="cta-alt"><a href="https://wa.me/5544999997219?text=Ol%C3%A1%20Rafael%2C%20tenho%20uma%20d%C3%BAvida%20sobre%20a%20proposta%20da%20Xavier%27s%20Sports." target="_blank" rel="noopener">Prefere tirar uma dúvida antes? Fale comigo no WhatsApp.</a></p>
+      <p class="cta-alt"><a href="https://wa.me/5544999997219?text=Ol%C3%A1%20Rafael%2C%20tenho%20uma%20d%C3%BAvida%20sobre%20a%20proposta%20da%20Xavier%27s%20Sports." target="_blank" rel="noopener">Ficou com uma dúvida? Fala comigo no WhatsApp <span aria-hidden="true">→</span></a></p>
     </div>
   </section>
 
@@ -682,31 +681,6 @@ a{color:inherit;text-decoration:none}
   </footer>
 
 </div>
-
-<script>
-/* Validade dinâmica: conta os dias restantes a partir da data da
-   proposta (14/07/2026 + 7 dias) e cria urgência nos últimos dias.
-   Sem JS, fica o texto estático "VALIDADE: 7 DIAS". */
-(function(){
-  var el = document.getElementById("validade");
-  if (!el) return;
-  var fim = new Date("2026-07-21T23:59:59-03:00");
-  var dias = Math.ceil((fim - new Date()) / 86400000);
-  if (dias > 7) return;                       // antes da data da proposta
-  if (dias >= 4) {
-    el.textContent = "VALIDADE: RESTAM " + dias + " DIAS";
-  } else if (dias >= 2) {
-    el.textContent = "RESTAM APENAS " + dias + " DIAS";
-    el.classList.add("urgente");
-  } else if (dias === 1) {
-    el.textContent = "ÚLTIMO DIA DESTA CONDIÇÃO";
-    el.classList.add("urgente");
-  } else {
-    el.textContent = "VALIDADE ENCERRADA: CONSULTE NOVAS CONDIÇÕES";
-    el.classList.add("urgente");
-  }
-})();
-</script>
 
 </body>
 </html>
