@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Proposta WS Style Mens · Rafael Razeira Estúdio</title>
+
+<!-- ============================================================
+     PROPOSTA COMERCIAL — WS STYLE MENS (vitrine digital)
+     Base: proposta/xavier-sports.html · Condição de primeiros cases
+     Checkout real (Pix/cartão) via Mercado Pago, sem sair da página.
+     Itens cadastrados em pages/api/proposta-pagamento.js
+     (proposta "ws-style-mens": avista_pix R$ 899,10 · entrada_pix R$ 499,50 · avista_card R$ 999 em 6x).
+     Para PDF: Ctrl+P → Salvar como PDF.
+     ============================================================ -->
+
+<link rel="icon" type="image/png" href="/assets/favicon.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+<!-- Checkout na proposta (modal Pix/cartão) -->
+<link rel="stylesheet" href="/css/proposta-checkout.css" />
+<script src="/js/proposta-checkout.js" defer></script>
+
+<style>
+/* ——— Tokens copiados de css/base.css da landing ——— */
+:root{
+  --emerald:#10B981;
+  --emerald-dark:#065F46;
+  --emerald-light:#D1FAE5;
+  --off-white:#FAFAF7;
+  --black:#0A0A0A;
+  --ink-60:rgba(10,10,10,.60);
+  --ink-40:rgba(10,10,10,.40);
+  --line:rgba(10,10,10,.10);
+  --maxw:1040px;
+  --pad:clamp(20px,6vw,72px);
+  --font-display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --font-body:"Inter",system-ui,-apple-system,sans-serif;
+  --font-mono:"Space Mono",ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font-body);background:var(--off-white);color:var(--black);
+  line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+b{font-weight:600}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--emerald);outline-offset:3px}
+
+.grid-lines{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  max-width:var(--maxw);margin:0 auto;
+  display:flex;justify-content:space-between;padding:0 var(--pad);
+}
+.grid-lines span{width:1px;background:var(--line)}
+.grid-lines span:first-child,.grid-lines span:last-child{opacity:0}
+/* mobile: as linhas verticais atravessariam preços e textos — some tudo */
+@media(max-width:640px){.grid-lines{display:none}}
+.doc{position:relative;z-index:1;max-width:var(--maxw);margin:0 auto;padding:0 var(--pad)}
+
+/* ——— Header ——— */
+.doc-header{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding-block:clamp(20px,4vw,32px);border-bottom:1px solid var(--line);
+}
+.brand{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(15px,4vw,19px);letter-spacing:-.01em;white-space:nowrap}
+.brand small{font-weight:800;color:var(--ink-40);letter-spacing:.01em;font-size:1em}
+.doc-header .date{font-family:var(--font-mono);font-size:clamp(11px,3vw,13px);color:var(--ink-60);white-space:nowrap}
+
+/* ——— Abertura ——— */
+.opening{padding-block:clamp(44px,9vw,96px)}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:12px;flex-wrap:wrap;
+  font-family:var(--font-mono);font-size:clamp(11px,3vw,13px);
+  letter-spacing:.06em;text-transform:uppercase;color:var(--ink-60);
+}
+.status{color:var(--emerald-dark);font-weight:700}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--emerald);flex:none;position:relative}
+.dot::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--emerald);animation:pulse 2.2s ease-out infinite}
+@keyframes pulse{0%{transform:scale(1);opacity:.6}70%{transform:scale(2.6);opacity:0}100%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.dot::after{animation:none}}
+.opening h1{
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(2.05rem,8.4vw,5.5rem);line-height:.94;letter-spacing:-.035em;
+  margin-top:clamp(20px,4vw,32px);
+}
+.opening h1 em{font-style:normal;color:var(--emerald)}
+.opening .meta{
+  margin-top:clamp(24px,4vw,36px);font-size:clamp(1rem,4vw,1.15rem);color:var(--ink-60);max-width:52ch;
+}
+.opening .meta b{color:var(--black)}
+
+/* ——— Seções numeradas ——— */
+.sec{padding-block:clamp(40px,7vw,72px);border-top:1px solid var(--line)}
+@media(min-width:820px){.sec{display:grid;grid-template-columns:110px 1fr;gap:16px}}
+.sec .num{
+  font-family:var(--font-mono);font-weight:700;font-size:clamp(1rem,4vw,1.35rem);
+  color:var(--emerald-dark);letter-spacing:.02em;margin-bottom:12px;
+}
+.sec h2{
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.5rem,6.5vw,2.4rem);line-height:1.02;letter-spacing:-.025em;
+}
+.sec .body{margin-top:clamp(16px,3vw,24px);max-width:62ch}
+.sec .body--wide{max-width:none}
+.sec p{font-size:clamp(1rem,4vw,1.15rem);color:var(--ink-60);line-height:1.55}
+.sec p + p{margin-top:12px}
+.sec p b{color:var(--black)}
+
+/* Inclusos: cards elegantes em grade, check esmeralda */
+.grid-list{list-style:none;display:grid;gap:12px;margin-top:4px}
+@media(min-width:680px){.grid-list{grid-template-columns:1fr 1fr}}
+.grid-list li{
+  display:flex;gap:12px;align-items:flex-start;
+  border:1px solid var(--line);border-radius:14px;
+  padding:16px 18px;background:#fff;
+  font-size:clamp(.98rem,3.8vw,1.05rem);line-height:1.45;color:var(--ink-60);
+  transition:border-color .3s,box-shadow .3s;
+}
+.grid-list li:hover{border-color:rgba(16,185,129,.5);box-shadow:0 10px 24px -18px rgba(16,185,129,.55)}
+.grid-list .check{color:var(--emerald);font-family:var(--font-mono);font-weight:700;flex:none;line-height:1.45}
+.grid-list b{color:var(--black)}
+
+/* Exclusões: lista sóbria, traço cinza */
+.list{list-style:none}
+.list li{
+  display:flex;gap:14px;align-items:flex-start;
+  padding-block:14px;border-bottom:1px solid var(--line);
+  font-size:clamp(1rem,4vw,1.1rem);line-height:1.5;color:var(--ink-60);
+}
+.list li:last-child{border-bottom:none}
+.list li::before{font-family:var(--font-mono);font-weight:700;flex:none;line-height:1.5}
+.list--out li::before{content:"·";color:var(--ink-40)}
+.list-note{margin-top:16px;font-size:clamp(.9rem,3.4vw,.98rem);color:var(--ink-40)}
+
+/* ——— Condição especial (primeiros cases) — card esmeralda ——— */
+.founding{
+  display:block;
+  background:var(--emerald-light);color:var(--black);
+  border-radius:24px;padding:clamp(24px,5vw,44px);
+  box-shadow:0 24px 60px -24px rgba(6,95,70,.35);
+}
+.founding .f-label{
+  display:inline-flex;align-items:center;gap:10px;
+  font-family:var(--font-mono);font-size:12px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--emerald-dark);
+}
+.founding h3{
+  margin-top:12px;font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.5rem,6.5vw,2.3rem);line-height:.98;letter-spacing:-.03em;
+}
+.founding p{margin-top:14px;font-size:clamp(1rem,4vw,1.1rem);line-height:1.55;color:rgba(10,10,10,.72);max-width:58ch}
+.founding p b{color:var(--black)}
+.founding ul{list-style:none;margin-top:18px}
+.founding li{
+  display:flex;gap:12px;align-items:flex-start;
+  padding-block:10px;border-top:1px solid rgba(6,95,70,.15);
+  font-size:clamp(.98rem,3.8vw,1.05rem);color:rgba(10,10,10,.78);line-height:1.5;
+}
+.founding li::before{content:"•";color:var(--emerald-dark);font-weight:700;flex:none}
+
+/* ——— Investimento: valor de tabela + condição primeiros cases ——— */
+.price-compare{margin-top:clamp(8px,2vw,16px)}
+.price-row{
+  display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;
+  padding-block:14px;border-bottom:1px solid var(--line);
+}
+.price-row .p-tag{
+  font-family:var(--font-mono);font-weight:700;font-size:clamp(11px,3vw,13px);
+  letter-spacing:.06em;text-transform:uppercase;color:var(--ink-40);flex:none;min-width:210px;
+}
+.price-row--main .p-tag{color:var(--emerald-dark)}
+.price-normal{
+  font-family:var(--font-display);font-weight:800;font-size:clamp(1.3rem,5vw,1.7rem);
+  color:var(--ink-40);text-decoration:line-through;text-decoration-thickness:2px;
+}
+.price-main{
+  font-family:var(--font-display);font-weight:900;letter-spacing:-.03em;
+  font-size:clamp(2.6rem,11vw,4.2rem);line-height:1;
+}
+.price-main small{font-size:.34em;font-weight:800;letter-spacing:0;color:var(--ink-40);text-transform:uppercase;white-space:nowrap}
+.split{margin-top:clamp(20px,4vw,28px);border-top:1px solid var(--line)}
+.split div{
+  display:flex;justify-content:space-between;gap:16px;align-items:baseline;
+  padding-block:14px;border-bottom:1px solid var(--line);
+}
+.split .tag{font-family:var(--font-mono);font-weight:700;font-size:clamp(11px,3vw,13px);letter-spacing:.06em;text-transform:uppercase;color:var(--emerald-dark);white-space:nowrap}
+.split .desc{font-size:clamp(.95rem,3.8vw,1.05rem);color:var(--ink-60);text-align:right}
+/* mobile: empilha etiqueta + descrição, alinhadas à esquerda */
+@media(max-width:560px){
+  .split div{flex-direction:column;align-items:flex-start;gap:4px}
+  .split .desc{text-align:left}
+}
+
+.guarantee{
+  display:block;margin-top:clamp(28px,5vw,40px);
+  border:1.5px solid var(--emerald);border-radius:20px;
+  padding:clamp(20px,4.5vw,32px);
+}
+.guarantee .g-label{
+  font-family:var(--font-mono);font-size:12px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--emerald-dark);
+}
+.guarantee p{margin-top:10px;font-size:clamp(1rem,4vw,1.1rem);line-height:1.5;color:var(--ink-60);max-width:58ch}
+.guarantee p b{color:var(--black)}
+
+/* ——— Formas de pagamento: cards Pix + cartão (checkout Mercado Pago) ——— */
+.pay-cards{margin-top:clamp(24px,4vw,32px);display:grid;gap:16px;align-items:stretch}
+@media(min-width:720px){.pay-cards{grid-template-columns:repeat(3,1fr)}}
+.pay-cards--duo{grid-template-columns:1fr}
+@media(min-width:720px){.pay-cards--duo{grid-template-columns:repeat(2,1fr)}}
+.pay-cards--one{grid-template-columns:1fr;margin-top:16px}
+.pay{
+  display:flex;flex-direction:column;
+  border:1.5px solid var(--line);border-radius:20px;
+  background:#fff;overflow:hidden;
+}
+.pay--rec{
+  border-color:var(--emerald);
+  box-shadow:0 20px 44px -24px rgba(16,185,129,.55);
+}
+@media(min-width:720px){.pay--rec{transform:translateY(-8px)}}
+.pay-head{
+  padding:10px 16px;text-align:center;
+  display:flex;align-items:center;justify-content:center;min-height:58px;
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(.95rem,3.8vw,1.05rem);letter-spacing:-.01em;
+  background:var(--off-white);border-bottom:1.5px solid var(--line);
+  color:var(--black);
+}
+/* Zona de preço com altura reservada: alinha os checklists entre os cards */
+.pay-top{display:flex;flex-direction:column;align-items:flex-start}
+@media(min-width:720px){.pay-top{min-height:150px}}
+/* card solo embaixo: não precisa reservar a altura de alinhamento */
+.pay-top--auto{min-height:0}
+@media(min-width:720px){.pay-top--auto{min-height:0}}
+/* Contexto do desconto (Pix à vista): preço antigo riscado + pill −10% */
+.pay-ctx{display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-height:22px}
+.off-old{font-family:var(--font-mono);font-size:clamp(12px,3vw,13px);color:var(--ink-40)}
+.off-old s{text-decoration-thickness:2px}
+.off-pill{
+  font-family:var(--font-mono);font-weight:700;font-size:11px;letter-spacing:.04em;
+  color:#fff;background:var(--emerald);border-radius:999px;padding:3px 9px;line-height:1;
+}
+.pay-save{
+  margin-top:6px;font-family:var(--font-mono);font-weight:700;font-size:clamp(11px,3vw,12px);
+  letter-spacing:.02em;color:var(--emerald-dark);
+}
+.pay--rec .pay-head{background:var(--emerald);border-color:var(--emerald);color:#fff}
+.pay--dark .pay-head{background:var(--black);border-color:var(--black);color:#fff}
+.pay--soft .pay-head{background:var(--emerald-light);border-color:var(--emerald-light);color:var(--emerald-dark)}
+.pay-body{display:flex;flex-direction:column;flex:1;padding:clamp(18px,4vw,24px)}
+.pay-price{
+  margin-top:8px;font-family:var(--font-display);font-weight:900;letter-spacing:-.02em;
+  font-size:clamp(1.6rem,6.5vw,2rem);line-height:1;
+}
+.pay--rec .pay-price{color:var(--emerald-dark);font-size:clamp(1.9rem,7vw,2.3rem)}
+.pay-price{white-space:nowrap}
+.pay-price small{white-space:normal}
+.pay-price small{display:block;margin-top:6px;font-size:11px;font-weight:800;color:var(--ink-40);text-transform:uppercase;letter-spacing:.02em}
+.pay-feats{list-style:none;margin-top:14px;margin-bottom:18px}
+.pay-feats li{
+  display:flex;gap:10px;align-items:flex-start;
+  padding-block:8px;border-top:1px solid var(--line);
+  font-size:clamp(.88rem,3.4vw,.95rem);color:var(--ink-60);line-height:1.45;
+}
+.pay-feats li::before{content:"✓";font-family:var(--font-mono);font-weight:700;color:var(--emerald);flex:none;line-height:1.45}
+.pay-feats b{color:var(--black)}
+.btn-pay{
+  margin-top:auto;width:100%;
+  border:none;border-radius:999px;background:var(--emerald);color:#fff;
+  padding:14px 20px;cursor:pointer;
+  font-family:var(--font-display);font-weight:900;font-size:14px;
+  letter-spacing:.03em;text-transform:uppercase;
+  transition:background .25s,transform .1s;
+}
+.btn-pay:hover{background:var(--emerald-dark)}
+.btn-pay:active{transform:scale(.99)}
+.btn-pay:focus-visible{outline:2px solid var(--emerald-dark);outline-offset:2px}
+.btn-pay--ghost{background:#fff;color:var(--emerald-dark);border:1.5px solid var(--emerald)}
+.btn-pay--ghost:hover{background:var(--emerald-light)}
+.pay-note{margin-top:16px;font-family:var(--font-mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-40)}
+@media print{
+  .pay-cards .btn-pay{display:none}
+  .pay--rec{transform:none}
+  .pay-head{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
+/* ——— Hospedagem: dois formatos lado a lado ——— */
+.host-cards{margin-top:clamp(20px,4vw,28px);display:grid;gap:16px}
+@media(min-width:720px){.host-cards{grid-template-columns:1fr 1fr}}
+.host{border:1.5px solid var(--line);border-radius:20px;padding:clamp(20px,4.5vw,28px);background:#fff}
+.host--rec{border-color:var(--emerald);box-shadow:0 12px 32px -20px rgba(16,185,129,.45)}
+.host .h-tag{font-family:var(--font-mono);font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--emerald-dark)}
+.host h3{
+  margin-top:10px;font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.1rem,4.6vw,1.35rem);line-height:1.02;letter-spacing:-.015em;
+}
+.host .h-price{
+  margin-top:10px;font-family:var(--font-display);font-weight:900;letter-spacing:-.02em;
+  font-size:clamp(1.5rem,6vw,1.9rem);line-height:1;
+}
+.host .h-price small{font-size:.55em;font-weight:800;color:var(--ink-40);text-transform:uppercase;letter-spacing:0;white-space:nowrap}
+.host p{margin-top:12px;font-size:clamp(.95rem,3.8vw,1.02rem)}
+.host-note{margin-top:clamp(16px,3vw,22px)}
+@media print{.host-cards{break-inside:avoid}}
+
+/* ——— Próximos passos ——— */
+.next{list-style:none;counter-reset:np}
+.next li{
+  counter-increment:np;display:flex;gap:14px;align-items:flex-start;
+  padding-block:14px;border-bottom:1px solid var(--line);
+  font-size:clamp(1rem,4vw,1.1rem);color:var(--ink-60);line-height:1.5;
+}
+.next li:last-child{border-bottom:none}
+.next li::before{
+  content:counter(np,decimal-leading-zero);
+  font-family:var(--font-mono);font-weight:700;color:var(--emerald-dark);flex:none;line-height:1.5;
+}
+.next b{color:var(--black)}
+
+/* ——— Prazo ——— */
+.deadline{
+  font-family:var(--font-display);font-weight:900;letter-spacing:-.02em;
+  font-size:clamp(1.6rem,7vw,2.6rem);line-height:1.05;text-transform:uppercase;
+}
+.deadline em{font-style:normal;color:var(--emerald)}
+
+/* ——— CTA final ——— */
+.closing{padding-block:clamp(48px,9vw,96px);border-top:1px solid var(--line);text-align:center}
+.closing h2{
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.8rem,8vw,3.4rem);line-height:1;letter-spacing:-.03em;
+  max-width:22ch;margin-inline:auto;
+}
+.closing h2 em{font-style:normal;color:var(--emerald)}
+.cta-wrap{margin-top:clamp(28px,5vw,40px)}
+.cta-note{margin-top:14px;font-family:var(--font-mono);font-size:12px;color:var(--ink-40);letter-spacing:.04em;text-transform:uppercase}
+.cta-alt{margin-top:clamp(22px,3vw,28px)}
+.cta-alt a{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--font-mono);font-weight:700;font-size:13px;letter-spacing:.04em;text-transform:uppercase;
+  color:var(--emerald-dark);border-bottom:1.5px solid var(--emerald);padding-bottom:3px;
+  text-decoration:none;transition:color .2s;
+}
+.cta-alt a:hover{color:var(--emerald)}
+@media print{.cta-alt{display:none}}
+
+/* ——— Rodapé ——— */
+.doc-footer{
+  padding-block:clamp(24px,4vw,36px);
+  border-top:1px solid var(--line);
+  display:flex;flex-wrap:wrap;gap:8px 24px;
+  font-family:var(--font-mono);font-size:clamp(11px,3vw,12px);
+  letter-spacing:.04em;text-transform:uppercase;color:var(--ink-60);
+}
+
+/* ——— Impressão / PDF (A4) ——— */
+@page{size:A4;margin:16mm}
+@media print{
+  body{background:#fff}
+  .grid-lines,.cta-wrap{display:none}
+  .dot::after{animation:none}
+  .doc{max-width:none;padding:0}
+  .opening{padding-block:28px 36px}
+  .sec{padding-block:24px;break-inside:avoid}
+  .founding,.guarantee{
+    box-shadow:none;border:1.5px solid var(--emerald-dark);
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;
+    break-inside:avoid;
+  }
+  .grid-list li{break-inside:avoid}
+}
+</style>
+</head>
+<body data-proposta="ws-style-mens">
+
+<div class="grid-lines" aria-hidden="true">
+  <span></span><span></span><span></span><span></span><span></span>
+</div>
+
+<div class="doc">
+
+  <header class="doc-header">
+    <div class="brand">RAFAEL RAZEIRA <small>ESTÚDIO</small></div>
+    <div class="date">22/07/2026</div>
+  </header>
+
+  <!-- 1 · HERO -->
+  <section class="opening">
+    <div class="eyebrow">
+      <span class="dot"></span><span class="status">PROPOSTA COMERCIAL</span>
+    </div>
+    <h1>SEU ESTILO MASCULINO MERECE UMA VITRINE À ALTURA DA <em>WS STYLE MENS.</em></h1>
+    <p class="meta">Uma vitrine digital completa para as peças da <b>WS Style Mens</b>: camisas, calças, tênis e acessórios masculinos. Cada look vira uma conversa no WhatsApp com a mensagem já pronta.</p>
+  </section>
+
+  <!-- 2 · OBJETIVO -->
+  <section class="sec">
+    <div class="num">01</div>
+    <div>
+      <h2>O OBJETIVO DO PROJETO</h2>
+      <div class="body">
+        <p>Hoje a WS Style Mens vende pelo Instagram e pelo WhatsApp, e vende bem. O que falta é uma <b>vitrine profissional</b> que organize o catálogo inteiro, valorize cada peça como ela merece e transforme visitantes em conversas qualificadas.</p>
+        <p>O site não substitui o atendimento: ele <b>prepara o cliente</b>. A pessoa navega, escolhe modelo e tamanho, e chega no seu WhatsApp com a mensagem pronta, com peça, tamanho e cor já descritos. Menos ida e volta, mais fechamento.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 · O QUE ESTÁ INCLUSO -->
+  <section class="sec">
+    <div class="num">02</div>
+    <div>
+      <h2>O QUE ESTÁ INCLUSO</h2>
+      <div class="body body--wide">
+        <ul class="grid-list">
+          <li><span class="check">✓</span><span><b>Design exclusivo</b> alinhado à identidade da WS Style Mens, com uma estética masculina e sofisticada aplicada em todo o site</span></li>
+          <li><span class="check">✓</span><span><b>Abertura com os destaques da loja</b>: os lançamentos e os reels do Instagram viram o topo da página inicial</span></li>
+          <li><span class="check">✓</span><span><b>Tela de carregamento personalizada</b> com a marca WS Style Mens</span></li>
+          <li><span class="check">✓</span><span><b>Peças já cadastradas</b>, com fotos reais tratadas a partir do Instagram da loja</span></li>
+          <li><span class="check">✓</span><span><b>Catálogo com filtros e busca inteligente</b>: categoria, tamanho, cor, coleção e preço</span></li>
+          <li><span class="check">✓</span><span><b>Páginas por categoria</b>: camisas, calças, bermudas, tênis e acessórios, cada uma com sua vitrine</span></li>
+          <li><span class="check">✓</span><span><b>Seção de lançamentos e coleção atual</b> com tratamento editorial de lookbook</span></li>
+          <li><span class="check">✓</span><span><b>Pedido pelo WhatsApp com mensagem pronta</b>: modelo, tamanho e cor preenchidos sozinhos</span></li>
+          <li><span class="check">✓</span><span><b>Lista de favoritos com painel lateral</b>: o cliente separa peças, escolhe o tamanho de cada uma e envia tudo de uma vez</span></li>
+          <li><span class="check">✓</span><span><b>Guia de tamanhos e medidas</b> para reduzir dúvidas e trocas</span></li>
+          <li><span class="check">✓</span><span><b>Central de trocas completa</b>: fluxos de tamanho, arrependimento, defeito e produto incorreto que geram a mensagem no WhatsApp</span></li>
+          <li><span class="check">✓</span><span><b>Páginas institucionais</b>: envios, trocas e políticas da loja</span></li>
+          <li><span class="check">✓</span><span><b>Painel administrativo</b> para acompanhar produtos, pedidos e trocas</span></li>
+          <li><span class="check">✓</span><span><b>Versão mobile impecável</b>, com animações leves e navegação pensada para quem chega pelo Instagram</span></li>
+          <li><span class="check">✓</span><span><b>SEO configurado</b> para a loja aparecer no Google</span></li>
+          <li><span class="check">✓</span><span><b>Publicação do projeto</b></span></li>
+          <li><span class="check">✓</span><span><b>2 rodadas de revisão</b> após a apresentação da primeira versão</span></li>
+          <li><span class="check">✓</span><span><b>Treinamento de uso</b> + 30 dias de suporte pós-publicação</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 · O QUE NÃO ESTÁ INCLUSO -->
+  <section class="sec">
+    <div class="num">03</div>
+    <div>
+      <h2>O QUE NÃO ESTÁ INCLUSO</h2>
+      <div class="body">
+        <ul class="list list--out">
+          <li><span>Carrinho de compras</span></li>
+          <li><span>Checkout online</span></li>
+          <li><span>Sistema de pagamento</span></li>
+          <li><span>ERP</span></li>
+          <li><span>Controle de estoque</span></li>
+          <li><span>Emissão fiscal</span></li>
+          <li><span>Cadastro e atualização de produtos após a entrega</span></li>
+          <li><span>Produção contínua de banners e artes</span></li>
+          <li><span>Fotografia profissional dos produtos</span></li>
+          <li><span>Hospedagem e domínio</span></li>
+        </ul>
+        <p class="list-note">Qualquer um desses itens pode ser conversado em uma etapa futura, como evolução da vitrine.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 · CONDIÇÃO ESPECIAL -->
+  <section class="sec">
+    <div class="num">04</div>
+    <div>
+      <h2>CONDIÇÃO ESPECIAL</h2>
+      <div class="body body--wide">
+        <aside class="founding">
+          <span class="f-label">◆ PRIMEIROS CASES</span>
+          <h3>PROJETO SELECIONADO PARA O PORTFÓLIO INICIAL DO ESTÚDIO.</h3>
+          <p>A WS Style Mens foi escolhida como uma das <b>primeiras marcas</b> que farão parte do portfólio do Rafael Razeira Estúdio.</p>
+          <p>Por esse motivo, este projeto possui uma <b>condição especial de lançamento</b>. Em contrapartida, será necessário:</p>
+          <ul>
+            <li><span>Autorização para utilizar o projeto como case.</span></li>
+            <li><span>Autorização para divulgação nas redes sociais e no portfólio.</span></li>
+            <li><span>Depoimento após a entrega.</span></li>
+            <li><span>Marcação do estúdio quando o projeto for divulgado (quando possível).</span></li>
+          </ul>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 · INVESTIMENTO -->
+  <section class="sec">
+    <div class="num">05</div>
+    <div>
+      <h2>INVESTIMENTO</h2>
+      <div class="body">
+        <p>Catálogo com filtros, páginas por categoria, favoritos, central de trocas e painel administrativo: um escopo bem acima de um site institucional simples.</p>
+        <div class="price-compare">
+          <div class="price-row price-row--main">
+            <span class="p-tag">VALOR TOTAL DO PROJETO</span>
+            <span class="price-main">R$ 999,00</span>
+          </div>
+        </div>
+
+        <aside class="guarantee">
+          <span class="g-label">RISCO ZERO</span>
+          <p>Se a primeira direção visual apresentada não for aprovada, a entrada é <b>devolvida integralmente</b>. O saldo só existe <b>depois que você aprovar o projeto</b>.</p>
+        </aside>
+
+        <div class="pay-cards pay-cards--duo">
+          <div class="pay pay--rec">
+            <div class="pay-head">Pix à vista</div>
+            <div class="pay-body">
+              <div class="pay-top">
+                <div class="pay-ctx">
+                  <span class="off-old"><s>R$ 999,00</s></span>
+                  <span class="off-pill">−10%</span>
+                </div>
+                <div class="pay-price">R$ 899,10</div>
+                <span class="pay-save">Você economiza R$ 99,90</span>
+              </div>
+              <ul class="pay-feats">
+                <li><span>Pagamento único, sem parcelas</span></li>
+                <li><span>QR code aqui na página, confirmação na hora</span></li>
+              </ul>
+              <button class="btn-pay" type="button" data-checkout-item="avista_pix">Pagar por Pix</button>
+            </div>
+          </div>
+
+          <div class="pay">
+            <div class="pay-head">Pix em 2x</div>
+            <div class="pay-body">
+              <div class="pay-top">
+                <div class="pay-ctx">Entrada + saldo</div>
+                <div class="pay-price">R$ 499,50 <small>entrada para início do projeto</small></div>
+              </div>
+              <ul class="pay-feats">
+                <li><span>Mais <b>R$ 499,50 na entrega</b> da vitrine</span></li>
+                <li><span>Total R$ 999,00, sem juros</span></li>
+              </ul>
+              <button class="btn-pay btn-pay--ghost" type="button" data-checkout-item="entrada_pix">Pagar a entrada</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="pay-cards pay-cards--one">
+          <div class="pay pay--dark">
+            <div class="pay-head">Cartão</div>
+            <div class="pay-body">
+              <div class="pay-top pay-top--auto">
+                <div class="pay-ctx">Sugestão de parcelamento</div>
+                <div class="pay-price">6x de R$ 166,50 <small>no total R$ 999,00, sem juros</small></div>
+              </div>
+              <ul class="pay-feats">
+                <li><span>É só uma sugestão: <b>você altera as parcelas</b> ali mesmo no checkout</span></li>
+                <li><span>Juros, se houver, calculados na hora pelo cartão</span></li>
+              </ul>
+              <button class="btn-pay btn-pay--ghost" type="button" data-checkout-item="avista_card">Pagar no cartão</button>
+            </div>
+          </div>
+        </div>
+        <p class="pay-note">O pagamento acontece aqui mesmo, com segurança pelo Mercado Pago. Assim que confirma, o WhatsApp abre sozinho para você me avisar e a gente já começa.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 · PRAZO -->
+  <section class="sec">
+    <div class="num">06</div>
+    <div>
+      <h2>PRAZO</h2>
+      <div class="body">
+        <p class="deadline">NO AR EM ATÉ <em>10 DIAS ÚTEIS</em> APÓS O ACEITE</p>
+        <p style="margin-top:14px">Após o aceite e a entrada, começo a montagem da vitrine com as suas peças e a sua identidade. Você acompanha a primeira versão, fazemos os ajustes e publico o site com os seus dados oficiais: número do WhatsApp, políticas de troca e envio e a revisão do catálogo.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 · DEPOIS DA PUBLICAÇÃO: HOSPEDAGEM -->
+  <section class="sec">
+    <div class="num">07</div>
+    <div>
+      <h2>DEPOIS DA PUBLICAÇÃO: HOSPEDAGEM</h2>
+      <div class="body body--wide">
+        <p>A vitrine precisa de um lugar para ficar no ar. Você escolhe um dos dois formatos:</p>
+        <div class="host-cards">
+          <div class="host host--rec">
+            <span class="h-tag">OPÇÃO A · RECOMENDADA</span>
+            <h3>HOSPEDAGEM GERENCIADA</h3>
+            <div class="h-price">R$ 89<small>/mês</small></div>
+            <p>Eu cuido de tudo: hospedagem em infraestrutura profissional, certificado de segurança (SSL), monitoramento e <b>1 ajuste pequeno por mês</b> (trocar uma foto, um preço, um destaque). Se algo acontecer, é comigo.</p>
+          </div>
+          <div class="host">
+            <span class="h-tag">OPÇÃO B</span>
+            <h3>ENTREGA COM TRANSFERÊNCIA</h3>
+            <div class="h-price">R$ 250<small> · taxa única</small></div>
+            <p>Transfiro o projeto e os acessos para as contas da WS Style Mens, com um guia de uso. A partir daí, a manutenção e os custos de infraestrutura ficam por conta da loja.</p>
+          </div>
+        </div>
+        <p class="host-note">Em ambos os formatos, o domínio (ex.: wsstylemens.com.br) é registrado <b>no nome da WS Style Mens</b> e é seu. Eu apenas configuro (~R$ 40/ano no Registro.br).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 · PRÓXIMOS PASSOS -->
+  <section class="sec">
+    <div class="num">08</div>
+    <div>
+      <h2>PRÓXIMOS PASSOS</h2>
+      <div class="body">
+        <ol class="next">
+          <li><span>Você confirma o <b>aceite desta proposta</b> pelo botão abaixo, por WhatsApp ou e-mail.</span></li>
+          <li><span>Envio dos dados para o <b>pagamento da entrada</b> e você me passa o número oficial do WhatsApp e as regras de troca e envio.</span></li>
+          <li><span>Reviso o catálogo com você, publico a vitrine e a <b>WS Style Mens entra no ar</b>.</span></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 · CTA -->
+  <section class="closing">
+    <h2>VAMOS COLOCAR A <em>WS STYLE MENS</em> NO AR.</h2>
+    <div class="cta-wrap">
+      <p class="cta-alt"><a href="https://wa.me/5544999997219?text=Ol%C3%A1%20Rafael%2C%20tenho%20uma%20d%C3%BAvida%20sobre%20a%20proposta%20da%20WS%20Style%20Mens." target="_blank" rel="noopener">Ficou com uma dúvida? Fala comigo no WhatsApp <span aria-hidden="true">→</span></a></p>
+    </div>
+  </section>
+
+  <footer class="doc-footer">
+    <span>RAFAEL RAZEIRA ESTÚDIO</span>
+    <span>rafael.rbarbon@gmail.com</span>
+    <span>(44) 99999-7219</span>
+    <span>@rafaelrazeira.estudio</span>
+  </footer>
+
+</div>
+
+</body>
+</html>
