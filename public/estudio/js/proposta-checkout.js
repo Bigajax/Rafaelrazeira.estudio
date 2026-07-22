@@ -115,7 +115,7 @@
         "ck-text",
         base +
           (whats
-            ? "Toque no botão abaixo para me avisar no WhatsApp e já seguimos com os próximos passos."
+            ? "Já estou abrindo o WhatsApp para confirmarmos e seguirmos com os próximos passos."
             : "Vou te chamar no WhatsApp para os próximos passos. Obrigado pela confiança!")
       )
     );
@@ -129,14 +129,19 @@
         String(config.whatsapp).replace(/\D/g, "") +
         "?text=" +
         encodeURIComponent(msg);
-      var wa = el("a", "ck-btn", "Avisar no WhatsApp");
+      var wa = el("a", "ck-btn", "Abrir o WhatsApp");
       wa.href = href;
       wa.target = "_blank";
       wa.rel = "noopener";
       wa.style.textDecoration = "none";
       s.appendChild(wa);
-      // tenta abrir sozinho; se o navegador bloquear, o botão acima resolve
-      try { window.open(href, "_blank", "noopener"); } catch (_) {}
+      s.appendChild(el("p", "ck-note", "Se o WhatsApp não abrir sozinho, toque no botão acima."));
+      // abre o WhatsApp sozinho: tenta uma nova aba e, se o navegador bloquear, redireciona a própria aba
+      setTimeout(function () {
+        var w = null;
+        try { w = window.open(href, "_blank", "noopener"); } catch (_) {}
+        if (!w) { try { window.location.href = href; } catch (_) {} }
+      }, 1500);
     }
     body.appendChild(s);
   }
