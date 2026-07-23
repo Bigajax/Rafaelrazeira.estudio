@@ -18,11 +18,11 @@ const Button = ({ href, children, outline = false, onClick, cta, dest }: { href?
 
 /* ---------- fio de conversa (assinatura da página) ----------
    Uma única venda contada em balões de WhatsApp reais que atravessam a
-   página: sem resposta na seção do problema, resolvida no como funciona,
-   e na oferta quem manda a mensagem é o lojista. O confere (✓ cinza sem
-   resposta, ✓✓ azul lida) carrega o argumento. Cada balão revela no
-   scroll com "digitando…"; sem JS ou com reduced motion o texto já vem
-   visível, então nada fica escondido. */
+   página: as perguntas sem resposta na seção do problema, o pedido já
+   resolvido no como funciona, e na oferta quem manda a mensagem é o
+   lojista. O confere (✓ cinza sem resposta, ✓✓ azul lida) carrega o
+   argumento. Cada balão revela no scroll com "digitando…"; sem JS ou com
+   reduced motion o texto já vem visível, então nada fica escondido. */
 function Bubble({ out = false, time, tick, delay = 0, children }: { out?: boolean; time: string; tick?: "sent" | "read"; delay?: number; children: React.ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
   const [typing, setTyping] = useState(false);
@@ -57,6 +57,8 @@ const ChatStrip = ({ label, note, children }: { label: string; note?: string; ch
     {note && <small className={s.stripNote}>{note}</small>}
   </div>;
 
+/* Navegação enxuta: só os passos desta oferta. Serviços e E-commerce saem
+   do topo e continuam no rodapé, para o tráfego pago não ter porta de saída. */
 export function Header() {
   const [open, setOpen] = useState(false);
   return <header className={s.header}>
@@ -67,8 +69,6 @@ export function Header() {
       <a href="#projetos">PROJETOS</a>
       <a href="#inclui">O QUE INCLUI</a>
       <a href="#faq">DÚVIDAS</a>
-      <Link href="/servicos">SERVIÇOS</Link>
-      <Link href="/e-commerce">E-COMMERCE</Link>
       <a className={s.navcta} href="#oferta" data-cta="nav">CONTRATAR ↗</a>
     </nav>
   </header>;
@@ -91,47 +91,56 @@ function VitrineDemo() {
 
 const heroPoints = ["Design personalizado", "Catálogo organizado", "WhatsApp integrado", "Feita para celular"];
 export function Hero() {
-  return <section className={s.hero}>
+  return <section className={s.hero} id="topo">
     <div className={s.heroGrid}>
       <div className={s.heroCopy}>
-        <Eyebrow>● VITRINE DIGITAL PARA LOJAS</Eyebrow>
-        <h1>TRANSFORME SEU INSTAGRAM EM UMA <em>LOJA ORGANIZADA.</em></h1>
-        <p className={s.lead}>Apresente seus produtos em um catálogo profissional e receba no WhatsApp clientes que já chegam com o produto escolhido.</p>
+        <Eyebrow>● VITRINE DIGITAL PARA LOJAS QUE VENDEM PELO INSTAGRAM</Eyebrow>
+        <h1>SEUS PRODUTOS EM <em>UM ÚNICO LINK.</em><span className={s.h1sub}>CLIENTES MAIS DECIDIDOS NO WHATSAPP.</span></h1>
+        {/* a segunda frase repetia a promessa do próprio título e custava
+            duas linhas no celular, empurrando a demonstração para longe */}
+        <p className={s.lead}>Eu crio uma vitrine personalizada para sua loja: catálogo organizado, páginas de produto e pedido direto pelo WhatsApp.</p>
         <div className={s.actions}>
-          <Button href="#oferta" cta="hero">COMEÇAR COM R$500 ↗</Button>
-          <a className={s.ghost} href="#projetos" data-cta="hero_projetos" data-cta-dest="projetos">VER PROJETOS ↓</a>
+          <Button href="#oferta" cta="hero">RESERVAR MINHA VITRINE · R$500 ↗</Button>
+          <a className={s.ghost} href="#projetos" data-cta="hero_projetos" data-cta-dest="projetos">VER UMA VITRINE FUNCIONANDO ↓</a>
         </div>
-        <small className={s.micro}>PROJETO COMPLETO POR R$999 · 20 PRODUTOS CADASTRADOS PARA VOCÊ · ENTREGA EM ATÉ 7 DIAS ÚTEIS</small>
+        <small className={s.micro}>Total de R$999 · saldo de R$499 só após a sua aprovação · até 20 produtos · entrega em até 7 dias úteis</small>
       </div>
       <div className={s.heroVisual}>
         <div className={s.phone} role="img" aria-label="Demonstração da vitrine da Xavier's Sports: o cliente navega no catálogo, abre a camisa Brasil Retrô 2004, escolhe o tamanho M e envia o pedido pelo WhatsApp">
           <VitrineDemo />
         </div>
-        <small className={s.demoTag}>DEMONSTRAÇÃO REAL · XAVIER&apos;S SPORTS</small>
+        <small className={s.demoTag}>VITRINE NO AR · XAVIER&apos;S SPORTS</small>
       </div>
     </div>
     <ul className={s.heroPoints}>{heroPoints.map(x => <li key={x}>{x}</li>)}</ul>
   </section>;
 }
 
+/* As quatro perguntas de sempre viram os próprios balões: o argumento é
+   ver quatro mensagens verdes seguidas com o confere cinza, sem resposta. */
+const questions: [string, string, number][] = [
+  ["oi! quanto custa a camisa do story?", "19:02", 0],
+  ["tem em outro modelo?", "19:03", 500],
+  ["quais tamanhos vocês têm?", "19:05", 1000],
+  ["consegue mandar as fotos de novo? não achei no feed", "19:07", 1500],
+];
 export function PainSolution() {
   return <section className={s.section}>
     <div className={s.wrap}>
       <div className={s.split}>
         <div>
           <Eyebrow>O PROBLEMA E A SOLUÇÃO</Eyebrow>
-          <h2>SEU CLIENTE NÃO DEVERIA PROCURAR PRODUTOS NO MEIO DO FEED.</h2>
-          <p className={s.lead}>Stories desaparecem, publicações antigas ficam difíceis de encontrar e cada atendimento começa do zero: foto, preço e tamanho, um por um.</p>
-        </div>
-        <div className={s.shift}>
-          <ChatStrip label="HOJE · O CLIENTE ESPERANDO NO DIRECT" note="Visualizado só às 21:40. A vontade de comprar não espera duas horas.">
-            <Bubble out time="19:02" tick="sent">oi! ainda tem a camisa do story? qual o preço?</Bubble>
-            <Bubble out time="19:04" tick="sent" delay={700}>tem foto de outros modelos? não achei no feed</Bubble>
-          </ChatStrip>
+          <h2>Pare de responder as mesmas perguntas em toda conversa.</h2>
+          <p className={s.lead}>Quando os produtos ficam espalhados entre stories, destaques e publicações antigas, o cliente precisa perguntar tudo antes de decidir. E cada atendimento começa do zero: foto, preço e tamanho, um por um.</p>
           <div className={s.shiftAfter}>
             <small>COM A VITRINE</small>
-            <p>Seus produtos ficam organizados em um único link. O cliente navega, escolhe e chama sua loja com o produto definido.</p>
+            <p>O cliente encontra os produtos, escolhe o que quer e chama sua loja pelo WhatsApp com o pedido já identificado.</p>
           </div>
+        </div>
+        <div className={s.shift}>
+          <ChatStrip label="HOJE · O CLIENTE ESPERANDO NO DIRECT" note="Quatro perguntas antes de escolher qualquer coisa. Visualizado só às 21:40, e a vontade de comprar não espera duas horas.">
+            {questions.map(([text, time, delay]) => <Bubble key={time} out time={time} tick="sent" delay={delay}>{text}</Bubble>)}
+          </ChatStrip>
         </div>
       </div>
       <p className={s.manifesto}>O INSTAGRAM APRESENTA. A VITRINE <em>ORGANIZA.</em> O WHATSAPP FECHA.</p>
@@ -149,11 +158,11 @@ export function HowItWorks() {
   return <section className={s.section} id="como">
     <div className={s.wrap}>
       <Eyebrow>COMO FUNCIONA</Eyebrow>
-      <h2>DO INSTAGRAM AO PEDIDO EM QUATRO PASSOS.</h2>
+      <h2>Do Instagram ao pedido em quatro passos.</h2>
       <div className={s.split}>
         <div>
           <ol className={s.steps}>{steps.map((x, i) => <li key={x[0]}><b>0{i + 1}</b><div><h3>{x[0]}</h3><p>{x[1]}</p></div></li>)}</ol>
-          <div className={s.actions}><Button href="#oferta" cta="como_funciona">QUERO ISSO NA MINHA LOJA ↗</Button></div>
+          <div className={s.actions}><Button href="#oferta" cta="como_funciona">RESERVAR MINHA VITRINE ↗</Button></div>
         </div>
         <div className={s.howVisual}>
           <div className={s.phoneSmall}>
@@ -173,16 +182,33 @@ export function HowItWorks() {
 
 /* Captura desktop da página inteira de cada site (1440px de largura),
    exibida na tela de um MacBook com scroll automático em loop.
-   A duração acompanha a altura da página para o ritmo ser parecido. */
+   A duração acompanha a altura da página para o ritmo ser parecido.
+   Cada card diz o que é: a Xavier's é loja de cliente no ar, a Solo Urb
+   é projeto de demonstração. Prova vaga não convence ninguém. */
 const projects = [
-  { img: "/assets/case-xavier-desk.jpg", w: 1440, h: 8965, dur: "36s", url: "https://xavier-s-sports.vercel.app/", dom: "xavier-s-sports.vercel.app", name: "XAVIER'S SPORTS", tag: "CAMISAS ESPORTIVAS", copy: "Catálogo por clubes, seleções e modelos retrô, com pedido direto no WhatsApp." },
-  { img: "/assets/case-solourb-desk.jpg", w: 1440, h: 11263, dur: "44s", url: "https://s-lo-urb.vercel.app/", dom: "s-lo-urb.vercel.app", name: "SOLO URB", tag: "STREETWEAR E SNEAKERS", copy: "Lançamentos, categorias e páginas de produto com reserva pela sacola." },
+  {
+    img: "/assets/case-xavier-desk.jpg", w: 1440, h: 8965, dur: "36s",
+    url: "https://xavier-s-sports.vercel.app/", dom: "xavier-s-sports.vercel.app",
+    name: "XAVIER'S SPORTS", tag: "CAMISAS ESPORTIVAS",
+    real: true, chip: "● NO AR", kind: "LOJA DE CLIENTE",
+    copy: "Vitrine no ar, navegável agora. Abra pelo celular e faça o caminho que o cliente faz.",
+    facts: ["Catálogo por clubes, seleções e modelos retrô", "Página individual para cada produto", "Controle de pronta entrega", "Pedido enviado direto no WhatsApp"],
+  },
+  {
+    img: "/assets/case-solourb-desk.jpg", w: 1440, h: 11263, dur: "44s",
+    url: "https://s-lo-urb.vercel.app/", dom: "s-lo-urb.vercel.app",
+    name: "SOLO URB", tag: "STREETWEAR E SNEAKERS",
+    real: false, chip: "● DEMONSTRAÇÃO", kind: "PROJETO DE DEMONSTRAÇÃO",
+    copy: "Criei este projeto para mostrar o padrão de entrega em uma loja de streetwear: lançamentos, categorias e reserva pela sacola.",
+    facts: [],
+  },
 ];
 export function Projects() {
   return <section className={`${s.section} ${s.dark}`} id="projetos">
     <div className={s.wrap}>
-      <Eyebrow>PROJETOS</Eyebrow>
-      <h2>UMA DIREÇÃO CRIADA PARA CADA LOJA.</h2>
+      <Eyebrow>PROJETO NO AR</Eyebrow>
+      <h2>Veja uma vitrine real em funcionamento.</h2>
+      <p className={`${s.lead} ${s.leadDark}`}>A Xavier&apos;s Sports vende camisas esportivas e atende pelo WhatsApp. A vitrine dela está publicada e você pode navegar por ela inteira antes de decidir qualquer coisa.</p>
       <div className={s.projects}>
         {projects.map(x => <article key={x.name}>
           <div className={s.laptop}>
@@ -190,7 +216,7 @@ export function Projects() {
               <div className={s.browserBar}>
                 <span className={s.dots} aria-hidden><i /><i /><i /></span>
                 <span className={s.urlChip}>{x.dom}</span>
-                <span className={s.live}>● NO AR</span>
+                <span className={x.real ? s.live : s.liveDemo}>{x.chip}</span>
               </div>
               <a className={s.cover} href={x.url} target="_blank" rel="noopener" aria-label={`Abrir o site do projeto ${x.name} em nova aba`}>
                 {/* img simples: o otimizador de imagem não lida bem com capturas de 10 mil pixels */}
@@ -199,30 +225,38 @@ export function Projects() {
             </div>
             <div className={s.deck} aria-hidden />
           </div>
-          <small>{x.tag}</small>
+          <div className={s.projMeta}>
+            <small>{x.tag}</small>
+            <span className={`${s.kind} ${x.real ? s.kindReal : ""}`}>{x.kind}</span>
+          </div>
           <h3>{x.name}</h3>
           <p>{x.copy}</p>
-          <a className={`${s.button} ${s.outlineDark}`} href={x.url} target="_blank" rel="noopener">ABRIR PROJETO ↗</a>
+          {x.facts.length > 0 && <ul className={s.facts}>{x.facts.map(f => <li key={f}>{f}</li>)}</ul>}
+          <a className={`${s.button} ${x.real ? s.primary : s.outlineDark}`} href={x.url} target="_blank" rel="noopener" data-cta={x.real ? "case_xavier" : "case_solourb"} data-cta-dest="case">
+            {x.real ? "ABRIR A VITRINE DA XAVIER'S ↗" : "ABRIR PROJETO ↗"}
+          </a>
         </article>)}
       </div>
-      <p className={s.note}>Alguns projetos são conceitos demonstrativos criados para apresentar possibilidades de aplicação.</p>
     </div>
   </section>;
 }
 
 const included = [
-  ["Design personalizado", "Visual alinhado à identidade da loja."],
-  ["Página inicial e catálogo", "Categorias e produtos organizados."],
-  ["Página de produto", "Fotos, descrição, preço e variações."],
-  ["WhatsApp integrado", "Mensagem automática com o produto escolhido."],
-  ["Até 20 produtos", "Eu cadastro tudo para você no lançamento."],
-  ["Publicação completa", "Sua página no ar, com domínio configurado e uma rodada de ajustes."],
+  ["Design personalizado", "Visual criado a partir da identidade da sua loja, não um modelo pronto."],
+  ["Página inicial e catálogo", "Categorias organizadas do jeito que a sua loja vende."],
+  ["Página de produto", "Fotos, descrição, preço, tamanhos e variações."],
+  ["WhatsApp integrado", "A mensagem chega com o produto já identificado."],
+  ["Até 20 produtos", "Eu cadastro todos no lançamento. Acima disso, combinamos à parte."],
+  ["Uma rodada de ajustes", "Você revisa e aponta as correções antes de a página entrar no ar."],
+  ["Publicação e endereço", "Coloco a vitrine no ar e configuro o endereço. O domínio próprio é opcional, anual e pago direto no registrador."],
+  ["Entrega em até 7 dias úteis", "Contados a partir do envio de todos os materiais da loja."],
+  ["Atualizações quando precisar", "Você pede alterações pontuais depois e eu orço na hora. Nada é obrigatório."],
 ];
 export function Included() {
   return <section className={s.section} id="inclui">
     <div className={s.wrap}>
       <Eyebrow>O QUE ESTÁ INCLUSO</Eyebrow>
-      <h2>SUA LOJA PRONTA PARA APRESENTAR E VENDER MELHOR.</h2>
+      <h2>Tudo o que está incluído no projeto.</h2>
       <div className={s.grid}>{included.map(x => <article key={x[0]}><h3>{x[0]}</h3><p>{x[1]}</p></article>)}</div>
       <details className={s.accordion}>
         <summary>O que preciso enviar?</summary>
@@ -232,51 +266,61 @@ export function Included() {
   </section>;
 }
 
-const offerItems = ["Design personalizado", "Página inicial", "Catálogo", "Página de produto", "WhatsApp integrado", "Até 20 produtos", "Publicação", "Uma rodada de ajustes"];
+const offerItems = ["Design personalizado", "Página inicial e catálogo", "Páginas de produto", "WhatsApp integrado", "Até 20 produtos cadastrados", "Publicação e endereço configurado", "Uma rodada de ajustes", "Entrega em até 7 dias úteis"];
 export function Offer() {
-  const [plan, setPlan] = useState("Entrada de R$500");
+  /* Um caminho só: reservar por R$500. O pagamento à vista deixou de ser um
+     segundo botão concorrendo com o principal e virou uma opção dentro do
+     formulário, escolhida depois que a pessoa já decidiu contratar. */
+  const [avista, setAvista] = useState(false);
   const [status, setStatus] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
-  function choose(p: string) {
-    setPlan(p);
+  const plan = avista ? "À vista R$999" : "Entrada de R$500";
+  function goToForm() {
     formRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     (formRef.current?.elements.namedItem("nome") as HTMLInputElement | null)?.focus({ preventScroll: true });
   }
   function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const f = new FormData(e.currentTarget);
-    trackLead(plan, String(f.get("whatsapp") || ""));
+    /* Sem campo de telefone: a mensagem sai do WhatsApp da própria pessoa,
+       então pedir o número é fricção para uma informação que já chega junto.
+       O Lead na Conversions API perde o hash do telefone e passa a casar só
+       por fbp/fbc, e o meta-capi.js já ignora phone vazio. */
+    trackLead(plan);
     setStatus("Tudo certo. Abrindo o WhatsApp para concluir a contratação…");
-    const text = encodeURIComponent(`Olá, Rafael! Quero contratar a Vitrine Digital.\nNome: ${f.get("nome")}\nLoja: ${f.get("loja")}\nInstagram: ${f.get("instagram")}\nWhatsApp: ${f.get("whatsapp")}\nPlano: ${plan}`);
+    const text = encodeURIComponent(`Olá, Rafael! Quero contratar a Vitrine Digital.\nNome: ${f.get("nome")}\nLoja: ${f.get("loja")}\nInstagram: ${f.get("instagram")}\nPlano: ${plan}`);
     window.open(`https://wa.me/5544999997219?text=${text}`, "_blank", "noopener");
   }
   return <section className={`${s.section} ${s.offer}`} id="oferta">
     <div className={s.wrap}>
       <Eyebrow>OFERTA E CONTRATAÇÃO</Eyebrow>
-      <h2>VITRINE DIGITAL COMPLETA POR <em>R$999.</em></h2>
-      <p className={s.lead}>Uma página personalizada para organizar seus produtos, valorizar sua marca e facilitar os pedidos pelo WhatsApp.</p>
+      <h2>Vitrine digital completa por <em>R$999.</em></h2>
+      <p className={s.lead}>Você reserva o projeto com R$500, acompanha o desenvolvimento e só paga o saldo depois de ver a vitrine pronta e aprovar.</p>
       <div className={s.offerGrid}>
         <article className={s.pricecard}>
           <small>VITRINE DIGITAL</small>
           <div className={s.price}>R$<strong>999</strong></div>
-          <p className={s.installments}><b>R$500 PARA INICIAR</b><br />R$499 APÓS A APROVAÇÃO</p>
+          <p className={s.installments}><b>R$500 PARA RESERVAR</b><br />R$499 APÓS A SUA APROVAÇÃO</p>
+          <p className={s.nomensal}>SEM MENSALIDADE OBRIGATÓRIA</p>
           <ul className={s.check}>{offerItems.map(x => <li key={x}>{x}</li>)}</ul>
-          <Button onClick={() => choose("Entrada de R$500")} cta="oferta_entrada">COMEÇAR COM R$500 ↗</Button>
-          <Button onClick={() => choose("À vista R$999")} outline cta="oferta_avista">PAGAR R$999 À VISTA</Button>
-          <a className={s.ghost} href={whatsapp} target="_blank" rel="noopener" data-cta="oferta_whats" data-cta-dest="whatsapp">TIRAR DÚVIDAS NO WHATSAPP</a>
-          <small className={s.micro}>Você paga o saldo somente depois da apresentação e aprovação do projeto.</small>
+          <Button onClick={goToForm} cta="oferta_entrada">RESERVAR MINHA VITRINE · R$500 ↗</Button>
+          <p className={s.guarantee}>O saldo de R$499 é pago somente depois que você visualizar e aprovar o projeto.</p>
+          <a className={s.ghost} href={whatsapp} target="_blank" rel="noopener" data-cta="oferta_whats" data-cta-dest="whatsapp">AINDA TENHO DÚVIDAS: FALAR COM RAFAEL</a>
         </article>
         <div className={s.formCol}>
           <ChatStrip label="SUA PRÓXIMA MENSAGEM">
             <Bubble out time="19:15" tick="read">Rafael, quero uma vitrine dessas pra minha loja</Bubble>
           </ChatStrip>
           <form ref={formRef} onSubmit={submit} className={s.form} id="contratar">
-            <p className={s.formTitle}>COMECE AGORA<br /><span>Plano escolhido: {plan}</span></p>
+            <p className={s.formTitle}>RESERVAR MINHA VITRINE<br /><span>Entrada de R$500. O saldo só depois da sua aprovação.</span></p>
             <label>NOME<input name="nome" autoComplete="name" required /></label>
-            <label>WHATSAPP<input name="whatsapp" type="tel" autoComplete="tel" required /></label>
             <label>NOME DA LOJA<input name="loja" required /></label>
             <label>INSTAGRAM<input name="instagram" placeholder="@sualoja" required /></label>
-            <button className={`${s.button} ${s.primary}`}>CONTINUAR CONTRATAÇÃO ↗</button>
+            <label className={s.avista}>
+              <input type="checkbox" name="avista" checked={avista} onChange={e => setAvista(e.target.checked)} />
+              Prefiro pagar os R$999 à vista
+            </label>
+            <button className={`${s.button} ${s.primary}`}>CONTINUAR NO WHATSAPP ↗</button>
             <p className={s.micro} role="status">{status || "Ao continuar, você confirma os detalhes comigo no WhatsApp. Não peço dados de cartão nesta etapa."}</p>
           </form>
         </div>
@@ -286,16 +330,16 @@ export function Offer() {
 }
 
 const process = [
-  ["Contratação", "Você paga R$500 e envia o briefing."],
+  ["Reserva", "Você paga R$500 e envia o briefing da loja."],
   ["Criação", "Eu desenvolvo a estrutura, o design e o catálogo."],
-  ["Aprovação", "Você revisa e solicita a rodada de ajustes."],
-  ["Publicação", "Após a aprovação e o pagamento do saldo, a página entra no ar."],
+  ["Aprovação", "Você revisa a vitrine pronta e pede a rodada de ajustes."],
+  ["Publicação", "Depois da sua aprovação e do saldo, a página entra no ar."],
 ];
 export function Process() {
   return <section className={`${s.section} ${s.dark}`}>
     <div className={s.wrap}>
       <Eyebrow>PROCESSO E SEGURANÇA</Eyebrow>
-      <h2>VOCÊ ACOMPANHA O PROJETO ANTES DE CONCLUIR O PAGAMENTO.</h2>
+      <h2>Você acompanha o projeto antes de concluir o pagamento.</h2>
       <ol className={s.process}>{process.map((x, i) => <li key={x[0]}><b>0{i + 1}</b><h3>{x[0]}</h3><p>{x[1]}</p></li>)}</ol>
       <div className={s.trust}>
         <span className={s.badge}>✓ PAGAMENTO PROCESSADO EM AMBIENTE SEGURO</span>
@@ -307,30 +351,46 @@ export function Process() {
 
 const faq = [
   ["A vitrine recebe pagamentos dos meus clientes?", "Não. A vitrine organiza o catálogo e leva o pedido pronto para o WhatsApp da loja, onde você combina pagamento e entrega."],
-  ["Quantos produtos estão incluídos?", "Até 20 produtos no cadastro inicial. Novos cadastros podem ser combinados depois."],
-  ["Existe mensalidade?", "Não. O projeto custa R$999 uma única vez. Serviços externos, como domínio próprio, podem ter custo anual à parte."],
-  ["Posso atualizar depois?", "Sim. Você pode solicitar atualizações pontuais ou combinar um pacote de manutenção quando precisar."],
+  ["Quantos produtos estão incluídos?", "Até 20 produtos no cadastro inicial, todos cadastrados por mim. Novos cadastros podem ser combinados depois."],
+  ["Existe mensalidade?", "Não. O projeto custa R$999 uma única vez. Um domínio próprio é opcional e tem custo anual pago direto no registrador."],
+  ["Quem atualiza a vitrine depois?", "Você pede as alterações e eu executo, orçadas por demanda. Se preferir, combinamos um pacote de manutenção. Nada disso é obrigatório."],
   ["Quanto tempo demora?", "Até 7 dias úteis depois do envio de todos os materiais da loja."],
-  ["Preciso pagar tudo antes?", "Não. São R$500 para iniciar e R$499 somente depois da apresentação e aprovação do projeto."],
+  ["Preciso pagar tudo antes?", "Não. São R$500 para reservar e R$499 somente depois da apresentação e da sua aprovação do projeto."],
 ];
 export function FAQ() {
   return <section className={s.section} id="faq">
     <div className={s.wrap}>
       <Eyebrow>DÚVIDAS FREQUENTES</Eyebrow>
-      <h2>ANTES DE CONTRATAR.</h2>
+      <h2>Antes de contratar.</h2>
       <div className={s.faq}>{faq.map(x => <details key={x[0]}><summary>{x[0]}</summary><p>{x[1]}</p></details>)}</div>
     </div>
   </section>;
 }
 
+/* Dentro da oferta a pílula sumia atrás do argumento: ela cobria a
+   microcopy do formulário e oferecia um terceiro caminho bem na hora de
+   decidir. Some enquanto a oferta está na tela. */
+function useInOffer() {
+  const [inOffer, setInOffer] = useState(false);
+  useEffect(() => {
+    const offer = document.getElementById("oferta");
+    if (!offer) return;
+    const io = new IntersectionObserver(([x]) => setInOffer(x.isIntersecting), { rootMargin: "-20% 0px" });
+    io.observe(offer);
+    return () => io.disconnect();
+  }, []);
+  return inOffer;
+}
+
 export function FinalCTA() {
+  const inOffer = useInOffer();
   return <>
     <section className={`${s.section} ${s.dark} ${s.final}`}>
       <Eyebrow>AGENDA ABERTA</Eyebrow>
-      <h2>SUA LOJA JÁ TEM PRODUTOS. AGORA PRECISA <em>FACILITAR A ESCOLHA.</em></h2>
-      <p className={s.lead}>Transforme o link da bio em uma vitrine profissional e atenda clientes que já escolheram o que querem.</p>
+      <h2>Sua loja já tem produtos. Agora precisa <em>facilitar a escolha.</em></h2>
+      <p className={s.lead}>Reserve a sua vitrine com R$500, acompanhe o projeto e pague o saldo só depois de aprovar.</p>
       <div className={s.actions}>
-        <Button href="#oferta" cta="final">COMEÇAR MINHA VITRINE ↗</Button>
+        <Button href="#oferta" cta="final">RESERVAR MINHA VITRINE · R$500 ↗</Button>
         <a className={s.ghost} href={whatsapp} target="_blank" rel="noopener" data-cta="final_whats" data-cta-dest="whatsapp">FALAR COM RAFAEL</a>
       </div>
     </section>
@@ -339,26 +399,31 @@ export function FinalCTA() {
       <nav><Link href="/estudio/">INÍCIO</Link><Link href="/servicos">SERVIÇOS</Link><Link href="/e-commerce">E-COMMERCE</Link><Link href="/termos">TERMOS</Link><Link href="/privacidade">PRIVACIDADE</Link></nav>
       <small>© 2026 RAFAEL RAZEIRA ESTÚDIO</small>
     </footer>
-    <a className={s.pill} href={whatsapp} target="_blank" rel="noopener" data-cta="pill" data-cta-dest="whatsapp">FALAR COM RAFAEL ↗</a>
+    <a className={`${s.pill} ${inOffer ? s.pillHidden : ""}`} href={whatsapp} target="_blank" rel="noopener" data-cta="pill" data-cta-dest="whatsapp">FALAR COM RAFAEL ↗</a>
   </>;
 }
 
+/* Barra fixa do celular: entra depois que a pessoa passa do hero e some
+   dentro da oferta e enquanto ela digita, para não cobrir o formulário. */
 export function MobileBar() {
-  const [hidden, setHidden] = useState(false);
+  const [hidden, setHidden] = useState(true);
   useEffect(() => {
+    const hero = document.getElementById("topo");
     const offer = document.getElementById("oferta");
-    let focused = false, inOffer = false;
-    const update = () => setHidden(focused || inOffer);
+    let focused = false, inOffer = false, inHero = !!hero;
+    const update = () => setHidden(focused || inOffer || inHero);
     const onFocus = (e: FocusEvent) => { focused = !!(e.target as HTMLElement)?.closest?.("form"); update(); };
     const onBlur = () => { focused = false; update(); };
     document.addEventListener("focusin", onFocus);
     document.addEventListener("focusout", onBlur);
-    const io = offer && new IntersectionObserver(([x]) => { inOffer = x.isIntersecting; update(); }, { rootMargin: "-30% 0px" });
-    if (offer && io) io.observe(offer);
-    return () => { document.removeEventListener("focusin", onFocus); document.removeEventListener("focusout", onBlur); io?.disconnect(); };
+    const heroIO = hero && new IntersectionObserver(([x]) => { inHero = x.isIntersecting; update(); }, { rootMargin: "-15% 0px" });
+    if (hero && heroIO) heroIO.observe(hero);
+    const offerIO = offer && new IntersectionObserver(([x]) => { inOffer = x.isIntersecting; update(); }, { rootMargin: "-30% 0px" });
+    if (offer && offerIO) offerIO.observe(offer);
+    return () => { document.removeEventListener("focusin", onFocus); document.removeEventListener("focusout", onBlur); heroIO?.disconnect(); offerIO?.disconnect(); };
   }, []);
   return <div className={`${s.bar} ${hidden ? s.barHidden : ""}`}>
-    <span>VITRINE DIGITAL · <b>R$999</b></span>
-    <a className={`${s.button} ${s.primary}`} href="#oferta" data-cta="sticky_mobile">CONTRATAR</a>
+    <span className={s.barCopy}><b>R$500 PARA RESERVAR</b><span>Saldo só após você aprovar</span></span>
+    <a className={`${s.button} ${s.primary}`} href="#oferta" data-cta="sticky_mobile">RESERVAR</a>
   </div>;
 }
