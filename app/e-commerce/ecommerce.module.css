@@ -1,0 +1,450 @@
+/* ============================================================
+   /e-commerce — a operação do estúdio.
+   Identidade herdada de /servicos (off-white, preto, esmeralda,
+   Archivo wdth, Inter, Space Mono, traço das plantas). Assinatura
+   própria: o TRILHO OPERACIONAL — o pedido que percorre catálogo,
+   carrinho, checkout, pagamento, pedido e painel. Um acento novo,
+   usado uma vez: --alerta, âmbar fosco só para "estoque baixo".
+   ============================================================ */
+
+.page {
+  --green: #10b981;
+  --pale: #c9f7df;
+  --black: #090909;
+  --night: #0b1411;
+  --off: #f5f5f0;
+  --ink: #494949;
+  --line: #dcdcd4;
+  --line-dark: #26312b;
+  --traco: #a9bfb1;
+  --alerta: #c98a2b;
+  --pad: clamp(20px, 5vw, 64px);
+  --display: var(--font-display), Arial, sans-serif;
+  --body: var(--font-body), Arial, sans-serif;
+  --mono: var(--font-mono), monospace;
+  background: var(--off);
+  color: var(--black);
+  font-family: var(--body);
+  overflow: clip;
+}
+.page * { box-sizing: border-box }
+.page a { text-decoration: none; color: inherit }
+.page :focus-visible { outline: 2px solid var(--green); outline-offset: 3px }
+
+.page h1, .page h2, .page h3 {
+  font-family: var(--display);
+  font-stretch: 118%;
+  font-weight: 800;
+  line-height: .97;
+  letter-spacing: -.015em;
+  margin: 0;
+  text-wrap: balance;
+}
+.page h1 { font-size: clamp(38px, 4.4vw, 64px); font-stretch: 106%; letter-spacing: -.025em; max-width: 15ch }
+.page h2 { font-size: clamp(30px, 3vw, 44px); max-width: 780px }
+.page h3 { font-size: clamp(22px, 1.8vw, 28px) }
+.page em { font-style: normal; color: var(--green) }
+.page p { line-height: 1.6; color: var(--ink); margin: 0 }
+
+.molde { max-width: 1360px; margin: auto }
+.secao { padding: clamp(60px, 7vw, 92px) var(--pad); scroll-margin-top: 72px }
+.olho { font: 11px var(--mono); letter-spacing: .12em; color: var(--black); margin: 0 0 20px }
+.escura .olho { color: var(--green) }
+.apoio { font-size: clamp(15px, 1.2vw, 17px); max-width: 620px; margin-top: 22px }
+.apoioEscuro { font-size: clamp(15px, 1.2vw, 17px); max-width: 640px; margin-top: 36px; color: #a8b3ab }
+.micro { font: 11px/1.6 var(--mono); color: #8a958d; display: block; margin-top: 18px }
+.obs { font: 11px/1.6 var(--mono); color: #8a958d; margin-top: 18px; max-width: 560px }
+
+/* ---------- botões ---------- */
+.acoes { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; margin-top: 32px }
+.botao {
+  display: inline-flex; justify-content: center; align-items: center;
+  padding: 17px 24px; border: 0; cursor: pointer;
+  font: 700 11px var(--mono); letter-spacing: .05em; color: var(--black);
+  transition: transform .15s ease;
+}
+.botao:hover { transform: translateY(-2px) }
+.cheio { background: var(--green) }
+.contorno { background: transparent; border: 1px solid var(--black); color: var(--black) }
+.discreto { font: 700 11px var(--mono); letter-spacing: .05em; border-bottom: 1px solid; padding-bottom: 3px; color: var(--black) }
+.escura .discreto { color: #fff }
+
+/* ---------- header ---------- */
+.topo {
+  height: 64px; position: sticky; top: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 var(--pad); background: #f5f5f0e8; backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.marca { font-family: var(--display); font-stretch: 118%; font-weight: 800; line-height: .9 }
+.marca b, .marca span { display: block }
+.marca span { font-size: 9px; letter-spacing: .34em; color: #7a7a74; font-weight: 400 }
+.topo nav { display: flex; gap: clamp(14px, 2vw, 30px); align-items: center; font: 700 10px var(--mono) }
+.navCta { background: var(--green); padding: 12px 16px }
+.menu { display: none; border: 0; background: none; font: 700 11px var(--mono); cursor: pointer }
+
+/* ---------- hero ---------- */
+.hero { padding: clamp(44px, 6vw, 80px) var(--pad) clamp(24px, 3vw, 48px) }
+.heroGrade {
+  max-width: 1360px; margin: auto;
+  display: grid; grid-template-columns: 1.02fr .98fr;
+  gap: clamp(32px, 4vw, 72px); align-items: center;
+}
+.heroMicro { font: 11px var(--mono); letter-spacing: .1em; color: var(--ink); margin: 20px 0 0 }
+
+/* trilho operacional (assinatura) — prancheta com papel quadriculado */
+.prancheta {
+  border: 1px solid var(--line);
+  background: var(--off);
+  background-image:
+    linear-gradient(#0000000a 1px, transparent 1px),
+    linear-gradient(90deg, #0000000a 1px, transparent 1px);
+  background-size: 28px 28px;
+  padding: clamp(16px, 2vw, 26px);
+}
+.pedidoTopo {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font: 10px var(--mono); letter-spacing: .06em; color: var(--ink);
+  border-bottom: 1px solid var(--line); padding-bottom: 12px; margin-bottom: 6px;
+}
+.pedidoTopo b { color: var(--black) }
+.trilhoOp { list-style: none; margin: 0; padding: 0; position: relative }
+.trilhoOp::before { content: ""; position: absolute; left: 15px; top: 22px; bottom: 22px; width: 1px; background: var(--line) }
+.etapaOp {
+  display: flex; align-items: center; gap: 16px; padding: 9px 0; position: relative;
+}
+.etapaOp b {
+  flex: none; width: 32px; height: 32px; border-radius: 50%;
+  display: grid; place-items: center; background: var(--off);
+  border: 1px solid var(--traco); color: var(--traco);
+  position: relative; z-index: 1;
+}
+.etapaOp b svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.6 }
+.etapaOp span { font: 11px var(--mono); letter-spacing: .05em; color: var(--ink); flex: 1 }
+.etapaOp small { font: 9px var(--mono); letter-spacing: .06em; color: #9aa39c }
+/* o pedido percorre o trilho: cada etapa acende na sua fatia do ciclo */
+.etapaOp:nth-child(1) b { animation-delay: 0s }
+.etapaOp:nth-child(2) b { animation-delay: 1.6s }
+.etapaOp:nth-child(3) b { animation-delay: 3.2s }
+.etapaOp:nth-child(4) b { animation-delay: 4.8s }
+.etapaOp:nth-child(5) b { animation-delay: 6.4s }
+.etapaOp:nth-child(6) b { animation-delay: 8s }
+.etapaOp:nth-child(7) b { animation-delay: 9.6s }
+@keyframes acendeEtapa {
+  0%, 6% { color: var(--traco); border-color: var(--traco); background: var(--off) }
+  8%, 18% { color: #fff; border-color: var(--green); background: var(--green) }
+  22%, 100% { color: var(--traco); border-color: var(--traco); background: var(--off) }
+}
+.etapaOp b { animation: acendeEtapa 12s infinite }
+.pedidoStatus {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  border-top: 1px solid var(--line); margin-top: 6px; padding-top: 14px;
+}
+.pedidoIndic { display: flex; gap: 16px; flex-wrap: wrap; font: 9px var(--mono); letter-spacing: .05em; color: #9aa39c }
+.pedidoIndic b { color: var(--black); font-weight: 700 }
+
+/* chip de status — mono, quadrado, com ponto */
+.chip {
+  display: inline-flex; align-items: center; gap: 7px;
+  font: 700 9px var(--mono); letter-spacing: .08em; color: var(--black);
+  border: 1px solid var(--line); padding: 7px 11px; background: #fff;
+}
+.chip::before { content: ""; width: 7px; height: 7px; background: var(--traco) }
+.chipPago::before, .chipEnviado::before { background: var(--green) }
+.chipSep::before { background: var(--traco) }
+.chipBaixo::before { background: var(--alerta) }
+.chipBaixo { color: var(--alerta); border-color: #e4cfa6 }
+.chipCancel::before { background: #b8beb6 }
+.chipCancel { color: #8a958d }
+/* o status do pedido do hero cicla junto com o trilho */
+.statusCiclo { position: relative; height: 26px; min-width: 132px }
+.statusCiclo .chip { position: absolute; right: 0; top: 0; opacity: 0; animation: statusPassa 12s infinite }
+.statusCiclo .chip:nth-child(1) { animation-delay: 4.8s }
+.statusCiclo .chip:nth-child(2) { animation-delay: 8s }
+.statusCiclo .chip:nth-child(3) { animation-delay: 9.6s }
+@keyframes statusPassa {
+  0%, 6% { opacity: 0 }
+  9%, 20% { opacity: 1 }
+  24%, 100% { opacity: 0 }
+}
+
+/* ---------- faixa editorial (marquee) ---------- */
+.faixa { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); overflow: hidden; background: var(--off) }
+.faixaTrilho { display: flex; width: max-content; animation: desliza 32s linear infinite }
+.faixaTrilho span {
+  font-family: var(--display); font-stretch: 108%; font-weight: 800;
+  font-size: clamp(20px, 2.4vw, 32px); letter-spacing: -.01em;
+  padding: 18px 0; white-space: nowrap;
+}
+.faixaTrilho i { color: var(--traco); margin: 0 26px; font-style: normal }
+@keyframes desliza { to { transform: translateX(-50%) } }
+
+/* ---------- problema: para quem compra / para quem vende ---------- */
+.duasColunas { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); margin-top: 44px }
+.coluna { background: var(--off); padding: clamp(24px, 3vw, 40px) }
+.colunaVende { background: #fff }
+.coluna h3 { font-size: clamp(20px, 1.7vw, 24px) }
+.coluna .rotulo { font: 700 9px var(--mono); letter-spacing: .12em; color: #8a958d; display: block; margin-bottom: 14px }
+.listaCol { list-style: none; margin: 20px 0 0; padding: 0; font-size: 14.5px; color: var(--ink) }
+.listaCol li { padding: 10px 0; border-bottom: 1px solid var(--line); line-height: 1.45; display: flex; gap: 10px }
+.listaCol li:last-child { border-bottom: 0 }
+.listaCol li::before { content: "▪"; color: var(--traco); font-size: 10px; line-height: 1.6 }
+.colunaVende .listaCol li { border-color: #ececde }
+
+/* ---------- jornada de compra ---------- */
+.jornada { list-style: none; margin: 48px 0 0; padding: 0; display: grid; grid-template-columns: repeat(6, 1fr); gap: 0 }
+.jornadaItem { position: relative; padding: 0 clamp(12px, 1.4vw, 22px) 8px 0; border-top: 1px solid var(--black); padding-top: 18px }
+.jornadaItem::after {
+  content: ""; position: absolute; top: -4px; right: 18px; width: 7px; height: 7px;
+  background: var(--off); border: 1px solid var(--black); border-radius: 50%;
+}
+.jornadaItem:first-child { padding-left: 0 }
+.jornadaNum { font: 700 11px var(--mono); letter-spacing: .08em; color: var(--green) }
+.jornadaItem h3 { font-size: 16px; margin-top: 12px }
+.jornadaItem p { font-size: 13px; margin-top: 10px; line-height: 1.5 }
+
+/* ---------- o que está incluso ---------- */
+.grupos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); margin-top: 44px }
+.grupo { background: var(--off); padding: clamp(22px, 2.4vw, 34px) }
+.grupo:nth-child(odd) { background: #fff }
+.grupoTopo { display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--line); padding-bottom: 14px }
+.grupoTopo b { font: 700 11px var(--mono); color: var(--green); letter-spacing: .08em }
+.grupoTopo h3 { font-size: 18px }
+.grupoLista { list-style: none; margin: 16px 0 0; padding: 0; columns: 2; column-gap: 26px; font-size: 13.5px; color: var(--ink) }
+.grupoLista li { padding: 6px 0; line-height: 1.4; break-inside: avoid }
+.grupoLista li::before { content: "· "; color: var(--traco) }
+
+/* ---------- seção preta genérica ---------- */
+.escura { background: var(--night); color: #fff }
+.escura h2, .escura h3 { color: #fff }
+.escura p { color: #b9c2bb }
+.escura .obs { color: #6e7d74 }
+
+/* ---------- painel administrativo (seção preta) ---------- */
+.painelGrade { display: grid; grid-template-columns: 1.05fr .95fr; gap: clamp(28px, 4vw, 64px); align-items: start; margin-top: 44px }
+.mockPainel { border: 1px solid var(--line-dark); background: #0e1a15 }
+.mockBarra { display: flex; align-items: center; gap: 6px; padding: 10px 14px; border-bottom: 1px solid var(--line-dark) }
+.mockBarra i { width: 8px; height: 8px; border-radius: 50%; background: #2a3a31 }
+.mockBarra span { font: 9px var(--mono); color: #6e7d74; margin-left: 8px; letter-spacing: .06em }
+.mockCorpo { display: grid; grid-template-columns: 96px 1fr }
+.mockMenu { border-right: 1px solid var(--line-dark); padding: 16px 12px; display: grid; gap: 12px; align-content: start }
+.mockMenu i { display: block; height: 7px; background: #23332b }
+.mockMenu i:first-child { background: var(--green); width: 70% }
+.mockPainelMain { padding: 18px 18px 22px }
+.mockKpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px }
+.mockKpi { border: 1px solid var(--line-dark); padding: 12px }
+.mockKpi small { font: 8px var(--mono); letter-spacing: .08em; color: #6e7d74; display: block }
+.mockKpi b { font-family: var(--display); font-stretch: 90%; font-weight: 800; font-size: 22px; color: #fff; display: block; margin-top: 6px }
+.mockKpi.kpiAlerta b { color: var(--alerta) }
+.mockLinhas { margin-top: 16px; border: 1px solid var(--line-dark) }
+.mockLinha { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; padding: 11px 13px; border-bottom: 1px solid var(--line-dark) }
+.mockLinha:last-child { border-bottom: 0 }
+.mockLinha em { font: 10px var(--mono); color: #9aa79f; font-style: normal }
+.mockLinha em b { color: #fff }
+.painelEstados { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px }
+.painelTexto .chip { background: #0e1a15; border-color: var(--line-dark); color: #cdd6cf }
+.painelTexto .chipPago, .painelTexto .chipEnviado { color: #cdd6cf }
+.painelTexto .chipBaixo { color: var(--alerta); border-color: #4a3c1f }
+
+/* ---------- diagrama de plantas (herdado de servicos) ---------- */
+.plantaCaixa { color: var(--traco) }
+.plantaCaixa svg { display: block; width: 100%; height: 100%; max-height: 100%; fill: none; stroke: currentColor; stroke-width: 1.5 }
+.plantaTexto { fill: var(--ink); stroke: none; font: 8px var(--mono); letter-spacing: .04em }
+.plantaCheia { fill: #10b98122 }
+.escura .plantaTexto { fill: #9aa79f }
+.caixaBranca { border: 1px solid var(--line); background: #fff; padding: clamp(18px, 2vw, 30px) }
+.caixaEscura { border: 1px solid var(--line-dark); background: #0e1a15; padding: clamp(18px, 2vw, 30px); color: var(--traco) }
+
+/* ---------- integrações (hub) ---------- */
+.hubGrade { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 4vw, 64px); align-items: center; margin-top: 44px }
+.hubTexto .obs { max-width: 460px }
+
+/* ---------- vitrine vs e-commerce ---------- */
+.comparaGrade { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); margin-top: 44px }
+.comparaCard { background: #fff; padding: clamp(24px, 3vw, 40px); display: flex; flex-direction: column }
+.comparaCard.ecom { background: var(--off) }
+.comparaCard h3 { font-size: clamp(21px, 1.9vw, 26px) }
+.comparaCard .rotulo { font: 700 9px var(--mono); letter-spacing: .12em; color: #8a958d; display: block; margin: 18px 0 10px }
+.comparaLista { list-style: none; margin: 0; padding: 0; font-size: 14px; color: var(--ink) }
+.comparaLista li { padding: 8px 0; border-bottom: 1px solid var(--line); line-height: 1.45 }
+.comparaLista li:last-child { border-bottom: 0 }
+.comparaLista li::before { content: "▪ "; color: var(--traco); font-size: 10px }
+.fluxo { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--line) }
+.fluxo span { font: 700 10px var(--mono); letter-spacing: .04em; color: var(--black); border: 1px solid var(--line); padding: 8px 10px; background: var(--off) }
+.ecom .fluxo span { background: #fff }
+.fluxo i { color: var(--traco); font-style: normal }
+.fluxoEcom span:last-of-type { background: var(--green); border-color: var(--green) }
+
+/* ---------- design para a marca ---------- */
+.blocos { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: 44px; border-top: 1px solid var(--black) }
+.bloco { padding: 24px 22px 28px 0; border-right: 1px solid var(--line) }
+.bloco:last-child { border-right: 0 }
+.blocoNum { font: 700 11px var(--mono); letter-spacing: .08em; color: var(--green) }
+.bloco h3 { font-size: 18px; margin-top: 14px }
+.bloco p { font-size: 13.5px; margin-top: 10px }
+
+/* ---------- demonstração / case ---------- */
+.demoTag { display: inline-block; font: 700 9px var(--mono); letter-spacing: .12em; color: var(--green); border: 1px solid var(--green); padding: 7px 11px; margin-bottom: 20px }
+.telas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 40px }
+.tela { border: 1px solid var(--line); background: #fff; padding: 16px 14px 18px }
+.telaTopo { font: 9px var(--mono); letter-spacing: .06em; color: #9aa39c; border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-bottom: 12px; display: flex; justify-content: space-between }
+.telaTopo b { color: var(--black) }
+.tela .plantaCaixa { aspect-ratio: 4/5 }
+
+/* ---------- processo (trilho numerado) ---------- */
+.trilho { list-style: none; margin: 44px 0 0; padding: 0; position: relative }
+.trilho::before { content: ""; position: absolute; left: 15px; top: 8px; bottom: 8px; width: 1px; background: var(--line) }
+.trilho li { display: flex; gap: 26px; padding: 16px 0; position: relative }
+.trilho b {
+  flex: none; width: 32px; height: 32px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--off); border: 1px solid var(--traco);
+  font: 700 10px var(--mono); color: var(--black);
+  position: relative; z-index: 1;
+}
+.trilho li:last-child b { background: var(--green); border-color: var(--green) }
+.trilho h3 { font-size: 18px; padding-top: 6px }
+.trilho p { font-size: 14px; margin-top: 6px; max-width: 620px }
+
+/* ---------- por que o estúdio (grade) ---------- */
+.porGrade { display: grid; grid-template-columns: 1fr 1fr; margin-top: 44px; border-top: 1px solid var(--line-dark) }
+.porGrade article { padding: 24px 28px 26px 0; border-bottom: 1px solid var(--line-dark) }
+.porGrade article:nth-child(odd) { border-right: 1px solid var(--line-dark); padding-right: 40px }
+.porGrade article:nth-child(even) { padding-left: 40px }
+.porGrade h3 { font-size: 18px }
+.porGrade p { font-size: 14px; margin-top: 8px; max-width: 480px; color: #b9c2bb }
+
+/* ---------- faq ---------- */
+.sanfona { margin-top: 40px; border-top: 1px solid var(--line); max-width: 860px }
+.sanfona details { border-bottom: 1px solid var(--line) }
+.sanfona summary { font: 800 clamp(16px, 1.5vw, 19px) var(--display); font-stretch: 114%; padding: 20px 0; cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: 20px; align-items: center }
+.sanfona summary::-webkit-details-marker { display: none }
+.sanfona summary::after { content: "+"; font: 400 20px var(--mono); color: var(--green) }
+.sanfona details[open] summary::after { content: "–" }
+.sanfona p { padding: 0 0 22px; max-width: 680px; font-size: 15px }
+
+/* ---------- cta final + formulário ---------- */
+.final { text-align: center }
+.final h2 { max-width: 900px; margin-inline: auto }
+.final .apoioEscuro { margin-inline: auto }
+.agenda { display: inline-flex; align-items: center; gap: 9px; font: 700 10px var(--mono); letter-spacing: .1em; color: var(--green); margin-bottom: 26px }
+.agenda::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 4px #10b98126 }
+
+.form { max-width: 720px; margin: 44px auto 0; text-align: left; border: 1px solid var(--line-dark); background: #0e1a15 }
+.formPassos { display: flex; border-bottom: 1px solid var(--line-dark) }
+.formPasso { flex: 1; padding: 16px 18px; font: 700 10px var(--mono); letter-spacing: .06em; color: #6e7d74; display: flex; align-items: center; gap: 10px }
+.formPasso b { width: 22px; height: 22px; border: 1px solid var(--line-dark); border-radius: 50%; display: grid; place-items: center; font-size: 9px }
+.formPassoAtivo { color: #fff }
+.formPassoAtivo b { background: var(--green); border-color: var(--green); color: #052e21 }
+.formPasso + .formPasso { border-left: 1px solid var(--line-dark) }
+.formCorpo { padding: clamp(22px, 3vw, 36px) }
+.campo { display: block; margin-bottom: 18px }
+.campo span { display: block; font: 700 10px var(--mono); letter-spacing: .06em; color: #9aa79f; margin-bottom: 8px }
+.campo input, .campo select, .campo textarea {
+  width: 100%; background: var(--night); border: 1px solid var(--line-dark); color: #fff;
+  font: 14px var(--body); padding: 13px 14px; border-radius: 0;
+}
+.campo textarea { resize: vertical; min-height: 74px }
+.campo input::placeholder, .campo textarea::placeholder { color: #55645b }
+.dupla { display: grid; grid-template-columns: 1fr 1fr; gap: 16px }
+.formNav { display: flex; justify-content: space-between; gap: 16px; margin-top: 8px; flex-wrap: wrap }
+.rodapeForm { font: 10px var(--mono); color: #6e7d74; margin-top: 18px; text-align: center }
+
+.rodape {
+  background: var(--night); color: #fff;
+  padding: 44px var(--pad) 52px; border-top: 1px solid var(--line-dark);
+  display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap;
+}
+.rodape nav { display: flex; gap: 22px; font: 10px var(--mono); flex-wrap: wrap }
+.rodape small { font: 10px var(--mono); color: #6e7d74 }
+
+/* barra fixa mobile com CTA sempre acessível */
+.barraFixa { display: none }
+
+/* ---------- responsivo ---------- */
+@media (max-width: 960px) {
+  .topo nav { display: none; position: absolute; top: 64px; left: 0; right: 0; background: var(--off); border-bottom: 1px solid var(--line); padding: 26px var(--pad) 30px; flex-direction: column; align-items: flex-start; gap: 18px; font-size: 11px }
+  .topo nav.navAberta { display: flex }
+  .menu { display: block }
+  .heroGrade { grid-template-columns: 1fr; gap: 32px }
+  .painelGrade, .hubGrade { grid-template-columns: 1fr; gap: 32px }
+  .jornada { grid-template-columns: 1fr 1fr }
+  .blocos { grid-template-columns: 1fr 1fr }
+  .bloco:nth-child(2) { border-right: 0 }
+  .telas { grid-template-columns: 1fr 1fr }
+}
+
+@media (max-width: 720px) {
+  .page h1 { font-size: clamp(32px, 8.6vw, 42px) }
+  .page h2 { font-size: clamp(27px, 7.4vw, 36px) }
+  .secao { padding: 56px 20px }
+  .hero { padding-top: 30px }
+  .acoes { gap: 16px }
+  .acoes .botao { width: 100% }
+  .duasColunas, .grupos, .comparaGrade { grid-template-columns: 1fr }
+  .jornada { grid-template-columns: 1fr }
+  .jornadaItem { padding-left: 0 }
+  .blocos { grid-template-columns: 1fr }
+  .bloco { border-right: 0; border-bottom: 1px solid var(--line); padding-right: 0 }
+  .bloco:last-child { border-bottom: 0 }
+  .telas { grid-template-columns: 1fr 1fr }
+  .porGrade { grid-template-columns: 1fr }
+  .porGrade article:nth-child(odd) { border-right: 0; padding-right: 0 }
+  .porGrade article:nth-child(even) { padding-left: 0 }
+  .dupla { grid-template-columns: 1fr }
+  .grupoLista { columns: 1 }
+
+  /* mock do painel: some a barra lateral, tudo em coluna cheia */
+  .mockCorpo { grid-template-columns: 1fr }
+  .mockMenu { display: none }
+  .mockKpi b { font-size: 20px }
+
+  /* trilho do hero: cabeçalho e status quebram sem estourar */
+  .prancheta { padding: 16px }
+  .pedidoTopo { flex-direction: column; gap: 4px }
+  .pedidoStatus { flex-wrap: wrap; gap: 14px }
+  .statusCiclo { min-width: 120px }
+
+  /* formulário: navegação em largura cheia e área de toque confortável */
+  .formNav { flex-direction: column-reverse; gap: 12px }
+  .formNav .botao { width: 100% }
+  .formNav span { display: none }
+
+  /* rodapé empilhado, com folga para a barra fixa não cobrir o conteúdo */
+  .rodape { flex-direction: column; align-items: flex-start; gap: 18px; padding-bottom: 96px }
+
+  /* barra fixa mobile: some quando o formulário de diagnóstico está à vista */
+  .barraFixa {
+    display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+    align-items: center; justify-content: space-between; gap: 12px;
+    padding: 12px 18px calc(12px + env(safe-area-inset-bottom));
+    background: #0b1411f2; backdrop-filter: blur(8px); border-top: 1px solid var(--line-dark);
+    transition: transform .28s ease;
+  }
+  .barraOculta { transform: translateY(130%); pointer-events: none }
+  .barraFixa small { font: 700 10px var(--mono); color: #fff; letter-spacing: .04em; line-height: 1.3 }
+  .barraFixa small i { display: block; color: var(--green); font-style: normal; margin-top: 3px }
+  .barraFixa a { flex: none; background: var(--green); color: var(--black); padding: 13px 18px; font: 700 10px var(--mono) }
+}
+
+/* etapas do trilho: a info de cada passo desce para a própria linha */
+@media (max-width: 460px) {
+  .page h1 { font-size: clamp(30px, 8.8vw, 38px) }
+  .etapaOp { flex-wrap: wrap }
+  .etapaOp span { flex: 1 1 auto }
+  .etapaOp small { flex-basis: 100%; padding-left: 48px; margin-top: -2px }
+  .faixaTrilho span { font-size: 20px }
+  .formPasso { padding: 14px 14px; font-size: 9px }
+  .demoTag { font-size: 8px; padding: 6px 9px }
+}
+
+/* reduced motion: o trilho para e mostra o estado final legível */
+@media (prefers-reduced-motion: reduce) {
+  .page *, .botao { transition: none !important; animation: none !important }
+  .etapaOp b { color: var(--traco); border-color: var(--traco); background: var(--off) }
+  .etapaOp:last-child b { color: #fff; border-color: var(--green); background: var(--green) }
+  .statusCiclo { height: auto; min-width: 0 }
+  .statusCiclo .chip { position: static; opacity: 1 }
+  .statusCiclo .chip:not(:last-child) { display: none }
+  .faixaTrilho { animation: none; transform: none }
+}

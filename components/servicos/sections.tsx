@@ -170,6 +170,7 @@ export function Cabecalho() {
       <a href="#servicos">SERVIÇOS</a>
       <a href="#comparar">COMPARAR</a>
       <a href="#processo">PROCESSO</a>
+      <Link href="/e-commerce">E-COMMERCE</Link>
       <a className={s.navCta} href={zap("Olá, Rafael! Conheci seus serviços pelo site e gostaria de conversar sobre um projeto digital para minha empresa.")} target="_blank" rel="noopener">CONVERSAR ↗</a>
     </nav>
   </header>;
@@ -489,6 +490,7 @@ export function ChamadaFinal() {
       <nav>
         <Link href="/estudio/">INÍCIO</Link>
         <Link href="/servicos">SERVIÇOS</Link>
+        <Link href="/e-commerce">E-COMMERCE</Link>
         <Link href="/vitrine-digital">VITRINE DIGITAL</Link>
         <Link href="/termos">TERMOS</Link>
         <Link href="/privacidade">PRIVACIDADE</Link>

@@ -4,3 +4,9 @@ out/
 .DS_Store
 Thumbs.db
 tsconfig.tsbuildinfo
+
+# Clone do three.js (referência de estudo, não faz parte do app)
+three.js/
+
+# Claude Code local settings (contains secrets)
+.claude/settings.local.json
