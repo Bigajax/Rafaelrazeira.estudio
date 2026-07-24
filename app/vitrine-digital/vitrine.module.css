@@ -99,7 +99,10 @@
   gap: clamp(32px, 4vw, 64px); align-items: center;
 }
 .heroCopy .micro { display: block; margin-top: 22px }
-.heroVisual { position: relative; display: grid; justify-items: center }
+/* o mockup ocupa as duas linhas do grid: linha 1 é a cópia, linha 2 é o
+   link secundário, ambos na coluna 1, e o aparelho centraliza ao lado */
+.heroVisual { position: relative; display: grid; justify-items: center; grid-row: 1 / span 2 }
+.heroSecondary { grid-column: 1; justify-self: start; margin-top: 2px; font: 700 11px var(--mono); letter-spacing: .05em; color: var(--black); border-bottom: 1px solid; padding-bottom: 3px }
 .phone {
   position: relative; width: min(320px, 78vw); height: 600px;
   border: 8px solid #111; border-radius: 42px; overflow: hidden;
@@ -170,7 +173,7 @@
 .site .manifesto {
   font-family: var(--display); font-stretch: 118%; font-weight: 800;
   font-size: clamp(26px, 3.4vw, 48px); line-height: 1.02; letter-spacing: -.015em;
-  color: var(--black); max-width: 1000px;
+  color: var(--black); max-width: 1000px; text-wrap: balance;
   margin-top: clamp(40px, 5vw, 60px); padding-top: clamp(26px, 3.4vw, 38px);
   border-top: 1px solid var(--line);
 }
@@ -254,15 +257,20 @@
 
 /* ---------- o que está incluso ---------- */
 .grid {
-  display: grid; grid-template-columns: repeat(3, 1fr);
+  display: grid; grid-template-columns: repeat(2, 1fr);
   margin-top: 40px; border-top: 1px solid var(--line); border-left: 1px solid var(--line);
 }
 .grid article { padding: 26px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line) }
 .grid h3::before { content: "✓ "; color: var(--green) }
 .grid p { font-size: 15px; margin-top: 8px }
-.accordion { border: 1px solid var(--line); margin-top: 28px; padding: 0 22px; max-width: 560px }
+.accordion { border: 1px solid var(--line); margin-top: 16px; padding: 0 22px; max-width: 560px }
+.accordion:first-of-type { margin-top: 28px }
 .accordion summary { font: 800 16px var(--display); font-stretch: 118%; padding: 18px 0; cursor: pointer; list-style-position: outside }
 .accordion .check { margin: 0 0 20px; padding: 0 }
+/* detalhe fino do escopo: título em negrito seguido da explicação, denso */
+.moreList { list-style: none; margin: 0 0 20px; padding: 0; display: grid; gap: 14px }
+.moreList li { font-size: 14px; line-height: 1.5; color: var(--ink) }
+.moreList b { display: block; color: var(--black); font-weight: 700 }
 
 /* ---------- oferta ---------- */
 .offer { background: var(--pale) }
@@ -378,7 +386,10 @@
   .form .avista input { width: 18px; height: 18px }
   .heroGrid, .split, .offerGrid { grid-template-columns: 1fr }
   .heroGrid { gap: 24px }
-  .heroVisual { justify-items: start; padding: 10px 0 16px }
+  /* em coluna única o span de duas linhas não faz sentido: volta ao fluxo,
+     e o link secundário passa a cair naturalmente depois do mockup */
+  .heroVisual { justify-items: start; padding: 10px 0 4px; grid-row: auto }
+  .heroSecondary { margin-top: 10px }
   .demoTag { justify-self: start }
   .heroPoints { grid-template-columns: 1fr 1fr }
   .projects { grid-template-columns: 1fr }
@@ -390,31 +401,40 @@
   .bar { display: flex }
   /* sem quebra, PRIVACIDADE saía da tela no celular */
   .footer nav { flex-wrap: wrap; gap: 14px 18px }
-  .footer { padding-bottom: 110px }
+  /* a barra já sai de cena no CTA final (logo antes do rodapé), então o
+     rodapé não precisa mais de folga para ela; só respeita a safe-area */
+  .footer { padding-bottom: calc(40px + env(safe-area-inset-bottom)) }
 }
 
 @media (max-width: 600px) {
-  .site h1 { font-size: clamp(29px, 8vw, 36px) }
-  .site h2 { font-size: clamp(27px, 7.2vw, 34px) }
-  .section { padding: 52px 20px }
+  /* títulos mais justos: line-height baixo e tracking negativo tiram as
+     palavras órfãs; text-wrap:balance (global) equilibra as linhas */
+  .site h1 { font-size: clamp(30px, 8.4vw, 38px); line-height: .95; letter-spacing: -.035em }
+  .site h2 { font-size: clamp(28px, 7.4vw, 36px); line-height: .97; letter-spacing: -.03em }
+  .section { padding: 64px 20px }
   /* hero compacto: o topo do celular com a demonstração entra na primeira dobra */
   .hero { padding-top: 26px }
   .heroCopy .lead { margin-top: 14px; font-size: 16px }
   .heroCopy .actions { margin-top: 20px }
   /* microcopy do hero carrega o preço total e a proteção: precisa ser legível */
   .heroCopy .micro { margin-top: 14px; font-size: 12px }
-  /* meio em de uma manchete pequena vira corpo de texto: a segunda frase
-     precisa continuar lendo como título ao lado do lead de 16px */
-  .h1sub { font-size: .64em; margin-top: .4em }
+  /* as duas frases leem como uma manchete só: a segunda vem quase do mesmo
+     tamanho, apenas um degrau abaixo, sem virar corpo de texto */
+  .h1sub { font-size: .78em; margin-top: .34em }
   .heroGrid { gap: 14px }
-  .heroVisual { justify-items: center; padding-bottom: 10px }
+  .heroVisual { justify-items: center; padding-bottom: 4px }
+  .heroSecondary { justify-self: center; margin-top: 14px }
   .demoTag { justify-self: center }
-  .phone { height: 500px }
+  /* aparelho ~15% menor para caber inteiro na tela, com folga lateral e a
+     legenda logo abaixo, em vez de a base ser cortada na dobra seguinte */
+  .phone { width: min(300px, 72vw); height: 430px }
   .heroPoints { margin-top: 26px }
   .grid, .process { grid-template-columns: 1fr }
   /* os pontos do hero são argumento, não etiqueta: sobem para 12px */
   .heroPoints li { font-size: 12px }
-  .button { font-size: 12px }
+  /* botões com alvo de dedo e leitura imediata */
+  .button { font-size: 15px; letter-spacing: .04em; min-height: 54px; padding: 0 20px }
+  .bar .button { min-height: 0; padding: 13px 20px }
   .site .manifesto { font-size: clamp(24px, 7vw, 34px) }
   /* o balão de 330px mais o respiro da faixa passava da largura útil de um
      celular de 390px, e o overflow:clip do .site cortava a hora e o confere */
@@ -430,6 +450,17 @@
   /* cards do processo sem o vão de ar do layout em colunas */
   .process li { padding: 20px }
   .process h3 { margin-top: 14px }
+  /* captura mais baixa (16/9) mostra a vitrine sem o card virar uma tela
+     inteira; os quatro fatos em duas colunas encurtam o card do Xavier */
+  .cover { aspect-ratio: 16 / 9 }
+  .facts { grid-template-columns: 1fr 1fr; gap: 9px 16px }
+  /* a prova real manda; o conceito aparece menor e mais discreto */
+  .projDemo .lapScreen { width: 74% }
+  .projDemo h3 { font-size: clamp(21px, 6vw, 25px) }
+  .projDemo p { font-size: 14px }
+  /* o balão "sua próxima mensagem" é reforço decorativo; no celular ele só
+     alonga a oferta antes do formulário, então sai */
+  .formCol .chatStrip { display: none }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -74,9 +74,11 @@ export function Header() {
   </header>;
 }
 
-/* Demonstração no mockup do hero — vídeo real gravado na vitrine da Xavier's:
-   catálogo rolando → produto → tamanho M escolhido → pedido no WhatsApp.
-   Com reduced-motion ativo, mostra um frame estático da página do produto. */
+/* Demonstração no mockup do hero — vídeo real gravado na vitrine da Xavier's,
+   com legendas por passo: catálogo → pronta entrega → produto (Brasil Home
+   2026) → escolhe o tamanho → pedido pronto no WhatsApp. Gerado pelo script
+   scripts/record-xavier-hero.mjs. Com reduced-motion ativo, mostra um frame
+   estático limpo da página do produto. */
 function VitrineDemo() {
   const [video, setVideo] = useState(true);
   useEffect(() => {
@@ -84,8 +86,8 @@ function VitrineDemo() {
   }, []);
   return <div className={s.screen}>
     {video
-      ? <video className={s.demoVideo} src="/assets/demo/xavier-demo.mp4" autoPlay muted loop playsInline preload="auto" poster="/assets/demo/xavier-produto.jpg" />
-      : <Image className={s.shot} src="/assets/demo/xavier-produto.jpg" width={500} height={1600} alt="" />}
+      ? <video className={s.demoVideo} src="/assets/demo/xavier-hero.mp4" autoPlay muted loop playsInline preload="auto" poster="/assets/demo/xavier-hero-still.jpg" />
+      : <Image className={s.shot} src="/assets/demo/xavier-hero-still.jpg" width={780} height={1688} alt="" />}
   </div>;
 }
 
@@ -100,17 +102,20 @@ export function Hero() {
             duas linhas no celular, empurrando a demonstração para longe */}
         <p className={s.lead}>Eu crio uma vitrine personalizada para sua loja: catálogo organizado, páginas de produto e pedido direto pelo WhatsApp.</p>
         <div className={s.actions}>
-          <Button href="#oferta" cta="hero">RESERVAR MINHA VITRINE · R$500 ↗</Button>
-          <a className={s.ghost} href="#projetos" data-cta="hero_projetos" data-cta-dest="projetos">VER UMA VITRINE FUNCIONANDO ↓</a>
+          <Button href="#oferta" cta="hero">RESERVAR POR R$500 ↗</Button>
         </div>
         <small className={s.micro}>Total de R$999 · saldo de R$499 só após a sua aprovação · até 20 produtos · entrega em até 7 dias úteis</small>
       </div>
       <div className={s.heroVisual}>
-        <div className={s.phone} role="img" aria-label="Demonstração da vitrine da Xavier's Sports: o cliente navega no catálogo, abre a camisa Brasil Retrô 2004, escolhe o tamanho M e envia o pedido pelo WhatsApp">
+        <div className={s.phone} role="img" aria-label="Demonstração da vitrine da Xavier's Sports: o cliente filtra por pronta entrega, abre a camisa Brasil Home 2026, escolhe o tamanho e envia o pedido pelo WhatsApp já preenchido">
           <VitrineDemo />
         </div>
         <small className={s.demoTag}>VITRINE NO AR · XAVIER&apos;S SPORTS</small>
       </div>
+      {/* link secundário fora do bloco de ação: no desktop cai sob a coluna
+          de texto; no celular, com o grid em uma coluna, ele fica depois do
+          mockup, sem disputar atenção com o CTA no primeiro momento */}
+      <a className={s.heroSecondary} href="#projetos" data-cta="hero_projetos" data-cta-dest="projetos">VER UMA VITRINE FUNCIONANDO ↓</a>
     </div>
     <ul className={s.heroPoints}>{heroPoints.map(x => <li key={x}>{x}</li>)}</ul>
   </section>;
@@ -162,7 +167,7 @@ export function HowItWorks() {
       <div className={s.split}>
         <div>
           <ol className={s.steps}>{steps.map((x, i) => <li key={x[0]}><b>0{i + 1}</b><div><h3>{x[0]}</h3><p>{x[1]}</p></div></li>)}</ol>
-          <div className={s.actions}><Button href="#oferta" cta="como_funciona">RESERVAR MINHA VITRINE ↗</Button></div>
+          <div className={s.actions}><Button href="#oferta" cta="como_funciona">RESERVAR POR R$500 ↗</Button></div>
         </div>
         <div className={s.howVisual}>
           <div className={s.phoneSmall}>
@@ -192,7 +197,7 @@ const projects = [
     name: "XAVIER'S SPORTS", tag: "CAMISAS ESPORTIVAS",
     real: true, chip: "● NO AR", kind: "LOJA DE CLIENTE",
     copy: "Vitrine no ar, navegável agora. Abra pelo celular e faça o caminho que o cliente faz.",
-    facts: ["Catálogo por clubes, seleções e modelos retrô", "Página individual para cada produto", "Controle de pronta entrega", "Pedido enviado direto no WhatsApp"],
+    facts: ["Catálogo por clubes e seleções", "Página para cada produto", "Controle de pronta entrega", "Pedido direto no WhatsApp"],
   },
   {
     img: "/assets/case-solourb-desk.jpg", w: 1440, h: 11263, dur: "44s",
@@ -210,7 +215,7 @@ export function Projects() {
       <h2>Veja uma vitrine real em funcionamento.</h2>
       <p className={`${s.lead} ${s.leadDark}`}>A Xavier&apos;s Sports vende camisas esportivas e atende pelo WhatsApp. A vitrine dela está publicada e você pode navegar por ela inteira antes de decidir qualquer coisa.</p>
       <div className={s.projects}>
-        {projects.map(x => <article key={x.name}>
+        {projects.map(x => <article key={x.name} className={x.real ? "" : s.projDemo}>
           <div className={s.laptop}>
             <div className={s.lapScreen}>
               <div className={s.browserBar}>
@@ -241,14 +246,19 @@ export function Projects() {
   </section>;
 }
 
+/* Quatro cards resumem a entrega; o detalhe fino (que antes eram nove
+   blocos altos, quase três telas no celular) fica a um toque, no acordeão. */
 const included = [
-  ["Design personalizado", "Visual criado a partir da identidade da sua loja, não um modelo pronto."],
-  ["Página inicial e catálogo", "Categorias organizadas do jeito que a sua loja vende."],
-  ["Página de produto", "Fotos, descrição, preço, tamanhos e variações."],
-  ["WhatsApp integrado", "A mensagem chega com o produto já identificado."],
+  ["Design personalizado", "Visual alinhado à identidade da sua loja, não um modelo pronto."],
+  ["Catálogo e produtos", "Página inicial, categorias e até 20 produtos cadastrados por mim."],
+  ["WhatsApp integrado", "O pedido chega com o produto já identificado."],
+  ["Publicação completa", "Vitrine no ar, endereço configurado e uma rodada de ajustes."],
+];
+const includedDetails = [
   ["Até 20 produtos", "Eu cadastro todos no lançamento. Acima disso, combinamos à parte."],
+  ["Domínio e endereço", "Coloco a vitrine no ar. O domínio próprio é opcional, anual e pago direto no registrador."],
+  ["Páginas de produto", "Fotos, descrição, preço, tamanhos e variações em uma página só."],
   ["Uma rodada de ajustes", "Você revisa e aponta as correções antes de a página entrar no ar."],
-  ["Publicação e endereço", "Coloco a vitrine no ar e configuro o endereço. O domínio próprio é opcional, anual e pago direto no registrador."],
   ["Entrega em até 7 dias úteis", "Contados a partir do envio de todos os materiais da loja."],
   ["Atualizações quando precisar", "Você pede alterações pontuais depois e eu orço na hora. Nada é obrigatório."],
 ];
@@ -258,6 +268,10 @@ export function Included() {
       <Eyebrow>O QUE ESTÁ INCLUSO</Eyebrow>
       <h2>Tudo o que está incluído no projeto.</h2>
       <div className={s.grid}>{included.map(x => <article key={x[0]}><h3>{x[0]}</h3><p>{x[1]}</p></article>)}</div>
+      <details className={s.accordion}>
+        <summary>Ver tudo o que está incluído</summary>
+        <ul className={s.moreList}>{includedDetails.map(([t, d]) => <li key={t}><b>{t}</b>{d}</li>)}</ul>
+      </details>
       <details className={s.accordion}>
         <summary>O que preciso enviar?</summary>
         <ul className={s.check}>{["Logo", "Fotos", "Produtos", "Preços", "Categorias", "Informações da loja"].map(x => <li key={x}>{x}</li>)}</ul>
@@ -303,7 +317,7 @@ export function Offer() {
           <p className={s.installments}><b>R$500 PARA RESERVAR</b><br />R$499 APÓS A SUA APROVAÇÃO</p>
           <p className={s.nomensal}>SEM MENSALIDADE OBRIGATÓRIA</p>
           <ul className={s.check}>{offerItems.map(x => <li key={x}>{x}</li>)}</ul>
-          <Button onClick={goToForm} cta="oferta_entrada">RESERVAR MINHA VITRINE · R$500 ↗</Button>
+          <Button onClick={goToForm} cta="oferta_entrada">RESERVAR POR R$500 ↗</Button>
           <p className={s.guarantee}>O saldo de R$499 é pago somente depois que você visualizar e aprovar o projeto.</p>
           <a className={s.ghost} href={whatsapp} target="_blank" rel="noopener" data-cta="oferta_whats" data-cta-dest="whatsapp">AINDA TENHO DÚVIDAS: FALAR COM RAFAEL</a>
         </article>
@@ -385,12 +399,12 @@ function useInOffer() {
 export function FinalCTA() {
   const inOffer = useInOffer();
   return <>
-    <section className={`${s.section} ${s.dark} ${s.final}`}>
+    <section id="fim" className={`${s.section} ${s.dark} ${s.final}`}>
       <Eyebrow>AGENDA ABERTA</Eyebrow>
       <h2>Sua loja já tem produtos. Agora precisa <em>facilitar a escolha.</em></h2>
       <p className={s.lead}>Reserve a sua vitrine com R$500, acompanhe o projeto e pague o saldo só depois de aprovar.</p>
       <div className={s.actions}>
-        <Button href="#oferta" cta="final">RESERVAR MINHA VITRINE · R$500 ↗</Button>
+        <Button href="#oferta" cta="final">RESERVAR POR R$500 ↗</Button>
         <a className={s.ghost} href={whatsapp} target="_blank" rel="noopener" data-cta="final_whats" data-cta-dest="whatsapp">FALAR COM RAFAEL</a>
       </div>
     </section>
@@ -404,14 +418,16 @@ export function FinalCTA() {
 }
 
 /* Barra fixa do celular: entra depois que a pessoa passa do hero e some
-   dentro da oferta e enquanto ela digita, para não cobrir o formulário. */
+   dentro da oferta, enquanto ela digita, e no CTA final, para não cobrir o
+   formulário nem apertar o rodapé, onde o botão já está na tela. */
 export function MobileBar() {
   const [hidden, setHidden] = useState(true);
   useEffect(() => {
     const hero = document.getElementById("topo");
     const offer = document.getElementById("oferta");
-    let focused = false, inOffer = false, inHero = !!hero;
-    const update = () => setHidden(focused || inOffer || inHero);
+    const end = document.getElementById("fim");
+    let focused = false, inOffer = false, inHero = !!hero, inEnd = false;
+    const update = () => setHidden(focused || inOffer || inHero || inEnd);
     const onFocus = (e: FocusEvent) => { focused = !!(e.target as HTMLElement)?.closest?.("form"); update(); };
     const onBlur = () => { focused = false; update(); };
     document.addEventListener("focusin", onFocus);
@@ -420,7 +436,9 @@ export function MobileBar() {
     if (hero && heroIO) heroIO.observe(hero);
     const offerIO = offer && new IntersectionObserver(([x]) => { inOffer = x.isIntersecting; update(); }, { rootMargin: "-30% 0px" });
     if (offer && offerIO) offerIO.observe(offer);
-    return () => { document.removeEventListener("focusin", onFocus); document.removeEventListener("focusout", onBlur); heroIO?.disconnect(); offerIO?.disconnect(); };
+    const endIO = end && new IntersectionObserver(([x]) => { inEnd = x.isIntersecting; update(); }, { rootMargin: "-10% 0px" });
+    if (end && endIO) endIO.observe(end);
+    return () => { document.removeEventListener("focusin", onFocus); document.removeEventListener("focusout", onBlur); heroIO?.disconnect(); offerIO?.disconnect(); endIO?.disconnect(); };
   }, []);
   return <div className={`${s.bar} ${hidden ? s.barHidden : ""}`}>
     <span className={s.barCopy}><b>R$500 PARA RESERVAR</b><span>Saldo só após você aprovar</span></span>
