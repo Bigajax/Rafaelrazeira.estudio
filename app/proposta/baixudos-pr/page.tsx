@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Archivo, Inter, Space_Mono } from "next/font/google";
 import s from "./proposta.module.css";
+import CheckoutLoader from "./CheckoutLoader";
 
 const display = Archivo({ subsets: ["latin"], axes: ["wdth"], variable: "--font-display" });
 const body = Inter({ subsets: ["latin"], variable: "--font-body" });
@@ -179,6 +180,8 @@ export default function PropostaBaixudos() {
       <div className={s.gridLines} aria-hidden="true">
         <span /><span /><span /><span /><span />
       </div>
+
+      <CheckoutLoader />
 
       <div className={s.doc}>
         <header className={s.header}>
@@ -564,6 +567,9 @@ export default function PropostaBaixudos() {
                       <li>Pagamento único, sem parcelas</li>
                       <li>O prazo começa a contar no mesmo dia</li>
                     </ul>
+                    <button className={s.btnPay} type="button" data-checkout-item="avista_pix">
+                      Pagar por Pix <span aria-hidden="true">→</span>
+                    </button>
                   </div>
                 </div>
 
@@ -577,9 +583,36 @@ export default function PropostaBaixudos() {
                       <li><span><b className={s.nb}>R$ 1.950</b> na publicação, com as vendas abertas</span></li>
                       <li><span className={s.nb}>Total de R$ 6.500, sem juros</span></li>
                     </ul>
+                    <button className={`${s.btnPay} ${s.btnPayGhost}`} type="button" data-checkout-item="entrada_pix">
+                      Pagar a entrada <span aria-hidden="true">→</span>
+                    </button>
                   </div>
                 </div>
               </div>
+
+              <div className={s.payCardsOne}>
+                <div className={s.payCard}>
+                  <div className={`${s.payHead} ${s.payHeadDark}`}>Cartão de crédito</div>
+                  <div className={s.payBody}>
+                    <div className={s.payCtx}>Parcele em até 12x</div>
+                    <div className={s.payPrice}>R$ 6.500</div>
+                    <ul className={s.payFeats}>
+                      <li><span><b>Você escolhe</b> as parcelas no checkout</span></li>
+                      <li>Juros calculados na hora pelo cartão</li>
+                      <li>Aprovação na hora, sem esperar compensação</li>
+                    </ul>
+                    <button className={`${s.btnPay} ${s.btnPayGhost}`} type="button" data-checkout-item="avista_card">
+                      Pagar no cartão <span aria-hidden="true">→</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <p className={s.payNote}>
+                O pagamento acontece <b>aqui mesmo</b>, com segurança pelo Mercado Pago. Assim
+                que confirma, o WhatsApp <b>abre sozinho</b> para você me avisar e a gente já
+                começa.
+              </p>
 
               <div className={s.warn} style={{ borderColor: "var(--line)", background: "transparent" }}>
                 <span className={s.gLabel}>ADICIONAL OPCIONAL · R$ 2.900</span>

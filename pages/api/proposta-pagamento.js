@@ -74,6 +74,18 @@ const PROPOSTAS = {
       avista_card: { label: "No cartão, em até 6x", valor: 2990, metodo: "card", maxParcelas: 6 },
     },
   },
+  /* Campanha Gol Vermelho. NÃO confundir com a entrada "baixudos" acima,
+     que pertence à proposta antiga em /proposta/baixudos.html e segue viva
+     com os valores dela. */
+  "baixudos-pr": {
+    titulo: "Rafael Razeira Estúdio — Campanha Gol Vermelho Baixudos.PR",
+    whatsapp: "5544999997219",
+    itens: {
+      avista_pix: { label: "À vista no Pix, com 10% de desconto", valor: 5850, metodo: "pix" },
+      entrada_pix: { label: "Entrada no Pix (mais 2x R$ 1.950 na entrega)", valor: 2600, metodo: "pix" },
+      avista_card: { label: "No cartão, em até 12x", valor: 6500, metodo: "card", maxParcelas: 12 },
+    },
+  },
 };
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
