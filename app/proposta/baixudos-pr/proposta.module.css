@@ -1,0 +1,362 @@
+/* ============================================================
+   /proposta/baixudos-pr — documento comercial do estúdio.
+   Variante ESCURA da gramática de propostas: preto, grafite,
+   off-white, esmeralda como assinatura do estúdio. O vermelho
+   #ff1010 da Baixudos.PR aparece SÓ em áreas do cliente.
+   Tipografia herdada: Archivo (wdth), Inter, Space Mono.
+   ============================================================ */
+
+.page {
+  --green: #10b981;
+  --green-lit: #34d399;
+  --green-deep: #065f46;
+  --pale: #a7f3d0;
+
+  --red: #ff1010;
+  --red-lit: #ff4d4d;
+
+  --ink: #f5f5f0;
+  --ink-70: rgba(245, 245, 240, .7);
+  --ink-45: rgba(245, 245, 240, .45);
+  --ink-28: rgba(245, 245, 240, .28);
+
+  --black: #0b0b0d;
+  --panel: #15151a;
+  --panel-2: #1c1c22;
+  --line: rgba(245, 245, 240, .12);
+  --line-soft: rgba(245, 245, 240, .07);
+
+  --maxw: 1040px;
+  --pad: clamp(20px, 6vw, 72px);
+  --display: var(--font-display), "Arial Narrow", system-ui, sans-serif;
+  --body: var(--font-body), system-ui, -apple-system, sans-serif;
+  --mono: var(--font-mono), ui-monospace, monospace;
+
+  background: var(--black);
+  color: var(--ink);
+  font-family: var(--body);
+  line-height: 1.5;
+  min-height: 100svh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+.page * { box-sizing: border-box }
+.page a { color: inherit; text-decoration: none }
+.page b { font-weight: 600; color: var(--ink) }
+.page s { text-decoration-thickness: 2px }
+.page :focus-visible { outline: 2px solid var(--green-lit); outline-offset: 3px }
+
+/* ---------- Linhas verticais de grid (assinatura) ---------- */
+.gridLines {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  max-width: var(--maxw); margin: 0 auto;
+  display: flex; justify-content: space-between; padding: 0 var(--pad);
+}
+.gridLines span { width: 1px; background: var(--line-soft) }
+.gridLines span:first-child, .gridLines span:last-child { opacity: 0 }
+@media (max-width: 640px) {
+  .gridLines span:nth-child(2), .gridLines span:nth-child(4) { display: none }
+}
+.doc { position: relative; z-index: 1; max-width: var(--maxw); margin: 0 auto; padding: 0 var(--pad) }
+
+/* ---------- Header ---------- */
+.header {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding-block: clamp(20px, 4vw, 32px); border-bottom: 1px solid var(--line);
+}
+.brand {
+  font-family: var(--display); font-weight: 900; text-transform: uppercase;
+  font-size: clamp(15px, 4vw, 19px); letter-spacing: -.01em; white-space: nowrap;
+}
+.brand small { font-weight: 800; color: var(--ink-45); font-size: 1em }
+.date { font: clamp(11px, 3vw, 13px) var(--mono); color: var(--ink-45); white-space: nowrap }
+
+/* ---------- Abertura ---------- */
+.opening { padding-block: clamp(44px, 9vw, 96px) }
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  font: clamp(11px, 3vw, 13px) var(--mono); letter-spacing: .06em;
+  text-transform: uppercase; color: var(--ink-45);
+}
+.status { color: var(--green-lit); font-weight: 700 }
+.dot { width: 12px; height: 12px; border-radius: 50%; background: var(--green); flex: none; position: relative }
+.dot::after {
+  content: ""; position: absolute; inset: 0; border-radius: 50%;
+  background: var(--green); animation: pulse 2.2s ease-out infinite;
+}
+@keyframes pulse { 0% { transform: scale(1); opacity: .6 } 70% { transform: scale(2.6); opacity: 0 } 100% { opacity: 0 } }
+@media (prefers-reduced-motion: reduce) { .dot::after { animation: none } }
+
+.h1 {
+  font-family: var(--display); font-weight: 900; font-stretch: 106%;
+  text-transform: uppercase; font-size: clamp(2.35rem, 9vw, 5.2rem);
+  line-height: .92; letter-spacing: -.035em; margin: clamp(20px, 4vw, 32px) 0 0;
+  text-wrap: balance;
+}
+/* Nome do cliente no título: cor da marca dele, não a do estúdio */
+.accentClient { color: var(--red) }
+.sub {
+  margin: clamp(18px, 3vw, 26px) 0 0;
+  font-family: var(--display); font-weight: 800; font-stretch: 112%;
+  text-transform: uppercase; font-size: clamp(1rem, 4.2vw, 1.4rem);
+  letter-spacing: -.01em; line-height: 1.1; color: var(--ink-70);
+}
+.meta { margin-top: clamp(22px, 4vw, 32px); font-size: clamp(1rem, 4vw, 1.15rem); color: var(--ink-70); max-width: 56ch }
+
+/* ---------- Ficha do projeto (capa) ---------- */
+.fiche {
+  margin-top: clamp(30px, 5vw, 44px);
+  border: 1px solid var(--line); border-radius: 18px; overflow: hidden;
+  background: var(--panel);
+}
+.ficheRow {
+  display: grid; grid-template-columns: 1fr; gap: 2px 20px;
+  padding: 15px clamp(18px, 3.5vw, 26px); border-bottom: 1px solid var(--line-soft);
+}
+@media (min-width: 560px) { .ficheRow { grid-template-columns: 190px 1fr; align-items: baseline } }
+.ficheRow:last-child { border-bottom: none }
+.ficheKey { font: 700 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-45) }
+.ficheVal { font-size: clamp(.98rem, 3.8vw, 1.08rem); color: var(--ink) }
+.ficheVal small { display: block; margin-top: 2px; font-size: .84em; color: var(--ink-45) }
+/* Marca do cliente: o vermelho lidera. Precisa vencer a regra `.page b`. */
+.page .clientMark { color: var(--red-lit); font-weight: 600 }
+
+/* Valor monetário nunca quebra no meio */
+.nb { white-space: nowrap }
+
+/* ---------- Seções numeradas ---------- */
+.sec { padding-block: clamp(40px, 7vw, 72px); border-top: 1px solid var(--line) }
+@media (min-width: 820px) { .sec { display: grid; grid-template-columns: 110px 1fr; gap: 16px } }
+.num { font: 700 clamp(1rem, 4vw, 1.35rem) var(--mono); color: var(--green); letter-spacing: .02em; margin-bottom: 12px }
+.h2 {
+  font-family: var(--display); font-weight: 900; font-stretch: 118%;
+  text-transform: uppercase; font-size: clamp(1.5rem, 6.5vw, 2.4rem);
+  line-height: 1.02; letter-spacing: -.025em; margin: 0; text-wrap: balance;
+}
+.body { margin-top: clamp(16px, 3vw, 24px); max-width: 64ch }
+.body p { font-size: clamp(1rem, 4vw, 1.15rem); color: var(--ink-70); line-height: 1.55; margin: 0 }
+.body p + p { margin-top: 12px }
+.leadIn { margin-bottom: clamp(18px, 3vw, 24px) }
+.wide { max-width: none }
+
+/* ---------- Listas ---------- */
+.list { list-style: none; margin: 0; padding: 0 }
+.list li {
+  display: flex; gap: 14px; align-items: flex-start;
+  padding-block: 13px; border-bottom: 1px solid var(--line-soft);
+  font-size: clamp(.98rem, 3.9vw, 1.08rem); line-height: 1.5; color: var(--ink-70);
+}
+.list li:last-child { border-bottom: none }
+.list li::before { font: 700 1em var(--mono); flex: none; line-height: 1.5 }
+.listIn li::before { content: "→"; color: var(--green-lit) }
+.listOut li::before { content: "×"; color: var(--ink-28) }
+.listTodo li::before { content: "○"; color: var(--green) }
+
+/* ---------- Blocos de escopo ---------- */
+.scopeGrid { display: grid; gap: 16px; margin-top: clamp(4px, 2vw, 10px) }
+@media (min-width: 720px) { .scopeGrid { grid-template-columns: 1fr 1fr } }
+.scope {
+  border: 1px solid var(--line); border-radius: 18px; padding: clamp(20px, 4vw, 28px);
+  background: var(--panel); display: flex; flex-direction: column;
+}
+/* Módulo da campanha: área do cliente, aceita o vermelho */
+.scopeClient { border-color: rgba(255, 16, 16, .3) }
+.scopeTag { font: 700 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--green) }
+.scopeClient .scopeTag { color: var(--red-lit) }
+/* Card em largura cheia, fora da grade de dois */
+.scopeFull { margin-top: 16px }
+/* Cabeçalho com ícone (conferência / telão) */
+.scopeHead { display: flex; align-items: flex-start; gap: 14px; margin-top: 9px }
+.scopeIcon { flex: none; width: 34px; height: 34px; color: var(--red-lit) }
+.scopeIcon svg { display: block; width: 100%; height: 100% }
+.page .scopeSub {
+  margin: 5px 0 0; font: 11.5px/1.5 var(--mono); letter-spacing: .04em;
+  text-transform: uppercase; color: var(--ink-45);
+}
+.scope h3 {
+  margin: 9px 0 0; font-family: var(--display); font-weight: 900; text-transform: uppercase;
+  font-size: clamp(1.08rem, 4.4vw, 1.35rem); line-height: 1.04; letter-spacing: -.015em;
+}
+.scopeFeats { list-style: none; margin: 15px 0 0; padding: 15px 0 0; border-top: 1px solid var(--line-soft); display: flex; flex-direction: column; gap: 9px; flex: 1 }
+.scopeFeats li { display: flex; gap: 10px; align-items: flex-start; font-size: clamp(.88rem, 3.5vw, .96rem); color: var(--ink-70); line-height: 1.45 }
+.scopeFeats li::before { content: "✓"; font: 700 1em var(--mono); color: var(--green-lit); flex: none; line-height: 1.45 }
+.scopeClient .scopeFeats li::before { color: var(--red-lit) }
+
+/* ---------- Estado do que já existe (lista classificada) ---------- */
+.stateList { list-style: none; margin: clamp(4px, 2vw, 10px) 0 0; padding: 0 }
+.stateList li {
+  display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline;
+  justify-content: space-between; padding-block: 12px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.stateList li:last-child { border-bottom: none }
+.stateWhat { font-size: clamp(.95rem, 3.8vw, 1.05rem); color: var(--ink-70); line-height: 1.45; flex: 1 1 60% }
+.badge {
+  flex: none; font: 700 10.5px var(--mono); letter-spacing: .09em; text-transform: uppercase;
+  border-radius: 999px; padding: 4px 11px; border: 1px solid transparent; white-space: nowrap;
+}
+.bReady { color: var(--green-lit); border-color: rgba(16, 185, 129, .45); background: rgba(16, 185, 129, .1) }
+.bPartial { color: #fbbf24; border-color: rgba(251, 191, 36, .4); background: rgba(251, 191, 36, .08) }
+.bPending { color: var(--ink-45); border-color: var(--line); background: transparent }
+.page .legend {
+  margin-top: clamp(16px, 3vw, 22px); font: 11.5px/1.6 var(--mono);
+  letter-spacing: .03em; color: var(--ink-45); max-width: 78ch;
+}
+
+/* ---------- Investimento ---------- */
+.wasTag { font: 700 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-45) }
+.price {
+  font-family: var(--display); font-weight: 900; letter-spacing: -.03em;
+  font-size: clamp(2.6rem, 11vw, 4.5rem); line-height: 1; margin-top: clamp(8px, 2vw, 14px);
+}
+.price small { font-size: .26em; font-weight: 800; letter-spacing: .03em; color: var(--green-lit); text-transform: uppercase; white-space: nowrap }
+.page .priceNote { margin-top: 14px; font-size: clamp(.95rem, 3.8vw, 1.05rem); color: var(--ink-70); max-width: 56ch }
+
+/* ---------- Formas de pagamento ---------- */
+.payLabel { display: block; margin-top: clamp(26px, 4vw, 34px); font: 700 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--green) }
+.payCards { margin-top: 16px; display: grid; gap: 16px; align-items: stretch }
+@media (min-width: 560px) { .payCards { grid-template-columns: 1fr 1fr } }
+.payCard { border: 1.5px solid var(--line); border-radius: 18px; overflow: hidden; background: var(--panel); display: flex; flex-direction: column }
+.payCardRec { border-color: var(--green); box-shadow: 0 22px 48px -26px rgba(16, 185, 129, .45) }
+.payHead {
+  padding: 13px 16px; text-align: center; border-bottom: 1.5px solid var(--line); background: var(--panel-2);
+  font-family: var(--display); font-weight: 900; text-transform: uppercase;
+  font-size: clamp(.95rem, 2.4vw, 1.05rem); letter-spacing: -.005em; color: var(--ink);
+}
+.payHeadRec { background: var(--green); border-color: var(--green); color: var(--black) }
+.payBody { display: flex; flex-direction: column; flex: 1; padding: clamp(20px, 4vw, 26px) }
+.payCtx {
+  display: flex; align-items: center; gap: 10px; min-height: 26px; margin-bottom: 4px;
+  font: 700 11px var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-45);
+}
+.offOld { font-family: var(--display); font-weight: 800; font-size: clamp(1.05rem, 3.2vw, 1.2rem); color: var(--ink-28); letter-spacing: 0; white-space: nowrap }
+.offPill { font-family: var(--display); font-weight: 900; font-size: 12px; letter-spacing: .02em; background: var(--green); color: var(--black); border-radius: 999px; padding: 3px 10px }
+.payPrice { font-family: var(--display); font-weight: 900; letter-spacing: -.02em; font-size: clamp(1.85rem, 5.2vw, 2.25rem); line-height: 1 }
+.payCardRec .payPrice { color: var(--green-lit) }
+.payPrice small { display: inline-block; margin-left: 6px; font-size: .3em; font-weight: 800; color: var(--ink-45); text-transform: uppercase; letter-spacing: .04em; vertical-align: baseline }
+.paySave { align-self: flex-start; margin-top: 12px; background: rgba(16, 185, 129, .14); color: var(--green-lit); border-radius: 999px; padding: 6px 12px; font: 700 11px var(--mono); letter-spacing: .05em; text-transform: uppercase }
+.payFeats { list-style: none; margin: 16px 0 0; padding: 15px 0 0; border-top: 1px solid var(--line-soft); display: flex; flex-direction: column; gap: 9px; flex: 1 }
+.payFeats li { display: flex; gap: 10px; align-items: flex-start; font-size: clamp(.86rem, 2.2vw, .94rem); color: var(--ink-70); line-height: 1.4 }
+.payFeats li::before { content: "✓"; font: 700 1em var(--mono); color: var(--green-lit); flex: none; line-height: 1.4 }
+
+/* ---------- Destaque (prazo) ---------- */
+.highlight {
+  display: block; margin-top: clamp(28px, 5vw, 40px);
+  background: linear-gradient(160deg, #0f3d2e, #082019);
+  border: 1px solid rgba(16, 185, 129, .4);
+  border-radius: 24px; padding: clamp(24px, 5vw, 40px);
+}
+.gLabel { font: 700 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--green-lit) }
+.highlight h3 {
+  margin: 12px 0 0; font-family: var(--display); font-weight: 900; font-stretch: 118%;
+  text-transform: uppercase; font-size: clamp(1.5rem, 6.5vw, 2.2rem);
+  line-height: .98; letter-spacing: -.03em; color: var(--ink);
+}
+.highlight p { margin: 14px 0 0; font-size: clamp(1rem, 4vw, 1.1rem); line-height: 1.5; color: var(--ink-70); max-width: 58ch }
+
+/* ---------- Fases futuras / planos ---------- */
+.planCards { margin-top: clamp(20px, 4vw, 28px); display: grid; gap: 16px }
+@media (min-width: 720px) { .planCards { grid-template-columns: 1fr 1fr } }
+.plan { border: 1.5px solid var(--line); border-radius: 20px; padding: clamp(21px, 4.2vw, 28px); background: var(--panel); display: flex; flex-direction: column }
+.planRec { border-color: var(--green); box-shadow: 0 16px 40px -24px rgba(16, 185, 129, .45) }
+.pTag { font: 700 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--green) }
+.plan h3 {
+  margin: 10px 0 0; font-family: var(--display); font-weight: 900; text-transform: uppercase;
+  font-size: clamp(1.05rem, 4.4vw, 1.32rem); line-height: 1.04; letter-spacing: -.015em;
+}
+.pPrice { margin-top: 10px; font-family: var(--display); font-weight: 900; letter-spacing: -.02em; font-size: clamp(1.6rem, 6.6vw, 2rem); line-height: 1 }
+.planRec .pPrice { color: var(--green-lit) }
+.pPrice small { font-size: .4em; font-weight: 800; color: var(--ink-45); text-transform: uppercase; letter-spacing: .02em }
+.feats { list-style: none; margin: 15px 0 0; padding: 15px 0 0; border-top: 1px solid var(--line-soft); display: flex; flex-direction: column; gap: 9px; flex: 1 }
+.feats li { display: flex; gap: 11px; align-items: flex-start; font-size: clamp(.88rem, 3.5vw, .96rem); color: var(--ink-70); line-height: 1.45 }
+.feats li::before { content: "✓"; font: 700 1em var(--mono); color: var(--green-lit); flex: none; line-height: 1.45 }
+/* Notas e legendas são <p> dentro de .body: precisam vencer `.body p` (0,1,1). */
+.page .pNote { margin: 15px 0 0; font: 11.5px/1.55 var(--mono); letter-spacing: .03em; color: var(--ink-45) }
+
+/* ---------- Não-negociáveis ---------- */
+.warn {
+  margin-top: clamp(24px, 4vw, 32px); border: 1px solid rgba(255, 16, 16, .32);
+  border-radius: 18px; padding: clamp(20px, 4vw, 28px); background: rgba(255, 16, 16, .05);
+}
+.warnLab { font: 700 11.5px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--red-lit) }
+.warn h3 { margin: 10px 0 0; font-family: var(--display); font-weight: 900; text-transform: uppercase; font-size: clamp(1.15rem, 4.8vw, 1.5rem); line-height: 1.04; letter-spacing: -.02em }
+.warn p { margin: 11px 0 0; font-size: clamp(.94rem, 3.7vw, 1.02rem); color: var(--ink-70); line-height: 1.55 }
+
+/* ---------- Encerramento + próximos passos ---------- */
+.closing {
+  font-family: var(--display); font-weight: 900; font-stretch: 106%;
+  text-transform: uppercase; font-size: clamp(1.35rem, 5.5vw, 2rem);
+  line-height: 1.05; letter-spacing: -.02em; color: var(--ink);
+  max-width: 26ch; margin: 0 0 clamp(24px, 4vw, 32px);
+}
+.closing em { font-style: normal; color: var(--green-lit) }
+.next { list-style: none; counter-reset: np; margin: 0; padding: 0 }
+.next li {
+  counter-increment: np; display: flex; gap: 14px; align-items: flex-start;
+  padding-block: 13px; border-bottom: 1px solid var(--line-soft);
+  font-size: clamp(.98rem, 3.9vw, 1.08rem); color: var(--ink-70); line-height: 1.5;
+}
+.next li:last-child { border-bottom: none }
+.next li::before { content: counter(np, decimal-leading-zero); font: 700 1em var(--mono); color: var(--green-lit); flex: none; line-height: 1.5 }
+.linkWa {
+  display: inline-flex; align-items: center; gap: 8px; margin-top: clamp(20px, 3vw, 28px);
+  font: 700 clamp(11px, 3vw, 13px) var(--mono); letter-spacing: .04em; text-transform: uppercase;
+  color: var(--green-lit); border-bottom: 1.5px solid var(--green); padding-bottom: 3px;
+  transition: color .2s; max-width: 100%;
+}
+.linkWa:hover { color: var(--pale) }
+
+/* ---------- Validade ---------- */
+.validity {
+  margin-top: clamp(18px, 3vw, 24px); display: inline-flex; align-items: center; gap: 12px;
+  border: 1px solid var(--line); border-radius: 999px; padding: 10px 18px;
+  font: 700 12px var(--mono); letter-spacing: .07em; text-transform: uppercase; color: var(--ink-70);
+}
+.validity strong { color: var(--green-lit) }
+
+/* ---------- Aceite ---------- */
+.accept {
+  margin-top: clamp(24px, 4vw, 32px); border: 1px solid var(--line);
+  border-radius: 20px; padding: clamp(22px, 4.5vw, 34px); background: var(--panel);
+}
+.acceptGrid { display: grid; gap: clamp(26px, 5vw, 40px); margin-top: clamp(22px, 4vw, 30px) }
+@media (min-width: 620px) { .acceptGrid { grid-template-columns: 1fr 1fr } }
+.sign { border-top: 1px solid var(--ink-28); padding-top: 11px }
+.signWho { font: 700 11.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-45) }
+.signName { margin-top: 4px; font-size: clamp(.95rem, 3.8vw, 1.04rem); color: var(--ink) }
+.signName small { display: block; margin-top: 2px; font-size: .84em; color: var(--ink-45) }
+.acceptDate { margin-top: clamp(24px, 4vw, 32px); display: flex; flex-wrap: wrap; gap: 10px 32px; font: 12px var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-45) }
+.acceptDate span { border-bottom: 1px solid var(--ink-28); padding: 0 40px 6px 0 }
+
+/* ---------- Rodapé ---------- */
+.footer {
+  margin-top: clamp(40px, 7vw, 72px); padding-block: clamp(24px, 4vw, 36px);
+  border-top: 1px solid var(--line);
+  display: flex; flex-wrap: wrap; gap: 8px 24px;
+  font: clamp(11px, 3vw, 12px) var(--mono); letter-spacing: .04em;
+  text-transform: uppercase; color: var(--ink-45);
+}
+
+/* ---------- Impressão / PDF ---------- */
+@media print {
+  .page {
+    background: #fff; color: #0b0b0d;
+    --ink: #0b0b0d; --ink-70: rgba(11, 11, 13, .72); --ink-45: rgba(11, 11, 13, .5);
+    --ink-28: rgba(11, 11, 13, .3); --line: rgba(11, 11, 13, .18); --line-soft: rgba(11, 11, 13, .1);
+    --panel: #fff; --panel-2: #f5f5f0; --green-lit: #047857; --black: #0b0b0d;
+  }
+  .gridLines, .linkWa { display: none }
+  .dot::after { animation: none }
+  .doc { max-width: none; padding: 0 }
+  .opening { padding-block: 24px 32px }
+  .sec { padding-block: 22px; break-inside: avoid }
+  .highlight {
+    background: none; border: 1.5px solid #047857; color: #0b0b0d;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact; break-inside: avoid;
+  }
+  .highlight h3, .highlight p { color: #0b0b0d }
+  .warn { background: none; break-inside: avoid }
+  .payHeadRec { background: #047857; color: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact }
+  .planCards, .planCards3, .payCards, .steps, .scopeGrid, .builtGrid, .accept, .timeline { break-inside: avoid }
+  .footer { margin-top: 28px }
+}
