@@ -91,33 +91,44 @@ function VitrineDemo() {
   </div>;
 }
 
-const heroPoints = ["Design personalizado", "Catálogo organizado", "WhatsApp integrado", "Feita para celular"];
+/* O hero tinha quatro camadas dizendo a mesma coisa: manchete, segunda
+   frase repetindo a promessa, lead listando as features e os pontos
+   listando as features de novo. Agora cada peça tem um trabalho só e não
+   se repete: a manchete promete, o lead entrega o resultado, os pontos
+   listam o que vem no projeto. O que sobrou de fato (preço cheio, prazo,
+   quantidade de produtos) já é dito na oferta, então saiu daqui.
+   O ganho real é de espaço: a demonstração era o argumento mais forte da
+   página e começava fora da primeira dobra no celular. */
+const heroPoints = ["Design personalizado", "Catálogo organizado", "WhatsApp integrado", "Pronta em 7 dias úteis"];
 export function Hero() {
   return <section className={s.hero} id="topo">
     <div className={s.heroGrid}>
       <div className={s.heroCopy}>
-        <Eyebrow>● VITRINE DIGITAL PARA LOJAS QUE VENDEM PELO INSTAGRAM</Eyebrow>
-        <h1>SEUS PRODUTOS EM <em>UM ÚNICO LINK.</em><span className={s.h1sub}>CLIENTES MAIS DECIDIDOS NO WHATSAPP.</span></h1>
-        {/* a segunda frase repetia a promessa do próprio título e custava
-            duas linhas no celular, empurrando a demonstração para longe */}
-        <p className={s.lead}>Eu crio uma vitrine personalizada para sua loja: catálogo organizado, páginas de produto e pedido direto pelo WhatsApp.</p>
+        <Eyebrow>VITRINE DIGITAL PARA LOJAS DE INSTAGRAM</Eyebrow>
+        <h1>SEUS PRODUTOS EM <em>UM LINK SÓ.</em></h1>
+        <p className={s.lead}>O cliente escolhe sozinho e chega no seu WhatsApp com o pedido pronto.</p>
         <div className={s.actions}>
           <Button href="#oferta" cta="hero">RESERVAR POR R$500 ↗</Button>
         </div>
-        <small className={s.micro}>Total de R$999 · saldo de R$499 só após a sua aprovação · até 20 produtos · entrega em até 7 dias úteis</small>
+        <small className={s.micro}>Total de R$999 · o saldo só após você aprovar</small>
       </div>
       <div className={s.heroVisual}>
         <div className={s.phone} role="img" aria-label="Demonstração da vitrine da Xavier's Sports: o cliente filtra por pronta entrega, abre a camisa Brasil Home 2026, escolhe o tamanho e envia o pedido pelo WhatsApp já preenchido">
           <VitrineDemo />
         </div>
-        <small className={s.demoTag}>VITRINE NO AR · XAVIER&apos;S SPORTS</small>
+        {/* a legenda do mockup e o antigo link "ver uma vitrine funcionando"
+            diziam a mesma coisa em dois lugares. Viraram um elemento só: a
+            bolinha marca que a vitrine está no ar, o nome diz de quem é, e o
+            próprio rótulo leva para a seção onde ela aparece inteira. */}
+        <a className={s.demoTag} href="#projetos" data-cta="hero_projetos" data-cta-dest="projetos">
+          <b aria-hidden>●</b> NO AR: XAVIER&apos;S SPORTS · VER INTEIRA ↓
+        </a>
       </div>
-      {/* link secundário fora do bloco de ação: no desktop cai sob a coluna
-          de texto; no celular, com o grid em uma coluna, ele fica depois do
-          mockup, sem disputar atenção com o CTA no primeiro momento */}
-      <a className={s.heroSecondary} href="#projetos" data-cta="hero_projetos" data-cta-dest="projetos">VER UMA VITRINE FUNCIONANDO ↓</a>
+      {/* os pontos entram no próprio grid do hero: no desktop viram uma
+          coluna estreita ao lado da demonstração, encostada na margem
+          direita da página, e no celular voltam a ser a faixa embaixo */}
+      <ul className={s.heroPoints}>{heroPoints.map(x => <li key={x}>{x}</li>)}</ul>
     </div>
-    <ul className={s.heroPoints}>{heroPoints.map(x => <li key={x}>{x}</li>)}</ul>
   </section>;
 }
 
@@ -135,8 +146,11 @@ export function PainSolution() {
       <div className={s.split}>
         <div>
           <Eyebrow>O PROBLEMA E A SOLUÇÃO</Eyebrow>
-          <h2>Pare de responder as mesmas perguntas em toda conversa.</h2>
-          <p className={s.lead}>Quando os produtos ficam espalhados entre stories, destaques e publicações antigas, o cliente precisa perguntar tudo antes de decidir. E cada atendimento começa do zero: foto, preço e tamanho, um por um.</p>
+          {/* quebra combinada: "quantas vendas sua loja perde" / "porque o
+              cliente não encontrou o produto?" — só em coluna dupla; no
+              celular o span volta a fluir com o texto */}
+          <h2>Quantas vendas sua loja perde <span className={s.h2Line}>porque o cliente não encontrou o produto?</span></h2>
+          <p className={s.lead}>Quando os produtos ficam espalhados entre stories, destaques e publicações antigas, o cliente precisa perguntar tudo antes de decidir. Cada atendimento começa do zero: foto, preço e tamanho, um por um. E muitas vezes ele desiste antes mesmo de chamar.</p>
           <div className={s.shiftAfter}>
             <small>COM A VITRINE</small>
             <p>O cliente encontra os produtos, escolhe o que quer e chama sua loja pelo WhatsApp com o pedido já identificado.</p>
@@ -148,7 +162,9 @@ export function PainSolution() {
           </ChatStrip>
         </div>
       </div>
-      <p className={s.manifesto}>O INSTAGRAM APRESENTA. A VITRINE <em>ORGANIZA.</em> O WHATSAPP FECHA.</p>
+      {/* três batidas: no celular cada frase é um bloco (nada de palavra
+          órfã entre frases); no desktop os spans fluem como sempre */}
+      <p className={s.manifesto}><span>O INSTAGRAM APRESENTA.</span> <span>A VITRINE <em>ORGANIZA.</em></span> <span>O WHATSAPP FECHA.</span></p>
     </div>
   </section>;
 }
@@ -167,7 +183,9 @@ export function HowItWorks() {
       <div className={s.split}>
         <div>
           <ol className={s.steps}>{steps.map((x, i) => <li key={x[0]}><b>0{i + 1}</b><div><h3>{x[0]}</h3><p>{x[1]}</p></div></li>)}</ol>
-          <div className={s.actions}><Button href="#oferta" cta="como_funciona">RESERVAR POR R$500 ↗</Button></div>
+          {/* no celular o botão não pode vir antes da prova: esta instância
+              some e a cópia abaixo do chat assume; no desktop é o contrário */}
+          <div className={`${s.actions} ${s.hideMobile}`}><Button href="#oferta" cta="como_funciona">RESERVAR POR R$500 ↗</Button></div>
         </div>
         <div className={s.howVisual}>
           <div className={s.phoneSmall}>
@@ -179,6 +197,7 @@ export function HowItWorks() {
               <Bubble out time="19:12" tick="read" delay={700}>tem sim! separei o seu, te mando o Pix</Bubble>
             </ChatStrip>
           </div>
+          <div className={`${s.actions} ${s.mobileOnly}`}><Button href="#oferta" cta="como_funciona">RESERVAR POR R$500 ↗</Button></div>
         </div>
       </div>
     </div>
@@ -309,7 +328,7 @@ export function Offer() {
     <div className={s.wrap}>
       <Eyebrow>OFERTA E CONTRATAÇÃO</Eyebrow>
       <h2>Vitrine digital completa por <em>R$999.</em></h2>
-      <p className={s.lead}>Você reserva o projeto com R$500, acompanha o desenvolvimento e só paga o saldo depois de ver a vitrine pronta e aprovar.</p>
+      <p className={s.lead}>Estrutura pronta para transformar visita do Instagram em pedido no WhatsApp. Você reserva com R$500, acompanha o desenvolvimento e só paga o saldo depois de aprovar.</p>
       <div className={s.offerGrid}>
         <article className={s.pricecard}>
           <small>VITRINE DIGITAL</small>
@@ -401,7 +420,7 @@ export function FinalCTA() {
   return <>
     <section id="fim" className={`${s.section} ${s.dark} ${s.final}`}>
       <Eyebrow>AGENDA ABERTA</Eyebrow>
-      <h2>Sua loja já tem produtos. Agora precisa <em>facilitar a escolha.</em></h2>
+      <h2>Sua loja já tem produtos. Agora precisa de uma estrutura para <em>vender melhor.</em></h2>
       <p className={s.lead}>Reserve a sua vitrine com R$500, acompanhe o projeto e pague o saldo só depois de aprovar.</p>
       <div className={s.actions}>
         <Button href="#oferta" cta="final">RESERVAR POR R$500 ↗</Button>
