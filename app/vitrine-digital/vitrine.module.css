@@ -76,7 +76,6 @@
 .mobileOnly { display: none }
 .primary { background: var(--green) }
 .outline { background: transparent; border: 1px solid var(--black); color: var(--black) }
-.outlineDark { background: transparent; border: 1px solid #3a3a3a; color: #fff }
 .ghost { font: 700 11px var(--mono); letter-spacing: .05em; border-bottom: 1px solid; padding-bottom: 3px }
 
 /* ---------- header ---------- */
@@ -261,7 +260,6 @@
   background: #1a1c20; border: 1px solid #26282c; border-radius: 100px; padding: 5px 12px;
 }
 .live { font: 700 9px var(--mono); letter-spacing: .1em; color: var(--green); white-space: nowrap }
-.liveDemo { font: 700 9px var(--mono); letter-spacing: .1em; color: #8a8a84; white-space: nowrap }
 .cover {
   display: block; position: relative; width: 100%;
   aspect-ratio: 16 / 10; overflow: hidden; background: #141414;
@@ -276,12 +274,14 @@
   0%, 2.5% { transform: translateY(0) }
   97.5%, 100% { transform: translateY(calc(100cqh - 100%)) }
 }
-/* Cada card diz o que é: loja de cliente no ar ou projeto de demonstração.
-   O que é real ganha a etiqueta verde e a lista de fatos verificáveis. */
+/* Os dois cards são loja de cliente no ar: etiqueta verde e lista de fatos
+   verificáveis nos dois. O que diferencia é o segmento e os fatos. */
 .projMeta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 14px }
 .projects small { font: 10px var(--mono); letter-spacing: .12em; color: var(--green) }
-.kind { font: 700 9px var(--mono); letter-spacing: .1em; color: #a8a8a2; border: 1px solid #3a3a3a; padding: 5px 9px }
-.kindReal { color: var(--night); background: var(--green); border-color: var(--green) }
+.kind {
+  font: 700 9px var(--mono); letter-spacing: .1em; padding: 5px 9px;
+  color: var(--night); background: var(--green); border: 1px solid var(--green);
+}
 .projects h3 { font-size: clamp(24px, 2vw, 30px) }
 .projects p { font-size: 15px; max-width: 440px }
 .facts { list-style: none; padding: 0; margin: 4px 0 0; display: grid; gap: 9px; max-width: 440px }
@@ -305,6 +305,37 @@
 .moreList { list-style: none; margin: 0 0 20px; padding: 0; display: grid; gap: 14px }
 .moreList li { font-size: 14px; line-height: 1.5; color: var(--ink) }
 .moreList b { display: block; color: var(--black); font-weight: 700 }
+
+/* ---------- painel de gestão ---------- */
+/* dois seletores porque .check já define a margem e o risco das linhas:
+   uma classe solta perderia por ordem de arquivo */
+.panelSec .check { max-width: 560px; margin-top: 26px }
+/* estes três itens são frases, não etiquetas curtas como as do card de preço:
+   no celular quebram em duas linhas, e sem o recuo pendurado a segunda linha
+   voltava para debaixo do ✓ */
+.panelSec .check li { position: relative; padding-left: 26px }
+.panelSec .check li::before { position: absolute; left: 0; margin: 0 }
+/* --line é claro e viraria um risco branco sobre o --night */
+.dark .check li { border-bottom-color: var(--line-dark) }
+/* moldura de browser (.browserBar, herdada da seção de projetos) mais o
+   print, com a sombra dura deslocada que a página usa nos mockups */
+.panelShot { margin: clamp(32px, 4vw, 44px) 0 0; max-width: 960px }
+.panelScreen { box-shadow: 18px 18px 0 var(--pale) }
+.panelFrame { position: relative; aspect-ratio: 16 / 10; background: #141414 }
+.panelFrame img { object-fit: cover; object-position: top }
+/* 34px porque a sombra desce 18px: com menos, a primeira linha da legenda
+   cai em cima da mancha clara */
+.panelNote { display: block; font: 11px/1.6 var(--mono); letter-spacing: .01em; color: #8f8f88; margin-top: 34px; max-width: 480px }
+/* mesma afirmação do card de preço duas dobras abaixo, então mesma cara que
+   o .nomensal. Precisa de dois seletores para vencer .dark p, que tem
+   seletor de elemento e pintaria o texto de cinza claro. */
+.dark .panelClaim {
+  display: inline-block; margin-top: clamp(26px, 3vw, 34px);
+  font: 700 11px var(--mono); letter-spacing: .08em; color: var(--black);
+  background: var(--pale); padding: 11px 14px;
+  /* no celular a frase quebra: sem equilibrar, sobra "sua." sozinho na segunda linha */
+  text-wrap: balance;
+}
 
 /* ---------- oferta ---------- */
 .offer { background: var(--pale) }
@@ -490,6 +521,8 @@
   .pricecard { box-shadow: 10px 10px 0 var(--black); margin-right: 10px }
   .phone { box-shadow: 14px 14px 0 var(--pale) }
   .phoneSmall { box-shadow: 12px 12px 0 var(--pale) }
+  .panelShot { margin-right: 10px }
+  .panelScreen { box-shadow: 12px 12px 0 var(--pale) }
   /* cards do processo sem o vão de ar do layout em colunas */
   .process li { padding: 20px }
   .process h3 { margin-top: 14px }
@@ -498,10 +531,6 @@
      "seleções" quebravam no meio da palavra */
   .cover { aspect-ratio: 16 / 9 }
   .facts { grid-template-columns: 1fr; gap: 8px }
-  /* a prova real manda; o conceito aparece menor e mais discreto */
-  .projDemo .lapScreen { width: 74% }
-  .projDemo h3 { font-size: clamp(21px, 6vw, 25px) }
-  .projDemo p { font-size: 14px }
   /* o balão "sua próxima mensagem" é reforço decorativo; no celular ele só
      alonga a oferta antes do formulário, então sai */
   .formCol .chatStrip { display: none }

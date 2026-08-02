@@ -188,13 +188,16 @@ export function HowItWorks() {
           <div className={`${s.actions} ${s.hideMobile}`}><Button href="#oferta" cta="como_funciona">RESERVAR POR R$500 ↗</Button></div>
         </div>
         <div className={s.howVisual}>
+          {/* captura do catálogo da PR Grife, loja de cliente no ar. O corte
+              começa na grade de produtos: o que prova o passo é preço, tamanho
+              e botão de pedir na tela, não a barra de navegação. */}
           <div className={s.phoneSmall}>
-            <Image src="/assets/demo/solo-maisvendidos.jpg" fill sizes="300px" alt="Catálogo da vitrine da Solo Urb com a grade de produtos e preços" />
+            <Image src="/assets/demo/prgrife-catalogo.jpg" fill sizes="300px" alt="Catálogo da vitrine da PR Grife com a grade de produtos, preços e botão de pedir" />
           </div>
           <div className={s.howChat}>
             <ChatStrip label="COM A VITRINE · O PEDIDO CHEGA PRONTO" note="A mesma noite, sem uma foto sequer no direct: o cliente escolheu sozinho.">
-              <Bubble time="19:11">escolhi pela vitrine: 9060 Rain Cloud, tamanho 39. ainda tem?</Bubble>
-              <Bubble out time="19:12" tick="read" delay={700}>tem sim! separei o seu, te mando o Pix</Bubble>
+              <Bubble time="19:11">escolhi pela vitrine: polo piquet branca, tamanho M. ainda tem?</Bubble>
+              <Bubble out time="19:12" tick="read" delay={700}>tem sim! separei a sua, te mando o Pix</Bubble>
             </ChatStrip>
           </div>
           <div className={`${s.actions} ${s.mobileOnly}`}><Button href="#oferta" cta="como_funciona">RESERVAR POR R$500 ↗</Button></div>
@@ -206,41 +209,43 @@ export function HowItWorks() {
 
 /* Captura desktop da página inteira de cada site (1440px de largura),
    exibida na tela de um MacBook com scroll automático em loop.
-   A duração acompanha a altura da página para o ritmo ser parecido.
-   Cada card diz o que é: a Xavier's é loja de cliente no ar, a Solo Urb
-   é projeto de demonstração. Prova vaga não convence ninguém. */
+   A duração acompanha a altura da página para o ritmo ser parecido
+   (por volta de 250px por segundo nas duas).
+   As duas são lojas de clientes no ar. O que separa uma da outra é o
+   segmento e a lista de fatos, não uma etiqueta de demonstração:
+   prova vaga não convence ninguém. */
 const projects = [
   {
     img: "/assets/case-xavier-desk.jpg", w: 1440, h: 8965, dur: "36s",
     url: "https://xavier-s-sports.vercel.app/", dom: "xavier-s-sports.vercel.app",
     name: "XAVIER'S SPORTS", tag: "CAMISAS ESPORTIVAS",
-    real: true, chip: "● NO AR", kind: "LOJA DE CLIENTE",
     copy: "Vitrine no ar, navegável agora. Abra pelo celular e faça o caminho que o cliente faz.",
     facts: ["Catálogo por clubes e seleções", "Página para cada produto", "Controle de pronta entrega", "Pedido direto no WhatsApp"],
+    cta: "ABRIR A VITRINE DA XAVIER'S ↗", ctaId: "case_xavier",
   },
   {
-    img: "/assets/case-solourb-desk.jpg", w: 1440, h: 11263, dur: "44s",
-    url: "https://s-lo-urb.vercel.app/", dom: "s-lo-urb.vercel.app",
-    name: "SOLO URB", tag: "STREETWEAR E SNEAKERS",
-    real: false, chip: "● DEMONSTRAÇÃO", kind: "PROJETO DE DEMONSTRAÇÃO",
-    copy: "Criei este projeto para mostrar o padrão de entrega em uma loja de streetwear: lançamentos, categorias e reserva pela sacola.",
-    facts: [],
+    img: "/assets/case-prgrife-desk.jpg", w: 1440, h: 5559, dur: "22s",
+    url: "https://usepr-grife.vercel.app/", dom: "usepr-grife.vercel.app",
+    name: "PR GRIFE", tag: "MULTIMARCAS DE ALTO PADRÃO",
+    copy: "Loja com ponto físico em Maringá. Entreguei a vitrine e o painel: o dono publica peça e ajusta o estoque sozinho.",
+    facts: ["Catálogo por marca e categoria", "Página para cada produto", "Painel de estoque para o dono", "Pedido com forma de pagamento escolhida"],
+    cta: "ABRIR A VITRINE DA PR GRIFE ↗", ctaId: "case_prgrife",
   },
 ];
 export function Projects() {
   return <section className={`${s.section} ${s.dark}`} id="projetos">
     <div className={s.wrap}>
-      <Eyebrow>PROJETO NO AR</Eyebrow>
-      <h2>Veja uma vitrine real em funcionamento.</h2>
-      <p className={`${s.lead} ${s.leadDark}`}>A Xavier&apos;s Sports vende camisas esportivas e atende pelo WhatsApp. A vitrine dela está publicada e você pode navegar por ela inteira antes de decidir qualquer coisa.</p>
+      <Eyebrow>PROJETOS NO AR</Eyebrow>
+      <h2>Duas vitrines de clientes, no ar agora.</h2>
+      <p className={`${s.lead} ${s.leadDark}`}>A Xavier&apos;s Sports vende camisas esportivas. A PR Grife é multimarcas e tem loja física em Maringá. As duas estão publicadas e você pode navegar por elas inteiras antes de decidir qualquer coisa.</p>
       <div className={s.projects}>
-        {projects.map(x => <article key={x.name} className={x.real ? "" : s.projDemo}>
+        {projects.map(x => <article key={x.name}>
           <div className={s.laptop}>
             <div className={s.lapScreen}>
               <div className={s.browserBar}>
                 <span className={s.dots} aria-hidden><i /><i /><i /></span>
                 <span className={s.urlChip}>{x.dom}</span>
-                <span className={x.real ? s.live : s.liveDemo}>{x.chip}</span>
+                <span className={s.live}>● NO AR</span>
               </div>
               <a className={s.cover} href={x.url} target="_blank" rel="noopener" aria-label={`Abrir o site do projeto ${x.name} em nova aba`}>
                 {/* img simples: o otimizador de imagem não lida bem com capturas de 10 mil pixels */}
@@ -251,13 +256,13 @@ export function Projects() {
           </div>
           <div className={s.projMeta}>
             <small>{x.tag}</small>
-            <span className={`${s.kind} ${x.real ? s.kindReal : ""}`}>{x.kind}</span>
+            <span className={s.kind}>LOJA DE CLIENTE</span>
           </div>
           <h3>{x.name}</h3>
           <p>{x.copy}</p>
-          {x.facts.length > 0 && <ul className={s.facts}>{x.facts.map(f => <li key={f}>{f}</li>)}</ul>}
-          <a className={`${s.button} ${x.real ? s.primary : s.outlineDark}`} href={x.url} target="_blank" rel="noopener" data-cta={x.real ? "case_xavier" : "case_solourb"} data-cta-dest="case">
-            {x.real ? "ABRIR A VITRINE DA XAVIER'S ↗" : "ABRIR PROJETO ↗"}
+          <ul className={s.facts}>{x.facts.map(f => <li key={f}>{f}</li>)}</ul>
+          <a className={`${s.button} ${s.primary}`} href={x.url} target="_blank" rel="noopener" data-cta={x.ctaId} data-cta-dest="case">
+            {x.cta}
           </a>
         </article>)}
       </div>
@@ -279,6 +284,9 @@ const includedDetails = [
   ["Páginas de produto", "Fotos, descrição, preço, tamanhos e variações em uma página só."],
   ["Uma rodada de ajustes", "Você revisa e aponta as correções antes de a página entrar no ar."],
   ["Entrega em até 7 dias úteis", "Contados a partir do envio de todos os materiais da loja."],
+  /* os dois itens de pós-entrega ficam juntos: o painel é o que você faz
+     sozinho, a linha seguinte é o que continua passando por mim */
+  ["Painel de gestão", "Na identidade da sua loja: produtos, preços, fotos, estoque e disponibilidade."],
   ["Atualizações quando precisar", "Você pede alterações pontuais depois e eu orço na hora. Nada é obrigatório."],
 ];
 export function Included() {
@@ -299,7 +307,55 @@ export function Included() {
   </section>;
 }
 
-const offerItems = ["Design personalizado", "Página inicial e catálogo", "Páginas de produto", "WhatsApp integrado", "Até 20 produtos cadastrados", "Publicação e endereço configurado", "Uma rodada de ajustes", "Entrega em até 7 dias úteis"];
+/* Responde a objeção "quem atualiza isso depois?" com a tela real do painel,
+   uma dobra antes do preço, e é o que sustenta o "sem mensalidade obrigatória"
+   do card: a loja só não fica refém se conseguir mexer sozinha.
+
+   O print é a tela de Produtos do painel da Xavier's filtrada por pronta
+   entrega, sem nenhum dado alterado. O dashboard foi descartado porque os
+   números reais são três zeros e dois alertas vermelhos, e porque ele mostra
+   métrica, não a ação: as colunas Preço, Estoque por tamanho e Status provam
+   os três checks um a um, e o subtítulo da própria tela já diz o argumento.
+
+   Fundo escuro pelo mesmo motivo da seção de projetos: o print é claro e
+   acende contra o --night, a moldura de browser (.browserBar) já é desenhada
+   para fundo escuro, e o bloco corta a sequência clara entre "o que está
+   incluso" e a oferta, empurrando o olho para o card de preço.
+
+   Sem CTA de propósito: nenhum data-cta novo, o funil não muda. */
+const panelProof = [
+  "Troca preço, foto e descrição na hora",
+  "Marca esgotado, últimas unidades ou pronta entrega",
+  "Cadastra produto novo e ele entra na vitrine na mesma hora",
+];
+export function Panel() {
+  return <section className={`${s.section} ${s.dark} ${s.panelSec}`} id="painel">
+    <div className={s.wrap}>
+      <Eyebrow>DEPOIS DA ENTREGA</Eyebrow>
+      <h2>Depois de publicada, a vitrine é sua.</h2>
+      <p className={`${s.lead} ${s.leadDark}`}>Junto com a vitrine, você recebe um painel de gestão na identidade da sua loja. Atualizar não depende de programador, nem de mim.</p>
+      <ul className={s.check}>{panelProof.map(x => <li key={x}>{x}</li>)}</ul>
+      {/* a sombra deslocada mora na moldura, não no figure: com ela no figure
+          a mancha clara passava por baixo da legenda também */}
+      <figure className={s.panelShot}>
+        <div className={s.panelScreen}>
+          <div className={s.browserBar}>
+            <span className={s.dots} aria-hidden><i /><i /><i /></span>
+            <span className={s.urlChip}>xavier-s-sports.vercel.app/admin</span>
+            <span className={s.live}>● PAINEL DA LOJA</span>
+          </div>
+          <div className={s.panelFrame}>
+            <Image src="/assets/demo/xavier-painel.jpg" fill sizes="(max-width: 900px) 100vw, 960px" alt="Tela de produtos e estoque do painel da Xavier's Sports: cada camisa com foto, preço, estoque por tamanho e status de pronta entrega" />
+          </div>
+        </div>
+        <figcaption className={s.panelNote}>Painel real da Xavier&apos;s Sports. Cada loja recebe o seu, na própria identidade.</figcaption>
+      </figure>
+      <p className={s.panelClaim}>Sem mensalidade obrigatória: a estrutura é sua.</p>
+    </div>
+  </section>;
+}
+
+const offerItems = ["Design personalizado", "Página inicial e catálogo", "Páginas de produto", "WhatsApp integrado", "Até 20 produtos cadastrados", "Painel de gestão da loja", "Publicação e endereço configurado", "Uma rodada de ajustes", "Entrega em até 7 dias úteis"];
 export function Offer() {
   /* Um caminho só: reservar por R$500. O pagamento à vista deixou de ser um
      segundo botão concorrendo com o principal e virou uma opção dentro do
@@ -386,7 +442,7 @@ const faq = [
   ["A vitrine recebe pagamentos dos meus clientes?", "Não. A vitrine organiza o catálogo e leva o pedido pronto para o WhatsApp da loja, onde você combina pagamento e entrega."],
   ["Quantos produtos estão incluídos?", "Até 20 produtos no cadastro inicial, todos cadastrados por mim. Novos cadastros podem ser combinados depois."],
   ["Existe mensalidade?", "Não. O projeto custa R$999 uma única vez. Um domínio próprio é opcional e tem custo anual pago direto no registrador."],
-  ["Quem atualiza a vitrine depois?", "Você pede as alterações e eu executo, orçadas por demanda. Se preferir, combinamos um pacote de manutenção. Nada disso é obrigatório."],
+  ["Quem atualiza a vitrine depois?", "Você mesmo, pelo painel que acompanha a vitrine: troca preço e foto, marca esgotado ou pronta entrega e cadastra produtos novos."],
   ["Quanto tempo demora?", "Até 7 dias úteis depois do envio de todos os materiais da loja."],
   ["Preciso pagar tudo antes?", "Não. São R$500 para reservar e R$499 somente depois da apresentação e da sua aprovação do projeto."],
 ];

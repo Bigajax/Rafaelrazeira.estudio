@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Archivo, Inter, Space_Mono } from "next/font/google";
-import { Analytics, FAQ, FinalCTA, Header, Hero, HowItWorks, Included, MobileBar, Offer, PainSolution, Process, Projects } from "@/components/vitrine/sections";
+import { Analytics, FAQ, FinalCTA, Header, Hero, HowItWorks, Included, MobileBar, Offer, PainSolution, Panel, Process, Projects } from "@/components/vitrine/sections";
 import styles from "./vitrine.module.css";
 
 const display = Archivo({ subsets: ["latin"], axes: ["wdth"], variable: "--font-display" });
@@ -21,6 +21,7 @@ export default function VitrineDigitalPage() {
       <HowItWorks />
       <Projects />
       <Included />
+      <Panel />
       <Offer />
       <Process />
       <FAQ />
