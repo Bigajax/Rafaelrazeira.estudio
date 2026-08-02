@@ -373,9 +373,13 @@ export function Offer() {
     const f = new FormData(e.currentTarget);
     /* Sem campo de telefone: a mensagem sai do WhatsApp da própria pessoa,
        então pedir o número é fricção para uma informação que já chega junto.
-       O Lead na Conversions API perde o hash do telefone e passa a casar só
-       por fbp/fbc, e o meta-capi.js já ignora phone vazio. */
-    trackLead(plan);
+       O nome vai para a Conversions API porque sem telefone e sem e-mail ele
+       é uma das poucas chaves de casamento que sobram (o servidor pega só o
+       primeiro nome e hasheia; nada em texto puro sai daqui).
+       O botão CONTINUAR NO WHATSAPP não tem data-cta de propósito: quem
+       dispara o Lead deste caminho é este submit, e não o ouvinte de cliques,
+       senão o mesmo envio contaria duas vezes. */
+    trackLead({ ctaPosition: "form", plano: plan, nome: String(f.get("nome") || "") });
     setStatus("Tudo certo. Abrindo o WhatsApp para concluir a contratação…");
     const text = encodeURIComponent(`Olá, Rafael! Quero contratar a Vitrine Digital.\nNome: ${f.get("nome")}\nLoja: ${f.get("loja")}\nInstagram: ${f.get("instagram")}\nPlano: ${plan}`);
     window.open(`https://wa.me/5544999997219?text=${text}`, "_blank", "noopener");

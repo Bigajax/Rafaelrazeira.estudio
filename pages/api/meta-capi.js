@@ -1,6 +1,11 @@
 /* ============================================================
    CONVERSIONS API (Meta) — função serverless da Vercel.
-   Recebe o Lead do browser e reenvia à Graph API com hashes SHA-256.
+   Recebe um evento do browser e reenvia à Graph API com hashes SHA-256.
+   ------------------------------------------------------------
+   TRÊS CONSUMIDORES: js/lib/tracking.js (site estático),
+   components/ecommerce/tracking.ts e components/vitrine/tracking.ts.
+   Os dois primeiros não mandam `event_name`, então o padrão é "Lead":
+   não mudar esse default sem mexer neles.
    ------------------------------------------------------------
    Variáveis de ambiente (Vercel → Settings → Environment Variables):
    • META_CAPI_ACCESS_TOKEN  (obrigatória) — gere no Events Manager:
@@ -18,6 +23,11 @@ const GRAPH_URL = `https://graph.facebook.com/v21.0/${PIXEL_ID}/events`;
 
 const sha256 = (v) => crypto.createHash("sha256").update(v).digest("hex");
 
+/* Só estes eventos passam. Sem a lista, um erro de digitação no client
+   cria um evento novo no dataset em vez de falhar, e o estrago só
+   aparece semanas depois no Events Manager. */
+const EVENTOS = new Set(["Lead", "Contact", "ViewContent", "InitiateCheckout", "PageView"]);
+
 /* Normalizações exigidas pela Meta antes do hash */
 const normEmail = (e) => String(e || "").trim().toLowerCase();
 function normPhone(p){
@@ -25,6 +35,8 @@ function normPhone(p){
   if (d && !d.startsWith("55")) d = "55" + d;   // E.164 com DDI Brasil
   return d;
 }
+/* Nome: a Meta casa por primeiro nome, em minúsculas e sem pontuação */
+const normNome = (n) => String(n || "").trim().toLowerCase().replace(/[^\p{L}\s]/gu, "").split(/\s+/)[0] || "";
 
 export default async function handler(req, res) {
   if (req.method !== "POST"){
@@ -42,6 +54,12 @@ export default async function handler(req, res) {
     res.statusCode = 400;
     return res.end(JSON.stringify({ error: "event_id obrigatório" }));
   }
+  /* padrão "Lead" pelos consumidores antigos, que não mandam o campo */
+  const event_name = String(b.event_name || "Lead");
+  if (!EVENTOS.has(event_name)){
+    res.statusCode = 400;
+    return res.end(JSON.stringify({ error: `event_name inválido: ${event_name}` }));
+  }
 
   const user_data = {
     client_user_agent: req.headers["user-agent"] || "",
@@ -51,6 +69,12 @@ export default async function handler(req, res) {
   if (em) user_data.em = [sha256(em)];
   const ph = normPhone(b.phone);
   if (ph) user_data.ph = [sha256(ph)];
+  const fn = normNome(b.first_name);
+  if (fn) user_data.fn = [sha256(fn)];
+  /* external_id é a chave de casamento mais forte que sobra num formulário
+     sem e-mail e sem telefone. O pixel hasheia sozinho no browser, então o
+     servidor precisa hashear o MESMO valor cru para os dois baterem. */
+  if (b.external_id) user_data.external_id = [sha256(String(b.external_id).trim())];
   if (b.fbp) user_data.fbp = String(b.fbp);
   if (b.fbc) user_data.fbc = String(b.fbc);
 
@@ -62,10 +86,15 @@ export default async function handler(req, res) {
     custom_data.currency = String(b.currency || "BRL");
   }
   if (b.plano) custom_data.plano = String(b.plano);
+  if (b.content_name) custom_data.content_name = String(b.content_name);
+  if (b.content_category) custom_data.content_category = String(b.content_category);
+  /* de qual botão veio o Lead: hero, steps, pricing_card, form, final,
+     sticky, duvidas, final_falar, flutuante */
+  if (b.cta_position) custom_data.cta_position = String(b.cta_position);
 
   const payload = {
     data: [{
-      event_name: "Lead",
+      event_name,
       event_time: Math.floor(Date.now() / 1000),
       event_id: String(b.event_id),
       action_source: "website",

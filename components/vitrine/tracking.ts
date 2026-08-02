@@ -147,6 +147,58 @@ function umaVezPorSessao(chave: string, fn: () => void) {
   fn();
 }
 
+/* ---------- Conversions API ----------
+   Todo evento de conversão sai pelos dois caminhos com o MESMO event_id:
+   o Pixel no browser e a CAPI no servidor. A Meta descarta a cópia, e o
+   que chega é o que o navegador entregou OU o que o servidor entregou
+   quando o navegador falhou. Isso importa aqui porque a maior parte do
+   tráfego vem do navegador interno do Instagram, onde bloqueio de rastreio
+   e falha do fbevents.js são rotina.
+   Fire-and-forget: erro de CAPI nunca afeta a página. */
+type CapiExtra = Record<string, string | number | undefined>;
+function enviarCapi(evento: string, eventId: string, extra: CapiExtra = {}) {
+  try {
+    fetch(CAPI_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      keepalive: true,
+      body: JSON.stringify({
+        event_name: evento,
+        event_id: eventId,
+        external_id: mpDistinctId(),
+        fbp: getCookie("_fbp"),
+        fbc: getFbc(),
+        event_source_url: location.href,
+        ...extra,
+      }),
+    }).catch(() => {});
+  } catch {}
+}
+
+/* Dispara Pixel + CAPI + Mixpanel amarrados pelo mesmo id */
+function conversao(evento: string, dadosPixel: Record<string, unknown>, extraCapi: CapiExtra = {}, propsMp: Record<string, unknown> = {}) {
+  const eventId = idAleatorio();
+  fbq("track", evento, dadosPixel, { eventID: eventId });
+  enviarCapi(evento, eventId, extraCapi);
+  mpTrack(evento, { $insert_id: eventId, ...propsMp });
+}
+
+/* data-cta → cta_position do Lead. Quem não está aqui NÃO dispara Lead:
+   `nav` e `hero_projetos` só rolam a página para outra seção e `case` abre o
+   site de um cliente. Só `final_falar` foge do vocabulário do brief, que não
+   tinha slot para o "FALAR COM RAFAEL" do CTA final (o `flutuante` é a
+   pílula, e `duvidas` é o "AINDA TENHO DÚVIDAS" do card de preço). */
+const POSICAO_LEAD: Record<string, string> = {
+  hero: "hero",
+  como_funciona: "steps",
+  oferta_entrada: "pricing_card",
+  final: "final",
+  sticky_mobile: "sticky",
+  oferta_whats: "duvidas",
+  final_whats: "final_falar",
+  pill: "flutuante",
+};
+
 let iniciado = false;
 
 /* Chamado no mount da página (componente <Analytics />). */
@@ -156,7 +208,10 @@ export function initTracking() {
 
   salvarFbclid();
   carregarPixel();
-  fbq("init", PIXEL_ID);
+  /* external_id no init: o pixel passa a mandar essa chave em todo evento do
+     browser e hasheia sozinho. É o que segura o casamento de um formulário
+     sem e-mail e sem telefone. */
+  fbq("init", PIXEL_ID, { external_id: mpDistinctId() });
   fbq("track", "PageView");
   mpTrack("PageView");
 
@@ -168,57 +223,74 @@ export function initTracking() {
         if (!en.isIntersecting) return;
         obs.disconnect();
         umaVezPorSessao("mp_vc_oferta", () => {
-          fbq("track", "ViewContent", { content_name: "oferta-vitrine", content_category: "vitrine-digital", value: VALOR_OFERTA, currency: "BRL" });
-          mpTrack("ViewContent", { content_name: "oferta-vitrine" });
+          conversao("ViewContent",
+            { content_name: "oferta-vitrine", content_category: "vitrine-digital", value: VALOR_OFERTA, currency: "BRL" },
+            { content_name: "oferta-vitrine", content_category: "vitrine-digital", value: VALOR_OFERTA, currency: "BRL" },
+            { content_name: "oferta-vitrine" });
         });
       });
     }, { threshold: 0.3 });
     obs.observe(oferta);
   }
 
-  // ClickCTA — 1 evento por clique em [data-cta], com location/destination
+  // ClickCTA — 1 evento por clique em [data-cta], com location/destination.
+  // Evento custom: serve para ler a página, não para a Meta otimizar.
   document.addEventListener("click", (e) => {
     const el = (e.target as HTMLElement)?.closest?.("[data-cta]") as HTMLElement | null;
     if (!el) return;
     const dados = { location: el.dataset.cta, destination: el.dataset.ctaDest || "form" };
     fbq("trackCustom", "ClickCTA", dados);
     mpTrack("ClickCTA", dados);
+
+    /* Lead nos CTAs de conversão. Um evento só cobre todo caminho até o
+       WhatsApp: com verba baixa, densidade de sinal vale mais que pureza de
+       funil, e a qualidade se mede na conversa, não no painel.
+       Ouvinte delegado em vez de onClick nos oito botões: um caminho só,
+       impossível de esquecer quando nascer um CTA novo.
+       Não segura nem atrasa o clique: o listener é passivo e a CAPI vai por
+       fetch com keepalive, que sobrevive à navegação. */
+    const posicao = POSICAO_LEAD[el.dataset.cta || ""];
+    if (posicao) trackLead({ ctaPosition: posicao });
   });
 
   // InitiateCheckout — primeiro foco no formulário de contratação (1x por sessão)
   document.addEventListener("focusin", (e) => {
     if (!(e.target as HTMLElement)?.closest?.("#contratar")) return;
     umaVezPorSessao("mp_ic_vitrine", () => {
-      fbq("track", "InitiateCheckout", { content_name: "vitrine-digital", value: VALOR_OFERTA, currency: "BRL" });
-      mpTrack("InitiateCheckout");
+      conversao("InitiateCheckout",
+        { content_name: "vitrine-digital", value: VALOR_OFERTA, currency: "BRL" },
+        { content_name: "vitrine-digital", value: VALOR_OFERTA, currency: "BRL" });
     });
   });
 }
 
-/* Submit do formulário — a conversão do funil, deduplicada: mesmo
-   event_id no Pixel (browser) e na Conversions API (servidor), que
-   recebe o WhatsApp do formulário e o hasheia antes de enviar à Meta.
-   Fire-and-forget: falha de tracking nunca bloqueia o formulário. */
-export function trackLead(plano: string, whatsapp?: string) {
+/* ---------- Lead: a conversão da campanha ----------
+   Um único evento cobre todos os caminhos até o WhatsApp, com `cta_position`
+   dizendo de onde veio. Deduplicado: o MESMO event_id vai no Pixel (browser)
+   e na Conversions API (servidor), então a Meta conta uma vez só e ainda
+   recebe o evento quando o navegador falha, que é o caso comum no navegador
+   interno do Instagram.
+
+   O formulário não pede telefone (a mensagem sai do WhatsApp da própria
+   pessoa), então as chaves de casamento que sobram são external_id, fbp, fbc
+   e o primeiro nome, e é por isso que o nome chega até aqui. O servidor
+   hasheia; nada em texto puro sai do browser.
+
+   Fire-and-forget e sem preventDefault: nunca bloqueia nem atrasa a abertura
+   do WhatsApp. O keepalive do fetch cobre a navegação. */
+export function trackLead({ ctaPosition, plano, nome }: { ctaPosition: string; plano?: string; nome?: string }) {
   if (!consentido()) return;
   const eventId = idAleatorio();
-  fbq("track", "Lead", { plano, value: VALOR_OFERTA, currency: "BRL" }, { eventID: eventId });
-  mpTrack("Lead", { $insert_id: eventId, plano });   // mesmo id do Meta p/ cruzar os números
-  try {
-    fetch(CAPI_ENDPOINT, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      keepalive: true,
-      body: JSON.stringify({
-        event_id: eventId,
-        phone: whatsapp || "",
-        fbp: getCookie("_fbp"),
-        fbc: getFbc(),
-        event_source_url: location.href,
-        value: VALOR_OFERTA,
-        currency: "BRL",
-        plano,
-      }),
-    }).catch(() => {});
-  } catch {}
+  const dados: Record<string, unknown> = { content_name: "vitrine-digital", cta_position: ctaPosition, value: VALOR_OFERTA, currency: "BRL" };
+  if (plano) dados.plano = plano;
+  fbq("track", "Lead", dados, { eventID: eventId });
+  mpTrack("Lead", { $insert_id: eventId, cta_position: ctaPosition, plano });   // mesmo id do Meta p/ cruzar os números
+  enviarCapi("Lead", eventId, {
+    first_name: nome || "",
+    content_name: "vitrine-digital",
+    cta_position: ctaPosition,
+    value: VALOR_OFERTA,
+    currency: "BRL",
+    plano,
+  });
 }
