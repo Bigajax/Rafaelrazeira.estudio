@@ -70,6 +70,35 @@ const consentido = () => {
   try { return localStorage.getItem("cookie_consent") !== "declined"; } catch { return true; }
 };
 
+/* Mesma guarda da vitrine, e pelo mesmo motivo: esta página usa o MESMO
+   PIXEL_ID, então rodar ela em dev ou em preview suja o dataset da campanha.
+   Só produção; `?tracking=on` libera a aba para testar de propósito.
+   Ver o comentário longo em components/vitrine/tracking.ts. */
+const PRODUCAO = process.env.NEXT_PUBLIC_VERCEL_ENV
+  ? process.env.NEXT_PUBLIC_VERCEL_ENV === "production"
+  : process.env.NODE_ENV === "production";
+
+let avisou = false;
+function ambientePermitido() {
+  if (typeof window === "undefined") return false;
+  try {
+    const q = new URLSearchParams(location.search).get("tracking");
+    if (q === "on") sessionStorage.setItem("tracking_forcado", "1");
+    if (q === "off") sessionStorage.removeItem("tracking_forcado");
+    if (sessionStorage.getItem("tracking_forcado")) return true;
+  } catch {}
+  const local = /^(localhost|127\.0\.0\.1|\[::1\]|0\.0\.0\.0)$/.test(location.hostname);
+  const ok = PRODUCAO && !local;
+  if (!ok && !avisou) {
+    avisou = true;
+    console.info("[tracking] desligado fora de produção. Para testar nesta aba, adicione ?tracking=on na URL.");
+  }
+  return ok;
+}
+
+/* Portão único dos três destinos: Pixel, Conversions API e Mixpanel */
+const podeRastrear = () => consentido() && ambientePermitido();
+
 const idAleatorio = () =>
   (crypto.randomUUID && crypto.randomUUID()) ||
   `${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -103,7 +132,7 @@ function mpDispositivo() {
 }
 
 export function mpTrack(evento: string, props?: Record<string, unknown>) {
-  if (typeof window === "undefined" || !MIXPANEL_TOKEN || !consentido()) return;
+  if (typeof window === "undefined" || !MIXPANEL_TOKEN || !podeRastrear()) return;
   const utm: Record<string, string> = {};
   try {
     const q = new URLSearchParams(location.search);
@@ -138,7 +167,7 @@ export function mpTrack(evento: string, props?: Record<string, unknown>) {
 /* Evento genérico da página: Mixpanel + Meta (custom). Consent-gated.
    É o que os cliques de CTA, o FAQ e o formulário chamam. */
 export function track(evento: string, props: Record<string, unknown> = {}) {
-  if (typeof window === "undefined" || !consentido()) return;
+  if (typeof window === "undefined" || !podeRastrear()) return;
   mpTrack(evento, props);
   fbq("trackCustom", evento, props);
 }
@@ -167,7 +196,7 @@ let iniciado = false;
 
 /* Chamado no mount da página (componente <Analytics />). */
 export function initTracking() {
-  if (iniciado || !consentido()) return;   // guarda contra StrictMode/remontagem
+  if (iniciado || !podeRastrear()) return;   // guarda contra StrictMode/remontagem
   iniciado = true;
 
   salvarFbclid();
@@ -193,7 +222,7 @@ export function initTracking() {
    recebe o WhatsApp do formulário e o hasheia antes de enviar à Meta.
    SEM value: o e-commerce não tem preço fixo. Fire-and-forget. */
 export function trackLead(whatsapp?: string) {
-  if (!consentido()) return;
+  if (!podeRastrear()) return;
   const eventId = idAleatorio();
   fbq("track", "Lead", { content_name: "e-commerce" }, { eventID: eventId });
   mpTrack("ecommerce_form_submit", { $insert_id: eventId });

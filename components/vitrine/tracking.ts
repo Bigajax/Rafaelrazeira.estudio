@@ -74,6 +74,43 @@ const consentido = () => {
   try { return localStorage.getItem("cookie_consent") !== "declined"; } catch { return true; }
 };
 
+/* ---------- onde o tracking tem permissão de rodar ----------
+   Sem esta guarda, `npm run dev` e todo deploy de preview mandam PageView,
+   ClickCTA e Lead para o MESMO dataset da campanha: o número que decide se o
+   anúncio está funcionando passa a incluir você mexendo na página.
+
+   Regra: só produção. Em preview e em localhost o tracking fica mudo, e o
+   console avisa, para ninguém achar que quebrou.
+
+   Para testar de propósito (Test Events do Meta, conferir o funil na
+   Mixpanel), abra a página com `?tracking=on`: a permissão vale para a aba
+   toda, e `?tracking=off` desliga. É a mesma chave para os três destinos,
+   então não existe caso de ligar um e esquecer o outro. */
+const PRODUCAO = process.env.NEXT_PUBLIC_VERCEL_ENV
+  ? process.env.NEXT_PUBLIC_VERCEL_ENV === "production"
+  : process.env.NODE_ENV === "production";
+
+let avisou = false;
+function ambientePermitido() {
+  if (typeof window === "undefined") return false;
+  try {
+    const q = new URLSearchParams(location.search).get("tracking");
+    if (q === "on") sessionStorage.setItem("tracking_forcado", "1");
+    if (q === "off") sessionStorage.removeItem("tracking_forcado");
+    if (sessionStorage.getItem("tracking_forcado")) return true;
+  } catch {}
+  const local = /^(localhost|127\.0\.0\.1|\[::1\]|0\.0\.0\.0)$/.test(location.hostname);
+  const ok = PRODUCAO && !local;
+  if (!ok && !avisou) {
+    avisou = true;
+    console.info("[tracking] desligado fora de produção. Para testar nesta aba, adicione ?tracking=on na URL.");
+  }
+  return ok;
+}
+
+/* Portão único dos três destinos: Pixel, Conversions API e Mixpanel */
+const podeRastrear = () => consentido() && ambientePermitido();
+
 const idAleatorio = () =>
   (crypto.randomUUID && crypto.randomUUID()) ||
   `${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -109,7 +146,7 @@ function mpDispositivo() {
 }
 
 export function mpTrack(evento: string, props?: Record<string, unknown>) {
-  if (typeof window === "undefined" || !MIXPANEL_TOKEN || !consentido()) return;
+  if (typeof window === "undefined" || !MIXPANEL_TOKEN || !podeRastrear()) return;
   const utm: Record<string, string> = {};
   try {
     const q = new URLSearchParams(location.search);
@@ -205,7 +242,7 @@ let iniciado = false;
 
 /* Chamado no mount da página (componente <Analytics />). */
 export function initTracking() {
-  if (iniciado || !consentido()) return;   // guarda contra StrictMode/remontagem
+  if (iniciado || !podeRastrear()) return;   // guarda contra StrictMode/remontagem
   iniciado = true;
 
   salvarFbclid();
@@ -281,7 +318,7 @@ export function initTracking() {
    Fire-and-forget e sem preventDefault: nunca bloqueia nem atrasa a abertura
    do WhatsApp. O keepalive do fetch cobre a navegação. */
 export function trackLead({ ctaPosition, plano, nome }: { ctaPosition: string; plano?: string; nome?: string }) {
-  if (!consentido()) return;
+  if (!podeRastrear()) return;
   const eventId = idAleatorio();
   const dados: Record<string, unknown> = { content_name: "vitrine-digital", cta_position: ctaPosition, value: VALOR_OFERTA, currency: "BRL" };
   if (plano) dados.plano = plano;
