@@ -68,7 +68,11 @@ export default async function handler(req, res) {
   /* external_id é a chave de casamento mais forte que sobra num formulário
      sem e-mail e sem telefone. O pixel hasheia sozinho no browser, então o
      servidor precisa hashear o MESMO valor cru para os dois baterem. */
-  if (b.external_id) user_data.external_id = [sha256(String(b.external_id).trim())];
+  /* toLowerCase obrigatório: o browser manda o código da visita já em
+     minúsculas justamente porque não está claro se o pixel normaliza antes de
+     hashear. Os dois lados precisam aplicar a MESMA regra, senão os hashes
+     divergem e a amarração não acontece, sem erro nenhum aparecer. */
+  if (b.external_id) user_data.external_id = [sha256(String(b.external_id).trim().toLowerCase())];
   if (b.fbp) user_data.fbp = String(b.fbp);
   if (b.fbc) user_data.fbc = String(b.fbc);
 

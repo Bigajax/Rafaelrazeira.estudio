@@ -4,9 +4,24 @@ import Image from "next/image";
 import Link from "next/link";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import s from "@/app/vitrine-digital/vitrine.module.css";
-import { initTracking, trackLead } from "@/components/vitrine/tracking";
+import { initTracking, refDaVisita, trackLead } from "@/components/vitrine/tracking";
 
 const whatsapp = "https://wa.me/5544999997219?text=Ol%C3%A1%2C%20Rafael!%20Conheci%20a%20Vitrine%20Digital%20e%20gostaria%20de%20tirar%20d%C3%BAvidas.";
+
+/* A mensagem do WhatsApp leva o código da visita no fim. Quando a venda
+   fechar, esse código vai junto no registro em /api/venda-fechada, e a Meta
+   amarra a compra à visita exata que veio do anúncio.
+   Só depois da montagem: no servidor não existe localStorage, então o
+   primeiro render usa o link puro e o código entra logo em seguida. Sem isso
+   o HTML gerado no build carregaria o código de quem buildou. */
+function useWhatsapp() {
+  const [href, setHref] = useState(whatsapp);
+  useEffect(() => {
+    const ref = refDaVisita();
+    if (ref) setHref(whatsapp + encodeURIComponent(`\n\nRef: ${ref}`));
+  }, []);
+  return href;
+}
 
 export function Analytics() { useEffect(() => { initTracking(); }, []); return null; }
 
@@ -363,6 +378,7 @@ export function Offer() {
   const [avista, setAvista] = useState(false);
   const [status, setStatus] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
+  const waHref = useWhatsapp();
   const plan = avista ? "À vista R$999" : "Entrada de R$500";
   function goToForm() {
     formRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -383,7 +399,12 @@ export function Offer() {
        que este caminho é contratação, e o único que chega na Mixpanel. */
     trackLead({ ctaPosition: "form", plano: plan, nome: String(f.get("nome") || "") });
     setStatus("Tudo certo. Abrindo o WhatsApp para concluir a contratação…");
-    const text = encodeURIComponent(`Olá, Rafael! Quero contratar a Vitrine Digital.\nNome: ${f.get("nome")}\nLoja: ${f.get("loja")}\nInstagram: ${f.get("instagram")}\nPlano: ${plan}`);
+    /* O código da visita fecha a mensagem. Ao registrar a venda em
+       /api/venda-fechada, ele vai no campo `ref` e a Meta amarra a compra à
+       visita que veio do anúncio. Fica na última linha para ser fácil de
+       copiar e para não atrapalhar a leitura do pedido. */
+    const ref = refDaVisita();
+    const text = encodeURIComponent(`Olá, Rafael! Quero contratar a Vitrine Digital.\nNome: ${f.get("nome")}\nLoja: ${f.get("loja")}\nInstagram: ${f.get("instagram")}\nPlano: ${plan}${ref ? `\nRef: ${ref}` : ""}`);
     window.open(`https://wa.me/5544999997219?text=${text}`, "_blank", "noopener");
   }
   return <section className={`${s.section} ${s.offer}`} id="oferta">
@@ -400,7 +421,7 @@ export function Offer() {
           <ul className={s.check}>{offerItems.map(x => <li key={x}>{x}</li>)}</ul>
           <Button onClick={goToForm} cta="oferta_entrada">RESERVAR POR R$500 ↗</Button>
           <p className={s.guarantee}>O saldo de R$499 é pago somente depois que você visualizar e aprovar o projeto.</p>
-          <a className={s.ghost} href={whatsapp} target="_blank" rel="noopener" data-cta="oferta_whats" data-cta-dest="whatsapp">AINDA TENHO DÚVIDAS: FALAR COM RAFAEL</a>
+          <a className={s.ghost} href={waHref} target="_blank" rel="noopener" data-cta="oferta_whats" data-cta-dest="whatsapp">AINDA TENHO DÚVIDAS: FALAR COM RAFAEL</a>
         </article>
         <div className={s.formCol}>
           <ChatStrip label="SUA PRÓXIMA MENSAGEM">
@@ -479,6 +500,7 @@ function useInOffer() {
 
 export function FinalCTA() {
   const inOffer = useInOffer();
+  const waHref = useWhatsapp();
   return <>
     <section id="fim" className={`${s.section} ${s.dark} ${s.final}`}>
       <Eyebrow>AGENDA ABERTA</Eyebrow>
@@ -486,7 +508,7 @@ export function FinalCTA() {
       <p className={s.lead}>Reserve a sua vitrine com R$500, acompanhe o projeto e pague o saldo só depois de aprovar.</p>
       <div className={s.actions}>
         <Button href="#oferta" cta="final">RESERVAR POR R$500 ↗</Button>
-        <a className={s.ghost} href={whatsapp} target="_blank" rel="noopener" data-cta="final_whats" data-cta-dest="whatsapp">FALAR COM RAFAEL</a>
+        <a className={s.ghost} href={waHref} target="_blank" rel="noopener" data-cta="final_whats" data-cta-dest="whatsapp">FALAR COM RAFAEL</a>
       </div>
     </section>
     <footer className={s.footer}>
@@ -494,7 +516,7 @@ export function FinalCTA() {
       <nav><Link href="/estudio/">INÍCIO</Link><Link href="/servicos">SERVIÇOS</Link><Link href="/e-commerce">E-COMMERCE</Link><Link href="/termos">TERMOS</Link><Link href="/privacidade">PRIVACIDADE</Link></nav>
       <small>© 2026 RAFAEL RAZEIRA ESTÚDIO</small>
     </footer>
-    <a className={`${s.pill} ${inOffer ? s.pillHidden : ""}`} href={whatsapp} target="_blank" rel="noopener" data-cta="pill" data-cta-dest="whatsapp">FALAR COM RAFAEL ↗</a>
+    <a className={`${s.pill} ${inOffer ? s.pillHidden : ""}`} href={waHref} target="_blank" rel="noopener" data-cta="pill" data-cta-dest="whatsapp">FALAR COM RAFAEL ↗</a>
   </>;
 }
 

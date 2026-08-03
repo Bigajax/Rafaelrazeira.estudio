@@ -95,10 +95,14 @@ export default async function handler(req, res) {
   if (em) user_data.em = [sha256(em)];
   const fn = normNome(b.nome);
   if (fn) user_data.fn = hashArray(fn);
-  /* ref = o external_id da visita original (o mesmo mp_distinct_id que o
-     Lead mandou). Quando existe, a Meta amarra a venda à sessão exata, e aí
-     você descobre qual criativo traz comprador, não qual traz clique. */
-  if (b.ref) user_data.external_id = [sha256(String(b.ref).trim())];
+  /* ref = o código da visita, que chega na última linha da mensagem do
+     WhatsApp ("Ref: CFK7KLS8"). É o mesmo valor que o Lead mandou como
+     external_id, então a Meta amarra a venda à sessão exata que veio do
+     anúncio, e aí dá para saber qual criativo traz comprador.
+     toLowerCase pela mesma razão do browser: os dois lados aplicam a mesma
+     regra, senão os hashes divergem em silêncio. De quebra, tanto faz se
+     alguém digitar o código em maiúscula ou minúscula. */
+  if (b.ref) user_data.external_id = [sha256(String(b.ref).trim().toLowerCase())];
 
   const payload = {
     data: [{

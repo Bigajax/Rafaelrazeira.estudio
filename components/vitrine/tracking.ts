@@ -131,6 +131,50 @@ function mpDistinctId() {
   } catch { return "anon"; }
 }
 
+/* ---------- código da visita ----------
+   Oito caracteres, e curto de propósito: ele viaja na mensagem do WhatsApp e
+   alguém vai copiar na mão ao registrar a venda em /api/venda-fechada. UUID
+   de 36 caracteres ninguém copia certo.
+
+   É o MESMO valor mandado como external_id no Pixel e na Conversions API. Só
+   por isso a Meta consegue amarrar a venda de quinta à visita de terça, e aí
+   você descobre qual criativo traz comprador em vez de qual traz clique.
+   Se este valor divergir entre os dois lados, nada quebra e nada avisa: a
+   amarração simplesmente não acontece.
+
+   Alfabeto sem I, O, 0 e 1, que são os que se confundem ao ler de um celular.
+   32 símbolos e 8 posições dão 1,1 trilhão de combinações, e 256/32 é exato,
+   então o resto do byte não enviesa o sorteio.
+   Separado do mp_distinct_id: identidade do Mixpanel e chave de casamento da
+   Meta são coisas diferentes, e juntar deixaria uma refém da outra. */
+const ALFABETO = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+function codigoVisita() {
+  try {
+    let c = localStorage.getItem("visita_ref");
+    if (!c) {
+      c = Array.from(crypto.getRandomValues(new Uint8Array(8)))
+        .map(byte => ALFABETO[byte % 32]).join("");
+      localStorage.setItem("visita_ref", c);
+    }
+    return c;
+  } catch { return ""; }
+}
+
+/* Vazio quando o tracking está desligado: sem consentimento não se carimba
+   identificador na mensagem de ninguém. A venda ainda casa pelo telefone. */
+export const refDaVisita = () => (podeRastrear() ? codigoVisita() : "");
+
+/* O que vai para a Meta é SEMPRE em minúsculas, nos dois lados.
+   Motivo: não está documentado com firmeza se o pixel normaliza o external_id
+   antes de hashear. Se ele normalizar e o servidor não, os hashes divergem e a
+   amarração venda-visita não acontece, sem erro nenhum aparecer em lugar
+   nenhum. Mandando já em minúscula, normalizar vira operação nula e os dois
+   caminhos batem nas duas hipóteses.
+   O código continua exibido em maiúsculas na mensagem, que é mais fácil de
+   ler e de copiar de um celular; /api/venda-fechada faz o mesmo toLowerCase
+   antes do hash, então tanto faz como o Rafael digitar. */
+const externalId = () => codigoVisita().toLowerCase();
+
 /* $browser/$os pelo user agent — "Instagram" primeiro: o navegador
    interno do IG é o segmento que mais importa para os anúncios. */
 function mpDispositivo() {
@@ -210,7 +254,7 @@ function enviarCapi(evento: string, eventId: string, extra: CapiExtra = {}) {
       body: JSON.stringify({
         event_name: evento,
         event_id: eventId,
-        external_id: mpDistinctId(),
+        external_id: externalId(),
         fbp: getCookie("_fbp"),
         fbc: getFbc(),
         event_source_url: location.href,
@@ -257,8 +301,9 @@ export function initTracking() {
   carregarPixel();
   /* external_id no init: o pixel passa a mandar essa chave em todo evento do
      browser e hasheia sozinho. É o que segura o casamento de um formulário
-     sem e-mail e sem telefone. */
-  fbq("init", PIXEL_ID, { external_id: mpDistinctId() });
+     sem e-mail e sem telefone, e é o mesmo código que vai na mensagem do
+     WhatsApp, para a venda registrada depois amarrar nesta visita. */
+  fbq("init", PIXEL_ID, { external_id: externalId() });
   fbq("track", "PageView");
   mpTrack("PageView");
 
