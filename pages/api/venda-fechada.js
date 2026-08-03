@@ -16,8 +16,10 @@
    • VENDA_TOKEN             (obrigatória) o segredo desta rota. Invente uma
      string longa e aleatória; não reaproveite senha de outra coisa.
    • META_CAPI_ACCESS_TOKEN  (obrigatória) o mesmo usado por meta-capi.js.
-   • META_TEST_EVENT_CODE    (opcional) manda para o Test Events em vez de
-     valer de verdade. Ótimo para o primeiro teste; tire depois.
+   • META_TEST_EVENT_CODE    (opcional) manda tudo para o Test Events em vez
+     de valer. Para um teste avulso, prefira mandar "test_event_code" no
+     corpo da chamada: não exige mexer na Vercel nem redeploy, e não corre o
+     risco de ficar esquecido ligado depois.
 
    COMO USAR (exemplo):
      curl -X POST https://rafaelrazeira-estudio.vercel.app/api/venda-fechada \
@@ -114,7 +116,14 @@ export default async function handler(req, res) {
       },
     }],
   };
-  if (process.env.META_TEST_EVENT_CODE) payload.test_event_code = process.env.META_TEST_EVENT_CODE;
+  /* Código de teste: aceito no corpo da chamada, não só por variável de
+     ambiente. Sem isso, testar em produção obrigaria a criar uma variável na
+     Vercel e redeployar, e o caminho mais fácil viraria "manda valendo e
+     torce", que é exatamente como se suja um dataset.
+     Com o código, o evento cai na aba Testar eventos e NÃO conta como
+     conversão. */
+  const codigoTeste = b.test_event_code || process.env.META_TEST_EVENT_CODE;
+  if (codigoTeste) payload.test_event_code = String(codigoTeste);
 
   /* daqui para baixo é o envio de verdade: só agora o token faz falta */
   const token = process.env.META_CAPI_ACCESS_TOKEN;
@@ -142,7 +151,9 @@ export default async function handler(req, res) {
           ok: true,
           registrado: { telefone: `••••${ph.slice(-4)}`, valor, moeda: payload.data[0].custom_data.currency, data: diaISO },
           amarrado_a_visita: Boolean(b.ref),
-          teste: Boolean(process.env.META_TEST_EVENT_CODE),
+          /* deixa explícito se valeu ou se foi teste: num processo manual, a
+             pergunta "isso contou?" precisa ter resposta na própria resposta */
+          teste: Boolean(codigoTeste),
           event_id: eventId,
           meta: corpo,
         }
