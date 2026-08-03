@@ -9,6 +9,10 @@
      sem nenhum dado pessoal — liga colando MIXPANEL_TOKEN em js/config.js.
    • Modelo OPT-OUT: a medição roda desde o load para todos; quem desativar
      na Política de Privacidade (cookie_consent = "declined") sai de tudo.
+   • Só produção: em dev e em preview o tracking fica mudo (HOSTS_PRODUCAO).
+     Para testar de propósito, abra a página com `?tracking=on`.
+   • Os nomes que chegam na Mixpanel não são estes: NOME_MP traduz cada um
+     para o que ele significa NESTA página. Ver o mapa mais abaixo.
    Eventos: PageView (load) · ViewContent (bloco da garantia, 1x/sessão)
             · ClickCTA (custom — 1 evento por clique em elementos [data-cta],
               com location/destination; pill vira "sticky_mobile" no mobile)
@@ -24,6 +28,44 @@ const MP_URL        = "https://api.mixpanel.com/track?ip=1"; // residência UE: 
 
 /* Opt-out: rastreia a menos que a pessoa tenha desativado explicitamente */
 const consentido = () => getConsent() !== "declined";
+
+/* ---------- onde o tracking tem permissão de rodar ----------
+   Esta guarda existia em /vitrine-digital e em /e-commerce, e NÃO existia
+   aqui: esta página mandava para o mesmo PIXEL_ID e para o mesmo projeto da
+   Mixpanel rodando em localhost e em qualquer preview da Vercel. Ou seja, cada
+   `npm run dev` entrava na mesma conta de visitantes que decide se o anúncio
+   está funcionando.
+
+   Regra: só produção. Para testar de propósito (Test Events do Meta, conferir
+   o funil na Mixpanel), abra com `?tracking=on`, que vale para a aba toda;
+   `?tracking=off` desliga. É a mesma chave para os três destinos.
+
+   AO TROCAR DE DOMÍNIO, acrescente aqui: senão o tracking some em produção, em
+   silêncio, e o aviso no console é a única pista. */
+const HOSTS_PRODUCAO = [
+  "rafaelrazeira-estudio.vercel.app",
+  "rafaelrazeira.com",       // ainda sem DNS, já deixado pronto
+  "www.rafaelrazeira.com",
+];
+
+let avisou = false;
+function ambientePermitido(){
+  try{
+    const q = new URLSearchParams(location.search).get("tracking");
+    if (q === "on")  sessionStorage.setItem("tracking_forcado", "1");
+    if (q === "off") sessionStorage.removeItem("tracking_forcado");
+    if (sessionStorage.getItem("tracking_forcado")) return true;
+  }catch(e){}
+  const ok = HOSTS_PRODUCAO.includes(location.hostname);
+  if (!ok && !avisou){
+    avisou = true;
+    console.info("[tracking] desligado fora de produção. Para testar nesta aba, adicione ?tracking=on na URL.");
+  }
+  return ok;
+}
+
+/* Portão único dos três destinos: Pixel, Conversions API e Mixpanel */
+const podeRastrear = () => consentido() && ambientePermitido();
 
 function getCookie(nome){
   const m = document.cookie.match(new RegExp("(?:^|; )" + nome + "=([^;]*)"));
@@ -90,8 +132,29 @@ function mpDispositivo(){
 }
 const MP_DISPOSITIVO = mpDispositivo();
 
+/* ---------- vocabulário da Mixpanel ----------
+   Esquerda: o nome que vai para a Meta. Direita: o nome que aparece no painel
+   da Mixpanel. O motivo completo está em components/vitrine/tracking.ts.
+
+   Aqui a tradução é o que conserta a pior colisão do projeto: as três páginas
+   mandam para o MESMO projeto da Mixpanel, e `ViewContent` significa o bloco
+   da garantia nesta página e a seção da oferta na vitrine, enquanto
+   `InitiateCheckout` é o passo 1→2 do formulário aqui e o primeiro toque no
+   formulário lá. Mesmo nome, dois números somados, nenhum aviso. Com nomes
+   próprios, cada página passa a contar o que de fato aconteceu nela.
+
+   AO ACRESCENTAR UM EVENTO, acrescente aqui também: o que não estiver no mapa
+   passa direto com o nome de código. */
+const NOME_MP = {
+  PageView:         "Abriu a página",
+  ViewContent:      "Viu a garantia",
+  ClickCTA:         "Clicou em CTA",
+  InitiateCheckout: "Passou da etapa 1",
+  Lead:             "Enviou o formulário",
+};
+
 function mpTrack(evento, props){
-  if (!MIXPANEL_TOKEN || !consentido()) return;
+  if (!MIXPANEL_TOKEN || !podeRastrear()) return;
   const utm = {};
   try{
     const q = new URLSearchParams(location.search);
@@ -99,14 +162,21 @@ function mpTrack(evento, props){
       .forEach(k => { const v = q.get(k); if (v) utm[k] = v; });
   }catch(e){}
   const corpo = [{
-    event: evento,
+    event: NOME_MP[evento] || evento,
     properties: {
       token: MIXPANEL_TOKEN,
       distinct_id: mpDistinctId(),
-      time: Math.floor(Date.now() / 1000),
+      /* MILISSEGUNDOS, não segundos: com segundos, dois eventos no mesmo tique
+         empatam e a Mixpanel não sabe ordenar, o que quebra o funil de quem
+         entra e sai rápido. Ver o comentário longo em vitrine/tracking.ts. */
+      time: Date.now(),
       $insert_id: (props && props.$insert_id) || idAleatorio(),
       $current_url: location.href,
       $referrer: document.referrer || "",
+      /* Esta página era a única sem `page`, e sem ele não dava para separar o
+         funil dela do da vitrine nem do e-commerce: virava um resto anônimo
+         que só se identificava pela AUSÊNCIA da propriedade. */
+      page: "estudio",
       ...MP_DISPOSITIVO,
       ...utm,
       ...props,
@@ -168,7 +238,7 @@ function observarCliquesCTA(){
 
 /* Chamado pelo main.js após o aceite (ou no load, se já aceito antes) */
 export function initTracking(){
-  if (!consentido()) return;
+  if (!podeRastrear()) return;
   salvarFbclid();
   carregarPixel();
   window.fbq("init", PIXEL_ID);
@@ -181,7 +251,7 @@ export function initTracking(){
 /* InitiateCheckout — sinal intermediário: visitante avançou do passo 1
    para o passo 2 do formulário. Só browser; Lead continua sendo a conversão. */
 export function trackInitiateCheckout(){
-  if (!consentido()) return;
+  if (!podeRastrear()) return;
   window.fbq && window.fbq("track", "InitiateCheckout");
   mpTrack("InitiateCheckout");
 }
@@ -190,7 +260,7 @@ export function trackInitiateCheckout(){
    tipo_projeto vai como custom property no Lead (segmentação no Meta).
    Fire-and-forget — falha de tracking nunca bloqueia o formulário. */
 export function trackLead(eventId, dados){
-  if (!consentido()) return;
+  if (!podeRastrear()) return;
   const props = dados.tipo_projeto ? { tipo_projeto: dados.tipo_projeto } : {};
   window.fbq && window.fbq("track", "Lead", props, { eventID: eventId });
   mpTrack("Lead", { $insert_id: eventId, ...props });   // mesmo id do Meta p/ cruzar os números

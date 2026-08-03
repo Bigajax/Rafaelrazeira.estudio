@@ -56,9 +56,35 @@ if (!r.ok) {
   process.exit(1);
 }
 
+/* Em 03/08 os eventos ganharam nome em português (o mapa NOME_MP em
+   components/vitrine/tracking.ts). Quem já estava gravado continua com o nome
+   antigo para sempre, então qualquer período que atravesse essa data viria
+   partido em dois: "PageView" até dia 3 e "Abriu a página" daí em diante, cada
+   um com metade das pessoas. Traduzir na leitura junta as duas eras numa série
+   só. Pode sair daqui quando não houver mais interesse em ler agosto de 2026. */
+const NOME_NOVO = {
+  PageView: "Abriu a página",
+  Scroll: "Rolou",
+  ViewContent: "Viu a oferta",
+  ClickCTA: "Clicou em CTA",
+  InitiateCheckout: "Tocou no formulário",
+  Lead: "Enviou o formulário",
+  Saida: "Saiu da página",
+};
+
+/* O `time` passou de segundos para milissegundos na mesma data, e a exportação
+   devolve o que foi gravado. Sem normalizar, o "tempo na página" calculado por
+   diferença de timestamps daria valores mil vezes maiores para os eventos
+   novos. O corte em 1e12 é seguro: em segundos isso seria o ano 33.658. */
+const emSegundos = (t) => (t > 1e12 ? Math.round(t / 1000) : t);
+
 /* A API devolve JSON por linha, não um array: um evento por linha */
 const linhas = (await r.text()).trim().split("\n").filter(Boolean);
 const eventos = linhas.map((l) => JSON.parse(l)).filter((e) => e.properties.page === "vitrine-digital");
+for (const e of eventos) {
+  e.event = NOME_NOVO[e.event] || e.event;
+  e.properties.time = emSegundos(e.properties.time);
+}
 console.log(`${linhas.length} eventos no projeto, ${eventos.length} da vitrine-digital\n`);
 if (!eventos.length) process.exit(0);
 
@@ -93,19 +119,25 @@ if (!reais.length) { console.log("\nNenhum visitante real no período."); proces
 
 const tem = (v, ev) => v.eventos.some((x) => x.ev === ev);
 console.log(`\n=== funil dos ${reais.length} visitantes reais ===`);
-for (const ev of ["PageView", "Scroll", "ViewContent", "ClickCTA", "InitiateCheckout", "Lead"]) {
+for (const ev of ["Abriu a página", "Rolou", "Viu a oferta", "Clicou em CTA", "Tocou no formulário", "Enviou o formulário"]) {
   const n = reais.filter((v) => tem(v, ev)).length;
   const pct = ((n / reais.length) * 100).toFixed(0);
-  console.log(`  ${ev.padEnd(18)} ${String(n).padStart(3)}  ${pct.padStart(3)}%  ${"█".repeat(Math.round(n / reais.length * 34))}`);
+  console.log(`  ${ev.padEnd(21)} ${String(n).padStart(3)}  ${pct.padStart(3)}%  ${"█".repeat(Math.round(n / reais.length * 34))}`);
 }
 
 /* O que a instrumentação de leitura passou a responder: onde a pessoa parou */
 console.log("\n=== até onde rolaram ===");
 const faixas = { "não rolou": 0, "25%": 0, "50%": 0, "75%": 0, "100%": 0 };
 for (const v of reais) {
-  const saida = v.eventos.filter((x) => x.ev === "Saida").pop();
-  const porScroll = Math.max(0, ...v.eventos.filter((x) => x.ev === "Scroll").map((x) => Number(x.props.profundidade) || 0));
-  const max = saida ? Number(saida.props.profundidade_max) || porScroll : porScroll;
+  /* O MAIOR dos dois, e não o `Saida` mandando sozinho. O `Saida` dispara em
+     `visibilitychange`, ou seja, também quando a pessoa troca de app e VOLTA:
+     ele carimba a profundidade daquele instante e a leitura continua depois
+     dele. Quem fazia isso era contado pelo que tinha lido até a interrupção.
+     Na amostra de 03/08 eram 2 de 32, e um deles tinha lido a página inteira e
+     entrava na faixa de 25%. */
+  const porSaida = Math.max(0, ...v.eventos.filter((x) => x.ev === "Saiu da página").map((x) => Number(x.props.profundidade_max) || 0));
+  const porScroll = Math.max(0, ...v.eventos.filter((x) => x.ev === "Rolou").map((x) => Number(x.props.profundidade) || 0));
+  const max = Math.max(porSaida, porScroll);
   faixas[max >= 100 ? "100%" : max >= 75 ? "75%" : max >= 50 ? "50%" : max >= 25 ? "25%" : "não rolou"]++;
 }
 for (const [k, n] of Object.entries(faixas)) {
@@ -124,7 +156,7 @@ for (const v of reais) {
   const f = v.p.utm_source || "(sem utm)";
   porFonte[f] = porFonte[f] || { n: 0, interagiu: 0 };
   porFonte[f].n++;
-  if (v.eventos.some((x) => x.ev !== "PageView")) porFonte[f].interagiu++;
+  if (v.eventos.some((x) => x.ev !== "Abriu a página")) porFonte[f].interagiu++;
 }
 for (const [f, d] of Object.entries(porFonte).sort((a, b) => b[1].n - a[1].n)) {
   const rotulo = NOME_FONTE[f] || f;
@@ -132,13 +164,15 @@ for (const [f, d] of Object.entries(porFonte).sort((a, b) => b[1].n - a[1].n)) {
 }
 
 const tempos = reais.map((v) => {
-  const s = v.eventos.filter((x) => x.ev === "Saida").pop();
-  if (s) return Number(s.props.segundos) || 0;
+  /* Mesmo motivo do bloco acima: quem sai, volta e continua lendo tem vários
+     `Saida`, e o que interessa é o mais longo, não o último a ser gravado. */
+  const porSaida = Math.max(0, ...v.eventos.filter((x) => x.ev === "Saiu da página").map((x) => Number(x.props.segundos) || 0));
+  if (porSaida) return porSaida;
   const t = v.eventos.map((x) => x.t);
   return Math.max(...t) - Math.min(...t);
 }).sort((a, b) => a - b);
 const mediana = tempos[Math.floor(tempos.length / 2)];
 console.log(`\n  tempo na página: mediana ${mediana}s | mais longo ${tempos[tempos.length - 1]}s`);
-console.log(`  chegaram ao formulário: ${reais.filter((v) => tem(v, "InitiateCheckout")).length}`);
+console.log(`  chegaram ao formulário: ${reais.filter((v) => tem(v, "Tocou no formulário")).length}`);
 console.log(`  precisaram reabrir o WhatsApp: ${reais.filter((v) => v.eventos.some((x) => x.props.location === "reabrir_whats")).length}`);
 console.log(`\n  eventos crus salvos em ${path.basename(bruto)}`);

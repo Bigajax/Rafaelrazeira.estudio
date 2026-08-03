@@ -197,6 +197,35 @@ function mpDispositivo() {
   return { $browser: browser, $os: os };
 }
 
+/* ---------- vocabulário da Mixpanel ----------
+   Esquerda: o nome que vai para a Meta. Direita: o nome que aparece no painel
+   da Mixpanel. Existem separados por dois motivos.
+
+   O primeiro é que `ViewContent` e `InitiateCheckout` são nomes do catálogo da
+   Meta, e lá eles são fixos: renomear na origem desliga a otimização da
+   campanha. Mas eles não descrevem nada. Quem abre a Mixpanel daqui a três
+   meses lê "InitiateCheckout: 2" e entende que duas pessoas começaram uma
+   compra, quando duas pessoas tocaram num campo de formulário.
+
+   O segundo é que o MESMO nome já significa coisas diferentes conforme a
+   página, e as três mandam para o mesmo projeto: `ViewContent` aqui é a seção
+   da oferta, e em js/lib/tracking.js é o bloco da garantia. Traduzindo na
+   saída, cada página nomeia o que de fato aconteceu nela e o funil deixa de
+   depender de alguém lembrar de filtrar por `page`.
+
+   AO ACRESCENTAR UM EVENTO, acrescente aqui também: o que não estiver no mapa
+   passa direto com o nome de código, e aí volta a aparecer em inglês no meio
+   dos outros. */
+const NOME_MP: Record<string, string> = {
+  PageView:         "Abriu a página",
+  Scroll:           "Rolou",
+  ViewContent:      "Viu a oferta",
+  ClickCTA:         "Clicou em CTA",
+  InitiateCheckout: "Tocou no formulário",
+  Lead:             "Enviou o formulário",
+  Saida:            "Saiu da página",
+};
+
 export function mpTrack(evento: string, props?: Record<string, unknown>) {
   if (typeof window === "undefined" || !MIXPANEL_TOKEN || !podeRastrear()) return;
   const utm: Record<string, string> = {};
@@ -206,11 +235,19 @@ export function mpTrack(evento: string, props?: Record<string, unknown>) {
       .forEach(k => { const v = q.get(k); if (v) utm[k] = v; });
   } catch {}
   const corpo = [{
-    event: evento,
+    event: NOME_MP[evento] || evento,
     properties: {
       token: MIXPANEL_TOKEN,
       distinct_id: mpDistinctId(),
-      time: Math.floor(Date.now() / 1000),
+      /* MILISSEGUNDOS, não segundos. Com segundos, quem abria e fechava dentro
+         do mesmo tique gerava PageView e Saida com o MESMO `time`, e a Mixpanel
+         não tinha como saber qual veio primeiro: numa amostra de 32 pessoas,
+         12 tinham eventos empatados e 4 apareciam com a saída ANTES da entrada.
+         Funil que começa em PageView descarta essa gente. É o comportamento
+         típico de quem vem do Audience Network, ou seja, justamente a fatia que
+         mais precisa ser medida. A API do /track aceita as duas unidades e
+         distingue pela ordem de grandeza. */
+      time: Date.now(),
       $insert_id: (props && (props.$insert_id as string)) || idAleatorio(),
       $current_url: location.href,
       $referrer: document.referrer || "",

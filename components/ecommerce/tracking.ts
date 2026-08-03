@@ -133,6 +133,36 @@ function mpDispositivo() {
   return { $browser: browser, $os: os };
 }
 
+/* ---------- vocabulário da Mixpanel ----------
+   Esquerda: o nome que vai para a Meta. Direita: o nome que aparece no painel
+   da Mixpanel. O motivo completo está em components/vitrine/tracking.ts; aqui
+   pesa mais o segundo: esta página fala `ecommerce_hero_cta` e a vitrine fala
+   `ClickCTA` para a mesma ação, então no painel a mesma pergunta ("quanta gente
+   clicou em algum CTA?") tinha duas respostas com nomes diferentes.
+
+   `ecommerce_hero_cta` e `ecommerce_secondary_cta` caem os DOIS em "Clicou em
+   CTA" de propósito: a distinção primário/secundário já vive na propriedade
+   `origem`, e como dois eventos separados ela só atrapalhava a contagem.
+
+   Do lado da Meta nada muda: os nomes de custom event continuam os mesmos e o
+   histórico de lá fica inteiro.
+
+   AO ACRESCENTAR UM EVENTO, acrescente aqui também: o que não estiver no mapa
+   passa direto com o nome de código. */
+const NOME_MP: Record<string, string> = {
+  PageView:                           "Abriu a página",
+  ecommerce_hero_cta:                 "Clicou em CTA",
+  ecommerce_secondary_cta:            "Clicou em CTA",
+  ecommerce_admin_section_view:       "Viu o painel",
+  ecommerce_integration_section_view: "Viu as integrações",
+  ecommerce_case_view:                "Viu o case",
+  ecommerce_faq_open:                 "Abriu uma dúvida",
+  ecommerce_form_start:               "Tocou no formulário",
+  ecommerce_form_step_complete:       "Passou da etapa 1",
+  ecommerce_whatsapp_click:           "Abriu o WhatsApp",
+  Lead:                               "Enviou o formulário",
+};
+
 export function mpTrack(evento: string, props?: Record<string, unknown>) {
   if (typeof window === "undefined" || !MIXPANEL_TOKEN || !podeRastrear()) return;
   const utm: Record<string, string> = {};
@@ -142,11 +172,14 @@ export function mpTrack(evento: string, props?: Record<string, unknown>) {
       .forEach(k => { const v = q.get(k); if (v) utm[k] = v; });
   } catch {}
   const corpo = [{
-    event: evento,
+    event: NOME_MP[evento] || evento,
     properties: {
       token: MIXPANEL_TOKEN,
       distinct_id: mpDistinctId(),
-      time: Math.floor(Date.now() / 1000),
+      /* MILISSEGUNDOS, não segundos: com segundos, dois eventos no mesmo tique
+         empatam e a Mixpanel não sabe ordenar, o que quebra o funil de quem
+         entra e sai rápido. Ver o comentário longo em vitrine/tracking.ts. */
+      time: Date.now(),
       $insert_id: (props && (props.$insert_id as string)) || idAleatorio(),
       $current_url: location.href,
       $referrer: document.referrer || "",
@@ -227,7 +260,9 @@ export function trackLead(whatsapp?: string) {
   if (!podeRastrear()) return;
   const eventId = idAleatorio();
   fbq("track", "Lead", { content_name: "e-commerce" }, { eventID: eventId });
-  mpTrack("ecommerce_form_submit", { $insert_id: eventId });
+  /* Um evento só. O `ecommerce_form_submit` que existia aqui disparava na
+     linha de cima do `Lead`, com o mesmo id e o mesmo significado: contava a
+     mesma pessoa duas vezes em qualquer soma que juntasse os dois. */
   mpTrack("Lead", { $insert_id: eventId, content_name: "e-commerce" });
   try {
     fetch(CAPI_ENDPOINT, {
