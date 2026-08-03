@@ -1,0 +1,97 @@
+/* ============================================================
+   Ferramenta interna: registrar venda fechada.
+   Mesma identidade do estúdio (Archivo, Inter, Space Mono, esmeralda),
+   mas utilitária: isto é usado em pé, no celular, logo depois de fechar
+   uma venda no WhatsApp. Alvo de toque grande e leitura imediata valem
+   mais que sofisticação.
+   ============================================================ */
+.tela {
+  --green: #10b981;
+  --pale: #c9f7df;
+  --black: #090909;
+  --night: #0b1411;
+  --off: #f5f5f0;
+  --ink: #494949;
+  --line: #dcdcd4;
+  --red: #c2410c;
+  --display: var(--font-display), Arial, sans-serif;
+  --body: var(--font-body), Arial, sans-serif;
+  --mono: var(--font-mono), monospace;
+  min-height: 100dvh;
+  background: var(--off);
+  color: var(--black);
+  font-family: var(--body);
+  padding: 28px 20px calc(48px + env(safe-area-inset-bottom));
+}
+.tela * { box-sizing: border-box }
+.tela :focus-visible { outline: 2px solid var(--green); outline-offset: 3px }
+
+.wrap { max-width: 460px; margin: 0 auto }
+
+.marca { font: 700 10px var(--mono); letter-spacing: .14em; color: var(--ink) }
+.titulo {
+  font-family: var(--display); font-stretch: 118%; font-weight: 800;
+  font-size: 34px; line-height: .96; letter-spacing: -.02em;
+  margin: 10px 0 0;
+}
+.sub { font: 12px/1.6 var(--mono); color: var(--ink); margin-top: 10px }
+
+.form { display: grid; gap: 18px; margin-top: 28px }
+.campo { display: grid; gap: 7px }
+.campo label { font: 700 10px var(--mono); letter-spacing: .12em }
+.campo input {
+  /* 16px é o mínimo que não faz o iOS dar zoom ao focar o campo */
+  font: 16px var(--body); color: var(--black);
+  background: #fff; border: 1px solid var(--line); border-radius: 0;
+  padding: 15px 14px; width: 100%; min-height: 52px;
+}
+.campo input:focus { border-color: var(--black) }
+.dica { font: 11px/1.5 var(--mono); color: var(--ink) }
+
+.dupla { display: grid; grid-template-columns: 1fr 1fr; gap: 14px }
+
+/* Modo teste: some por padrão. O caminho comum é registrar valendo, e um
+   modo de teste ligado por engano faria a venda real não contar em silêncio,
+   que é o pior erro possível nesta tela. */
+.modo {
+  display: flex; align-items: center; gap: 10px;
+  font: 700 11px var(--mono); letter-spacing: .06em;
+  padding: 14px 0; border-top: 1px solid var(--line); margin-top: 4px;
+}
+.modo input { width: 20px; height: 20px; accent-color: var(--green) }
+
+.botao {
+  display: inline-flex; justify-content: center; align-items: center;
+  width: 100%; min-height: 56px; margin-top: 6px;
+  background: var(--green); color: var(--black); border: 0; cursor: pointer;
+  font: 700 14px var(--mono); letter-spacing: .06em;
+}
+.botao:disabled { opacity: .5; cursor: default }
+.botaoTeste { background: var(--night); color: #fff }
+
+/* Bloco da senha: separado do resto por uma linha, porque não é dado da
+   venda, é credencial da ferramenta. */
+.acesso { margin-top: 30px; padding-top: 22px; border-top: 1px solid var(--line) }
+.lembrar { display: flex; align-items: center; gap: 10px; font: 11px var(--mono); color: var(--ink); margin-top: 12px }
+.lembrar input { width: 18px; height: 18px; accent-color: var(--green) }
+
+/* Resultado: precisa responder "contou ou não" sem ninguém interpretar JSON */
+.resultado { margin-top: 26px; padding: 20px; border: 1px solid var(--line); background: #fff }
+.ok { border-color: var(--green); background: var(--pale) }
+.falha { border-color: var(--red); background: #fff3ee }
+.resultado h2 {
+  font-family: var(--display); font-stretch: 118%; font-weight: 800;
+  font-size: 22px; line-height: 1.05; letter-spacing: -.02em; margin: 0;
+}
+.resultado p { font: 13px/1.6 var(--body); color: var(--black); margin: 10px 0 0 }
+.linhas { list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 7px }
+.linhas li { display: flex; justify-content: space-between; gap: 14px; font: 11px var(--mono); color: var(--ink) }
+.linhas b { color: var(--black); font-weight: 700; text-align: right }
+.selo { display: inline-block; font: 700 10px var(--mono); letter-spacing: .1em; padding: 6px 9px; margin-bottom: 12px }
+.seloValendo { background: var(--black); color: #fff }
+.seloTeste { background: var(--night); color: var(--pale) }
+
+@media (max-width: 380px) {
+  .titulo { font-size: 29px }
+  .dupla { grid-template-columns: 1fr }
+}
