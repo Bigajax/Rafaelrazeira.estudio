@@ -188,6 +188,8 @@ function conversao(evento: string, dadosPixel: Record<string, unknown>, extraCap
    site de um cliente. Só `final_falar` foge do vocabulário do brief, que não
    tinha slot para o "FALAR COM RAFAEL" do CTA final (o `flutuante` é a
    pílula, e `duvidas` é o "AINDA TENHO DÚVIDAS" do card de preço). */
+/* o único caminho que é contratação de verdade, e não intenção */
+const POSICAO_FORMULARIO = "form";
 const POSICAO_LEAD: Record<string, string> = {
   hero: "hero",
   como_funciona: "steps",
@@ -284,7 +286,14 @@ export function trackLead({ ctaPosition, plano, nome }: { ctaPosition: string; p
   const dados: Record<string, unknown> = { content_name: "vitrine-digital", cta_position: ctaPosition, value: VALOR_OFERTA, currency: "BRL" };
   if (plano) dados.plano = plano;
   fbq("track", "Lead", dados, { eventID: eventId });
-  mpTrack("Lead", { $insert_id: eventId, cta_position: ctaPosition, plano });   // mesmo id do Meta p/ cruzar os números
+  /* A Mixpanel só recebe o Lead do formulário. Os disparos de clique existem
+     para dar densidade de sinal à campanha da Meta; na Mixpanel eles quebravam
+     o funil, porque o Lead passava a acontecer ANTES do ViewContent e do
+     InitiateCheckout e uma sessão só gerava três Leads. Lá o clique já é
+     contado por ClickCTA com `location`, então o Lead extra não acrescentava
+     nada: era só ruído. Aqui Lead continua significando formulário enviado.
+     Mesmo id do Meta, para cruzar os números dos dois painéis. */
+  if (ctaPosition === POSICAO_FORMULARIO) mpTrack("Lead", { $insert_id: eventId, cta_position: ctaPosition, plano });
   enviarCapi("Lead", eventId, {
     first_name: nome || "",
     content_name: "vitrine-digital",

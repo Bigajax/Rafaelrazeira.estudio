@@ -379,6 +379,8 @@ export function Offer() {
        O botão CONTINUAR NO WHATSAPP não tem data-cta de propósito: quem
        dispara o Lead deste caminho é este submit, e não o ouvinte de cliques,
        senão o mesmo envio contaria duas vezes. */
+    /* "form" não é um rótulo qualquer: é o valor que o tracking usa para saber
+       que este caminho é contratação, e o único que chega na Mixpanel. */
     trackLead({ ctaPosition: "form", plano: plan, nome: String(f.get("nome") || "") });
     setStatus("Tudo certo. Abrindo o WhatsApp para concluir a contratação…");
     const text = encodeURIComponent(`Olá, Rafael! Quero contratar a Vitrine Digital.\nNome: ${f.get("nome")}\nLoja: ${f.get("loja")}\nInstagram: ${f.get("instagram")}\nPlano: ${plan}`);
