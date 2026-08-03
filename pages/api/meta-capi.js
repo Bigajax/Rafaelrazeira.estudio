@@ -16,27 +16,21 @@
    Local: esta rota só roda na Vercel (ou `vercel dev`); com `npm run dev`
    (serve estático) a chamada falha em silêncio, por design fire-and-forget.
    ============================================================ */
-import crypto from "crypto";
+/* Normalização e hash em lib/meta-hash.js: a rota da venda fechada usa as
+   MESMAS funções, senão o telefone daqui e o de lá viram hashes diferentes e
+   a Meta não amarra a venda na visita. */
+import { sha256, normEmail, normPhone, normNome } from "@/lib/meta-hash";
 
 const PIXEL_ID = "2445872572575348"; // ⬅ mesmo ID de js/lib/tracking.js
 const GRAPH_URL = `https://graph.facebook.com/v21.0/${PIXEL_ID}/events`;
 
-const sha256 = (v) => crypto.createHash("sha256").update(v).digest("hex");
-
 /* Só estes eventos passam. Sem a lista, um erro de digitação no client
    cria um evento novo no dataset em vez de falhar, e o estrago só
-   aparece semanas depois no Events Manager. */
+   aparece semanas depois no Events Manager.
+   Purchase NÃO entra aqui de propósito: esta rota é pública, e faturamento
+   falso injetado por qualquer um destruiria a otimização da campanha. Ele
+   vive em /api/venda-fechada, atrás de um segredo. */
 const EVENTOS = new Set(["Lead", "Contact", "ViewContent", "InitiateCheckout", "PageView"]);
-
-/* Normalizações exigidas pela Meta antes do hash */
-const normEmail = (e) => String(e || "").trim().toLowerCase();
-function normPhone(p){
-  let d = String(p || "").replace(/\D/g, "").replace(/^0+/, "");
-  if (d && !d.startsWith("55")) d = "55" + d;   // E.164 com DDI Brasil
-  return d;
-}
-/* Nome: a Meta casa por primeiro nome, em minúsculas e sem pontuação */
-const normNome = (n) => String(n || "").trim().toLowerCase().replace(/[^\p{L}\s]/gu, "").split(/\s+/)[0] || "";
 
 export default async function handler(req, res) {
   if (req.method !== "POST"){
