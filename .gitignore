@@ -10,3 +10,10 @@ three.js/
 
 # Claude Code local settings (contains secrets)
 .claude/settings.local.json
+
+# Variáveis de ambiente locais: VENDA_TOKEN e META_CAPI_ACCESS_TOKEN vivem
+# aqui para rodar as rotas em localhost. NUNCA versionar.
+# .env.example fica de fora do ignore de propósito: serve de modelo, sem valor.
+.env
+.env.local
+.env*.local

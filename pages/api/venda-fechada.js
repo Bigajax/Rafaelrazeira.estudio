@@ -58,9 +58,9 @@ export default async function handler(req, res) {
   if (!segredo) return erro(res, 500, "VENDA_TOKEN não configurado no servidor");
   if (!segredoConfere(req.headers["x-venda-token"], segredo)) return erro(res, 401, "segredo inválido");
 
-  const token = process.env.META_CAPI_ACCESS_TOKEN;
-  if (!token) return erro(res, 500, "META_CAPI_ACCESS_TOKEN ausente");
-
+  /* A validação vem ANTES da checagem do token da Meta de propósito: assim dá
+     para conferir telefone, valor e data em localhost sem precisar do token de
+     produção. O token só é exigido na hora de realmente enviar. */
   const b = req.body || {};
 
   /* telefone: é a chave que amarra a venda na pessoa. Sem ele a Meta não tem
@@ -115,6 +115,15 @@ export default async function handler(req, res) {
     }],
   };
   if (process.env.META_TEST_EVENT_CODE) payload.test_event_code = process.env.META_TEST_EVENT_CODE;
+
+  /* daqui para baixo é o envio de verdade: só agora o token faz falta */
+  const token = process.env.META_CAPI_ACCESS_TOKEN;
+  if (!token) {
+    return erro(res, 500, "META_CAPI_ACCESS_TOKEN ausente", {
+      validacao: "passou",
+      teria_enviado: { telefone: `••••${ph.slice(-4)}`, valor, data: diaISO, event_id: eventId },
+    });
+  }
 
   try {
     const r = await fetch(`${GRAPH_URL}?access_token=${encodeURIComponent(token)}`, {
