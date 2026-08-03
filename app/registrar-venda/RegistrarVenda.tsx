@@ -27,6 +27,12 @@ type Resposta = {
 
 const hoje = () => new Date().toISOString().slice(0, 10);
 
+const reais = (v?: number, moeda = "BRL") => {
+  if (typeof v !== "number") return "-";
+  try { return new Intl.NumberFormat("pt-BR", { style: "currency", currency: moeda }).format(v); }
+  catch { return `${moeda} ${v}`; }
+};
+
 export default function RegistrarVenda() {
   const [senha, setSenha] = useState("");
   const [lembrar, setLembrar] = useState(true);
@@ -176,7 +182,8 @@ function Resultado({ r }: { r: Resposta }) {
       </p>
       <ul className={s.linhas}>
         <li><span>telefone</span><b>{r.registrado?.telefone}</b></li>
-        <li><span>valor</span><b>{r.registrado?.moeda} {r.registrado?.valor}</b></li>
+        {/* confirmação de dinheiro se lê em real, não em "BRL 1499" */}
+        <li><span>valor</span><b>{reais(r.registrado?.valor, r.registrado?.moeda)}</b></li>
         <li><span>data</span><b>{r.registrado?.data}</b></li>
         <li><span>amarrado ao anúncio</span><b>{r.amarrado_a_visita ? "sim" : "não, só pelo telefone"}</b></li>
       </ul>
