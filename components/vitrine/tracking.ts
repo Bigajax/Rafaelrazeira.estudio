@@ -85,10 +85,19 @@ const consentido = () => {
    Para testar de propósito (Test Events do Meta, conferir o funil na
    Mixpanel), abra a página com `?tracking=on`: a permissão vale para a aba
    toda, e `?tracking=off` desliga. É a mesma chave para os três destinos,
-   então não existe caso de ligar um e esquecer o outro. */
-const PRODUCAO = process.env.NEXT_PUBLIC_VERCEL_ENV
-  ? process.env.NEXT_PUBLIC_VERCEL_ENV === "production"
-  : process.env.NODE_ENV === "production";
+   então não existe caso de ligar um e esquecer o outro.
+
+   Lista de hosts em vez de variável de ambiente: ler
+   `process.env.NEXT_PUBLIC_VERCEL_ENV` no escopo do módulo quebra o prerender
+   do build (o macro de env do Next explode em __NEXT_PRIVATE_MINIMIZE_MACRO).
+   Cada preview da Vercel tem subdomínio próprio, então cai fora sozinho.
+   AO TROCAR DE DOMÍNIO, acrescente aqui: senão o tracking some em produção,
+   em silêncio. O aviso no console é a única pista. */
+const HOSTS_PRODUCAO = [
+  "rafaelrazeira-estudio.vercel.app",
+  "rafaelrazeira.com",       // ainda sem DNS, já deixado pronto
+  "www.rafaelrazeira.com",
+];
 
 let avisou = false;
 function ambientePermitido() {
@@ -99,8 +108,7 @@ function ambientePermitido() {
     if (q === "off") sessionStorage.removeItem("tracking_forcado");
     if (sessionStorage.getItem("tracking_forcado")) return true;
   } catch {}
-  const local = /^(localhost|127\.0\.0\.1|\[::1\]|0\.0\.0\.0)$/.test(location.hostname);
-  const ok = PRODUCAO && !local;
+  const ok = HOSTS_PRODUCAO.includes(location.hostname);
   if (!ok && !avisou) {
     avisou = true;
     console.info("[tracking] desligado fora de produção. Para testar nesta aba, adicione ?tracking=on na URL.");

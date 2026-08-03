@@ -73,10 +73,13 @@ const consentido = () => {
 /* Mesma guarda da vitrine, e pelo mesmo motivo: esta página usa o MESMO
    PIXEL_ID, então rodar ela em dev ou em preview suja o dataset da campanha.
    Só produção; `?tracking=on` libera a aba para testar de propósito.
-   Ver o comentário longo em components/vitrine/tracking.ts. */
-const PRODUCAO = process.env.NEXT_PUBLIC_VERCEL_ENV
-  ? process.env.NEXT_PUBLIC_VERCEL_ENV === "production"
-  : process.env.NODE_ENV === "production";
+   Ver o comentário longo em components/vitrine/tracking.ts, inclusive o
+   motivo de a lista ser de hosts e não de variável de ambiente. */
+const HOSTS_PRODUCAO = [
+  "rafaelrazeira-estudio.vercel.app",
+  "rafaelrazeira.com",
+  "www.rafaelrazeira.com",
+];
 
 let avisou = false;
 function ambientePermitido() {
@@ -87,8 +90,7 @@ function ambientePermitido() {
     if (q === "off") sessionStorage.removeItem("tracking_forcado");
     if (sessionStorage.getItem("tracking_forcado")) return true;
   } catch {}
-  const local = /^(localhost|127\.0\.0\.1|\[::1\]|0\.0\.0\.0)$/.test(location.hostname);
-  const ok = PRODUCAO && !local;
+  const ok = HOSTS_PRODUCAO.includes(location.hostname);
   if (!ok && !avisou) {
     avisou = true;
     console.info("[tracking] desligado fora de produção. Para testar nesta aba, adicione ?tracking=on na URL.");
