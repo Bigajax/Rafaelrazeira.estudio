@@ -26,6 +26,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&family=Cormorant+Garamond:wght@500;600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
+<!-- Checkout do saldo final (modal Pix). O valor vive na tabela do
+     servidor, em pages/api/proposta-pagamento.js -> "pr-grife". -->
+<link rel="stylesheet" href="/css/proposta-checkout.css" />
+<script src="/js/proposta-checkout.js" defer></script>
+
 <style>
 :root{
   --emerald:#10B981;
@@ -126,6 +131,40 @@ a{color:inherit;text-decoration:none}
 .num span{font-family:var(--font-mono);font-size:clamp(10px,2.6vw,12px);text-transform:uppercase;
        letter-spacing:.06em;color:var(--ink-40);display:block;margin-top:8px}
 
+/* Quitação: o saldo final, pago no Pix aqui mesmo.
+   Único bloco escuro do documento — é o momento de decisão da página. */
+.q-card{
+  margin-top:clamp(22px,4vw,30px);border-radius:20px;
+  background:var(--black);color:var(--off-white);
+  padding:clamp(24px,5vw,38px);display:grid;gap:clamp(24px,4vw,30px);
+}
+@media(min-width:820px){
+  .q-card{grid-template-columns:1fr auto;align-items:center;gap:clamp(36px,5vw,60px)}
+}
+.q-tag{display:block;font-family:var(--font-mono);font-size:12px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--emerald)}
+.q-valor{display:flex;align-items:baseline;gap:.06em;margin-top:14px;
+  font-family:var(--font-display);font-weight:900;letter-spacing:-.045em;
+  font-size:clamp(3.1rem,13vw,5rem);line-height:.88}
+.q-valor span{font-size:.4em;letter-spacing:-.02em;color:rgba(250,250,247,.45)}
+.q-desc{margin-top:16px;font-size:clamp(.95rem,3.7vw,1.05rem);line-height:1.55;
+  color:rgba(250,250,247,.66);max-width:46ch}
+.q-acao{width:100%;min-width:min(100%,290px)}
+.q-btn{display:block;width:100%;border:0;cursor:pointer;border-radius:999px;
+  background:var(--emerald);color:#04231A;
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(1rem,4vw,1.15rem);letter-spacing:-.01em;padding:19px 34px;
+  transition:background .18s ease,transform .18s ease}
+.q-btn:hover{background:#0EA271;transform:translateY(-1px)}
+.q-btn:active{transform:translateY(0)}
+/* O foco global é esmeralda: sobre o botão esmeralda ele sumiria. */
+.q-card :focus-visible{outline-color:var(--off-white)}
+@media(prefers-reduced-motion:reduce){
+  .q-btn{transition:none}.q-btn:hover{transform:none}
+}
+.q-nota{margin-top:12px;text-align:center;font-family:var(--font-mono);
+  font-size:11.5px;line-height:1.6;letter-spacing:.03em;color:rgba(250,250,247,.58)}
+
 /* Bloco de acesso ao painel */
 .acesso{margin-top:clamp(22px,4vw,30px);border:1.5px solid var(--black);border-radius:20px;
        background:#fff;overflow:hidden}
@@ -213,11 +252,17 @@ a{color:inherit;text-decoration:none}
 @media print{
   body{background:#fff}
   .grid-lines{display:none}
-  .cor,.spec,.nota,.msg,.passo,.acesso{break-inside:avoid}
+  .cor,.spec,.nota,.msg,.passo,.acesso,.q-card{break-inside:avoid}
+  /* No papel o cartão preto vira ficha; o botão não tem função. */
+  .q-card{background:#fff;color:var(--black);border:1.5px solid var(--black)}
+  .q-valor span{color:var(--ink-40)}
+  .q-desc{color:var(--ink-60)}
+  .q-btn{display:none}
+  .q-nota{color:var(--ink-40);text-align:left}
 }
 </style>
 </head>
-<body>
+<body data-proposta="pr-grife">
 
 <div class="grid-lines" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
 
@@ -242,6 +287,31 @@ a{color:inherit;text-decoration:none}
       <div class="num"><b>475</b><span>produtos cadastrados</span></div>
       <div class="num"><b>63</b><span>publicados na vitrine</span></div>
       <div class="num"><b>1.386</b><span>unidades em estoque</span></div>
+    </div>
+  </section>
+
+  <!-- ══════════ 00 · PAGAMENTO ══════════ -->
+  <section class="sec" id="pagamento">
+    <span class="eyebrow"><span class="dot"></span> 00 · Pagamento</span>
+    <h2>O saldo final</h2>
+    <p>
+      A última parcela combinada, que fecha o projeto na publicação. Você paga
+      aqui mesmo, sem sair desta página.
+    </p>
+
+    <div class="q-card">
+      <div>
+        <span class="q-tag">Saldo final da entrega</span>
+        <div class="q-valor"><span>R$</span>700<span>,00</span></div>
+        <p class="q-desc">
+          O botão abre o Pix com QR code e copia-e-cola. A confirmação aparece
+          na tela assim que o banco aprova.
+        </p>
+      </div>
+      <div class="q-acao">
+        <button class="q-btn" type="button" data-checkout-item="saldo_pix">Pagar no Pix</button>
+        <p class="q-nota">Mercado Pago</p>
+      </div>
     </div>
   </section>
 

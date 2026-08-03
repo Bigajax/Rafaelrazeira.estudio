@@ -46,6 +46,8 @@ const PROPOSTAS = {
       avista_card: { label: "No cartão, em até 6x", valor: 2990, metodo: "card", maxParcelas: 6 },
       entrada_pix: { label: "Entrada do modelo em 3 etapas", valor: 1190, metodo: "pix" },
       painel_pix: { label: "Módulo painel da vitrine (contratação junto)", valor: 1290, metodo: "pix" },
+      /* Cobrado na página de entrega (/entrega/pr-grife.html), não na proposta. */
+      saldo_pix: { label: "Saldo final da entrega", valor: 700, metodo: "pix" },
     },
   },
   "xavier-sports": {
