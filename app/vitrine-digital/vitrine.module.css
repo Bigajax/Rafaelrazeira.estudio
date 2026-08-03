@@ -124,7 +124,9 @@
 
 /* ---------- demonstração em vídeo no mockup do hero ---------- */
 .screen { position: absolute; inset: 0; background: #0d0d10; overflow: hidden }
-.demoVideo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top }
+/* o vídeo entra por cima do quadro estático quando termina de carregar; a
+   transição existe para a troca não ser um corte seco */
+.demoVideo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; transition: opacity .45s ease }
 .shot { position: absolute; top: 0; left: 0; width: 100%; height: auto }
 /* faixa que fecha o hero em telas médias; em tela larga a regra de
    min-width abaixo transforma a mesma lista na coluna da direita */

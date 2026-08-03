@@ -94,15 +94,37 @@ export function Header() {
    2026) → escolhe o tamanho → pedido pronto no WhatsApp. Gerado pelo script
    scripts/record-xavier-hero.mjs. Com reduced-motion ativo, mostra um frame
    estático limpo da página do produto. */
+/* O vídeo tem 1,2 MB e vinha com preload="auto": o navegador baixava ele
+   inteiro, imediatamente, disputando banda com as fontes e com a imagem, antes
+   de a pessoa ver qualquer coisa. Era 72% do peso da página. Com 38% dos
+   cliques do anúncio se perdendo antes de a página abrir, isso sai caro.
+
+   Agora a primeira carga leva só o quadro estático, otimizado pelo next/image
+   no tamanho real do aparelho (o `sizes` importa: sem ele o Next servia uma
+   versão de 1920px para uma tela de 300px). O vídeo entra no DOM só depois do
+   evento `load`, quando nada mais está competindo, e só fica visível quando já
+   tem quadro para mostrar, então não há piscada preta nem espera em branco.
+   A imagem fica embaixo o tempo todo, o vídeo aparece por cima.
+
+   Com "reduzir movimento" ligado o vídeo nunca chega a ser montado. */
 function VitrineDemo() {
-  const [video, setVideo] = useState(true);
+  const [montar, setMontar] = useState(false);
+  const [visivel, setVisivel] = useState(false);
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) setVideo(false);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const ligar = () => setMontar(true);
+    if (document.readyState === "complete") { ligar(); return; }
+    window.addEventListener("load", ligar, { once: true });
+    return () => window.removeEventListener("load", ligar);
   }, []);
   return <div className={s.screen}>
-    {video
-      ? <video className={s.demoVideo} src="/assets/demo/xavier-hero.mp4" autoPlay muted loop playsInline preload="auto" poster="/assets/demo/xavier-hero-still.jpg" />
-      : <Image className={s.shot} src="/assets/demo/xavier-hero-still.jpg" width={780} height={1688} alt="" />}
+    <Image className={s.shot} src="/assets/demo/xavier-hero-still.jpg" width={780} height={1688} sizes="300px" priority alt="" />
+    {montar && <video
+      className={s.demoVideo} src="/assets/demo/xavier-hero.mp4"
+      autoPlay muted loop playsInline preload="auto"
+      style={{ opacity: visivel ? 1 : 0 }}
+      onCanPlay={() => setVisivel(true)}
+    />}
   </div>;
 }
 
