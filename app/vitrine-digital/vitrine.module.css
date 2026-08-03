@@ -363,6 +363,16 @@
 .check li:last-child { border-bottom: 0 }
 .check li::before { content: "✓"; color: var(--green); margin-right: 12px }
 
+/* Aviso de que falta enviar a mensagem no WhatsApp. Verde-claro em vez de
+   alarme: não deu erro, só falta o último toque. */
+.pendente { display: grid; gap: 10px; margin-top: 14px; padding: 16px; background: var(--pale); border: 1px solid var(--green) }
+/* filho direto: só o "Falta um toque." é mono. O negrito dentro do parágrafo
+   é ênfase de leitura e continua na fonte do texto. */
+.pendente > b { font: 700 12px var(--mono); letter-spacing: .06em }
+.form .pendente p { font-size: 14px; line-height: 1.55; color: var(--black) }
+.form .pendente p b { font: inherit; font-weight: 700 }
+.pendente .button { width: 100%; margin-top: 4px }
+
 .formCol { display: grid; gap: 18px; align-content: start; justify-items: stretch }
 .formCol .chatStrip { justify-self: end; width: min(360px, 100%) }
 .form { background: #fff; border: 1px solid #b5e4cb; padding: clamp(26px, 3vw, 40px); display: grid; gap: 15px; scroll-margin-top: 90px }

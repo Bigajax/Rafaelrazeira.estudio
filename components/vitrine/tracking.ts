@@ -276,7 +276,13 @@ function conversao(evento: string, dadosPixel: Record<string, unknown>, extraCap
    `nav` e `hero_projetos` só rolam a página para outra seção e `case` abre o
    site de um cliente. Só `final_falar` foge do vocabulário do brief, que não
    tinha slot para o "FALAR COM RAFAEL" do CTA final (o `flutuante` é a
-   pílula, e `duvidas` é o "AINDA TENHO DÚVIDAS" do card de preço). */
+   pílula, e `duvidas` é o "AINDA TENHO DÚVIDAS" do card de preço).
+
+   `reabrir_whats` fica FORA de propósito, mesmo sendo destino WhatsApp: é o
+   botão de reabrir a mensagem depois de enviar o formulário, então quem clica
+   nele já disparou o Lead do formulário segundos antes, e contaria a mesma
+   pessoa duas vezes. Ele existe só como ClickCTA, para dar para medir quantas
+   pessoas precisam do socorro quando o pop-up é bloqueado. */
 /* o único caminho que é contratação de verdade, e não intenção */
 const POSICAO_FORMULARIO = "form";
 const POSICAO_LEAD: Record<string, string> = {
@@ -289,6 +295,61 @@ const POSICAO_LEAD: Record<string, string> = {
   final_whats: "final_falar",
   pill: "flutuante",
 };
+
+/* ---------- leitura da página: onde a pessoa desiste ----------
+   Entre "abriu" e "viu a oferta" não existia sinal nenhum. Quem saía antes
+   virava um PageView solto, e não dava para saber se leu a manchete, rolou
+   metade ou fechou em dois segundos. Nos dois primeiros dias de campanha,
+   20 dos 26 visitantes reais foram exatamente isso: um PageView e silêncio.
+
+   Estes eventos vão SÓ para a Mixpanel. São diagnóstico, não conversão: na
+   Meta virariam eventos custom que sujam o dataset e não otimizam nada.
+
+   `Saida` é o mais útil dos dois, porque também conta a história de quem não
+   rolou nada: sai com o tempo de permanência e a profundidade máxima. */
+function medirLeitura() {
+  const inicio = Date.now();
+  const marcos = [25, 50, 75, 100];
+  let maior = 0;
+  let agendado = false;
+
+  const segundos = () => Math.round((Date.now() - inicio) / 1000);
+
+  const medir = () => {
+    agendado = false;
+    const rolavel = document.documentElement.scrollHeight - window.innerHeight;
+    /* página menor que a tela: não há o que rolar, e dividir por zero daria
+       Infinity. Conta como 100% porque a pessoa já viu tudo. */
+    const pct = rolavel <= 0 ? 100 : Math.round((window.scrollY / rolavel) * 100);
+    for (const m of marcos) {
+      if (pct >= m && maior < m) {
+        maior = m;
+        mpTrack("Scroll", { profundidade: m, segundos: segundos() });
+      }
+    }
+  };
+
+  /* passivo e agendado no próximo quadro: rolagem dispara dezenas de vezes
+     por segundo e medir em cada uma travaria a página no celular */
+  addEventListener("scroll", () => {
+    if (agendado) return;
+    agendado = true;
+    requestAnimationFrame(medir);
+  }, { passive: true });
+  medir();
+
+  let saiu = false;
+  const aoSair = () => {
+    if (saiu) return;
+    saiu = true;
+    mpTrack("Saida", { segundos: segundos(), profundidade_max: maior, rolou: maior > 0 });
+  };
+  /* visibilitychange é o único confiável no celular: no iOS o `unload` muitas
+     vezes não roda quando a pessoa troca de app ou fecha a aba. O mpTrack usa
+     fetch com keepalive, que sobrevive à página morrendo. */
+  addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") aoSair(); });
+  addEventListener("pagehide", aoSair);
+}
 
 let iniciado = false;
 
@@ -306,6 +367,7 @@ export function initTracking() {
   fbq("init", PIXEL_ID, { external_id: externalId() });
   fbq("track", "PageView");
   mpTrack("PageView");
+  medirLeitura();
 
   // ViewContent — visitante viu a oferta (1x por sessão)
   const oferta = document.getElementById("oferta");

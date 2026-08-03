@@ -398,7 +398,7 @@ export function Offer() {
      segundo botão concorrendo com o principal e virou uma opção dentro do
      formulário, escolhida depois que a pessoa já decidiu contratar. */
   const [avista, setAvista] = useState(false);
-  const [status, setStatus] = useState("");
+  const [linkWa, setLinkWa] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
   const waHref = useWhatsapp();
   const plan = avista ? "À vista R$999" : "Entrada de R$500";
@@ -420,14 +420,20 @@ export function Offer() {
     /* "form" não é um rótulo qualquer: é o valor que o tracking usa para saber
        que este caminho é contratação, e o único que chega na Mixpanel. */
     trackLead({ ctaPosition: "form", plano: plan, nome: String(f.get("nome") || "") });
-    setStatus("Tudo certo. Abrindo o WhatsApp para concluir a contratação…");
     /* O código da visita fecha a mensagem. Ao registrar a venda em
        /api/venda-fechada, ele vai no campo `ref` e a Meta amarra a compra à
        visita que veio do anúncio. Fica na última linha para ser fácil de
        copiar e para não atrapalhar a leitura do pedido. */
     const ref = refDaVisita();
     const text = encodeURIComponent(`Olá, Rafael! Quero contratar a Vitrine Digital.\nNome: ${f.get("nome")}\nLoja: ${f.get("loja")}\nInstagram: ${f.get("instagram")}\nPlano: ${plan}${ref ? `\nRef: ${ref}` : ""}`);
-    window.open(`https://wa.me/5544999997219?text=${text}`, "_blank", "noopener");
+    const link = `https://wa.me/5544999997219?text=${text}`;
+    /* Guardar o link é o conserto do vazamento. Enviar o formulário NÃO manda
+       mensagem nenhuma: o WhatsApp abre com o texto pronto e a pessoa ainda
+       precisa tocar em enviar. Se o pop-up for bloqueado, e no navegador
+       interno do Instagram isso acontece, ela ficava numa tela dizendo "tudo
+       certo" sem nada ter acontecido. Agora o link fica na tela como saída. */
+    setLinkWa(link);
+    window.open(link, "_blank", "noopener");
   }
   return <section className={`${s.section} ${s.offer}`} id="oferta">
     <div className={s.wrap}>
@@ -459,7 +465,22 @@ export function Offer() {
               Prefiro pagar os R$999 à vista
             </label>
             <button className={`${s.button} ${s.primary}`}>CONTINUAR NO WHATSAPP ↗</button>
-            <p className={s.micro} role="status">{status || "Ao continuar, você confirma os detalhes comigo no WhatsApp. Não peço dados de cartão nesta etapa."}</p>
+            {/* Antes daqui saía "Tudo certo. Abrindo o WhatsApp…", que dizia à
+                pessoa que estava feito quando não estava: a mensagem abre
+                pronta mas não enviada, e sem tocar em enviar nada chega.
+                Agora o passo que falta é dito com todas as letras, e o botão
+                cobre o caso do pop-up bloqueado, comum no navegador do
+                Instagram. O clique tem data-cta próprio para dar para medir
+                quantas pessoas precisam dele. */}
+            {linkWa
+              ? <div className={s.pendente} role="status">
+                  <b>Falta um toque.</b>
+                  <p>Abri o WhatsApp com sua mensagem pronta. Toque em <b>enviar</b> lá para eu receber, senão ela não chega.</p>
+                  <a className={`${s.button} ${s.primary}`} href={linkWa} target="_blank" rel="noopener" data-cta="reabrir_whats" data-cta-dest="whatsapp">
+                    ABRIR O WHATSAPP ↗
+                  </a>
+                </div>
+              : <p className={s.micro} role="status">Ao continuar, você confirma os detalhes comigo no WhatsApp. Não peço dados de cartão nesta etapa.</p>}
           </form>
         </div>
       </div>
