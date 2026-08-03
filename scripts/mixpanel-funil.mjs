@@ -112,6 +112,25 @@ for (const [k, n] of Object.entries(faixas)) {
   console.log(`  ${k.padEnd(10)} ${String(n).padStart(3)}  ${"█".repeat(Math.round(n / reais.length * 34))}`);
 }
 
+/* De onde vieram. `utm_source` usa o código da Meta: `ig` é Instagram, `fb` é
+   Facebook, `msg` é Messenger e **`an` é Audience Network**, que é anúncio
+   dentro de app e jogo de terceiros, onde muito clique é toque sem querer.
+   Esta quebra existe porque na primeira campanha 84% dos visitantes vieram de
+   `an` sem ninguém ter escolhido isso. */
+const NOME_FONTE = { an: "Audience Network", ig: "Instagram", fb: "Facebook", msg: "Messenger" };
+console.log("\n=== de onde vieram ===");
+const porFonte = {};
+for (const v of reais) {
+  const f = v.p.utm_source || "(sem utm)";
+  porFonte[f] = porFonte[f] || { n: 0, interagiu: 0 };
+  porFonte[f].n++;
+  if (v.eventos.some((x) => x.ev !== "PageView")) porFonte[f].interagiu++;
+}
+for (const [f, d] of Object.entries(porFonte).sort((a, b) => b[1].n - a[1].n)) {
+  const rotulo = NOME_FONTE[f] || f;
+  console.log(`  ${rotulo.padEnd(18)} ${String(d.n).padStart(3)} pessoas  ${String(d.interagiu).padStart(3)} passaram do PageView  ${Math.round(d.interagiu / d.n * 100)}%`);
+}
+
 const tempos = reais.map((v) => {
   const s = v.eventos.filter((x) => x.ev === "Saida").pop();
   if (s) return Number(s.props.segundos) || 0;
