@@ -311,12 +311,14 @@ function conversao(evento: string, dadosPixel: Record<string, unknown>, extraCap
 
 /* data-cta → cta_position do Lead. Quem não está aqui NÃO dispara Lead:
    `nav` e `hero_projetos` só rolam a página para outra seção e `case` abre o
-   site de um cliente. Só `final_falar` foge do vocabulário do brief, que não
-   tinha slot para o "FALAR COM RAFAEL" do CTA final (o `flutuante` é a
-   pílula, e `ver_no_whats` é o "VER COMO FICA PARA A MINHA LOJA" do card de
-   preço, o caminho principal da oferta desde 04/08; o antigo `oferta_whats`,
-   link fantasma de dúvidas com zero cliques na primeira campanha, saiu da
-   página junto com a promoção da conversa a convite principal).
+   site de um cliente. Desde 04/08 a página inteira convida para a CONVERSA
+   ("VER COMO FICA PARA A MINHA LOJA"): hero, como_funciona, final e
+   sticky_mobile apontam para o WhatsApp (o `destination` do ClickCTA guarda
+   essa mudança), `ver_no_whats` é o mesmo convite no card de preço e
+   `final_reserva` é o atalho "JÁ DECIDI" do CTA final, que rola até a
+   oferta. Saíram da página `oferta_whats` (link fantasma de dúvidas, zero
+   cliques na primeira campanha) e `final_whats` (o FALAR COM RAFAEL do fim,
+   absorvido pelo convite principal). O `flutuante` é a pílula.
 
    `reabrir_whats` fica FORA de propósito, mesmo sendo destino WhatsApp: é o
    botão de reabrir a mensagem depois de enviar o formulário, então quem clica
@@ -332,7 +334,7 @@ const POSICAO_LEAD: Record<string, string> = {
   final: "final",
   sticky_mobile: "sticky",
   oferta_ver: "ver_no_whats",
-  final_whats: "final_falar",
+  final_reserva: "final_reserva",
   pill: "flutuante",
 };
 

@@ -167,16 +167,23 @@ function useVeioDoC1() {
 
 export function Hero() {
   const c1 = useVeioDoC1();
+  const waVer = useWhatsapp(MSG_VER);
   return <section className={s.hero} id="topo">
     <div className={s.heroGrid}>
       <div className={s.heroCopy}>
         <Eyebrow>VITRINE DIGITAL PARA LOJAS DE INSTAGRAM</Eyebrow>
         <h1>{c1 ? <>SUA VITRINE PRONTA EM <em>7 DIAS ÚTEIS.</em></> : <>SEUS PRODUTOS EM <em>UM LINK SÓ.</em></>}</h1>
         <p className={s.lead}>O cliente escolhe sozinho e chega no seu WhatsApp com o pedido pronto.</p>
+        {/* mesma inversão da oferta (04/08): o primeiro pedido da página era
+            um compromisso de R$500 com 4 segundos de página, agora é a
+            conversa. O preço saiu da primeira dobra e mora na oferta, onde a
+            pessoa já viu o argumento; o `data-cta` continua "hero" porque a
+            posição é a mesma, só o destino mudou (o ClickCTA registra o
+            destination). Link cru porque o Button não tem target _blank. */}
         <div className={s.actions}>
-          <Button href="#oferta" cta="hero">RESERVAR POR R$500 ↗</Button>
+          <a className={`${s.button} ${s.primary}`} href={waVer} target="_blank" rel="noopener" data-cta="hero" data-cta-dest="whatsapp">VER COMO FICA PARA A MINHA LOJA ↗</a>
         </div>
-        <small className={s.micro}>Total de R$999 · o saldo só após você aprovar</small>
+        <small className={s.micro}>Você fala direto comigo no WhatsApp, sem compromisso.</small>
       </div>
       <div className={s.heroVisual}>
         <div className={s.phone} role="img" aria-label="Demonstração da vitrine da Xavier's Sports: o cliente filtra por pronta entrega, abre a camisa Brasil Home 2026, escolhe o tamanho e envia o pedido pelo WhatsApp já preenchido">
@@ -242,6 +249,7 @@ const steps = [
   ["Chama a loja pelo WhatsApp", "A mensagem já chega com o produto escolhido."],
 ];
 export function HowItWorks() {
+  const waVer = useWhatsapp(MSG_VER);
   return <section className={s.section} id="como">
     <div className={s.wrap}>
       <Eyebrow>COMO FUNCIONA</Eyebrow>
@@ -251,7 +259,7 @@ export function HowItWorks() {
           <ol className={s.steps}>{steps.map((x, i) => <li key={x[0]}><b>0{i + 1}</b><div><h3>{x[0]}</h3><p>{x[1]}</p></div></li>)}</ol>
           {/* no celular o botão não pode vir antes da prova: esta instância
               some e a cópia abaixo do chat assume; no desktop é o contrário */}
-          <div className={`${s.actions} ${s.hideMobile}`}><Button href="#oferta" cta="como_funciona">RESERVAR POR R$500 ↗</Button></div>
+          <div className={`${s.actions} ${s.hideMobile}`}><a className={`${s.button} ${s.primary}`} href={waVer} target="_blank" rel="noopener" data-cta="como_funciona" data-cta-dest="whatsapp">VER COMO FICA PARA A MINHA LOJA ↗</a></div>
         </div>
         <div className={s.howVisual}>
           {/* captura do catálogo da PR Grife, loja de cliente no ar. O corte
@@ -266,7 +274,7 @@ export function HowItWorks() {
               <Bubble out time="19:12" tick="read" delay={700}>tem sim! separei a sua, te mando o Pix</Bubble>
             </ChatStrip>
           </div>
-          <div className={`${s.actions} ${s.mobileOnly}`}><Button href="#oferta" cta="como_funciona">RESERVAR POR R$500 ↗</Button></div>
+          <div className={`${s.actions} ${s.mobileOnly}`}><a className={`${s.button} ${s.primary}`} href={waVer} target="_blank" rel="noopener" data-cta="como_funciona" data-cta-dest="whatsapp">VER COMO FICA PARA A MINHA LOJA ↗</a></div>
         </div>
       </div>
     </div>
@@ -590,14 +598,18 @@ function useInOffer() {
 export function FinalCTA() {
   const inOffer = useInOffer();
   const waHref = useWhatsapp();
+  const waVer = useWhatsapp(MSG_VER);
   return <>
     <section id="fim" className={`${s.section} ${s.dark} ${s.final}`}>
       <Eyebrow>AGENDA ABERTA</Eyebrow>
       <h2>Sua loja já tem produtos. Agora precisa de uma estrutura para <em>vender melhor.</em></h2>
-      <p className={s.lead}>Reserve a sua vitrine com R$500, acompanhe o projeto e pague o saldo só depois de aprovar.</p>
+      {/* mesma inversão da oferta: a conversa na frente, a reserva como
+          atalho de quem já decidiu. Aqui a pessoa leu a página inteira,
+          então a reserva continua citada com preço, só não abre o caminho. */}
+      <p className={s.lead}>Me chama no WhatsApp e eu te mostro como a vitrine ficaria para a sua loja. E se você já decidiu, é só reservar com R$500.</p>
       <div className={s.actions}>
-        <Button href="#oferta" cta="final">RESERVAR POR R$500 ↗</Button>
-        <a className={s.ghost} href={waHref} target="_blank" rel="noopener" data-cta="final_whats" data-cta-dest="whatsapp">FALAR COM RAFAEL</a>
+        <a className={`${s.button} ${s.primary}`} href={waVer} target="_blank" rel="noopener" data-cta="final" data-cta-dest="whatsapp">VER COMO FICA PARA A MINHA LOJA ↗</a>
+        <a className={s.ghost} href="#oferta" data-cta="final_reserva" data-cta-dest="oferta">JÁ DECIDI: RESERVAR POR R$500</a>
       </div>
     </section>
     <footer className={s.footer}>
@@ -614,6 +626,7 @@ export function FinalCTA() {
    formulário nem apertar o rodapé, onde o botão já está na tela. */
 export function MobileBar() {
   const [hidden, setHidden] = useState(true);
+  const waVer = useWhatsapp(MSG_VER);
   useEffect(() => {
     const hero = document.getElementById("topo");
     const offer = document.getElementById("oferta");
@@ -633,7 +646,7 @@ export function MobileBar() {
     return () => { document.removeEventListener("focusin", onFocus); document.removeEventListener("focusout", onBlur); heroIO?.disconnect(); offerIO?.disconnect(); endIO?.disconnect(); };
   }, []);
   return <div className={`${s.bar} ${hidden ? s.barHidden : ""}`}>
-    <span className={s.barCopy}><b>R$500 PARA RESERVAR</b><span>Saldo só após você aprovar</span></span>
-    <a className={`${s.button} ${s.primary}`} href="#oferta" data-cta="sticky_mobile">RESERVAR</a>
+    <span className={s.barCopy}><b>VITRINE DIGITAL</b><span>Pronta em 7 dias úteis</span></span>
+    <a className={`${s.button} ${s.primary}`} href={waVer} target="_blank" rel="noopener" data-cta="sticky_mobile" data-cta-dest="whatsapp">VER COMO FICA</a>
   </div>;
 }
