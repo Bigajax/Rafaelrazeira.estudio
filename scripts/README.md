@@ -37,3 +37,17 @@ Dependências (não ficam no package.json; instale sob demanda):
 Rode a partir da pasta onde instalou as deps e copie os arquivos de `out/`
 para `public/assets/demo/`. Usa o Chrome do sistema em
 `C:\Program Files\Google\Chrome\Application\chrome.exe`.
+
+# Capas do portfólio
+
+`capture-portfolio.mjs` fotografa a primeira dobra de cada projeto entregue
+(1280×800, WebP) direto em `public/portfolio/{slug}.webp`, que a página
+`/portfolio` usa como capa dos cards. Sem argumentos, captura todos os sites
+no ar; com `slug=url` captura só os pedidos, útil para os projetos sem deploy
+público, servidos de um dev server local:
+
+    node scripts/capture-portfolio.mjs
+    node scripts/capture-portfolio.mjs star-point=http://localhost:4001
+
+Fecha banner de cookies (botão "Aceitar") antes da foto. Mesma dependência
+sob demanda dos scripts de gravação: `npm i --no-save puppeteer-core`.

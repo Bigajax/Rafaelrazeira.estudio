@@ -614,7 +614,7 @@ export function FinalCTA() {
     </section>
     <footer className={s.footer}>
       <div className={s.brand}><b>RAFAEL RAZEIRA</b><span>ESTÚDIO</span></div>
-      <nav><Link href="/estudio/">INÍCIO</Link><Link href="/servicos">SERVIÇOS</Link><Link href="/e-commerce">E-COMMERCE</Link><Link href="/termos">TERMOS</Link><Link href="/privacidade">PRIVACIDADE</Link></nav>
+      <nav><Link href="/estudio/">INÍCIO</Link><Link href="/portfolio">PORTFÓLIO</Link><Link href="/servicos">SERVIÇOS</Link><Link href="/e-commerce">E-COMMERCE</Link><Link href="/termos">TERMOS</Link><Link href="/privacidade">PRIVACIDADE</Link></nav>
       <small>© 2026 RAFAEL RAZEIRA ESTÚDIO</small>
     </footer>
     <a className={`${s.pill} ${inOffer ? s.pillHidden : ""}`} href={waHref} target="_blank" rel="noopener" data-cta="pill" data-cta-dest="whatsapp">FALAR COM RAFAEL ↗</a>

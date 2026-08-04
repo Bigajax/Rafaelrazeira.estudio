@@ -10,6 +10,7 @@ export function header(){
       <nav class="header-actions" aria-label="Navegação principal">
         <a href="/servicos" class="nav-product">SERVIÇOS</a>
         <a href="/vitrine-digital/" class="nav-product">VITRINE DIGITAL</a>
+        <a href="/portfolio" class="nav-product">PORTFÓLIO</a>
         <a href="#contato" class="nav-cta" data-cta="header" data-cta-dest="form">${b.navCta} <span class="arrow">↗</span></a>
       </nav>
     </div>
