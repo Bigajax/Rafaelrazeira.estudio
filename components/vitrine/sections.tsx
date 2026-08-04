@@ -137,12 +137,36 @@ function VitrineDemo() {
    O ganho real é de espaço: a demonstração era o argumento mais forte da
    página e começava fora da primeira dobra no celular. */
 const heroPoints = ["Design personalizado", "Catálogo organizado", "WhatsApp integrado", "Pronta em 7 dias úteis"];
+
+/* ---------- coerência com o anúncio ----------
+   O c1-direct fecha prometendo "vitrine digital pronta em 7 dias úteis,
+   R$999, saldo só depois de você aprovar". Quem clicava caía numa manchete
+   diferente ("seus produtos em um link só"), e no primeiro fim de semana
+   63% do tráfego de Facebook e Instagram não rolou a primeira dobra.
+   O teste: quem chega do c1 vê a manchete continuar a promessa do anúncio,
+   e "um link só" desce para a lista de pontos, trocando de lugar com o
+   prazo. Nada disso precisa de flag para medir: todo evento da Mixpanel
+   já sai com utm_content, então a leitura é comparar o coorte do c1 antes
+   e depois desta mudança entrar no ar.
+   O estado começa falso e vira no mount porque o HTML é gerado no build,
+   onde não existe query string: no servidor todo mundo é a versão padrão. */
+const AD_C1_DIRECT = "120250180921710201";
+const heroPointsC1 = ["Design personalizado", "Catálogo organizado", "WhatsApp integrado", "Seus produtos em um link só"];
+function useVeioDoC1() {
+  const [veio, setVeio] = useState(false);
+  useEffect(() => {
+    try { setVeio(new URLSearchParams(location.search).get("utm_content") === AD_C1_DIRECT); } catch {}
+  }, []);
+  return veio;
+}
+
 export function Hero() {
+  const c1 = useVeioDoC1();
   return <section className={s.hero} id="topo">
     <div className={s.heroGrid}>
       <div className={s.heroCopy}>
         <Eyebrow>VITRINE DIGITAL PARA LOJAS DE INSTAGRAM</Eyebrow>
-        <h1>SEUS PRODUTOS EM <em>UM LINK SÓ.</em></h1>
+        <h1>{c1 ? <>SUA VITRINE PRONTA EM <em>7 DIAS ÚTEIS.</em></> : <>SEUS PRODUTOS EM <em>UM LINK SÓ.</em></>}</h1>
         <p className={s.lead}>O cliente escolhe sozinho e chega no seu WhatsApp com o pedido pronto.</p>
         <div className={s.actions}>
           <Button href="#oferta" cta="hero">RESERVAR POR R$500 ↗</Button>
@@ -164,7 +188,7 @@ export function Hero() {
       {/* os pontos entram no próprio grid do hero: no desktop viram uma
           coluna estreita ao lado da demonstração, encostada na margem
           direita da página, e no celular voltam a ser a faixa embaixo */}
-      <ul className={s.heroPoints}>{heroPoints.map(x => <li key={x}>{x}</li>)}</ul>
+      <ul className={s.heroPoints}>{(c1 ? heroPointsC1 : heroPoints).map(x => <li key={x}>{x}</li>)}</ul>
     </div>
   </section>;
 }

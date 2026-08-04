@@ -375,11 +375,27 @@ function medirLeitura() {
   }, { passive: true });
   medir();
 
+  /* qual campo do formulário a pessoa tocou por último. No primeiro fim de
+     semana 4 pessoas tocaram no formulário e nenhuma enviou, e este número
+     sozinho não diz se o atrito é o nome, a loja ou o instagram. Vai como
+     propriedade do Saida em vez de virar evento próprio: é diagnóstico, e o
+     Saida já é o retrato de onde a pessoa desistiu. */
+  let ultimoCampo = "";
+  addEventListener("focusin", (e) => {
+    const alvo = e.target as HTMLInputElement | null;
+    if (alvo?.closest?.("#contratar") && alvo.name) ultimoCampo = alvo.name;
+  });
+
   let saiu = false;
   const aoSair = () => {
     if (saiu) return;
     saiu = true;
-    mpTrack("Saida", { segundos: segundos(), profundidade_max: maior, rolou: maior > 0 });
+    mpTrack("Saida", {
+      segundos: segundos(),
+      profundidade_max: maior,
+      rolou: maior > 0,
+      ...(ultimoCampo ? { form_ultimo_campo: ultimoCampo } : {}),
+    });
   };
   /* visibilitychange é o único confiável no celular: no iOS o `unload` muitas
      vezes não roda quando a pessoa troca de app ou fecha a aba. O mpTrack usa
