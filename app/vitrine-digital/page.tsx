@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Archivo, Inter, Space_Mono } from "next/font/google";
 import { Analytics, FAQ, FinalCTA, Header, Hero, HowItWorks, Included, MobileBar, Offer, PainSolution, Panel, Process, Projects } from "@/components/vitrine/sections";
+import { Loader } from "@/components/vitrine/Loader";
 import styles from "./vitrine.module.css";
 
 const display = Archivo({ subsets: ["latin"], axes: ["wdth"], variable: "--font-display" });
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
 
 export default function VitrineDigitalPage() {
   return <div className={`${styles.site} ${display.variable} ${body.variable} ${mono.variable}`}>
+    <Loader />
     <Header />
     <main>
       <Hero />
