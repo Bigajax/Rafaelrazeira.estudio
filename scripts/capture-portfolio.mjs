@@ -20,6 +20,8 @@ const SITES = {
   "solo-urb": "https://s-lo-urb.vercel.app",
   "lancellotti": "https://lancellotti-tattoo-clinic.vercel.app",
   "baixudos": "https://baixudos.vercel.app",
+  "star-point": "https://star-point-wheat.vercel.app",
+  "bella-black": "https://bella-black-three.vercel.app",
 };
 
 // slug=url na linha de comando entra na lista (ou substitui a URL padrão)
