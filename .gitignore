@@ -21,3 +21,5 @@ three.js/
 # Exports crus da Mixpanel (scripts/mixpanel-funil.mjs): trazem dados de
 # visitantes reais, incluindo cidade e URL. Ficam na máquina, não no git.
 mixpanel-*.json
+
+.vercel
