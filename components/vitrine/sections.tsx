@@ -262,7 +262,7 @@ const projects = [
   },
   {
     img: "/assets/case-prgrife-desk.jpg", w: 1440, h: 5559, dur: "22s",
-    url: "https://usepr-grife.vercel.app/", dom: "usepr-grife.vercel.app",
+    url: "https://pr-grife.vercel.app/", dom: "pr-grife.vercel.app",
     name: "PR GRIFE", tag: "MULTIMARCAS DE ALTO PADRÃO",
     copy: "Loja com ponto físico em Maringá. Entreguei a vitrine e o painel: o dono publica peça e ajusta o estoque sozinho.",
     facts: ["Catálogo por marca e categoria", "Página para cada produto", "Painel de estoque para o dono", "Pedido com forma de pagamento escolhida"],
