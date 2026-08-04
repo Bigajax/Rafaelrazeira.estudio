@@ -313,7 +313,10 @@ function conversao(evento: string, dadosPixel: Record<string, unknown>, extraCap
    `nav` e `hero_projetos` só rolam a página para outra seção e `case` abre o
    site de um cliente. Só `final_falar` foge do vocabulário do brief, que não
    tinha slot para o "FALAR COM RAFAEL" do CTA final (o `flutuante` é a
-   pílula, e `duvidas` é o "AINDA TENHO DÚVIDAS" do card de preço).
+   pílula, e `ver_no_whats` é o "VER COMO FICA PARA A MINHA LOJA" do card de
+   preço, o caminho principal da oferta desde 04/08; o antigo `oferta_whats`,
+   link fantasma de dúvidas com zero cliques na primeira campanha, saiu da
+   página junto com a promoção da conversa a convite principal).
 
    `reabrir_whats` fica FORA de propósito, mesmo sendo destino WhatsApp: é o
    botão de reabrir a mensagem depois de enviar o formulário, então quem clica
@@ -328,7 +331,7 @@ const POSICAO_LEAD: Record<string, string> = {
   oferta_entrada: "pricing_card",
   final: "final",
   sticky_mobile: "sticky",
-  oferta_whats: "duvidas",
+  oferta_ver: "ver_no_whats",
   final_whats: "final_falar",
   pill: "flutuante",
 };

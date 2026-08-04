@@ -6,7 +6,12 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 import s from "@/app/vitrine-digital/vitrine.module.css";
 import { initTracking, refDaVisita, trackLead } from "@/components/vitrine/tracking";
 
-const whatsapp = "https://wa.me/5544999997219?text=Ol%C3%A1%2C%20Rafael!%20Conheci%20a%20Vitrine%20Digital%20e%20gostaria%20de%20tirar%20d%C3%BAvidas.";
+const ZAP = "https://wa.me/5544999997219?text=";
+const MSG_DUVIDAS = "Olá, Rafael! Conheci a Vitrine Digital e gostaria de tirar dúvidas.";
+/* a mensagem do caminho principal da oferta pede a demonstração, não tira
+   dúvida: o convite da página é "quero ver para a minha loja", e a mensagem
+   precisa continuar essa frase, senão a conversa começa desalinhada */
+const MSG_VER = "Olá, Rafael! Quero ver como a Vitrine Digital ficaria para a minha loja.";
 
 /* A mensagem do WhatsApp leva o código da visita no fim. Quando a venda
    fechar, esse código vai junto no registro em /api/venda-fechada, e a Meta
@@ -14,12 +19,12 @@ const whatsapp = "https://wa.me/5544999997219?text=Ol%C3%A1%2C%20Rafael!%20Conhe
    Só depois da montagem: no servidor não existe localStorage, então o
    primeiro render usa o link puro e o código entra logo em seguida. Sem isso
    o HTML gerado no build carregaria o código de quem buildou. */
-function useWhatsapp() {
-  const [href, setHref] = useState(whatsapp);
+function useWhatsapp(msg: string = MSG_DUVIDAS) {
+  const [href, setHref] = useState(ZAP + encodeURIComponent(msg));
   useEffect(() => {
     const ref = refDaVisita();
-    if (ref) setHref(whatsapp + encodeURIComponent(`\n\nRef: ${ref}`));
-  }, []);
+    if (ref) setHref(ZAP + encodeURIComponent(`${msg}\n\nRef: ${ref}`));
+  }, [msg]);
   return href;
 }
 
@@ -418,13 +423,20 @@ export function Panel() {
 
 const offerItems = ["Design personalizado", "Página inicial e catálogo", "Páginas de produto", "WhatsApp integrado", "Até 20 produtos cadastrados", "Painel de gestão da loja", "Publicação e endereço configurado", "Uma rodada de ajustes", "Entrega em até 7 dias úteis"];
 export function Offer() {
-  /* Um caminho só: reservar por R$500. O pagamento à vista deixou de ser um
-     segundo botão concorrendo com o principal e virou uma opção dentro do
-     formulário, escolhida depois que a pessoa já decidiu contratar. */
+  /* Inversão de 04/08, decidida com dados: na primeira campanha 23 pessoas
+     leram a página inteira, 4 tocaram no formulário, ZERO enviaram e zero
+     conversas chegaram. O primeiro pedido da página a um desconhecido era um
+     compromisso de R$500, e o caminho de conversar estava rebaixado a link
+     fantasma (zero cliques). Agora o convite principal é a conversa, que é
+     onde uma venda de R$999 fecha de verdade, e a reserva por R$500 vira o
+     atalho de quem já decidiu. O preço continua inteiro à vista de todos:
+     esconder valor filtra menos e piora a conversa.
+     O pagamento à vista segue como opção dentro do formulário, escolhida
+     depois que a pessoa já decidiu contratar. */
   const [avista, setAvista] = useState(false);
   const [linkWa, setLinkWa] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
-  const waHref = useWhatsapp();
+  const waVer = useWhatsapp(MSG_VER);
   const plan = avista ? "À vista R$999" : "Entrada de R$500";
   function goToForm() {
     formRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -464,6 +476,9 @@ export function Offer() {
       <Eyebrow>OFERTA E CONTRATAÇÃO</Eyebrow>
       <h2>Vitrine digital completa por <em>R$999.</em></h2>
       <p className={s.lead}>Estrutura pronta para transformar visita do Instagram em pedido no WhatsApp. Você reserva com R$500, acompanha o desenvolvimento e só paga o saldo depois de aprovar.</p>
+      {/* prova antes do preço: fato verificável, sem citação inventada. Quando
+          existir depoimento de cliente, ele entra aqui no lugar desta linha. */}
+      <p className={s.proof}><b>PROVA NO AR</b> A PR Grife, multimarcas com loja física em Maringá, publica peça e ajusta o estoque sozinha no painel. <a href="#projetos" data-cta="oferta_projetos" data-cta-dest="projetos">Veja a loja dela acima.</a></p>
       <div className={s.offerGrid}>
         <article className={s.pricecard}>
           <small>VITRINE DIGITAL</small>
@@ -471,9 +486,16 @@ export function Offer() {
           <p className={s.installments}><b>R$500 PARA RESERVAR</b><br />R$499 APÓS A SUA APROVAÇÃO</p>
           <p className={s.nomensal}>SEM MENSALIDADE OBRIGATÓRIA</p>
           <ul className={s.check}>{offerItems.map(x => <li key={x}>{x}</li>)}</ul>
-          <Button onClick={goToForm} cta="oferta_entrada">RESERVAR POR R$500 ↗</Button>
+          {/* o convite principal custa zero para quem está do outro lado; a
+              reserva vira o atalho de quem já decidiu. `oferta_ver` é um
+              data-cta NOVO de propósito: o antigo `oferta_whats` era o link
+              fantasma de dúvidas, e reaproveitar o id misturaria na leitura
+              dois botões com papéis diferentes. Botão de link cru em vez do
+              componente Button porque o WhatsApp precisa de target _blank,
+              que o Button não tem. */}
+          <a className={`${s.button} ${s.primary}`} href={waVer} target="_blank" rel="noopener" data-cta="oferta_ver" data-cta-dest="whatsapp">VER COMO FICA PARA A MINHA LOJA ↗</a>
+          <Button outline onClick={goToForm} cta="oferta_entrada">JÁ DECIDI: RESERVAR POR R$500</Button>
           <p className={s.guarantee}>O saldo de R$499 é pago somente depois que você visualizar e aprovar o projeto.</p>
-          <a className={s.ghost} href={waHref} target="_blank" rel="noopener" data-cta="oferta_whats" data-cta-dest="whatsapp">AINDA TENHO DÚVIDAS: FALAR COM RAFAEL</a>
         </article>
         <div className={s.formCol}>
           <ChatStrip label="SUA PRÓXIMA MENSAGEM">

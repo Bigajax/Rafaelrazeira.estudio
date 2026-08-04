@@ -342,6 +342,11 @@
 /* ---------- oferta ---------- */
 .offer { background: var(--pale) }
 .offer .lead { margin-top: 22px }
+/* prova antes do preço: fato verificável, sem depoimento inventado. Dois
+   seletores para vencer .site p (seletor de elemento). */
+.offer .proof { max-width: 640px; margin-top: 18px; font-size: 14.5px; line-height: 1.6; color: var(--black); border-left: 3px solid var(--green); padding-left: 14px }
+.offer .proof b { display: block; font: 700 10.5px var(--mono); letter-spacing: .14em; margin-bottom: 4px }
+.offer .proof a { border-bottom: 1px solid; font-weight: 600 }
 .offerGrid {
   display: grid; grid-template-columns: 1.05fr .95fr;
   gap: clamp(24px, 3vw, 48px); margin-top: 48px; align-items: start;
@@ -357,6 +362,8 @@
 .pricecard .nomensal { display: inline-block; font: 700 11px var(--mono); letter-spacing: .08em; color: var(--black); background: var(--pale); padding: 8px 11px; margin-top: 12px }
 .pricecard .guarantee { font: 12.5px/1.6 var(--mono); color: var(--black); margin-top: 16px }
 .pricecard .button { width: 100%; margin-top: 16px }
+/* o atalho de quem já decidiu cola no convite principal, não compete com ele */
+.pricecard .button + .button { margin-top: 10px }
 .pricecard .ghost { display: inline-block; margin-top: 20px }
 .check { list-style: none; padding: 0; margin: 14px 0 8px; font: 700 13px/1.5 var(--mono) }
 .check li { padding: 9px 0; border-bottom: 1px solid var(--line) }
