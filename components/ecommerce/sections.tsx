@@ -9,6 +9,12 @@ import { initTracking, track, trackLead } from "@/components/ecommerce/tracking"
 const NUMERO = "5544999997219";
 const zap = (msg: string) => `https://wa.me/${NUMERO}?text=${encodeURIComponent(msg)}`;
 
+/* Decisão do Rafael (05/08): NENHUM preço nesta página. A âncora de
+   investimento do hero e a faixa na primeira pergunta do FAQ saíram, e o
+   VALOR_BASE que as alimentava foi removido junto. O valor entra na conversa
+   do WhatsApp, depois do diagnóstico. Se um número voltar a esta página, ele
+   precisa aparecer em dois lugares (hero e FAQ) para não se contradizer. */
+
 /* Dispara o funil no mount (Pixel + Mixpanel), respeitando o opt-out. */
 export function Analytics() { useEffect(() => { initTracking(); }, []); return null; }
 
@@ -19,6 +25,9 @@ export function Analytics() { useEffect(() => { initTracking(); }, []); return n
 function IconeEtapa({ tipo }: { tipo: string }) {
   switch (tipo) {
     case "catalogo": return <svg viewBox="0 0 24 24" aria-hidden><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /></svg>;
+    /* a etapa "produto" existia na lista do trilho sem case aqui, e o segundo
+       círculo do hero saía vazio: foto, descrição e o botão de comprar */
+    case "produto": return <svg viewBox="0 0 24 24" aria-hidden><rect x="4" y="3" width="16" height="18" rx="1" /><rect x="7" y="6" width="10" height="7" rx="1" /><path d="M7 16h7M7 19h4" /></svg>;
     case "carrinho": return <svg viewBox="0 0 24 24" aria-hidden><path d="M3 4h3l2 12h11" /><path d="M8 16h11l2-9H6" /><circle cx="10" cy="20" r="1.4" /><circle cx="18" cy="20" r="1.4" /></svg>;
     case "checkout": return <svg viewBox="0 0 24 24" aria-hidden><rect x="4" y="4" width="16" height="16" rx="1" /><path d="M8 10h8M8 14h5" /></svg>;
     case "pagamento": return <svg viewBox="0 0 24 24" aria-hidden><rect x="3" y="6" width="18" height="12" rx="1" /><path d="M3 10h18" /></svg>;
@@ -32,22 +41,46 @@ function IconeEtapa({ tipo }: { tipo: string }) {
 /* Plantas em SVG — o painel administrativo, o hub de integrações e as
    telas do case, no mesmo traço 1.5 + anotações mono do estúdio. */
 function Planta({ tipo }: { tipo: string }) {
-  const T = (p: { x: number; y: number; children: string; end?: boolean }) => (
-    <text x={p.x} y={p.y} className={s.plantaTexto} textAnchor={p.end ? "end" : "start"}>{p.children}</text>
+  const T = (p: { x: number; y: number; children: string; end?: boolean; mid?: boolean }) => (
+    <text x={p.x} y={p.y} className={s.plantaTexto} textAnchor={p.end ? "end" : p.mid ? "middle" : "start"}>{p.children}</text>
   );
   switch (tipo) {
-    case "hub": /* o e-commerce no centro, sistemas ao redor */
-      return <svg viewBox="0 0 260 200" role="img" aria-label="Diagrama de integrações: o e-commerce ao centro conectado a pagamento, estoque, ERP, frete, transportadora, WhatsApp, análise e emissão fiscal">
-        <rect x="96" y="82" width="68" height="36" rx="3" className={s.plantaCheia} />
-        <T x={110} y={104}>E-COMMERCE</T>
-        <line x1="96" y1="90" x2="44" y2="34" markerEnd="url(#setaE)" /><rect x="6" y="18" width="60" height="20" rx="3" /><T x={12} y={32}>PAGAMENTO</T>
-        <line x1="130" y1="82" x2="130" y2="38" markerEnd="url(#setaE)" /><rect x="100" y="16" width="60" height="20" rx="3" /><T x={107} y={30}>ESTOQUE</T>
-        <line x1="164" y1="90" x2="216" y2="34" markerEnd="url(#setaE)" /><rect x="194" y="18" width="60" height="20" rx="3" /><T x={214} y={32}>ERP</T>
-        <line x1="90" y1="100" x2="42" y2="100" markerEnd="url(#setaE)" /><rect x="6" y="90" width="34" height="20" rx="3" /><T x={11} y={104}>FRETE</T>
-        <line x1="170" y1="100" x2="218" y2="100" markerEnd="url(#setaE)" /><rect x="220" y="90" width="36" height="20" rx="3" /><T x={225} y={104}>PIXEL</T>
-        <line x1="96" y1="110" x2="44" y2="166" markerEnd="url(#setaE)" /><rect x="6" y="162" width="62" height="20" rx="3" /><T x={12} y={176}>WHATSAPP</T>
-        <line x1="130" y1="118" x2="130" y2="162" markerEnd="url(#setaE)" /><rect x="100" y="164" width="60" height="20" rx="3" /><T x={107} y={178}>ANÁLISE</T>
-        <line x1="164" y1="110" x2="216" y2="166" markerEnd="url(#setaE)" /><rect x="194" y="162" width="60" height="20" rx="3" /><T x={200} y={176}>NF-E</T>
+    case "hub":
+      /* Antes isto era SmartArt: oito retângulos arredondados, setas pretas
+         gordas e a caixa do meio preenchida de verde. Saiu tudo. Sobrou o que
+         o desenho precisa dizer: oito fios mirando uma palavra. Os fios param
+         antes de chegar e a palavra ocupa o vão, então o centro existe sem
+         precisar de moldura. Sem caixas, sem setas, sem preenchimento. */
+      return <svg viewBox="0 0 380 152" aria-hidden>
+        <text x={6} y={84} className={s.plantaFoco}>E-COMMERCE</text>
+        <line x1="84" y1="80" x2="360" y2="80" />
+        {/* derivações acima e abaixo do mesmo barramento, alternadas para os
+            rótulos nunca disputarem espaço: sem diagonal, nada desalinha */}
+        <line x1="100" y1="80" x2="100" y2="52" /><T x={100} y={42} mid>PAGAMENTO</T>
+        <line x1="170" y1="80" x2="170" y2="52" /><T x={170} y={42} mid>ESTOQUE</T>
+        <line x1="240" y1="80" x2="240" y2="52" /><T x={240} y={42} mid>ERP</T>
+        <line x1="310" y1="80" x2="310" y2="52" /><T x={310} y={42} mid>NF-E</T>
+        <line x1="135" y1="80" x2="135" y2="108" /><T x={135} y={122} mid>FRETE</T>
+        <line x1="205" y1="80" x2="205" y2="108" /><T x={205} y={122} mid>WHATSAPP</T>
+        <line x1="275" y1="80" x2="275" y2="108" /><T x={275} y={122} mid>ANÁLISE</T>
+        <line x1="345" y1="80" x2="345" y2="108" /><T x={345} y={122} mid>PIXEL</T>
+      </svg>;
+    case "hubMob":
+      /* O mesmo barramento em pé. O horizontal precisa de 380 unidades de
+         largura e, dentro de um card de ~300px no celular, o mono de 8px
+         renderiza a 6,5px: ilegível. Em pé, o viewBox estreita, a escala sobe
+         e cada rótulo ganha a própria linha. É a gramática do .trilho, que a
+         página já usa no hero e no processo. */
+      return <svg viewBox="0 0 210 258" aria-hidden>
+        <text x={6} y={14} className={s.plantaFoco}>E-COMMERCE</text>
+        <line x1="14" y1="26" x2="14" y2="248" />
+        {["PAGAMENTO", "ESTOQUE", "ERP", "FRETE", "WHATSAPP", "ANÁLISE", "NF-E", "PIXEL"].map((nome, i) => {
+          const y = 46 + i * 28;
+          return <g key={nome}>
+            <line x1="14" y1={y} x2="40" y2={y} />
+            <T x={48} y={y + 3}>{nome}</T>
+          </g>;
+        })}
       </svg>;
     case "home": /* vitrine de produtos */
       return <svg viewBox="0 0 160 200" role="img" aria-label="Tela inicial da loja com destaque e grade de produtos">
@@ -109,16 +142,6 @@ function Planta({ tipo }: { tipo: string }) {
   }
 }
 
-const PlantaDefs = () => (
-  <svg width="0" height="0" aria-hidden>
-    <defs>
-      <marker id="setaE" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-        <path d="M0 0 L8 4 L0 8" fill="none" stroke="context-stroke" strokeWidth="1.5" />
-      </marker>
-    </defs>
-  </svg>
-);
-
 /* ============================================================ HEADER */
 export function Cabecalho() {
   const [aberto, setAberto] = useState(false);
@@ -128,8 +151,11 @@ export function Cabecalho() {
     <nav className={aberto ? s.navAberta : ""} onClick={() => setAberto(false)}>
       <a href="#o-ecommerce">O E-COMMERCE</a>
       <a href="#incluso">O QUE ESTÁ INCLUSO</a>
+      {/* "INTEGRAÇÕES" saiu do nav: o id continua no acordeão (é alvo do
+          ecommerce_integration_section_view), mas mandar alguém para dentro de
+          uma gaveta fechada não é navegação, é beco */}
+      <a href="#case">PROJETOS NO AR</a>
       <a href="#processo">COMO FUNCIONA</a>
-      <a href="#integracoes">INTEGRAÇÕES</a>
       <a href="#faq">DÚVIDAS</a>
       <a className={s.navCta} href="#diagnostico" onClick={() => track("ecommerce_hero_cta", { origem: "header" })}>SOLICITAR DIAGNÓSTICO ↗</a>
     </nav>
@@ -148,17 +174,18 @@ const etapasHero = [
 ];
 export function Hero() {
   return <section className={s.hero} id="o-ecommerce">
-    <PlantaDefs />
     <div className={s.heroGrade}>
       <div>
         <p className={s.olho}>E-COMMERCE SOB MEDIDA · DESIGN · OPERAÇÃO · CONVERSÃO</p>
-        <h1>SUA LOJA NÃO PRECISA APENAS ESTAR ONLINE. PRECISA ESTAR <em>PRONTA PARA VENDER.</em></h1>
-        <p className={s.apoio}>E-commerces desenvolvidos para apresentar seus produtos, facilitar a compra e organizar a operação: do primeiro acesso ao pagamento e à gestão dos pedidos.</p>
+        <h1>UM E-COMMERCE QUE VENDE PARA O CLIENTE E <em>FUNCIONA PARA VOCÊ.</em></h1>
+        <p className={s.apoio}>Loja, pagamento, estoque e painel administrativo em uma estrutura só. Você troca preço, foto e banner sozinho, sem depender de programador.</p>
         <div className={s.acoes}>
           <a className={`${s.botao} ${s.cheio}`} href="#diagnostico" onClick={() => track("ecommerce_hero_cta", { origem: "hero" })}>QUERO PLANEJAR MEU E-COMMERCE ↗</a>
           <a className={s.discreto} href="#incluso" onClick={() => track("ecommerce_secondary_cta", { origem: "hero" })}>VER O QUE ESTÁ INCLUSO ↓</a>
         </div>
-        <p className={s.heroMicro}>Projeto definido conforme produtos, operação, integrações e nível de complexidade. Primeira direção visual apresentada em até 7 dias úteis.</p>
+        {/* sem preço, por decisão do Rafael: o que sustenta o CTA aqui é o
+            risco baixo de tocar nele, não a ordem de grandeza do projeto */}
+        <p className={s.heroMicro}>Diagnóstico sem compromisso. Primeira direção visual em até 7 dias úteis.</p>
       </div>
 
       {/* assinatura: o pedido percorre a operação */}
@@ -201,88 +228,80 @@ export function Faixa() {
   </div>;
 }
 
-/* ============================================================ PROBLEMA */
-const paraCompra = ["Navegação clara", "Pesquisa e filtros", "Página de produto completa", "Variações de tamanho e cor", "Carrinho simples", "Checkout objetivo", "Pagamento confiável", "Acompanhamento do pedido", "Experiência responsiva"];
-const paraVende = ["Cadastro de produtos", "Controle de estoque", "Acompanhamento de pedidos", "Alteração de preços", "Criação de categorias", "Gerenciamento de banners", "Cupons", "Clientes", "Relatórios", "Integrações"];
-export function Problema() {
-  return <section className={s.secao}>
+/* ============================================================ OPERAÇÃO
+   Um bloco no lugar de três que provavam a mesma coisa. "O cliente vê a loja"
+   dava a tese, "tudo o que a loja precisa" dava o inventário e "integrações"
+   dava o entorno: agora a tese abre o bloco e todo o resto é acordeão fechado,
+   então o detalhe fino continua existindo para quem procura, sem custar tela
+   para quem está indo à prova.
+
+   As duas colunas "para quem compra / para quem vende" saíram: repetiam os
+   cinco grupos item por item ("Cadastro de produtos" e "Controle de estoque"
+   já moram em Administração).
+
+   Cada categoria mostra número, título e uma linha de resumo; os 9 a 11 itens
+   só aparecem a um toque. O resumo é escrito, não é o primeiro item da lista:
+   "Página inicial" sozinho não diz o que a categoria cobre.
+
+   DOIS IDS QUE NÃO PODEM SUMIR: `incluso` é o alvo do CTA secundário do hero e
+   do link do header; `integracoes`, no sexto acordeão, é o alvo do
+   IntersectionObserver que dispara ecommerce_integration_section_view. */
+const grupos: [string, string, string, string[]][] = [
+  ["01", "Experiência da loja", "Página inicial, categorias, busca, produto, carrinho e área do cliente.",
+    ["Página inicial", "Categorias", "Pesquisa", "Filtros", "Página de produto", "Produtos relacionados", "Variações de tamanho, cor ou modelo", "Carrinho", "Área do cliente", "Acompanhamento de pedidos", "Versão mobile"]],
+  ["02", "Comercial", "Preço, promoção, cupom, kit, pronta entrega e encomenda.",
+    ["Preços", "Preços promocionais", "Cupons", "Kits", "Descontos", "Condições comerciais", "Pronta entrega", "Encomendas", "Produtos esgotados", "Destaques e lançamentos"]],
+  ["03", "Pagamento e entrega", "Pix, cartão, gateway, cálculo de frete, retirada e status do pedido.",
+    ["Pix", "Cartão", "Gateway de pagamento", "Cálculo de frete", "Retirada", "Entrega local", "Regras de frete grátis", "Status do pedido", "Comunicação transacional"]],
+  ["04", "Administração", "Painel com produtos, estoque, pedidos, clientes, cupons e banners.",
+    ["Painel administrativo", "Cadastro e edição de produtos", "Imagens", "Categorias", "Variações", "Estoque", "Pedidos", "Clientes", "Cupons", "Banners", "Usuários e permissões"]],
+  ["05", "Estrutura", "Domínio, hospedagem, segurança, SEO técnico, analytics e publicação.",
+    ["Domínio", "Hospedagem", "Banco de dados", "Segurança", "Responsividade", "SEO técnico básico", "Analytics", "Eventos de conversão", "Publicação", "Treinamento de uso"]],
+];
+export function Operacao() {
+  return <section className={`${s.secao} ${s.secaoMenor}`} id="incluso">
     <div className={s.molde}>
       <p className={s.olho}>NÃO É APENAS SOBRE COLOCAR PRODUTOS EM UMA PÁGINA</p>
-      <h2>UM E-COMMERCE PRECISA VENDER PARA O CLIENTE E FUNCIONAR PARA QUEM <em>ADMINISTRA.</em></h2>
-      <p className={s.apoio}>Por trás de cada compra existe uma operação. Produtos precisam estar organizados, o estoque precisa ser confiável, o pagamento deve funcionar, o pedido precisa chegar corretamente e o responsável pela loja precisa administrar tudo sem depender de alterações no código.</p>
-      <div className={s.duasColunas}>
-        <div className={s.coluna}>
-          <span className={s.rotulo}>PARA QUEM COMPRA</span>
-          <h3>A experiência da loja</h3>
-          <ul className={s.listaCol}>{paraCompra.map((x) => <li key={x}>{x}</li>)}</ul>
-        </div>
-        <div className={`${s.coluna} ${s.colunaVende}`}>
-          <span className={s.rotulo}>PARA QUEM VENDE</span>
-          <h3>A operação por trás</h3>
-          <ul className={s.listaCol}>{paraVende.map((x) => <li key={x}>{x}</li>)}</ul>
-        </div>
-      </div>
-    </div>
-  </section>;
-}
-
-/* ============================================================ JORNADA */
-const jornada = [
-  ["Descoberta", "O visitante encontra a loja por anúncios, redes sociais, busca ou indicação."],
-  ["Navegação", "Categorias, filtros e pesquisa ajudam a localizar os produtos."],
-  ["Decisão", "A página do produto apresenta imagens, preço, variações, disponibilidade e prazo."],
-  ["Carrinho", "O cliente revisa produtos, quantidades, descontos e estimativa de entrega."],
-  ["Checkout", "Dados, endereço, frete e pagamento sem etapas desnecessárias."],
-  ["Pedido", "A compra é registrada, o estoque é atualizado e o painel acompanha o processo."],
-];
-export function Jornada() {
-  return <section className={s.secao}>
-    <div className={s.molde}>
-      <p className={s.olho}>DA DESCOBERTA AO PEDIDO APROVADO</p>
-      <h2>CADA ETAPA DA COMPRA PRECISA CONDUZIR PARA A <em>PRÓXIMA.</em></h2>
-      <ol className={s.jornada}>
-        {jornada.map((j, i) => <li className={s.jornadaItem} key={j[0]}>
-          <span className={s.jornadaNum}>{String(i + 1).padStart(2, "0")}</span>
-          <h3>{j[0]}</h3>
-          <p>{j[1]}</p>
-        </li>)}
-      </ol>
-    </div>
-  </section>;
-}
-
-/* ============================================================ INCLUSO */
-const grupos = [
-  ["01", "Experiência da loja", ["Página inicial", "Categorias", "Pesquisa", "Filtros", "Página de produto", "Produtos relacionados", "Variações de tamanho, cor ou modelo", "Carrinho", "Área do cliente", "Acompanhamento de pedidos", "Versão mobile"]],
-  ["02", "Comercial", ["Preços", "Preços promocionais", "Cupons", "Kits", "Descontos", "Condições comerciais", "Pronta entrega", "Encomendas", "Produtos esgotados", "Destaques e lançamentos"]],
-  ["03", "Pagamento e entrega", ["Pix", "Cartão", "Gateway de pagamento", "Cálculo de frete", "Retirada", "Entrega local", "Regras de frete grátis", "Status do pedido", "Comunicação transacional"]],
-  ["04", "Administração", ["Painel administrativo", "Cadastro e edição de produtos", "Imagens", "Categorias", "Variações", "Estoque", "Pedidos", "Clientes", "Cupons", "Banners", "Usuários e permissões"]],
-  ["05", "Estrutura", ["Domínio", "Hospedagem", "Banco de dados", "Segurança", "Responsividade", "SEO técnico básico", "Analytics", "Eventos de conversão", "Publicação", "Treinamento de uso"]],
-];
-export function Incluso() {
-  return <section className={s.secao} id="incluso">
-    <div className={s.molde}>
-      <p className={s.olho}>ESTRUTURA COMPLETA</p>
-      <h2>TUDO O QUE A LOJA PRECISA PARA <em>OPERAR ONLINE.</em></h2>
+      <h2>O CLIENTE VÊ A LOJA. VOCÊ VIVE A <em>OPERAÇÃO.</em></h2>
+      <p className={s.apoio}>Por trás de cada compra existe uma operação: produtos organizados, estoque confiável, pagamento que funciona, pedido que chega certo, e você administrando tudo sem depender de alterações no código.</p>
       <div className={s.grupos}>
-        {grupos.map((g) => <div className={s.grupo} key={g[0] as string}>
-          <div className={s.grupoTopo}><b>{g[0]}</b><h3>{g[1]}</h3></div>
-          <ul className={s.grupoLista}>{(g[2] as string[]).map((x) => <li key={x}>{x}</li>)}</ul>
-        </div>)}
-        <div className={s.grupo}>
-          <p className={s.obs}>As funcionalidades finais são definidas de acordo com a operação de cada negócio. Integrações dependem da disponibilidade técnica e da API dos sistemas utilizados.</p>
-        </div>
+        {grupos.map(([n, titulo, resumo, itens]) => <details className={s.grupo} key={n}>
+          <summary>
+            <span className={s.grupoTopo}><b>{n}</b><h3>{titulo}</h3></span>
+            <span className={s.grupoResumo}>{resumo}</span>
+          </summary>
+          <ul className={s.grupoLista}>{itens.map((x) => <li key={x}>{x}</li>)}</ul>
+        </details>)}
+
+        {/* sexto card do mesmo inventário: as integrações fazem parte do que a
+            estrutura entrega, então não precisavam de uma seção só delas */}
+        <details className={s.grupo} id="integracoes">
+          <summary>
+            <span className={s.grupoTopo}><b>06</b><h3>Integrações</h3></span>
+            <span className={s.grupoResumo}>Pagamento, estoque, ERP, frete, WhatsApp, analytics e emissão fiscal.</span>
+          </summary>
+          <p className={s.grupoP}>As integrações reduzem trabalho manual, evitam informação duplicada e conectam a loja à operação que já existe.</p>
+          <div className={s.hubDesenho} role="img" aria-label="A loja como um barramento: pagamento, estoque, ERP, frete, WhatsApp, análise, emissão fiscal e pixel derivam da mesma estrutura">
+            <div className={`${s.hubDesk} ${s.plantaCaixa}`}><Planta tipo="hub" /></div>
+            <div className={`${s.hubMob} ${s.plantaCaixa}`}><Planta tipo="hubMob" /></div>
+          </div>
+          <p className={s.obs}>A viabilidade de cada integração é analisada individualmente. Alguns sistemas não disponibilizam API ou documentação suficiente.</p>
+        </details>
       </div>
+      <p className={s.obs}>As funcionalidades finais são definidas de acordo com a operação de cada negócio.</p>
     </div>
   </section>;
 }
 
 /* ============================================================ PAINEL (escura) */
 export function Painel() {
-  return <section className={`${s.secao} ${s.escura}`} id="painel">
+  /* O h2 antigo ("não depender de um desenvolvedor para alterar um preço")
+     virou o subtítulo do hero. Aqui o título passa a nomear o que o mock
+     realmente mostra: a fila de pedidos e os estados por que ela passa. */
+  return <section className={`${s.secao} ${s.escura} ${s.secaoMenor}`} id="painel">
     <div className={s.molde}>
       <p className={s.olho}>A LOJA POR TRÁS DA LOJA</p>
-      <h2>VOCÊ NÃO DEVE DEPENDER DE UM DESENVOLVEDOR PARA <em>ALTERAR UM PREÇO.</em></h2>
+      <h2>TODO PEDIDO VIRA UMA FILA. O PAINEL É ONDE ELA <em>ANDA.</em></h2>
       <div className={s.painelGrade}>
         <div className={s.mockPainel} aria-hidden>
           <div className={s.mockBarra}><i /><i /><i /><span>painel.sualoja.com.br</span></div>
@@ -305,15 +324,11 @@ export function Painel() {
         </div>
         <div className={s.painelTexto}>
           <p className={s.apoioEscuro} style={{ marginTop: 0 }}>Quando o projeto exige administração própria, é desenvolvido um painel para gerenciar as informações essenciais da operação sem alterar o código da loja: visão geral, novos pedidos, faturamento, produtos com estoque baixo, cadastro de produto, alteração de preço, disponibilidade, banners e categorias.</p>
-          <div className={s.painelEstados}>
-            <span className={`${s.chip} ${s.chipPago}`}>PAGO</span>
-            <span className={`${s.chip} ${s.chipSep}`}>EM SEPARAÇÃO</span>
-            <span className={`${s.chip} ${s.chipEnviado}`}>ENVIADO</span>
-            <span className={`${s.chip} ${s.chipCancel}`}>CANCELADO</span>
-            <span className={`${s.chip} ${s.chipBaixo}`}>ESTOQUE BAIXO</span>
-          </div>
+          {/* a régua de estados saiu: os mesmos chips já aparecem na lista de
+              pedidos do mock, logo ao lado, e repetir custava quase uma dobra
+              de celular. O CTA fica, com o `origem: "painel"` intacto. */}
           <div className={s.acoes}>
-            <a className={`${s.botao} ${s.contorno} ${s.discreto}`} style={{ borderColor: "#fff", color: "#fff" }} href="#diagnostico" onClick={() => track("ecommerce_secondary_cta", { origem: "painel" })}>ENTENDER O PAINEL ADMINISTRATIVO ↗</a>
+            <a className={`${s.botao} ${s.contorno} ${s.contornoClaro}`} href="#diagnostico" onClick={() => track("ecommerce_secondary_cta", { origem: "painel" })}>ENTENDER O PAINEL ADMINISTRATIVO ↗</a>
           </div>
         </div>
       </div>
@@ -321,92 +336,49 @@ export function Painel() {
   </section>;
 }
 
-/* ============================================================ INTEGRAÇÕES */
-export function Integracoes() {
-  return <section className={s.secao} id="integracoes">
-    <div className={s.molde}>
-      <p className={s.olho}>SUA OPERAÇÃO NÃO COMEÇA E TERMINA NO SITE</p>
-      <h2>O E-COMMERCE PODE CONVERSAR COM AS <em>FERRAMENTAS DO NEGÓCIO.</em></h2>
-      <div className={s.hubGrade}>
-        <div className={`${s.caixaBranca} ${s.plantaCaixa}`}><Planta tipo="hub" /></div>
-        <div className={s.hubTexto}>
-          <p className={s.apoio} style={{ marginTop: 0 }}>As integrações reduzem trabalho manual, evitam informações duplicadas e conectam a loja à operação existente: pagamento, estoque, ERP, frete, transportadoras, WhatsApp, analytics, Meta Pixel, e-mail e emissão fiscal.</p>
-          <p className={s.obs}>A viabilidade de cada integração é analisada individualmente. Alguns sistemas não disponibilizam API ou documentação suficiente.</p>
-          <div className={s.acoes}>
-            <a className={`${s.botao} ${s.contorno}`} href="#diagnostico" onClick={() => track("ecommerce_secondary_cta", { origem: "integracoes" })}>AVALIAR MINHAS INTEGRAÇÕES ↗</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>;
-}
+/* ============================================================ PROVA
+   Entra no lugar dos seis wireframes de conceito, que provavam apenas que
+   alguém sabe desenhar retângulos. Aqui tudo é verificável: dois sites de
+   clientes no ar, com a página inteira rolando na tela, e o print da tela
+   de produtos do painel da Xavier's, sem um número alterado.
 
-/* ============================================================ VITRINE OU E-COMMERCE */
-export function VitrineOuEcommerce() {
-  return <section className={s.secao}>
-    <div className={s.molde}>
-      <p className={s.olho}>QUAL ESTRUTURA O SEU NEGÓCIO PRECISA?</p>
-      <h2>NEM TODA LOJA PRECISA COMEÇAR COM UM <em>E-COMMERCE COMPLETO.</em></h2>
-      <div className={s.comparaGrade}>
-        <div className={s.comparaCard}>
-          <h3>Vitrine digital</h3>
-          <span className={s.rotulo}>INDICADA QUANDO</span>
-          <ul className={s.comparaLista}>
-            <li>A empresa quer organizar os produtos</li>
-            <li>O atendimento continua pelo WhatsApp</li>
-            <li>Não existe checkout</li>
-            <li>O volume de pedidos ainda é menor</li>
-            <li>A operação é mais simples</li>
-          </ul>
-          <div className={s.fluxo}><span>PRODUTO</span><i>→</i><span>WHATSAPP</span><i>→</i><span>ATENDIMENTO</span></div>
-        </div>
-        <div className={`${s.comparaCard} ${s.ecom}`}>
-          <h3>E-commerce</h3>
-          <span className={s.rotulo}>INDICADO QUANDO</span>
-          <ul className={s.comparaLista}>
-            <li>O cliente deve comprar sozinho</li>
-            <li>Existem vários produtos</li>
-            <li>Há necessidade de carrinho</li>
-            <li>Pagamentos serão recebidos pela plataforma</li>
-            <li>Estoque e pedidos precisam ser administrados</li>
-            <li>A empresa deseja escalar a operação</li>
-          </ul>
-          <div className={`${s.fluxo} ${s.fluxoEcom}`}><span>PRODUTO</span><i>→</i><span>CARRINHO</span><i>→</i><span>CHECKOUT</span><i>→</i><span>PAGAMENTO</span><i>→</i><span>PEDIDO</span></div>
-        </div>
-      </div>
-      <div className={s.acoes}>
-        <a className={`${s.botao} ${s.contorno}`} href="#diagnostico">DESCOBRIR QUAL ESTRUTURA PRECISO ↗</a>
-        <a className={s.discreto} href="/vitrine-digital">CONHECER A VITRINE DIGITAL ↗</a>
-      </div>
-    </div>
-  </section>;
-}
+   A seção é dividida em duas metades com os mesmos nomes da promessa do
+   hero: O QUE O CLIENTE VÊ (as duas lojas) e O QUE O DONO OPERA (o painel).
+   O corte não é enfeite — é o argumento da página desenhado em layout.
 
-/* ============================================================ DESIGN PARA A MARCA */
-const blocosMarca = [
-  ["01", "Direção visual", "Interface coerente com a identidade e o posicionamento da marca."],
-  ["02", "Hierarquia comercial", "Produtos, categorias, campanhas e argumentos organizados por prioridade."],
-  ["03", "Experiência mobile", "A loja é planejada para o dispositivo em que a maior parte dos clientes compra."],
-  ["04", "Possibilidade de evolução", "A estrutura permite novos produtos, páginas, campanhas, funcionalidades e integrações."],
+   Honestidade obrigatória: nenhum e-commerce completo foi entregue ainda.
+   A nota do rodapé diz isso com todas as letras, porque prova que mente
+   uma vez não serve mais para nada. Os wireframes continuam existindo,
+   fechados no acordeão, que é onde uma explicação de estrutura pertence.
+
+   Fundo claro desde 05/08. Era escuro, mas depois do corte de seções ele
+   ficou colado no bloco escuro do painel: dava 3,8 telas seguidas de --night
+   no celular, e a prova perdia o contorno de seção. Agora o peso dela vem do
+   tamanho e de ser a única seção com fotografia: os dois MacBooks e a moldura
+   do painel são objetos escuros sobre creme, e o bloco do painel logo acima
+   virou o corte que separa a página em atos.
+
+   O id="case" NÃO muda: é o alvo do IntersectionObserver que dispara
+   ecommerce_case_view. Os links das lojas saem sem data-cta e sem track()
+   de propósito, para o funil continuar exatamente como estava. */
+const lojas = [
+  {
+    img: "/assets/case-xavier-desk.jpg", w: 1440, h: 8965, dur: "36s",
+    url: "https://xavier-s-sports.vercel.app/", dom: "xavier-s-sports.vercel.app",
+    nome: "XAVIER'S SPORTS", tag: "CAMISAS ESPORTIVAS", tipo: "VITRINE + PAINEL",
+    copy: "Catálogo no ar com controle de pronta entrega. Abra pelo celular e faça o caminho que o seu cliente faria.",
+    fatos: ["Catálogo por clubes e seleções", "Página para cada produto", "Estoque por tamanho no painel", "Pedido direto no WhatsApp"],
+    cta: "ABRIR A LOJA DA XAVIER'S ↗",
+  },
+  {
+    img: "/assets/case-prgrife-desk.jpg", w: 1440, h: 5559, dur: "22s",
+    url: "https://pr-grife.vercel.app/", dom: "pr-grife.vercel.app",
+    nome: "PR GRIFE", tag: "MULTIMARCAS DE ALTO PADRÃO", tipo: "VITRINE + PAINEL",
+    copy: "Loja com ponto físico em Maringá. O dono publica peça nova e ajusta o estoque sozinho, sem me chamar.",
+    fatos: ["Catálogo por marca e categoria", "Página para cada produto", "Painel de estoque para o dono", "Pedido com forma de pagamento escolhida"],
+    cta: "ABRIR A LOJA DA PR GRIFE ↗",
+  },
 ];
-export function DesignMarca() {
-  return <section className={s.secao}>
-    <div className={s.molde}>
-      <p className={s.olho}>DESIGN ESPECÍFICO PARA A MARCA</p>
-      <h2>NÃO É UM TEMA PRONTO COM A SUA <em>LOGO COLOCADA POR CIMA.</em></h2>
-      <p className={s.apoio}>A experiência é construída a partir do posicionamento, dos produtos, do público e da operação da marca. A interface deve fazer sentido para aquilo que está sendo vendido, e não apenas seguir o visual de uma plataforma genérica.</p>
-      <div className={s.blocos}>
-        {blocosMarca.map((b) => <article className={s.bloco} key={b[0]}>
-          <span className={s.blocoNum}>{b[0]}</span>
-          <h3>{b[1]}</h3>
-          <p>{b[2]}</p>
-        </article>)}
-      </div>
-    </div>
-  </section>;
-}
-
-/* ============================================================ DEMONSTRAÇÃO / CASE */
 const telas = [
   { k: "home", nome: "Home", tag: "loja" },
   { k: "categoria", nome: "Categoria", tag: "filtros" },
@@ -415,20 +387,81 @@ const telas = [
   { k: "admin", nome: "Painel", tag: "pedidos" },
   { k: "mobile", nome: "Mobile", tag: "responsivo" },
 ];
-export function Demonstracao() {
+export function Prova() {
   return <section className={s.secao} id="case">
     <div className={s.molde}>
-      <span className={s.demoTag}>CONCEITO DE E-COMMERCE · PROJETO EM DESENVOLVIMENTO</span>
-      <h2>UM E-COMMERCE NÃO É UMA <em>ÚNICA TELA.</em></h2>
-      <p className={s.apoio}>Home, categoria, produto, carrinho, checkout, painel administrativo e versão mobile: telas conectadas por trás da mesma operação. As imagens abaixo representam um conceito, não um resultado de cliente entregue.</p>
-      <div className={s.telas}>
-        {telas.map((t) => <figure className={s.tela} key={t.k}>
-          <figcaption className={s.telaTopo}><b>{t.nome}</b><span>{t.tag}</span></figcaption>
-          <div className={s.plantaCaixa}><Planta tipo={t.k} /></div>
-        </figure>)}
+      <p className={s.olho}>PROJETOS NO AR</p>
+      <h2>A BASE JÁ ESTÁ <em>NO AR.</em></h2>
+      <p className={s.apoio}>Duas lojas de clientes, publicadas e navegáveis agora. As duas foram desenhadas, desenvolvidas e entregues por mim, e hoje quem mexe nelas é o dono. Cada estrutura é desenhada do zero para a marca, não um tema pronto com a logo colocada por cima.</p>
+
+      <p className={s.metade}>O QUE O CLIENTE VÊ</p>
+      <div className={s.lojas}>
+        {lojas.map((x) => <article key={x.nome}>
+          <div className={s.laptop}>
+            <div className={s.lapTela}>
+              <div className={s.barraNav}>
+                <span className={s.pontos} aria-hidden><i /><i /><i /></span>
+                <span className={s.urlChip}>{x.dom}</span>
+                <span className={s.noAr}>● NO AR</span>
+              </div>
+              <a className={s.capa} href={x.url} target="_blank" rel="noopener" aria-label={`Abrir o site da ${x.nome} em uma nova aba`}>
+                {/* img simples: o otimizador do Next não lida bem com capturas de quase 9 mil pixels de altura */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img className={s.pageShot} src={x.img} width={x.w} height={x.h} style={{ "--dur": x.dur } as React.CSSProperties} alt={`Página completa da loja da ${x.nome}`} loading="lazy" decoding="async" />
+              </a>
+            </div>
+            <div className={s.deck} aria-hidden />
+          </div>
+          <div className={s.lojaMeta}><small>{x.tag}</small><span className={s.lojaTipo}>{x.tipo}</span></div>
+          <h3>{x.nome}</h3>
+          <p>{x.copy}</p>
+          <ul className={s.fatos}>{x.fatos.map((f) => <li key={f}>{f}</li>)}</ul>
+          <a className={`${s.botao} ${s.cheio}`} href={x.url} target="_blank" rel="noopener">{x.cta}</a>
+        </article>)}
       </div>
+
+      <p className={s.metade}>O QUE O DONO OPERA</p>
+      <figure className={s.painelReal}>
+        <div className={s.painelMoldura}>
+          <div className={s.barraNav}>
+            <span className={s.pontos} aria-hidden><i /><i /><i /></span>
+            <span className={s.urlChip}>xavier-s-sports.vercel.app/admin</span>
+            <span className={s.noAr}>● PAINEL DA LOJA</span>
+          </div>
+          {/* Art direction de verdade: no celular entra um recorte das colunas
+              Preço, Estoque por tamanho e Status. Encolher a tela inteira para
+              350px deixa a tabela com 4px de texto, ou seja, uma prova que
+              ninguém consegue ler. <picture> em vez de next/image porque o
+              otimizador não troca recorte por media query, e o navegador baixa
+              só o arquivo que corresponde. */}
+          <div className={s.painelQuadro}>
+            <picture>
+              <source media="(max-width: 720px)" srcSet="/assets/demo/xavier-painel-mob.jpg" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/assets/demo/xavier-painel.jpg" alt="Tela de produtos do painel da Xavier's Sports: cada camisa com preço, estoque por tamanho e status de pronta entrega" loading="lazy" decoding="async" />
+            </picture>
+          </div>
+        </div>
+        {/* sem "foto" na lista: o recorte mobile corta a coluna do produto, e
+            legenda não pode prometer o que a imagem ao lado não mostra */}
+        <figcaption className={s.painelLegenda}>Painel da Xavier&apos;s Sports, operado pelo dono da loja. Preço, estoque por tamanho e disponibilidade mudam por ali, sem tocar em código.</figcaption>
+      </figure>
+
+      <p className={s.notaProva}>Estruturas de vitrine e painel desenvolvidas pelo estúdio e operadas pelos próprios donos. O módulo de e-commerce completo estende essa mesma base com carrinho, checkout e pagamento.</p>
+
+      <details className={`${s.dobra} ${s.dobraTelas}`}>
+        <summary>Como as telas se conectam</summary>
+        <p className={s.dobraNota}>Desenhos de estrutura, não capturas de um cliente entregue: home, categoria, produto, checkout, painel e mobile ligados pela mesma operação.</p>
+        <div className={s.telas}>
+          {telas.map((t) => <figure className={s.tela} key={t.k}>
+            <figcaption className={s.telaTopo}><b>{t.nome}</b><span>{t.tag}</span></figcaption>
+            <div className={s.plantaCaixa}><Planta tipo={t.k} /></div>
+          </figure>)}
+        </div>
+      </details>
+
       <div className={s.acoes}>
-        <a className={`${s.botao} ${s.cheio}`} href="#diagnostico">QUERO UMA ESTRUTURA COMO ESTA ↗</a>
+        <a className={`${s.botao} ${s.cheio}`} href="#diagnostico">PLANEJAR O MEU E-COMMERCE ↗</a>
       </div>
     </div>
   </section>;
@@ -446,49 +479,54 @@ const etapas = [
   ["Publicação", "Entrada no ar, orientação de uso e acompanhamento inicial."],
 ];
 export function Processo() {
-  return <section className={s.secao} id="processo">
+  /* Oito passos com descrição custavam uma tela e meia de celular a quem ainda
+     não decidiu conversar. Quem quer saber como o projeto anda abre; quem está
+     indo para o formulário passa reto. O id fica: é o link COMO FUNCIONA. */
+  return <section className={`${s.secao} ${s.secaoMenor}`} id="processo">
     <div className={s.molde}>
       <p className={s.olho}>DA OPERAÇÃO À TELA</p>
-      <h2>COMO UM E-COMMERCE SAI DA IDEIA E CHEGA AO <em>PRIMEIRO PEDIDO.</em></h2>
-      <ol className={s.trilho}>
-        {etapas.map((e, i) => <li key={e[0]}>
-          <b>{String(i + 1).padStart(2, "0")}</b>
-          <div><h3>{e[0]}</h3><p>{e[1]}</p></div>
-        </li>)}
-      </ol>
-      <p className={s.obs}>O prazo é definido após o diagnóstico. A complexidade varia conforme quantidade de produtos, integrações, regras comerciais e operação.</p>
+      {/* manchete curta porque a seção agora é uma linha só: em 320px a antiga
+          ("como um e-commerce sai da ideia e chega ao primeiro pedido") ocupava
+          quatro linhas para anunciar um acordeão fechado */}
+      <h2>DA IDEIA AO <em>PRIMEIRO PEDIDO.</em></h2>
+      <details className={`${s.dobra} ${s.dobraLarga}`}>
+        <summary>Como funciona o projeto, do diagnóstico à publicação</summary>
+        <ol className={s.trilho}>
+          {etapas.map((e, i) => <li key={e[0]}>
+            <b>{String(i + 1).padStart(2, "0")}</b>
+            <div><h3>{e[0]}</h3><p>{e[1]}</p></div>
+          </li>)}
+        </ol>
+        <p className={s.obs}>O prazo é definido após o diagnóstico. A complexidade varia conforme quantidade de produtos, integrações, regras comerciais e operação.</p>
+      </details>
     </div>
   </section>;
 }
 
-/* ============================================================ POR QUE O ESTÚDIO (escura) */
-const porques = [
-  ["Estratégia antes da interface", "A estrutura é definida antes dos detalhes visuais."],
-  ["Design sob medida", "A loja não nasce de um tema genérico aplicado a qualquer negócio."],
-  ["Visão de negócio", "O projeto considera venda, operação, atendimento e administração."],
-  ["Contato direto", "O cliente acompanha as decisões sem atravessar várias camadas de atendimento."],
-  ["Evolução planejada", "A estrutura pode ser preparada para novas páginas, produtos e integrações."],
-  ["Poucos projetos por vez", "Um número reduzido de projetos simultâneos para manter o nível de cada entrega."],
-];
-export function PorQue() {
-  return <section className={`${s.secao} ${s.escura}`}>
-    <div className={s.molde}>
-      <p className={s.olho}>POR QUE O RAFAEL RAZEIRA ESTÚDIO</p>
-      <h2>UMA LOJA É UMA OPERAÇÃO. E MERECE SER TRATADA <em>COMO UMA.</em></h2>
-      <div className={s.porGrade}>
-        {porques.map((p) => <article key={p[0]}><h3>{p[0]}</h3><p>{p[1]}</p></article>)}
-      </div>
-    </div>
-  </section>;
-}
+/* ============================================================ FAQ
+   Dezessete perguntas seguidas custavam 1,7 tela de celular a quem já estava
+   quase no formulário. As seis que respondem objeção de compra ficam à vista;
+   as doze de detalhe técnico esperam atrás de uma gaveta.
 
-/* ============================================================ FAQ */
-const faq: [string, string][] = [
-  ["Quanto custa desenvolver um e-commerce?", "O investimento depende da quantidade de páginas, produtos, regras comerciais, painel administrativo e integrações. Após o diagnóstico, você recebe um escopo com valor e prazo definidos."],
+   A segunda pergunta é nova e absorve a seção comparativa "nem toda loja
+   precisa começar com um e-commerce completo": é a mesma decisão, respondida
+   onde a pessoa de fato pergunta. */
+type Pergunta = [string, React.ReactNode];
+const faqTopo: Pergunta[] = [
+  /* Sem número, mas sem evasiva: a resposta nomeia os três fatores que de fato
+     mexem no valor e diz o que a pessoa recebe e quando. "Depende" sozinho é o
+     que faz alguém fechar a aba na primeira pergunta do FAQ. */
+  ["Quanto custa desenvolver um e-commerce?", "Três coisas mexem no valor: a quantidade de produtos, as integrações com os sistemas que você já usa e as regras comerciais da sua operação. No diagnóstico eu levanto os três e te mando um escopo fechado, com valor e prazo, antes de qualquer compromisso."],
+  ["Preciso de um e-commerce completo ou de uma vitrine digital?", <>
+    Na vitrine, os produtos ficam organizados e o pedido fecha no WhatsApp, sem carrinho nem checkout: serve quando o volume ainda é menor e o atendimento passa por você. O e-commerce serve quando o cliente precisa comprar e pagar sozinho, e quando estoque e pedidos precisam ser administrados. Se for o primeiro caso, <Link className={s.linkTexto} href="/vitrine-digital">conheça a vitrine digital</Link>.
+  </>],
   ["Qual é o prazo de desenvolvimento?", "O prazo é definido após o diagnóstico e varia conforme a quantidade de produtos, integrações e a complexidade da operação. A primeira direção visual pode ser apresentada em até 7 dias úteis."],
-  ["O projeto funciona no celular?", "Sim. Cada seção é planejada e revisada para computadores, tablets e celulares, com atenção especial à experiência mobile, onde a maior parte das compras acontece."],
   ["Eu consigo cadastrar os produtos sozinho?", "Quando o projeto inclui painel administrativo, você cadastra e edita produtos, preços, imagens, categorias e disponibilidade sem alterar o código da loja."],
   ["O painel administrativo está incluído?", "Depende do escopo. Quando a operação exige administração própria, o painel é desenvolvido de acordo com o que o negócio precisa controlar."],
+  ["Existe mensalidade?", "Serviços de terceiros como hospedagem, domínio e gateway podem ter custos recorrentes próprios. Manutenção e evolução são definidas separadamente, conforme a necessidade."],
+];
+const faqResto: Pergunta[] = [
+  ["O projeto funciona no celular?", "Sim. Cada seção é planejada e revisada para computadores, tablets e celulares, com atenção especial à experiência mobile, onde a maior parte das compras acontece."],
   ["Quem cadastra os produtos iniciais?", "A carga inicial pode ser feita pelo estúdio ou pela equipe da loja, e é definida no escopo. O painel permite que você siga cadastrando depois."],
   ["Posso integrar com o meu sistema de estoque?", "A integração depende do sistema utilizado, da existência de API e da documentação disponibilizada pelo fornecedor. A viabilidade é analisada antes de entrar no escopo."],
   ["É possível integrar com um ERP?", "É possível quando o ERP oferece API e documentação adequadas. Nem todo sistema disponibiliza integração automática, então cada caso é avaliado individualmente."],
@@ -496,29 +534,42 @@ const faq: [string, string][] = [
   ["Como funciona o cálculo de frete?", "O frete pode ser calculado por regras próprias, integração com transportadoras, retirada, entrega local e regras de frete grátis, conforme a operação da loja."],
   ["Preciso ter todas as fotos e textos prontos?", "Não necessariamente. Durante o diagnóstico, o material existente é analisado e são identificados os conteúdos que precisam ser produzidos, organizados ou adaptados."],
   ["Domínio e hospedagem estão incluídos?", "A configuração pode fazer parte da entrega. Caso a empresa ainda não tenha domínio ou hospedagem, ela é orientada sobre o registro e a contratação."],
-  ["Existe mensalidade?", "Serviços de terceiros como hospedagem, domínio e gateway podem ter custos recorrentes próprios. Manutenção e evolução são definidas separadamente, conforme a necessidade."],
   ["Como funciona a manutenção?", "Suporte, manutenção, atualizações e novas funcionalidades são combinados conforme a necessidade do projeto, fora do escopo inicial de desenvolvimento."],
   ["O e-commerce é seguro?", "O projeto utiliza boas práticas de desenvolvimento e serviços especializados de pagamento. Os dados sensíveis do cartão não devem ser armazenados diretamente pela loja."],
   ["Posso emitir nota fiscal?", "A emissão fiscal é possível por integração com sistemas especializados, quando eles oferecem API e documentação. A viabilidade é avaliada caso a caso."],
   ["A loja poderá receber novas funcionalidades depois?", "Sim. A estrutura é pensada para evoluir, permitindo novas páginas, produtos, campanhas, funcionalidades e integrações ao longo do tempo."],
 ];
+/* Uma pergunta é sempre uma pergunta, esteja à vista ou dentro da gaveta:
+   mesmo marcador visual e o mesmo ecommerce_faq_open nas duas. */
+const linhaFaq = (f: Pergunta) => (
+  <details key={f[0]} onToggle={(e) => (e.currentTarget as HTMLDetailsElement).open && track("ecommerce_faq_open", { pergunta: f[0] })}>
+    <summary>{f[0]}</summary>
+    <p>{f[1]}</p>
+  </details>
+);
 export function Duvidas() {
-  return <section className={s.secao} id="faq">
+  return <section className={`${s.secao} ${s.secaoMenor}`} id="faq">
     <div className={s.molde}>
       <p className={s.olho}>DÚVIDAS FREQUENTES</p>
       <h2>ANTES DE COMEÇAR.</h2>
-      <div className={s.sanfona}>
-        {faq.map((f) => <details key={f[0]} onToggle={(e) => (e.currentTarget as HTMLDetailsElement).open && track("ecommerce_faq_open", { pergunta: f[0] })}>
-          <summary>{f[0]}</summary>
-          <p>{f[1]}</p>
-        </details>)}
-      </div>
+      <div className={s.sanfona}>{faqTopo.map(linhaFaq)}</div>
+      {/* a gaveta NÃO dispara ecommerce_faq_open: abrir a gaveta não é tirar
+          uma dúvida, e contar as duas coisas juntas estragaria a leitura de
+          qual pergunta trava a venda */}
+      <details className={`${s.dobra} ${s.dobraLarga}`}>
+        <summary>Ver as outras {faqResto.length} dúvidas</summary>
+        <div className={s.sanfona}>{faqResto.map(linhaFaq)}</div>
+      </details>
     </div>
   </section>;
 }
 
 /* ============================================================ CTA FINAL + FORMULÁRIO + RODAPÉ */
-const passo1 = [
+/* Etapa 2 desde a inversão: primeiro a pessoa fala da loja, só depois deixa
+   o contato. Perguntar nome e WhatsApp de saída faz o formulário parecer uma
+   cobrança; perguntar sobre a operação faz ele parecer um diagnóstico, que é
+   o que ele é. Os textos dos campos não mudaram, só a ordem das etapas. */
+const contato = [
   { id: "nome", rot: "Nome", tipo: "text", ph: "Seu nome" },
   { id: "whatsapp", rot: "WhatsApp", tipo: "tel", ph: "(00) 00000-0000" },
   { id: "canal", rot: "Instagram ou site", tipo: "text", ph: "@sualoja ou sualoja.com.br" },
@@ -530,15 +581,22 @@ export function ChamadaFinal() {
   const [ocultarBarra, setOcultarBarra] = useState(false);
   const set = (k: string, v: string) => setDados((d) => ({ ...d, [k]: v }));
 
-  // A barra fixa mobile some quando o formulário de diagnóstico entra na tela,
-  // para nunca cobrir os campos e o botão de envio.
+  /* A barra fixa entra só depois que a pessoa passa do hero (antes disso o CTA
+     principal já está na tela e a barra só rouba altura) e some quando o
+     formulário aparece, para nunca cobrir os campos e o botão de envio.
+     Handler de scroll em vez de IntersectionObserver de propósito: o IO não
+     dispara no ambiente CDP usado para testar esta página, e medir o
+     getBoundingClientRect é determinístico. */
   useEffect(() => {
-    const alvo = document.getElementById("diagnostico");
-    if (!alvo) return;
+    const form = document.getElementById("diagnostico");
+    const hero = document.getElementById("o-ecommerce");
+    if (!form) return;
     const aoRolar = () => {
-      const r = alvo.getBoundingClientRect();
+      const f = form.getBoundingClientRect();
+      const noHero = hero ? hero.getBoundingClientRect().bottom > 80 : false;
       // à vista = o topo do form já subiu à metade inferior e ele ainda não saiu por cima
-      setOcultarBarra(r.top < window.innerHeight * 0.8 && r.bottom > 0);
+      const noForm = f.top < window.innerHeight * 0.8 && f.bottom > 0;
+      setOcultarBarra(noHero || noForm);
     };
     aoRolar();
     window.addEventListener("scroll", aoRolar, { passive: true });
@@ -561,13 +619,8 @@ export function ChamadaFinal() {
       linha("Segmento", dados.vende),
       linha("Quantidade aproximada de produtos", dados.produtos),
       linha("Site atual", dados.site),
-      linha("Sistema de estoque ou ERP", dados.erp),
-      linha("Área de entrega", dados.entrega),
-      linha("Precisa de pagamento online", dados.pagamento),
-      linha("Precisa de painel administrativo", dados.painel),
       linha("Principal necessidade", dados.necessidade),
       linha("Faixa de investimento", dados.investimento),
-      linha("Prazo desejado", dados.prazo),
       "",
       "Gostaria de entender qual estrutura seria mais adequada para a operação.",
     ].join("\n");
@@ -580,25 +633,18 @@ export function ChamadaFinal() {
       <p className={s.agenda}>AGENDA PARA NOVOS PROJETOS</p>
       <h2>SEU E-COMMERCE COMEÇA ANTES DA <em>PRIMEIRA TELA.</em></h2>
       <p className={s.apoioEscuro}>Conte sobre sua loja, seus produtos e como sua operação funciona hoje. A partir disso, será possível definir a estrutura, o investimento e o caminho adequado para colocar o projeto no ar.</p>
+      {/* o que sobrou da seção "uma loja é uma operação": dos seis argumentos
+          de lá, só este é um fato verificável e escasso, e escassez pertence
+          ao lado do formulário, não a um card no meio da página */}
+      <p className={s.agendaLimite}>Agenda limitada: poucos projetos simultâneos para manter o nível de cada entrega.</p>
 
       <form className={s.form} onSubmit={enviar}>
         <div className={s.formPassos}>
-          <div className={`${s.formPasso} ${etapa === 1 ? s.formPassoAtivo : ""}`}><b>1</b> CONTATO</div>
-          <div className={`${s.formPasso} ${etapa === 2 ? s.formPassoAtivo : ""}`}><b>2</b> OPERAÇÃO</div>
+          <div className={`${s.formPasso} ${etapa === 1 ? s.formPassoAtivo : ""}`}><b>1</b> OPERAÇÃO</div>
+          <div className={`${s.formPasso} ${etapa === 2 ? s.formPassoAtivo : ""}`}><b>2</b> CONTATO</div>
         </div>
 
         {etapa === 1 ? <div className={s.formCorpo}>
-          <div className={s.dupla}>
-            {passo1.map((c) => <label className={s.campo} key={c.id}>
-              <span>{c.rot}</span>
-              <input type={c.tipo} placeholder={c.ph} value={dados[c.id] || ""} onChange={(ev) => set(c.id, ev.target.value)} required={c.id === "nome" || c.id === "whatsapp"} />
-            </label>)}
-          </div>
-          <div className={s.formNav}>
-            <span />
-            <button type="button" className={`${s.botao} ${s.cheio}`} onClick={avancar}>CONTINUAR PARA A OPERAÇÃO ↓</button>
-          </div>
-        </div> : <div className={s.formCorpo}>
           <div className={s.dupla}>
             <label className={s.campo}><span>O que a empresa vende</span><input type="text" placeholder="Segmento e produtos" value={dados.vende || ""} onChange={(e) => set("vende", e.target.value)} /></label>
             <label className={s.campo}><span>Quantidade aproximada de produtos</span>
@@ -611,26 +657,24 @@ export function ChamadaFinal() {
                 <option value="">Selecione</option><option>Não tenho</option><option>Tenho site institucional</option><option>Tenho loja virtual</option>
               </select>
             </label>
-            <label className={s.campo}><span>Usa sistema de estoque ou ERP?</span><input type="text" placeholder="Qual sistema, se houver" value={dados.erp || ""} onChange={(e) => set("erp", e.target.value)} /></label>
-            <label className={s.campo}><span>Vende para todo o Brasil ou regional?</span>
-              <select value={dados.entrega || ""} onChange={(e) => set("entrega", e.target.value)}>
-                <option value="">Selecione</option><option>Todo o Brasil</option><option>Regional</option><option>Entrega local</option>
-              </select>
-            </label>
-            <label className={s.campo}><span>Precisa de pagamento online?</span>
-              <select value={dados.pagamento || ""} onChange={(e) => set("pagamento", e.target.value)}>
-                <option value="">Selecione</option><option>Sim</option><option>Não</option><option>Ainda avaliando</option>
-              </select>
-            </label>
-            <label className={s.campo}><span>Precisa de painel administrativo?</span>
-              <select value={dados.painel || ""} onChange={(e) => set("painel", e.target.value)}>
-                <option value="">Selecione</option><option>Sim</option><option>Não</option><option>Ainda avaliando</option>
-              </select>
-            </label>
+            {/* ERP, abrangência de venda, pagamento online, painel e prazo
+                saíram: são cinco perguntas que a conversa do diagnóstico
+                responde melhor, e cada uma delas era um motivo a mais para
+                abandonar o formulário no celular. */}
             <label className={s.campo}><span>Faixa de investimento</span><input type="text" placeholder="Sua faixa de investimento" value={dados.investimento || ""} onChange={(e) => set("investimento", e.target.value)} /></label>
           </div>
           <label className={s.campo}><span>Principal dificuldade atual</span><textarea placeholder="O que mais atrapalha sua operação hoje" value={dados.necessidade || ""} onChange={(e) => set("necessidade", e.target.value)} /></label>
-          <label className={s.campo}><span>Prazo desejado</span><input type="text" placeholder="Quando pretende colocar no ar" value={dados.prazo || ""} onChange={(e) => set("prazo", e.target.value)} /></label>
+          <div className={s.formNav}>
+            <span />
+            <button type="button" className={`${s.botao} ${s.cheio}`} onClick={avancar}>CONTINUAR PARA O CONTATO ↓</button>
+          </div>
+        </div> : <div className={s.formCorpo}>
+          <div className={s.dupla}>
+            {contato.map((c) => <label className={s.campo} key={c.id}>
+              <span>{c.rot}</span>
+              <input type={c.tipo} placeholder={c.ph} value={dados[c.id] || ""} onChange={(ev) => set(c.id, ev.target.value)} required={c.id === "nome" || c.id === "whatsapp"} />
+            </label>)}
+          </div>
           <div className={s.formNav}>
             <button type="button" className={`${s.botao} ${s.contorno}`} style={{ borderColor: "#fff", color: "#fff" }} onClick={() => setEtapa(1)}>← VOLTAR</button>
             <button type="submit" className={`${s.botao} ${s.cheio}`}>SOLICITAR DIAGNÓSTICO DO E-COMMERCE ↗</button>
@@ -642,8 +686,8 @@ export function ChamadaFinal() {
     </section>
 
     <a className={`${s.barraFixa} ${ocultarBarra ? s.barraOculta : ""}`} href="#diagnostico" onClick={() => track("ecommerce_secondary_cta", { origem: "barra-fixa" })}>
-      <small>DESENVOLVIMENTO DE E-COMMERCE<i>DIAGNÓSTICO SOB MEDIDA</i></small>
-      <span>SOLICITAR ↗</span>
+      <small>E-COMMERCE SOB MEDIDA<i>Diagnóstico sem compromisso</i></small>
+      <span>PLANEJAR MEU E-COMMERCE ↗</span>
     </a>
 
     <footer className={s.rodape}>

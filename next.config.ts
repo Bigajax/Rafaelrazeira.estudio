@@ -1,6 +1,13 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  /* O balão de dev do Next (<nextjs-portal>) nascia por cima do "RAFAEL
+     RAZEIRA" do header e passava por bug de layout em todo teste de celular
+     em localhost. Ele não existe no build de produção (verificado com
+     `next start`: nenhum nextjs-portal no DOM, logo limpo em 320/360/390px),
+     então o problema era só de bancada. Mandado para o canto oposto do
+     cabeçalho, em vez de desligado: o indicador de rota e de build é útil. */
+  devIndicators: { position: "bottom-right" },
   /* AVIF na frente do WebP. O padrão do Next é só WebP, e o que decide aqui
      é o quadro estático do hero (/assets/demo/xavier-hero-still.jpg): ele é a
      primeira imagem grande da /vitrine-digital e a maioria do tráfego chega

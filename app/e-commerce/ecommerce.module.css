@@ -18,6 +18,13 @@
   --line-dark: #26312b;
   --traco: #a9bfb1;
   --alerta: #c98a2b;
+  /* O --green tem 2,3:1 sobre o creme: serve de fundo de botão e de destaque
+     em manchete (que passa como texto grande), mas reprova em qualquer rótulo
+     miúdo. Este é o mesmo verde escurecido até 4,7:1, para texto pequeno em
+     fundo claro. No escuro o --green continua valendo, lá ele dá 5,6:1. */
+  --green-ink: #0a7d57;
+  /* âmbar de texto: o --alerta dá 2,9:1 no chip branco */
+  --alerta-ink: #8a5e15;
   --pad: clamp(20px, 5vw, 64px);
   --display: var(--font-display), Arial, sans-serif;
   --body: var(--font-body), Arial, sans-serif;
@@ -46,6 +53,14 @@
 .page em { font-style: normal; color: var(--green) }
 .page p { line-height: 1.6; color: var(--ink); margin: 0 }
 
+/* Hierarquia: tamanho cheio só no hero, na seção de prova e na chamada final.
+   As seções intermediárias descem um degrau, senão a página inteira grita no
+   mesmo volume e o clímax deixa de existir.
+   Dois níveis de classe de propósito: `.page h2` reaparece dentro do media
+   query de 720px lá embaixo, e com (0,1,1) contra (0,1,1) quem vence é a
+   última regra do arquivo. Com (0,2,1) a ordem deixa de importar. */
+.page .secaoMenor h2 { font-size: clamp(25px, 2.3vw, 34px) }
+
 .molde { max-width: 1360px; margin: auto }
 .secao { padding: clamp(60px, 7vw, 92px) var(--pad); scroll-margin-top: 72px }
 .olho { font: 11px var(--mono); letter-spacing: .12em; color: var(--black); margin: 0 0 20px }
@@ -53,7 +68,40 @@
 .apoio { font-size: clamp(15px, 1.2vw, 17px); max-width: 620px; margin-top: 22px }
 .apoioEscuro { font-size: clamp(15px, 1.2vw, 17px); max-width: 640px; margin-top: 36px; color: #a8b3ab }
 .micro { font: 11px/1.6 var(--mono); color: #8a958d; display: block; margin-top: 18px }
-.obs { font: 11px/1.6 var(--mono); color: #8a958d; margin-top: 18px; max-width: 560px }
+/* dois níveis de classe porque `.page p { margin: 0 }` tem seletor de elemento
+   e vencia o margin-top: a ressalva ficava colada no bloco de cima */
+.page .obs { font: 11px/1.6 var(--mono); color: #63706a; margin-top: 24px; max-width: 560px }
+
+/* ---------- acordeão de lista ----------
+   Mesmo vocabulário visual do FAQ (mono, filete, o + em esmeralda), mas em
+   escala de rodapé de lista: aqui ele fecha um resto de inventário, não abre
+   uma pergunta. Serve às colunas do problema e às telas de conceito. */
+.dobra { border-top: 1px solid var(--line); margin-top: 4px }
+.dobra > summary {
+  font: 700 11px var(--mono); letter-spacing: .06em; color: var(--black);
+  padding: 15px 0; cursor: pointer; list-style: none;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+.dobra > summary::-webkit-details-marker { display: none }
+.dobra > summary::after { content: "+"; font: 400 18px/1 var(--mono); color: var(--green-ink) }
+.dobra[open] > summary::after { content: "–" }
+.dobra > ul { margin-top: 0; padding-bottom: 8px }
+.escura .dobra { border-color: var(--line-dark) }
+.escura .dobra > summary { color: #fff }
+
+/* Acordeão do tamanho de uma seção: o processo inteiro e o resto do FAQ.
+   Mesma régua do .sanfona (860px, filete em cima e embaixo) e o summary em
+   Archivo, porque aqui ele não é rodapé de lista, é o título do conteúdo.
+   Precisa vir DEPOIS de `.dobra > summary`: as duas regras têm a mesma
+   especificidade (0,1,1) e quem vence é a última do arquivo. */
+.dobraLarga { max-width: 860px; margin-top: 40px; border-bottom: 1px solid var(--line) }
+.dobraLarga > summary { font: 800 clamp(15px, 1.4vw, 18px) var(--display); font-stretch: 114%; letter-spacing: 0; padding: 20px 0 }
+.dobraLarga > summary::after { font: 400 20px/1 var(--mono) }
+.dobraLarga .sanfona { margin-top: 0; border-top: 0 }
+.dobraLarga .trilho { margin-top: 8px }
+/* no FAQ a gaveta é a linha seguinte da lista, não um bloco à parte: sem isto
+   sobravam 40px de vão e um filete duplo depois de "Existe mensalidade?" */
+.sanfona + .dobraLarga { margin-top: 0; border-top: 0 }
 
 /* ---------- botões ---------- */
 .acoes { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; margin-top: 32px }
@@ -66,8 +114,14 @@
 .botao:hover { transform: translateY(-2px) }
 .cheio { background: var(--green) }
 .contorno { background: transparent; border: 1px solid var(--black); color: var(--black) }
+/* contorno sobre fundo escuro. Existia como style inline combinado com
+   .discreto, e o `padding-bottom: 3px` do .discreto anulava o padding do
+   .botao: o alvo de toque caía para 38px. */
+.contornoClaro { border-color: #fff; color: #fff }
 .discreto { font: 700 11px var(--mono); letter-spacing: .05em; border-bottom: 1px solid; padding-bottom: 3px; color: var(--black) }
 .escura .discreto { color: #fff }
+/* link dentro de texto corrido: sublinhado do próprio texto, sem virar botão */
+.linkTexto { border-bottom: 1px solid var(--green); color: var(--black); font-weight: 600 }
 
 /* ---------- header ---------- */
 .topo {
@@ -78,7 +132,7 @@
 }
 .marca { font-family: var(--display); font-stretch: 118%; font-weight: 800; line-height: .9 }
 .marca b, .marca span { display: block }
-.marca span { font-size: 9px; letter-spacing: .34em; color: #7a7a74; font-weight: 400 }
+.marca span { font-size: 9px; letter-spacing: .34em; color: #63635d; font-weight: 400 }
 .topo nav { display: flex; gap: clamp(14px, 2vw, 30px); align-items: center; font: 700 10px var(--mono) }
 .navCta { background: var(--green); padding: 12px 16px }
 .menu { display: none; border: 0; background: none; font: 700 11px var(--mono); cursor: pointer }
@@ -90,7 +144,7 @@
   display: grid; grid-template-columns: 1.02fr .98fr;
   gap: clamp(32px, 4vw, 72px); align-items: center;
 }
-.heroMicro { font: 11px var(--mono); letter-spacing: .1em; color: var(--ink); margin: 20px 0 0 }
+.heroMicro { font: 11px/1.7 var(--mono); letter-spacing: .1em; color: var(--ink); margin: 20px 0 0 }
 
 /* trilho operacional (assinatura) — prancheta com papel quadriculado */
 .prancheta {
@@ -153,9 +207,7 @@
 .chipPago::before, .chipEnviado::before { background: var(--green) }
 .chipSep::before { background: var(--traco) }
 .chipBaixo::before { background: var(--alerta) }
-.chipBaixo { color: var(--alerta); border-color: #e4cfa6 }
-.chipCancel::before { background: #b8beb6 }
-.chipCancel { color: #8a958d }
+.chipBaixo { color: var(--alerta-ink); border-color: #e4cfa6 }
 /* o status do pedido do hero cicla junto com o trilho */
 .statusCiclo { position: relative; height: 26px; min-width: 132px }
 .statusCiclo .chip { position: absolute; right: 0; top: 0; opacity: 0; animation: statusPassa 12s infinite }
@@ -179,37 +231,35 @@
 .faixaTrilho i { color: var(--traco); margin: 0 26px; font-style: normal }
 @keyframes desliza { to { transform: translateX(-50%) } }
 
-/* ---------- problema: para quem compra / para quem vende ---------- */
-.duasColunas { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); margin-top: 44px }
-.coluna { background: var(--off); padding: clamp(24px, 3vw, 40px) }
-.colunaVende { background: #fff }
-.coluna h3 { font-size: clamp(20px, 1.7vw, 24px) }
-.coluna .rotulo { font: 700 9px var(--mono); letter-spacing: .12em; color: #8a958d; display: block; margin-bottom: 14px }
-.listaCol { list-style: none; margin: 20px 0 0; padding: 0; font-size: 14.5px; color: var(--ink) }
-.listaCol li { padding: 10px 0; border-bottom: 1px solid var(--line); line-height: 1.45; display: flex; gap: 10px }
-.listaCol li:last-child { border-bottom: 0 }
-.listaCol li::before { content: "▪"; color: var(--traco); font-size: 10px; line-height: 1.6 }
-.colunaVende .listaCol li { border-color: #ececde }
-
-/* ---------- jornada de compra ---------- */
-.jornada { list-style: none; margin: 48px 0 0; padding: 0; display: grid; grid-template-columns: repeat(6, 1fr); gap: 0 }
-.jornadaItem { position: relative; padding: 0 clamp(12px, 1.4vw, 22px) 8px 0; border-top: 1px solid var(--black); padding-top: 18px }
-.jornadaItem::after {
-  content: ""; position: absolute; top: -4px; right: 18px; width: 7px; height: 7px;
-  background: var(--off); border: 1px solid var(--black); border-radius: 50%;
-}
-.jornadaItem:first-child { padding-left: 0 }
-.jornadaNum { font: 700 11px var(--mono); letter-spacing: .08em; color: var(--green) }
-.jornadaItem h3 { font-size: 16px; margin-top: 12px }
-.jornadaItem p { font-size: 13px; margin-top: 10px; line-height: 1.5 }
-
 /* ---------- o que está incluso ---------- */
-.grupos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); margin-top: 44px }
-.grupo { background: var(--off); padding: clamp(22px, 2.4vw, 34px) }
-.grupo:nth-child(odd) { background: #fff }
+/* mesma correção da seção do problema: cinco caixas independentes, cada uma
+   crescendo só até onde o próprio conteúdo pede quando o acordeão abre */
+.grupos { display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(14px, 1.6vw, 22px); align-items: start; margin-top: 44px }
+.grupo { background: #fff; border: 1px solid var(--line); padding: clamp(22px, 2.4vw, 34px) }
+/* Cada categoria é um <details> fechado: número, título e uma linha de resumo
+   à vista, os 9 a 11 itens a um toque. O + fica ancorado no alto à direita
+   porque o cabeçalho do grupo tem duas linhas, não uma. */
+.grupo > summary { display: block; cursor: pointer; list-style: none; position: relative; padding-right: 28px }
+.grupo > summary::-webkit-details-marker { display: none }
+.grupo > summary::after { content: "+"; position: absolute; right: 0; top: -2px; font: 400 20px/1 var(--mono); color: var(--green-ink) }
+.grupo[open] > summary::after { content: "–" }
 .grupoTopo { display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--line); padding-bottom: 14px }
-.grupoTopo b { font: 700 11px var(--mono); color: var(--green); letter-spacing: .08em }
+.grupoTopo b { font: 700 11px var(--mono); color: var(--green-ink); letter-spacing: .08em }
 .grupoTopo h3 { font-size: 18px }
+.grupoResumo { display: block; font-size: 13.5px; line-height: 1.5; color: var(--ink); margin-top: 14px }
+/* parágrafo dentro de um card (só o acordeão de integrações usa). Dois níveis
+   de classe porque `.page p { margin: 0 }` venceria o margin-top. */
+.page .grupoP { font-size: 13.5px; line-height: 1.6; margin-top: 16px }
+
+/* o barramento das integrações: deitado no desktop, em pé no celular. Em pé
+   porque o horizontal precisa de 380 unidades de largura e, num card de
+   ~300px, o mono de 8px renderiza a 6,5px, ou seja, ilegível. */
+.hubDesenho { padding: clamp(10px, 2vw, 24px) 0 4px }
+.hubMob { display: none }
+@media (max-width: 720px) {
+  .hubDesk { display: none }
+  .hubMob { display: block }
+}
 .grupoLista { list-style: none; margin: 16px 0 0; padding: 0; columns: 2; column-gap: 26px; font-size: 13.5px; color: var(--ink) }
 .grupoLista li { padding: 6px 0; line-height: 1.4; break-inside: avoid }
 .grupoLista li::before { content: "· "; color: var(--traco) }
@@ -218,14 +268,14 @@
 .escura { background: var(--night); color: #fff }
 .escura h2, .escura h3 { color: #fff }
 .escura p { color: #b9c2bb }
-.escura .obs { color: #6e7d74 }
+.escura .obs { color: #9aa79f }
 
 /* ---------- painel administrativo (seção preta) ---------- */
 .painelGrade { display: grid; grid-template-columns: 1.05fr .95fr; gap: clamp(28px, 4vw, 64px); align-items: start; margin-top: 44px }
 .mockPainel { border: 1px solid var(--line-dark); background: #0e1a15 }
 .mockBarra { display: flex; align-items: center; gap: 6px; padding: 10px 14px; border-bottom: 1px solid var(--line-dark) }
 .mockBarra i { width: 8px; height: 8px; border-radius: 50%; background: #2a3a31 }
-.mockBarra span { font: 9px var(--mono); color: #6e7d74; margin-left: 8px; letter-spacing: .06em }
+.mockBarra span { font: 9px var(--mono); color: #8a958d; margin-left: 8px; letter-spacing: .06em }
 .mockCorpo { display: grid; grid-template-columns: 96px 1fr }
 .mockMenu { border-right: 1px solid var(--line-dark); padding: 16px 12px; display: grid; gap: 12px; align-content: start }
 .mockMenu i { display: block; height: 7px; background: #23332b }
@@ -233,7 +283,7 @@
 .mockPainelMain { padding: 18px 18px 22px }
 .mockKpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px }
 .mockKpi { border: 1px solid var(--line-dark); padding: 12px }
-.mockKpi small { font: 8px var(--mono); letter-spacing: .08em; color: #6e7d74; display: block }
+.mockKpi small { font: 8px var(--mono); letter-spacing: .08em; color: #8a958d; display: block }
 .mockKpi b { font-family: var(--display); font-stretch: 90%; font-weight: 800; font-size: 22px; color: #fff; display: block; margin-top: 6px }
 .mockKpi.kpiAlerta b { color: var(--alerta) }
 .mockLinhas { margin-top: 16px; border: 1px solid var(--line-dark) }
@@ -241,55 +291,120 @@
 .mockLinha:last-child { border-bottom: 0 }
 .mockLinha em { font: 10px var(--mono); color: #9aa79f; font-style: normal }
 .mockLinha em b { color: #fff }
-.painelEstados { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px }
-.painelTexto .chip { background: #0e1a15; border-color: var(--line-dark); color: #cdd6cf }
-.painelTexto .chipPago, .painelTexto .chipEnviado { color: #cdd6cf }
-.painelTexto .chipBaixo { color: var(--alerta); border-color: #4a3c1f }
-
 /* ---------- diagrama de plantas (herdado de servicos) ---------- */
 .plantaCaixa { color: var(--traco) }
 .plantaCaixa svg { display: block; width: 100%; height: 100%; max-height: 100%; fill: none; stroke: currentColor; stroke-width: 1.5 }
 .plantaTexto { fill: var(--ink); stroke: none; font: 8px var(--mono); letter-spacing: .04em }
+/* o único texto acentuado de uma planta: o centro do hub de integrações, que
+   não tem moldura nenhuma e precisa se sustentar sozinho */
+.plantaFoco { fill: var(--green-ink); stroke: none; font: 700 10px var(--mono); letter-spacing: .12em }
 .plantaCheia { fill: #10b98122 }
 .escura .plantaTexto { fill: #9aa79f }
-.caixaBranca { border: 1px solid var(--line); background: #fff; padding: clamp(18px, 2vw, 30px) }
-.caixaEscura { border: 1px solid var(--line-dark); background: #0e1a15; padding: clamp(18px, 2vw, 30px); color: var(--traco) }
 
-/* ---------- integrações (hub) ---------- */
-.hubGrade { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 4vw, 64px); align-items: center; margin-top: 44px }
-.hubTexto .obs { max-width: 460px }
+/* ============================================================
+   PROVA — o clímax da página. Portada da seção PROJETOS da
+   /vitrine-digital, que é onde estas capturas foram calibradas: as
+   duas páginas rolam sozinhas dentro de um MacBook, na régua de uns
+   250px por segundo (a duração vem do --dur de cada card).
+   ============================================================ */
 
-/* ---------- vitrine vs e-commerce ---------- */
-.comparaGrade { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); margin-top: 44px }
-.comparaCard { background: #fff; padding: clamp(24px, 3vw, 40px); display: flex; flex-direction: column }
-.comparaCard.ecom { background: var(--off) }
-.comparaCard h3 { font-size: clamp(21px, 1.9vw, 26px) }
-.comparaCard .rotulo { font: 700 9px var(--mono); letter-spacing: .12em; color: #8a958d; display: block; margin: 18px 0 10px }
-.comparaLista { list-style: none; margin: 0; padding: 0; font-size: 14px; color: var(--ink) }
-.comparaLista li { padding: 8px 0; border-bottom: 1px solid var(--line); line-height: 1.45 }
-.comparaLista li:last-child { border-bottom: 0 }
-.comparaLista li::before { content: "▪ "; color: var(--traco); font-size: 10px }
-.fluxo { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--line) }
-.fluxo span { font: 700 10px var(--mono); letter-spacing: .04em; color: var(--black); border: 1px solid var(--line); padding: 8px 10px; background: var(--off) }
-.ecom .fluxo span { background: #fff }
-.fluxo i { color: var(--traco); font-style: normal }
-.fluxoEcom span:last-of-type { background: var(--green); border-color: var(--green) }
+/* O rótulo que separa as duas metades da prova. O filete que sai dele é a
+   divisão do hero desenhada: o que o cliente vê de um lado, o que o dono
+   opera do outro. Dois níveis de classe porque `.page p { margin: 0 }` tem
+   seletor de elemento e zeraria a margem. O --traco que ele usava no fundo
+   escuro dá 1,9:1 sobre o creme: aqui a cor é --ink. */
+.page .metade {
+  display: flex; align-items: center; gap: 14px;
+  font: 700 9px var(--mono); letter-spacing: .12em; color: var(--ink);
+  margin: clamp(38px, 4.5vw, 58px) 0 24px;
+}
+.page .metade::after { content: ""; flex: 1; height: 1px; background: var(--line) }
 
-/* ---------- design para a marca ---------- */
-.blocos { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: 44px; border-top: 1px solid var(--black) }
-.bloco { padding: 24px 22px 28px 0; border-right: 1px solid var(--line) }
-.bloco:last-child { border-right: 0 }
-.blocoNum { font: 700 11px var(--mono); letter-spacing: .08em; color: var(--green) }
-.bloco h3 { font-size: 18px; margin-top: 14px }
-.bloco p { font-size: 13.5px; margin-top: 10px }
+.lojas { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 3vw, 48px) }
+.lojas article { display: grid; gap: 10px; justify-items: start }
+.lojas h3 { font-size: clamp(22px, 1.9vw, 28px) }
+.lojas p { font-size: 15px; max-width: 440px }
+.lojas .botao { margin-top: 8px }
 
-/* ---------- demonstração / case ---------- */
-.demoTag { display: inline-block; font: 700 9px var(--mono); letter-spacing: .12em; color: var(--green); border: 1px solid var(--green); padding: 7px 11px; margin-bottom: 20px }
-.telas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 40px }
+/* MacBook: tampa sem borda inferior + o "deck" com o rebaixo do trackpad */
+.laptop { width: 100%; display: grid; justify-items: center }
+.lapTela {
+  width: 88%; overflow: hidden;
+  border: 7px solid #17181a; border-bottom: 0; border-radius: 14px 14px 0 0;
+  background: #17181a;
+}
+.deck {
+  position: relative; width: 100%; height: 14px;
+  background: linear-gradient(#41454c, #24262b 55%, #17181a);
+  border-radius: 2px 2px 11px 11px;
+  box-shadow: inset 0 1px 0 #5a5f67;
+}
+.deck::before {
+  content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 13%; height: 6px; background: #131417; border-radius: 0 0 8px 8px;
+}
+
+/* a mesma moldura de navegador serve as duas lojas e o painel: lidas de
+   cima para baixo, são a loja, a loja e a porta que fica atrás delas */
+.barraNav { display: flex; align-items: center; gap: 12px; padding: 8px 12px; background: #101114; border-bottom: 1px solid #26282c }
+.pontos { display: flex; gap: 5px }
+.pontos i { width: 8px; height: 8px; border-radius: 50%; background: #2e3136 }
+.urlChip {
+  flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font: 10px var(--mono); letter-spacing: .04em; color: #8a8a84;
+  background: #1a1c20; border: 1px solid #26282c; border-radius: 100px; padding: 5px 12px;
+}
+.noAr { font: 700 9px var(--mono); letter-spacing: .1em; color: var(--green); white-space: nowrap }
+
+.capa {
+  display: block; position: relative; width: 100%;
+  aspect-ratio: 16 / 10; overflow: hidden; background: #141414;
+  container-type: size;
+}
+.pageShot {
+  display: block; width: 100%; height: auto; will-change: transform;
+  animation: rolaPagina var(--dur, 45s) ease-in-out infinite alternate;
+}
+.lojas article:hover .pageShot { animation-play-state: paused }
+@keyframes rolaPagina {
+  0%, 2.5% { transform: translateY(0) }
+  97.5%, 100% { transform: translateY(calc(100cqh - 100%)) }
+}
+
+/* as duas são loja de cliente no ar, então a etiqueta é igual: o que separa
+   uma da outra é o segmento e a lista de fatos, não um selo de demonstração */
+.lojaMeta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 14px }
+.lojaMeta small { font: 10px var(--mono); letter-spacing: .12em; color: var(--green-ink) }
+.lojaTipo {
+  font: 700 9px var(--mono); letter-spacing: .1em; padding: 5px 9px;
+  color: var(--night); background: var(--green); border: 1px solid var(--green);
+}
+.fatos { list-style: none; padding: 0; margin: 4px 0 0; display: grid; gap: 9px; max-width: 440px }
+.fatos li { position: relative; padding-left: 20px; font: 12.5px/1.45 var(--mono); color: var(--ink) }
+.fatos li::before { content: "✓"; position: absolute; left: 0; color: var(--green-ink) }
+
+/* o painel real, na mesma moldura e mais largo que a coluna de texto: é a
+   única imagem da página que prova a promessa do subtítulo do hero */
+.painelReal { margin: 0; max-width: 1000px }
+.painelMoldura { border: 1px solid var(--line) }
+.painelQuadro { aspect-ratio: 16 / 10; background: #141414 }
+.painelQuadro picture, .painelQuadro img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top }
+.painelLegenda { display: block; font: 11px/1.6 var(--mono); color: var(--ink); margin-top: 22px; max-width: 540px }
+/* a nota de honestidade fecha a seção inteira, não é continuação da legenda
+   do painel: ganha respiro de dobra e o tom mais claro dos dois, porque
+   admitir o que ainda não existe é argumento, não letra miúda */
+.page .notaProva { font: 12px/1.7 var(--mono); color: var(--ink); max-width: 620px; margin: clamp(38px, 4.5vw, 56px) 0 0 }
+
+/* ---------- telas de conceito (dentro do acordeão) ---------- */
+.dobraTelas { margin-top: 34px; max-width: 100% }
+.page .dobraNota { font: 11px/1.6 var(--mono); color: var(--ink); max-width: 560px; margin: 0 }
+.telas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 20px; padding-bottom: 8px }
 .tela { border: 1px solid var(--line); background: #fff; padding: 16px 14px 18px }
-.telaTopo { font: 9px var(--mono); letter-spacing: .06em; color: #9aa39c; border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-bottom: 12px; display: flex; justify-content: space-between }
+.telaTopo { font: 9px var(--mono); letter-spacing: .06em; color: #6b7169; border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-bottom: 12px; display: flex; justify-content: space-between }
 .telaTopo b { color: var(--black) }
 .tela .plantaCaixa { aspect-ratio: 4/5 }
+/* (a regra que forçava `fill: var(--ink)` nas anotações das plantas saiu com o
+   fundo escuro da prova: `.plantaTexto` já nasce em --ink) */
 
 /* ---------- processo (trilho numerado) ---------- */
 .trilho { list-style: none; margin: 44px 0 0; padding: 0; position: relative }
@@ -306,20 +421,12 @@
 .trilho h3 { font-size: 18px; padding-top: 6px }
 .trilho p { font-size: 14px; margin-top: 6px; max-width: 620px }
 
-/* ---------- por que o estúdio (grade) ---------- */
-.porGrade { display: grid; grid-template-columns: 1fr 1fr; margin-top: 44px; border-top: 1px solid var(--line-dark) }
-.porGrade article { padding: 24px 28px 26px 0; border-bottom: 1px solid var(--line-dark) }
-.porGrade article:nth-child(odd) { border-right: 1px solid var(--line-dark); padding-right: 40px }
-.porGrade article:nth-child(even) { padding-left: 40px }
-.porGrade h3 { font-size: 18px }
-.porGrade p { font-size: 14px; margin-top: 8px; max-width: 480px; color: #b9c2bb }
-
 /* ---------- faq ---------- */
 .sanfona { margin-top: 40px; border-top: 1px solid var(--line); max-width: 860px }
 .sanfona details { border-bottom: 1px solid var(--line) }
 .sanfona summary { font: 800 clamp(16px, 1.5vw, 19px) var(--display); font-stretch: 114%; padding: 20px 0; cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: 20px; align-items: center }
 .sanfona summary::-webkit-details-marker { display: none }
-.sanfona summary::after { content: "+"; font: 400 20px var(--mono); color: var(--green) }
+.sanfona summary::after { content: "+"; font: 400 20px var(--mono); color: var(--green-ink) }
 .sanfona details[open] summary::after { content: "–" }
 .sanfona p { padding: 0 0 22px; max-width: 680px; font-size: 15px }
 
@@ -329,10 +436,13 @@
 .final .apoioEscuro { margin-inline: auto }
 .agenda { display: inline-flex; align-items: center; gap: 9px; font: 700 10px var(--mono); letter-spacing: .1em; color: var(--green); margin-bottom: 26px }
 .agenda::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 4px #10b98126 }
+/* escassez fica ao lado do formulário, não num card no meio da página. Dois
+   níveis de classe para vencer `.escura p` e `.page p { margin: 0 }`. */
+.escura .agendaLimite { font: 11px/1.6 var(--mono); color: var(--traco); margin: 22px auto 0; max-width: 460px }
 
 .form { max-width: 720px; margin: 44px auto 0; text-align: left; border: 1px solid var(--line-dark); background: #0e1a15 }
 .formPassos { display: flex; border-bottom: 1px solid var(--line-dark) }
-.formPasso { flex: 1; padding: 16px 18px; font: 700 10px var(--mono); letter-spacing: .06em; color: #6e7d74; display: flex; align-items: center; gap: 10px }
+.formPasso { flex: 1; padding: 16px 18px; font: 700 10px var(--mono); letter-spacing: .06em; color: #8a958d; display: flex; align-items: center; gap: 10px }
 .formPasso b { width: 22px; height: 22px; border: 1px solid var(--line-dark); border-radius: 50%; display: grid; place-items: center; font-size: 9px }
 .formPassoAtivo { color: #fff }
 .formPassoAtivo b { background: var(--green); border-color: var(--green); color: #052e21 }
@@ -345,18 +455,19 @@
   font: 14px var(--body); padding: 13px 14px; border-radius: 0;
 }
 .campo textarea { resize: vertical; min-height: 74px }
-.campo input::placeholder, .campo textarea::placeholder { color: #55645b }
+.campo input::placeholder, .campo textarea::placeholder { color: #7f8d84 }
 .dupla { display: grid; grid-template-columns: 1fr 1fr; gap: 16px }
 .formNav { display: flex; justify-content: space-between; gap: 16px; margin-top: 8px; flex-wrap: wrap }
-.rodapeForm { font: 10px var(--mono); color: #6e7d74; margin-top: 18px; text-align: center }
+.rodapeForm { font: 10px var(--mono); color: #8a958d; margin-top: 18px; text-align: center }
 
 .rodape {
   background: var(--night); color: #fff;
   padding: 44px var(--pad) 52px; border-top: 1px solid var(--line-dark);
   display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap;
 }
+.rodape .marca span { color: #9aa79f }
 .rodape nav { display: flex; gap: 22px; font: 10px var(--mono); flex-wrap: wrap }
-.rodape small { font: 10px var(--mono); color: #6e7d74 }
+.rodape small { font: 10px var(--mono); color: #8a958d }
 
 /* barra fixa mobile com CTA sempre acessível */
 .barraFixa { display: none }
@@ -367,43 +478,60 @@
   .topo nav.navAberta { display: flex }
   .menu { display: block }
   .heroGrade { grid-template-columns: 1fr; gap: 32px }
-  .painelGrade, .hubGrade { grid-template-columns: 1fr; gap: 32px }
-  .jornada { grid-template-columns: 1fr 1fr }
-  .blocos { grid-template-columns: 1fr 1fr }
-  .bloco:nth-child(2) { border-right: 0 }
+  .painelGrade { grid-template-columns: 1fr; gap: 32px }
   .telas { grid-template-columns: 1fr 1fr }
+  .lojas { grid-template-columns: 1fr }
 }
 
 @media (max-width: 720px) {
-  .page h1 { font-size: clamp(32px, 8.6vw, 42px) }
-  .page h2 { font-size: clamp(27px, 7.4vw, 36px) }
-  .secao { padding: 56px 20px }
+  /* `max-width: 15ch` é limite de medida para linha de desktop: numa coluna de
+     350px ele só estreita mais e joga palavra para a linha seguinte.
+     (Testei `text-wrap: pretty` aqui: zero diferença medida, então não entrou.
+     As 5 linhas da manchete são o tamanho do texto, não o algoritmo.) */
+  .page h1 { font-size: clamp(30px, 7.8vw, 38px); max-width: none }
+  .page h2 { font-size: clamp(26px, 6.6vw, 33px) }
+  .page .secaoMenor h2 { font-size: clamp(22px, 5.6vw, 28px) }
+  /* o padding já era 56px aqui: os 92px são só do desktop. 48px é o piso da
+     faixa confortável, abaixo disso as seções começam a se confundir */
+  .secao { padding: 48px 20px }
   .hero { padding-top: 30px }
   .acoes { gap: 16px }
   .acoes .botao { width: 100% }
-  .duasColunas, .grupos, .comparaGrade { grid-template-columns: 1fr }
-  .jornada { grid-template-columns: 1fr }
-  .jornadaItem { padding-left: 0 }
-  .blocos { grid-template-columns: 1fr }
-  .bloco { border-right: 0; border-bottom: 1px solid var(--line); padding-right: 0 }
-  .bloco:last-child { border-bottom: 0 }
+  .grupos { grid-template-columns: 1fr }
   .telas { grid-template-columns: 1fr 1fr }
-  .porGrade { grid-template-columns: 1fr }
-  .porGrade article:nth-child(odd) { border-right: 0; padding-right: 0 }
-  .porGrade article:nth-child(even) { padding-left: 0 }
   .dupla { grid-template-columns: 1fr }
   .grupoLista { columns: 1 }
+
+  /* O trilho operacional sai do celular. Custa 560px, quase uma dobra inteira,
+     e não adiciona argumento nenhum ao que a manchete já diz: quem chega de
+     anúncio precisa ver promessa, preço e botão antes de qualquer desenho.
+     Continua sendo a assinatura da página no desktop. */
+  .prancheta { display: none }
+
+  /* alvos de toque: o MENU tinha 18px e os links .discreto, 20px. O .discreto
+     ganha área invisível por ::after, que amplia o toque sem deslocar o
+     sublinhado (mesmo idioma da /vitrine-digital) */
+  .menu { min-height: 44px; display: flex; align-items: center }
+  .marca { display: flex; flex-direction: column; justify-content: center; min-height: 44px }
+  .rodape nav a { display: inline-flex; align-items: center; min-height: 44px }
+  .discreto { position: relative }
+  .discreto::after { content: ""; position: absolute; left: 0; right: 0; top: -12px; bottom: -12px }
+
+  /* prova: o MacBook ocupa a largura toda e os fatos viram uma coluna */
+  .lapTela { width: 100% }
+  .fatos { gap: 8px }
+  .lojas .botao { width: 100% }
+  /* o recorte mobile do painel é mais largo que alto: mostra cabeçalho da
+     tabela e duas linhas, com texto legível em vez da tela inteira a 4px */
+  .painelQuadro { aspect-ratio: 1032 / 530 }
 
   /* mock do painel: some a barra lateral, tudo em coluna cheia */
   .mockCorpo { grid-template-columns: 1fr }
   .mockMenu { display: none }
   .mockKpi b { font-size: 20px }
 
-  /* trilho do hero: cabeçalho e status quebram sem estourar */
-  .prancheta { padding: 16px }
-  .pedidoTopo { flex-direction: column; gap: 4px }
-  .pedidoStatus { flex-wrap: wrap; gap: 14px }
-  .statusCiclo { min-width: 120px }
+  /* abaixo de 16px o iOS dá zoom sozinho no foco e desalinha a página inteira */
+  .campo input, .campo select, .campo textarea { font-size: 16px }
 
   /* formulário: navegação em largura cheia e área de toque confortável */
   .formNav { flex-direction: column-reverse; gap: 12px }
@@ -423,19 +551,21 @@
   }
   .barraOculta { transform: translateY(130%); pointer-events: none }
   .barraFixa small { font: 700 10px var(--mono); color: #fff; letter-spacing: .04em; line-height: 1.3 }
-  .barraFixa small i { display: block; color: var(--green); font-style: normal; margin-top: 3px }
-  .barraFixa a { flex: none; background: var(--green); color: var(--black); padding: 13px 18px; font: 700 10px var(--mono) }
+  .barraFixa small i { display: block; color: var(--traco); font-style: normal; font-weight: 400; margin-top: 3px; letter-spacing: 0 }
+  /* a barra inteira é o link, então o "botão" é um span: cor de botão, altura
+     de alvo de toque, e o texto do CTA principal da página */
+  .barraFixa span { flex: none; background: var(--green); color: var(--black); padding: 0 14px; min-height: 44px; display: flex; align-items: center; font: 700 10px var(--mono); letter-spacing: .04em }
 }
 
-/* etapas do trilho: a info de cada passo desce para a própria linha */
 @media (max-width: 460px) {
-  .page h1 { font-size: clamp(30px, 8.8vw, 38px) }
-  .etapaOp { flex-wrap: wrap }
-  .etapaOp span { flex: 1 1 auto }
-  .etapaOp small { flex-basis: 100%; padding-left: 48px; margin-top: -2px }
+  .page h1 { font-size: clamp(28px, 8vw, 34px) }
   .faixaTrilho span { font-size: 20px }
   .formPasso { padding: 14px 14px; font-size: 9px }
-  .demoTag { font-size: 8px; padding: 6px 9px }
+  /* a barra de navegador não cabe inteira: some o selo, fica a URL */
+  .noAr { display: none }
+  /* a barra fixa: o rótulo cede o espaço, o botão não */
+  .barraFixa small { font-size: 9px }
+  .barraFixa span { font-size: 9px; padding: 0 11px }
 }
 
 /* reduced motion: o trilho para e mostra o estado final legível */
@@ -446,5 +576,12 @@
   .statusCiclo { height: auto; min-width: 0 }
   .statusCiclo .chip { position: static; opacity: 1 }
   .statusCiclo .chip:not(:last-child) { display: none }
-  .faixaTrilho { animation: none; transform: none }
+  /* EXCEÇÃO DELIBERADA, a pedido do Rafael: a faixa continua andando mesmo com
+     "reduzir movimento" ligado. Ela é a única coisa que se move na página nesse
+     modo, e o resto (trilho do hero, capturas rolando nos MacBooks) segue
+     parado. Em vez de ignorar o pedido do sistema, o movimento cai para um
+     terço da velocidade: 96s no lugar de 32s, uns 19px por segundo, uma deriva
+     lenta em vez de um letreiro. Precisa de !important e de vir depois da
+     regra `.page *`, que zera animação com !important e mesma especificidade. */
+  .faixaTrilho { animation: desliza 96s linear infinite !important; transform: none }
 }

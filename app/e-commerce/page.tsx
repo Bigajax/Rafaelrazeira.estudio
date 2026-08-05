@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { Archivo, Inter, Space_Mono } from "next/font/google";
 import s from "./ecommerce.module.css";
 import {
-  Analytics, Cabecalho, Hero, Faixa, Problema, Jornada, Incluso, Painel, Integracoes,
-  VitrineOuEcommerce, DesignMarca, Demonstracao, Processo, PorQue, Duvidas, ChamadaFinal,
+  Analytics, Cabecalho, Hero, Faixa, Operacao, Painel, Prova, Processo, Duvidas, ChamadaFinal,
 } from "@/components/ecommerce/sections";
 
 const display = Archivo({ subsets: ["latin"], axes: ["wdth"], variable: "--font-display" });
@@ -47,16 +46,10 @@ export default function ECommerce() {
       <main>
         <Hero />
         <Faixa />
-        <Problema />
-        <Jornada />
-        <Incluso />
+        <Operacao />
         <Painel />
-        <Integracoes />
-        <VitrineOuEcommerce />
-        <DesignMarca />
-        <Demonstracao />
+        <Prova />
         <Processo />
-        <PorQue />
         <Duvidas />
       </main>
       <ChamadaFinal />
