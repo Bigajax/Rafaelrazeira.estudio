@@ -585,57 +585,7 @@
   .site *, .bar, .button, .cover img { transition: none !important; animation: none !important }
 }
 
-/* ============================================================
-   LOADER — tela de carregamento (logo + "CARREGANDO…") que se
-   desfaz em quadrados pretos, de baixo para cima, o mesmo rito
-   de css/sections/loader.css na landing principal. O overlay sai
-   no HTML do servidor e pinta preto no primeiro frame; a grade
-   de quadrados nasce em components/vitrine/Loader.tsx só na
-   hora da saída.
-   ============================================================ */
-.loader {
-  position: fixed; inset: 0; z-index: 999;
-  background: var(--black);
-  display: flex; align-items: center; justify-content: center;
-}
-.loaderCenter {
-  position: relative; z-index: 2;
-  display: flex; flex-direction: column; align-items: center; gap: 0;
-  transition: opacity .35s ease;
-}
-.loaderLeaving .loaderCenter { opacity: 0 }
-.loaderLogo {
-  width: min(64vw, 360px); height: auto; display: block;
-  /* funde as bordas da imagem (vinheta cinza) no preto do overlay */
-  -webkit-mask-image: radial-gradient(closest-side, #000 55%, transparent 98%);
-          mask-image: radial-gradient(closest-side, #000 55%, transparent 98%);
-}
-.loaderText {
-  margin-top: -6px;
-  font: 400 11px/1.6 var(--mono);
-  letter-spacing: .42em; text-indent: .42em; text-transform: uppercase;
-  color: rgba(255, 255, 255, .85);
-  animation: loaderPulse 1.6s ease-in-out infinite;
-}
-@keyframes loaderPulse { 0%, 100% { opacity: .85 } 50% { opacity: .35 } }
-
-/* Grade da saída: cada célula é um "pixel" preto que some sozinho.
-   Enquanto a grade existe, ela é o fundo — o overlay fica transparente. */
-.loaderGrid {
-  position: absolute; inset: 0; z-index: 1;
-  display: grid; overflow: hidden;
-}
-.loaderLeaving { background: transparent }
-.loaderGrid span {
-  background: var(--black);
-  /* cobre as emendas subpixel entre as células (sem isso aparecem fiapos claros) */
-  box-shadow: 0 0 0 1px var(--black);
-  opacity: 1; transition: opacity .22s ease;
-}
-.loaderLeaving .loaderGrid span { opacity: 0 }
-
-/* com movimento reduzido o kill de transições lá em cima já vale para o
-   overlay: a saída vira um corte seco depois do timeout, sem grade */
-@media (prefers-reduced-motion: reduce) {
-  .loaderLeaving { opacity: 0 }
-}
+/* A tela de carregamento morava aqui (.loader e companhia). Saiu junto com
+   o componente em 05/08: o motivo está escrito por extenso no topo de
+   app/vitrine-digital/page.tsx. Em resumo, ela cobria a tela por ~2s em
+   conexão boa e ~3,5s no 4G, numa página cuja sessão mediana tem 8,6s. */
