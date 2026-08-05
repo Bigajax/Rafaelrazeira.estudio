@@ -4,14 +4,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import s from "@/app/vitrine-digital/vitrine.module.css";
-import { initTracking, refDaVisita, trackLead } from "@/components/vitrine/tracking";
+import { initTracking, irParaWhatsapp, refDaVisita, trackLead } from "@/components/vitrine/tracking";
 
 const ZAP = "https://wa.me/5544999997219?text=";
-const MSG_DUVIDAS = "Olá, Rafael! Conheci a Vitrine Digital e gostaria de tirar dúvidas.";
+const MSG_DUVIDAS = "Oi Rafael! Conheci a Vitrine Digital e quero tirar dúvidas.";
 /* a mensagem do caminho principal da oferta pede a demonstração, não tira
    dúvida: o convite da página é "quero ver para a minha loja", e a mensagem
-   precisa continuar essa frase, senão a conversa começa desalinhada */
-const MSG_VER = "Olá, Rafael! Quero ver como a Vitrine Digital ficaria para a minha loja.";
+   precisa continuar essa frase, senão a conversa começa desalinhada.
+   Curta de propósito: ela abre no teclado de um celular, e mensagem comprida
+   é mensagem que a pessoa apaga antes de enviar. */
+const MSG_VER = "Oi Rafael! Quero uma vitrine para minha loja.";
 
 /* A mensagem do WhatsApp leva o código da visita no fim. Quando a venda
    fechar, esse código vai junto no registro em /api/venda-fechada, e a Meta
@@ -136,54 +138,96 @@ function VitrineDemo() {
 /* O hero tinha quatro camadas dizendo a mesma coisa: manchete, segunda
    frase repetindo a promessa, lead listando as features e os pontos
    listando as features de novo. Agora cada peça tem um trabalho só e não
-   se repete: a manchete promete, o lead entrega o resultado, os pontos
+   se repete: a manchete nomeia a DOR, o lead entrega o resultado, os pontos
    listam o que vem no projeto. O que sobrou de fato (preço cheio, prazo,
    quantidade de produtos) já é dito na oferta, então saiu daqui.
    O ganho real é de espaço: a demonstração era o argumento mais forte da
    página e começava fora da primeira dobra no celular. */
 const heroPoints = ["Design personalizado", "Catálogo organizado", "WhatsApp integrado", "Pronta em 7 dias úteis"];
 
-/* ---------- coerência com o anúncio ----------
-   O c1-direct fecha prometendo "vitrine digital pronta em 7 dias úteis,
-   R$999, saldo só depois de você aprovar". Quem clicava caía numa manchete
-   diferente ("seus produtos em um link só"), e no primeiro fim de semana
-   63% do tráfego de Facebook e Instagram não rolou a primeira dobra.
-   O teste: quem chega do c1 vê a manchete continuar a promessa do anúncio,
-   e "um link só" desce para a lista de pontos, trocando de lugar com o
-   prazo. Nada disso precisa de flag para medir: todo evento da Mixpanel
-   já sai com utm_content, então a leitura é comparar o coorte do c1 antes
-   e depois desta mudança entrar no ar.
-   O estado começa falso e vira no mount porque o HTML é gerado no build,
-   onde não existe query string: no servidor todo mundo é a versão padrão. */
-const AD_C1_DIRECT = "120250180921710201";
-const heroPointsC1 = ["Design personalizado", "Catálogo organizado", "WhatsApp integrado", "Seus produtos em um link só"];
-function useVeioDoC1() {
-  const [veio, setVeio] = useState(false);
-  useEffect(() => {
-    try { setVeio(new URLSearchParams(location.search).get("utm_content") === AD_C1_DIRECT); } catch {}
-  }, []);
-  return veio;
-}
+/* ---------- a prova dentro da primeira dobra ----------
+   Um balão só, do cliente que já escolheu, com hora de noite: é o retrato
+   do que a página promete, e chega antes de qualquer argumento. Reaproveita
+   o mesmo par ChatStrip/Bubble da segunda dobra de propósito, porque o fio
+   de conversa é a assinatura da página e repetir o material aqui é o que
+   faz o hero e o resto parecerem a mesma peça.
+   A hora e a nota juntas são a legenda: "21:58 · sem uma pergunta antes".
+   Ficam nos lugares naturais do WhatsApp (a hora dentro do balão, a nota
+   embaixo da faixa) em vez de virarem uma linha de texto solta.
 
+   O produto do balão é o MESMO que está na tela do mockup ao lado (a camisa
+   Brasil Home 2026 da Xavier's, com o tamanho que a demonstração escolhe).
+   Duas peças diferentes lado a lado quebravam a cena: o balão passava a
+   ser um exemplo genérico em vez do desfecho do que a pessoa acabou de ver
+   acontecer na tela. */
+const HeroProof = () =>
+  <ChatStrip label="COM A VITRINE" note="Sem uma pergunta antes.">
+    <Bubble time="21:58">escolhi pela vitrine: Brasil Home 2026, tamanho M. ainda tem?</Bubble>
+  </ChatStrip>;
+
+/* ---------- primeira dobra: a dor primeiro ----------
+   A manchete vendia o MECANISMO ("seus produtos em um link só"), e mecanismo
+   só interessa a quem já concordou que tem um problema. Com 85% dos
+   visitantes saindo sem chegar na oferta e sessão mediana de 8,6 segundos,
+   não existe tempo de convencer alguém de que ele tem o problema: a página
+   precisa nomeá-lo na primeira linha e ser reconhecida na hora.
+   Agora a manchete é a dor ("pare de perder venda no direct"), que é a mesma
+   cena que o anúncio c1-direct mostra, então quem clica encontra do outro
+   lado o que veio buscar. O mecanismo não sumiu: virou o rótulo, que é onde
+   ele serve, explicando o que a página vende sem gastar a manchete nisso.
+
+   Some daqui a variante por anúncio (`useVeioDoC1`): ela existia para o
+   coorte do c1 ver uma manchete que continuasse o anúncio, e a manchete
+   nova já é essa continuação para todo mundo. Manter as duas faria 15% do
+   tráfego (justamente o que motivou a mudança) nunca ver a versão nova. */
 export function Hero() {
-  const c1 = useVeioDoC1();
   const waVer = useWhatsapp(MSG_VER);
   return <section className={s.hero} id="topo">
     <div className={s.heroGrid}>
       <div className={s.heroCopy}>
-        <Eyebrow>VITRINE DIGITAL PARA LOJAS DE INSTAGRAM</Eyebrow>
-        <h1>{c1 ? <>SUA VITRINE PRONTA EM <em>7 DIAS ÚTEIS.</em></> : <>SEUS PRODUTOS EM <em>UM LINK SÓ.</em></>}</h1>
-        <p className={s.lead}>O cliente escolhe sozinho e chega no seu WhatsApp com o pedido pronto.</p>
+        <Eyebrow>VITRINE DIGITAL · SEUS PRODUTOS EM UM LINK SÓ</Eyebrow>
+        {/* "NO DIRECT." não se separa: é onde a dor acontece, e o nome do
+            lugar partido em duas linhas ("no" órfão em cima, "direct."
+            sozinho embaixo) tira a frase da leitura de um golpe só. O
+            text-wrap: balance global cuida do resto da quebra. */}
+        <h1>PARE DE PERDER VENDA <span className={s.noBreak}>NO <em>DIRECT.</em></span></h1>
+        <p className={s.lead}>Sua vitrine digital mostra foto, preço e tamanho de tudo, e o cliente chega no seu WhatsApp com o pedido pronto, sem você responder vinte perguntas.</p>
         {/* mesma inversão da oferta (04/08): o primeiro pedido da página era
             um compromisso de R$500 com 4 segundos de página, agora é a
             conversa. O preço saiu da primeira dobra e mora na oferta, onde a
             pessoa já viu o argumento; o `data-cta` continua "hero" porque a
             posição é a mesma, só o destino mudou (o ClickCTA registra o
-            destination). Link cru porque o Button não tem target _blank. */}
+            destination). Link cru porque o Button não repassa data-cta-dest.
+
+            SEM target="_blank": todo link de WhatsApp desta página abre na
+            mesma aba. Aba nova é o que quebra no navegador interno do
+            Instagram, de onde vem quase todo o tráfego: ele trata como
+            pop-up e entrega uma aba em branco que não vira app nenhum. O
+            tracking.ts intercepta o clique, dispara o Lead e navega por
+            location.href 300ms depois. */}
         <div className={s.actions}>
-          <a className={`${s.button} ${s.primary}`} href={waVer} target="_blank" rel="noopener" data-cta="hero" data-cta-dest="whatsapp">VER COMO FICA PARA A MINHA LOJA ↗</a>
+          <a className={`${s.button} ${s.primary}`} href={waVer} data-cta="hero" data-cta-dest="whatsapp">VER COMO FICA PARA A MINHA LOJA ↗</a>
         </div>
         <small className={s.micro}>Você fala direto comigo no WhatsApp, sem compromisso.</small>
+        {/* ---------- onde a prova entra ----------
+            No desktop, aqui: encostada no mockup, na mesma faixa da tela. Não
+            embaixo do aparelho, que tem 528px de altura e jogaria o balão
+            para fora da primeira dobra, justamente onde ele não serve.
+
+            No celular a ordem é outra e a instância é a de baixo, depois do
+            aparelho. Em coluna única esta posição colocava o balão ANTES do
+            mockup, e aí a pessoa lia "escolhi pela vitrine: Brasil Home 2026"
+            sem nunca ter visto a camisa: a mensagem virava exemplo solto em
+            vez de desfecho do que acabou de acontecer na tela. Depois do
+            aparelho, a cena fica na ordem em que ela acontece.
+
+            Duas instâncias em vez de uma reposicionada porque o balão está
+            dentro da coluna de texto e o aparelho é outro item do grid: não
+            existe `order` que atravesse os dois. É o mesmo recurso que o CTA
+            do "como funciona" já usa nesta página.
+            Sem animação de digitando: o Bubble só anima o que entra por
+            rolagem, e este já nasce dentro da tela. */}
+        <div className={`${s.heroProof} ${s.hideMobile}`}><HeroProof /></div>
       </div>
       <div className={s.heroVisual}>
         <div className={s.phone} role="img" aria-label="Demonstração da vitrine da Xavier's Sports: o cliente filtra por pronta entrega, abre a camisa Brasil Home 2026, escolhe o tamanho e envia o pedido pelo WhatsApp já preenchido">
@@ -196,11 +240,13 @@ export function Hero() {
         <a className={s.demoTag} href="#projetos" data-cta="hero_projetos" data-cta-dest="projetos">
           <b aria-hidden>●</b> NO AR: XAVIER&apos;S SPORTS · VER INTEIRA ↓
         </a>
+        {/* a instância do celular: o pedido chega depois da vitrine na tela */}
+        <div className={`${s.heroProof} ${s.mobileOnly}`}><HeroProof /></div>
       </div>
       {/* os pontos entram no próprio grid do hero: no desktop viram uma
           coluna estreita ao lado da demonstração, encostada na margem
           direita da página, e no celular voltam a ser a faixa embaixo */}
-      <ul className={s.heroPoints}>{(c1 ? heroPointsC1 : heroPoints).map(x => <li key={x}>{x}</li>)}</ul>
+      <ul className={s.heroPoints}>{heroPoints.map(x => <li key={x}>{x}</li>)}</ul>
     </div>
   </section>;
 }
@@ -224,10 +270,14 @@ export function PainSolution() {
               celular o span volta a fluir com o texto */}
           <h2>Quantas vendas sua loja perde <span className={s.h2Line}>porque o cliente não encontrou o produto?</span></h2>
           <p className={s.lead}>Quando os produtos ficam espalhados entre stories, destaques e publicações antigas, o cliente precisa perguntar tudo antes de decidir. Cada atendimento começa do zero: foto, preço e tamanho, um por um. E muitas vezes ele desiste antes mesmo de chamar.</p>
-          <div className={s.shiftAfter}>
-            <small>COM A VITRINE</small>
-            <p>O cliente encontra os produtos, escolhe o que quer e chama sua loja pelo WhatsApp com o pedido já identificado.</p>
-          </div>
+          {/* Aqui morava o box escuro "COM A VITRINE: o cliente encontra os
+              produtos, escolhe o que quer e chama sua loja pelo WhatsApp com
+              o pedido já identificado". Saiu porque virou repetição: o
+              subtítulo do hero passou a dizer isso na primeira tela, e esta
+              seção agora tem um trabalho só, que é aprofundar a dor que a
+              manchete abriu. A virada continua na página, dita pelo material
+              em vez de por uma caixa de texto: as quatro perguntas sem
+              resposta ao lado, e o manifesto logo abaixo. */}
         </div>
         <div className={s.shift}>
           <ChatStrip label="HOJE · O CLIENTE ESPERANDO NO DIRECT" note="Quatro perguntas antes de escolher qualquer coisa. Visualizado só às 21:40, e a vontade de comprar não espera duas horas.">
@@ -259,7 +309,7 @@ export function HowItWorks() {
           <ol className={s.steps}>{steps.map((x, i) => <li key={x[0]}><b>0{i + 1}</b><div><h3>{x[0]}</h3><p>{x[1]}</p></div></li>)}</ol>
           {/* no celular o botão não pode vir antes da prova: esta instância
               some e a cópia abaixo do chat assume; no desktop é o contrário */}
-          <div className={`${s.actions} ${s.hideMobile}`}><a className={`${s.button} ${s.primary}`} href={waVer} target="_blank" rel="noopener" data-cta="como_funciona" data-cta-dest="whatsapp">VER COMO FICA PARA A MINHA LOJA ↗</a></div>
+          <div className={`${s.actions} ${s.hideMobile}`}><a className={`${s.button} ${s.primary}`} href={waVer} data-cta="como_funciona" data-cta-dest="whatsapp">VER COMO FICA PARA A MINHA LOJA ↗</a></div>
         </div>
         <div className={s.howVisual}>
           {/* captura do catálogo da PR Grife, loja de cliente no ar. O corte
@@ -274,7 +324,7 @@ export function HowItWorks() {
               <Bubble out time="19:12" tick="read" delay={700}>tem sim! separei a sua, te mando o Pix</Bubble>
             </ChatStrip>
           </div>
-          <div className={`${s.actions} ${s.mobileOnly}`}><a className={`${s.button} ${s.primary}`} href={waVer} target="_blank" rel="noopener" data-cta="como_funciona" data-cta-dest="whatsapp">VER COMO FICA PARA A MINHA LOJA ↗</a></div>
+          <div className={`${s.actions} ${s.mobileOnly}`}><a className={`${s.button} ${s.primary}`} href={waVer} data-cta="como_funciona" data-cta-dest="whatsapp">VER COMO FICA PARA A MINHA LOJA ↗</a></div>
         </div>
       </div>
     </div>
@@ -469,15 +519,22 @@ export function Offer() {
        visita que veio do anúncio. Fica na última linha para ser fácil de
        copiar e para não atrapalhar a leitura do pedido. */
     const ref = refDaVisita();
-    const text = encodeURIComponent(`Olá, Rafael! Quero contratar a Vitrine Digital.\nNome: ${f.get("nome")}\nLoja: ${f.get("loja")}\nInstagram: ${f.get("instagram")}\nPlano: ${plan}${ref ? `\nRef: ${ref}` : ""}`);
+    /* A primeira linha é a mesma dos CTAs da página ("quero uma vitrine para
+       minha loja"), agora com o nome da loja preenchido: a conversa começa
+       do mesmo jeito, venha de onde vier. O resto do pedido vem abaixo. */
+    const text = encodeURIComponent(`Oi Rafael! Quero uma vitrine para minha loja ${f.get("loja")}.\nNome: ${f.get("nome")}\nInstagram: ${f.get("instagram")}\nPlano: ${plan}${ref ? `\nRef: ${ref}` : ""}`);
     const link = `https://wa.me/5544999997219?text=${text}`;
     /* Guardar o link é o conserto do vazamento. Enviar o formulário NÃO manda
        mensagem nenhuma: o WhatsApp abre com o texto pronto e a pessoa ainda
-       precisa tocar em enviar. Se o pop-up for bloqueado, e no navegador
-       interno do Instagram isso acontece, ela ficava numa tela dizendo "tudo
-       certo" sem nada ter acontecido. Agora o link fica na tela como saída. */
+       precisa tocar em enviar. Se a abertura falhar, e no navegador interno
+       do Instagram isso acontecia com o window.open, ela ficava numa tela
+       dizendo "tudo certo" sem nada ter acontecido. O link fica na tela como
+       saída, e continua valendo para quem volta do WhatsApp sem enviar. */
     setLinkWa(link);
-    window.open(link, "_blank", "noopener");
+    /* Mesmo handoff dos CTAs: location.href na mesma aba, 300ms depois do
+       Lead sair. Era window.open, que o navegador do Instagram bloqueia ou
+       abre em aba fantasma. */
+    irParaWhatsapp(link);
   }
   return <section className={`${s.section} ${s.offer}`} id="oferta">
     <div className={s.wrap}>
@@ -498,10 +555,10 @@ export function Offer() {
               reserva vira o atalho de quem já decidiu. `oferta_ver` é um
               data-cta NOVO de propósito: o antigo `oferta_whats` era o link
               fantasma de dúvidas, e reaproveitar o id misturaria na leitura
-              dois botões com papéis diferentes. Botão de link cru em vez do
-              componente Button porque o WhatsApp precisa de target _blank,
-              que o Button não tem. */}
-          <a className={`${s.button} ${s.primary}`} href={waVer} target="_blank" rel="noopener" data-cta="oferta_ver" data-cta-dest="whatsapp">VER COMO FICA PARA A MINHA LOJA ↗</a>
+              dois botões com papéis diferentes. Link cru em vez do componente
+              Button porque o Button não repassa data-cta-dest, que é o que
+              decide o Lead. */}
+          <a className={`${s.button} ${s.primary}`} href={waVer} data-cta="oferta_ver" data-cta-dest="whatsapp">VER COMO FICA PARA A MINHA LOJA ↗</a>
           <Button outline onClick={goToForm} cta="oferta_entrada">JÁ DECIDI: RESERVAR POR R$500</Button>
           <p className={s.guarantee}>O saldo de R$499 é pago somente depois que você visualizar e aprovar o projeto.</p>
         </article>
@@ -523,14 +580,16 @@ export function Offer() {
                 pessoa que estava feito quando não estava: a mensagem abre
                 pronta mas não enviada, e sem tocar em enviar nada chega.
                 Agora o passo que falta é dito com todas as letras, e o botão
-                cobre o caso do pop-up bloqueado, comum no navegador do
-                Instagram. O clique tem data-cta próprio para dar para medir
-                quantas pessoas precisam dele. */}
+                cobre o caso de a abertura falhar, e o de quem voltou do
+                WhatsApp sem enviar. O clique tem data-cta próprio para dar
+                para medir quantas pessoas precisam dele, e `reabrir_whats`
+                está na lista de exceção do Lead: quem chega aqui já disparou
+                o Lead do formulário segundos antes. */}
             {linkWa
               ? <div className={s.pendente} role="status">
                   <b>Falta um toque.</b>
                   <p>Abri o WhatsApp com sua mensagem pronta. Toque em <b>enviar</b> lá para eu receber, senão ela não chega.</p>
-                  <a className={`${s.button} ${s.primary}`} href={linkWa} target="_blank" rel="noopener" data-cta="reabrir_whats" data-cta-dest="whatsapp">
+                  <a className={`${s.button} ${s.primary}`} href={linkWa} data-cta="reabrir_whats" data-cta-dest="whatsapp">
                     ABRIR O WHATSAPP ↗
                   </a>
                 </div>
@@ -608,7 +667,7 @@ export function FinalCTA() {
           então a reserva continua citada com preço, só não abre o caminho. */}
       <p className={s.lead}>Me chama no WhatsApp e eu te mostro como a vitrine ficaria para a sua loja. E se você já decidiu, é só reservar com R$500.</p>
       <div className={s.actions}>
-        <a className={`${s.button} ${s.primary}`} href={waVer} target="_blank" rel="noopener" data-cta="final" data-cta-dest="whatsapp">VER COMO FICA PARA A MINHA LOJA ↗</a>
+        <a className={`${s.button} ${s.primary}`} href={waVer} data-cta="final" data-cta-dest="whatsapp">VER COMO FICA PARA A MINHA LOJA ↗</a>
         <a className={s.ghost} href="#oferta" data-cta="final_reserva" data-cta-dest="oferta">JÁ DECIDI: RESERVAR POR R$500</a>
       </div>
     </section>
@@ -617,7 +676,7 @@ export function FinalCTA() {
       <nav><Link href="/estudio/">INÍCIO</Link><Link href="/portfolio">PORTFÓLIO</Link><Link href="/servicos">SERVIÇOS</Link><Link href="/e-commerce">E-COMMERCE</Link><Link href="/termos">TERMOS</Link><Link href="/privacidade">PRIVACIDADE</Link></nav>
       <small>© 2026 RAFAEL RAZEIRA ESTÚDIO</small>
     </footer>
-    <a className={`${s.pill} ${inOffer ? s.pillHidden : ""}`} href={waHref} target="_blank" rel="noopener" data-cta="pill" data-cta-dest="whatsapp">FALAR COM RAFAEL ↗</a>
+    <a className={`${s.pill} ${inOffer ? s.pillHidden : ""}`} href={waHref} data-cta="pill" data-cta-dest="whatsapp">FALAR COM RAFAEL ↗</a>
   </>;
 }
 
@@ -647,6 +706,6 @@ export function MobileBar() {
   }, []);
   return <div className={`${s.bar} ${hidden ? s.barHidden : ""}`}>
     <span className={s.barCopy}><b>VITRINE DIGITAL</b><span>Pronta em 7 dias úteis</span></span>
-    <a className={`${s.button} ${s.primary}`} href={waVer} target="_blank" rel="noopener" data-cta="sticky_mobile" data-cta-dest="whatsapp">VER COMO FICA</a>
+    <a className={`${s.button} ${s.primary}`} href={waVer} data-cta="sticky_mobile" data-cta-dest="whatsapp">VER COMO FICA</a>
   </div>;
 }

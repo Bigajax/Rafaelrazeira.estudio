@@ -16,7 +16,17 @@ import s from "@/app/vitrine-digital/vitrine.module.css";
    registrar, teto para conexão lenta nunca prender ninguém. */
 
 const MIN_SHOW = 700;    // ms mínimos com a logo na tela (evita "flash")
-const MAX_WAIT = 7000;   // teto: sai mesmo se algum asset demorar
+/* Teto de 7s era teto de ninguém: quem espera 7 segundos numa tela preta já
+   foi embora. A saída normal é o evento `load`, e `load` só chega depois de
+   TODAS as imagens não-lazy e das fontes — no 4G do navegador interno do
+   Instagram isso passa fácil de 4 segundos, com a página inteira já pintada
+   embaixo do overlay. Com metade das sessões durando menos de 10s, era o
+   maior pedaço da visita gasto olhando preto.
+   2,2s é o novo teto. Em conexão boa nada muda (o `load` chega antes e o
+   MIN_SHOW é quem manda); em conexão ruim o conteúdo aparece no lugar da
+   espera. A animação de saída é a mesma, então a página não muda de cara:
+   muda só quanto tempo ela demora a ter cara. */
+const MAX_WAIT = 2200;   // teto: sai mesmo se algum asset demorar
 const ROW_STEP = 55;     // ms entre uma fileira e a de cima
 const JITTER   = 110;    // aleatoriedade por quadrado (o "pixelado")
 

@@ -1,6 +1,16 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  /* AVIF na frente do WebP. O padrão do Next é só WebP, e o que decide aqui
+     é o quadro estático do hero (/assets/demo/xavier-hero-still.jpg): ele é a
+     primeira imagem grande da /vitrine-digital e a maioria do tráfego chega
+     por 4G, no navegador interno do Instagram. Em AVIF ele cai por volta de
+     um terço do WebP no mesmo tamanho de tela. Quem não suporta AVIF recebe
+     WebP, e quem não suporta nenhum dos dois recebe o JPEG original: a lista
+     é uma negociação por Accept, não uma troca de formato.
+     Custo: a primeira requisição de cada tamanho paga a conversão no servidor;
+     da segunda em diante sai do cache da Vercel. */
+  images: { formats: ["image/avif", "image/webp"] },
   async redirects() {
     return [
       { source: "/", destination: "/estudio", permanent: false },

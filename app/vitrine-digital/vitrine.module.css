@@ -118,6 +118,17 @@
   border-bottom: 1px solid var(--line); padding-bottom: 5px;
   transition: color .15s ease, border-color .15s ease;
 }
+/* prova da primeira dobra: um balão só, encostado no aparelho no desktop e
+   logo abaixo do CTA no celular. A faixa é a mesma do resto da página, num
+   corpo menor, porque aqui ela acompanha a manchete e não pode competir
+   com ela. */
+.heroProof { margin-top: 22px; width: min(360px, 100%) }
+.heroProof .chatStrip { width: 100%; padding: 13px 13px 11px; gap: 8px }
+.heroProof .bubble p { font-size: 14px }
+.heroProof .stripNote { margin-top: 2px }
+/* o nome do lugar não se parte no meio: "no" numa linha e "direct." na
+   seguinte quebra a leitura da manchete em dois tempos */
+.noBreak { white-space: nowrap }
 .demoTag b { color: var(--green) }
 .demoTag:hover { color: var(--black); border-bottom-color: var(--black) }
 .demoTag::after { content: ""; position: absolute; left: 0; right: 0; top: -10px; bottom: -10px }
@@ -481,6 +492,10 @@
   /* prova antes do CTA no como funciona: troca de instância do botão */
   .hideMobile { display: none }
   .actions.mobileOnly { display: flex; margin-top: 28px; justify-self: stretch }
+  /* a prova troca de instância junto com o CTA: sai de baixo do texto e
+     reaparece depois do aparelho, que é onde a cena faz sentido em coluna
+     única. A margem menor porque aqui ela vem colada na legenda do mockup. */
+  .heroProof.mobileOnly { display: block; margin-top: 18px }
   .heroPoints { grid-template-columns: 1fr 1fr }
   .projects { grid-template-columns: 1fr }
   .grid { grid-template-columns: 1fr 1fr }

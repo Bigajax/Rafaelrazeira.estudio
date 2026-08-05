@@ -1,7 +1,9 @@
 /* ============================================================
    META PIXEL + CONVERSIONS API + MIXPANEL — funil da Vitrine
    Digital (PageView → ViewContent → ClickCTA → InitiateCheckout
-   → Lead), espelhando o padrão da landing principal.
+   → Lead/AbriuWhatsApp), espelhando o padrão da landing principal.
+   • Lead = clique que abre o wa.me, e nada mais. A regra vive num
+     lugar só, no ouvinte de cliques, lendo `data-cta-dest`.
    • Pixel: mesmo dataset da landing (js/lib/tracking.js); os funis
      se separam no Meta por event_source_url (/vitrine-digital) e
      no Mixpanel pela propriedade `page`.
@@ -222,6 +224,7 @@ const NOME_MP: Record<string, string> = {
   ViewContent:      "Viu a oferta",
   ClickCTA:         "Clicou em CTA",
   InitiateCheckout: "Tocou no formulário",
+  AbriuWhatsApp:    "Abriu WhatsApp",
   Lead:             "Enviou o formulário",
   Saida:            "Saiu da página",
 };
@@ -309,34 +312,88 @@ function conversao(evento: string, dadosPixel: Record<string, unknown>, extraCap
   mpTrack(evento, { $insert_id: eventId, ...propsMp });
 }
 
-/* data-cta → cta_position do Lead. Quem não está aqui NÃO dispara Lead:
-   `nav` e `hero_projetos` só rolam a página para outra seção e `case` abre o
-   site de um cliente. Desde 04/08 a página inteira convida para a CONVERSA
-   ("VER COMO FICA PARA A MINHA LOJA"): hero, como_funciona, final e
-   sticky_mobile apontam para o WhatsApp (o `destination` do ClickCTA guarda
-   essa mudança), `ver_no_whats` é o mesmo convite no card de preço e
-   `final_reserva` é o atalho "JÁ DECIDI" do CTA final, que rola até a
-   oferta. Saíram da página `oferta_whats` (link fantasma de dúvidas, zero
-   cliques na primeira campanha) e `final_whats` (o FALAR COM RAFAEL do fim,
-   absorvido pelo convite principal). O `flutuante` é a pílula.
+/* ---------- quem dispara Lead ----------
+   REGRA ÚNICA: Lead sai no clique que ABRE O WHATSAPP, e em nenhum outro
+   lugar. Não em PageView, não em scroll, não em "viu a oferta", não em
+   botão que só rola a página. A campanha otimiza por este evento: cada
+   Lead falso ensina a Meta a procurar mais gente que não conversa.
+
+   A decisão passou a ser lida do próprio `data-cta-dest="whatsapp"` em vez
+   de uma lista de nomes. A lista era o vazamento: `oferta_entrada` (o "JÁ
+   DECIDI: RESERVAR POR R$500", que só rola até o formulário) e
+   `final_reserva` (o mesmo atalho no fim, que rola até a oferta) estavam
+   nela e disparavam Lead sem ninguém sair da página. Entre 2 e 5/08 isso
+   deu 16 "leads" na Meta para 1 conversa real. Amarrando no destino, um
+   CTA novo entra no lugar certo sozinho e a lista não tem como envelhecer
+   errado de novo.
 
    `reabrir_whats` fica FORA de propósito, mesmo sendo destino WhatsApp: é o
    botão de reabrir a mensagem depois de enviar o formulário, então quem clica
    nele já disparou o Lead do formulário segundos antes, e contaria a mesma
    pessoa duas vezes. Ele existe só como ClickCTA, para dar para medir quantas
-   pessoas precisam do socorro quando o pop-up é bloqueado. */
+   pessoas precisam do socorro quando o handoff falha. */
+const DESTINO_WHATSAPP = "whatsapp";
+const FORA_DO_LEAD = new Set(["reabrir_whats"]);
+
 /* o único caminho que é contratação de verdade, e não intenção */
 const POSICAO_FORMULARIO = "form";
+
+/* apelido de leitura do `cta_position` no painel da Meta; o que não estiver
+   aqui vai com o próprio nome do data-cta, que já é legível */
 const POSICAO_LEAD: Record<string, string> = {
   hero: "hero",
   como_funciona: "steps",
-  oferta_entrada: "pricing_card",
   final: "final",
   sticky_mobile: "sticky",
   oferta_ver: "ver_no_whats",
-  final_reserva: "final_reserva",
   pill: "flutuante",
 };
+
+/* ---------- handoff para o WhatsApp ----------
+   `window.location.href`, nunca `window.open`. O navegador interno do
+   Instagram, que é de onde vem quase todo o tráfego desta campanha, trata
+   `open` como pop-up: ou bloqueia calado, ou abre uma aba fantasma que
+   aparece em branco e morre. A pessoa acha que quebrou e volta. Trocando
+   por navegação na mesma aba, o Android entrega o link ao app do WhatsApp
+   e a mensagem abre pronta.
+
+   Os 300ms existem só para o Pixel terminar de sair. O fbevents.js manda o
+   evento por requisição de imagem, que a navegação cancela se acontecer no
+   mesmo quadro: era Lead disparado e Lead não entregue. Mixpanel e CAPI já
+   vão por fetch com keepalive e sobrevivem sozinhos.
+   Sem tracking (localhost, preview, consentimento negado) não há o que
+   esperar: navega na hora. */
+const ESPERA_TRACKING = 300;
+let navegando = false;
+
+/* A trava contra toque duplo tem que soltar quando a pessoa VOLTA, senão ela
+   vira o próximo bug: quem abre o WhatsApp, desiste de enviar e volta para a
+   página encontra todos os botões mortos, inclusive o "ABRIR O WHATSAPP" que
+   existe justamente como socorro. No celular a volta quase nunca recarrega
+   nada (bfcache no Android, troca de app no iOS), então o estado do módulo
+   sobrevive inteiro. Os dois eventos cobrem os dois caminhos de volta. */
+let ouvindoVolta = false;
+function soltarNaVolta() {
+  if (ouvindoVolta) return;
+  ouvindoVolta = true;
+  const soltar = () => { navegando = false; };
+  addEventListener("pageshow", soltar);
+  addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") soltar(); });
+}
+
+export function irParaWhatsapp(href: string) {
+  if (navegando) return;              // toque duplo não agenda dois redirects
+  navegando = true;
+  soltarNaVolta();
+  const ir = () => { location.href = href; };
+  if (!podeRastrear()) { ir(); return; }
+  setTimeout(ir, ESPERA_TRACKING);
+}
+
+/* ctrl/cmd/shift/botão do meio: a pessoa pediu outra aba de propósito.
+   Deixa o navegador fazer o que ele faz e não sequestra o clique. */
+const cliqueModificado = (e: MouseEvent) =>
+  e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey;
 
 /* ---------- leitura da página: onde a pessoa desiste ----------
    Entre "abriu" e "viu a oferta" não existia sinal nenhum. Quem saía antes
@@ -450,19 +507,27 @@ export function initTracking() {
   document.addEventListener("click", (e) => {
     const el = (e.target as HTMLElement)?.closest?.("[data-cta]") as HTMLElement | null;
     if (!el) return;
-    const dados = { location: el.dataset.cta, destination: el.dataset.ctaDest || "form" };
+    const cta = el.dataset.cta || "";
+    const destino = el.dataset.ctaDest || "form";
+    const dados = { location: cta, destination: destino };
     fbq("trackCustom", "ClickCTA", dados);
     mpTrack("ClickCTA", dados);
 
-    /* Lead nos CTAs de conversão. Um evento só cobre todo caminho até o
-       WhatsApp: com verba baixa, densidade de sinal vale mais que pureza de
-       funil, e a qualidade se mede na conversa, não no painel.
-       Ouvinte delegado em vez de onClick nos oito botões: um caminho só,
-       impossível de esquecer quando nascer um CTA novo.
-       Não segura nem atrasa o clique: o listener é passivo e a CAPI vai por
-       fetch com keepalive, que sobrevive à navegação. */
-    const posicao = POSICAO_LEAD[el.dataset.cta || ""];
-    if (posicao) trackLead({ ctaPosition: posicao });
+    /* Daqui para baixo é só o caminho do WhatsApp. Quem rola a página
+       (`nav`, `hero_projetos`, `oferta_entrada`, `final_reserva`) ou abre o
+       site de um cliente (`case_*`) sai aqui: vira ClickCTA e mais nada. */
+    if (destino !== DESTINO_WHATSAPP) return;
+    const href = (el as HTMLAnchorElement).href;
+    if (!href || cliqueModificado(e)) return;
+
+    /* Segura a navegação de propósito. Antes o clique seguia direto pelo
+       href e o Lead saía numa corrida contra o descarregamento da página;
+       agora dispara, espera os 300ms e só então navega. Ouvinte delegado em
+       vez de onClick nos sete botões: um caminho só, impossível de esquecer
+       quando nascer um CTA novo. */
+    e.preventDefault();
+    if (!FORA_DO_LEAD.has(cta)) trackLead({ ctaPosition: POSICAO_LEAD[cta] || cta });
+    irParaWhatsapp(href);
   });
 
   // InitiateCheckout — primeiro foco no formulário de contratação (1x por sessão)
@@ -478,7 +543,8 @@ export function initTracking() {
 
 /* ---------- Lead: a conversão da campanha ----------
    Um único evento cobre todos os caminhos até o WhatsApp, com `cta_position`
-   dizendo de onde veio. Deduplicado: o MESMO event_id vai no Pixel (browser)
+   dizendo de onde veio, e SÓ é chamado de dentro do clique que abre o
+   wa.me. Deduplicado: o MESMO event_id vai no Pixel (browser)
    e na Conversions API (servidor), então a Meta conta uma vez só e ainda
    recebe o evento quando o navegador falha, que é o caso comum no navegador
    interno do Instagram.
@@ -488,21 +554,28 @@ export function initTracking() {
    e o primeiro nome, e é por isso que o nome chega até aqui. O servidor
    hasheia; nada em texto puro sai do browser.
 
-   Fire-and-forget e sem preventDefault: nunca bloqueia nem atrasa a abertura
-   do WhatsApp. O keepalive do fetch cobre a navegação. */
+   Fire-and-forget: nenhuma falha de rede aqui impede o WhatsApp de abrir. A
+   espera dos 300ms antes do redirect é do `irParaWhatsapp`, não daqui, e é
+   por conta do Pixel: Mixpanel e CAPI já sobrevivem à navegação pelo
+   keepalive do fetch. */
 export function trackLead({ ctaPosition, plano, nome }: { ctaPosition: string; plano?: string; nome?: string }) {
   if (!podeRastrear()) return;
   const eventId = idAleatorio();
   const dados: Record<string, unknown> = { content_name: "vitrine-digital", cta_position: ctaPosition, value: VALOR_OFERTA, currency: "BRL" };
   if (plano) dados.plano = plano;
   fbq("track", "Lead", dados, { eventID: eventId });
-  /* A Mixpanel só recebe o Lead do formulário. Os disparos de clique existem
-     para dar densidade de sinal à campanha da Meta; na Mixpanel eles quebravam
-     o funil, porque o Lead passava a acontecer ANTES do ViewContent e do
-     InitiateCheckout e uma sessão só gerava três Leads. Lá o clique já é
-     contado por ClickCTA com `location`, então o Lead extra não acrescentava
-     nada: era só ruído. Aqui Lead continua significando formulário enviado.
-     Mesmo id do Meta, para cruzar os números dos dois painéis. */
+  /* "Abriu WhatsApp" é o espelho exato do Lead na Mixpanel: mesmo gatilho,
+     mesmo momento, mesmo $insert_id. Existe para os dois painéis serem
+     conferíveis um contra o outro. Enquanto a Mixpanel só recebia o Lead do
+     formulário, um número (16 na Meta) não tinha par nenhum do outro lado, e
+     não dava para saber se a diferença era evento falso, bloqueio de rastreio
+     ou pessoa que abriu o WhatsApp e não mandou. Agora dá: se estes dois
+     divergirem mais que 10%, o problema é entrega de evento, e o que falta
+     entre "Abriu WhatsApp" e conversa recebida é a mensagem não enviada. */
+  mpTrack("AbriuWhatsApp", { $insert_id: eventId, cta_position: ctaPosition, plano });
+  /* E `Lead` continua significando, na Mixpanel, formulário enviado: é um
+     passo a mais do funil, não o mesmo evento com outro nome. Só o caminho
+     do formulário passa por aqui. */
   if (ctaPosition === POSICAO_FORMULARIO) mpTrack("Lead", { $insert_id: eventId, cta_position: ctaPosition, plano });
   enviarCapi("Lead", eventId, {
     first_name: nome || "",
