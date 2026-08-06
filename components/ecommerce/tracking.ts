@@ -441,6 +441,28 @@ export function irParaWhatsapp(href: string) {
   setTimeout(ir, ESPERA_TRACKING);
 }
 
+/* ---------- quem vai para o WhatsApp, e com que nome ----------
+   O `data-cta-dest` sempre existiu nesta página, mas só descrevia o destino
+   para leitura: todo CTA era âncora e ninguém agia sobre ele. Agora "whatsapp"
+   é um comportamento. */
+const DESTINO_WHATSAPP = "whatsapp";
+
+/* Os botões de socorro reabrem a MESMA conversa que o formulário já registrou:
+   o submit disparou Lead e Contact segundos antes. Contá-los de novo criaria um
+   lead por toque de quem já é lead, justamente o defeito que tirou o Lead dos
+   CTAs de âncora em 06/08. Continuam no ClickCTA e no "Abriu o WhatsApp", que é
+   o que eles medem de verdade: quantas pessoas o handoff deixou na mão. */
+const FORA_DO_LEAD = new Set(["reabrir_whats"]);
+
+/* O nome que vai em `cta_position`. São os MESMOS rótulos da vitrine de
+   propósito: "Abriu o WhatsApp" só é somável entre as duas páginas se "hero"
+   for hero dos dois lados. O `page` na Mixpanel é que separa uma da outra. */
+const POSICAO_WHATSAPP: Record<string, string> = {
+  hero_whatsapp:       "hero",
+  barra_fixa_whatsapp: "sticky",
+  reabrir_whats:       "confirmacao",
+};
+
 let iniciado = false;
 
 /* Chamado no mount da página (componente <Analytics />). */
@@ -499,7 +521,31 @@ export function initTracking() {
   document.addEventListener("click", (e) => {
     const alvo = (e.target as HTMLElement)?.closest?.("[data-cta]") as HTMLElement | null;
     if (!alvo) return;
-    track("ClickCTA", { location: alvo.dataset.cta || "", destination: alvo.dataset.ctaDest || "form" });
+    const posicao = alvo.dataset.cta || "";
+    const destino = alvo.dataset.ctaDest || "form";
+    track("ClickCTA", { location: posicao, destination: destino });
+    if (destino !== DESTINO_WHATSAPP) return;
+
+    /* ---------- daqui para baixo, o clique que sai da página (06/08) ----------
+       Até agora esta página não tinha nenhum: os seis CTAs eram âncoras para
+       #diagnostico e o único WhatsApp acontecia depois do formulário. Com o
+       WhatsApp virando caminho primário, o clique precisa fazer o que a vitrine
+       já faz: segurar a navegação, mandar o Lead e só então trocar de app. */
+    const href = (alvo as HTMLAnchorElement).href;
+    /* clique com modificador é intenção de abrir noutra aba: sai do caminho,
+       igual ao interceptador de âncoras faz lá em cima */
+    if (!href || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    e.preventDefault();
+    const cta_position = POSICAO_WHATSAPP[posicao] || posicao;
+    if (!FORA_DO_LEAD.has(posicao)) trackLead({ ctaPosition: cta_position });
+    /* mpTrack e não track: o espelho na Mixpanel é o que torna este clique
+       somável com o da vitrine, mas a Meta já recebeu o Lead uma linha acima.
+       Mandar também o custom `ecommerce_whatsapp_click` daria dois eventos de
+       Meta para uma ação só, que é exatamente o vício que o corte de 06/08
+       tirou desta página. No caminho do formulário o `track` continua, porque
+       lá o custom carrega o `origem: fallback`, que não existe em outro lugar. */
+    mpTrack("ecommerce_whatsapp_click", { cta_position });
+    irParaWhatsapp(href);
   });
 
   // Primeiro foco no formulário de diagnóstico (1x por sessão)

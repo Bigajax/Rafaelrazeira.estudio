@@ -44,12 +44,24 @@ export default function ECommerce() {
       <Analytics />
       <Ancoras />
       <Cabecalho />
+      {/* ---------- a prova subiu (06/08) ----------
+          Ela era a 5ª seção, no terço final: com 78% dos visitantes não
+          passando do hero e sessão mediana de 13s, quase ninguém chegava nas
+          duas lojas de cliente no ar, que são o argumento mais forte da página
+          inteira. Agora ela é a primeira coisa depois do hero, e o inventário
+          de funcionalidades (Operacao, Painel), que só interessa a quem já
+          acreditou, desceu uma posição. Nada foi removido.
+
+          AO LER O FUNIL: `ecommerce_case_view` ("Viu a prova") passa a disparar
+          para muito mais gente a partir daqui, porque a seção mudou de lugar e
+          não porque o interesse mudou. Comparar com o período anterior não faz
+          sentido; a série recomeça no deploy. */}
       <main>
         <Hero />
         <Faixa />
+        <Prova />
         <Operacao />
         <Painel />
-        <Prova />
         <Processo />
         <Duvidas />
       </main>

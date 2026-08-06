@@ -145,6 +145,15 @@
   gap: clamp(32px, 4vw, 72px); align-items: center;
 }
 .heroMicro { font: 11px/1.7 var(--mono); letter-spacing: .1em; color: var(--ink); margin: 20px 0 0 }
+/* âncora de investimento: mono como o resto dos rótulos da página, mas com o
+   número em corpo de leitura e preto cheio. Ela fica entre o apoio e os
+   botões, e o filete à esquerda é o que a separa do parágrafo sem precisar de
+   caixa nem de fundo. */
+.ancora {
+  margin: 26px 0 0; padding-left: 14px; border-left: 2px solid var(--green);
+  font: 12px var(--mono); letter-spacing: .08em; color: var(--ink);
+}
+.ancora b { font-size: 16px; letter-spacing: .02em; color: var(--black) }
 
 /* trilho operacional (assinatura) — prancheta com papel quadriculado */
 .prancheta {
@@ -361,6 +370,13 @@
   aspect-ratio: 16 / 10; overflow: hidden; background: #141414;
   container-type: size;
 }
+/* o <picture> que embrulha a captura não pode existir para o layout: ele é
+   inline por padrão, e um elemento inline entre .capa (que é o container de
+   consulta) e a imagem acrescentaria a folga de linha e quebraria a conta de
+   100cqh da animação. `display: contents` faz o <img> continuar sendo filho
+   direto para efeito de layout, com o <picture> servindo só à escolha de
+   formato. */
+.capa picture { display: contents }
 .pageShot {
   display: block; width: 100%; height: auto; will-change: transform;
   animation: rolaPagina var(--dur, 45s) ease-in-out infinite alternate;

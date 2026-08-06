@@ -10,11 +10,18 @@ import { contextoDaSessao, initTracking, irParaWhatsapp, track, trackContact, tr
 const NUMERO = "5544999997219";
 const zap = (msg: string) => `https://wa.me/${NUMERO}?text=${encodeURIComponent(msg)}`;
 
-/* Decisão do Rafael (05/08): NENHUM preço nesta página. A âncora de
-   investimento do hero e a faixa na primeira pergunta do FAQ saíram, e o
-   VALOR_BASE que as alimentava foi removido junto. O valor entra na conversa
-   do WhatsApp, depois do diagnóstico. Se um número voltar a esta página, ele
-   precisa aparecer em dois lugares (hero e FAQ) para não se contradizer. */
+/* ---------- a âncora de investimento voltou (06/08) ----------
+   Ela tinha saído em 05/08, para o valor entrar só na conversa. O que a
+   campanha mostrou desde então: CTR de 15% a 26%, 30 visitas de anúncio e zero
+   contatos. Quem chega de anúncio frio e não faz ideia se o projeto custa mil
+   ou trinta mil não pede diagnóstico, fecha a aba. A âncora não substitui o
+   diagnóstico, ela dá a ordem de grandeza que decide se vale começar a
+   conversa.
+
+   O comentário que ficou aqui em 05/08 pedia uma coisa quando o número
+   voltasse: que ele aparecesse nos DOIS lugares, hero e FAQ, para a página não
+   se contradizer. É o que esta constante garante. Trocar aqui troca nos dois. */
+const VALOR_BASE = "R$3.499";
 
 /* Dispara o funil no mount (Pixel + Mixpanel), respeitando o opt-out. */
 export function Analytics() { useEffect(() => { initTracking(); }, []); return null; }
@@ -214,24 +221,53 @@ const etapasHero = [
   { k: "pedido", nome: "Pedido #1048", info: "registrado" },
   { k: "painel", nome: "Painel", info: "separação" },
 ];
+/* ---------- a manchete mora aqui, e sozinha ----------
+   Duas strings e nada mais, porque ela é a peça que troca toda vez que um
+   criativo novo ganha: a página precisa continuar a frase do anúncio, senão
+   quem clica encontra do outro lado um assunto diferente do que veio buscar.
+   Trocar o par abaixo é a mudança inteira, sem procurar JSX.
+
+   Duas e não uma só por causa do verde: a segunda metade entra em <em>, que é
+   a gramática de manchete da página (e da vitrine). Uma string única obrigaria
+   a manchete a ser toda preta e tiraria do hero o único acento de cor. */
+const MANCHETE = ["O CLIENTE ESCOLHE, PAGA E PRONTO.", "NO MESMO MINUTO."];
+const APOIO = "E-commerce completo com carrinho, Pix e cartão: a venda se fecha sozinha, até quando você está atendendo outra pessoa, ou dormindo.";
+/* Mensagem do WhatsApp do hero: curta porque abre no teclado de um celular, e
+   escrita na voz de quem ainda não decidiu, que é quem chega aqui pelo anúncio.
+   Ela não promete diagnóstico nem preço: promete uma pergunta respondida. */
+const MSG_HERO = "Oi Rafael! Tenho uma loja e quero entender se um e-commerce completo faz sentido pra mim.";
 export function Hero() {
   return <section className={s.hero} id="o-ecommerce">
     <div className={s.heroGrade}>
       <div>
         <p className={s.olho}>E-COMMERCE SOB MEDIDA · DESIGN · OPERAÇÃO · CONVERSÃO</p>
-        <h1>UM E-COMMERCE QUE VENDE PARA O CLIENTE E <em>FUNCIONA PARA VOCÊ.</em></h1>
-        <p className={s.apoio}>Loja, pagamento, estoque e painel administrativo em uma estrutura só. Você troca preço, foto e banner sozinho, sem depender de programador.</p>
+        <h1>{MANCHETE[0]} <em>{MANCHETE[1]}</em></h1>
+        <p className={s.apoio}>{APOIO}</p>
+        {/* a âncora antes dos botões, não depois: ela é o que decide se a
+            pessoa toca em algum, então chegar junto com eles é tarde */}
+        <p className={s.ancora}>Projetos a partir de <b>{VALOR_BASE}</b></p>
+        {/* ---------- os dois caminhos, na ordem em que convertem ----------
+            O WhatsApp na frente e cheio, o formulário atrás e de contorno. Não
+            é preferência de layout: no mesmo período esta página levou 30
+            visitas de anúncio a zero contatos com o formulário como único
+            caminho, enquanto a vitrine, que abre conversa direto, fez 21 leads.
+            O formulário fica porque quem prefere escrever a falar existe, e
+            porque ele é o que grava o lead no servidor.
+
+            SEM target="_blank" no link do WhatsApp: aba nova é o que quebra no
+            navegador interno do Instagram, de onde vem quase todo o tráfego. O
+            tracking.ts intercepta o clique, dispara o Lead e navega por
+            location.href 300ms depois. */}
         <div className={s.acoes}>
-          <a className={`${s.botao} ${s.cheio}`} href="#diagnostico" data-cta="hero" data-cta-dest="form">QUERO PLANEJAR MEU E-COMMERCE ↗</a>
+          <a className={`${s.botao} ${s.cheio}`} href={zap(MSG_HERO)} data-cta="hero_whatsapp" data-cta-dest="whatsapp">FALAR COM O RAFAEL NO WHATSAPP ↗</a>
+          <a className={`${s.botao} ${s.contorno}`} href="#diagnostico" data-cta="hero" data-cta-dest="form">QUERO PLANEJAR MEU E-COMMERCE ↗</a>
           {/* este ganhou data-cta agora: era o único CTA sem, porque a lista
               antiga do Lead o excluía de propósito (rola para #incluso, é
               navegação). Como ClickCTA ele PRECISA existir, e o `destination`
               é o que separa navegação de intenção na hora de ler */}
           <a className={s.discreto} href="#incluso" data-cta="hero_incluso" data-cta-dest="incluso">VER O QUE ESTÁ INCLUSO ↓</a>
         </div>
-        {/* sem preço, por decisão do Rafael: o que sustenta o CTA aqui é o
-            risco baixo de tocar nele, não a ordem de grandeza do projeto */}
-        <p className={s.heroMicro}>Diagnóstico sem compromisso. Primeira direção visual em até 7 dias úteis.</p>
+        <p className={s.heroMicro}>Você fala direto comigo, sem compromisso.</p>
       </div>
 
       {/* assinatura: o pedido percorre a operação */}
@@ -451,9 +487,40 @@ export function Prova() {
                 <span className={s.noAr}>● NO AR</span>
               </div>
               <a className={s.capa} href={x.url} target="_blank" rel="noopener" aria-label={`Abrir o site da ${x.nome} em uma nova aba`}>
-                {/* img simples: o otimizador do Next não lida bem com capturas de quase 9 mil pixels de altura */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img className={s.pageShot} src={x.img} width={x.w} height={x.h} style={{ "--dur": x.dur } as React.CSSProperties} alt={`Página completa da loja da ${x.nome}`} loading="lazy" decoding="async" />
+                {/* img simples: o otimizador do Next não lida bem com capturas
+                    de quase 9 mil pixels de altura. Então a otimização é feita
+                    fora, por scripts/webp-assets.mjs, e entregue por <picture>.
+                    As duas capturas somavam 1,8 MB de JPEG; no celular, que é
+                    de onde vem o tráfego, agora somam 361 KB. O JPEG fica como
+                    último recurso.
+
+                    As dimensões seguem no <img> e não mudam entre as variantes:
+                    a redução de celular é proporcional, então a caixa de
+                    proporção continua valendo e o --dur da animação, que é
+                    calibrado pela altura EXIBIDA, também.
+
+                    A ordem é obrigatória: o navegador pega a primeira source
+                    que casa media e type, então as três do celular precisam vir
+                    inteiras antes das de desktop. */}
+                <picture>
+                  <source media="(max-width: 720px)" type="image/avif" srcSet={x.img.replace(/\.jpg$/, "-720.avif")} />
+                  <source media="(max-width: 720px)" type="image/webp" srcSet={x.img.replace(/\.jpg$/, "-720.webp")} />
+                  <source type="image/avif" srcSet={x.img.replace(/\.jpg$/, ".avif")} />
+                  <source type="image/webp" srcSet={x.img.replace(/\.jpg$/, ".webp")} />
+                  {/* ---------- fetchPriority low, e é o que salva o LCP ----------
+                      `loading="lazy"` não segura nada aqui: depois que a prova
+                      subiu para logo abaixo do hero, estas imagens já nascem
+                      dentro da margem de pré-carregamento do navegador. Medido:
+                      elas começavam a baixar aos 236ms, no MESMO instante que
+                      as fontes, e 361 KB contra 136 KB de fonte num 4G
+                      simulado é a fonte perdendo. Como o elemento de LCP desta
+                      página é TEXTO, a fonte atrasada é o LCP atrasado.
+                      Com prioridade baixa elas continuam carregando cedo, mas
+                      cedem a vez: quem rola encontra a prova pronta, e quem só
+                      lê o hero não paga por ela. */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img className={s.pageShot} src={x.img} width={x.w} height={x.h} style={{ "--dur": x.dur } as React.CSSProperties} alt={`Página completa da loja da ${x.nome}`} loading="lazy" decoding="async" fetchPriority="low" />
+                </picture>
               </a>
             </div>
             <div className={s.deck} aria-hidden />
@@ -481,10 +548,17 @@ export function Prova() {
               otimizador não troca recorte por media query, e o navegador baixa
               só o arquivo que corresponde. */}
           <div className={s.painelQuadro}>
+            {/* a ordem importa: o navegador pega a PRIMEIRA source que casa
+                media e type, então o recorte do celular precisa esgotar os
+                três formatos antes de a versão de desktop aparecer na lista */}
             <picture>
+              <source media="(max-width: 720px)" type="image/avif" srcSet="/assets/demo/xavier-painel-mob.avif" />
+              <source media="(max-width: 720px)" type="image/webp" srcSet="/assets/demo/xavier-painel-mob.webp" />
               <source media="(max-width: 720px)" srcSet="/assets/demo/xavier-painel-mob.jpg" />
+              <source type="image/avif" srcSet="/assets/demo/xavier-painel.avif" />
+              <source type="image/webp" srcSet="/assets/demo/xavier-painel.webp" />
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/assets/demo/xavier-painel.jpg" alt="Tela de produtos do painel da Xavier's Sports: cada camisa com preço, estoque por tamanho e status de pronta entrega" loading="lazy" decoding="async" />
+              <img src="/assets/demo/xavier-painel.jpg" alt="Tela de produtos do painel da Xavier's Sports: cada camisa com preço, estoque por tamanho e status de pronta entrega" loading="lazy" decoding="async" fetchPriority="low" />
             </picture>
           </div>
         </div>
@@ -559,10 +633,12 @@ export function Processo() {
    onde a pessoa de fato pergunta. */
 type Pergunta = [string, React.ReactNode];
 const faqTopo: Pergunta[] = [
-  /* Sem número, mas sem evasiva: a resposta nomeia os três fatores que de fato
-     mexem no valor e diz o que a pessoa recebe e quando. "Depende" sozinho é o
-     que faz alguém fechar a aba na primeira pergunta do FAQ. */
-  ["Quanto custa desenvolver um e-commerce?", "Três coisas mexem no valor: a quantidade de produtos, as integrações com os sistemas que você já usa e as regras comerciais da sua operação. No diagnóstico eu levanto os três e te mando um escopo fechado, com valor e prazo, antes de qualquer compromisso."],
+  /* Com número desde 06/08, e aberta por padrão (ver `linhaFaq`): esta é a
+     pergunta que a pessoa veio fazer, e obrigá-la a tocar para descobrir se
+     pode pagar é cobrar um toque justamente de quem ainda não decidiu ficar.
+     A resposta continua nomeando os três fatores que mexem no valor: a âncora
+     diz por onde começa, o diagnóstico diz onde termina. */
+  ["Quanto custa desenvolver um e-commerce?", `Projetos a partir de ${VALOR_BASE}. O valor final sai do diagnóstico, de acordo com a operação da loja: a quantidade de produtos, as integrações com os sistemas que você já usa e as regras comerciais. Eu levanto os três e te mando um escopo fechado, com valor e prazo, antes de qualquer compromisso.`],
   ["Preciso de um e-commerce completo ou de uma vitrine digital?", <>
     Na vitrine, os produtos ficam organizados e o pedido fecha no WhatsApp, sem carrinho nem checkout: serve quando o volume ainda é menor e o atendimento passa por você. O e-commerce serve quando o cliente precisa comprar e pagar sozinho, e quando estoque e pedidos precisam ser administrados. Se for o primeiro caso, <Link className={s.linkTexto} href="/vitrine-digital">conheça a vitrine digital</Link>.
   </>],
@@ -587,8 +663,15 @@ const faqResto: Pergunta[] = [
 ];
 /* Uma pergunta é sempre uma pergunta, esteja à vista ou dentro da gaveta:
    mesmo marcador visual e o mesmo ecommerce_faq_open nas duas. */
-const linhaFaq = (f: Pergunta) => (
-  <details key={f[0]} onToggle={(e) => (e.currentTarget as HTMLDetailsElement).open && track("ecommerce_faq_open", { pergunta: f[0] })}>
+/* `aberta` só é usada pela primeira pergunta do topo (a do preço). Ela é
+   parâmetro e não índice de propósito: `faqResto.map(linhaFaq)` passaria o
+   índice do map e abriria também a primeira da gaveta, que não é a mesma
+   decisão.
+   AO LER O FUNIL: a pergunta aberta por padrão deixa de aparecer no
+   `ecommerce_faq_open`, porque ninguém precisa abrir o que já está aberto. A
+   queda a zero nessa linha, a partir de 06/08, é isso e não desinteresse. */
+const linhaFaq = (f: Pergunta, aberta = false) => (
+  <details key={f[0]} open={aberta} onToggle={(e) => (e.currentTarget as HTMLDetailsElement).open && track("ecommerce_faq_open", { pergunta: f[0] })}>
     <summary>{f[0]}</summary>
     <p>{f[1]}</p>
   </details>
@@ -598,13 +681,13 @@ export function Duvidas() {
     <div className={s.molde}>
       <p className={s.olho}>DÚVIDAS FREQUENTES</p>
       <h2>ANTES DE COMEÇAR.</h2>
-      <div className={s.sanfona}>{faqTopo.map(linhaFaq)}</div>
+      <div className={s.sanfona}>{faqTopo.map((f, i) => linhaFaq(f, i === 0))}</div>
       {/* a gaveta NÃO dispara ecommerce_faq_open: abrir a gaveta não é tirar
           uma dúvida, e contar as duas coisas juntas estragaria a leitura de
           qual pergunta trava a venda */}
       <details className={`${s.dobra} ${s.dobraLarga}`}>
         <summary>Ver as outras {faqResto.length} dúvidas</summary>
-        <div className={s.sanfona}>{faqResto.map(linhaFaq)}</div>
+        <div className={s.sanfona}>{faqResto.map((f) => linhaFaq(f))}</div>
       </details>
     </div>
   </section>;
@@ -644,6 +727,11 @@ const campos = [
   { id: "canal", rot: "Instagram ou site da loja", tipo: "text", ph: "@sualoja ou sualoja.com.br", req: false },
   { id: "vende", rot: "O que você vende", tipo: "text", ph: "Segmento e produtos", req: false },
 ];
+/* Fração da rolagem total a partir da qual a barra fixa aparece. É uma fração
+   da PÁGINA, não da tela: numa página longa como esta, 30% é bem mais de uma
+   dobra, então a barra chega para quem está lendo de verdade, e não para quem
+   ainda está decidindo se fica. */
+const INICIO_DA_BARRA = 0.30;
 export function ChamadaFinal() {
   const [dados, setDados] = useState<Record<string, string>>({});
   const [ocultarBarra, setOcultarBarra] = useState(false);
@@ -653,22 +741,26 @@ export function ChamadaFinal() {
   const [enviado, setEnviado] = useState(false);
   const set = (k: string, v: string) => setDados((d) => ({ ...d, [k]: v }));
 
-  /* A barra fixa entra só depois que a pessoa passa do hero (antes disso o CTA
-     principal já está na tela e a barra só rouba altura) e some quando o
+  /* A barra fixa entra depois de 30% da página rolada e some quando o
      formulário aparece, para nunca cobrir os campos e o botão de envio.
      Handler de scroll em vez de IntersectionObserver de propósito: o IO não
      dispara no ambiente CDP usado para testar esta página, e medir o
-     getBoundingClientRect é determinístico. */
+     getBoundingClientRect é determinístico.
+
+     O gatilho era "passou do hero" e virou distância em 06/08, junto com a
+     barra deixar de apontar para o formulário e passar a abrir o WhatsApp. São
+     duas perguntas diferentes: "o CTA principal saiu da tela?" pedia o hero,
+     "esta pessoa está lendo mesmo?" pede distância. */
   useEffect(() => {
     const form = document.getElementById("diagnostico");
-    const hero = document.getElementById("o-ecommerce");
     if (!form) return;
     const aoRolar = () => {
       const f = form.getBoundingClientRect();
-      const noHero = hero ? hero.getBoundingClientRect().bottom > 80 : false;
+      const rolavel = document.documentElement.scrollHeight - window.innerHeight;
+      const cedo = rolavel <= 0 || window.scrollY < rolavel * INICIO_DA_BARRA;
       // à vista = o topo do form já subiu à metade inferior e ele ainda não saiu por cima
       const noForm = f.top < window.innerHeight * 0.8 && f.bottom > 0;
-      setOcultarBarra(noHero || noForm);
+      setOcultarBarra(cedo || noForm);
     };
     aoRolar();
     window.addEventListener("scroll", aoRolar, { passive: true });
@@ -766,8 +858,12 @@ export function ChamadaFinal() {
         <b>RECEBI SEUS DADOS</b>
         <h3>Te chamo no WhatsApp ainda hoje.</h3>
         <p>Vou olhar sua operação antes de falar com você, para a conversa já começar com uma direção. Se preferir adiantar, é só me chamar.</p>
-        <a className={`${s.botao} ${s.cheio}`} href={linkWa} data-cta="reabrir_whats" data-cta-dest="whatsapp"
-           onClick={() => track("ecommerce_whatsapp_click", { cta_position: "confirmacao" })}>
+        {/* sem onClick desde 06/08: o ouvinte delegado do tracking.ts passou a
+            tratar `data-cta-dest="whatsapp"`, e ele já emite "Abriu o WhatsApp"
+            com cta_position "confirmacao". Manter o onClick daria dois eventos
+            para um toque. O `reabrir_whats` está em FORA_DO_LEAD, então o Lead
+            NÃO sai daqui: o submit já mandou Lead e Contact segundos antes. */}
+        <a className={`${s.botao} ${s.cheio}`} href={linkWa} data-cta="reabrir_whats" data-cta-dest="whatsapp">
           QUER AGILIZAR? ME CHAMA AGORA ↗
         </a>
       </div> : <form className={s.form} onSubmit={enviar}>
@@ -819,9 +915,16 @@ export function ChamadaFinal() {
       <small className={s.micro}>A conversa inicial serve para entender a operação antes da definição do escopo e do investimento.</small>
     </section>
 
-    <a className={`${s.barraFixa} ${ocultarBarra ? s.barraOculta : ""}`} href="#diagnostico" data-cta="barra_fixa" data-cta-dest="form">
-      <small>E-COMMERCE SOB MEDIDA<i>Diagnóstico sem compromisso</i></small>
-      <span>PLANEJAR MEU E-COMMERCE ↗</span>
+    {/* A barra deixou de rolar para o formulário e passou a abrir a conversa
+        (06/08). Ela é a única peça que acompanha a pessoa a página inteira, e
+        mandá-la para o mesmo formulário que os outros cinco CTAs já ofereciam
+        era gastar essa companhia repetindo o caminho que não converteu.
+        `data-cta` NOVO (`barra_fixa_whatsapp`) de propósito: reaproveitar
+        `barra_fixa` misturaria, na mesma linha do relatório, os cliques que
+        rolavam a página com os que trocam de app. */}
+    <a className={`${s.barraFixa} ${ocultarBarra ? s.barraOculta : ""}`} href={zap(MSG_HERO)} data-cta="barra_fixa_whatsapp" data-cta-dest="whatsapp">
+      <small>E-COMMERCE SOB MEDIDA<i>Sem compromisso</i></small>
+      <span>FALAR NO WHATSAPP ↗</span>
     </a>
 
     <footer className={s.rodape}>
