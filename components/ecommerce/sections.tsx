@@ -611,18 +611,40 @@ export function Duvidas() {
 }
 
 /* ============================================================ CTA FINAL + FORMULÁRIO + RODAPÉ */
-/* Etapa 2 desde a inversão: primeiro a pessoa fala da loja, só depois deixa
-   o contato. Perguntar nome e WhatsApp de saída faz o formulário parecer uma
-   cobrança; perguntar sobre a operação faz ele parecer um diagnóstico, que é
-   o que ele é. Os textos dos campos não mudaram, só a ordem das etapas. */
-const contato = [
-  { id: "nome", rot: "Nome", tipo: "text", ph: "Seu nome" },
-  { id: "whatsapp", rot: "WhatsApp", tipo: "tel", ph: "(00) 00000-0000" },
-  { id: "canal", rot: "Instagram ou site", tipo: "text", ph: "@sualoja ou sualoja.com.br" },
-  { id: "empresa", rot: "Nome da empresa", tipo: "text", ph: "Sua marca" },
+/* ---------- uma etapa, quatro campos (06/08) ----------
+   Eram duas etapas e nove campos, incluindo dois selects, um textarea e uma
+   pergunta de faixa de investimento. Aquilo era um diagnóstico, e fazia sentido
+   enquanto o formulário precisava carregar a conversa inteira de uma vez: ele
+   montava a mensagem do WhatsApp e sumia.
+
+   Depois que o lead passou a ser gravado no servidor e a promessa virou "te
+   chamo ainda hoje", o formulário deixou de ser o diagnóstico e virou a porta
+   dele. O diagnóstico acontece na conversa, que é onde ele sempre foi melhor.
+   Então cada campo aqui precisa se justificar por uma pergunta só: sem ele, eu
+   consigo ligar?
+
+   O que sobrou:
+   • nome e whatsapp, porque sem os dois não existe lead;
+   • instagram ou site, porque a tela de confirmação promete que eu olho a
+     operação antes de falar, e sem um endereço eu não olho nada;
+   • o que vende, uma linha, que é o que separa "loja de roupa" de "peça
+     técnica sob encomenda" antes de eu abrir a boca.
+
+   O que saiu, e por quê: faixa de investimento (a pergunta mais cara de
+   responder da página inteira, e a que a conversa resolve em trinta segundos),
+   quantidade de produtos e site atual (dois selects que a ligação responde
+   sozinha), principal dificuldade (textarea, o pior campo que existe no
+   celular) e nome da empresa (o @ do instagram já entrega isso).
+
+   As colunas continuam na tabela `leads`: um lead antigo não perde o que
+   respondeu, e a /vitrine-digital pode mandar campos diferentes sem migração. */
+const campos = [
+  { id: "nome", rot: "Nome", tipo: "text", ph: "Seu nome", req: true },
+  { id: "whatsapp", rot: "WhatsApp", tipo: "tel", ph: "(00) 00000-0000", req: true },
+  { id: "canal", rot: "Instagram ou site da loja", tipo: "text", ph: "@sualoja ou sualoja.com.br", req: false },
+  { id: "vende", rot: "O que você vende", tipo: "text", ph: "Segmento e produtos", req: false },
 ];
 export function ChamadaFinal() {
-  const [etapa, setEtapa] = useState(1);
   const [dados, setDados] = useState<Record<string, string>>({});
   const [ocultarBarra, setOcultarBarra] = useState(false);
   /* guardado no estado para virar o botão de socorro embaixo do formulário */
@@ -654,10 +676,6 @@ export function ChamadaFinal() {
     return () => { window.removeEventListener("scroll", aoRolar); window.removeEventListener("resize", aoRolar); };
   }, []);
 
-  function avancar() {
-    setEtapa(2);
-    track("ecommerce_form_step_complete", { etapa: 1 });
-  }
   /* ---------- o envio, invertido em 06/08 ----------
      Antes: dispara os eventos, abre o WhatsApp, torce. Se o handoff falhasse
      (pop-up bloqueado no navegador do Instagram) ou a pessoa desistisse antes
@@ -683,19 +701,17 @@ export function ChamadaFinal() {
     trackLead({ ctaPosition: "form", nome: dados.nome, whatsapp: dados.whatsapp });
     trackContact({ nome: dados.nome, whatsapp: dados.whatsapp });
 
-    const linha = (r: string, v?: string) => `${r}: ${v?.trim() ? v.trim() : "não informado"}`;
+    /* A mensagem encolheu junto com o formulário. Ela só é usada quando a
+       pessoa escolhe falar agora (ou no fallback), e nesse caso a conversa já
+       vai acontecer: repetir seis campos ali era encher o teclado dela com o
+       que eu já tenho na tabela. */
+    const linha = (r: string, v?: string) => (v?.trim() ? `${r}: ${v.trim()}` : "");
     const msg = [
-      "Olá, Rafael! Preenchi o diagnóstico para desenvolvimento de um e-commerce.",
+      "Olá, Rafael! Preenchi o formulário no site sobre um e-commerce.",
       "",
-      linha("Empresa", dados.empresa),
-      linha("Segmento", dados.vende),
-      linha("Quantidade aproximada de produtos", dados.produtos),
-      linha("Site atual", dados.site),
-      linha("Principal necessidade", dados.necessidade),
-      linha("Faixa de investimento", dados.investimento),
-      "",
-      "Gostaria de entender qual estrutura seria mais adequada para a operação.",
-    ].join("\n");
+      linha("Loja", dados.canal),
+      linha("Vendo", dados.vende),
+    ].filter(Boolean).join("\n");
     /* guardado antes de qualquer caminho: serve à confirmação e ao fallback */
     const link = zap(msg);
     setLinkWa(link);
@@ -705,12 +721,7 @@ export function ChamadaFinal() {
       nome: dados.nome || "",
       whatsapp: dados.whatsapp || "",
       canal: dados.canal,
-      empresa: dados.empresa,
       vende: dados.vende,
-      produtos: dados.produtos,
-      site: dados.site,
-      necessidade: dados.necessidade,
-      investimento: dados.investimento,
       ...contextoDaSessao(),
     });
     setEnviando(false);
@@ -733,7 +744,11 @@ export function ChamadaFinal() {
     <section className={`${s.secao} ${s.escura} ${s.final}`} id="diagnostico">
       <p className={s.agenda}>AGENDA PARA NOVOS PROJETOS</p>
       <h2>SEU E-COMMERCE COMEÇA ANTES DA <em>PRIMEIRA TELA.</em></h2>
-      <p className={s.apoioEscuro}>Conte sobre sua loja, seus produtos e como sua operação funciona hoje. A partir disso, será possível definir a estrutura, o investimento e o caminho adequado para colocar o projeto no ar.</p>
+      {/* a chamada acompanhou o encolhimento do formulário: prometer "conte
+          sobre sua operação" na frente de quatro campos seria pedir de novo o
+          esforço que acabou de sair. O trabalho de entender a operação passou
+          para a conversa, e é isso que a frase diz agora. */}
+      <p className={s.apoioEscuro}>Deixe seu contato e o endereço da sua loja. Eu olho sua operação antes de falar com você, e a conversa já começa com uma direção: estrutura, investimento e caminho para colocar o projeto no ar.</p>
       {/* o que sobrou da seção "uma loja é uma operação": dos seis argumentos
           de lá, só este é um fato verificável e escasso, e escassez pertence
           ao lado do formulário, não a um card no meio da página */}
@@ -756,54 +771,32 @@ export function ChamadaFinal() {
           QUER AGILIZAR? ME CHAMA AGORA ↗
         </a>
       </div> : <form className={s.form} onSubmit={enviar}>
-        <div className={s.formPassos}>
-          <div className={`${s.formPasso} ${etapa === 1 ? s.formPassoAtivo : ""}`}><b>1</b> OPERAÇÃO</div>
-          <div className={`${s.formPasso} ${etapa === 2 ? s.formPassoAtivo : ""}`}><b>2</b> CONTATO</div>
-        </div>
-
-        {etapa === 1 ? <div className={s.formCorpo}>
+        {/* Sem cabeçalho de etapas: contar passos só faz sentido quando existe
+            mais de um, e o "1 · OPERAÇÃO / 2 · CONTATO" era, ele próprio, o
+            aviso de que ainda faltava trabalho depois do que estava na tela.
+            Os dois campos que não são obrigatórios dizem isso na etiqueta, o
+            que só cabe agora que sobraram quatro. */}
+        <div className={s.formCorpo}>
           <div className={s.dupla}>
-            <label className={s.campo}><span>O que a empresa vende</span><input type="text" name="vende" placeholder="Segmento e produtos" value={dados.vende || ""} onChange={(e) => set("vende", e.target.value)} /></label>
-            <label className={s.campo}><span>Quantidade aproximada de produtos</span>
-              <select name="produtos" value={dados.produtos || ""} onChange={(e) => set("produtos", e.target.value)}>
-                <option value="">Selecione</option><option>Até 20</option><option>20 a 100</option><option>100 a 500</option><option>Mais de 500</option>
-              </select>
-            </label>
-            <label className={s.campo}><span>Já possui site ou loja virtual?</span>
-              <select name="site" value={dados.site || ""} onChange={(e) => set("site", e.target.value)}>
-                <option value="">Selecione</option><option>Não tenho</option><option>Tenho site institucional</option><option>Tenho loja virtual</option>
-              </select>
-            </label>
-            {/* ERP, abrangência de venda, pagamento online, painel e prazo
-                saíram: são cinco perguntas que a conversa do diagnóstico
-                responde melhor, e cada uma delas era um motivo a mais para
-                abandonar o formulário no celular. */}
-            <label className={s.campo}><span>Faixa de investimento</span><input type="text" name="investimento" placeholder="Sua faixa de investimento" value={dados.investimento || ""} onChange={(e) => set("investimento", e.target.value)} /></label>
-          </div>
-          <label className={s.campo}><span>Principal dificuldade atual</span><textarea name="necessidade" placeholder="O que mais atrapalha sua operação hoje" value={dados.necessidade || ""} onChange={(e) => set("necessidade", e.target.value)} /></label>
-          <div className={s.formNav}>
-            <span />
-            <button type="button" className={`${s.botao} ${s.cheio}`} onClick={avancar}>CONTINUAR PARA O CONTATO ↓</button>
-          </div>
-        </div> : <div className={s.formCorpo}>
-          <div className={s.dupla}>
-            {contato.map((c) => <label className={s.campo} key={c.id}>
-              <span>{c.rot}</span>
-              <input type={c.tipo} name={c.id} placeholder={c.ph} value={dados[c.id] || ""} onChange={(ev) => set(c.id, ev.target.value)} required={c.id === "nome" || c.id === "whatsapp"} />
+            {campos.map((c) => <label className={s.campo} key={c.id}>
+              <span>{c.rot}{!c.req && <i className={s.opcional}>opcional</i>}</span>
+              <input type={c.tipo} name={c.id} placeholder={c.ph} value={dados[c.id] || ""}
+                     onChange={(ev) => set(c.id, ev.target.value)} required={c.req}
+                     autoComplete={c.id === "nome" ? "name" : c.id === "whatsapp" ? "tel" : "off"} />
             </label>)}
           </div>
           <div className={s.formNav}>
-            <button type="button" className={`${s.botao} ${s.contorno}`} style={{ borderColor: "#fff", color: "#fff" }} onClick={() => setEtapa(1)}>← VOLTAR</button>
+            <span />
             {/* o rótulo muda porque o botão passou a esperar o servidor: sem
                 isso, um toque em rede ruim parece um botão que não funciona,
-                e a pessoa toca de novo */}
+                e a pessoa toca de novo.
+                Sem a seta ↗: nesta página ela significa "sai daqui", e o envio
+                agora acontece na própria tela. */}
             <button type="submit" className={`${s.botao} ${s.cheio}`} disabled={enviando}>
-              {/* sem a seta ↗: nesta página ela significa "sai daqui", e o
-                  envio agora acontece na própria tela */}
-              {enviando ? "ENVIANDO…" : "SOLICITAR DIAGNÓSTICO DO E-COMMERCE"}
+              {enviando ? "ENVIANDO…" : "QUERO FALAR SOBRE MEU E-COMMERCE"}
             </button>
           </div>
-        </div>}
+        </div>
         {/* O aviso vira o socorro depois do envio. Antes daqui não saía nada:
             a página abria o WhatsApp e ficava calada, então quem caísse no
             bloqueio de pop-up do navegador do Instagram não tinha o que fazer.

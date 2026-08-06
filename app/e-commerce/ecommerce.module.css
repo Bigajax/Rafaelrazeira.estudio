@@ -441,15 +441,15 @@
 .escura .agendaLimite { font: 11px/1.6 var(--mono); color: var(--traco); margin: 22px auto 0; max-width: 460px }
 
 .form { max-width: 720px; margin: 44px auto 0; text-align: left; border: 1px solid var(--line-dark); background: #0e1a15 }
-.formPassos { display: flex; border-bottom: 1px solid var(--line-dark) }
-.formPasso { flex: 1; padding: 16px 18px; font: 700 10px var(--mono); letter-spacing: .06em; color: #8a958d; display: flex; align-items: center; gap: 10px }
-.formPasso b { width: 22px; height: 22px; border: 1px solid var(--line-dark); border-radius: 50%; display: grid; place-items: center; font-size: 9px }
-.formPassoAtivo { color: #fff }
-.formPassoAtivo b { background: var(--green); border-color: var(--green); color: #052e21 }
-.formPasso + .formPasso { border-left: 1px solid var(--line-dark) }
+/* o cabeçalho de etapas (.formPassos/.formPasso) saiu em 06/08 junto com a
+   segunda etapa: quatro campos numa tela só não têm passo para contar */
 .formCorpo { padding: clamp(22px, 3vw, 36px) }
 .campo { display: block; margin-bottom: 18px }
 .campo span { display: block; font: 700 10px var(--mono); letter-spacing: .06em; color: #9aa79f; margin-bottom: 8px }
+/* "opcional" na própria etiqueta, em vez de asterisco nos obrigatórios: dizer
+   o que a pessoa pode PULAR encurta o formulário aos olhos dela, e marcar o
+   que é exigido faz o contrário */
+.opcional { font-style: normal; font-weight: 400; text-transform: none; letter-spacing: 0; color: #6f7d75; margin-left: 8px }
 .campo input, .campo select, .campo textarea {
   width: 100%; background: var(--night); border: 1px solid var(--line-dark); color: #fff;
   font: 14px var(--body); padding: 13px 14px; border-radius: 0;
@@ -585,7 +585,6 @@
 @media (max-width: 460px) {
   .page h1 { font-size: clamp(28px, 8vw, 34px) }
   .faixaTrilho span { font-size: 20px }
-  .formPasso { padding: 14px 14px; font-size: 9px }
   /* a barra de navegador não cabe inteira: some o selo, fica a URL */
   .noAr { display: none }
   /* a barra fixa: o rótulo cede o espaço, o botão não */

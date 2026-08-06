@@ -244,7 +244,9 @@ const NOME_MP: Record<string, string> = {
   ecommerce_case_view:                "Viu a prova",
   ecommerce_faq_open:                 "Abriu uma dúvida",
   ecommerce_form_start:               "Tocou no formulário",
-  ecommerce_form_step_complete:       "Passou da etapa 1",
+  /* `ecommerce_form_step_complete` ("Passou da etapa 1") saiu em 06/08: o
+     formulário virou uma etapa só, então o evento deixou de existir. A série
+     antiga continua na Mixpanel, parada nessa data. */
   /* O passo que passou a existir em 06/08, e o único que não depende do
      WhatsApp: o lead está gravado no banco. É contra ELE que "Abriu o
      WhatsApp" deve ser lido agora. Se os dois divergirem muito, o handoff
