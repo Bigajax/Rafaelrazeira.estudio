@@ -211,7 +211,19 @@ export function Hero() {
         <div className={s.actions}>
           <a className={`${s.button} ${s.primary}`} href={waVer} data-cta="hero" data-cta-dest="whatsapp">VER COMO FICA PARA A MINHA LOJA ↗</a>
         </div>
-        <small className={s.micro}>Você fala direto comigo no WhatsApp, sem compromisso.</small>
+        {/* ---------- o preço volta à primeira dobra (06/08) ----------
+            Como INFORMAÇÃO, não como pedido: o convite continua sendo a
+            conversa, então a inversão de 04/08 descrita acima segue de pé. O
+            que mudou é que o valor deixou de ser segredo até a sétima seção.
+            Com 78% saindo sem passar do hero e sessão mediana de 13s, a
+            maioria decidia sem nunca ter visto quanto custa. E é o pior lugar
+            possível para esconder: num mercado que responde "solicite
+            orçamento", o preço fechado é o diferencial desta oferta, e
+            escondê-lo joga fora justamente o que ela tem de diferente.
+            Aqui embaixo do botão e não em bloco próprio porque um selo de
+            preço passaria a disputar a atenção com o CTA verde, que é a única
+            coisa da dobra que precisa ser tocada. */}
+        <small className={s.micro}><b>Projeto completo por R$999.</b> Você reserva com R$500 e paga o saldo só depois de aprovar. Fala direto comigo no WhatsApp, sem compromisso.</small>
         {/* ---------- onde a prova entra ----------
             No desktop, aqui: encostada no mockup, na mesma faixa da tela. Não
             embaixo do aparelho, que tem 528px de altura e jogaria o balão
@@ -741,32 +753,65 @@ export function FinalCTA() {
   </>;
 }
 
-/* Barra fixa do celular: entra depois que a pessoa passa do hero e some
-   dentro da oferta, enquanto ela digita, e no CTA final, para não cobrir o
-   formulário nem apertar o rodapé, onde o botão já está na tela. */
+/* Barra fixa do celular: entra depois de uma tela de rolagem e some dentro
+   da oferta, enquanto a pessoa digita, e no CTA final, para não cobrir o
+   formulário nem apertar o rodapé, onde o botão já está na tela.
+
+   ---------- por que uma distância e não o hero (06/08) ----------
+   O gatilho era um IntersectionObserver em #topo: enquanto o hero estivesse
+   visível, a barra ficava fora. Só que o hero no celular é alto (manchete,
+   lead, CTA, microcopy, os quatro checks, o aparelho de 430px, a legenda e o
+   balão), então "passou do hero" acontecia lá pelos 1200px de rolagem. A
+   barra chegava tarde demais numa página em que a maioria decide antes.
+   Agora o gatilho é a distância rolada, que é o que se queria medir desde o
+   começo: uma tela cheia é sinal de interesse suficiente para oferecer o
+   atalho, e cai perto da demonstração em vez de depois dela.
+
+   Listener de scroll e não um IntersectionObserver porque não há elemento a
+   observar: o gatilho é uma distância, e fabricar uma âncora invisível a
+   0,85 de tela só para poder observá-la seria dar a volta no problema. Os
+   observers de #oferta e #fim continuam sendo observers, que é o caso deles.
+
+   Sem requestAnimationFrame para coalescer, diferente da /e-commerce: lá o
+   handler chama getBoundingClientRect, que força layout e precisa mesmo de
+   um quadro. Aqui a conta é scrollY contra innerHeight, duas leituras que
+   não tocam no layout, então o rAF só adicionaria uma dependência de pintura
+   para o estado ficar correto. Com a aba ociosa ou o navegador estrangulado,
+   o quadro não vem e a barra congela no estado errado, que foi exatamente o
+   que apareceu ao testar a primeira versão desta função. */
+const ROLAGEM_PARA_BARRA = 0.85;   // frações de uma tela
 export function MobileBar() {
   const [hidden, setHidden] = useState(true);
   const waVer = useWhatsapp(MSG_VER);
   useEffect(() => {
-    const hero = document.getElementById("topo");
     const offer = document.getElementById("oferta");
     const end = document.getElementById("fim");
-    let focused = false, inOffer = false, inHero = !!hero, inEnd = false;
-    const update = () => setHidden(focused || inOffer || inHero || inEnd);
+    let focused = false, inOffer = false, inEnd = false, cedo = true;
+    const update = () => setHidden(focused || inOffer || inEnd || cedo);
     const onFocus = (e: FocusEvent) => { focused = !!(e.target as HTMLElement)?.closest?.("form"); update(); };
     const onBlur = () => { focused = false; update(); };
     document.addEventListener("focusin", onFocus);
     document.addEventListener("focusout", onBlur);
-    const heroIO = hero && new IntersectionObserver(([x]) => { inHero = x.isIntersecting; update(); }, { rootMargin: "-15% 0px" });
-    if (hero && heroIO) heroIO.observe(hero);
+    const medir = () => {
+      const passou = window.scrollY > window.innerHeight * ROLAGEM_PARA_BARRA;
+      if (passou !== cedo) return;   // cedo é o inverso de passou: nada mudou
+      cedo = !passou;
+      update();
+    };
+    window.addEventListener("scroll", medir, { passive: true });
+    window.addEventListener("resize", medir, { passive: true });
+    medir();   // quem volta do WhatsApp reabre a página já rolada
     const offerIO = offer && new IntersectionObserver(([x]) => { inOffer = x.isIntersecting; update(); }, { rootMargin: "-30% 0px" });
     if (offer && offerIO) offerIO.observe(offer);
     const endIO = end && new IntersectionObserver(([x]) => { inEnd = x.isIntersecting; update(); }, { rootMargin: "-10% 0px" });
     if (end && endIO) endIO.observe(end);
-    return () => { document.removeEventListener("focusin", onFocus); document.removeEventListener("focusout", onBlur); heroIO?.disconnect(); offerIO?.disconnect(); endIO?.disconnect(); };
+    return () => { document.removeEventListener("focusin", onFocus); document.removeEventListener("focusout", onBlur); window.removeEventListener("scroll", medir); window.removeEventListener("resize", medir); offerIO?.disconnect(); endIO?.disconnect(); };
   }, []);
+  /* a barra passa a levar o preço no lugar do prazo: ela é a única peça que
+     acompanha a pessoa a página inteira, e "pronta em 7 dias" já é um dos
+     quatro checks do hero. O prazo informa; o preço decide. */
   return <div className={`${s.bar} ${hidden ? s.barHidden : ""}`}>
-    <span className={s.barCopy}><b>VITRINE DIGITAL</b><span>Pronta em 7 dias úteis</span></span>
+    <span className={s.barCopy}><b>R$999</b><span>Reserva com R$500</span></span>
     <a className={`${s.button} ${s.primary}`} href={waVer} data-cta="sticky_mobile" data-cta-dest="whatsapp">VER COMO FICA</a>
   </div>;
 }

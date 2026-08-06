@@ -56,6 +56,9 @@
 /* precisa de duas classes para vencer .dark p, que tem seletor de elemento */
 .dark .leadDark { color: #b6b6b0 }
 .micro { font: 12px/1.65 var(--mono); color: var(--ink); letter-spacing: .01em }
+/* o preço dentro da microcopy do hero: precisa ancorar a leitura sem virar
+   um segundo título, então ganha só peso e o preto cheio contra o cinza */
+.micro b { font-weight: 700; color: var(--black) }
 
 .wrap { max-width: 1360px; margin: auto }
 .section { padding: clamp(56px, 6.4vw, 84px) var(--pad); scroll-margin-top: 72px }
@@ -468,7 +471,9 @@
 }
 .bar b { color: var(--green) }
 .bar .button { padding: 13px 20px; flex: none }
-/* a barra leva o preço de entrada e a proteção junto, não só "contratar" */
+/* a barra leva o preço cheio e a entrada, não o prazo: é a única peça que
+   acompanha a pessoa a página inteira. Duas linhas curtas de propósito, o
+   botão ao lado precisa da metade da largura numa tela de 320px. */
 .barCopy { display: grid; gap: 2px; min-width: 0 }
 .barCopy b { font: 700 11px var(--mono); letter-spacing: .04em }
 .barCopy span { font: 400 10.5px var(--mono); letter-spacing: .01em; color: #a8a8a2 }
@@ -534,7 +539,9 @@
   .heroCopy .eyebrow { margin-bottom: 14px }
   .heroCopy .lead { margin-top: 14px; font-size: 16px }
   .heroCopy .actions { margin-top: 20px }
-  /* microcopy do hero carrega o preço total e a proteção: precisa ser legível */
+  /* a microcopy do hero voltou a carregar o preço total e a proteção (06/08),
+     então são três ou quatro linhas e não uma: mantém 12px porque abaixo
+     disso o valor deixa de ser lido de relance, que é o trabalho dela */
   .heroCopy .micro { margin-top: 14px; font-size: 12px }
   .heroGrid { gap: 14px }
   .heroVisual { justify-items: center; padding-bottom: 4px }
