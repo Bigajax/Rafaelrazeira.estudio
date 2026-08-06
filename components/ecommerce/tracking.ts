@@ -147,6 +147,57 @@ function mpDistinctId() {
    frequência e o fbp/fbc muitas vezes é tudo o que existe. */
 const externalId = () => mpDistinctId().toLowerCase();
 
+/* ---------- UTMs da SESSÃO ----------
+   O mpTrack lê a query da URL a cada evento, e para eventos isso basta. Para a
+   linha do lead no banco não basta: ela é escrita no fim da visita, e se a
+   pessoa tiver trocado de página (ou o navegador do Instagram tiver comido a
+   query no meio do caminho) a campanha some justamente do registro que vai
+   dizer se a campanha valeu a pena.
+
+   Guardado na sessão no primeiro evento em que aparecer, e depois só lido. O
+   primeiro toque vence: quem chega pelo anúncio e volta pelo direct continua
+   sendo do anúncio. Morre quando a aba fecha, que é a duração de uma visita.
+
+   Fora do portão do tracking de propósito: isto não vai para lugar nenhum
+   sozinho, só compõe o registro de um formulário que a pessoa escolheu
+   enviar. Sem isso, testar a captura em localhost seria impossível. */
+const CHAVE_UTM = "utm_sessao";
+const CAMPOS_UTM = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"];
+
+export function utmsDaSessao(): Record<string, string> {
+  let guardadas: Record<string, string> = {};
+  try {
+    guardadas = JSON.parse(sessionStorage.getItem(CHAVE_UTM) || "{}");
+  } catch {}
+  try {
+    const q = new URLSearchParams(location.search);
+    const daUrl: Record<string, string> = {};
+    CAMPOS_UTM.forEach(k => { const v = q.get(k); if (v) daUrl[k] = v; });
+    /* só grava se a URL trouxe algo E a sessão ainda não tinha nada: primeiro
+       toque vence, e uma URL sem utm nunca apaga o que já foi capturado */
+    if (Object.keys(daUrl).length && !Object.keys(guardadas).length) {
+      guardadas = daUrl;
+      sessionStorage.setItem(CHAVE_UTM, JSON.stringify(daUrl));
+    }
+  } catch {}
+  return guardadas;
+}
+
+/* O rastro que acompanha o lead até o banco. As duas chaves de identidade
+   (`ref` para a Meta, `distinct_id` para a Mixpanel) só vão quando o tracking
+   está ligado: quem desativou a medição não tem por que ter a linha do banco
+   amarrada nos painéis. O lead em si é salvo do mesmo jeito. */
+export function contextoDaSessao() {
+  const ligado = podeRastrear();
+  return {
+    utm: utmsDaSessao(),
+    url: location.href,
+    referrer: document.referrer || "",
+    ref: ligado ? externalId() : "",
+    distinct_id: ligado ? mpDistinctId() : "",
+  };
+}
+
 function mpDispositivo() {
   const ua = navigator.userAgent || "";
   let os = "";
@@ -194,6 +245,11 @@ const NOME_MP: Record<string, string> = {
   ecommerce_faq_open:                 "Abriu uma dúvida",
   ecommerce_form_start:               "Tocou no formulário",
   ecommerce_form_step_complete:       "Passou da etapa 1",
+  /* O passo que passou a existir em 06/08, e o único que não depende do
+     WhatsApp: o lead está gravado no banco. É contra ELE que "Abriu o
+     WhatsApp" deve ser lido agora. Se os dois divergirem muito, o handoff
+     está falhando, e não a oferta. */
+  ecommerce_lead_salvo:               "Lead salvo",
   /* Mesmo nome da vitrine desde 06/08, e agora com o mesmo significado nas
      duas: o momento em que o WhatsApp abre. Antes esta página dizia "Abriu o
      WhatsApp" e a vitrine dizia "Abriu WhatsApp", que eram dois eventos

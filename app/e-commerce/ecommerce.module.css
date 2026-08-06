@@ -465,6 +465,20 @@
    página, e não em vermelho de erro, porque não é erro: é a única instrução
    que sobrou para a pessoa. Dois níveis de classe no parágrafo para vencer
    `.escura p` e `.page p { margin: 0 }`. */
+/* botão esperando o servidor: continua legível, mas não convida a um segundo
+   toque. Sem isto o estado "ENVIANDO…" parecia um botão quebrado. */
+.botao[disabled] { opacity: .55; cursor: progress; transform: none }
+
+/* ---------- confirmação: o lead está salvo ----------
+   Ocupa o lugar exato do formulário, com a mesma caixa e a mesma largura, para
+   a troca não parecer que a página pulou. Verde de confirmação e não de erro,
+   e sem sinal de carregamento nenhum: aqui não falta nada acontecer. */
+.confirmado { max-width: 720px; margin: 44px auto 0; text-align: left; border: 1px solid var(--green); background: #10b9811a; padding: clamp(26px, 3vw, 40px); display: grid; gap: 12px }
+.confirmado > b { font: 700 11px var(--mono); letter-spacing: .1em; color: var(--green) }
+.escura .confirmado h3 { font-family: var(--display); font-stretch: 114%; font-weight: 800; font-size: clamp(21px, 2.4vw, 27px); color: #fff }
+.escura .confirmado p { font: 15px/1.6 var(--body); color: #dfe6e1; margin: 0 }
+.confirmado .botao { margin-top: 8px; justify-self: start }
+
 .pendente { display: grid; gap: 10px; margin: 20px clamp(22px, 3vw, 36px) clamp(22px, 3vw, 36px); padding: 18px; background: #10b9811a; border: 1px solid var(--green) }
 .pendente > b { font: 700 11px var(--mono); letter-spacing: .08em; color: var(--green) }
 .escura .pendente p { font: 14px/1.55 var(--body); color: #dfe6e1; margin: 0 }

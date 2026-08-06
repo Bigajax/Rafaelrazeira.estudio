@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import s from "@/app/e-commerce/ecommerce.module.css";
-import { initTracking, irParaWhatsapp, track, trackContact, trackLead } from "@/components/ecommerce/tracking";
+import { salvarLead } from "@/components/lead";
+import { contextoDaSessao, initTracking, irParaWhatsapp, track, trackContact, trackLead } from "@/components/ecommerce/tracking";
 
 /* Um número, uma função — todos os links de WhatsApp saem daqui. */
 const NUMERO = "5544999997219";
@@ -626,6 +627,8 @@ export function ChamadaFinal() {
   const [ocultarBarra, setOcultarBarra] = useState(false);
   /* guardado no estado para virar o botão de socorro embaixo do formulário */
   const [linkWa, setLinkWa] = useState("");
+  const [enviando, setEnviando] = useState(false);
+  const [enviado, setEnviado] = useState(false);
   const set = (k: string, v: string) => setDados((d) => ({ ...d, [k]: v }));
 
   /* A barra fixa entra só depois que a pessoa passa do hero (antes disso o CTA
@@ -655,14 +658,31 @@ export function ChamadaFinal() {
     setEtapa(2);
     track("ecommerce_form_step_complete", { etapa: 1 });
   }
-  function enviar(e: React.FormEvent) {
+  /* ---------- o envio, invertido em 06/08 ----------
+     Antes: dispara os eventos, abre o WhatsApp, torce. Se o handoff falhasse
+     (pop-up bloqueado no navegador do Instagram) ou a pessoa desistisse antes
+     de tocar em enviar lá, o lead sumia sem deixar nome nem telefone.
+
+     Agora o dado é gravado primeiro, no servidor, e a conversa vira
+     consequência: eu chamo, ou ela chama, o que vier primeiro. A tela de
+     confirmação é estado do React, sem navegação nenhuma, então ela aparece
+     igual no navegador interno do Instagram, que é onde tudo quebrava.
+
+     Se a gravação falhar, o caminho antigo continua valendo inteiro. Perder o
+     lead do banco é ruim; deixar a pessoa sem caminho nenhum é pior. */
+  async function enviar(e: React.FormEvent) {
     e.preventDefault();
-    /* Os dois, de propósito. O Lead é a conversão de intenção e precisa
-       continuar contando quem chegou até aqui (cta_position "form" separa
-       este dos cinco CTAs). O Contact é o envio de verdade, e é por ele que
-       a campanha otimiza. */
+    if (enviando) return;              // toque duplo não grava duas linhas
+    setEnviando(true);
+
+    /* Os dois, de propósito, e agora os dois significam lead capturado de
+       verdade, não intenção: desde que o Lead saiu dos CTAs de âncora, ele só
+       acontece aqui. A campanha otimiza pelo Contact. Disparam ANTES da
+       gravação porque não podem depender dela: o Pixel morre com a aba, e
+       segurar o evento esperando o banco é como se perdia evento antes. */
     trackLead({ ctaPosition: "form", nome: dados.nome, whatsapp: dados.whatsapp });
     trackContact({ nome: dados.nome, whatsapp: dados.whatsapp });
+
     const linha = (r: string, v?: string) => `${r}: ${v?.trim() ? v.trim() : "não informado"}`;
     const msg = [
       "Olá, Rafael! Preenchi o diagnóstico para desenvolvimento de um e-commerce.",
@@ -676,16 +696,36 @@ export function ChamadaFinal() {
       "",
       "Gostaria de entender qual estrutura seria mais adequada para a operação.",
     ].join("\n");
-    track("ecommerce_whatsapp_click", { cta_position: "form" });
-    /* Era `window.open(..., "_blank")`, e é o conserto portado da vitrine em
-       06/08: o navegador interno do Instagram trata open como pop-up, bloqueia
-       calado ou abre aba fantasma, e a pessoa fica numa tela dizendo "tudo
-       certo" sem nada ter acontecido. Guardar o link ANTES de navegar é a
-       outra metade: enviar o formulário não manda mensagem nenhuma, o WhatsApp
-       só abre com o texto pronto, e quem volta sem tocar em enviar precisa
-       achar o caminho de novo na tela. */
+    /* guardado antes de qualquer caminho: serve à confirmação e ao fallback */
     const link = zap(msg);
     setLinkWa(link);
+
+    const salvo = await salvarLead({
+      pagina: "e-commerce",
+      nome: dados.nome || "",
+      whatsapp: dados.whatsapp || "",
+      canal: dados.canal,
+      empresa: dados.empresa,
+      vende: dados.vende,
+      produtos: dados.produtos,
+      site: dados.site,
+      necessidade: dados.necessidade,
+      investimento: dados.investimento,
+      ...contextoDaSessao(),
+    });
+    setEnviando(false);
+
+    if (salvo) {
+      track("ecommerce_lead_salvo");
+      setEnviado(true);
+      return;
+    }
+
+    /* fallback: exatamente o comportamento anterior, WhatsApp na mesma aba
+       com os 300ms do Pixel. A tela de confirmação NÃO aparece aqui, porque
+       aqui o lead de fato só existe se a conversa acontecer, e prometer
+       "recebi seus dados" seria mentira. */
+    track("ecommerce_whatsapp_click", { cta_position: "form", origem: "fallback" });
     irParaWhatsapp(link);
   }
 
@@ -699,7 +739,23 @@ export function ChamadaFinal() {
           ao lado do formulário, não a um card no meio da página */}
       <p className={s.agendaLimite}>Agenda limitada: poucos projetos simultâneos para manter o nível de cada entrega.</p>
 
-      <form className={s.form} onSubmit={enviar}>
+      {/* ---------- a tela de confirmação ----------
+          Ocupa o lugar do formulário quando o lead está gravado. É estado do
+          React, sem navegação e sem pop-up, então aparece igual no navegador
+          interno do Instagram, que é onde o fluxo antigo quebrava calado.
+          A promessa é explícita ("ainda hoje") porque agora dá para cumprir:
+          o nome e o WhatsApp estão no banco e o aviso já saiu.
+          O botão é opcional de propósito: quem quer agilizar chama, quem não
+          quer já entregou o que era preciso e não precisa fazer mais nada. */}
+      {enviado ? <div className={s.confirmado} role="status">
+        <b>RECEBI SEUS DADOS</b>
+        <h3>Te chamo no WhatsApp ainda hoje.</h3>
+        <p>Vou olhar sua operação antes de falar com você, para a conversa já começar com uma direção. Se preferir adiantar, é só me chamar.</p>
+        <a className={`${s.botao} ${s.cheio}`} href={linkWa} data-cta="reabrir_whats" data-cta-dest="whatsapp"
+           onClick={() => track("ecommerce_whatsapp_click", { cta_position: "confirmacao" })}>
+          QUER AGILIZAR? ME CHAMA AGORA ↗
+        </a>
+      </div> : <form className={s.form} onSubmit={enviar}>
         <div className={s.formPassos}>
           <div className={`${s.formPasso} ${etapa === 1 ? s.formPassoAtivo : ""}`}><b>1</b> OPERAÇÃO</div>
           <div className={`${s.formPasso} ${etapa === 2 ? s.formPassoAtivo : ""}`}><b>2</b> CONTATO</div>
@@ -738,7 +794,14 @@ export function ChamadaFinal() {
           </div>
           <div className={s.formNav}>
             <button type="button" className={`${s.botao} ${s.contorno}`} style={{ borderColor: "#fff", color: "#fff" }} onClick={() => setEtapa(1)}>← VOLTAR</button>
-            <button type="submit" className={`${s.botao} ${s.cheio}`}>SOLICITAR DIAGNÓSTICO DO E-COMMERCE ↗</button>
+            {/* o rótulo muda porque o botão passou a esperar o servidor: sem
+                isso, um toque em rede ruim parece um botão que não funciona,
+                e a pessoa toca de novo */}
+            <button type="submit" className={`${s.botao} ${s.cheio}`} disabled={enviando}>
+              {/* sem a seta ↗: nesta página ela significa "sai daqui", e o
+                  envio agora acontece na própria tela */}
+              {enviando ? "ENVIANDO…" : "SOLICITAR DIAGNÓSTICO DO E-COMMERCE"}
+            </button>
           </div>
         </div>}
         {/* O aviso vira o socorro depois do envio. Antes daqui não saía nada:
@@ -746,15 +809,20 @@ export function ChamadaFinal() {
             bloqueio de pop-up do navegador do Instagram não tinha o que fazer.
             O `data-cta` existe para dar para medir quantas pessoas precisam
             dele: se este número subir, o handoff está falhando, e não é a
-            oferta que está errada. */}
+            oferta que está errada.
+
+            A linha de baixo (antes do envio) mudou junto com o fluxo em 06/08:
+            enviar não abre mais o WhatsApp, ele registra o diagnóstico e eu
+            chamo. Se ela continuasse dizendo "abre no WhatsApp", a tela de
+            confirmação chegaria contradizendo o que a pessoa acabou de ler. */}
         {linkWa
           ? <div className={s.pendente} role="status">
               <b>FALTA UM TOQUE</b>
               <p>Abri o WhatsApp com seu diagnóstico já preenchido. Toque em <b>enviar</b> lá para eu receber, senão ele não chega.</p>
               <a className={`${s.botao} ${s.cheio}`} href={linkWa} data-cta="reabrir_whats" data-cta-dest="whatsapp">ABRIR O WHATSAPP ↗</a>
             </div>
-          : <p className={s.rodapeForm}>Ao enviar, o diagnóstico abre no WhatsApp já organizado. Nenhuma informação é publicada.</p>}
-      </form>
+          : <p className={s.rodapeForm}>Ao enviar, recebo seu diagnóstico e te chamo no WhatsApp. Nenhuma informação é publicada.</p>}
+      </form>}
       <small className={s.micro}>A conversa inicial serve para entender a operação antes da definição do escopo e do investimento.</small>
     </section>
 
