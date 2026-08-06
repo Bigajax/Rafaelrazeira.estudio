@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import s from "@/app/e-commerce/ecommerce.module.css";
-import { initTracking, track, trackContact, trackLead } from "@/components/ecommerce/tracking";
+import { initTracking, irParaWhatsapp, track, trackContact, trackLead } from "@/components/ecommerce/tracking";
 
 /* Um número, uma função — todos os links de WhatsApp saem daqui. */
 const NUMERO = "5544999997219";
@@ -196,7 +196,9 @@ export function Cabecalho() {
       <a href="#case">PROJETOS NO AR</a>
       <a href="#processo">COMO FUNCIONA</a>
       <a href="#faq">DÚVIDAS</a>
-      <a className={s.navCta} href="#diagnostico" data-cta="header" onClick={() => track("ecommerce_hero_cta", { origem: "header" })}>SOLICITAR DIAGNÓSTICO ↗</a>
+      {/* sem onClick: o ClickCTA sai do ouvinte delegado em tracking.ts, lendo
+          data-cta e data-cta-dest. Um caminho só para os seis CTAs da página */}
+      <a className={s.navCta} href="#diagnostico" data-cta="header" data-cta-dest="form">SOLICITAR DIAGNÓSTICO ↗</a>
     </nav>
   </header>;
 }
@@ -219,8 +221,12 @@ export function Hero() {
         <h1>UM E-COMMERCE QUE VENDE PARA O CLIENTE E <em>FUNCIONA PARA VOCÊ.</em></h1>
         <p className={s.apoio}>Loja, pagamento, estoque e painel administrativo em uma estrutura só. Você troca preço, foto e banner sozinho, sem depender de programador.</p>
         <div className={s.acoes}>
-          <a className={`${s.botao} ${s.cheio}`} href="#diagnostico" data-cta="hero" onClick={() => track("ecommerce_hero_cta", { origem: "hero" })}>QUERO PLANEJAR MEU E-COMMERCE ↗</a>
-          <a className={s.discreto} href="#incluso" onClick={() => track("ecommerce_secondary_cta", { origem: "hero" })}>VER O QUE ESTÁ INCLUSO ↓</a>
+          <a className={`${s.botao} ${s.cheio}`} href="#diagnostico" data-cta="hero" data-cta-dest="form">QUERO PLANEJAR MEU E-COMMERCE ↗</a>
+          {/* este ganhou data-cta agora: era o único CTA sem, porque a lista
+              antiga do Lead o excluía de propósito (rola para #incluso, é
+              navegação). Como ClickCTA ele PRECISA existir, e o `destination`
+              é o que separa navegação de intenção na hora de ler */}
+          <a className={s.discreto} href="#incluso" data-cta="hero_incluso" data-cta-dest="incluso">VER O QUE ESTÁ INCLUSO ↓</a>
         </div>
         {/* sem preço, por decisão do Rafael: o que sustenta o CTA aqui é o
             risco baixo de tocar nele, não a ordem de grandeza do projeto */}
@@ -367,7 +373,7 @@ export function Painel() {
               pedidos do mock, logo ao lado, e repetir custava quase uma dobra
               de celular. O CTA fica, com o `origem: "painel"` intacto. */}
           <div className={s.acoes}>
-            <a className={`${s.botao} ${s.contorno} ${s.contornoClaro}`} href="#diagnostico" data-cta="painel" onClick={() => track("ecommerce_secondary_cta", { origem: "painel" })}>ENTENDER O PAINEL ADMINISTRATIVO ↗</a>
+            <a className={`${s.botao} ${s.contorno} ${s.contornoClaro}`} href="#diagnostico" data-cta="painel" data-cta-dest="form">ENTENDER O PAINEL ADMINISTRATIVO ↗</a>
           </div>
         </div>
       </div>
@@ -500,10 +506,7 @@ export function Prova() {
       </details>
 
       <div className={s.acoes}>
-        {/* o track() aqui existe para "Clicou em CTA" não ficar subcontado: os
-            outros quatro CTAs disparam os dois eventos, este disparava só o
-            Lead pelo ouvinte delegado */}
-        <a className={`${s.botao} ${s.cheio}`} href="#diagnostico" data-cta="prova" onClick={() => track("ecommerce_secondary_cta", { origem: "prova" })}>PLANEJAR O MEU E-COMMERCE ↗</a>
+        <a className={`${s.botao} ${s.cheio}`} href="#diagnostico" data-cta="prova" data-cta-dest="form">PLANEJAR O MEU E-COMMERCE ↗</a>
       </div>
     </div>
   </section>;
@@ -621,6 +624,8 @@ export function ChamadaFinal() {
   const [etapa, setEtapa] = useState(1);
   const [dados, setDados] = useState<Record<string, string>>({});
   const [ocultarBarra, setOcultarBarra] = useState(false);
+  /* guardado no estado para virar o botão de socorro embaixo do formulário */
+  const [linkWa, setLinkWa] = useState("");
   const set = (k: string, v: string) => setDados((d) => ({ ...d, [k]: v }));
 
   /* A barra fixa entra só depois que a pessoa passa do hero (antes disso o CTA
@@ -671,8 +676,17 @@ export function ChamadaFinal() {
       "",
       "Gostaria de entender qual estrutura seria mais adequada para a operação.",
     ].join("\n");
-    track("ecommerce_whatsapp_click", { origem: "form" });
-    window.open(zap(msg), "_blank", "noopener");
+    track("ecommerce_whatsapp_click", { cta_position: "form" });
+    /* Era `window.open(..., "_blank")`, e é o conserto portado da vitrine em
+       06/08: o navegador interno do Instagram trata open como pop-up, bloqueia
+       calado ou abre aba fantasma, e a pessoa fica numa tela dizendo "tudo
+       certo" sem nada ter acontecido. Guardar o link ANTES de navegar é a
+       outra metade: enviar o formulário não manda mensagem nenhuma, o WhatsApp
+       só abre com o texto pronto, e quem volta sem tocar em enviar precisa
+       achar o caminho de novo na tela. */
+    const link = zap(msg);
+    setLinkWa(link);
+    irParaWhatsapp(link);
   }
 
   return <>
@@ -727,12 +741,24 @@ export function ChamadaFinal() {
             <button type="submit" className={`${s.botao} ${s.cheio}`}>SOLICITAR DIAGNÓSTICO DO E-COMMERCE ↗</button>
           </div>
         </div>}
-        <p className={s.rodapeForm}>Ao enviar, o diagnóstico abre no WhatsApp já organizado. Nenhuma informação é publicada.</p>
+        {/* O aviso vira o socorro depois do envio. Antes daqui não saía nada:
+            a página abria o WhatsApp e ficava calada, então quem caísse no
+            bloqueio de pop-up do navegador do Instagram não tinha o que fazer.
+            O `data-cta` existe para dar para medir quantas pessoas precisam
+            dele: se este número subir, o handoff está falhando, e não é a
+            oferta que está errada. */}
+        {linkWa
+          ? <div className={s.pendente} role="status">
+              <b>FALTA UM TOQUE</b>
+              <p>Abri o WhatsApp com seu diagnóstico já preenchido. Toque em <b>enviar</b> lá para eu receber, senão ele não chega.</p>
+              <a className={`${s.botao} ${s.cheio}`} href={linkWa} data-cta="reabrir_whats" data-cta-dest="whatsapp">ABRIR O WHATSAPP ↗</a>
+            </div>
+          : <p className={s.rodapeForm}>Ao enviar, o diagnóstico abre no WhatsApp já organizado. Nenhuma informação é publicada.</p>}
       </form>
       <small className={s.micro}>A conversa inicial serve para entender a operação antes da definição do escopo e do investimento.</small>
     </section>
 
-    <a className={`${s.barraFixa} ${ocultarBarra ? s.barraOculta : ""}`} href="#diagnostico" data-cta="barra_fixa" onClick={() => track("ecommerce_secondary_cta", { origem: "barra-fixa" })}>
+    <a className={`${s.barraFixa} ${ocultarBarra ? s.barraOculta : ""}`} href="#diagnostico" data-cta="barra_fixa" data-cta-dest="form">
       <small>E-COMMERCE SOB MEDIDA<i>Diagnóstico sem compromisso</i></small>
       <span>PLANEJAR MEU E-COMMERCE ↗</span>
     </a>

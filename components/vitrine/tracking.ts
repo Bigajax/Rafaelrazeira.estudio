@@ -101,20 +101,41 @@ const HOSTS_PRODUCAO = [
   "www.rafaelrazeira.com",
 ];
 
-let avisou = false;
+/* ---------- desligado NESTE APARELHO, para sempre ----------
+   O `?tracking=off` valia só para a aba: fechou o navegador, voltou a medir. E
+   a guarda acima libera qualquer pessoa no domínio real, inclusive quem fez o
+   site conferindo a página pelo celular. Numa campanha de 26 visitantes, duas
+   conferidas já mexem na leitura.
+
+   Agora `?tracking=off` grava em localStorage e vale para o APARELHO inteiro,
+   em todas as páginas do site, até alguém desfazer com `?tracking=on`. Abra
+   uma vez em cada aparelho seu. Mesma chave nos três arquivos de tracking
+   (vitrine, e-commerce e js/lib/tracking.js), então desligar numa página
+   desliga em todas. */
+const CHAVE_DESLIGADO = "tracking_desligado";
+
+const avisados = new Set<string>();
+function avisarUmaVez(msg: string) {
+  if (avisados.has(msg)) return;
+  avisados.add(msg);
+  console.info(msg);
+}
+
 function ambientePermitido() {
   if (typeof window === "undefined") return false;
   try {
     const q = new URLSearchParams(location.search).get("tracking");
-    if (q === "on") sessionStorage.setItem("tracking_forcado", "1");
-    if (q === "off") sessionStorage.removeItem("tracking_forcado");
+    if (q === "off") { localStorage.setItem(CHAVE_DESLIGADO, "1"); sessionStorage.removeItem("tracking_forcado"); }
+    if (q === "on") { localStorage.removeItem(CHAVE_DESLIGADO); sessionStorage.setItem("tracking_forcado", "1"); }
+    /* vence tudo, inclusive o host de produção */
+    if (localStorage.getItem(CHAVE_DESLIGADO)) {
+      avisarUmaVez("[tracking] desligado NESTE APARELHO. Para religar, abra a página com ?tracking=on.");
+      return false;
+    }
     if (sessionStorage.getItem("tracking_forcado")) return true;
   } catch {}
   const ok = HOSTS_PRODUCAO.includes(location.hostname);
-  if (!ok && !avisou) {
-    avisou = true;
-    console.info("[tracking] desligado fora de produção. Para testar nesta aba, adicione ?tracking=on na URL.");
-  }
+  if (!ok) avisarUmaVez("[tracking] desligado fora de produção. Para testar nesta aba, adicione ?tracking=on na URL.");
   return ok;
 }
 
@@ -224,7 +245,11 @@ const NOME_MP: Record<string, string> = {
   ViewContent:      "Viu a oferta",
   ClickCTA:         "Clicou em CTA",
   InitiateCheckout: "Tocou no formulário",
-  AbriuWhatsApp:    "Abriu WhatsApp",
+  /* "Abriu o WhatsApp" desde 06/08, com artigo: a /e-commerce já chamava assim
+     e ter "Abriu WhatsApp" aqui criava duas linhas no painel para a mesma
+     ideia, que ninguém consegue somar sem saber de cor qual é de qual página.
+     A série fica partida na data da troca; `page` separa as duas origens. */
+  AbriuWhatsApp:    "Abriu o WhatsApp",
   Lead:             "Enviou o formulário",
   Saida:            "Saiu da página",
 };
@@ -480,7 +505,14 @@ export function initTracking() {
      sem e-mail e sem telefone, e é o mesmo código que vai na mensagem do
      WhatsApp, para a venda registrada depois amarrar nesta visita. */
   fbq("init", PIXEL_ID, { external_id: externalId() });
-  fbq("track", "PageView");
+  /* PageView pelos DOIS caminhos, deduplicado pelo mesmo event_id, desde
+     06/08. Antes saía só do navegador, e no navegador interno do Instagram o
+     fbevents.js falha com frequência: o PageView se perdia enquanto o Lead
+     chegava pela CAPI, e a razão visita/lead saía otimista justamente no
+     segmento que mais precisa ser lido. */
+  const idPageView = idAleatorio();
+  fbq("track", "PageView", {}, { eventID: idPageView });
+  enviarCapi("PageView", idPageView);
   mpTrack("PageView");
   medirLeitura();
 

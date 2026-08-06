@@ -460,6 +460,17 @@
 .formNav { display: flex; justify-content: space-between; gap: 16px; margin-top: 8px; flex-wrap: wrap }
 .rodapeForm { font: 10px var(--mono); color: #8a958d; margin-top: 18px; text-align: center }
 
+/* ---------- o passo que falta, depois do envio ----------
+   Ocupa o lugar do .rodapeForm quando o WhatsApp é aberto. Fica no verde da
+   página, e não em vermelho de erro, porque não é erro: é a única instrução
+   que sobrou para a pessoa. Dois níveis de classe no parágrafo para vencer
+   `.escura p` e `.page p { margin: 0 }`. */
+.pendente { display: grid; gap: 10px; margin: 20px clamp(22px, 3vw, 36px) clamp(22px, 3vw, 36px); padding: 18px; background: #10b9811a; border: 1px solid var(--green) }
+.pendente > b { font: 700 11px var(--mono); letter-spacing: .08em; color: var(--green) }
+.escura .pendente p { font: 14px/1.55 var(--body); color: #dfe6e1; margin: 0 }
+.pendente p b { font-weight: 700; color: #fff }
+.pendente .botao { width: 100%; margin-top: 4px }
+
 .rodape {
   background: var(--night); color: #fff;
   padding: 44px var(--pad) 52px; border-top: 1px solid var(--line-dark);

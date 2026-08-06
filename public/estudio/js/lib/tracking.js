@@ -48,19 +48,38 @@ const HOSTS_PRODUCAO = [
   "www.rafaelrazeira.com",
 ];
 
-let avisou = false;
+/* ---------- desligado NESTE APARELHO, para sempre ----------
+   O `?tracking=off` valia só para a aba, e a guarda acima libera qualquer
+   pessoa no domínio real: quem fez o site conferindo a página pelo celular
+   entrava na mesma conta de visitantes que decide se o anúncio funciona.
+
+   Agora `?tracking=off` grava em localStorage e vale para o APARELHO inteiro,
+   até alguém desfazer com `?tracking=on`. A chave é a MESMA dos arquivos de
+   tracking da vitrine e do e-commerce, de propósito: desligar numa página do
+   site desliga em todas. Abra uma vez em cada aparelho seu. */
+const CHAVE_DESLIGADO = "tracking_desligado";
+
+const avisados = new Set();
+function avisarUmaVez(msg){
+  if (avisados.has(msg)) return;
+  avisados.add(msg);
+  console.info(msg);
+}
+
 function ambientePermitido(){
   try{
     const q = new URLSearchParams(location.search).get("tracking");
-    if (q === "on")  sessionStorage.setItem("tracking_forcado", "1");
-    if (q === "off") sessionStorage.removeItem("tracking_forcado");
+    if (q === "off"){ localStorage.setItem(CHAVE_DESLIGADO, "1"); sessionStorage.removeItem("tracking_forcado"); }
+    if (q === "on"){ localStorage.removeItem(CHAVE_DESLIGADO); sessionStorage.setItem("tracking_forcado", "1"); }
+    /* vence tudo, inclusive o host de produção */
+    if (localStorage.getItem(CHAVE_DESLIGADO)){
+      avisarUmaVez("[tracking] desligado NESTE APARELHO. Para religar, abra a página com ?tracking=on.");
+      return false;
+    }
     if (sessionStorage.getItem("tracking_forcado")) return true;
   }catch(e){}
   const ok = HOSTS_PRODUCAO.includes(location.hostname);
-  if (!ok && !avisou){
-    avisou = true;
-    console.info("[tracking] desligado fora de produção. Para testar nesta aba, adicione ?tracking=on na URL.");
-  }
+  if (!ok) avisarUmaVez("[tracking] desligado fora de produção. Para testar nesta aba, adicione ?tracking=on na URL.");
   return ok;
 }
 
@@ -236,13 +255,41 @@ function observarCliquesCTA(){
   });
 }
 
+/* ---------- Conversions API ----------
+   Extraído de dentro do trackLead em 06/08, quando o PageView passou a sair
+   pelos dois caminhos também. Fire-and-forget: erro aqui nunca afeta a página.
+   O `event_name` vai explícito; o endpoint mantém o default "Lead" para os
+   consumidores que não mandam o campo. */
+function enviarCapi(evento, eventId, extra){
+  try{
+    fetch(CAPI_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      keepalive: true,
+      body: JSON.stringify({
+        event_name: evento,
+        event_id: eventId,
+        fbp: getCookie("_fbp"),
+        fbc: getFbc(),
+        event_source_url: location.href,
+        ...(extra || {}),
+      }),
+    }).catch(() => {});
+  }catch(e){}
+}
+
 /* Chamado pelo main.js após o aceite (ou no load, se já aceito antes) */
 export function initTracking(){
   if (!podeRastrear()) return;
   salvarFbclid();
   carregarPixel();
   window.fbq("init", PIXEL_ID);
-  window.fbq("track", "PageView");
+  /* PageView pelos DOIS caminhos, deduplicado pelo mesmo event_id: sem isso o
+     denominador (visitas) se perde onde o fbevents.js falha, enquanto o Lead
+     chega pela CAPI, e a razão visita/lead fica otimista. */
+  const idPageView = idAleatorio();
+  window.fbq("track", "PageView", {}, { eventID: idPageView });
+  enviarCapi("PageView", idPageView);
   mpTrack("PageView");
   observarGarantia();
   observarCliquesCTA();
@@ -264,19 +311,5 @@ export function trackLead(eventId, dados){
   const props = dados.tipo_projeto ? { tipo_projeto: dados.tipo_projeto } : {};
   window.fbq && window.fbq("track", "Lead", props, { eventID: eventId });
   mpTrack("Lead", { $insert_id: eventId, ...props });   // mesmo id do Meta p/ cruzar os números
-  try{
-    fetch(CAPI_ENDPOINT, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      keepalive: true,
-      body: JSON.stringify({
-        event_id: eventId,
-        email: dados.email || "",
-        phone: dados.phone || "",
-        fbp: getCookie("_fbp"),
-        fbc: getFbc(),
-        event_source_url: location.href,
-      }),
-    }).catch(() => {});
-  }catch(e){}
+  enviarCapi("Lead", eventId, { email: dados.email || "", phone: dados.phone || "" });
 }

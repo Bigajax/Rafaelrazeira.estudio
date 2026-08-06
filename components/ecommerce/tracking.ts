@@ -81,20 +81,43 @@ const HOSTS_PRODUCAO = [
   "www.rafaelrazeira.com",
 ];
 
-let avisou = false;
+/* ---------- desligado NESTE APARELHO, para sempre ----------
+   O `?tracking=off` valia só para a aba: fechou o navegador, voltou a medir.
+   Como a guarda de produção libera qualquer pessoa no domínio real, o Rafael
+   conferindo a página pelo celular entrava na mesma conta de visitantes que
+   decide se o anúncio está funcionando. Na campanha de agosto, que teve 16
+   visitas, duas conferidas dele já seriam 12% de ruído, e antes desta sprint
+   elas ainda disparavam Lead.
+
+   Agora `?tracking=off` grava em localStorage e vale para o APARELHO inteiro,
+   em todas as páginas do site, até alguém desfazer com `?tracking=on`. Abra
+   uma vez em cada aparelho seu. A chave é a mesma nos três arquivos de
+   tracking, então desligar numa página desliga em todas. */
+const CHAVE_DESLIGADO = "tracking_desligado";
+
+const avisados = new Set<string>();
+function avisarUmaVez(msg: string) {
+  if (avisados.has(msg)) return;
+  avisados.add(msg);
+  console.info(msg);
+}
+
 function ambientePermitido() {
   if (typeof window === "undefined") return false;
   try {
     const q = new URLSearchParams(location.search).get("tracking");
-    if (q === "on") sessionStorage.setItem("tracking_forcado", "1");
-    if (q === "off") sessionStorage.removeItem("tracking_forcado");
+    if (q === "off") { localStorage.setItem(CHAVE_DESLIGADO, "1"); sessionStorage.removeItem("tracking_forcado"); }
+    if (q === "on") { localStorage.removeItem(CHAVE_DESLIGADO); sessionStorage.setItem("tracking_forcado", "1"); }
+    /* vence tudo, inclusive o host de produção: é o aparelho de quem faz o
+       site, e ele não pode aparecer no funil nem por engano */
+    if (localStorage.getItem(CHAVE_DESLIGADO)) {
+      avisarUmaVez("[tracking] desligado NESTE APARELHO. Para religar, abra a página com ?tracking=on.");
+      return false;
+    }
     if (sessionStorage.getItem("tracking_forcado")) return true;
   } catch {}
   const ok = HOSTS_PRODUCAO.includes(location.hostname);
-  if (!ok && !avisou) {
-    avisou = true;
-    console.info("[tracking] desligado fora de produção. Para testar nesta aba, adicione ?tracking=on na URL.");
-  }
+  if (!ok) avisarUmaVez("[tracking] desligado fora de produção. Para testar nesta aba, adicione ?tracking=on na URL.");
   return ok;
 }
 
@@ -146,17 +169,17 @@ function mpDispositivo() {
 
 /* ---------- vocabulário da Mixpanel ----------
    Esquerda: o nome que vai para a Meta. Direita: o nome que aparece no painel
-   da Mixpanel. O motivo completo está em components/vitrine/tracking.ts; aqui
-   pesa mais o segundo: esta página fala `ecommerce_hero_cta` e a vitrine fala
-   `ClickCTA` para a mesma ação, então no painel a mesma pergunta ("quanta gente
-   clicou em algum CTA?") tinha duas respostas com nomes diferentes.
+   da Mixpanel. O motivo completo está em components/vitrine/tracking.ts.
 
-   `ecommerce_hero_cta` e `ecommerce_secondary_cta` caem os DOIS em "Clicou em
-   CTA" de propósito: a distinção primário/secundário já vive na propriedade
-   `origem`, e como dois eventos separados ela só atrapalhava a contagem.
-
-   Do lado da Meta nada muda: os nomes de custom event continuam os mesmos e o
-   histórico de lá fica inteiro.
+   `ecommerce_hero_cta` e `ecommerce_secondary_cta` foram aposentados nesta
+   sprint. Eram dois nomes de custom event para a mesma ação, cada CTA
+   carregava um `onClick` próprio para dispará-los, e nenhum dos dois batia
+   com o `ClickCTA` que a vitrine e a landing já usavam: a mesma pergunta
+   ("quanta gente clicou em algum CTA?") tinha três respostas com nomes
+   diferentes no mesmo projeto. Agora as três páginas falam `ClickCTA`, com
+   `location` e `destination`, disparado por um ouvinte delegado só.
+   Na Meta os dois nomes antigos param de receber eventos a partir de 06/08;
+   o histórico deles continua lá, congelado.
 
    AO ACRESCENTAR UM EVENTO, acrescente aqui também: o que não estiver no mapa
    passa direto com o nome de código. */
@@ -164,24 +187,25 @@ const NOME_MP: Record<string, string> = {
   PageView:                           "Abriu a página",
   Scroll:                             "Rolou",
   Saida:                              "Saiu da página",
-  ecommerce_hero_cta:                 "Clicou em CTA",
-  ecommerce_secondary_cta:            "Clicou em CTA",
+  ClickCTA:                           "Clicou em CTA",
   ecommerce_admin_section_view:       "Viu o painel",
   ecommerce_integration_section_view: "Viu as integrações",
   ecommerce_case_view:                "Viu a prova",
   ecommerce_faq_open:                 "Abriu uma dúvida",
   ecommerce_form_start:               "Tocou no formulário",
   ecommerce_form_step_complete:       "Passou da etapa 1",
+  /* Mesmo nome da vitrine desde 06/08, e agora com o mesmo significado nas
+     duas: o momento em que o WhatsApp abre. Antes esta página dizia "Abriu o
+     WhatsApp" e a vitrine dizia "Abriu WhatsApp", que eram dois eventos
+     distintos no painel, com gatilhos distintos, impossíveis de somar. */
   ecommerce_whatsapp_click:           "Abriu o WhatsApp",
-  /* NÃO se chama "Enviou o formulário", de propósito. Desde que o Lead passou
-     a disparar em todo CTA de conversão, ele conta cinco botões de intenção
-     mais um envio de verdade. A vitrine manteve o nome antigo depois da mesma
-     mudança e isso já custou uma leitura errada: os "12 leads" do Ads Manager
-     de 04/08 eram 12 cliques, e o Rafael conferiu que não havia conversa
-     nenhuma no WhatsApp. Quem foi até o fim se distingue pela propriedade
-     `cta_position: "form"`. */
-  Lead:                               "Sinalizou interesse",
-  /* O nome que o Lead deixou vago, e agora ele é verdade: só o envio dispara. */
+  /* `Lead` NÃO aparece aqui, e não é esquecimento: ele não vai mais para a
+     Mixpanel. Desde que saiu dos cinco CTAs de âncora, o Lead desta página
+     dispara exatamente junto do Contact, no mesmo submit. Mandar os dois
+     criaria duas linhas no painel para uma ação só, que é justamente o
+     problema que "Sinalizou interesse" tinha. Na Meta os dois continuam: são
+     nomes de conversão diferentes, a campanha otimiza por Contact e o Lead
+     fica de reserva se a entrega travar. */
   Contact:                            "Enviou o formulário",
 };
 
@@ -319,23 +343,45 @@ function medirLeitura() {
   addEventListener("pagehide", aoSair);
 }
 
-/* ---------- de qual botão veio o Lead ----------
-   Decisão do Rafael (05/08), a mesma que ele já tinha tomado na vitrine:
-   densidade de sinal vale mais que pureza de funil. Com verba pequena e um
-   formulário de duas etapas, o Lead só no envio deixaria a Meta dias sem um
-   único evento para otimizar.
+/* ---------- handoff para o WhatsApp ----------
+   Portado da vitrine em 06/08, e o motivo é o mesmo: `window.open`, que era o
+   que esta página usava no envio do formulário, é tratado como pop-up pelo
+   navegador interno do Instagram, que é de onde vem o tráfego da campanha. Ou
+   ele bloqueia calado, ou abre uma aba fantasma que aparece em branco e morre.
+   A pessoa via "tudo certo", nada acontecia, e do lado de cá ficava um Contact
+   disparado sem conversa nenhuma chegando: exatamente o sintoma que a gente
+   estava tentando explicar nos números.
 
-   Entram os CTAs que levam ao ponto de conversão. Ficam de fora, de propósito:
-   o "VER O QUE ESTÁ INCLUSO" do hero (rola para #incluso, é navegação) e os
-   botões que abrem o site de um cliente. Ao ler os números, lembre que a maior
-   parte destes Leads é INTENÇÃO: quem foi até o fim tem cta_position "form". */
-const POSICAO_LEAD: Record<string, string> = {
-  hero: "hero",
-  header: "header",
-  painel: "painel",
-  prova: "prova",
-  barra_fixa: "barra_fixa",
-};
+   `location.href` na mesma aba entrega o link ao app do WhatsApp. Os 300ms
+   existem só para o Pixel terminar de sair: o fbevents.js manda o evento por
+   requisição de imagem, que a navegação cancela se acontecer no mesmo quadro.
+   Mixpanel e CAPI já vão por fetch com keepalive e sobrevivem sozinhos.
+   Sem tracking (localhost, preview, aparelho desligado) não há o que esperar. */
+const ESPERA_TRACKING = 300;
+let navegando = false;
+
+/* A trava contra toque duplo tem que soltar quando a pessoa VOLTA, senão ela
+   vira o próximo bug: quem abre o WhatsApp, desiste de enviar e volta encontra
+   o botão de socorro morto. No celular a volta quase nunca recarrega nada
+   (bfcache no Android, troca de app no iOS), então o estado do módulo
+   sobrevive inteiro. Os dois eventos cobrem os dois caminhos de volta. */
+let ouvindoVolta = false;
+function soltarNaVolta() {
+  if (ouvindoVolta) return;
+  ouvindoVolta = true;
+  const soltar = () => { navegando = false; };
+  addEventListener("pageshow", soltar);
+  addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") soltar(); });
+}
+
+export function irParaWhatsapp(href: string) {
+  if (navegando) return;              // toque duplo não agenda dois redirects
+  navegando = true;
+  soltarNaVolta();
+  const ir = () => { location.href = href; };
+  if (!podeRastrear()) { ir(); return; }
+  setTimeout(ir, ESPERA_TRACKING);
+}
 
 let iniciado = false;
 
@@ -361,7 +407,15 @@ export function initTracking() {
   /* external_id no init: o pixel passa a mandar essa chave em todo evento do
      browser, e não só no Lead, o que melhora o casamento de PageView também */
   fbq("init", PIXEL_ID, { external_id: externalId() });
-  fbq("track", "PageView");
+  /* PageView pelos DOIS caminhos, deduplicado pelo mesmo event_id, desde
+     06/08. Antes ele saía só do navegador, e no navegador interno do Instagram
+     o fbevents.js falha com frequência: o PageView se perdia, o Lead e o
+     Contact chegavam pela CAPI, e a razão visita/lead saía otimista justamente
+     no segmento que mais precisa ser lido. Denominador e numerador agora têm a
+     mesma chance de chegar. */
+  const idPageView = idAleatorio();
+  fbq("track", "PageView", {}, { eventID: idPageView });
+  enviarCapi("PageView", idPageView);
   mpTrack("PageView");
 
   medirLeitura();
@@ -371,13 +425,23 @@ export function initTracking() {
   observarSecao("integracoes", "ecommerce_integration_section_view", "ec_view_integracoes");
   observarSecao("case", "ecommerce_case_view", "ec_view_case");
 
-  /* Um ouvinte delegado no documento em vez de onClick em cada botão: os CTAs
-     nascem e morrem com o estado do React (a barra fixa some, o formulário
-     troca de etapa) e um listener por elemento se perderia nessas trocas. */
+  /* ---------- ClickCTA ----------
+     Este ouvinte disparava `Lead` até 06/08, um por CTA de âncora. Eram cinco
+     botões que não saem da página, e o resultado é conhecido: 12 "leads" no
+     Ads Manager de 04/08 sem uma conversa no WhatsApp. Cada Lead falso ensina
+     a Meta a procurar mais gente que clica e não fala. Agora o clique vira o
+     que ele sempre foi, um evento custom de leitura de página, e o Lead só
+     acontece no contato de verdade, como na vitrine.
+
+     Um ouvinte delegado em vez de onClick em cada botão: os CTAs nascem e
+     morrem com o estado do React (a barra fixa some, o formulário troca de
+     etapa) e um listener por elemento se perderia nessas trocas. É também o
+     que garante 1 evento por clique quando um CTA novo nascer: basta o
+     `data-cta`, sem ninguém precisar lembrar de plugar o track. */
   document.addEventListener("click", (e) => {
     const alvo = (e.target as HTMLElement)?.closest?.("[data-cta]") as HTMLElement | null;
-    const posicao = alvo && POSICAO_LEAD[alvo.dataset.cta || ""];
-    if (posicao) trackLead({ ctaPosition: posicao });
+    if (!alvo) return;
+    track("ClickCTA", { location: alvo.dataset.cta || "", destination: alvo.dataset.ctaDest || "form" });
   });
 
   // Primeiro foco no formulário de diagnóstico (1x por sessão)
@@ -428,10 +492,9 @@ export function trackLead({ ctaPosition, nome, whatsapp }: { ctaPosition: string
   const eventId = idAleatorio();
   const dados = { content_name: "e-commerce", cta_position: ctaPosition };
   fbq("track", "Lead", dados, { eventID: eventId });
-  /* Um evento só. O `ecommerce_form_submit` que existia aqui disparava na
-     linha de cima do `Lead`, com o mesmo id e o mesmo significado: contava a
-     mesma pessoa duas vezes em qualquer soma que juntasse os dois. */
-  mpTrack("Lead", { $insert_id: eventId, ...dados });
+  /* Sem mpTrack: ver a nota no NOME_MP. Desde que o Lead saiu dos CTAs de
+     âncora ele dispara no mesmo submit que o Contact, e o painel não precisa
+     de duas linhas para uma ação só. Na Meta os dois seguem valendo. */
   enviarCapi("Lead", eventId, { cta_position: ctaPosition, first_name: nome || "", phone: whatsapp || "" });
 }
 
