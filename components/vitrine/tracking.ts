@@ -198,6 +198,50 @@ export const refDaVisita = () => (podeRastrear() ? codigoVisita() : "");
    antes do hash, então tanto faz como o Rafael digitar. */
 const externalId = () => codigoVisita().toLowerCase();
 
+/* ---------- UTMs da SESSÃO ----------
+   Mesmo mecanismo da /e-commerce, e pelo mesmo motivo: o mpTrack lê a query a
+   cada evento, mas a linha do lead no banco é escrita no fim da visita, e se a
+   query tiver se perdido no caminho a campanha some justamente do registro que
+   vai dizer se a campanha valeu.
+
+   Primeiro toque vence, e a sessão morre com a aba. Fora do portão do tracking
+   de propósito: isto não sai sozinho para lugar nenhum, só compõe o registro de
+   um formulário que a pessoa escolheu enviar. */
+const CHAVE_UTM = "utm_sessao";
+const CAMPOS_UTM = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"];
+
+export function utmsDaSessao(): Record<string, string> {
+  let guardadas: Record<string, string> = {};
+  try {
+    guardadas = JSON.parse(sessionStorage.getItem(CHAVE_UTM) || "{}");
+  } catch {}
+  try {
+    const q = new URLSearchParams(location.search);
+    const daUrl: Record<string, string> = {};
+    CAMPOS_UTM.forEach(k => { const v = q.get(k); if (v) daUrl[k] = v; });
+    if (Object.keys(daUrl).length && !Object.keys(guardadas).length) {
+      guardadas = daUrl;
+      sessionStorage.setItem(CHAVE_UTM, JSON.stringify(daUrl));
+    }
+  } catch {}
+  return guardadas;
+}
+
+/* O rastro que acompanha o lead até o banco. O `ref` aqui é o código da visita
+   (o mesmo que viaja na mensagem do WhatsApp e volta em /api/venda-fechada),
+   e não o mp_distinct_id como na /e-commerce: nesta página é ele que amarra a
+   venda à visita. As duas chaves só vão quando o tracking está ligado. */
+export function contextoDaSessao() {
+  const ligado = podeRastrear();
+  return {
+    utm: utmsDaSessao(),
+    url: location.href,
+    referrer: document.referrer || "",
+    ref: ligado ? externalId() : "",
+    distinct_id: ligado ? mpDistinctId() : "",
+  };
+}
+
 /* $browser/$os pelo user agent — "Instagram" primeiro: o navegador
    interno do IG é o segmento que mais importa para os anúncios. */
 function mpDispositivo() {
@@ -252,6 +296,9 @@ const NOME_MP: Record<string, string> = {
   AbriuWhatsApp:    "Abriu o WhatsApp",
   Lead:             "Enviou o formulário",
   Saida:            "Saiu da página",
+  /* o passo que passou a existir em 06/08 e é o único que não depende do
+     WhatsApp: o lead está gravado no banco. Só Mixpanel, é diagnóstico. */
+  LeadSalvo:        "Lead salvo",
 };
 
 export function mpTrack(evento: string, props?: Record<string, unknown>) {
@@ -590,7 +637,7 @@ export function initTracking() {
    espera dos 300ms antes do redirect é do `irParaWhatsapp`, não daqui, e é
    por conta do Pixel: Mixpanel e CAPI já sobrevivem à navegação pelo
    keepalive do fetch. */
-export function trackLead({ ctaPosition, plano, nome }: { ctaPosition: string; plano?: string; nome?: string }) {
+export function trackLead({ ctaPosition, plano, nome, whatsapp, abriuWhats = true }: { ctaPosition: string; plano?: string; nome?: string; whatsapp?: string; abriuWhats?: boolean }) {
   if (!podeRastrear()) return;
   const eventId = idAleatorio();
   const dados: Record<string, unknown> = { content_name: "vitrine-digital", cta_position: ctaPosition, value: VALOR_OFERTA, currency: "BRL" };
@@ -604,13 +651,23 @@ export function trackLead({ ctaPosition, plano, nome }: { ctaPosition: string; p
      ou pessoa que abriu o WhatsApp e não mandou. Agora dá: se estes dois
      divergirem mais que 10%, o problema é entrega de evento, e o que falta
      entre "Abriu WhatsApp" e conversa recebida é a mensagem não enviada. */
-  mpTrack("AbriuWhatsApp", { $insert_id: eventId, cta_position: ctaPosition, plano });
+  /* `abriuWhats: false` existe desde 06/08, e é o que impede este espelho de
+     virar mentira: no caminho do formulário o WhatsApp só abre se a gravação
+     do lead falhar. Dizer "Abriu o WhatsApp" quando ninguém abriu quebraria
+     justamente a conferência que este evento existe para permitir. Quando o
+     fallback acontece, quem dispara o evento é o próprio submit. */
+  if (abriuWhats) mpTrack("AbriuWhatsApp", { $insert_id: eventId, cta_position: ctaPosition, plano });
   /* E `Lead` continua significando, na Mixpanel, formulário enviado: é um
      passo a mais do funil, não o mesmo evento com outro nome. Só o caminho
      do formulário passa por aqui. */
   if (ctaPosition === POSICAO_FORMULARIO) mpTrack("Lead", { $insert_id: eventId, cta_position: ctaPosition, plano });
   enviarCapi("Lead", eventId, {
     first_name: nome || "",
+    /* O telefone passou a existir nesta página em 06/08, quando o formulário
+       começou a pedi-lo, e é a chave de casamento mais forte que a Meta aceita
+       depois do e-mail. Antes daqui só saíam nome, fbp e fbc. O servidor
+       normaliza e hasheia; nada em texto puro sai do browser. */
+    phone: whatsapp || "",
     content_name: "vitrine-digital",
     cta_position: ctaPosition,
     value: VALOR_OFERTA,

@@ -383,6 +383,17 @@
 
 /* Aviso de que falta enviar a mensagem no WhatsApp. Verde-claro em vez de
    alarme: não deu erro, só falta o último toque. */
+/* ---------- confirmação: o lead está salvo ----------
+   Mesma caixa do formulário, no lugar dele, para a troca não parecer que a
+   página pulou. Herda .form e só muda a borda e o respiro interno. */
+.confirmado { border-color: var(--green); align-content: start }
+.form.confirmado p { font: 15px/1.6 var(--body); color: var(--ink) }
+.form.confirmado .formTitle { font: inherit; font-family: var(--display); font-stretch: 118%; font-weight: 800; font-size: 22px; color: var(--black) }
+.confirmado .button { margin-top: 4px }
+/* "opcional" na etiqueta em vez de asterisco nos obrigatórios: dizer o que dá
+   para pular encurta o formulário aos olhos de quem olha */
+.opcional { font-style: normal; font-weight: 400; letter-spacing: 0; color: var(--ink); opacity: .75 }
+
 .pendente { display: grid; gap: 10px; margin-top: 14px; padding: 16px; background: var(--pale); border: 1px solid var(--green) }
 /* filho direto: só o "Falta um toque." é mono. O negrito dentro do parágrafo
    é ênfase de leitura e continua na fonte do texto. */

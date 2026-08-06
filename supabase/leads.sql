@@ -73,3 +73,14 @@ create index if not exists leads_created_at_idx on public.leads (created_at desc
 -- desfazer justamente o que separa esta tabela da `briefings`.
 -- ============================================================
 alter table public.leads enable row level security;
+
+-- ============================================================
+-- ⚠️ MIGRAÇÃO (06/08/2026) — a /vitrine-digital entrou na captura.
+-- Rode este bloco ANTES de publicar, senão todo envio da vitrine cai no
+-- fallback (o Postgres recusa a coluna inexistente e a rota devolve 502).
+--
+-- `plano` é a escolha de pagamento do formulário de lá ("Entrada de R$500" ou
+-- "À vista R$999"). Não existe na /e-commerce, que não tem preço fixo, e por
+-- isso chega nula naqueles leads.
+-- ============================================================
+alter table public.leads add column if not exists plano text;

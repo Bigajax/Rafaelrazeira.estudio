@@ -94,6 +94,7 @@ async function avisar(lead) {
         ${linha("Produtos", lead.produtos)}
         ${linha("Site hoje", lead.site)}
         ${linha("Investimento", lead.investimento)}
+        ${linha("Plano", lead.plano)}
         ${linha("Dificuldade", lead.necessidade)}
         ${linha("Campanha", campanha)}
       </table>
@@ -162,6 +163,9 @@ export default async function handler(req, res) {
     site: texto(b.site),
     necessidade: texto(b.necessidade, LIMITE),
     investimento: texto(b.investimento),
+    /* só a /vitrine-digital manda: "Entrada de R$500" ou "À vista R$999".
+       Exige a migração de 06/08 no fim de supabase/leads.sql. */
+    plano: texto(b.plano),
     utm_source: texto(utm.utm_source),
     utm_medium: texto(utm.utm_medium),
     utm_campaign: texto(utm.utm_campaign),

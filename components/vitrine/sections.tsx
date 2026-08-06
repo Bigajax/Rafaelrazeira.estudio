@@ -4,7 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import s from "@/app/vitrine-digital/vitrine.module.css";
-import { initTracking, irParaWhatsapp, refDaVisita, trackLead } from "@/components/vitrine/tracking";
+import { salvarLead } from "@/components/lead";
+import { contextoDaSessao, initTracking, irParaWhatsapp, mpTrack, refDaVisita, trackLead } from "@/components/vitrine/tracking";
 
 const ZAP = "https://wa.me/5544999997219?text=";
 const MSG_DUVIDAS = "Oi Rafael! Conheci a Vitrine Digital e quero tirar dúvidas.";
@@ -495,6 +496,8 @@ export function Offer() {
      depois que a pessoa já decidiu contratar. */
   const [avista, setAvista] = useState(false);
   const [linkWa, setLinkWa] = useState("");
+  const [enviando, setEnviando] = useState(false);
+  const [enviado, setEnviado] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const waVer = useWhatsapp(MSG_VER);
   const plan = avista ? "À vista R$999" : "Entrada de R$500";
@@ -502,40 +505,77 @@ export function Offer() {
     formRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     (formRef.current?.elements.namedItem("nome") as HTMLInputElement | null)?.focus({ preventScroll: true });
   }
-  function submit(e: FormEvent<HTMLFormElement>) {
+  /* ---------- o envio, invertido em 06/08 (igual à /e-commerce) ----------
+     Antes: dispara o Lead, abre o WhatsApp, torce. Se a abertura falhasse ou a
+     pessoa não tocasse em enviar lá, o pedido de reserva evaporava.
+
+     O campo de telefone entrou junto, e é a mudança de fundo desta página. Ele
+     não existia de propósito: a mensagem saía do WhatsApp da própria pessoa,
+     então o número chegava junto e pedir era fricção à toa. Só que isso
+     dependia inteiramente de a mensagem ser enviada. Agora o lead é gravado
+     antes de qualquer navegação, e a tela promete que EU chamo: sem número não
+     há como cumprir. De quebra, o telefone é a chave de casamento mais forte
+     que a Conversions API aceita depois do e-mail, e esta página nunca teve
+     nenhuma das duas.
+
+     O botão CONTINUAR NO WHATSAPP continua sem data-cta: quem dispara o Lead
+     deste caminho é este submit, e não o ouvinte de cliques, senão o mesmo
+     envio contaria duas vezes. */
+  async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (enviando) return;              // toque duplo não grava duas linhas
+    setEnviando(true);
     const f = new FormData(e.currentTarget);
-    /* Sem campo de telefone: a mensagem sai do WhatsApp da própria pessoa,
-       então pedir o número é fricção para uma informação que já chega junto.
-       O nome vai para a Conversions API porque sem telefone e sem e-mail ele
-       é uma das poucas chaves de casamento que sobram (o servidor pega só o
-       primeiro nome e hasheia; nada em texto puro sai daqui).
-       O botão CONTINUAR NO WHATSAPP não tem data-cta de propósito: quem
-       dispara o Lead deste caminho é este submit, e não o ouvinte de cliques,
-       senão o mesmo envio contaria duas vezes. */
+    const nome = String(f.get("nome") || "");
+    const whatsapp = String(f.get("whatsapp") || "");
     /* "form" não é um rótulo qualquer: é o valor que o tracking usa para saber
-       que este caminho é contratação, e o único que chega na Mixpanel. */
-    trackLead({ ctaPosition: "form", plano: plan, nome: String(f.get("nome") || "") });
+       que este caminho é contratação, e o único que chega na Mixpanel.
+       `abriuWhats: false` porque daqui em diante o WhatsApp só abre se a
+       gravação falhar: o espelho "Abriu o WhatsApp" sai no fallback, junto da
+       navegação de verdade. */
+    trackLead({ ctaPosition: "form", plano: plan, nome, whatsapp, abriuWhats: false });
     /* O código da visita fecha a mensagem. Ao registrar a venda em
        /api/venda-fechada, ele vai no campo `ref` e a Meta amarra a compra à
        visita que veio do anúncio. Fica na última linha para ser fácil de
        copiar e para não atrapalhar a leitura do pedido. */
     const ref = refDaVisita();
+    const instagram = String(f.get("instagram") || "");
     /* A primeira linha é a mesma dos CTAs da página ("quero uma vitrine para
-       minha loja"), agora com o nome da loja preenchido: a conversa começa
-       do mesmo jeito, venha de onde vier. O resto do pedido vem abaixo. */
-    const text = encodeURIComponent(`Oi Rafael! Quero uma vitrine para minha loja ${f.get("loja")}.\nNome: ${f.get("nome")}\nInstagram: ${f.get("instagram")}\nPlano: ${plan}${ref ? `\nRef: ${ref}` : ""}`);
+       minha loja"): a conversa começa do mesmo jeito, venha de onde vier. O
+       resto encolheu junto com o formulário, e o telefone não entra na
+       mensagem de propósito: ela sai do WhatsApp da própria pessoa. */
+    const text = encodeURIComponent([
+      "Oi Rafael! Quero uma vitrine para minha loja.",
+      `Nome: ${nome}`,
+      instagram ? `Loja: ${instagram}` : "",
+      `Plano: ${plan}`,
+      ref ? `Ref: ${ref}` : "",
+    ].filter(Boolean).join("\n"));
     const link = `https://wa.me/5544999997219?text=${text}`;
-    /* Guardar o link é o conserto do vazamento. Enviar o formulário NÃO manda
-       mensagem nenhuma: o WhatsApp abre com o texto pronto e a pessoa ainda
-       precisa tocar em enviar. Se a abertura falhar, e no navegador interno
-       do Instagram isso acontecia com o window.open, ela ficava numa tela
-       dizendo "tudo certo" sem nada ter acontecido. O link fica na tela como
-       saída, e continua valendo para quem volta do WhatsApp sem enviar. */
+    /* guardado antes de qualquer caminho: serve à confirmação e ao fallback */
     setLinkWa(link);
-    /* Mesmo handoff dos CTAs: location.href na mesma aba, 300ms depois do
-       Lead sair. Era window.open, que o navegador do Instagram bloqueia ou
-       abre em aba fantasma. */
+
+    const salvo = await salvarLead({
+      pagina: "vitrine-digital",
+      nome,
+      whatsapp,
+      canal: instagram,
+      plano: plan,
+      ...contextoDaSessao(),
+    });
+    setEnviando(false);
+
+    if (salvo) {
+      mpTrack("LeadSalvo", { cta_position: "form", plano: plan });
+      setEnviado(true);
+      return;
+    }
+
+    /* Fallback: o comportamento inteiro de antes. location.href na mesma aba,
+       300ms depois do Lead sair, porque window.open o navegador do Instagram
+       bloqueia ou abre em aba fantasma. E é AQUI que "Abriu o WhatsApp" vira
+       verdade, porque é aqui que ele abre. */
+    mpTrack("AbriuWhatsApp", { cta_position: "form", plano: plan, origem: "fallback" });
     irParaWhatsapp(link);
   }
   return <section className={`${s.section} ${s.offer}`} id="oferta">
@@ -568,16 +608,35 @@ export function Offer() {
           <ChatStrip label="SUA PRÓXIMA MENSAGEM">
             <Bubble out time="19:15" tick="read">Rafael, quero uma vitrine dessas pra minha loja</Bubble>
           </ChatStrip>
-          <form ref={formRef} onSubmit={submit} className={s.form} id="contratar">
+          {/* ---------- a confirmação, quando o lead está gravado ----------
+              Ocupa o lugar do formulário. Estado do React, sem navegação e sem
+              pop-up, então aparece igual no navegador interno do Instagram,
+              que é onde o fluxo antigo quebrava calado. */}
+          {enviado ? <div className={`${s.form} ${s.confirmado}`} role="status">
+            <p className={s.formTitle}>RECEBI SEUS DADOS<br /><span>Te chamo no WhatsApp ainda hoje.</span></p>
+            <p>Vou olhar sua loja antes de falar com você, para a conversa já começar com uma direção. Sua reserva não foi cobrada: nada é pago antes de a gente combinar os detalhes.</p>
+            <a className={`${s.button} ${s.primary}`} href={linkWa} data-cta="reabrir_whats" data-cta-dest="whatsapp">
+              QUER AGILIZAR? ME CHAMA AGORA ↗
+            </a>
+          </div> : <form ref={formRef} onSubmit={submit} className={s.form} id="contratar">
             <p className={s.formTitle}>RESERVAR MINHA VITRINE<br /><span>Entrada de R$500. O saldo só depois da sua aprovação.</span></p>
             <label>NOME<input name="nome" autoComplete="name" required /></label>
-            <label>NOME DA LOJA<input name="loja" required /></label>
-            <label>INSTAGRAM<input name="instagram" placeholder="@sualoja" required /></label>
+            {/* O campo que esta página nunca teve. Ver a nota longa no submit:
+                sem número não dá para cumprir a promessa da tela de
+                confirmação, e era o handoff que carregava essa informação. */}
+            <label>WHATSAPP<input name="whatsapp" type="tel" autoComplete="tel" placeholder="(00) 00000-0000" required /></label>
+            {/* "NOME DA LOJA" saiu: o @ do instagram já entrega o nome, e eram
+                dois campos obrigatórios para uma informação só. O que sobrou
+                virou opcional, porque nome e telefone bastam para eu chamar. */}
+            <label>INSTAGRAM OU SITE DA LOJA <i className={s.opcional}>opcional</i><input name="instagram" placeholder="@sualoja" /></label>
             <label className={s.avista}>
               <input type="checkbox" name="avista" checked={avista} onChange={e => setAvista(e.target.checked)} />
               Prefiro pagar os R$999 à vista
             </label>
-            <button className={`${s.button} ${s.primary}`}>CONTINUAR NO WHATSAPP ↗</button>
+            {/* sem a seta ↗: o envio agora acontece na própria tela */}
+            <button className={`${s.button} ${s.primary}`} disabled={enviando}>
+              {enviando ? "ENVIANDO…" : "QUERO RESERVAR MINHA VITRINE"}
+            </button>
             {/* Antes daqui saía "Tudo certo. Abrindo o WhatsApp…", que dizia à
                 pessoa que estava feito quando não estava: a mensagem abre
                 pronta mas não enviada, e sem tocar em enviar nada chega.
@@ -595,8 +654,8 @@ export function Offer() {
                     ABRIR O WHATSAPP ↗
                   </a>
                 </div>
-              : <p className={s.micro} role="status">Ao continuar, você confirma os detalhes comigo no WhatsApp. Não peço dados de cartão nesta etapa.</p>}
-          </form>
+              : <p className={s.micro} role="status">Ao enviar, recebo seu pedido e te chamo no WhatsApp. Não peço dados de cartão nesta etapa.</p>}
+          </form>}
         </div>
       </div>
     </div>
