@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Archivo, Inter, Space_Mono } from "next/font/google";
 import s from "./ecommerce.module.css";
 import {
-  Analytics, Cabecalho, Hero, Faixa, Operacao, Painel, Prova, Processo, Duvidas, ChamadaFinal,
+  Analytics, Ancoras, Cabecalho, Hero, Faixa, Operacao, Painel, Prova, Processo, Duvidas, ChamadaFinal,
 } from "@/components/ecommerce/sections";
 
 const display = Archivo({ subsets: ["latin"], axes: ["wdth"], variable: "--font-display" });
@@ -42,6 +42,7 @@ export default function ECommerce() {
     <div className={`${s.page} ${display.variable} ${body.variable} ${mono.variable}`}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
       <Analytics />
+      <Ancoras />
       <Cabecalho />
       <main>
         <Hero />

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import s from "@/app/e-commerce/ecommerce.module.css";
-import { initTracking, track, trackLead } from "@/components/ecommerce/tracking";
+import { initTracking, track, trackContact, trackLead } from "@/components/ecommerce/tracking";
 
 /* Um número, uma função — todos os links de WhatsApp saem daqui. */
 const NUMERO = "5544999997219";
@@ -17,6 +17,43 @@ const zap = (msg: string) => `https://wa.me/${NUMERO}?text=${encodeURIComponent(
 
 /* Dispara o funil no mount (Pixel + Mixpanel), respeitando o opt-out. */
 export function Analytics() { useEffect(() => { initTracking(); }, []); return null; }
+
+/* ============================================================
+   ÂNCORAS INTERNAS — rolagem por JS, sem mexer na URL.
+
+   Isto começou como medição, não como enfeite. Todo CTA desta página aponta
+   para #diagnostico, e trocar o hash faz o fbevents.js contar uma navegação
+   de SPA e mandar um PageView EXTRA. Medido no build de produção: um a mais
+   por sessão, no primeiro clique. Parece pouco até lembrar da campanha de
+   agosto, que teve 16 visitas e 12 cliques de CTA: o relatório mostraria 28
+   visitas, 75% a mais do que existiu, e a razão clique-para-visita, que é
+   como se descobre se o anúncio está mentindo sobre a página, viraria ficção.
+
+   O href continua no HTML de propósito: sem JS o navegador rola do mesmo
+   jeito, e o link segue abrível em nova aba pelo teclado. Só o comportamento
+   com JS muda, e de quebra a rolagem fica suave, o que numa página onde cinco
+   botões saltam para o mesmo formulário ajuda a pessoa a não se perder.
+   O `scroll-margin-top` das seções já cuida de não esconder o título atrás
+   do cabeçalho fixo.
+   ============================================================ */
+export function Ancoras() {
+  useEffect(() => {
+    const aoClicar = (e: MouseEvent) => {
+      /* clique com modificador é intenção de abrir em outra aba: sai do caminho */
+      if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+      const link = (e.target as HTMLElement)?.closest?.("a[href^='#']") as HTMLAnchorElement | null;
+      const id = link?.getAttribute("href")?.slice(1);
+      const alvo = id && document.getElementById(id);
+      if (!alvo) return;
+      e.preventDefault();
+      const suave = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      alvo.scrollIntoView({ behavior: suave ? "smooth" : "auto", block: "start" });
+    };
+    document.addEventListener("click", aoClicar);
+    return () => document.removeEventListener("click", aoClicar);
+  }, []);
+  return null;
+}
 
 /* ============================================================
    ÍCONES DE ETAPA — o traço mínimo de cada estágio da operação,
@@ -146,7 +183,9 @@ function Planta({ tipo }: { tipo: string }) {
 export function Cabecalho() {
   const [aberto, setAberto] = useState(false);
   return <header className={s.topo}>
-    <Link className={s.marca} href="/estudio/"><b>RAFAEL RAZEIRA</b><span>ESTÚDIO</span></Link>
+    {/* a logo volta ao hero desta página, não para /estudio: quem chega do
+        anúncio e toca no topo quer recomeçar a leitura, não trocar de site */}
+    <a className={s.marca} href="#o-ecommerce"><b>RAFAEL RAZEIRA</b><span>ESTÚDIO</span></a>
     <button className={s.menu} onClick={() => setAberto(!aberto)} aria-expanded={aberto}>{aberto ? "FECHAR" : "MENU"}</button>
     <nav className={aberto ? s.navAberta : ""} onClick={() => setAberto(false)}>
       <a href="#o-ecommerce">O E-COMMERCE</a>
@@ -157,7 +196,7 @@ export function Cabecalho() {
       <a href="#case">PROJETOS NO AR</a>
       <a href="#processo">COMO FUNCIONA</a>
       <a href="#faq">DÚVIDAS</a>
-      <a className={s.navCta} href="#diagnostico" onClick={() => track("ecommerce_hero_cta", { origem: "header" })}>SOLICITAR DIAGNÓSTICO ↗</a>
+      <a className={s.navCta} href="#diagnostico" data-cta="header" onClick={() => track("ecommerce_hero_cta", { origem: "header" })}>SOLICITAR DIAGNÓSTICO ↗</a>
     </nav>
   </header>;
 }
@@ -180,7 +219,7 @@ export function Hero() {
         <h1>UM E-COMMERCE QUE VENDE PARA O CLIENTE E <em>FUNCIONA PARA VOCÊ.</em></h1>
         <p className={s.apoio}>Loja, pagamento, estoque e painel administrativo em uma estrutura só. Você troca preço, foto e banner sozinho, sem depender de programador.</p>
         <div className={s.acoes}>
-          <a className={`${s.botao} ${s.cheio}`} href="#diagnostico" onClick={() => track("ecommerce_hero_cta", { origem: "hero" })}>QUERO PLANEJAR MEU E-COMMERCE ↗</a>
+          <a className={`${s.botao} ${s.cheio}`} href="#diagnostico" data-cta="hero" onClick={() => track("ecommerce_hero_cta", { origem: "hero" })}>QUERO PLANEJAR MEU E-COMMERCE ↗</a>
           <a className={s.discreto} href="#incluso" onClick={() => track("ecommerce_secondary_cta", { origem: "hero" })}>VER O QUE ESTÁ INCLUSO ↓</a>
         </div>
         {/* sem preço, por decisão do Rafael: o que sustenta o CTA aqui é o
@@ -328,7 +367,7 @@ export function Painel() {
               pedidos do mock, logo ao lado, e repetir custava quase uma dobra
               de celular. O CTA fica, com o `origem: "painel"` intacto. */}
           <div className={s.acoes}>
-            <a className={`${s.botao} ${s.contorno} ${s.contornoClaro}`} href="#diagnostico" onClick={() => track("ecommerce_secondary_cta", { origem: "painel" })}>ENTENDER O PAINEL ADMINISTRATIVO ↗</a>
+            <a className={`${s.botao} ${s.contorno} ${s.contornoClaro}`} href="#diagnostico" data-cta="painel" onClick={() => track("ecommerce_secondary_cta", { origem: "painel" })}>ENTENDER O PAINEL ADMINISTRATIVO ↗</a>
           </div>
         </div>
       </div>
@@ -461,7 +500,10 @@ export function Prova() {
       </details>
 
       <div className={s.acoes}>
-        <a className={`${s.botao} ${s.cheio}`} href="#diagnostico">PLANEJAR O MEU E-COMMERCE ↗</a>
+        {/* o track() aqui existe para "Clicou em CTA" não ficar subcontado: os
+            outros quatro CTAs disparam os dois eventos, este disparava só o
+            Lead pelo ouvinte delegado */}
+        <a className={`${s.botao} ${s.cheio}`} href="#diagnostico" data-cta="prova" onClick={() => track("ecommerce_secondary_cta", { origem: "prova" })}>PLANEJAR O MEU E-COMMERCE ↗</a>
       </div>
     </div>
   </section>;
@@ -610,7 +652,12 @@ export function ChamadaFinal() {
   }
   function enviar(e: React.FormEvent) {
     e.preventDefault();
-    trackLead(dados.whatsapp);
+    /* Os dois, de propósito. O Lead é a conversão de intenção e precisa
+       continuar contando quem chegou até aqui (cta_position "form" separa
+       este dos cinco CTAs). O Contact é o envio de verdade, e é por ele que
+       a campanha otimiza. */
+    trackLead({ ctaPosition: "form", nome: dados.nome, whatsapp: dados.whatsapp });
+    trackContact({ nome: dados.nome, whatsapp: dados.whatsapp });
     const linha = (r: string, v?: string) => `${r}: ${v?.trim() ? v.trim() : "não informado"}`;
     const msg = [
       "Olá, Rafael! Preenchi o diagnóstico para desenvolvimento de um e-commerce.",
@@ -646,14 +693,14 @@ export function ChamadaFinal() {
 
         {etapa === 1 ? <div className={s.formCorpo}>
           <div className={s.dupla}>
-            <label className={s.campo}><span>O que a empresa vende</span><input type="text" placeholder="Segmento e produtos" value={dados.vende || ""} onChange={(e) => set("vende", e.target.value)} /></label>
+            <label className={s.campo}><span>O que a empresa vende</span><input type="text" name="vende" placeholder="Segmento e produtos" value={dados.vende || ""} onChange={(e) => set("vende", e.target.value)} /></label>
             <label className={s.campo}><span>Quantidade aproximada de produtos</span>
-              <select value={dados.produtos || ""} onChange={(e) => set("produtos", e.target.value)}>
+              <select name="produtos" value={dados.produtos || ""} onChange={(e) => set("produtos", e.target.value)}>
                 <option value="">Selecione</option><option>Até 20</option><option>20 a 100</option><option>100 a 500</option><option>Mais de 500</option>
               </select>
             </label>
             <label className={s.campo}><span>Já possui site ou loja virtual?</span>
-              <select value={dados.site || ""} onChange={(e) => set("site", e.target.value)}>
+              <select name="site" value={dados.site || ""} onChange={(e) => set("site", e.target.value)}>
                 <option value="">Selecione</option><option>Não tenho</option><option>Tenho site institucional</option><option>Tenho loja virtual</option>
               </select>
             </label>
@@ -661,9 +708,9 @@ export function ChamadaFinal() {
                 saíram: são cinco perguntas que a conversa do diagnóstico
                 responde melhor, e cada uma delas era um motivo a mais para
                 abandonar o formulário no celular. */}
-            <label className={s.campo}><span>Faixa de investimento</span><input type="text" placeholder="Sua faixa de investimento" value={dados.investimento || ""} onChange={(e) => set("investimento", e.target.value)} /></label>
+            <label className={s.campo}><span>Faixa de investimento</span><input type="text" name="investimento" placeholder="Sua faixa de investimento" value={dados.investimento || ""} onChange={(e) => set("investimento", e.target.value)} /></label>
           </div>
-          <label className={s.campo}><span>Principal dificuldade atual</span><textarea placeholder="O que mais atrapalha sua operação hoje" value={dados.necessidade || ""} onChange={(e) => set("necessidade", e.target.value)} /></label>
+          <label className={s.campo}><span>Principal dificuldade atual</span><textarea name="necessidade" placeholder="O que mais atrapalha sua operação hoje" value={dados.necessidade || ""} onChange={(e) => set("necessidade", e.target.value)} /></label>
           <div className={s.formNav}>
             <span />
             <button type="button" className={`${s.botao} ${s.cheio}`} onClick={avancar}>CONTINUAR PARA O CONTATO ↓</button>
@@ -672,7 +719,7 @@ export function ChamadaFinal() {
           <div className={s.dupla}>
             {contato.map((c) => <label className={s.campo} key={c.id}>
               <span>{c.rot}</span>
-              <input type={c.tipo} placeholder={c.ph} value={dados[c.id] || ""} onChange={(ev) => set(c.id, ev.target.value)} required={c.id === "nome" || c.id === "whatsapp"} />
+              <input type={c.tipo} name={c.id} placeholder={c.ph} value={dados[c.id] || ""} onChange={(ev) => set(c.id, ev.target.value)} required={c.id === "nome" || c.id === "whatsapp"} />
             </label>)}
           </div>
           <div className={s.formNav}>
@@ -685,7 +732,7 @@ export function ChamadaFinal() {
       <small className={s.micro}>A conversa inicial serve para entender a operação antes da definição do escopo e do investimento.</small>
     </section>
 
-    <a className={`${s.barraFixa} ${ocultarBarra ? s.barraOculta : ""}`} href="#diagnostico" onClick={() => track("ecommerce_secondary_cta", { origem: "barra-fixa" })}>
+    <a className={`${s.barraFixa} ${ocultarBarra ? s.barraOculta : ""}`} href="#diagnostico" data-cta="barra_fixa" onClick={() => track("ecommerce_secondary_cta", { origem: "barra-fixa" })}>
       <small>E-COMMERCE SOB MEDIDA<i>Diagnóstico sem compromisso</i></small>
       <span>PLANEJAR MEU E-COMMERCE ↗</span>
     </a>

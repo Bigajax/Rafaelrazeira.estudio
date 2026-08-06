@@ -84,7 +84,9 @@ const ChatStrip = ({ label, note, children }: { label: string; note?: string; ch
 export function Header() {
   const [open, setOpen] = useState(false);
   return <header className={s.header}>
-    <Link className={s.brand} href="/estudio/"><b>RAFAEL RAZEIRA</b><span>ESTÚDIO</span></Link>
+    {/* a logo volta ao hero desta página, não para /estudio: quem chega do
+        anúncio e toca no topo quer recomeçar a leitura, não trocar de site */}
+    <a className={s.brand} href="#topo"><b>RAFAEL RAZEIRA</b><span>ESTÚDIO</span></a>
     <button className={s.menu} onClick={() => setOpen(!open)} aria-expanded={open}>{open ? "FECHAR" : "MENU"}</button>
     <nav className={open ? s.open : ""} onClick={() => setOpen(false)}>
       <a href="#como">COMO FUNCIONA</a>

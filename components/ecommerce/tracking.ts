@@ -113,6 +113,17 @@ function mpDistinctId() {
   } catch { return "anon"; }
 }
 
+/* A chave de casamento mais forte que sobra num formulário sem e-mail: o
+   MESMO id que a Mixpanel usa como distinct_id vira o external_id do Pixel e
+   da Conversions API, então os dois lados falam do mesmo visitante. O Pixel
+   hasheia sozinho no browser e o servidor hasheia o valor cru, então os dois
+   precisam aplicar a MESMA normalização, senão os hashes divergem e a
+   amarração simplesmente não acontece, sem erro nenhum aparecer.
+   Importa mais aqui do que em qualquer outra página do estúdio: o tráfego
+   chega pelo navegador interno do Instagram, onde o fbevents.js falha com
+   frequência e o fbp/fbc muitas vezes é tudo o que existe. */
+const externalId = () => mpDistinctId().toLowerCase();
+
 function mpDispositivo() {
   const ua = navigator.userAgent || "";
   let os = "";
@@ -151,16 +162,27 @@ function mpDispositivo() {
    passa direto com o nome de código. */
 const NOME_MP: Record<string, string> = {
   PageView:                           "Abriu a página",
+  Scroll:                             "Rolou",
+  Saida:                              "Saiu da página",
   ecommerce_hero_cta:                 "Clicou em CTA",
   ecommerce_secondary_cta:            "Clicou em CTA",
   ecommerce_admin_section_view:       "Viu o painel",
   ecommerce_integration_section_view: "Viu as integrações",
-  ecommerce_case_view:                "Viu o case",
+  ecommerce_case_view:                "Viu a prova",
   ecommerce_faq_open:                 "Abriu uma dúvida",
   ecommerce_form_start:               "Tocou no formulário",
   ecommerce_form_step_complete:       "Passou da etapa 1",
   ecommerce_whatsapp_click:           "Abriu o WhatsApp",
-  Lead:                               "Enviou o formulário",
+  /* NÃO se chama "Enviou o formulário", de propósito. Desde que o Lead passou
+     a disparar em todo CTA de conversão, ele conta cinco botões de intenção
+     mais um envio de verdade. A vitrine manteve o nome antigo depois da mesma
+     mudança e isso já custou uma leitura errada: os "12 leads" do Ads Manager
+     de 04/08 eram 12 cliques, e o Rafael conferiu que não havia conversa
+     nenhuma no WhatsApp. Quem foi até o fim se distingue pela propriedade
+     `cta_position: "form"`. */
+  Lead:                               "Sinalizou interesse",
+  /* O nome que o Lead deixou vago, e agora ele é verdade: só o envio dispara. */
+  Contact:                            "Enviou o formulário",
 };
 
 export function mpTrack(evento: string, props?: Record<string, unknown>) {
@@ -227,6 +249,94 @@ function observarSecao(id: string, evento: string, chave: string) {
   obs.observe(alvo);
 }
 
+/* ============================================================
+   ROLAGEM E SAÍDA — diagnóstico, não conversão.
+
+   Vão SÓ para a Mixpanel: na Meta virariam evento custom que suja o dataset
+   e não otimiza nada. Sem eles, quem abre e fecha vira um PageView solto e
+   não dá para saber se leu a manchete, rolou metade ou fechou em dois
+   segundos. Na primeira campanha da vitrine, 20 dos 26 visitantes reais
+   foram exatamente isso, e foi este par de eventos que mostrou que o gargalo
+   era o topo da página, não a oferta.
+
+   `Saida` é o mais útil dos dois porque também conta a história de quem não
+   rolou nada: sai com tempo de permanência e profundidade máxima.
+   ============================================================ */
+function medirLeitura() {
+  const inicio = Date.now();
+  const marcos = [25, 50, 75, 100];
+  let maior = 0;
+  let agendado = false;
+  const segundos = () => Math.round((Date.now() - inicio) / 1000);
+
+  const medir = () => {
+    agendado = false;
+    const rolavel = document.documentElement.scrollHeight - window.innerHeight;
+    /* página menor que a tela: não há o que rolar, e dividir por zero daria
+       Infinity. Conta como 100% porque a pessoa já viu tudo. */
+    const pct = rolavel <= 0 ? 100 : Math.round((window.scrollY / rolavel) * 100);
+    for (const m of marcos) {
+      if (pct >= m && maior < m) {
+        maior = m;
+        mpTrack("Scroll", { profundidade: m, segundos: segundos() });
+      }
+    }
+  };
+  /* passivo e agendado no próximo quadro: rolagem dispara dezenas de vezes por
+     segundo e medir em cada uma travaria a página no celular */
+  addEventListener("scroll", () => {
+    if (agendado) return;
+    agendado = true;
+    requestAnimationFrame(medir);
+  }, { passive: true });
+  medir();
+
+  /* Qual campo do formulário a pessoa tocou por último. Vai como propriedade
+     do Saida em vez de virar evento próprio: é diagnóstico, e o Saida já é o
+     retrato de onde a pessoa desistiu. Depende do atributo `name` nos campos,
+     que existe só por causa disto: o formulário não faz submit nativo. */
+  let ultimoCampo = "";
+  addEventListener("focusin", (e) => {
+    const alvo = e.target as HTMLInputElement | null;
+    if (alvo?.closest?.("#diagnostico") && alvo.name) ultimoCampo = alvo.name;
+  });
+
+  let saiu = false;
+  const aoSair = () => {
+    if (saiu) return;
+    saiu = true;
+    mpTrack("Saida", {
+      segundos: segundos(),
+      profundidade_max: maior,
+      rolou: maior > 0,
+      ...(ultimoCampo ? { form_ultimo_campo: ultimoCampo } : {}),
+    });
+  };
+  /* visibilitychange é o único confiável no celular: no iOS o `unload` muitas
+     vezes não roda quando a pessoa troca de app ou fecha a aba. O mpTrack usa
+     fetch com keepalive, que sobrevive à página morrendo. */
+  addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") aoSair(); });
+  addEventListener("pagehide", aoSair);
+}
+
+/* ---------- de qual botão veio o Lead ----------
+   Decisão do Rafael (05/08), a mesma que ele já tinha tomado na vitrine:
+   densidade de sinal vale mais que pureza de funil. Com verba pequena e um
+   formulário de duas etapas, o Lead só no envio deixaria a Meta dias sem um
+   único evento para otimizar.
+
+   Entram os CTAs que levam ao ponto de conversão. Ficam de fora, de propósito:
+   o "VER O QUE ESTÁ INCLUSO" do hero (rola para #incluso, é navegação) e os
+   botões que abrem o site de um cliente. Ao ler os números, lembre que a maior
+   parte destes Leads é INTENÇÃO: quem foi até o fim tem cta_position "form". */
+const POSICAO_LEAD: Record<string, string> = {
+  hero: "hero",
+  header: "header",
+  painel: "painel",
+  prova: "prova",
+  barra_fixa: "barra_fixa",
+};
+
 let iniciado = false;
 
 /* Chamado no mount da página (componente <Analytics />). */
@@ -236,14 +346,39 @@ export function initTracking() {
 
   salvarFbclid();
   carregarPixel();
-  fbq("init", PIXEL_ID);
+  /* Configuração automática DESLIGADA, e o motivo é específico desta página:
+     todos os cinco CTAs são âncora para #diagnostico, e o fbevents.js trata a
+     mudança de hash como navegação de SPA e manda um PageView extra. Medido:
+     três cliques geram um PageView a mais por sessão. Parece pouco, mas é
+     justamente a conta que o Rafael faz ao ler a campanha (cliques no anúncio
+     contra visitas à página, visitas contra leads), e um numerador inflado ali
+     leva a conclusão errada sobre o anúncio.
+     O que se perde junto é o Automatic Advanced Matching, que garimpa e-mail e
+     telefone dos formulários por conta própria. Aqui ele é redundante: o
+     external_id, o primeiro nome e o WhatsApp já vão de propósito pela
+     Conversions API, que é casamento mais forte e explícito. */
+  fbq("set", "autoConfig", false, PIXEL_ID);
+  /* external_id no init: o pixel passa a mandar essa chave em todo evento do
+     browser, e não só no Lead, o que melhora o casamento de PageView também */
+  fbq("init", PIXEL_ID, { external_id: externalId() });
   fbq("track", "PageView");
   mpTrack("PageView");
+
+  medirLeitura();
 
   // Seções-chave vistas (1x por sessão cada)
   observarSecao("painel", "ecommerce_admin_section_view", "ec_view_painel");
   observarSecao("integracoes", "ecommerce_integration_section_view", "ec_view_integracoes");
   observarSecao("case", "ecommerce_case_view", "ec_view_case");
+
+  /* Um ouvinte delegado no documento em vez de onClick em cada botão: os CTAs
+     nascem e morrem com o estado do React (a barra fixa some, o formulário
+     troca de etapa) e um listener por elemento se perderia nessas trocas. */
+  document.addEventListener("click", (e) => {
+    const alvo = (e.target as HTMLElement)?.closest?.("[data-cta]") as HTMLElement | null;
+    const posicao = alvo && POSICAO_LEAD[alvo.dataset.cta || ""];
+    if (posicao) trackLead({ ctaPosition: posicao });
+  });
 
   // Primeiro foco no formulário de diagnóstico (1x por sessão)
   document.addEventListener("focusin", (e) => {
@@ -252,30 +387,77 @@ export function initTracking() {
   });
 }
 
-/* Submit do formulário — a conversão do funil, deduplicada: mesmo
-   event_id no Pixel (browser) e na Conversions API (servidor), que
-   recebe o WhatsApp do formulário e o hasheia antes de enviar à Meta.
-   SEM value: o e-commerce não tem preço fixo. Fire-and-forget. */
-export function trackLead(whatsapp?: string) {
-  if (!podeRastrear()) return;
-  const eventId = idAleatorio();
-  fbq("track", "Lead", { content_name: "e-commerce" }, { eventID: eventId });
-  /* Um evento só. O `ecommerce_form_submit` que existia aqui disparava na
-     linha de cima do `Lead`, com o mesmo id e o mesmo significado: contava a
-     mesma pessoa duas vezes em qualquer soma que juntasse os dois. */
-  mpTrack("Lead", { $insert_id: eventId, content_name: "e-commerce" });
+/* A conversão da campanha, deduplicada: mesmo event_id no Pixel (browser) e na
+   Conversions API (servidor). Os dois caminhos existem porque o tráfego chega
+   pelo navegador interno do Instagram, onde o fbevents.js falha com frequência
+   e o beacon do browser simplesmente não sai.
+
+   `cta_position` diz de qual botão veio, e é o que separa intenção (hero,
+   header, painel, prova, barra_fixa) de contato de verdade ("form").
+
+   SEM value: o e-commerce não tem preço fixo, e faturamento inventado
+   estraga qualquer leitura de ROAS depois. Fire-and-forget: falha de rede
+   nunca pode segurar o clique da pessoa. */
+function enviarCapi(evento: string, eventId: string, extra: Record<string, unknown> = {}) {
   try {
     fetch(CAPI_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       keepalive: true,
       body: JSON.stringify({
+        /* mandar o campo explicitamente. O endpoint tem default "Lead" para os
+           consumidores antigos que não mandam nada, e é justamente por isso que
+           esse default não pode mudar: `js/lib/tracking.js` depende dele. */
+        event_name: evento,
         event_id: eventId,
-        phone: whatsapp || "",
+        /* o servidor hasheia; o first_name ele reduz ao primeiro nome,
+           minúsculo e sem pontuação, antes do SHA-256 */
+        external_id: externalId(),
         fbp: getCookie("_fbp"),
         fbc: getFbc(),
+        content_name: "e-commerce",
         event_source_url: location.href,
+        ...extra,
       }),
     }).catch(() => {});
   } catch {}
+}
+
+export function trackLead({ ctaPosition, nome, whatsapp }: { ctaPosition: string; nome?: string; whatsapp?: string }) {
+  if (!podeRastrear()) return;
+  const eventId = idAleatorio();
+  const dados = { content_name: "e-commerce", cta_position: ctaPosition };
+  fbq("track", "Lead", dados, { eventID: eventId });
+  /* Um evento só. O `ecommerce_form_submit` que existia aqui disparava na
+     linha de cima do `Lead`, com o mesmo id e o mesmo significado: contava a
+     mesma pessoa duas vezes em qualquer soma que juntasse os dois. */
+  mpTrack("Lead", { $insert_id: eventId, ...dados });
+  enviarCapi("Lead", eventId, { cta_position: ctaPosition, first_name: nome || "", phone: whatsapp || "" });
+}
+
+/* ---------- Contact: o envio de verdade ----------
+   Decisão do Rafael (05/08): a campanha otimiza por AQUI desde o começo, e a
+   conversão de intenção fica criada como plano B se a entrega travar.
+
+   Por que um evento padrão em vez de um `ecommerce_*` próprio: só os nomes da
+   allowlist do endpoint (Lead, Contact, ViewContent, InitiateCheckout,
+   PageView) têm caminho de servidor. Um custom só existiria no navegador, e o
+   tráfego chega pelo navegador interno do Instagram, onde o fbevents.js falha
+   com frequência: a campanha seria otimizada justamente sem as conversões que
+   a Conversions API existe para recuperar.
+
+   Por que "Contact" e não outro: é literalmente o que aconteceu, a pessoa
+   abriu conversa. E, sendo padrão, a Meta traz o que aprendeu com outros
+   anunciantes para dentro da otimização, o que um custom nunca dá.
+
+   O envio dispara os DOIS, e de propósito: quem envia também demonstrou
+   interesse, então precisa continuar dentro da conversão de intenção. Na Meta
+   são eventos distintos, não há contagem dobrada dentro de uma conversão. */
+export function trackContact({ nome, whatsapp }: { nome?: string; whatsapp?: string }) {
+  if (!podeRastrear()) return;
+  const eventId = idAleatorio();
+  const dados = { content_name: "e-commerce" };
+  fbq("track", "Contact", dados, { eventID: eventId });
+  mpTrack("Contact", { $insert_id: eventId, ...dados });
+  enviarCapi("Contact", eventId, { first_name: nome || "", phone: whatsapp || "" });
 }
