@@ -380,7 +380,9 @@ function medirLeitura() {
   let ultimoCampo = "";
   addEventListener("focusin", (e) => {
     const alvo = e.target as HTMLInputElement | null;
-    if (alvo?.closest?.("#diagnostico") && alvo.name) ultimoCampo = alvo.name;
+    if (!alvo?.name || !alvo.closest?.("#diagnostico, #hero-form")) return;
+    /* o prefixo diz QUAL formulário: os dois têm campo `nome` desde 07/08 */
+    ultimoCampo = alvo.closest("#hero-form") ? `hero_${alvo.name}` : alvo.name;
   });
 
   let saiu = false;
@@ -459,6 +461,7 @@ const FORA_DO_LEAD = new Set(["reabrir_whats"]);
    for hero dos dois lados. O `page` na Mixpanel é que separa uma da outra. */
 const POSICAO_WHATSAPP: Record<string, string> = {
   hero_whatsapp:       "hero",
+  header:              "topo",
   barra_fixa_whatsapp: "sticky",
   reabrir_whats:       "confirmacao",
 };
@@ -548,9 +551,11 @@ export function initTracking() {
     irParaWhatsapp(href);
   });
 
-  // Primeiro foco no formulário de diagnóstico (1x por sessão)
+  // Primeiro foco em QUALQUER formulário de captura (o do diagnóstico ou o
+  // mini do hero, desde 07/08), 1x por sessão: a semântica é "tocou num
+  // formulário", não "tocou neste formulário"
   document.addEventListener("focusin", (e) => {
-    if (!(e.target as HTMLElement)?.closest?.("#diagnostico form")) return;
+    if (!(e.target as HTMLElement)?.closest?.("#diagnostico form, #hero-form")) return;
     umaVezPorSessao("ec_form_start", () => track("ecommerce_form_start"));
   });
 }

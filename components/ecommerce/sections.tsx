@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import s from "@/app/e-commerce/ecommerce.module.css";
@@ -188,26 +189,17 @@ function Planta({ tipo }: { tipo: string }) {
 }
 
 /* ============================================================ HEADER */
+/* Header de tráfego pago (07/08, mesma decisão da /vitrine-digital): só a
+   logo e uma ação. O menu inteiro saiu, inclusive o hambúrguer: cada rota do
+   topo é rota de fuga, e as âncoras das seções continuam vivas para os links
+   internos. O CTA vira conversa direta; o data-cta "header" muda de destino
+   (era rolagem ao form) e passa a contar como Lead na posição "topo". */
 export function Cabecalho() {
-  const [aberto, setAberto] = useState(false);
   return <header className={s.topo}>
     {/* a logo volta ao hero desta página, não para /estudio: quem chega do
         anúncio e toca no topo quer recomeçar a leitura, não trocar de site */}
     <a className={s.marca} href="#o-ecommerce"><b>RAFAEL RAZEIRA</b><span>ESTÚDIO</span></a>
-    <button className={s.menu} onClick={() => setAberto(!aberto)} aria-expanded={aberto}>{aberto ? "FECHAR" : "MENU"}</button>
-    <nav className={aberto ? s.navAberta : ""} onClick={() => setAberto(false)}>
-      <a href="#o-ecommerce">O E-COMMERCE</a>
-      <a href="#incluso">O QUE ESTÁ INCLUSO</a>
-      {/* "INTEGRAÇÕES" saiu do nav: o id continua no acordeão (é alvo do
-          ecommerce_integration_section_view), mas mandar alguém para dentro de
-          uma gaveta fechada não é navegação, é beco */}
-      <a href="#case">PROJETOS NO AR</a>
-      <a href="#processo">COMO FUNCIONA</a>
-      <a href="#faq">DÚVIDAS</a>
-      {/* sem onClick: o ClickCTA sai do ouvinte delegado em tracking.ts, lendo
-          data-cta e data-cta-dest. Um caminho só para os seis CTAs da página */}
-      <a className={s.navCta} href="#diagnostico" data-cta="header" data-cta-dest="form">SOLICITAR DIAGNÓSTICO ↗</a>
-    </nav>
+    <a className={s.navCta} href={zap(MSG_HERO)} data-cta="header" data-cta-dest="whatsapp">FALAR COM RAFAEL ↗</a>
   </header>;
 }
 
@@ -236,6 +228,87 @@ const APOIO = "E-commerce completo com carrinho, Pix e cartão: a venda se fecha
    escrita na voz de quem ainda não decidiu, que é quem chega aqui pelo anúncio.
    Ela não promete diagnóstico nem preço: promete uma pergunta respondida. */
 const MSG_HERO = "Oi Rafael! Tenho uma loja e quero entender se um e-commerce completo faz sentido pra mim.";
+
+/* ---------- o envio de lead, num caminho só (07/08) ----------
+   Desde as duas portas, a página tem dois formulários (o mini do hero e o
+   completo do diagnóstico) e as regras do envio moram aqui para não existirem
+   duas cópias que divergem caladas. A ordem é a de 06/08: Lead e Contact
+   disparam ANTES da gravação (a campanha otimiza pelo Contact e o Pixel morre
+   com a aba), o lead grava no servidor, e o WhatsApp abre só como fallback. */
+async function enviarLeadEcommerce(d: { nome: string; whatsapp: string; canal?: string; vende?: string; ctaPosition: "form" | "hero_form" }): Promise<{ salvo: boolean; linkWa: string }> {
+  trackLead({ ctaPosition: d.ctaPosition, nome: d.nome, whatsapp: d.whatsapp });
+  trackContact({ nome: d.nome, whatsapp: d.whatsapp });
+  const linha = (r: string, v?: string) => (v?.trim() ? `${r}: ${v.trim()}` : "");
+  const msg = [
+    "Olá, Rafael! Preenchi o formulário no site sobre um e-commerce.",
+    "",
+    linha("Loja", d.canal),
+    linha("Vendo", d.vende),
+  ].filter(Boolean).join("\n");
+  const linkWa = zap(msg);
+  const salvo = await salvarLead({
+    pagina: "e-commerce",
+    nome: d.nome,
+    whatsapp: d.whatsapp,
+    canal: d.canal,
+    vende: d.vende,
+    ...contextoDaSessao(),
+  });
+  if (salvo) {
+    track("ecommerce_lead_salvo", { cta_position: d.ctaPosition });
+    return { salvo: true, linkWa };
+  }
+  /* fallback: o comportamento inteiro de antes, WhatsApp na mesma aba com os
+     300ms do Pixel. A confirmação NÃO aparece: aqui o lead só existe se a
+     conversa acontecer, e prometer "recebi seus dados" seria mentira. */
+  track("ecommerce_whatsapp_click", { cta_position: d.ctaPosition, origem: "fallback" });
+  irParaWhatsapp(linkWa);
+  return { salvo: false, linkWa };
+}
+
+/* ---------- porta 01: o mini-formulário do hero ----------
+   Dois campos e a promessa "deixa que eu chamo", mesma peça da
+   /vitrine-digital. O botão de submit NÃO tem data-cta: o Lead deste caminho
+   sai do submit (via enviarLeadEcommerce), senão contaria duas vezes. */
+function HeroForm() {
+  const [linkWa, setLinkWa] = useState("");
+  const [enviando, setEnviando] = useState(false);
+  const [enviado, setEnviado] = useState(false);
+  async function enviar(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (enviando) return;              // toque duplo não grava duas linhas
+    setEnviando(true);
+    const f = new FormData(e.currentTarget);
+    const { salvo, linkWa: link } = await enviarLeadEcommerce({
+      nome: String(f.get("nome") || ""),
+      whatsapp: String(f.get("whatsapp") || ""),
+      ctaPosition: "hero_form",
+    });
+    setLinkWa(link);
+    setEnviando(false);
+    if (salvo) setEnviado(true);
+  }
+  if (enviado) return <div className={`${s.door} ${s.doorConfirm}`} role="status">
+    <small className={s.doorTag}>RECEBIDO</small>
+    <h3>Recebi seus dados.</h3>
+    <p>Te chamo no WhatsApp ainda hoje.</p>
+    <a className={`${s.botao} ${s.cheio}`} href={linkWa} data-cta="reabrir_whats" data-cta-dest="whatsapp">QUER AGILIZAR? ME CHAMA AGORA ↗</a>
+  </div>;
+  return <form id="hero-form" className={s.door} onSubmit={enviar}>
+    <small className={s.doorTag}>PORTA 01 · DEIXA QUE EU CHAMO</small>
+    <input name="nome" autoComplete="name" placeholder="Seu nome" aria-label="Seu nome" required />
+    <input name="whatsapp" type="tel" autoComplete="tel" placeholder="Seu WhatsApp" aria-label="Seu WhatsApp" required />
+    <button className={`${s.botao} ${s.cheio}`} disabled={enviando}>{enviando ? "ENVIANDO…" : "QUERO QUE O RAFAEL ME CHAME"}</button>
+    {linkWa
+      ? <div className={s.pendente} role="status">
+          <b>Falta um toque.</b>
+          <p>Abri o WhatsApp com sua mensagem pronta. Toque em <b>enviar</b> lá para eu receber, senão ela não chega.</p>
+          <a className={`${s.botao} ${s.cheio}`} href={linkWa} data-cta="reabrir_whats" data-cta-dest="whatsapp">ABRIR O WHATSAPP ↗</a>
+        </div>
+      : <small className={s.doorMicro}>Te chamo hoje. Nenhum dado é publicado.</small>}
+  </form>;
+}
+
 export function Hero() {
   return <section className={s.hero} id="o-ecommerce">
     <div className={s.heroGrade}>
@@ -243,31 +316,31 @@ export function Hero() {
         <p className={s.olho}>E-COMMERCE SOB MEDIDA · DESIGN · OPERAÇÃO · CONVERSÃO</p>
         <h1>{MANCHETE[0]} <em>{MANCHETE[1]}</em></h1>
         <p className={s.apoio}>{APOIO}</p>
-        {/* a âncora antes dos botões, não depois: ela é o que decide se a
-            pessoa toca em algum, então chegar junto com eles é tarde */}
-        <p className={s.ancora}>Projetos a partir de <b>{VALOR_BASE}</b></p>
-        {/* ---------- os dois caminhos, na ordem em que convertem ----------
-            O WhatsApp na frente e cheio, o formulário atrás e de contorno. Não
-            é preferência de layout: no mesmo período esta página levou 30
-            visitas de anúncio a zero contatos com o formulário como único
-            caminho, enquanto a vitrine, que abre conversa direto, fez 21 leads.
-            O formulário fica porque quem prefere escrever a falar existe, e
-            porque ele é o que grava o lead no servidor.
+        {/* ---------- as duas portas (07/08, mesma peça da vitrine) ----------
+            O CTA único deu lugar aos dois jeitos de começar, lado a lado: quem
+            prefere ser chamado deixa nome e WhatsApp (e o lead grava no
+            servidor); quem prefere falar agora abre a conversa. O antigo
+            "QUERO PLANEJAR" que rolava ao formulário sai: a porta 01 É o
+            formulário, na primeira dobra.
 
-            SEM target="_blank" no link do WhatsApp: aba nova é o que quebra no
-            navegador interno do Instagram, de onde vem quase todo o tráfego. O
-            tracking.ts intercepta o clique, dispara o Lead e navega por
-            location.href 300ms depois. */}
-        <div className={s.acoes}>
-          <a className={`${s.botao} ${s.cheio}`} href={zap(MSG_HERO)} data-cta="hero_whatsapp" data-cta-dest="whatsapp">FALAR COM O RAFAEL NO WHATSAPP ↗</a>
-          <a className={`${s.botao} ${s.contorno}`} href="#diagnostico" data-cta="hero" data-cta-dest="form">QUERO PLANEJAR MEU E-COMMERCE ↗</a>
-          {/* este ganhou data-cta agora: era o único CTA sem, porque a lista
-              antiga do Lead o excluía de propósito (rola para #incluso, é
-              navegação). Como ClickCTA ele PRECISA existir, e o `destination`
-              é o que separa navegação de intenção na hora de ler */}
-          <a className={s.discreto} href="#incluso" data-cta="hero_incluso" data-cta-dest="incluso">VER O QUE ESTÁ INCLUSO ↓</a>
+            SEM target="_blank" na porta 02: aba nova é o que quebra no
+            navegador interno do Instagram. O tracking.ts intercepta o clique,
+            dispara o Lead e navega por location.href 300ms depois. */}
+        <div className={s.doors}>
+          <HeroForm />
+          <div className={`${s.door} ${s.doorWhats}`}>
+            <small className={s.doorTag}>PORTA 02 · PREFERE JÁ FALAR?</small>
+            <p>Me chama agora e eu te conto, para o seu caso, o que um e-commerce completo muda na operação.</p>
+            <a className={`${s.botao} ${s.solidDark}`} href={zap(MSG_HERO)} data-cta="hero_whatsapp" data-cta-dest="whatsapp">ME CHAMA NO WHATSAPP ↗</a>
+          </div>
         </div>
-        <p className={s.heroMicro}>Você fala direto comigo, sem compromisso.</p>
+        {/* fatos verificáveis no lugar da âncora de preço e dos heroPoints:
+            o valor continua na primeira dobra, agora como célula da faixa */}
+        <ul className={s.proofStrip}>
+          <li><b>9</b>PROJETOS NO AR</li>
+          <li><b>{VALOR_BASE}</b>PONTO DE PARTIDA</li>
+          <li><b>7</b>DIAS ATÉ A 1ª DIREÇÃO</li>
+        </ul>
       </div>
 
       {/* assinatura: o pedido percorre a operação */}
@@ -306,6 +379,42 @@ export function Faixa() {
     <div className={s.faixaTrilho}>
       <span>{termos.map((t) => <span key={t}>{t}<i>·</i></span>)}</span>
       {linha}
+    </div>
+  </div>;
+}
+
+/* ============================================================ QUEM FAZ
+   Portada da /vitrine-digital em 07/08, com a copy na voz desta página: o
+   rosto atrás da operação. A foto é P&B pura no arquivo e o duotone
+   grafite/papel é 100% CSS (mix-blend-mode), então a cor segue os tokens. */
+export function QuemFaz() {
+  return <section className={s.quem}>
+    <div className={s.quemPhoto}>
+      <Image src="/assets/rafael-quemfaz.jpg" fill sizes="(max-width: 960px) 100vw, 45vw" alt="Rafael Razeira, retrato em preto e branco com óculos esportivos" />
+      <span className={s.quemVert} aria-hidden>MARINGÁ · PR · EST. 2026</span>
+    </div>
+    <div className={s.quemTxt}>
+      <p className={s.olho}>QUEM FAZ</p>
+      <h2>Uma pessoa.<br />Não uma <em>agência.</em></h2>
+      <p>Eu sou o Rafael. Desenho, desenvolvo e publico cada loja, e é comigo que você fala no WhatsApp, do primeiro oi até o e-commerce no ar. Sem fila de atendimento, sem gerente de conta, sem telefone que ninguém atende.</p>
+      <p>As duas lojas desta página? Feitas nesta mesa, junto com os outros sete projetos do portfólio.</p>
+      <ul className={s.quemFacts}>
+        {["MARINGÁ · PR", "9 PROJETOS NO AR", "RESPOSTA NO MESMO DIA"].map(x => <li key={x}>{x}</li>)}
+      </ul>
+      <a className={`${s.botao} ${s.cheio}`} href={zap(MSG_HERO)} data-cta="quem_faz" data-cta-dest="whatsapp">FALAR COM O RAFAEL NO WHATSAPP ↗</a>
+      <p className={s.assinatura}>RAFAEL RAZEIRA · <b>ESTÚDIO</b></p>
+    </div>
+  </section>;
+}
+
+/* ============================================================ FAIXA DA MARCA
+   O letreiro RAFAELRAZEIRA.ESTUDIO, mesma peça da /vitrine-digital: assina a
+   página logo depois do rosto, na costura para a prova. Decoração
+   (aria-hidden); o reduced-motion do módulo para a animação. */
+export function BrandBand() {
+  return <div className={s.brandband} aria-hidden>
+    <div className={s.brandTrack}>
+      {Array.from({ length: 6 }, (_, i) => <span key={i}>rafaelrazeira<em>.</em>estudio</span>)}
     </div>
   </div>;
 }
@@ -769,67 +878,24 @@ export function ChamadaFinal() {
   }, []);
 
   /* ---------- o envio, invertido em 06/08 ----------
-     Antes: dispara os eventos, abre o WhatsApp, torce. Se o handoff falhasse
-     (pop-up bloqueado no navegador do Instagram) ou a pessoa desistisse antes
-     de tocar em enviar lá, o lead sumia sem deixar nome nem telefone.
-
-     Agora o dado é gravado primeiro, no servidor, e a conversa vira
-     consequência: eu chamo, ou ela chama, o que vier primeiro. A tela de
-     confirmação é estado do React, sem navegação nenhuma, então ela aparece
-     igual no navegador interno do Instagram, que é onde tudo quebrava.
-
-     Se a gravação falhar, o caminho antigo continua valendo inteiro. Perder o
-     lead do banco é ruim; deixar a pessoa sem caminho nenhum é pior. */
+     As regras inteiras (eventos antes da gravação, lead no servidor, WhatsApp
+     só como fallback) moram em enviarLeadEcommerce desde 07/08, compartilhadas
+     com o mini-formulário do hero. Aqui fica só o estado de tela. */
   async function enviar(e: React.FormEvent) {
     e.preventDefault();
     if (enviando) return;              // toque duplo não grava duas linhas
     setEnviando(true);
-
-    /* Os dois, de propósito, e agora os dois significam lead capturado de
-       verdade, não intenção: desde que o Lead saiu dos CTAs de âncora, ele só
-       acontece aqui. A campanha otimiza pelo Contact. Disparam ANTES da
-       gravação porque não podem depender dela: o Pixel morre com a aba, e
-       segurar o evento esperando o banco é como se perdia evento antes. */
-    trackLead({ ctaPosition: "form", nome: dados.nome, whatsapp: dados.whatsapp });
-    trackContact({ nome: dados.nome, whatsapp: dados.whatsapp });
-
-    /* A mensagem encolheu junto com o formulário. Ela só é usada quando a
-       pessoa escolhe falar agora (ou no fallback), e nesse caso a conversa já
-       vai acontecer: repetir seis campos ali era encher o teclado dela com o
-       que eu já tenho na tabela. */
-    const linha = (r: string, v?: string) => (v?.trim() ? `${r}: ${v.trim()}` : "");
-    const msg = [
-      "Olá, Rafael! Preenchi o formulário no site sobre um e-commerce.",
-      "",
-      linha("Loja", dados.canal),
-      linha("Vendo", dados.vende),
-    ].filter(Boolean).join("\n");
-    /* guardado antes de qualquer caminho: serve à confirmação e ao fallback */
-    const link = zap(msg);
-    setLinkWa(link);
-
-    const salvo = await salvarLead({
-      pagina: "e-commerce",
+    const { salvo, linkWa: link } = await enviarLeadEcommerce({
       nome: dados.nome || "",
       whatsapp: dados.whatsapp || "",
       canal: dados.canal,
       vende: dados.vende,
-      ...contextoDaSessao(),
+      ctaPosition: "form",
     });
+    /* guardado nos dois caminhos: serve à confirmação e ao "Falta um toque" */
+    setLinkWa(link);
     setEnviando(false);
-
-    if (salvo) {
-      track("ecommerce_lead_salvo");
-      setEnviado(true);
-      return;
-    }
-
-    /* fallback: exatamente o comportamento anterior, WhatsApp na mesma aba
-       com os 300ms do Pixel. A tela de confirmação NÃO aparece aqui, porque
-       aqui o lead de fato só existe se a conversa acontecer, e prometer
-       "recebi seus dados" seria mentira. */
-    track("ecommerce_whatsapp_click", { cta_position: "form", origem: "fallback" });
-    irParaWhatsapp(link);
+    if (salvo) setEnviado(true);
   }
 
   return <>

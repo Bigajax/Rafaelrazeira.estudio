@@ -1,27 +1,28 @@
 /* ============================================================
    /e-commerce — a operação do estúdio.
-   Identidade herdada de /servicos (off-white, preto, esmeralda,
-   Archivo wdth, Inter, Space Mono, traço das plantas). Assinatura
-   própria: o TRILHO OPERACIONAL — o pedido que percorre catálogo,
-   carrinho, checkout, pagamento, pedido e painel. Um acento novo,
-   usado uma vez: --alerta, âmbar fosco só para "estoque baixo".
+   Identidade "papel e tinta" (07/08, a mesma da /vitrine-digital):
+   fundo papel, grafite quase-preto, verde de sinal, Archivo
+   condensada 900 em caixa alta, JetBrains Mono, bordas de 1.5px.
+   Assinatura própria: o TRILHO OPERACIONAL — o pedido que percorre
+   catálogo, carrinho, checkout, pagamento, pedido e painel. Um
+   acento usado uma vez: --alerta, âmbar fosco só de "estoque baixo".
    ============================================================ */
 
 .page {
-  --green: #10b981;
-  --pale: #c9f7df;
-  --black: #090909;
-  --night: #0b1411;
-  --off: #f5f5f0;
-  --ink: #494949;
-  --line: #dcdcd4;
-  --line-dark: #26312b;
+  --green: #00B268;
+  --green-dark: #008A50;
+  --mint: #CDEFDD;
+  --ink: #14181A;
+  --ink-soft: #3A4144;
+  --paper: #F2EFE6;
+  --paper-2: #EAE6D9;
+  --line: #D8D3C4;
+  --line-dark: #2A3134;
   --traco: #a9bfb1;
   --alerta: #c98a2b;
-  /* O --green tem 2,3:1 sobre o creme: serve de fundo de botão e de destaque
-     em manchete (que passa como texto grande), mas reprova em qualquer rótulo
-     miúdo. Este é o mesmo verde escurecido até 4,7:1, para texto pequeno em
-     fundo claro. No escuro o --green continua valendo, lá ele dá 5,6:1. */
+  /* O --green não passa em rótulo miúdo sobre o papel. Este é o verde
+     escurecido para texto pequeno em fundo claro; no escuro o --green
+     continua valendo. */
   --green-ink: #0a7d57;
   /* âmbar de texto: o --alerta dá 2,9:1 no chip branco */
   --alerta-ink: #8a5e15;
@@ -29,8 +30,8 @@
   --display: var(--font-display), Arial, sans-serif;
   --body: var(--font-body), Arial, sans-serif;
   --mono: var(--font-mono), monospace;
-  background: var(--off);
-  color: var(--black);
+  background: var(--paper);
+  color: var(--ink);
   font-family: var(--body);
   overflow: clip;
 }
@@ -40,18 +41,18 @@
 
 .page h1, .page h2, .page h3 {
   font-family: var(--display);
-  font-stretch: 118%;
-  font-weight: 800;
-  line-height: .97;
-  letter-spacing: -.015em;
   margin: 0;
   text-wrap: balance;
 }
-.page h1 { font-size: clamp(38px, 4.4vw, 64px); font-stretch: 106%; letter-spacing: -.025em; max-width: 15ch }
-.page h2 { font-size: clamp(30px, 3vw, 44px); max-width: 780px }
-.page h3 { font-size: clamp(22px, 1.8vw, 28px) }
+/* A voz nova dos títulos (mesma da /vitrine-digital, 07/08): Archivo
+   condensada no peso máximo, em caixa alta; o h3 fica em caixa mista e
+   largura natural para a página não gritar inteira. */
+.page h1, .page h2 { font-stretch: 78%; font-weight: 900; text-transform: uppercase; line-height: .97; letter-spacing: -.01em }
+.page h1 { font-size: clamp(38px, 4.6vw, 66px); line-height: .95; max-width: 15ch }
+.page h2 { font-size: clamp(30px, 3.2vw, 46px); max-width: 780px }
+.page h3 { font-size: clamp(22px, 1.8vw, 28px); font-stretch: 100%; font-weight: 800; line-height: 1.05; letter-spacing: -.015em }
 .page em { font-style: normal; color: var(--green) }
-.page p { line-height: 1.6; color: var(--ink); margin: 0 }
+.page p { line-height: 1.6; color: var(--ink-soft); margin: 0 }
 
 /* Hierarquia: tamanho cheio só no hero, na seção de prova e na chamada final.
    As seções intermediárias descem um degrau, senão a página inteira grita no
@@ -63,14 +64,14 @@
 
 .molde { max-width: 1360px; margin: auto }
 .secao { padding: clamp(60px, 7vw, 92px) var(--pad); scroll-margin-top: 72px }
-.olho { font: 11px var(--mono); letter-spacing: .12em; color: var(--black); margin: 0 0 20px }
+.olho { font: 11px var(--mono); letter-spacing: .12em; color: var(--ink); margin: 0 0 20px }
 .escura .olho { color: var(--green) }
 .apoio { font-size: clamp(15px, 1.2vw, 17px); max-width: 620px; margin-top: 22px }
-.apoioEscuro { font-size: clamp(15px, 1.2vw, 17px); max-width: 640px; margin-top: 36px; color: #a8b3ab }
-.micro { font: 11px/1.6 var(--mono); color: #8a958d; display: block; margin-top: 18px }
+.apoioEscuro { font-size: clamp(15px, 1.2vw, 17px); max-width: 640px; margin-top: 36px; color: #C9CDC6 }
+.micro { font: 11px/1.6 var(--mono); color: #9BA6A0; display: block; margin-top: 18px }
 /* dois níveis de classe porque `.page p { margin: 0 }` tem seletor de elemento
    e vencia o margin-top: a ressalva ficava colada no bloco de cima */
-.page .obs { font: 11px/1.6 var(--mono); color: #63706a; margin-top: 24px; max-width: 560px }
+.page .obs { font: 11px/1.6 var(--mono); color: var(--ink-soft); margin-top: 24px; max-width: 560px }
 
 /* ---------- acordeão de lista ----------
    Mesmo vocabulário visual do FAQ (mono, filete, o + em esmeralda), mas em
@@ -78,7 +79,7 @@
    uma pergunta. Serve às colunas do problema e às telas de conceito. */
 .dobra { border-top: 1px solid var(--line); margin-top: 4px }
 .dobra > summary {
-  font: 700 11px var(--mono); letter-spacing: .06em; color: var(--black);
+  font: 700 11px var(--mono); letter-spacing: .06em; color: var(--ink);
   padding: 15px 0; cursor: pointer; list-style: none;
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
 }
@@ -95,7 +96,7 @@
    Precisa vir DEPOIS de `.dobra > summary`: as duas regras têm a mesma
    especificidade (0,1,1) e quem vence é a última do arquivo. */
 .dobraLarga { max-width: 860px; margin-top: 40px; border-bottom: 1px solid var(--line) }
-.dobraLarga > summary { font: 800 clamp(15px, 1.4vw, 18px) var(--display); font-stretch: 114%; letter-spacing: 0; padding: 20px 0 }
+.dobraLarga > summary { font: 800 clamp(15px, 1.4vw, 18px) var(--display); font-stretch: 100%; letter-spacing: 0; padding: 20px 0 }
 .dobraLarga > summary::after { font: 400 20px/1 var(--mono) }
 .dobraLarga .sanfona { margin-top: 0; border-top: 0 }
 .dobraLarga .trilho { margin-top: 8px }
@@ -108,34 +109,36 @@
 .botao {
   display: inline-flex; justify-content: center; align-items: center;
   padding: 17px 24px; border: 0; cursor: pointer;
-  font: 700 11px var(--mono); letter-spacing: .05em; color: var(--black);
-  transition: transform .15s ease;
+  font: 700 11.5px var(--mono); letter-spacing: .05em; color: var(--ink);
+  transition: background .15s ease;
 }
-.botao:hover { transform: translateY(-2px) }
-.cheio { background: var(--green) }
-.contorno { background: transparent; border: 1px solid var(--black); color: var(--black) }
+/* prefixo .page nos botões cheios: `.page a { color: inherit }` tem seletor
+   de elemento e vence classe simples, então sem o prefixo o branco não chega
+   nos CTAs que são links (mesmo gotcha resolvido na /vitrine-digital) */
+.page .cheio { background: var(--green); color: #fff }
+.page .cheio:hover { background: var(--green-dark) }
+.contorno { background: transparent; border: 1.5px solid var(--ink); color: var(--ink) }
 /* contorno sobre fundo escuro. Existia como style inline combinado com
    .discreto, e o `padding-bottom: 3px` do .discreto anulava o padding do
    .botao: o alvo de toque caía para 38px. */
 .contornoClaro { border-color: #fff; color: #fff }
-.discreto { font: 700 11px var(--mono); letter-spacing: .05em; border-bottom: 1px solid; padding-bottom: 3px; color: var(--black) }
+.discreto { font: 700 11px var(--mono); letter-spacing: .05em; border-bottom: 1px solid; padding-bottom: 3px; color: var(--ink) }
 .escura .discreto { color: #fff }
 /* link dentro de texto corrido: sublinhado do próprio texto, sem virar botão */
-.linkTexto { border-bottom: 1px solid var(--green); color: var(--black); font-weight: 600 }
+.linkTexto { border-bottom: 1px solid var(--green); color: var(--ink); font-weight: 600 }
 
 /* ---------- header ---------- */
 .topo {
   height: 64px; position: sticky; top: 0; z-index: 50;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 var(--pad); background: #f5f5f0e8; backdrop-filter: blur(10px);
+  padding: 0 var(--pad); background: #f2efe6e8; backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
 }
-.marca { font-family: var(--display); font-stretch: 118%; font-weight: 800; line-height: .9 }
+.marca { font-family: var(--display); font-stretch: 100%; font-weight: 900; line-height: .9 }
 .marca b, .marca span { display: block }
-.marca span { font-size: 9px; letter-spacing: .34em; color: #63635d; font-weight: 400 }
-.topo nav { display: flex; gap: clamp(14px, 2vw, 30px); align-items: center; font: 700 10px var(--mono) }
-.navCta { background: var(--green); padding: 12px 16px }
-.menu { display: none; border: 0; background: none; font: 700 11px var(--mono); cursor: pointer }
+.marca span { font: 400 8.5px var(--mono); letter-spacing: .42em; color: var(--ink-soft); margin-top: 2px }
+.page .navCta { background: var(--green); color: #fff; padding: 12px 16px; font: 700 11px var(--mono); letter-spacing: .06em; transition: background .15s ease }
+.page .navCta:hover { background: var(--green-dark) }
 
 /* ---------- hero ---------- */
 .hero { padding: clamp(44px, 6vw, 80px) var(--pad) clamp(24px, 3vw, 48px) }
@@ -144,21 +147,11 @@
   display: grid; grid-template-columns: 1.02fr .98fr;
   gap: clamp(32px, 4vw, 72px); align-items: center;
 }
-.heroMicro { font: 11px/1.7 var(--mono); letter-spacing: .1em; color: var(--ink); margin: 20px 0 0 }
-/* âncora de investimento: mono como o resto dos rótulos da página, mas com o
-   número em corpo de leitura e preto cheio. Ela fica entre o apoio e os
-   botões, e o filete à esquerda é o que a separa do parágrafo sem precisar de
-   caixa nem de fundo. */
-.ancora {
-  margin: 26px 0 0; padding-left: 14px; border-left: 2px solid var(--green);
-  font: 12px var(--mono); letter-spacing: .08em; color: var(--ink);
-}
-.ancora b { font-size: 16px; letter-spacing: .02em; color: var(--black) }
 
 /* trilho operacional (assinatura) — prancheta com papel quadriculado */
 .prancheta {
-  border: 1px solid var(--line);
-  background: var(--off);
+  border: 1.5px solid var(--ink);
+  background: var(--paper);
   background-image:
     linear-gradient(#0000000a 1px, transparent 1px),
     linear-gradient(90deg, #0000000a 1px, transparent 1px);
@@ -167,10 +160,10 @@
 }
 .pedidoTopo {
   display: flex; justify-content: space-between; align-items: baseline;
-  font: 10px var(--mono); letter-spacing: .06em; color: var(--ink);
+  font: 10px var(--mono); letter-spacing: .06em; color: var(--ink-soft);
   border-bottom: 1px solid var(--line); padding-bottom: 12px; margin-bottom: 6px;
 }
-.pedidoTopo b { color: var(--black) }
+.pedidoTopo b { color: var(--ink) }
 .trilhoOp { list-style: none; margin: 0; padding: 0; position: relative }
 .trilhoOp::before { content: ""; position: absolute; left: 15px; top: 22px; bottom: 22px; width: 1px; background: var(--line) }
 .etapaOp {
@@ -178,12 +171,12 @@
 }
 .etapaOp b {
   flex: none; width: 32px; height: 32px; border-radius: 50%;
-  display: grid; place-items: center; background: var(--off);
+  display: grid; place-items: center; background: var(--paper);
   border: 1px solid var(--traco); color: var(--traco);
   position: relative; z-index: 1;
 }
 .etapaOp b svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.6 }
-.etapaOp span { font: 11px var(--mono); letter-spacing: .05em; color: var(--ink); flex: 1 }
+.etapaOp span { font: 11px var(--mono); letter-spacing: .05em; color: var(--ink-soft); flex: 1 }
 .etapaOp small { font: 9px var(--mono); letter-spacing: .06em; color: #9aa39c }
 /* o pedido percorre o trilho: cada etapa acende na sua fatia do ciclo */
 .etapaOp:nth-child(1) b { animation-delay: 0s }
@@ -194,9 +187,9 @@
 .etapaOp:nth-child(6) b { animation-delay: 8s }
 .etapaOp:nth-child(7) b { animation-delay: 9.6s }
 @keyframes acendeEtapa {
-  0%, 6% { color: var(--traco); border-color: var(--traco); background: var(--off) }
+  0%, 6% { color: var(--traco); border-color: var(--traco); background: var(--paper) }
   8%, 18% { color: #fff; border-color: var(--green); background: var(--green) }
-  22%, 100% { color: var(--traco); border-color: var(--traco); background: var(--off) }
+  22%, 100% { color: var(--traco); border-color: var(--traco); background: var(--paper) }
 }
 .etapaOp b { animation: acendeEtapa 12s infinite }
 .pedidoStatus {
@@ -204,12 +197,12 @@
   border-top: 1px solid var(--line); margin-top: 6px; padding-top: 14px;
 }
 .pedidoIndic { display: flex; gap: 16px; flex-wrap: wrap; font: 9px var(--mono); letter-spacing: .05em; color: #9aa39c }
-.pedidoIndic b { color: var(--black); font-weight: 700 }
+.pedidoIndic b { color: var(--ink); font-weight: 700 }
 
 /* chip de status — mono, quadrado, com ponto */
 .chip {
   display: inline-flex; align-items: center; gap: 7px;
-  font: 700 9px var(--mono); letter-spacing: .08em; color: var(--black);
+  font: 700 9px var(--mono); letter-spacing: .08em; color: var(--ink);
   border: 1px solid var(--line); padding: 7px 11px; background: #fff;
 }
 .chip::before { content: ""; width: 7px; height: 7px; background: var(--traco) }
@@ -229,11 +222,71 @@
   24%, 100% { opacity: 0 }
 }
 
+/* ---------- as duas portas do hero (mesma gramática da /vitrine-digital) ---------- */
+.doors { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; max-width: 640px; margin-top: 26px }
+.door { border: 1.5px solid var(--ink); background: #fff; padding: 18px; display: grid; gap: 10px; align-content: start }
+.doorTag { font: 9px var(--mono); letter-spacing: .2em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 2px }
+.door input {
+  width: 100%; border: 0; border-bottom: 1.5px solid var(--line); border-radius: 0;
+  background: transparent; font: 13px var(--mono); padding: 9px 2px; color: var(--ink);
+}
+.door input::placeholder { color: #9aa09b }
+.door input:focus-visible { outline: none; border-bottom-color: var(--green) }
+.door .botao { width: 100%; padding: 14px 10px; margin-top: 2px }
+.doorWhats { background: var(--mint); border-color: var(--green-dark); align-content: space-between }
+.doorWhats p { font-size: 13px; line-height: 1.5; color: var(--ink-soft) }
+.doorMicro { font: 9.5px/1.5 var(--mono); letter-spacing: .04em; color: var(--ink-soft) }
+.doorConfirm { border-color: var(--green) }
+.doorConfirm h3 { font-size: 18px }
+.doorConfirm p { font-size: 13px; line-height: 1.5; color: var(--ink-soft) }
+/* botão de tinta cheia (porta 02); prefixo .page pelo mesmo motivo do .cheio */
+.page .solidDark { background: var(--ink); color: #fff }
+.page .solidDark:hover { background: #000 }
+/* o .pendente aparece dentro da porta também: lá ele não tem as margens
+   largas do formulário do fim da página */
+.door .pendente { margin: 0 }
+
+/* faixa de prova: fatos em células, mesma borda das portas */
+.proofStrip { display: flex; margin: 22px 0 0; padding: 0; list-style: none; border: 1.5px solid var(--ink); max-width: 640px; background: #fff }
+.proofStrip li { flex: 1; padding: 11px 8px; text-align: center; font: 10px var(--mono); letter-spacing: .06em; border-right: 1.5px solid var(--ink) }
+.proofStrip li:last-child { border-right: 0 }
+.proofStrip b { display: block; font-size: 15px; letter-spacing: 0; margin-bottom: 2px; color: var(--green-dark) }
+
+/* ---------- quem faz (portada da /vitrine-digital) ---------- */
+.quem { position: relative; display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); background: var(--ink); color: var(--paper); overflow: hidden }
+.quemPhoto { position: relative; min-height: 420px; background: var(--ink) }
+.quemPhoto img { object-fit: cover; object-position: center 22%; mix-blend-mode: screen; filter: contrast(1.08) }
+.quemPhoto::before { content: ""; position: absolute; inset: 0; background: var(--paper-2); mix-blend-mode: multiply; z-index: 1 }
+.quemPhoto::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 55%, var(--ink) 100%); z-index: 2 }
+.quemVert {
+  position: absolute; left: 14px; bottom: 16px; z-index: 3;
+  font: 9px var(--mono); letter-spacing: .5em; color: var(--paper); opacity: .75;
+  writing-mode: vertical-rl; transform: rotate(180deg);
+}
+.quemTxt { padding: clamp(36px, 5vw, 72px) clamp(24px, 5vw, 72px); display: flex; flex-direction: column; align-items: flex-start; justify-content: center }
+.quemTxt h2 { margin-bottom: 18px; color: #fff }
+.quemTxt p { font-size: 15px; line-height: 1.65; color: #C9CDC6; max-width: 52ch; margin-bottom: 14px }
+.quemFacts { display: flex; flex-wrap: wrap; gap: 10px; list-style: none; padding: 0; margin: 14px 0 24px }
+.quemFacts li { font: 9.5px var(--mono); letter-spacing: .1em; border: 1px solid #3A4144; padding: 7px 11px; color: #C9CDC6 }
+.quemTxt .assinatura { font: 10px var(--mono); letter-spacing: .18em; color: #9BA6A0; margin: 26px 0 0 }
+.assinatura b { color: var(--paper) }
+.quemTxt .olho { color: #9BA6A0 }
+
+/* ---------- faixa da marca ---------- */
+.brandband { overflow: hidden; white-space: nowrap; padding-block: clamp(18px, 3vw, 40px) }
+.brandTrack { display: inline-flex; will-change: transform; animation: brandbandSlide 24s linear infinite }
+.brandTrack span {
+  font-family: var(--body); font-weight: 400; text-transform: uppercase;
+  font-size: clamp(2.25rem, 6.5vw, 7rem); line-height: 1; letter-spacing: -.03em;
+  padding: 0 .35em; color: var(--ink);
+}
+@keyframes brandbandSlide { from { transform: translateX(-50%) } to { transform: translateX(0) } }
+
 /* ---------- faixa editorial (marquee) ---------- */
-.faixa { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); overflow: hidden; background: var(--off) }
+.faixa { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); overflow: hidden; background: var(--paper) }
 .faixaTrilho { display: flex; width: max-content; animation: desliza 32s linear infinite }
 .faixaTrilho span {
-  font-family: var(--display); font-stretch: 108%; font-weight: 800;
+  font-family: var(--display); font-stretch: 78%; font-weight: 900; text-transform: uppercase;
   font-size: clamp(20px, 2.4vw, 32px); letter-spacing: -.01em;
   padding: 18px 0; white-space: nowrap;
 }
@@ -244,7 +297,7 @@
 /* mesma correção da seção do problema: cinco caixas independentes, cada uma
    crescendo só até onde o próprio conteúdo pede quando o acordeão abre */
 .grupos { display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(14px, 1.6vw, 22px); align-items: start; margin-top: 44px }
-.grupo { background: #fff; border: 1px solid var(--line); padding: clamp(22px, 2.4vw, 34px) }
+.grupo { background: #fff; border: 1.5px solid var(--ink); padding: clamp(22px, 2.4vw, 34px) }
 /* Cada categoria é um <details> fechado: número, título e uma linha de resumo
    à vista, os 9 a 11 itens a um toque. O + fica ancorado no alto à direita
    porque o cabeçalho do grupo tem duas linhas, não uma. */
@@ -255,7 +308,7 @@
 .grupoTopo { display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--line); padding-bottom: 14px }
 .grupoTopo b { font: 700 11px var(--mono); color: var(--green-ink); letter-spacing: .08em }
 .grupoTopo h3 { font-size: 18px }
-.grupoResumo { display: block; font-size: 13.5px; line-height: 1.5; color: var(--ink); margin-top: 14px }
+.grupoResumo { display: block; font-size: 13.5px; line-height: 1.5; color: var(--ink-soft); margin-top: 14px }
 /* parágrafo dentro de um card (só o acordeão de integrações usa). Dois níveis
    de classe porque `.page p { margin: 0 }` venceria o margin-top. */
 .page .grupoP { font-size: 13.5px; line-height: 1.6; margin-top: 16px }
@@ -269,46 +322,46 @@
   .hubDesk { display: none }
   .hubMob { display: block }
 }
-.grupoLista { list-style: none; margin: 16px 0 0; padding: 0; columns: 2; column-gap: 26px; font-size: 13.5px; color: var(--ink) }
+.grupoLista { list-style: none; margin: 16px 0 0; padding: 0; columns: 2; column-gap: 26px; font-size: 13.5px; color: var(--ink-soft) }
 .grupoLista li { padding: 6px 0; line-height: 1.4; break-inside: avoid }
 .grupoLista li::before { content: "· "; color: var(--traco) }
 
 /* ---------- seção preta genérica ---------- */
-.escura { background: var(--night); color: #fff }
+.escura { background: var(--ink); color: #fff }
 .escura h2, .escura h3 { color: #fff }
-.escura p { color: #b9c2bb }
-.escura .obs { color: #9aa79f }
+.escura p { color: #C9CDC6 }
+.escura .obs { color: #9BA6A0 }
 
 /* ---------- painel administrativo (seção preta) ---------- */
 .painelGrade { display: grid; grid-template-columns: 1.05fr .95fr; gap: clamp(28px, 4vw, 64px); align-items: start; margin-top: 44px }
-.mockPainel { border: 1px solid var(--line-dark); background: #0e1a15 }
+.mockPainel { border: 1px solid var(--line-dark); background: #101518 }
 .mockBarra { display: flex; align-items: center; gap: 6px; padding: 10px 14px; border-bottom: 1px solid var(--line-dark) }
-.mockBarra i { width: 8px; height: 8px; border-radius: 50%; background: #2a3a31 }
-.mockBarra span { font: 9px var(--mono); color: #8a958d; margin-left: 8px; letter-spacing: .06em }
+.mockBarra i { width: 8px; height: 8px; border-radius: 50%; background: #2A3134 }
+.mockBarra span { font: 9px var(--mono); color: #9BA6A0; margin-left: 8px; letter-spacing: .06em }
 .mockCorpo { display: grid; grid-template-columns: 96px 1fr }
 .mockMenu { border-right: 1px solid var(--line-dark); padding: 16px 12px; display: grid; gap: 12px; align-content: start }
-.mockMenu i { display: block; height: 7px; background: #23332b }
+.mockMenu i { display: block; height: 7px; background: #262B2E }
 .mockMenu i:first-child { background: var(--green); width: 70% }
 .mockPainelMain { padding: 18px 18px 22px }
 .mockKpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px }
 .mockKpi { border: 1px solid var(--line-dark); padding: 12px }
-.mockKpi small { font: 8px var(--mono); letter-spacing: .08em; color: #8a958d; display: block }
+.mockKpi small { font: 8px var(--mono); letter-spacing: .08em; color: #9BA6A0; display: block }
 .mockKpi b { font-family: var(--display); font-stretch: 90%; font-weight: 800; font-size: 22px; color: #fff; display: block; margin-top: 6px }
 .mockKpi.kpiAlerta b { color: var(--alerta) }
 .mockLinhas { margin-top: 16px; border: 1px solid var(--line-dark) }
 .mockLinha { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; padding: 11px 13px; border-bottom: 1px solid var(--line-dark) }
 .mockLinha:last-child { border-bottom: 0 }
-.mockLinha em { font: 10px var(--mono); color: #9aa79f; font-style: normal }
+.mockLinha em { font: 10px var(--mono); color: #9BA6A0; font-style: normal }
 .mockLinha em b { color: #fff }
 /* ---------- diagrama de plantas (herdado de servicos) ---------- */
 .plantaCaixa { color: var(--traco) }
 .plantaCaixa svg { display: block; width: 100%; height: 100%; max-height: 100%; fill: none; stroke: currentColor; stroke-width: 1.5 }
-.plantaTexto { fill: var(--ink); stroke: none; font: 8px var(--mono); letter-spacing: .04em }
+.plantaTexto { fill: var(--ink-soft); stroke: none; font: 8px var(--mono); letter-spacing: .04em }
 /* o único texto acentuado de uma planta: o centro do hub de integrações, que
    não tem moldura nenhuma e precisa se sustentar sozinho */
 .plantaFoco { fill: var(--green-ink); stroke: none; font: 700 10px var(--mono); letter-spacing: .12em }
-.plantaCheia { fill: #10b98122 }
-.escura .plantaTexto { fill: #9aa79f }
+.plantaCheia { fill: #00B26822 }
+.escura .plantaTexto { fill: #9BA6A0 }
 
 /* ============================================================
    PROVA — o clímax da página. Portada da seção PROJETOS da
@@ -324,7 +377,7 @@
    escuro dá 1,9:1 sobre o creme: aqui a cor é --ink. */
 .page .metade {
   display: flex; align-items: center; gap: 14px;
-  font: 700 9px var(--mono); letter-spacing: .12em; color: var(--ink);
+  font: 700 9px var(--mono); letter-spacing: .12em; color: var(--ink-soft);
   margin: clamp(38px, 4.5vw, 58px) 0 24px;
 }
 .page .metade::after { content: ""; flex: 1; height: 1px; background: var(--line) }
@@ -393,10 +446,10 @@
 .lojaMeta small { font: 10px var(--mono); letter-spacing: .12em; color: var(--green-ink) }
 .lojaTipo {
   font: 700 9px var(--mono); letter-spacing: .1em; padding: 5px 9px;
-  color: var(--night); background: var(--green); border: 1px solid var(--green);
+  color: #fff; background: var(--green); border: 1px solid var(--green);
 }
 .fatos { list-style: none; padding: 0; margin: 4px 0 0; display: grid; gap: 9px; max-width: 440px }
-.fatos li { position: relative; padding-left: 20px; font: 12.5px/1.45 var(--mono); color: var(--ink) }
+.fatos li { position: relative; padding-left: 20px; font: 12.5px/1.45 var(--mono); color: var(--ink-soft) }
 .fatos li::before { content: "✓"; position: absolute; left: 0; color: var(--green-ink) }
 
 /* o painel real, na mesma moldura e mais largo que a coluna de texto: é a
@@ -405,21 +458,21 @@
 .painelMoldura { border: 1px solid var(--line) }
 .painelQuadro { aspect-ratio: 16 / 10; background: #141414 }
 .painelQuadro picture, .painelQuadro img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top }
-.painelLegenda { display: block; font: 11px/1.6 var(--mono); color: var(--ink); margin-top: 22px; max-width: 540px }
+.painelLegenda { display: block; font: 11px/1.6 var(--mono); color: var(--ink-soft); margin-top: 22px; max-width: 540px }
 /* a nota de honestidade fecha a seção inteira, não é continuação da legenda
    do painel: ganha respiro de dobra e o tom mais claro dos dois, porque
    admitir o que ainda não existe é argumento, não letra miúda */
-.page .notaProva { font: 12px/1.7 var(--mono); color: var(--ink); max-width: 620px; margin: clamp(38px, 4.5vw, 56px) 0 0 }
+.page .notaProva { font: 12px/1.7 var(--mono); color: var(--ink-soft); max-width: 620px; margin: clamp(38px, 4.5vw, 56px) 0 0 }
 
 /* ---------- telas de conceito (dentro do acordeão) ---------- */
 .dobraTelas { margin-top: 34px; max-width: 100% }
-.page .dobraNota { font: 11px/1.6 var(--mono); color: var(--ink); max-width: 560px; margin: 0 }
+.page .dobraNota { font: 11px/1.6 var(--mono); color: var(--ink-soft); max-width: 560px; margin: 0 }
 .telas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 20px; padding-bottom: 8px }
 .tela { border: 1px solid var(--line); background: #fff; padding: 16px 14px 18px }
 .telaTopo { font: 9px var(--mono); letter-spacing: .06em; color: #6b7169; border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-bottom: 12px; display: flex; justify-content: space-between }
-.telaTopo b { color: var(--black) }
+.telaTopo b { color: var(--ink) }
 .tela .plantaCaixa { aspect-ratio: 4/5 }
-/* (a regra que forçava `fill: var(--ink)` nas anotações das plantas saiu com o
+/* (a regra que forçava `fill: var(--ink-soft)` nas anotações das plantas saiu com o
    fundo escuro da prova: `.plantaTexto` já nasce em --ink) */
 
 /* ---------- processo (trilho numerado) ---------- */
@@ -429,8 +482,8 @@
 .trilho b {
   flex: none; width: 32px; height: 32px; border-radius: 50%;
   display: grid; place-items: center;
-  background: var(--off); border: 1px solid var(--traco);
-  font: 700 10px var(--mono); color: var(--black);
+  background: var(--paper); border: 1px solid var(--traco);
+  font: 700 10px var(--mono); color: var(--ink);
   position: relative; z-index: 1;
 }
 .trilho li:last-child b { background: var(--green); border-color: var(--green) }
@@ -440,7 +493,7 @@
 /* ---------- faq ---------- */
 .sanfona { margin-top: 40px; border-top: 1px solid var(--line); max-width: 860px }
 .sanfona details { border-bottom: 1px solid var(--line) }
-.sanfona summary { font: 800 clamp(16px, 1.5vw, 19px) var(--display); font-stretch: 114%; padding: 20px 0; cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: 20px; align-items: center }
+.sanfona summary { font: 800 clamp(16px, 1.5vw, 19px) var(--display); font-stretch: 100%; padding: 20px 0; cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: 20px; align-items: center }
 .sanfona summary::-webkit-details-marker { display: none }
 .sanfona summary::after { content: "+"; font: 400 20px var(--mono); color: var(--green-ink) }
 .sanfona details[open] summary::after { content: "–" }
@@ -451,30 +504,32 @@
 .final h2 { max-width: 900px; margin-inline: auto }
 .final .apoioEscuro { margin-inline: auto }
 .agenda { display: inline-flex; align-items: center; gap: 9px; font: 700 10px var(--mono); letter-spacing: .1em; color: var(--green); margin-bottom: 26px }
-.agenda::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 4px #10b98126 }
+.agenda::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 4px #00B26826 }
 /* escassez fica ao lado do formulário, não num card no meio da página. Dois
    níveis de classe para vencer `.escura p` e `.page p { margin: 0 }`. */
 .escura .agendaLimite { font: 11px/1.6 var(--mono); color: var(--traco); margin: 22px auto 0; max-width: 460px }
 
-.form { max-width: 720px; margin: 44px auto 0; text-align: left; border: 1px solid var(--line-dark); background: #0e1a15 }
+/* cartão branco com borda de tinta dentro da seção escura: o mesmo material
+   do formulário da /vitrine-digital, para as duas páginas fecharem igual */
+.form { max-width: 720px; margin: 44px auto 0; text-align: left; border: 1.5px solid var(--ink); background: #fff }
 /* o cabeçalho de etapas (.formPassos/.formPasso) saiu em 06/08 junto com a
    segunda etapa: quatro campos numa tela só não têm passo para contar */
 .formCorpo { padding: clamp(22px, 3vw, 36px) }
 .campo { display: block; margin-bottom: 18px }
-.campo span { display: block; font: 700 10px var(--mono); letter-spacing: .06em; color: #9aa79f; margin-bottom: 8px }
+.campo span { display: block; font: 700 10px var(--mono); letter-spacing: .06em; color: var(--ink); margin-bottom: 8px }
 /* "opcional" na própria etiqueta, em vez de asterisco nos obrigatórios: dizer
    o que a pessoa pode PULAR encurta o formulário aos olhos dela, e marcar o
    que é exigido faz o contrário */
-.opcional { font-style: normal; font-weight: 400; text-transform: none; letter-spacing: 0; color: #6f7d75; margin-left: 8px }
+.opcional { font-style: normal; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--ink-soft); opacity: .75; margin-left: 8px }
 .campo input, .campo select, .campo textarea {
-  width: 100%; background: var(--night); border: 1px solid var(--line-dark); color: #fff;
+  width: 100%; background: var(--paper); border: 1px solid var(--line); color: var(--ink);
   font: 14px var(--body); padding: 13px 14px; border-radius: 0;
 }
 .campo textarea { resize: vertical; min-height: 74px }
-.campo input::placeholder, .campo textarea::placeholder { color: #7f8d84 }
+.campo input::placeholder, .campo textarea::placeholder { color: #9aa09b }
 .dupla { display: grid; grid-template-columns: 1fr 1fr; gap: 16px }
 .formNav { display: flex; justify-content: space-between; gap: 16px; margin-top: 8px; flex-wrap: wrap }
-.rodapeForm { font: 10px var(--mono); color: #8a958d; margin-top: 18px; text-align: center }
+.rodapeForm { font: 10px var(--mono); color: var(--ink-soft); margin-top: 18px; text-align: center }
 
 /* ---------- o passo que falta, depois do envio ----------
    Ocupa o lugar do .rodapeForm quando o WhatsApp é aberto. Fica no verde da
@@ -489,37 +544,39 @@
    Ocupa o lugar exato do formulário, com a mesma caixa e a mesma largura, para
    a troca não parecer que a página pulou. Verde de confirmação e não de erro,
    e sem sinal de carregamento nenhum: aqui não falta nada acontecer. */
-.confirmado { max-width: 720px; margin: 44px auto 0; text-align: left; border: 1px solid var(--green); background: #10b9811a; padding: clamp(26px, 3vw, 40px); display: grid; gap: 12px }
-.confirmado > b { font: 700 11px var(--mono); letter-spacing: .1em; color: var(--green) }
-.escura .confirmado h3 { font-family: var(--display); font-stretch: 114%; font-weight: 800; font-size: clamp(21px, 2.4vw, 27px); color: #fff }
-.escura .confirmado p { font: 15px/1.6 var(--body); color: #dfe6e1; margin: 0 }
+.confirmado { max-width: 720px; margin: 44px auto 0; text-align: left; border: 1.5px solid var(--green); background: #fff; padding: clamp(26px, 3vw, 40px); display: grid; gap: 12px }
+.confirmado > b { font: 700 11px var(--mono); letter-spacing: .1em; color: var(--green-ink) }
+.escura .confirmado h3 { font-family: var(--display); font-stretch: 100%; font-weight: 800; font-size: clamp(21px, 2.4vw, 27px); color: var(--ink) }
+.escura .confirmado p { font: 15px/1.6 var(--body); color: var(--ink-soft); margin: 0 }
 .confirmado .botao { margin-top: 8px; justify-self: start }
 
-.pendente { display: grid; gap: 10px; margin: 20px clamp(22px, 3vw, 36px) clamp(22px, 3vw, 36px); padding: 18px; background: #10b9811a; border: 1px solid var(--green) }
-.pendente > b { font: 700 11px var(--mono); letter-spacing: .08em; color: var(--green) }
-.escura .pendente p { font: 14px/1.55 var(--body); color: #dfe6e1; margin: 0 }
-.pendente p b { font-weight: 700; color: #fff }
+.pendente { display: grid; gap: 10px; margin: 20px clamp(22px, 3vw, 36px) clamp(22px, 3vw, 36px); padding: 18px; background: var(--mint); border: 1px solid var(--green) }
+.pendente > b { font: 700 11px var(--mono); letter-spacing: .08em; color: var(--ink) }
+.escura .pendente p { font: 14px/1.55 var(--body); color: var(--ink); margin: 0 }
+.pendente p b { font-weight: 700; color: var(--ink) }
 .pendente .botao { width: 100%; margin-top: 4px }
 
 .rodape {
-  background: var(--night); color: #fff;
+  background: var(--ink); color: #fff;
   padding: 44px var(--pad) 52px; border-top: 1px solid var(--line-dark);
   display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap;
 }
-.rodape .marca span { color: #9aa79f }
+.rodape .marca span { color: #9BA6A0 }
 .rodape nav { display: flex; gap: 22px; font: 10px var(--mono); flex-wrap: wrap }
-.rodape small { font: 10px var(--mono); color: #8a958d }
+.rodape small { font: 10px var(--mono); color: #9BA6A0 }
 
 /* barra fixa mobile com CTA sempre acessível */
 .barraFixa { display: none }
 
 /* ---------- responsivo ---------- */
 @media (max-width: 960px) {
-  .topo nav { display: none; position: absolute; top: 64px; left: 0; right: 0; background: var(--off); border-bottom: 1px solid var(--line); padding: 26px var(--pad) 30px; flex-direction: column; align-items: flex-start; gap: 18px; font-size: 11px }
-  .topo nav.navAberta { display: flex }
-  .menu { display: block }
   .heroGrade { grid-template-columns: 1fr; gap: 32px }
   .painelGrade { grid-template-columns: 1fr; gap: 32px }
+  .doors { grid-template-columns: 1fr }
+  /* quem faz em coluna: a foto em cima, o gradiente vira vertical */
+  .quem { grid-template-columns: 1fr }
+  .quemPhoto { min-height: 340px }
+  .quemPhoto::after { background: linear-gradient(180deg, transparent 55%, var(--ink) 100%) }
   .telas { grid-template-columns: 1fr 1fr }
   .lojas { grid-template-columns: 1fr }
 }
@@ -529,8 +586,8 @@
      350px ele só estreita mais e joga palavra para a linha seguinte.
      (Testei `text-wrap: pretty` aqui: zero diferença medida, então não entrou.
      As 5 linhas da manchete são o tamanho do texto, não o algoritmo.) */
-  .page h1 { font-size: clamp(30px, 7.8vw, 38px); max-width: none }
-  .page h2 { font-size: clamp(26px, 6.6vw, 33px) }
+  .page h1 { font-size: clamp(32px, 8.6vw, 40px); max-width: none }
+  .page h2 { font-size: clamp(27px, 7.4vw, 35px) }
   .page .secaoMenor h2 { font-size: clamp(22px, 5.6vw, 28px) }
   /* o padding já era 56px aqui: os 92px são só do desktop. 48px é o piso da
      faixa confortável, abaixo disso as seções começam a se confundir */
@@ -538,6 +595,11 @@
   .hero { padding-top: 30px }
   .acoes { gap: 16px }
   .acoes .botao { width: 100% }
+  .doors { margin-top: 18px }
+  /* letreiro da marca compacto e mais rápido no celular */
+  .brandband { padding-block: 16px }
+  .brandTrack { animation-duration: 18s }
+  .brandTrack span { font-size: 9vw }
   .grupos { grid-template-columns: 1fr }
   .telas { grid-template-columns: 1fr 1fr }
   .dupla { grid-template-columns: 1fr }
@@ -549,10 +611,8 @@
      Continua sendo a assinatura da página no desktop. */
   .prancheta { display: none }
 
-  /* alvos de toque: o MENU tinha 18px e os links .discreto, 20px. O .discreto
-     ganha área invisível por ::after, que amplia o toque sem deslocar o
-     sublinhado (mesmo idioma da /vitrine-digital) */
-  .menu { min-height: 44px; display: flex; align-items: center }
+  /* alvos de toque: os links .discreto tinham 20px. Ganham área invisível por
+     ::after, que amplia o toque sem deslocar o sublinhado */
   .marca { display: flex; flex-direction: column; justify-content: center; min-height: 44px }
   .rodape nav a { display: inline-flex; align-items: center; min-height: 44px }
   .discreto { position: relative }
@@ -587,7 +647,7 @@
     display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
     align-items: center; justify-content: space-between; gap: 12px;
     padding: 12px 18px calc(12px + env(safe-area-inset-bottom));
-    background: #0b1411f2; backdrop-filter: blur(8px); border-top: 1px solid var(--line-dark);
+    background: #14181af2; backdrop-filter: blur(8px); border-top: 1px solid var(--line-dark);
     transition: transform .28s ease;
   }
   .barraOculta { transform: translateY(130%); pointer-events: none }
@@ -595,7 +655,7 @@
   .barraFixa small i { display: block; color: var(--traco); font-style: normal; font-weight: 400; margin-top: 3px; letter-spacing: 0 }
   /* a barra inteira é o link, então o "botão" é um span: cor de botão, altura
      de alvo de toque, e o texto do CTA principal da página */
-  .barraFixa span { flex: none; background: var(--green); color: var(--black); padding: 0 14px; min-height: 44px; display: flex; align-items: center; font: 700 10px var(--mono); letter-spacing: .04em }
+  .barraFixa span { flex: none; background: var(--green); color: #fff; padding: 0 14px; min-height: 44px; display: flex; align-items: center; font: 700 10px var(--mono); letter-spacing: .04em }
 }
 
 @media (max-width: 460px) {
@@ -611,7 +671,7 @@
 /* reduced motion: o trilho para e mostra o estado final legível */
 @media (prefers-reduced-motion: reduce) {
   .page *, .botao { transition: none !important; animation: none !important }
-  .etapaOp b { color: var(--traco); border-color: var(--traco); background: var(--off) }
+  .etapaOp b { color: var(--traco); border-color: var(--traco); background: var(--paper) }
   .etapaOp:last-child b { color: #fff; border-color: var(--green); background: var(--green) }
   .statusCiclo { height: auto; min-width: 0 }
   .statusCiclo .chip { position: static; opacity: 1 }
