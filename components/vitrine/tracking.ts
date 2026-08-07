@@ -407,13 +407,16 @@ function conversao(evento: string, dadosPixel: Record<string, unknown>, extraCap
 const DESTINO_WHATSAPP = "whatsapp";
 const FORA_DO_LEAD = new Set(["reabrir_whats"]);
 
-/* o único caminho que é contratação de verdade, e não intenção */
-const POSICAO_FORMULARIO = "form";
+/* os únicos caminhos que são contratação de verdade, e não intenção: o
+   formulário da oferta e, desde 07/08, o mini-formulário do hero */
+const POSICOES_FORMULARIO = new Set(["form", "hero_form"]);
 
 /* apelido de leitura do `cta_position` no painel da Meta; o que não estiver
    aqui vai com o próprio nome do data-cta, que já é legível */
 const POSICAO_LEAD: Record<string, string> = {
   hero: "hero",
+  header: "topo",
+  quem_faz: "quem_faz",
   como_funciona: "steps",
   final: "final",
   sticky_mobile: "sticky",
@@ -517,7 +520,10 @@ function medirLeitura() {
   let ultimoCampo = "";
   addEventListener("focusin", (e) => {
     const alvo = e.target as HTMLInputElement | null;
-    if (alvo?.closest?.("#contratar") && alvo.name) ultimoCampo = alvo.name;
+    if (!alvo?.name || !alvo.closest?.("#contratar, #hero-form")) return;
+    /* o prefixo diz QUAL formulário: os dois têm campo `nome`, e um
+       "form_ultimo_campo: nome" ambíguo não diagnostica nada */
+    ultimoCampo = alvo.closest("#hero-form") ? `hero_${alvo.name}` : alvo.name;
   });
 
   let saiu = false;
@@ -609,9 +615,11 @@ export function initTracking() {
     irParaWhatsapp(href);
   });
 
-  // InitiateCheckout — primeiro foco no formulário de contratação (1x por sessão)
+  // InitiateCheckout — primeiro foco em QUALQUER formulário de contratação
+  // (o da oferta ou o do hero), 1x por sessão: a semântica é "tocou num
+  // formulário", não "tocou neste formulário"
   document.addEventListener("focusin", (e) => {
-    if (!(e.target as HTMLElement)?.closest?.("#contratar")) return;
+    if (!(e.target as HTMLElement)?.closest?.("#contratar, #hero-form")) return;
     umaVezPorSessao("mp_ic_vitrine", () => {
       conversao("InitiateCheckout",
         { content_name: "vitrine-digital", value: VALOR_OFERTA, currency: "BRL" },
@@ -660,7 +668,7 @@ export function trackLead({ ctaPosition, plano, nome, whatsapp, abriuWhats = tru
   /* E `Lead` continua significando, na Mixpanel, formulário enviado: é um
      passo a mais do funil, não o mesmo evento com outro nome. Só o caminho
      do formulário passa por aqui. */
-  if (ctaPosition === POSICAO_FORMULARIO) mpTrack("Lead", { $insert_id: eventId, cta_position: ctaPosition, plano });
+  if (POSICOES_FORMULARIO.has(ctaPosition)) mpTrack("Lead", { $insert_id: eventId, cta_position: ctaPosition, plano });
   enviarCapi("Lead", eventId, {
     first_name: nome || "",
     /* O telefone passou a existir nesta página em 06/08, quando o formulário

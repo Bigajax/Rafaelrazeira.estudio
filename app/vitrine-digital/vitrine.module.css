@@ -1,18 +1,21 @@
 /* ============================================================
    Vitrine Digital — landing page
-   Identidade: off-white, preto, verde, tipografia editorial
-   (Archivo expandida), grid discreto, estética boutique.
+   Identidade "papel e tinta" (mockup de 07/08): fundo papel,
+   grafite quase-preto, verde de sinal, Archivo condensada 900
+   em caixa alta nos títulos, JetBrains Mono nas etiquetas,
+   bordas sólidas de 1.5px e sombras duras deslocadas.
    ============================================================ */
 
 .site {
-  --green: #10b981;
-  --pale: #c9f7df;
-  --black: #090909;
-  --night: #0b1411;
-  --off: #f5f5f0;
-  --ink: #494949;
-  --line: #dcdcd4;
-  --line-dark: #262626;
+  --green: #00B268;
+  --green-dark: #008A50;
+  --mint: #CDEFDD;
+  --ink: #14181A;
+  --ink-soft: #3A4144;
+  --paper: #F2EFE6;
+  --paper-2: #EAE6D9;
+  --line: #D8D3C4;
+  --line-dark: #2A3134;
   /* material autêntico das conversas: papel de parede e bolha do WhatsApp */
   --wa-paper: #ece5dd;
   --wa-bubble: #dcf8c6;
@@ -21,8 +24,8 @@
   --display: var(--font-display), Arial, sans-serif;
   --body: var(--font-body), Arial, sans-serif;
   --mono: var(--font-mono), monospace;
-  background: var(--off);
-  color: var(--black);
+  background: var(--paper);
+  color: var(--ink);
   font-family: var(--body);
   overflow: clip;
 }
@@ -33,142 +36,139 @@
 
 .site h1, .site h2, .site h3 {
   font-family: var(--display);
-  font-stretch: 118%;
-  font-weight: 800;
-  line-height: .96;
-  letter-spacing: -.015em;
   margin: 0;
   text-wrap: balance;
 }
-/* Caixa alta reservada aos dois momentos altos da página: a manchete do
-   hero e o manifesto. Os títulos de seção ficam em caixa mista, que dá
-   hierarquia de volta e mostra melhor o desenho da Archivo expandida. */
-/* uma frase só, num corpo que sobra na página sem tomar a tela: a
-   manchete anterior vinha em dois tempos e o segundo tempo ocupava três
-   linhas no celular por uma ideia que o lead diz em meia linha */
-.site h1 { font-size: clamp(34px, 3.7vw, 52px); font-stretch: 106%; letter-spacing: -.025em }
-.site h2 { font-size: clamp(31px, 3.1vw, 45px); line-height: 1.03; max-width: 880px }
-.site h3 { font-size: 19px; line-height: 1.15 }
+/* A voz nova dos títulos: Archivo condensada (wdth 78) no peso máximo, em
+   caixa alta. A caixa alta vem do CSS para o JSX seguir legível; o h3 fica
+   em caixa mista e largura natural, senão a página inteira grita. */
+.site h1, .site h2 { font-stretch: 78%; font-weight: 900; text-transform: uppercase; letter-spacing: -.01em }
+.site h1 { font-size: clamp(36px, 5.2vw, 68px); line-height: .95 }
+.site h2 { font-size: clamp(28px, 3.6vw, 48px); line-height: 1; max-width: 880px }
+.site h3 { font-size: 19px; line-height: 1.15; font-stretch: 100%; font-weight: 800; letter-spacing: -.015em }
 .site em { font-style: normal; color: var(--green) }
 .dark em { color: var(--green) }
-.site p { line-height: 1.6; color: var(--ink); margin: 0 }
+.site p { line-height: 1.6; color: var(--ink-soft); margin: 0 }
 .lead { font-size: clamp(16px, 1.3vw, 18.5px); max-width: 640px; margin-top: 24px }
 /* precisa de duas classes para vencer .dark p, que tem seletor de elemento */
-.dark .leadDark { color: #b6b6b0 }
-.micro { font: 12px/1.65 var(--mono); color: var(--ink); letter-spacing: .01em }
+.dark .leadDark { color: #C9CDC6 }
+.micro { font: 12px/1.65 var(--mono); color: var(--ink-soft); letter-spacing: .01em }
 /* o preço dentro da microcopy do hero: precisa ancorar a leitura sem virar
    um segundo título, então ganha só peso e o preto cheio contra o cinza */
-.micro b { font-weight: 700; color: var(--black) }
+.micro b { font-weight: 700; color: var(--ink) }
 
 .wrap { max-width: 1360px; margin: auto }
 .section { padding: clamp(56px, 6.4vw, 84px) var(--pad); scroll-margin-top: 72px }
-.eyebrow { font: 11px var(--mono); letter-spacing: .12em; color: var(--black); margin: 0 0 22px }
-.dark .eyebrow { color: var(--green) }
+.eyebrow { font: 10.5px var(--mono); letter-spacing: .24em; text-transform: uppercase; color: var(--ink-soft); margin: 0 0 22px }
+.dark .eyebrow { color: #9BA6A0 }
 
 /* ---------- botões ---------- */
 .actions { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; margin-top: 34px }
 .button {
   display: inline-flex; justify-content: center; align-items: center;
   padding: 17px 26px; border: 0; cursor: pointer;
-  font: 700 11px var(--mono); letter-spacing: .05em; color: var(--black);
-  transition: transform .15s ease;
+  font: 700 11.5px var(--mono); letter-spacing: .05em; color: var(--ink);
+  transition: background .15s ease;
 }
-.button:hover { transform: translateY(-2px) }
 /* par de visibilidade para reordenar CTA sem duplicar clique: a instância
    de desktop some no celular e a cópia mobile só existe lá */
 .mobileOnly { display: none }
-.primary { background: var(--green) }
-.outline { background: transparent; border: 1px solid var(--black); color: var(--black) }
+/* prefixo .site nos botões cheios: `.site a` declara color e tem seletor de
+   elemento, então uma classe simples perderia e o branco não chegaria nos
+   CTAs que são links */
+.site .primary { background: var(--green); color: #fff }
+.site .primary:hover { background: var(--green-dark) }
+.site .solidDark { background: var(--ink); color: #fff }
+.site .solidDark:hover { background: #000 }
+.outline { background: transparent; border: 1.5px solid var(--ink); color: var(--ink) }
 .ghost { font: 700 11px var(--mono); letter-spacing: .05em; border-bottom: 1px solid; padding-bottom: 3px }
 
 /* ---------- header ---------- */
 .header {
   height: 64px; position: sticky; top: 0; z-index: 50;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 var(--pad); background: #f5f5f0e8; backdrop-filter: blur(10px);
+  padding: 0 var(--pad); background: #f2efe6e8; backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
 }
-.brand { font-family: var(--display); font-stretch: 118%; font-weight: 800; line-height: .9 }
+.brand { font-family: var(--display); font-stretch: 100%; font-weight: 900; line-height: .9 }
 .brand b, .brand span { display: block }
-.brand span { font-size: 9px; letter-spacing: .34em; color: #7a7a74; font-weight: 400 }
-.header nav { display: flex; gap: clamp(14px, 2vw, 30px); align-items: center; font: 700 10px var(--mono) }
-.navcta { background: var(--green); padding: 12px 16px }
-.menu { display: none; border: 0; background: none; font: 700 11px var(--mono); cursor: pointer }
+.brand span { font: 400 8.5px var(--mono); letter-spacing: .42em; color: var(--ink-soft); margin-top: 2px }
+.site .headCta { font: 700 11px var(--mono); letter-spacing: .06em; background: var(--green); color: #fff; padding: 11px 16px; transition: background .15s ease }
+.site .headCta:hover { background: var(--green-dark) }
 
 /* ---------- hero ---------- */
-.hero { padding: clamp(40px, 5vw, 72px) var(--pad) 0 }
+.hero { padding: clamp(40px, 5.5vw, 72px) var(--pad) clamp(30px, 4vw, 56px) }
 .heroGrid {
   max-width: 1360px; margin: auto;
   display: grid; grid-template-columns: 1.15fr .85fr;
   gap: clamp(32px, 4vw, 64px); align-items: center;
 }
-.heroCopy .lead { margin-top: 28px }
-.heroCopy .micro { display: block; margin-top: 20px }
+.heroCopy .lead { margin-top: 20px; max-width: 46ch }
 .heroVisual { position: relative; display: grid; justify-items: center }
+
+/* a linha de preço do hero: informação em mono, não um segundo título */
+.priceLine { font: 700 clamp(12.5px, 1.15vw, 14px) var(--mono); letter-spacing: .02em; color: var(--ink); margin-top: 16px }
+.priceLine em { color: var(--green-dark) }
+.priceLine small { display: block; font-weight: 400; font-size: 10.5px; letter-spacing: .05em; color: var(--ink-soft); margin-top: 4px }
+
+/* ---------- as duas portas ---------- */
+.doors { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; max-width: 640px; margin-top: 26px }
+.door { border: 1.5px solid var(--ink); background: #fff; padding: 18px; display: grid; gap: 10px; align-content: start }
+.doorTag { font: 9px var(--mono); letter-spacing: .2em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 2px }
+.door input {
+  width: 100%; border: 0; border-bottom: 1.5px solid var(--line); border-radius: 0;
+  background: transparent; font: 13px var(--mono); padding: 9px 2px; color: var(--ink);
+}
+.door input::placeholder { color: #9aa09b }
+/* o foco troca a cor do próprio traço em vez do anel: o campo já é linha */
+.door input:focus-visible { outline: none; border-bottom-color: var(--green) }
+.door .button { width: 100%; padding: 14px 10px; margin-top: 2px }
+.doorWhats { background: var(--mint); border-color: var(--green-dark); align-content: space-between }
+.doorWhats p { font-size: 13px; line-height: 1.5; color: var(--ink-soft) }
+.doorMicro { font: 9.5px/1.5 var(--mono); letter-spacing: .04em; color: var(--ink-soft) }
+.doorConfirm { border-color: var(--green) }
+.doorConfirm .formTitle { font-size: 18px }
+
+/* faixa de prova: três fatos em células, mesma gramática de borda das portas */
+.proofStrip { display: flex; margin: 22px 0 0; padding: 0; list-style: none; border: 1.5px solid var(--ink); max-width: 640px; background: #fff }
+.proofStrip li { flex: 1; padding: 11px 8px; text-align: center; font: 10px var(--mono); letter-spacing: .06em; border-right: 1.5px solid var(--ink) }
+.proofStrip li:last-child { border-right: 0 }
+.proofStrip b { display: block; font-size: 15px; letter-spacing: 0; margin-bottom: 2px; color: var(--green-dark) }
 /* aparelho um pouco menor: com a manchete em uma frase, um mockup de 600px
    virava o maior elemento da tela e a coluna de texto boiava ao lado dele */
 .phone {
   position: relative; width: min(300px, 78vw); height: 528px;
-  border: 8px solid #111; border-radius: 42px; overflow: hidden;
-  background: #111; box-shadow: 22px 22px 0 var(--pale);
+  border: 10px solid #101314; border-radius: 34px; overflow: hidden;
+  background: #101314;
+  /* sombra do mockup: mancha de papel escuro com contorno de tinta */
+  box-shadow: 14px 18px 0 var(--paper-2), 14px 18px 0 1.5px var(--ink);
 }
 .phoneSmall img { object-fit: cover; object-position: top }
-/* legenda do mockup que também é o caminho para a seção de projetos:
-   como agora é clicável, ganha contraste de link e alvo de toque real */
-.demoTag {
-  position: relative; display: inline-block; margin-top: 20px;
-  font: 11px var(--mono); letter-spacing: .12em; color: #4a4a44;
-  border-bottom: 1px solid var(--line); padding-bottom: 5px;
-  transition: color .15s ease, border-color .15s ease;
+/* o chip "no ar" colado na base do aparelho: link para a seção de projetos
+   com a bolinha viva marcando que a loja está publicada. Ancorado no
+   .phoneWrap, não na coluna: a coluna é mais larga que o celular e o chip
+   flutuava solto no vão. */
+.phoneWrap { position: relative }
+.site .liveTag {
+  position: absolute; bottom: -10px; right: -14px; z-index: 2;
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--ink); color: #fff; padding: 8px 12px;
+  font: 9px var(--mono); letter-spacing: .14em; white-space: nowrap;
 }
-/* prova da primeira dobra: um balão só, encostado no aparelho no desktop e
-   logo abaixo do CTA no celular. A faixa é a mesma do resto da página, num
-   corpo menor, porque aqui ela acompanha a manchete e não pode competir
-   com ela. */
-.heroProof { margin-top: 22px; width: min(360px, 100%) }
-.heroProof .chatStrip { width: 100%; padding: 13px 13px 11px; gap: 8px }
-.heroProof .bubble p { font-size: 14px }
-.heroProof .stripNote { margin-top: 2px }
+.liveTag i { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: livePulse 1.6s infinite }
+@keyframes livePulse { 0%, 100% { opacity: 1 } 50% { opacity: .35 } }
+/* alvo de toque maior que o chip, sem deslocar nada */
+.liveTag::after { content: ""; position: absolute; inset: -10px }
 /* o nome do lugar não se parte no meio: "no" numa linha e "direct." na
    seguinte quebra a leitura da manchete em dois tempos */
 .noBreak { white-space: nowrap }
-.demoTag b { color: var(--green) }
-.demoTag:hover { color: var(--black); border-bottom-color: var(--black) }
-.demoTag::after { content: ""; position: absolute; left: 0; right: 0; top: -10px; bottom: -10px }
 
-/* ---------- demonstração em vídeo no mockup do hero ---------- */
-.screen { position: absolute; inset: 0; background: #0d0d10; overflow: hidden }
-/* o vídeo entra por cima do quadro estático quando termina de carregar; a
-   transição existe para a troca não ser um corte seco */
-.demoVideo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; transition: opacity .45s ease }
+/* ---------- demonstração no mockup do hero: a loja inteira rolando ----------
+   container-type: size dá o 100cqh que o keyframe pageScroll (da seção de
+   projetos) usa para calcular o fim do percurso dentro da tela do aparelho */
+.screen { position: absolute; inset: 0; background: #fff; overflow: hidden; container-type: size }
 .shot { position: absolute; top: 0; left: 0; width: 100%; height: auto }
-/* faixa que fecha o hero em telas médias; em tela larga a regra de
-   min-width abaixo transforma a mesma lista na coluna da direita */
-.heroPoints {
-  grid-column: 1 / -1; margin: clamp(36px, 4vw, 52px) 0 0;
-  padding: 0; list-style: none;
-  display: grid; grid-template-columns: repeat(4, 1fr);
-  border-top: 1px solid var(--line);
-}
-.heroPoints li { padding: 18px 18px 22px 0; font: 700 12px var(--mono) }
-.heroPoints li::before { content: "✓ "; color: var(--green) }
-
-/* Em tela larga o hero tinha um vão morto entre o fim do texto e o
-   aparelho, e a faixa de pontos alongava a página por baixo. As duas
-   coisas se resolvem juntas: a lista vira a terceira coluna, encostada na
-   margem direita, e a demonstração fica cercada pelo argumento. */
-@media (min-width: 1150px) {
-  /* as três colunas partem da mesma linha do alto: a sobra de altura fica
-     embaixo do texto, como campo aberto, em vez de virar ar morto
-     distribuído em cima e embaixo de cada coluna */
-  .heroGrid { grid-template-columns: minmax(0, 1fr) auto minmax(170px, .32fr); gap: clamp(32px, 3.2vw, 52px); align-items: start }
-  .heroPoints {
-    grid-column: 3; margin: 0; border-top: 0;
-    grid-template-columns: 1fr;
-  }
-  .heroPoints li { padding: 13px 0; border-top: 1px solid var(--line) }
-  .heroPoints li:last-child { border-bottom: 1px solid var(--line) }
-}
+.phoneShot { position: relative; display: block; width: 100%; height: auto; will-change: transform; animation: pageScroll var(--dur, 36s) ease-in-out infinite alternate }
 
 /* ---------- fio de conversa (assinatura da página) ----------
    Faixas com o material real do WhatsApp: papel de parede com rabisco,
@@ -177,7 +177,7 @@
   display: grid; gap: 10px; justify-items: start;
   width: min(430px, 100%);
   padding: 16px 16px 14px;
-  border: 1px solid #ddd3c6;
+  border: 1px solid var(--line);
   background:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Cg fill='none' stroke='%23000' stroke-opacity='.03' stroke-width='1.4'%3E%3Cpath d='M26 26c3-6 13-4 13 3 0 5-8 9-13 13-5-4-13-8-13-13 0-7 10-9 13-3z'/%3E%3Crect x='96' y='18' width='24' height='20' rx='3'/%3E%3Cpath d='M100 18v-4a8 8 0 0 1 16 0v4'/%3E%3Cpath d='M34 104l4 9 10 1-7 7 2 10-9-5-9 5 2-10-7-7 10-1z'/%3E%3Cpath d='M100 96h16l10 10-18 18-18-18z'/%3E%3Ccircle cx='113' cy='104' r='2.4'/%3E%3C/g%3E%3C/svg%3E"),
     var(--wa-paper);
@@ -191,7 +191,7 @@
   padding: 8px 12px 7px;
   box-shadow: 0 1px 1px #00000012;
 }
-.bubble p { font-size: 15px; line-height: 1.5; color: var(--black) }
+.bubble p { font-size: 15px; line-height: 1.5; color: var(--ink) }
 .bubbleOut { justify-self: end; background: var(--wa-bubble); border-radius: 12px 12px 4px 12px }
 .bubbleMeta {
   display: flex; justify-content: flex-end; align-items: center; gap: 5px;
@@ -206,6 +206,39 @@
 .typing i:nth-child(3) { animation-delay: .36s }
 @keyframes blink { 0%, 70%, 100% { opacity: .3 } 35% { opacity: 1 } }
 
+/* ---------- quem faz ---------- */
+.quem { position: relative; display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); background: var(--ink); color: var(--paper); overflow: hidden }
+.quemPhoto { position: relative; min-height: 420px; background: var(--ink) }
+/* duotone grafite/papel sem tocar no arquivo: a foto P&B clareia por screen
+   (pretos viram o grafite do fundo) e o véu de papel multiplica por cima
+   (brancos viram papel). O gradiente fecha a costura com a coluna de texto. */
+.quemPhoto img { object-fit: cover; object-position: center 22%; mix-blend-mode: screen; filter: contrast(1.08) }
+.quemPhoto::before { content: ""; position: absolute; inset: 0; background: var(--paper-2); mix-blend-mode: multiply; z-index: 1 }
+.quemPhoto::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 55%, var(--ink) 100%); z-index: 2 }
+.quemVert {
+  position: absolute; left: 14px; bottom: 16px; z-index: 3;
+  font: 9px var(--mono); letter-spacing: .5em; color: var(--paper); opacity: .75;
+  writing-mode: vertical-rl; transform: rotate(180deg);
+}
+.quemTxt { padding: clamp(36px, 5vw, 72px) clamp(24px, 5vw, 72px); display: flex; flex-direction: column; align-items: flex-start; justify-content: center }
+.quemTxt h2 { margin-bottom: 18px }
+.quemTxt p { font-size: 15px; line-height: 1.65; color: #C9CDC6; max-width: 52ch; margin-bottom: 14px }
+.quemFacts { display: flex; flex-wrap: wrap; gap: 10px; list-style: none; padding: 0; margin: 14px 0 24px }
+.quemFacts li { font: 9.5px var(--mono); letter-spacing: .1em; border: 1px solid #3A4144; padding: 7px 11px; color: #C9CDC6 }
+/* dois seletores para vencer .quemTxt p */
+.quemTxt .assinatura { font: 10px var(--mono); letter-spacing: .18em; color: #9BA6A0; margin: 26px 0 0 }
+.assinatura b { color: var(--paper) }
+
+/* ---------- faixa da marca ---------- */
+.brandband { overflow: hidden; white-space: nowrap; padding-block: clamp(18px, 3vw, 40px) }
+.brandTrack { display: inline-flex; will-change: transform; animation: brandbandSlide 24s linear infinite }
+.brandTrack span {
+  font-family: var(--body); font-weight: 400; text-transform: uppercase;
+  font-size: clamp(2.25rem, 6.5vw, 7rem); line-height: 1; letter-spacing: -.03em;
+  padding: 0 .35em; color: var(--ink);
+}
+@keyframes brandbandSlide { from { transform: translateX(-50%) } to { transform: translateX(0) } }
+
 /* ---------- dor e solução ---------- */
 /* topo alinhado: centralizar deixava um vão morto acima da coluna curta
    sempre que a outra crescia (os balões, o celular do como funciona) */
@@ -214,15 +247,10 @@
    segunda frase desce inteira para a linha de baixo; no celular flui junto */
 @media (min-width: 901px) { .h2Line { display: block } }
 .shift { display: grid; gap: 18px; justify-items: start }
-/* a virada fica na coluna do texto: sem ela, os quatro balões deixavam a
-   esquerda com um vão morto de uns 300px */
-.shiftAfter { background: var(--night); color: #fff; padding: 26px; box-shadow: 14px 14px 0 var(--pale); margin-top: 34px; max-width: 560px }
-.shiftAfter small { font: 9px var(--mono); letter-spacing: .12em; width: 100%; color: var(--green) }
-.shiftAfter p { color: #e8e8e2; font-size: 16px; margin-top: 8px }
 .site .manifesto {
-  font-family: var(--display); font-stretch: 118%; font-weight: 800;
-  font-size: clamp(26px, 3.4vw, 48px); line-height: 1.02; letter-spacing: -.015em;
-  color: var(--black); max-width: 1000px; text-wrap: balance;
+  font-family: var(--display); font-stretch: 78%; font-weight: 900; text-transform: uppercase;
+  font-size: clamp(26px, 3.4vw, 48px); line-height: 1.02; letter-spacing: -.01em;
+  color: var(--ink); max-width: 1000px; text-wrap: balance;
   margin-top: clamp(40px, 5vw, 60px); padding-top: clamp(26px, 3.4vw, 38px);
   border-top: 1px solid var(--line);
 }
@@ -236,14 +264,15 @@
 .howVisual { position: relative; display: grid; justify-items: center; gap: 0; margin-top: 36px }
 .phoneSmall {
   position: relative; width: min(290px, 74vw); height: 540px;
-  border: 8px solid #111; border-radius: 40px; overflow: hidden;
-  background: #111; box-shadow: 18px 18px 0 var(--pale);
+  border: 10px solid #101314; border-radius: 34px; overflow: hidden;
+  background: #101314;
+  box-shadow: 14px 18px 0 var(--paper-2), 14px 18px 0 1.5px var(--ink);
 }
 .howChat { display: grid; gap: 10px; margin-top: -70px; position: relative; z-index: 2; justify-self: start }
 
 /* ---------- seções escuras: quase-preto com cast esmeralda ---------- */
-.dark { background: var(--night); color: #fff }
-.dark p { color: #a8a8a2 }
+.dark { background: var(--ink); color: #fff }
+.dark p { color: #C9CDC6 }
 .dark h3 { color: #fff }
 
 /* ---------- projetos ---------- */
@@ -296,14 +325,16 @@
 .projects small { font: 10px var(--mono); letter-spacing: .12em; color: var(--green) }
 .kind {
   font: 700 9px var(--mono); letter-spacing: .1em; padding: 5px 9px;
-  color: var(--night); background: var(--green); border: 1px solid var(--green);
+  color: #fff; background: var(--green); border: 1px solid var(--green);
 }
 .projects h3 { font-size: clamp(24px, 2vw, 30px) }
 .projects p { font-size: 15px; max-width: 440px }
 .facts { list-style: none; padding: 0; margin: 4px 0 0; display: grid; gap: 9px; max-width: 440px }
-.facts li { position: relative; padding-left: 20px; font: 12.5px/1.45 var(--mono); color: #c4c4bd }
+.facts li { position: relative; padding-left: 20px; font: 12.5px/1.45 var(--mono); color: #C9CDC6 }
 .facts li::before { content: "✓"; position: absolute; left: 0; color: var(--green) }
 .projects .button { margin-top: 12px }
+/* a ponte para o /portfolio fecha a seção; herda o branco do .dark */
+.projMore { display: inline-block; margin-top: clamp(28px, 3.5vw, 40px) }
 
 /* ---------- o que está incluso ---------- */
 .grid {
@@ -313,14 +344,14 @@
 .grid article { padding: 26px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line) }
 .grid h3::before { content: "✓ "; color: var(--green) }
 .grid p { font-size: 15px; margin-top: 8px }
-.accordion { border: 1px solid var(--line); margin-top: 16px; padding: 0 22px; max-width: 560px }
+.accordion { border: 1.5px solid var(--ink); margin-top: 16px; padding: 0 22px; max-width: 560px }
 .accordion:first-of-type { margin-top: 28px }
-.accordion summary { font: 800 16px var(--display); font-stretch: 118%; padding: 18px 0; cursor: pointer; list-style-position: outside }
+.accordion summary { font: 800 16px var(--display); font-stretch: 100%; padding: 18px 0; cursor: pointer; list-style-position: outside }
 .accordion .check { margin: 0 0 20px; padding: 0 }
 /* detalhe fino do escopo: título em negrito seguido da explicação, denso */
 .moreList { list-style: none; margin: 0 0 20px; padding: 0; display: grid; gap: 14px }
-.moreList li { font-size: 14px; line-height: 1.5; color: var(--ink) }
-.moreList b { display: block; color: var(--black); font-weight: 700 }
+.moreList li { font-size: 14px; line-height: 1.5; color: var(--ink-soft) }
+.moreList b { display: block; color: var(--ink); font-weight: 700 }
 
 /* ---------- painel de gestão ---------- */
 /* dois seletores porque .check já define a margem e o risco das linhas:
@@ -336,45 +367,45 @@
 /* moldura de browser (.browserBar, herdada da seção de projetos) mais o
    print, com a sombra dura deslocada que a página usa nos mockups */
 .panelShot { margin: clamp(32px, 4vw, 44px) 0 0; max-width: 960px }
-.panelScreen { box-shadow: 18px 18px 0 var(--pale) }
+.panelScreen { box-shadow: 18px 18px 0 var(--mint) }
 .panelFrame { position: relative; aspect-ratio: 16 / 10; background: #141414 }
 .panelFrame img { object-fit: cover; object-position: top }
 /* 34px porque a sombra desce 18px: com menos, a primeira linha da legenda
    cai em cima da mancha clara */
-.panelNote { display: block; font: 11px/1.6 var(--mono); letter-spacing: .01em; color: #8f8f88; margin-top: 34px; max-width: 480px }
+.panelNote { display: block; font: 11px/1.6 var(--mono); letter-spacing: .01em; color: #9BA6A0; margin-top: 34px; max-width: 480px }
 /* mesma afirmação do card de preço duas dobras abaixo, então mesma cara que
    o .nomensal. Precisa de dois seletores para vencer .dark p, que tem
    seletor de elemento e pintaria o texto de cinza claro. */
 .dark .panelClaim {
   display: inline-block; margin-top: clamp(26px, 3vw, 34px);
-  font: 700 11px var(--mono); letter-spacing: .08em; color: var(--black);
-  background: var(--pale); padding: 11px 14px;
+  font: 700 11px var(--mono); letter-spacing: .08em; color: var(--ink);
+  background: var(--mint); padding: 11px 14px;
   /* no celular a frase quebra: sem equilibrar, sobra "sua." sozinho na segunda linha */
   text-wrap: balance;
 }
 
 /* ---------- oferta ---------- */
-.offer { background: var(--pale) }
+.offer { background: var(--mint) }
 .offer .lead { margin-top: 22px }
 /* prova antes do preço: fato verificável, sem depoimento inventado. Dois
    seletores para vencer .site p (seletor de elemento). */
-.offer .proof { max-width: 640px; margin-top: 18px; font-size: 14.5px; line-height: 1.6; color: var(--black); border-left: 3px solid var(--green); padding-left: 14px }
+.offer .proof { max-width: 640px; margin-top: 18px; font-size: 14.5px; line-height: 1.6; color: var(--ink); border-left: 3px solid var(--green); padding-left: 14px }
 .offer .proof b { display: block; font: 700 10.5px var(--mono); letter-spacing: .14em; margin-bottom: 4px }
 .offer .proof a { border-bottom: 1px solid; font-weight: 600 }
 .offerGrid {
   display: grid; grid-template-columns: 1.05fr .95fr;
   gap: clamp(24px, 3vw, 48px); margin-top: 48px; align-items: start;
 }
-.pricecard { background: var(--off); padding: clamp(28px, 3.5vw, 48px); box-shadow: 16px 16px 0 var(--black) }
+.pricecard { background: var(--paper); border: 1.5px solid var(--ink); padding: clamp(28px, 3.5vw, 48px); box-shadow: 16px 16px 0 var(--ink) }
 .pricecard > small { font: 10px var(--mono); letter-spacing: .14em }
-.price { font-family: var(--display); font-stretch: 118%; font-weight: 800; font-size: 22px; margin: 14px 0 6px }
+.price { font-family: var(--display); font-stretch: 100%; font-weight: 800; font-size: 22px; margin: 14px 0 6px }
 /* numeral condensado: materialidade de etiqueta de preço */
 .price strong { font-stretch: 75%; font-weight: 900; font-size: clamp(76px, 7vw, 108px); letter-spacing: -.01em }
 .installments { font: 12.5px/1.7 var(--mono); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 14px 0; margin: 10px 0 6px }
-.installments b { color: var(--black) }
+.installments b { color: var(--ink) }
 /* prefixadas com .pricecard para vencer .site p, que tem seletor de elemento */
-.pricecard .nomensal { display: inline-block; font: 700 11px var(--mono); letter-spacing: .08em; color: var(--black); background: var(--pale); padding: 8px 11px; margin-top: 12px }
-.pricecard .guarantee { font: 12.5px/1.6 var(--mono); color: var(--black); margin-top: 16px }
+.pricecard .nomensal { display: inline-block; font: 700 11px var(--mono); letter-spacing: .08em; color: var(--ink); background: var(--mint); padding: 8px 11px; margin-top: 12px }
+.pricecard .guarantee { font: 12.5px/1.6 var(--mono); color: var(--ink); margin-top: 16px }
 .pricecard .button { width: 100%; margin-top: 16px }
 /* o atalho de quem já decidiu cola no convite principal, não compete com ele */
 .pricecard .button + .button { margin-top: 10px }
@@ -390,30 +421,30 @@
    Mesma caixa do formulário, no lugar dele, para a troca não parecer que a
    página pulou. Herda .form e só muda a borda e o respiro interno. */
 .confirmado { border-color: var(--green); align-content: start }
-.form.confirmado p { font: 15px/1.6 var(--body); color: var(--ink) }
-.form.confirmado .formTitle { font: inherit; font-family: var(--display); font-stretch: 118%; font-weight: 800; font-size: 22px; color: var(--black) }
+.form.confirmado p { font: 15px/1.6 var(--body); color: var(--ink-soft) }
+.form.confirmado .formTitle { font: inherit; font-family: var(--display); font-stretch: 100%; font-weight: 800; font-size: 22px; color: var(--ink) }
 .confirmado .button { margin-top: 4px }
 /* "opcional" na etiqueta em vez de asterisco nos obrigatórios: dizer o que dá
    para pular encurta o formulário aos olhos de quem olha */
-.opcional { font-style: normal; font-weight: 400; letter-spacing: 0; color: var(--ink); opacity: .75 }
+.opcional { font-style: normal; font-weight: 400; letter-spacing: 0; color: var(--ink-soft); opacity: .75 }
 
-.pendente { display: grid; gap: 10px; margin-top: 14px; padding: 16px; background: var(--pale); border: 1px solid var(--green) }
+.pendente { display: grid; gap: 10px; margin-top: 14px; padding: 16px; background: var(--mint); border: 1px solid var(--green) }
 /* filho direto: só o "Falta um toque." é mono. O negrito dentro do parágrafo
    é ênfase de leitura e continua na fonte do texto. */
 .pendente > b { font: 700 12px var(--mono); letter-spacing: .06em }
-.form .pendente p { font-size: 14px; line-height: 1.55; color: var(--black) }
+.form .pendente p { font-size: 14px; line-height: 1.55; color: var(--ink) }
 .form .pendente p b { font: inherit; font-weight: 700 }
 .pendente .button { width: 100%; margin-top: 4px }
 
 .formCol { display: grid; gap: 18px; align-content: start; justify-items: stretch }
 .formCol .chatStrip { justify-self: end; width: min(360px, 100%) }
-.form { background: #fff; border: 1px solid #b5e4cb; padding: clamp(26px, 3vw, 40px); display: grid; gap: 15px; scroll-margin-top: 90px }
-.formTitle { font-family: var(--display); font-stretch: 118%; font-weight: 800; font-size: 22px; color: var(--black) }
-.formTitle span { font: 11px var(--mono); font-stretch: normal; color: var(--ink) }
-.form label { font: 700 10px var(--mono); letter-spacing: .08em; color: var(--black) }
+.form { background: #fff; border: 1.5px solid var(--ink); padding: clamp(26px, 3vw, 40px); display: grid; gap: 15px; scroll-margin-top: 90px }
+.formTitle { font-family: var(--display); font-stretch: 100%; font-weight: 800; font-size: 22px; color: var(--ink) }
+.formTitle span { font: 11px var(--mono); font-stretch: normal; color: var(--ink-soft) }
+.form label { font: 700 10px var(--mono); letter-spacing: .08em; color: var(--ink) }
 .form input {
   display: block; width: 100%; margin-top: 7px; padding: 14px;
-  font: 15px var(--body); background: var(--off); color: var(--black);
+  font: 15px var(--body); background: var(--paper); color: var(--ink);
   border: 1px solid var(--line); border-radius: 0;
 }
 .form input:focus-visible { outline-offset: 0 }
@@ -421,7 +452,7 @@
 /* pagamento à vista: opção dentro do formulário, depois da decisão de
    contratar, e não um segundo botão brigando com o principal.
    Duas classes para vencer .form label e .form input. */
-.form .avista { display: flex; align-items: center; gap: 10px; font: 13px/1.5 var(--body); letter-spacing: 0; color: var(--ink); cursor: pointer; text-transform: none }
+.form .avista { display: flex; align-items: center; gap: 10px; font: 13px/1.5 var(--body); letter-spacing: 0; color: var(--ink-soft); cursor: pointer; text-transform: none }
 .form .avista input { width: auto; margin: 0; padding: 0; accent-color: var(--green); flex: none }
 
 /* ---------- processo e segurança ---------- */
@@ -431,12 +462,12 @@
 .process h3 { margin-top: 30px; font-size: 18px }
 .process p { font-size: 15px; margin-top: 8px }
 .trust { display: flex; align-items: center; gap: 28px; flex-wrap: wrap; margin-top: 36px }
-.badge { font: 700 10px var(--mono); letter-spacing: .08em; border: 1px solid var(--line-dark); padding: 12px 16px; color: var(--pale) }
+.badge { font: 700 10px var(--mono); letter-spacing: .08em; border: 1px solid var(--line-dark); padding: 12px 16px; color: var(--mint) }
 
 /* ---------- faq ---------- */
 .faq { margin-top: 36px; border-top: 1px solid var(--line); max-width: 820px }
 .faq details { border-bottom: 1px solid var(--line) }
-.faq summary { font: 800 clamp(17px, 1.6vw, 20px) var(--display); font-stretch: 118%; padding: 22px 0; cursor: pointer }
+.faq summary { font: 800 clamp(17px, 1.6vw, 20px) var(--display); font-stretch: 100%; padding: 22px 0; cursor: pointer }
 .faq p { padding: 0 0 22px; max-width: 640px }
 
 /* ---------- cta final + rodapé ---------- */
@@ -446,17 +477,17 @@
 .final .actions { justify-content: center }
 .final .ghost { color: #fff }
 .footer {
-  background: var(--night); color: #fff;
+  background: var(--ink); color: #fff;
   padding: 48px var(--pad) 56px; border-top: 1px solid var(--line-dark);
   display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap;
 }
 .footer nav { display: flex; gap: 24px; font: 10px var(--mono) }
-.footer small { font: 10px var(--mono); color: #777770 }
+.footer small { font: 10px var(--mono); color: #9BA6A0 }
 
 /* ---------- flutuantes ---------- */
 .pill {
   position: fixed; z-index: 60; right: 22px; bottom: 22px;
-  background: var(--pale); color: var(--black); padding: 15px 20px; border-radius: 100px;
+  background: var(--mint); color: var(--ink); padding: 15px 20px; border-radius: 100px;
   font: 700 10px var(--mono); box-shadow: 0 8px 28px #00000038;
   transition: opacity .2s ease, transform .2s ease;
 }
@@ -464,7 +495,7 @@
 .bar {
   position: fixed; z-index: 60; left: 0; right: 0; bottom: 0;
   display: none; align-items: center; justify-content: space-between; gap: 14px;
-  background: var(--night); color: #fff;
+  background: var(--ink); color: #fff;
   padding: 8px 14px calc(8px + env(safe-area-inset-bottom));
   font: 700 12px var(--mono);
   transition: transform .25s ease;
@@ -476,20 +507,14 @@
    botão ao lado precisa da metade da largura numa tela de 320px. */
 .barCopy { display: grid; gap: 2px; min-width: 0 }
 .barCopy b { font: 700 11px var(--mono); letter-spacing: .04em }
-.barCopy span { font: 400 10.5px var(--mono); letter-spacing: .01em; color: #a8a8a2 }
+.barCopy span { font: 400 10.5px var(--mono); letter-spacing: .01em; color: #C9CDC6 }
 /* sai de cena sem continuar tabulável para quem navega pelo teclado */
 .barHidden { transform: translateY(110%); visibility: hidden; transition: transform .25s ease, visibility 0s .25s }
 
 /* ---------- responsivo ---------- */
 @media (max-width: 900px) {
-  .header nav { display: none; position: absolute; top: 64px; left: 0; right: 0; background: var(--off); border-bottom: 1px solid var(--line); padding: 18px var(--pad) 26px; flex-direction: column; align-items: flex-start; gap: 6px; font-size: 12px }
-  /* itens do menu com altura de dedo; o :not preserva o padding do CONTRATAR */
-  .header nav a:not(.navcta) { padding: 11px 0 }
-  .header nav.open { display: flex }
-  /* alvos de toque: no dedo, 18px de altura não se acerta. O MENU ganha
-     padding real e os links secundários ganham área invisível pelo ::after,
-     que amplia o toque sem deslocar o sublinhado. */
-  .menu { display: block; padding: 13px 4px; margin-right: -4px }
+  /* alvos de toque: os links secundários ganham área invisível pelo ::after,
+     que amplia o toque sem deslocar o sublinhado */
   .ghost { position: relative }
   .ghost::after { content: ""; position: absolute; left: 0; right: 0; top: -12px; bottom: -12px }
   .footer nav a { padding: 5px 0 }
@@ -497,27 +522,26 @@
   .form .avista input { width: 18px; height: 18px }
   .heroGrid, .split, .offerGrid { grid-template-columns: 1fr }
   .heroGrid { gap: 24px }
-  /* ordem de conversão em coluna única: argumento, checks, prova.
-     O mockup desce para depois dos quatro checks (order só reordena aqui;
-     acima de 900px o grid de colunas segue o DOM) */
-  .heroVisual { justify-items: start; padding: 10px 0 4px; order: 1 }
-  .heroPoints { margin-top: 4px }
+  /* em coluna única o aparelho abre a página (ordem do mockup: o produto é
+     o herói) e as portas vêm logo depois do argumento, empilhadas */
+  .heroVisual { justify-items: center; padding: 4px 0 14px; order: -1 }
+  .doors { grid-template-columns: 1fr }
   /* manifesto em três batidas: cada frase é um bloco, nunca duas na mesma
      linha, nunca palavra órfã */
   .manifesto span { display: block }
   /* prova antes do CTA no como funciona: troca de instância do botão */
   .hideMobile { display: none }
   .actions.mobileOnly { display: flex; margin-top: 28px; justify-self: stretch }
-  /* a prova troca de instância junto com o CTA: sai de baixo do texto e
-     reaparece depois do aparelho, que é onde a cena faz sentido em coluna
-     única. A margem menor porque aqui ela vem colada na legenda do mockup. */
-  .heroProof.mobileOnly { display: block; margin-top: 18px }
-  .heroPoints { grid-template-columns: 1fr 1fr }
   .projects { grid-template-columns: 1fr }
   .grid { grid-template-columns: 1fr 1fr }
   .process { grid-template-columns: 1fr 1fr }
   .howVisual { justify-items: start }
   .howChat { margin-top: -90px; margin-left: 40px }
+  /* quem faz em coluna: a foto em cima, o gradiente vira vertical para a
+     costura acontecer na base da imagem */
+  .quem { grid-template-columns: 1fr }
+  .quemPhoto { min-height: 340px }
+  .quemPhoto::after { background: linear-gradient(180deg, transparent 55%, var(--ink) 100%) }
   .pill { display: none }
   .bar { display: flex }
   /* sem quebra, PRIVACIDADE saía da tela no celular */
@@ -528,34 +552,26 @@
 }
 
 @media (max-width: 600px) {
-  /* títulos mais justos: line-height baixo e tracking negativo tiram as
-     palavras órfãs; text-wrap:balance (global) equilibra as linhas */
-  .site h1 { font-size: clamp(27px, 7.4vw, 34px); line-height: .95; letter-spacing: -.035em }
-  .site h2 { font-size: clamp(28px, 7.4vw, 36px); line-height: .97; letter-spacing: -.03em }
+  /* a condensada ganha corpo no celular sem estourar linha: o tracking
+     negativo forte era da expandida e esmagava o desenho estreito */
+  .site h1 { font-size: clamp(32px, 8.8vw, 40px); line-height: .95; letter-spacing: -.01em }
+  .site h2 { font-size: clamp(27px, 7.6vw, 36px); line-height: .98; letter-spacing: -.01em }
   .section { padding: 64px 20px }
-  /* hero compacto: com a manchete em uma frase e o lead em duas linhas, a
-     demonstração entra na primeira dobra em vez de só aparecer no scroll */
-  .hero { padding-top: 22px }
+  /* hero compacto: o aparelho abre a página menor, para a manchete e a
+     primeira porta ainda entrarem na primeira dobra */
+  .hero { padding-top: 18px }
   .heroCopy .eyebrow { margin-bottom: 14px }
   .heroCopy .lead { margin-top: 14px; font-size: 16px }
-  .heroCopy .actions { margin-top: 20px }
-  /* a microcopy do hero voltou a carregar o preço total e a proteção (06/08),
-     então são três ou quatro linhas e não uma: mantém 12px porque abaixo
-     disso o valor deixa de ser lido de relance, que é o trabalho dela */
-  .heroCopy .micro { margin-top: 14px; font-size: 12px }
+  .priceLine { font-size: 12px; margin-top: 12px }
+  .doors { margin-top: 18px }
   .heroGrid { gap: 14px }
-  .heroVisual { justify-items: center; padding-bottom: 4px }
-  /* o rótulo precisa caber em uma linha até em telas de 320px, senão o
-     sublinhado do link se parte em duas */
-  .demoTag { justify-self: center; margin-top: 16px; font-size: 10px; letter-spacing: .08em }
-  /* aparelho ~15% menor para caber inteiro na tela, com folga lateral e a
-     legenda logo abaixo, em vez de a base ser cortada na dobra seguinte */
-  .phone { width: min(300px, 72vw); height: 430px }
+  .heroVisual { padding-bottom: 14px }
+  .phone { width: min(200px, 62vw); height: 360px; border-width: 7px }
   .grid, .process { grid-template-columns: 1fr }
-  /* os pontos do hero são argumento, não etiqueta: sobem para 12px, mas em
-     linhas curtas, porque agora moram entre o CTA e a demonstração */
-  .heroPoints { margin-top: 2px }
-  .heroPoints li { font-size: 12px; padding: 11px 12px 13px 0 }
+  /* letreiro um pouco maior e mais rápido no celular, sem tomar a tela */
+  .brandband { padding-block: 16px }
+  .brandTrack { animation-duration: 18s }
+  .brandTrack span { font-size: 9vw }
   /* botões com alvo de dedo e leitura imediata */
   .button { font-size: 15px; letter-spacing: .04em; min-height: 54px; padding: 0 20px }
   .bar .button { min-height: 0; padding: 13px 20px }
@@ -569,12 +585,11 @@
   .actions { gap: 16px }
   .actions .button { width: 100% }
   /* sombras duras menores e com folga para não sangrar na borda da tela */
-  .shiftAfter { box-shadow: 10px 10px 0 var(--pale); margin-right: 10px }
-  .pricecard { box-shadow: 10px 10px 0 var(--black); margin-right: 10px }
-  .phone { box-shadow: 14px 14px 0 var(--pale) }
-  .phoneSmall { box-shadow: 12px 12px 0 var(--pale) }
+  .pricecard { box-shadow: 10px 10px 0 var(--ink); margin-right: 10px }
+  .phone { box-shadow: 10px 12px 0 var(--paper-2), 10px 12px 0 1.5px var(--ink) }
+  .phoneSmall { box-shadow: 10px 12px 0 var(--paper-2), 10px 12px 0 1.5px var(--ink) }
   .panelShot { margin-right: 10px }
-  .panelScreen { box-shadow: 12px 12px 0 var(--pale) }
+  .panelScreen { box-shadow: 12px 12px 0 var(--mint) }
   /* cards do processo sem o vão de ar do layout em colunas */
   .process li { padding: 20px }
   .process h3 { margin-top: 14px }

@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { Archivo, Inter, Space_Mono } from "next/font/google";
-import { Analytics, FAQ, FinalCTA, Header, Hero, HowItWorks, Included, MobileBar, Offer, PainSolution, Panel, Process, Projects } from "@/components/vitrine/sections";
+import { Archivo, Inter, JetBrains_Mono } from "next/font/google";
+import { Analytics, BrandBand, FAQ, FinalCTA, Header, Hero, HowItWorks, Included, MobileBar, Offer, PainSolution, Panel, Process, Projects, QuemFaz } from "@/components/vitrine/sections";
 import styles from "./vitrine.module.css";
 
 const display = Archivo({ subsets: ["latin"], axes: ["wdth"], variable: "--font-display" });
 const body = Inter({ subsets: ["latin"], variable: "--font-body" });
-const mono = Space_Mono({ subsets: ["latin"], weight: ["400", "700"], variable: "--font-mono" });
+const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
 
 export const metadata: Metadata = {
   title: "Vitrine Digital para lojas",
@@ -37,6 +37,8 @@ export default function VitrineDigitalPage() {
     <Header />
     <main>
       <Hero />
+      <QuemFaz />
+      <BrandBand />
       <PainSolution />
       <HowItWorks />
       <Projects />
