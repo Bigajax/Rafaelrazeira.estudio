@@ -4,7 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import s from "@/app/e-commerce/ecommerce.module.css";
+import { CampoIsca, useGuardaDeFormulario } from "@/components/form-guarda";
 import { salvarLead } from "@/components/lead";
+import { mascararWhatsapp, whatsappValido } from "@/components/telefone";
 import { contextoDaSessao, initTracking, irParaWhatsapp, track, trackContact, trackLead } from "@/components/ecommerce/tracking";
 
 /* Um número, uma função — todos os links de WhatsApp saem daqui. */
@@ -274,11 +276,19 @@ function HeroForm() {
   const [linkWa, setLinkWa] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [enviado, setEnviado] = useState(false);
+  const [telInvalido, setTelInvalido] = useState(false);
+  const envioSuspeito = useGuardaDeFormulario();
   async function enviar(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (enviando) return;              // toque duplo não grava duas linhas
-    setEnviando(true);
+    /* robô cai na tela de confirmação e nada acontece: sem gravação, sem
+       Lead/Contact, sem aviso. Ver o porquê do sucesso falso em
+       form-guarda.tsx. Telefone inválido nem vira evento: o Contact treina
+       a campanha, e número lixo aqui seria falso positivo. */
+    if (envioSuspeito(e.currentTarget)) { setEnviado(true); return; }
     const f = new FormData(e.currentTarget);
+    if (!whatsappValido(String(f.get("whatsapp") || ""))) { setTelInvalido(true); return; }
+    setEnviando(true);
     const { salvo, linkWa: link } = await enviarLeadEcommerce({
       nome: String(f.get("nome") || ""),
       whatsapp: String(f.get("whatsapp") || ""),
@@ -297,7 +307,12 @@ function HeroForm() {
   return <form id="hero-form" className={s.door} onSubmit={enviar}>
     <small className={s.doorTag}>PORTA 01 · DEIXA QUE EU CHAMO</small>
     <input name="nome" autoComplete="name" placeholder="Seu nome" aria-label="Seu nome" required />
-    <input name="whatsapp" type="tel" autoComplete="tel" placeholder="Seu WhatsApp" aria-label="Seu WhatsApp" required />
+    {/* a máscara reescreve o valor a cada tecla; digitar limpa o erro para a
+        mensagem não continuar acusando um número que já foi corrigido */}
+    <input name="whatsapp" type="tel" autoComplete="tel" placeholder="Seu WhatsApp" aria-label="Seu WhatsApp" required maxLength={16}
+           onInput={e => { e.currentTarget.value = mascararWhatsapp(e.currentTarget.value); if (telInvalido) setTelInvalido(false); }} />
+    {telInvalido && <small className={s.doorMicro} role="alert" style={{ color: "#b3261e" }}>Confere o número: é por ele que eu te chamo. Ex.: (44) 99999-0000.</small>}
+    <CampoIsca />
     <button className={`${s.botao} ${s.cheio}`} disabled={enviando}>{enviando ? "ENVIANDO…" : "QUERO QUE O RAFAEL ME CHAME"}</button>
     {linkWa
       ? <div className={s.pendente} role="status">
@@ -848,7 +863,14 @@ export function ChamadaFinal() {
   const [linkWa, setLinkWa] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [enviado, setEnviado] = useState(false);
-  const set = (k: string, v: string) => setDados((d) => ({ ...d, [k]: v }));
+  const [telInvalido, setTelInvalido] = useState(false);
+  const envioSuspeito = useGuardaDeFormulario();
+  /* o WhatsApp passa pela máscara aqui porque estes campos são controlados:
+     o valor exibido É o estado. Digitar limpa o erro do telefone. */
+  const set = (k: string, v: string) => {
+    if (k === "whatsapp" && telInvalido) setTelInvalido(false);
+    setDados((d) => ({ ...d, [k]: k === "whatsapp" ? mascararWhatsapp(v) : v }));
+  };
 
   /* A barra fixa entra depois de 30% da página rolada e some quando o
      formulário aparece, para nunca cobrir os campos e o botão de envio.
@@ -884,6 +906,9 @@ export function ChamadaFinal() {
   async function enviar(e: React.FormEvent) {
     e.preventDefault();
     if (enviando) return;              // toque duplo não grava duas linhas
+    /* mesmas guardas do mini-formulário do hero, pelos mesmos motivos */
+    if (envioSuspeito(e.currentTarget as HTMLFormElement)) { setEnviado(true); return; }
+    if (!whatsappValido(dados.whatsapp || "")) { setTelInvalido(true); return; }
     setEnviando(true);
     const { salvo, linkWa: link } = await enviarLeadEcommerce({
       nome: dados.nome || "",
@@ -944,9 +969,13 @@ export function ChamadaFinal() {
               <span>{c.rot}{!c.req && <i className={s.opcional}>opcional</i>}</span>
               <input type={c.tipo} name={c.id} placeholder={c.ph} value={dados[c.id] || ""}
                      onChange={(ev) => set(c.id, ev.target.value)} required={c.req}
+                     maxLength={c.id === "whatsapp" ? 16 : undefined}
                      autoComplete={c.id === "nome" ? "name" : c.id === "whatsapp" ? "tel" : "off"} />
+              {/* a seção é escura, então o vermelho do erro é o claro */}
+              {c.id === "whatsapp" && telInvalido && <small role="alert" style={{ color: "#ff8a80" }}>Confere o número: é por ele que eu te chamo. Ex.: (44) 99999-0000.</small>}
             </label>)}
           </div>
+          <CampoIsca />
           <div className={s.formNav}>
             <span />
             {/* o rótulo muda porque o botão passou a esperar o servidor: sem

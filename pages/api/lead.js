@@ -32,6 +32,8 @@
    RODE ANTES: supabase/leads.sql, senão todo envio cai no fallback.
    ============================================================ */
 
+import { whatsappValido } from "../../components/telefone";
+
 /* Teto por campo. Não é validação de formulário, é limite de estrago: esta
    rota é pública e sem segredo (tem que ser, o formulário é anônimo), então o
    que dá para fazer é impedir que alguém encha a tabela com um texto de 4 MB. */
@@ -147,9 +149,12 @@ export default async function handler(req, res) {
   const nome = texto(b.nome);
   const whatsapp = texto(b.whatsapp, 40);
   if (!nome || !whatsapp) return erro(res, 400, "nome e whatsapp são obrigatórios");
-  /* telefone plausível: 10 dígitos é o piso do Brasil (DDD + 8). Não é
-     validação bonita, é filtro de lixo. */
-  if (whatsapp.replace(/\D/g, "").length < 10) return erro(res, 400, "whatsapp inválido");
+  /* a MESMA régua do formulário (components/telefone.ts): DDD válido, 10-11
+     dígitos, celular começando com 9, sem repetição nem escada. Validar só no
+     cliente seria decorativo, esta rota é pública e qualquer POST chega aqui.
+     Quem manda número lixo recebe 400 e o site cai no fallback do WhatsApp,
+     onde a pessoa se verifica sozinha ao mandar a mensagem. */
+  if (!whatsappValido(whatsapp)) return erro(res, 400, "whatsapp inválido");
 
   const utm = b.utm || {};
   const linha = {

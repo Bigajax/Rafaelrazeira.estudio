@@ -4,6 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import s from "@/app/vitrine-digital/vitrine.module.css";
+import { CampoIsca, useGuardaDeFormulario } from "@/components/form-guarda";
+import { mascararWhatsapp, whatsappValido } from "@/components/telefone";
 import { enviarLeadVitrine } from "@/components/vitrine/lead-flow";
 import { initTracking, refDaVisita } from "@/components/vitrine/tracking";
 
@@ -140,11 +142,19 @@ function HeroForm() {
   const [linkWa, setLinkWa] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [enviado, setEnviado] = useState(false);
+  const [telInvalido, setTelInvalido] = useState(false);
+  const envioSuspeito = useGuardaDeFormulario();
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (enviando) return;              // toque duplo não grava duas linhas
-    setEnviando(true);
+    /* robô cai na tela de confirmação e nada acontece: sem gravação, sem
+       Contact, sem aviso. Ver o porquê do sucesso falso em form-guarda.tsx. */
+    if (envioSuspeito(e.currentTarget)) { setEnviado(true); return; }
     const f = new FormData(e.currentTarget);
+    /* telefone inválido nem vira evento: o Contact é o que a campanha
+       otimiza, e número lixo aqui seria falso positivo ensinando a Meta */
+    if (!whatsappValido(String(f.get("whatsapp") || ""))) { setTelInvalido(true); return; }
+    setEnviando(true);
     const { salvo, linkWa: link } = await enviarLeadVitrine({
       nome: String(f.get("nome") || ""),
       whatsapp: String(f.get("whatsapp") || ""),
@@ -166,7 +176,12 @@ function HeroForm() {
     {/* placeholder como rótulo é pecado de formulário longo; aqui são dois
         campos com aria-label, e a etiqueta da porta já diz o que acontece */}
     <input name="nome" autoComplete="name" placeholder="Seu nome" aria-label="Seu nome" required />
-    <input name="whatsapp" type="tel" autoComplete="tel" placeholder="Seu WhatsApp" aria-label="Seu WhatsApp" required />
+    {/* a máscara reescreve o valor a cada tecla; digitar limpa o erro para a
+        mensagem não continuar acusando um número que já foi corrigido */}
+    <input name="whatsapp" type="tel" autoComplete="tel" placeholder="Seu WhatsApp" aria-label="Seu WhatsApp" required maxLength={16}
+           onInput={e => { e.currentTarget.value = mascararWhatsapp(e.currentTarget.value); if (telInvalido) setTelInvalido(false); }} />
+    {telInvalido && <small className={s.doorMicro} role="alert" style={{ color: "#b3261e" }}>Confere o número: é por ele que eu te chamo. Ex.: (44) 99999-0000.</small>}
+    <CampoIsca />
     <button className={`${s.button} ${s.primary}`} disabled={enviando}>{enviando ? "ENVIANDO…" : "QUERO QUE O RAFAEL ME CHAME"}</button>
     {linkWa
       ? <div className={s.pendente} role="status">
@@ -571,6 +586,8 @@ export function Offer() {
   const [linkWa, setLinkWa] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [enviado, setEnviado] = useState(false);
+  const [telInvalido, setTelInvalido] = useState(false);
+  const envioSuspeito = useGuardaDeFormulario();
   const formRef = useRef<HTMLFormElement>(null);
   const waVer = useWhatsapp(MSG_VER);
   const plan = avista ? "À vista R$999" : "Entrada de R$500";
@@ -589,8 +606,12 @@ export function Offer() {
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (enviando) return;              // toque duplo não grava duas linhas
-    setEnviando(true);
+    /* mesmas guardas do mini-formulário do hero: robô ganha a tela de
+       confirmação sem efeito nenhum, e telefone inválido nem vira evento */
+    if (envioSuspeito(e.currentTarget)) { setEnviado(true); return; }
     const f = new FormData(e.currentTarget);
+    if (!whatsappValido(String(f.get("whatsapp") || ""))) { setTelInvalido(true); return; }
+    setEnviando(true);
     const { salvo, linkWa: link } = await enviarLeadVitrine({
       nome: String(f.get("nome") || ""),
       whatsapp: String(f.get("whatsapp") || ""),
@@ -649,7 +670,10 @@ export function Offer() {
             {/* O campo que esta página nunca teve. Ver a nota longa no submit:
                 sem número não dá para cumprir a promessa da tela de
                 confirmação, e era o handoff que carregava essa informação. */}
-            <label>WHATSAPP<input name="whatsapp" type="tel" autoComplete="tel" placeholder="(00) 00000-0000" required /></label>
+            <label>WHATSAPP<input name="whatsapp" type="tel" autoComplete="tel" placeholder="(00) 00000-0000" required maxLength={16}
+                   onInput={e => { e.currentTarget.value = mascararWhatsapp(e.currentTarget.value); if (telInvalido) setTelInvalido(false); }} /></label>
+            {telInvalido && <small role="alert" style={{ color: "#b3261e" }}>Confere o número: é por ele que eu te chamo. Ex.: (44) 99999-0000.</small>}
+            <CampoIsca />
             {/* "NOME DA LOJA" saiu: o @ do instagram já entrega o nome, e eram
                 dois campos obrigatórios para uma informação só. O que sobrou
                 virou opcional, porque nome e telefone bastam para eu chamar. */}
