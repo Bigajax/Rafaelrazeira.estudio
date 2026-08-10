@@ -40,20 +40,34 @@ function getCookie(nome: string) {
 }
 
 /* fbclid da URL → persistido para compor o fbc (formato fb.1.<ts>.<fbclid>) */
+/* ---------- só fbclid ÍNTEGRO vira fbc (10/08) ----------
+   O Events Manager acusou "modified fbclid value in fbc parameter" em 3% dos
+   Contacts: o navegador interno do Instagram às vezes trunca a URL, e um
+   fbclid pela metade que entra aqui vira um fbc mutilado que a Meta detecta
+   e descarta, sujando o diagnóstico do dataset inteiro. fbclid de verdade é
+   base64url longo; o que não passar na régua não é guardado nem enviado.
+   Melhor fbc NENHUM do que fbc errado: sem ele a Meta ainda casa a conversão
+   por fbp, IP e user agent. O cookie _fbc do próprio pixel segue intocado e
+   preferido, esta régua só vale para o fallback que NÓS montamos. */
+const fbclidIntegro = (v: string) => /^[A-Za-z0-9_-]{20,}$/.test(v);
 function salvarFbclid() {
   try {
     const fbclid = new URLSearchParams(location.search).get("fbclid");
-    if (fbclid) localStorage.setItem("meta_fbclid", `${Date.now()}.${fbclid}`);
+    if (fbclid && fbclidIntegro(fbclid)) localStorage.setItem("meta_fbclid", `${Date.now()}.${fbclid}`);
   } catch {}
 }
 function getFbc() {
   const cookie = getCookie("_fbc");
   if (cookie) return cookie;
   try {
+    /* o valor guardado passa pela régua DE NOVO: aparelhos que guardaram um
+       fbclid truncado antes desta guarda existir continuam com ele no
+       localStorage, e é daqui que ele sairia rumo à Meta */
     const salvo = localStorage.getItem("meta_fbclid");
     if (salvo) {
       const i = salvo.indexOf(".");
-      return `fb.1.${salvo.slice(0, i)}.${salvo.slice(i + 1)}`;
+      const fbclid = salvo.slice(i + 1);
+      if (fbclidIntegro(fbclid)) return `fb.1.${salvo.slice(0, i)}.${fbclid}`;
     }
   } catch {}
   return "";

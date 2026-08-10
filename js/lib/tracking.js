@@ -92,20 +92,27 @@ function getCookie(nome){
 }
 
 /* fbclid da URL → persistido para compor o fbc (formato fb.1.<ts>.<fbclid>) */
+/* Só fbclid ÍNTEGRO vira fbc: base64url longo, senão nem guarda nem envia.
+   A régua nasceu em 10/08 depois de o Events Manager acusar fbc mutilado em
+   3% dos Contacts; a história completa está em components/vitrine/tracking.ts. */
+function fbclidIntegro(v){ return /^[A-Za-z0-9_-]{20,}$/.test(v); }
 function salvarFbclid(){
   try{
     const fbclid = new URLSearchParams(location.search).get("fbclid");
-    if (fbclid) localStorage.setItem("meta_fbclid", `${Date.now()}.${fbclid}`);
+    if (fbclid && fbclidIntegro(fbclid)) localStorage.setItem("meta_fbclid", `${Date.now()}.${fbclid}`);
   }catch(e){}
 }
 function getFbc(){
   const cookie = getCookie("_fbc");
   if (cookie) return cookie;
   try{
+    /* revalida o guardado: aparelho que guardou truncado antes da régua
+       existir continua com ele no localStorage */
     const salvo = localStorage.getItem("meta_fbclid");
     if (salvo){
       const i = salvo.indexOf(".");
-      return `fb.1.${salvo.slice(0, i)}.${salvo.slice(i + 1)}`;
+      const fbclid = salvo.slice(i + 1);
+      if (fbclidIntegro(fbclid)) return `fb.1.${salvo.slice(0, i)}.${fbclid}`;
     }
   }catch(e){}
   return "";
