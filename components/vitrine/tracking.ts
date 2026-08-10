@@ -1,9 +1,13 @@
 /* ============================================================
    META PIXEL + CONVERSIONS API + MIXPANEL — funil da Vitrine
    Digital (PageView → ViewContent → ClickCTA → InitiateCheckout
-   → Lead/AbriuWhatsApp), espelhando o padrão da landing principal.
-   • Lead = clique que abre o wa.me, e nada mais. A regra vive num
+   → Lead/AbriuWhatsApp → Contact), espelhando o padrão da landing
+   principal e a gramática da /e-commerce.
+   • Lead = clique que abre o wa.me: é INTENÇÃO. A regra vive num
      lugar só, no ouvinte de cliques, lendo `data-cta-dest`.
+   • Contact = formulário enviado, e nada mais. É por ELE que a
+     campanha otimiza desde 11/08 (conversão personalizada filtrada
+     por URL /vitrine-digital).
    • Pixel: mesmo dataset da landing (js/lib/tracking.js); os funis
      se separam no Meta por event_source_url (/vitrine-digital) e
      no Mixpanel pela propriedade `page`.
@@ -387,8 +391,14 @@ function conversao(evento: string, dadosPixel: Record<string, unknown>, extraCap
 /* ---------- quem dispara Lead ----------
    REGRA ÚNICA: Lead sai no clique que ABRE O WHATSAPP, e em nenhum outro
    lugar. Não em PageView, não em scroll, não em "viu a oferta", não em
-   botão que só rola a página. A campanha otimiza por este evento: cada
-   Lead falso ensina a Meta a procurar mais gente que não conversa.
+   botão que só rola a página.
+
+   Desde 11/08 a campanha NÃO otimiza mais por ele: otimizar pelo clique de
+   WhatsApp ensinou a Meta a buscar quem clica em botão (entre 8 e 10/08
+   foram 23 "leads" a R$ 4,20, 13 deles em menos de 15s de página, para ~5
+   conversas vazias). O Lead virou métrica de intenção, como na /e-commerce,
+   e a otimização passou para o Contact do formulário, lá embaixo no
+   trackLead. A regra de disparo daqui continua valendo igual.
 
    A decisão passou a ser lida do próprio `data-cta-dest="whatsapp"` em vez
    de uma lista de nomes. A lista era o vazamento: `oferta_entrada` (o "JÁ
@@ -668,7 +678,30 @@ export function trackLead({ ctaPosition, plano, nome, whatsapp, abriuWhats = tru
   /* E `Lead` continua significando, na Mixpanel, formulário enviado: é um
      passo a mais do funil, não o mesmo evento com outro nome. Só o caminho
      do formulário passa por aqui. */
-  if (POSICOES_FORMULARIO.has(ctaPosition)) mpTrack("Lead", { $insert_id: eventId, cta_position: ctaPosition, plano });
+  if (POSICOES_FORMULARIO.has(ctaPosition)) {
+    mpTrack("Lead", { $insert_id: eventId, cta_position: ctaPosition, plano });
+    /* ---------- Contact: o formulário enviado, e só ele ----------
+       É a conversão que a campanha otimiza desde 11/08, pela conversão
+       personalizada "Vitrine: formulário enviado" (Contact + URL contém
+       /vitrine-digital). Mesma gramática da /e-commerce: Lead = intenção,
+       Contact = contato de verdade, com dados no banco antes de qualquer
+       WhatsApp. event_id PRÓPRIO: é outro evento na Meta, não uma cópia do
+       Lead para deduplicar.
+       SEM mpTrack de propósito: na Mixpanel "Enviou o formulário" já é o
+       Lead logo acima; mandar o Contact também criaria duas linhas no
+       painel para um envio só. */
+    const contactId = idAleatorio();
+    fbq("track", "Contact", dados, { eventID: contactId });
+    enviarCapi("Contact", contactId, {
+      first_name: nome || "",
+      phone: whatsapp || "",
+      content_name: "vitrine-digital",
+      cta_position: ctaPosition,
+      value: VALOR_OFERTA,
+      currency: "BRL",
+      plano,
+    });
+  }
   enviarCapi("Lead", eventId, {
     first_name: nome || "",
     /* O telefone passou a existir nesta página em 06/08, quando o formulário
