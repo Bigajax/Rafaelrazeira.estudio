@@ -62,7 +62,7 @@ const PROPOSTAS = {
     titulo: "Rafael Razeira Estúdio — Vitrine Digital vérít.lab",
     whatsapp: "5544999997219",
     itens: {
-      avista_pix: { label: "À vista no Pix, com 10% de desconto", valor: 899.1, metodo: "pix" },
+      avista_pix: { label: "À vista no Pix", valor: 999, metodo: "pix" },
       entrada_pix: { label: "Entrada para início do projeto", valor: 199, metodo: "pix" },
       saldo_card: { label: "Saldo do projeto no cartão, em 4x", valor: 800, metodo: "card", maxParcelas: 4 },
     },
