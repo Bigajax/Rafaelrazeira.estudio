@@ -85,14 +85,21 @@ const ChatStrip = ({ label, note, children }: { label: string; note?: string; ch
 /* Header de tráfego pago (07/08): só a logo e uma ação. O menu inteiro saiu,
    inclusive o hambúrguer: numa página de anúncio, cada rota do topo é uma
    rota de fuga, e as âncoras das seções continuam vivas para os links
-   internos e externos. A ação vira conversa direta, não rolagem. */
+   internos e externos.
+
+   A ação levava ao WhatsApp até 11/08, e os números mandaram trocar: dos 19
+   cliques de WhatsApp em 9-11/08, 14 saíram deste botão, quase todos nos
+   primeiros segundos, com 0% de rolagem, e NENHUMA mensagem chegou. Era o
+   primeiro botão visível servindo de porta de saída para quem nem leu a
+   página. Agora ele desce para o formulário do hero, que é o Contact pelo
+   qual a campanha otimiza; o WhatsApp continua nos CTAs de quem já rolou
+   (porta 02, oferta, final). */
 export function Header() {
-  const waDuvidas = useWhatsapp();
   return <header className={s.header}>
     {/* a logo volta ao hero desta página, não para /estudio: quem chega do
         anúncio e toca no topo quer recomeçar a leitura, não trocar de site */}
     <a className={s.brand} href="#topo"><b>RAFAEL RAZEIRA</b><span>ESTÚDIO</span></a>
-    <a className={s.headCta} href={waDuvidas} data-cta="header" data-cta-dest="whatsapp">FALAR COM RAFAEL ↗</a>
+    <a className={s.headCta} href="#hero-form" data-cta="header" data-cta-dest="form">QUERO MINHA VITRINE ↓</a>
   </header>;
 }
 
@@ -166,7 +173,9 @@ function HeroForm() {
   }
   /* a confirmação ocupa a própria porta: estado do React, sem navegação,
      então aparece igual no navegador interno do Instagram */
-  if (enviado) return <div className={`${s.door} ${s.doorConfirm}`} role="status">
+  {/* o id fica também na confirmação: o CTA do topo desce para cá por
+      âncora, e sem isso quem já enviou clicaria num link morto */}
+  if (enviado) return <div id="hero-form" className={`${s.door} ${s.doorConfirm}`} role="status">
     <small className={s.doorTag}>RECEBIDO</small>
     <p className={s.formTitle}>RECEBI SEUS DADOS<br /><span>Te chamo no WhatsApp ainda hoje.</span></p>
     <a className={`${s.button} ${s.primary}`} href={linkWa} data-cta="reabrir_whats" data-cta-dest="whatsapp">QUER AGILIZAR? ME CHAMA AGORA ↗</a>
