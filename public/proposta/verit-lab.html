@@ -258,6 +258,8 @@ a{color:inherit;text-decoration:none}
 @media(min-width:720px){.pay-cards{grid-template-columns:repeat(3,1fr)}}
 .pay-cards--duo{grid-template-columns:1fr}
 @media(min-width:720px){.pay-cards--duo{grid-template-columns:repeat(2,1fr)}}
+.pay-cards--one{grid-template-columns:1fr;margin-top:16px}
+@media(min-width:720px){.pay-cards--one{grid-template-columns:1fr}}
 .pay{
   display:flex;flex-direction:column;
   border:1.5px solid var(--line);border-radius:20px;
@@ -279,6 +281,20 @@ a{color:inherit;text-decoration:none}
 /* Zona de preço com altura reservada: alinha os checklists entre os cards */
 .pay-top{display:flex;flex-direction:column;align-items:flex-start}
 @media(min-width:720px){.pay-top{min-height:132px}}
+.pay-top--auto{min-height:0}
+@media(min-width:720px){.pay-top--auto{min-height:0}}
+/* Contexto do desconto (Pix à vista): preço antigo riscado + pill −10% */
+.pay-ctx{display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-height:22px}
+.off-old{font-family:var(--font-mono);font-size:clamp(12px,3vw,13px);color:var(--ink-40)}
+.off-old s{text-decoration-thickness:2px}
+.off-pill{
+  font-family:var(--font-mono);font-weight:700;font-size:11px;letter-spacing:.04em;
+  color:#fff;background:var(--emerald);border-radius:999px;padding:3px 9px;line-height:1;
+}
+.pay-save{
+  margin-top:6px;font-family:var(--font-mono);font-weight:700;font-size:clamp(11px,3vw,12px);
+  letter-spacing:.02em;color:var(--emerald-dark);
+}
 .pay--rec .pay-head{background:var(--emerald);border-color:var(--emerald);color:#fff}
 .pay--dark .pay-head{background:var(--black);border-color:var(--black);color:#fff}
 .pay--soft .pay-head{background:var(--emerald-light);border-color:var(--emerald-light);color:var(--emerald-dark)}
@@ -539,19 +555,15 @@ a{color:inherit;text-decoration:none}
         </div>
         <div class="split">
           <div>
-            <span class="tag">ENTRADA</span>
-            <span class="desc">R$ 199,00 via Pix para início do projeto</span>
+            <span class="tag">OPÇÃO 1 · PIX À VISTA</span>
+            <span class="desc">R$ 899,10 em pagamento único, com 10% de desconto</span>
           </div>
           <div>
-            <span class="tag">PARCELAMENTO</span>
-            <span class="desc">Saldo de R$ 800,00 em até 4x no cartão de crédito</span>
-          </div>
-          <div>
-            <span class="tag">TOTAL</span>
-            <span class="desc">R$ 999,00</span>
+            <span class="tag">OPÇÃO 2 · PARCELADO</span>
+            <span class="desc">Entrada de R$ 199,00 no Pix + saldo de R$ 800,00 em até 4x no cartão</span>
           </div>
         </div>
-        <p class="host-note">O início do projeto será confirmado após o pagamento da entrada de R$ 199,00 via Pix. O saldo restante de R$ 800,00 será pago no cartão de crédito, em até 4 parcelas.</p>
+        <p class="host-note">Você escolhe a forma que preferir. No Pix à vista, o projeto começa com o pagamento único. No parcelado, começa após a entrada de R$ 199,00 via Pix, e o saldo de R$ 800,00 vai no cartão de crédito, em até 4 parcelas.</p>
 
         <aside class="guarantee">
           <span class="g-label">ACEITO PERMUTA</span>
@@ -565,22 +577,45 @@ a{color:inherit;text-decoration:none}
 
         <div class="pay-cards pay-cards--duo">
           <div class="pay pay--rec">
-            <div class="pay-head">Entrada no Pix</div>
+            <div class="pay-head">Pix à vista</div>
             <div class="pay-body">
               <div class="pay-top">
+                <div class="pay-ctx">
+                  <span class="off-old"><s>R$ 999,00</s></span>
+                  <span class="off-pill">−10%</span>
+                </div>
+                <div class="pay-price">R$ 899,10</div>
+                <span class="pay-save">Você economiza R$ 99,90</span>
+              </div>
+              <ul class="pay-feats">
+                <li><span>Pagamento único, sem parcelas</span></li>
+                <li><span>QR code aqui na página, confirmação na hora</span></li>
+              </ul>
+              <button class="btn-pay" type="button" data-checkout-item="avista_pix">Pagar por Pix</button>
+            </div>
+          </div>
+          <div class="pay">
+            <div class="pay-head">Parcelado: entrada no Pix</div>
+            <div class="pay-body">
+              <div class="pay-top">
+                <div class="pay-ctx">Entrada + saldo</div>
                 <div class="pay-price">R$ 199,00 <small>entrada para início do projeto</small></div>
               </div>
               <ul class="pay-feats">
-                <li><span>QR code aqui na página, confirmação na hora</span></li>
-                <li><span>O início do projeto é confirmado após a entrada</span></li>
+                <li><span>Saldo de <b>R$ 800,00 em até 4x</b> no cartão de crédito</span></li>
+                <li><span>Total R$ 999,00</span></li>
               </ul>
-              <button class="btn-pay" type="button" data-checkout-item="entrada_pix">Pagar entrada no Pix</button>
+              <button class="btn-pay btn-pay--ghost" type="button" data-checkout-item="entrada_pix">Pagar a entrada</button>
             </div>
           </div>
+        </div>
+
+        <div class="pay-cards pay-cards--one">
           <div class="pay pay--dark">
             <div class="pay-head">Saldo no cartão</div>
             <div class="pay-body">
-              <div class="pay-top">
+              <div class="pay-top pay-top--auto">
+                <div class="pay-ctx">Para quem escolheu o parcelado</div>
                 <div class="pay-price">R$ 800,00 <small>em até 4x no cartão de crédito</small></div>
               </div>
               <ul class="pay-feats">
@@ -642,7 +677,7 @@ a{color:inherit;text-decoration:none}
       <div class="body">
         <ol class="next">
           <li><span>Você confirma o <b>aceite desta proposta</b> por WhatsApp ou e-mail (e, se quiser permuta, a gente combina as peças nessa conversa).</span></li>
-          <li><span>Pagamento da <b>entrada</b> e você me passa o número oficial do WhatsApp, o valor mínimo de encomenda e os prazos e regiões de envio.</span></li>
+          <li><span>Pagamento do <b>Pix à vista ou da entrada</b>, na forma que você escolher, e você me passa o número oficial do WhatsApp, o valor mínimo de encomenda e os prazos e regiões de envio.</span></li>
           <li><span>Reviso as peças e os preços com você, publico a vitrine e a <b>vérít.lab entra no ar</b>.</span></li>
         </ol>
       </div>
