@@ -95,6 +95,30 @@
   overflow: clip;
 }
 
+/* ---------- as âncoras e o `goToForm` andavam em velocidades diferentes ----------
+   A página tem dez links `href="#..."` (header, chip do hero, Quem Faz, os
+   dois "QUERO UMA ASSIM", o link da prova, os dois do CTA final e a barra
+   fixa) e todos SALTAVAM instantâneo, enquanto o botão da oferta chama
+   `goToForm`, que rola com `behavior: "smooth"`. Dois jeitos de chegar ao
+   mesmo formulário, dois movimentos diferentes: quem clica no header cai de
+   paraquedas e não sabe de onde veio, quem clica na oferta é levado. Salto
+   instantâneo também apaga a relação entre o CTA e o destino, que é a única
+   coisa que essas âncoras têm para explicar.
+
+   Escopo pela rota, não global: `html:has(.site)` só casa quando o wrapper
+   desta página está montado, então /servicos, /e-commerce e as propostas
+   continuam com o comportamento delas. O `.site` aqui é hasheado pelo CSS
+   Modules normalmente, porque não está dentro de `:global()`.
+
+   O `auto` sob `prefers-reduced-motion` não é acessório: rolagem suave
+   longa é exatamente o movimento que dispara náusea em quem tem distúrbio
+   vestibular, e é o único tipo de animação da página que o bloco lá do fim
+   NÃO pegaria, já que `scroll-behavior` não é `transition` nem `animation`. */
+html:has(.site) { scroll-behavior: smooth }
+@media (prefers-reduced-motion: reduce) {
+  html:has(.site) { scroll-behavior: auto }
+}
+
 .site * { box-sizing: border-box }
 .site a { text-decoration: none; color: inherit }
 .site :focus-visible { outline: 2px solid var(--green); outline-offset: 3px }
@@ -165,11 +189,25 @@
    O deslocamento é sempre para baixo e para a direita, a mesma direção de
    luz de toda sombra desta página. */
 .site .primary { background: var(--ink); color: #fff; box-shadow: 4px 4px 0 var(--line-dark) }
-.site .primary:hover { background: #000 }
 /* sobre fundo grafite (seção Quem Faz e as seções .dark) o botão de
    navegação inverte para papel: grafite sobre grafite some */
 .site .dark .primary, .site .quemTxt .primary { background: var(--paper); color: var(--ink); box-shadow: 4px 4px 0 var(--green) }
-.site .dark .primary:hover, .site .quemTxt .primary:hover { background: #fff }
+/* ---------- POR QUE TODO :hover DESTA PÁGINA TEM GUARDA (13/08) ----------
+   `@media (hover: hover) and (pointer: fine)` em cada estado de hover da
+   página. O tráfego é quase todo celular, e no toque o navegador entrega
+   o `:hover` junto com o toque e SÓ o solta quando a pessoa toca em outro
+   lugar: o botão fica preso na cor de hover depois de tocado, o que lê
+   como "já cliquei, travou" bem no momento em que ela precisa de resposta
+   clara. O `:active` NÃO leva guarda, é o oposto: ele é o afundar de 4px
+   que dá o feedback do toque, e é justamente no celular que ele importa.
+   A guarda entra DEPOIS das regras de estado normal por causa da cascata:
+   `.site .primary:hover` e `.site .dark .primary` têm a mesma
+   especificidade (0,3,0), então quem vem por último vence. Hover novo que
+   nascer nesta página entra aqui dentro. */
+@media (hover: hover) and (pointer: fine) {
+  .site .primary:hover { background: #000 }
+  .site .dark .primary:hover, .site .quemTxt .primary:hover { background: #fff }
+}
 /* o afundar, comum aos dois botões cheios. `transition` no próprio
    `.button` para o hover de cor continuar valendo junto. */
 .site .primary, .site .acao { transition: background .15s ease, transform .1s ease, box-shadow .1s ease }
@@ -202,7 +240,10 @@
    repetiam a mesma declaração, e agora qualquer `.acao` novo já nasce
    com o carimbo. */
 .site .acao { background: var(--rosa); color: #fff; box-shadow: 4px 4px 0 var(--ink) }
-.site .acao:hover { background: var(--rosa-dark) }
+/* guarda de toque: ver o bloco em `.site .primary:hover` */
+@media (hover: hover) and (pointer: fine) {
+  .site .acao:hover { background: var(--rosa-dark) }
+}
 .site .acao:active { transform: translate(4px, 4px); box-shadow: 0 0 0 var(--ink) }
 /* ---------- a sombra do botão rosa no escuro ----------
    Sobre grafite a sombra de tinta some, então ela precisa de outra cor.
@@ -268,7 +309,10 @@
 /* grafite, não rosa: este botão só ROLA até a etiqueta, e o rosa está
    reservado para o envio. Ver a nota de 60/30/10 no topo do arquivo. */
 .site .headCta { font: 700 11px var(--mono); letter-spacing: .06em; background: var(--ink); color: #fff; padding: 11px 16px; transition: background .15s ease }
-.site .headCta:hover { background: #000 }
+/* guarda de toque: ver o bloco em `.site .primary:hover` */
+@media (hover: hover) and (pointer: fine) {
+  .site .headCta:hover { background: #000 }
+}
 
 /* ---------- hero ---------- */
 /* Respiro de cima cortado no desktop (13/08): a etiqueta é mais alta que
@@ -452,15 +496,41 @@
      isso causa nos cantos é de ~4px, então nada sangra na borda da tela. */
   transform: rotate(-.8deg);
   transform-origin: 50% -4px;
-  animation: etiquetaAssenta .9s cubic-bezier(.22, 1, .36, 1) .1s both;
+  will-change: transform;
+  animation: etiquetaAssenta .52s cubic-bezier(.22, 1, .36, 1) .06s both;
 }
 
 /* ============================================================
-   A ENTRADA (13/08): a etiqueta cai e assenta, a fita cola por cima e o
+   A ENTRADA (13/08): a etiqueta cai e assenta, o alfinete crava e o
    selo carimba por último.
 
+   ---------- POR QUE ELA FECHA EM 0,84s E NÃO EM 1,34s ----------
+   Retemporizada na auditoria de animação de 13/08. A versão anterior
+   (etiqueta .9s/.1s, alfinete .28s/.72s, selo .34s/1s) terminava em 1,34s,
+   e o problema não é a duração em si: é que ESTA ETIQUETA É O FORMULÁRIO.
+   O alvo de toque ficava se mexendo por quase um segundo numa página cuja
+   sessão mediana tem 10s, ou seja, a página gastava um décimo do tempo de
+   atenção que ela tem se apresentando, e quem chega decidido tenta tocar
+   num campo que ainda está andando. Animação de entrada em elemento
+   decorativo pode se dar ao luxo de durar; em cima de um campo de
+   formulário, não.
+
+   Os três tempos foram encolhidos JUNTOS, mantendo a ordem da história:
+     etiqueta  .52s com .06s de atraso  ->  assenta em .58s
+     alfinete  .2s  com .4s  de atraso  ->  crava   em .60s
+     selo      .24s com .6s  de atraso  ->  carimba em .84s
+   O alfinete pousa exatamente quando o selo começa, que é o encaixe que a
+   sequência antiga tinha e que se perde se alguém mexer em só um dos três.
+   Ao mudar qualquer um, refazer a conta inteira: o pino cravando DEPOIS do
+   carimbo inverte a narrativa (não se prende um papel que já foi selado).
+
+   O selo também deixou de entrar de `scale(1.8)`, 80% acima do repouso, que
+   é grande o bastante para ele aparecer do nada e cobrir o preço na primeira
+   fração. Agora entra de `1.32`: ainda lê como carimbo descendo contra o
+   papel, sem o susto.
+
    Um momento orquestrado, não três efeitos soltos: a ordem conta a
-   história de como a etiqueta foi parar ali (caiu, foi colada, foi
+   história de como a etiqueta foi parar ali (caiu, foi presa, foi
    carimbada), e é a mesma ordem em que a pessoa lê o cartão. Custa ZERO
    pixel de altura, que é o motivo de ser esta a peça de personalidade
    que entrou e não outra: a dobra do celular está no limite e não sobra
@@ -494,15 +564,20 @@
   0%   { opacity: 0; transform: rotate(4deg) translateY(-10px) scale(1.12) }
   100% { opacity: 1; transform: rotate(4deg) translateY(0) scale(1) }
 }
-.tagPin { animation: alfineteCrava .28s cubic-bezier(.35, 1.4, .5, 1) .72s both }
+.tagPin { will-change: transform; animation: alfineteCrava .2s cubic-bezier(.35, 1.4, .5, 1) .4s both }
 /* entra grande e fecha no tamanho: é o gesto de apertar o carimbo contra
    o papel, e a curva com overshoot dá a batida no fim */
 @keyframes seloCarimba {
-  0%   { opacity: 0; transform: rotate(-13deg) scale(1.8) }
+  0%   { opacity: 0; transform: rotate(-13deg) scale(1.32) }
   70%  { opacity: .9 }
   100% { opacity: .9; transform: rotate(-13deg) scale(1) }
 }
-.tagStamp { animation: seloCarimba .34s cubic-bezier(.3, 1.5, .5, 1) 1s both }
+/* `will-change` aqui é o único dos três que merece nota: o selo também tem
+   `mix-blend-mode: multiply`, e promover a camada muda a ordem de composição.
+   Conferido depois de aplicar, a soma de tinta sobre o traço continua. Se um
+   dia o selo aparecer chapado sobre o papel, este `will-change` é o primeiro
+   suspeito e sai sem dó: ele é otimização, o blend é o desenho. */
+.tagStamp { will-change: transform; animation: seloCarimba .24s cubic-bezier(.3, 1.5, .5, 1) .6s both }
 /* O furo do ilhó (`.tagHole`) morava aqui, com radial-gradient de parede
    e quatro sombras de profundidade. Saiu em 13/08: ele existia para o
    cordão passar, e sem cordão virou um círculo sem função no canto,
@@ -1343,7 +1418,16 @@
   display: block; width: 100%; height: auto; will-change: transform;
   animation: pageScroll var(--dur, 45s) ease-in-out infinite alternate;
 }
-.projects article:hover .pageShot { animation-play-state: paused }
+/* Pausar a captura ao passar o mouse é conveniência de desktop, e precisa
+   da mesma guarda dos botões por um motivo PIOR que o deles: sem ela, no
+   celular o hover gruda depois do toque e a rolagem de 45s para DE VEZ,
+   deixando o card como imagem parada. A prova desta seção é a loja se
+   mexendo ("não acredite em mim, abra as duas"), então o estado grudado
+   mata justamente o argumento. Quem toca o card quer abri-lo, e o toque
+   já leva para a loja real. */
+@media (hover: hover) and (pointer: fine) {
+  .projects article:hover .pageShot { animation-play-state: paused }
+}
 @keyframes pageScroll {
   0%, 2.5% { transform: translateY(0) }
   97.5%, 100% { transform: translateY(calc(100cqh - 100%)) }
@@ -1791,7 +1875,12 @@
   background: var(--ink); color: #fff;
   padding: 8px 14px calc(8px + env(safe-area-inset-bottom));
   font: 700 12px var(--mono);
-  transition: transform .25s ease;
+  /* `ease-out` e não `ease`: a barra ENTRA e SAI de cena, e movimento de
+     entrada precisa começar rápido e frear no fim. O `ease` gasta o começo
+     acelerando, e numa peça que aparece por cima do conteúdo isso lê como
+     atraso. Mesma curva na saída, em `.barHidden`, para as duas metades do
+     movimento serem o mesmo gesto. */
+  transition: transform .25s ease-out;
 }
 /* branco, não esmeralda: sobre grafite o verde da faixa dos 30% some, e
    quem tem que puxar o olho nesta barra é o botão rosa ao lado */
@@ -1804,7 +1893,7 @@
 .barCopy b { font: 700 11px var(--mono); letter-spacing: .04em }
 .barCopy span { font: 400 10.5px var(--mono); letter-spacing: .01em; color: #C9CDC6 }
 /* sai de cena sem continuar tabulável para quem navega pelo teclado */
-.barHidden { transform: translateY(110%); visibility: hidden; transition: transform .25s ease, visibility 0s .25s }
+.barHidden { transform: translateY(110%); visibility: hidden; transition: transform .25s ease-out, visibility 0s .25s }
 
 /* ---------- responsivo ---------- */
 @media (max-width: 900px) {
