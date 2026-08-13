@@ -1956,8 +1956,21 @@ html:has(.site) { scroll-behavior: smooth }
   /* o impresso ganha teto de largura: papel que encosta nas duas bordas
      volta a ser painel, e era disso que a seção estava saindo. Com 300px
      sobra campo escuro dos dois lados. `margin-inline: auto` sem tocar no
-     topo, que continua vindo da conta do `--sobe`. */
-  .quemPhoto { max-width: 300px; margin-inline: auto; margin-bottom: 6px }
+     topo, que continua vindo da conta do `--sobe`.
+
+     ---------- O `width: 100%` NÃO É REDUNDANTE, ele é o conserto ----------
+     Sem ele a foto SOME no celular, e o encadeamento é este: `margin-inline:
+     auto` num item de grid tira o `stretch` e o mede por conteúdo; o
+     conteúdo é o `.quemShot`, cujo único filho é um `next/image` com `fill`,
+     ou seja, `position: absolute`, que não conta para o tamanho do pai; então
+     o shot mede 0 de largura, o `aspect-ratio: 3 / 4` devolve 0 de altura, e
+     o `.quemPhoto` fica com os 20px do próprio padding. Nada de errado
+     aparece no CSS lido linha a linha: some porque três decisões corretas se
+     encontram. No desktop não acontece porque lá o item estica na coluna.
+     Medido a 390px: 0x0 antes, 292x382 depois, com o teto de 300px valendo.
+     Regra geral para esta página: item de grid com `margin-inline: auto` e
+     filho absoluto precisa de largura declarada. */
+  .quemPhoto { width: 100%; max-width: 300px; margin-inline: auto; margin-bottom: 6px }
   .bar { display: flex }
   /* no celular não existe vão entre a logo e o botão: os dois já ocupam
      os ~350px úteis, e o sinal de vida empurraria os dois para duas
