@@ -22,4 +22,14 @@ three.js/
 # visitantes reais, incluindo cidade e URL. Ficam na máquina, não no git.
 mixpanel-*.json
 
+# Vídeos dos anúncios (hooks, corpos, CTAs e as montagens do lote 01):
+# 31MB de .mp4, e git guarda binário para sempre — cada clone e cada
+# deploy da Vercel passaria a carregar esse peso, inclusive as versões
+# antigas de cada corte. Mesma regra do PNG do retrato em
+# scripts/foto-quemfaz.mjs: o material pesado fica na máquina e o repo
+# versiona só o resultado publicado.
+# O QUE FICA no git: docs/lotes/*.md, que é onde as combinações, os
+# roteiros e os resultados de cada lote são registrados.
+anuncios/
+
 .vercel
