@@ -7,7 +7,7 @@ import s from "@/app/vitrine-digital/vitrine.module.css";
 import { CampoIsca, useGuardaDeFormulario } from "@/components/form-guarda";
 import { mascararWhatsapp, whatsappValido } from "@/components/telefone";
 import { enviarLeadVitrine } from "@/components/vitrine/lead-flow";
-import { initTracking } from "@/components/vitrine/tracking";
+import { focarSemContar, initTracking } from "@/components/vitrine/tracking";
 
 /* ============================================================
    O WHATSAPP SAIU DO CAMINHO DE LEITURA (13/08)
@@ -1260,9 +1260,13 @@ export function Offer() {
   const envioSuspeito = useGuardaDeFormulario();
   const formRef = useRef<HTMLFormElement>(null);
   const plan = avista ? "À vista R$999" : "Entrada de R$500";
+  /* O foco continua: depois de um salto dentro da página, deixar o foco no
+     botão que ficou para trás quebra a navegação por teclado e por leitor de
+     tela. O que mudou é ele passar pelo `focarSemContar`, senão este clique
+     no CTA vira um "tocou no formulário" que ninguém tocou. */
   function goToForm() {
     formRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-    (formRef.current?.elements.namedItem("nome") as HTMLInputElement | null)?.focus({ preventScroll: true });
+    focarSemContar(formRef.current?.elements.namedItem("nome") as HTMLInputElement | null);
   }
   /* ---------- o envio, invertido em 06/08 (igual à /e-commerce) ----------
      As regras inteiras (Lead antes, gravação antes de navegar, WhatsApp só

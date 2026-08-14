@@ -465,6 +465,29 @@ const POSICAO_LEAD: Record<string, string> = {
 const ESPERA_TRACKING = 300;
 let navegando = false;
 
+/* ---------- foco posto por código não conta como toque ----------
+   `element.focus()` dispara um `focusin` de verdade, indistinguível do
+   toque de um dedo: `isTrusted` é true nos dois casos. Então a única forma
+   de separar os dois é o próprio código avisar que a mão é dele.
+
+   A bandeira sobe e desce dentro da MESMA chamada, sem timer, porque o
+   `focus()` despacha o `focusin` de forma síncrona: quando o `finally`
+   roda, o ouvinte já viu a bandeira levantada e voltou. Timer aqui seria
+   uma janela aberta onde um toque humano de verdade seria descartado.
+
+   Quem quiser focar um campo de formulário sem sujar o funil usa esta
+   função em vez do `.focus()` cru. */
+let focoDeCodigo = false;
+export function focarSemContar(el: HTMLElement | null | undefined) {
+  if (!el) return;
+  focoDeCodigo = true;
+  try {
+    el.focus({ preventScroll: true });
+  } finally {
+    focoDeCodigo = false;
+  }
+}
+
 /* A trava contra toque duplo tem que soltar quando a pessoa VOLTA, senão ela
    vira o próximo bug: quem abre o WhatsApp, desiste de enviar e volta para a
    página encontra todos os botões mortos, inclusive o "ABRIR O WHATSAPP" que
@@ -643,6 +666,14 @@ export function initTracking() {
   // (o da oferta ou o do hero), 1x por sessão: a semântica é "tocou num
   // formulário", não "tocou neste formulário"
   document.addEventListener("focusin", (e) => {
+    /* Foco posto por código não é gente tocando no formulário. O botão da
+       oferta chama `goToForm`, que rola até o formulário e foca o campo
+       "nome"; sem esta guarda o próprio clique no CTA gerava um
+       InitiateCheckout, e a métrica passava a contar "foi levado até o
+       formulário" como se fosse "decidiu preencher". Na leitura de 14/08
+       eram 4 dos 23 toques do histórico, e é justamente a métrica que vai
+       dizer se o buraco fica antes ou depois do formulário. */
+    if (focoDeCodigo) return;
     if (!(e.target as HTMLElement)?.closest?.("#contratar, #hero-form")) return;
     umaVezPorSessao("mp_ic_vitrine", () => {
       conversao("InitiateCheckout",
