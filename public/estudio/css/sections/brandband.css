@@ -7,10 +7,21 @@
   padding-block:clamp(24px,4vw,56px);
 }
 .brandband__track{display:inline-flex;will-change:transform;animation:brandband 24s linear infinite}
+/* ---------- o nome do estúdio entrou na voz do estúdio ----------
+   Ele rolava em Inter 400, a única peça de display da página escrita na
+   fonte de CORPO. A intenção era "presença, não grito", mas o resultado
+   era um nome próprio na letra de parágrafo, do tamanho de um outdoor:
+   parecia texto ampliado, não assinatura.
+
+   A condensada resolve os dois lados. Ela é a voz da manchete e da logo,
+   então o nome finalmente pertence à página; e por ocupar menos largura
+   por letra, ela cabe inteira sem precisar de corpo tão grande, que era
+   de onde vinha o grito. O peso fica em 800 e não 900: aqui o nome é
+   assinatura, e assinatura não precisa do peso máximo. */
 .brandband__track span{
-  font-family:var(--font-body);font-weight:400;text-transform:uppercase;
-  font-size:clamp(3.5rem,11.5vw,13rem);line-height:1;letter-spacing:-.03em;
-  padding:0 .35em;color:var(--black);
+  font-family:var(--font-display);font-stretch:78%;font-weight:800;text-transform:uppercase;
+  font-size:clamp(3rem,10vw,11rem);line-height:1;letter-spacing:-.03em;
+  padding:0 .3em;color:var(--ink);
 }
 /* Mobile: letreiro maior e mais rápido — presença em vez de sobra de espaço */
 @media(max-width:640px){

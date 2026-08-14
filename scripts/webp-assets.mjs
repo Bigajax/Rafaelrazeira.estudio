@@ -35,6 +35,17 @@ const ARQUIVOS = [
   { origem: "public/assets/case-prgrife-desk.jpg", mob: 900 },
   { origem: "public/assets/demo/xavier-painel.jpg" },
   { origem: "public/assets/demo/xavier-painel-mob.jpg" },
+  /* As capturas de celular dos cases da /estudio e da /landing-page
+     (780x9000 cada, ~760KB em JPEG). Entraram aqui em 14/08 depois de uma
+     medição: a /landing-page fechava em 1,68MB, e 1,5MB disso eram duas
+     dessas. Numa página de tráfego pago, que argumenta justamente que o
+     celular é onde tudo quebra, esse era o pior lugar para gastar banda.
+     Sem `mob`: elas já nascem na largura de celular, então não existe
+     versão menor para gerar. */
+  { origem: "public/assets/case-lancellotti.jpg" },
+  { origem: "public/assets/case-baixudos.jpg" },
+  { origem: "public/assets/case-solourb.jpg" },
+  { origem: "public/assets/case-xavier.jpg" },
 ];
 
 const kb = (n) => Math.round(n / 1024);

@@ -4,15 +4,64 @@
    ============================================================ */
 .process__label{margin-bottom:clamp(36px,7vw,60px)}
 .proc__list{list-style:none;margin:0;padding:0}
+/* Aqui a numeração FICA: estes três são uma sequência de verdade (o
+   briefing vem antes do design, que vem antes da publicação), e a ordem é
+   informação que a pessoa precisa. É por isso que o "Para quem é" e o "O
+   que está incluso" perderam os números: só quem tem sequência numera. */
 .proc__step{
-  padding-block:clamp(32px,6vw,52px);border-top:1px solid var(--line);
-  display:grid;grid-template-columns:1fr;gap:16px;
+  padding-block:clamp(30px,5.4vw,48px);border-top:1px solid var(--linha);
+  display:grid;grid-template-columns:1fr;gap:14px;
 }
-.proc__step:last-child{border-bottom:1px solid var(--line)}
+.proc__step:last-child{border-bottom:1px solid var(--linha)}
 @media(min-width:820px){.proc__step{grid-template-columns:110px 1fr}}
-.proc__num{font-family:var(--font-mono);font-weight:700;font-size:clamp(1rem,4vw,1.35rem);color:var(--emerald-dark);letter-spacing:.02em}
-.proc__title{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.4rem,6vw,2.4rem);line-height:1.02;letter-spacing:-.025em}
-.proc__text{margin-top:16px;font-size:clamp(1rem,4vw,1.2rem);color:var(--ink-60);line-height:1.45;max-width:52ch}
+/* ============================================================
+   O TRILHO DO TEMPO
+
+   O número era mono de 1,35rem em esmeralda: o mesmo peso de qualquer
+   rótulo da página. Numa seção cuja razão de existir é ser uma SEQUÊNCIA
+   (é a única das duas páginas em que a ordem é informação de verdade, e
+   foi por isso que ela ficou com os números quando o "para quem é" e o
+   "o que está incluso" perderam os deles), o número precisa ter peso de
+   número.
+
+   Ele entra no corpo de manchete, na condensada 62%: é a mesma anatomia
+   da "conta da dor" da /vitrine-digital, que é a gramática da casa para
+   quando o NÚMERO é o argumento. Como a condensada ocupa pouco, ele
+   cresce cinco vezes sem pedir uma coluna maior.
+
+   Embaixo dele vem o PRAZO daquele passo, em mono. Ele não inventa
+   promessa: as três frases já estavam dentro dos parágrafos. O que muda
+   é que elas param de estar enterradas no meio do texto e viram um
+   trilho que dá para ler de cima a baixo em três batidas: 24 horas, 7
+   dias, depois do seu OK. Numa página de tráfego pago, esse trilho é a
+   pergunta que a pessoa está tentando responder enquanto lê.
+
+   O prazo é opcional: onde não existe dado real, ele simplesmente não é
+   renderizado (ver js/sections/process.js).
+   ============================================================ */
+.proc__num{display:block;line-height:1}
+.proc__num b{
+  display:block;
+  font-family:var(--font-display);font-stretch:62%;font-weight:900;
+  font-size:clamp(2.6rem,5.2vw,4.2rem);line-height:.82;letter-spacing:-.02em;
+  color:var(--ink);
+}
+.proc__num i{
+  display:block;margin-top:9px;
+  font-family:var(--font-mono);font-style:normal;font-weight:700;font-size:9.5px;
+  line-height:1.5;letter-spacing:.14em;color:var(--green-dark);
+}
+/* a coluna cresce para caber o prazo em uma ou duas linhas; sem isso
+   "SALDO APÓS O SEU OK" quebrava em quatro */
+@media(min-width:820px){.proc__step{grid-template-columns:150px 1fr}}
+/* no celular o número e o prazo ficam lado a lado: empilhados, eles
+   gastavam meia tela antes do título do passo aparecer */
+@media(max-width:819px){
+  .proc__num{display:flex;align-items:baseline;gap:14px}
+  .proc__num i{margin-top:0}
+}
+.proc__title{font-family:var(--font-display);font-stretch:78%;font-weight:900;text-transform:uppercase;font-size:clamp(1.4rem,6vw,2.4rem);line-height:1.02;letter-spacing:-.025em}
+.proc__text{margin-top:14px;font-size:clamp(1rem,4vw,1.15rem);color:var(--ink-soft);line-height:1.5;max-width:54ch}
 
 /* Resumo da garantia — linha mono que leva ao bloco completo antes do formulário */
 .proc__note{

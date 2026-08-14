@@ -25,6 +25,7 @@ import { initLoader }     from "./lib/loader.js";
 import { initReveal }     from "./lib/reveal.js";
 import { initHeroFit }    from "./lib/herofit.js";
 import { initForm }       from "./lib/form.js";
+import { initHeroForm }   from "./lib/hero-form.js";
 import { initPill }       from "./lib/pill.js";
 import { initCaseVideos } from "./lib/videos.js";
 import { initTracking }   from "./lib/tracking.js";
@@ -45,6 +46,7 @@ initLoader();   // tela de carregamento — sai em pixel dissolve quando tudo pi
 initReveal();
 initHeroFit();
 initForm();
+initHeroForm();   // captura curta no cartão da 1ª dobra (grava na mesma tabela)
 initPill();
 initCaseVideos();
 initTracking();   // opt-out: medição roda no load; desativa-se em /privacidade

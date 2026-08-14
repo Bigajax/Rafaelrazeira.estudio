@@ -1,14 +1,37 @@
 /* ============================================================
-   MARQUEE — texto infinito em scroll horizontal
+   MARQUEE — a tira rosa da casa
+
+   Ela era uma faixa de papel com um fio em cima e outro embaixo,
+   e o texto em Inter caixa alta: no meio de uma página inteira de
+   papel, uma faixa de papel não é faixa, é mais um parágrafo
+   grande. Ela não separava nada e não marcava nada.
+
+   Agora é a mesma tira rosa que o /portfolio usa na costura entre
+   o argumento e a prova. Aqui ela aparece DUAS vezes (ver o array
+   `page` em js/main.js): uma logo depois do hero e outra antes do
+   rodapé, e é isso que a torna estrutura em vez de enfeite. Ela
+   fecha o parêntese que abriu.
+
+   O rosa é a faixa dos 10% da paleta. Ele já mora no botão do
+   cartão do hero e no pill flutuante, então a tira não abre cor
+   nova: usa a que a página já tinha para dizer "aqui muda de
+   assunto".
+
+   O tipo entrou na condensada 78% em peso 900, a mesma voz da
+   manchete. Em Inter 500 o letreiro lia como legenda esticada.
    ============================================================ */
 .marquee{
-  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
-  padding-block:clamp(16px,3.5vw,26px);overflow:hidden;white-space:nowrap;
-  position:relative;z-index:1;background:var(--off-white);
+  overflow:hidden;white-space:nowrap;
+  position:relative;z-index:1;
+  background:var(--rosa);
+  padding-block:0;
+  pointer-events:none;user-select:none;
 }
 .marquee__track{display:inline-flex;will-change:transform;animation:marquee 52s linear infinite}
 .marquee__track span{
-  font-family:var(--font-body);font-weight:500;text-transform:uppercase;
-  font-size:clamp(1.15rem,4.2vw,1.9rem);letter-spacing:.01em;padding:0 1.4em;
+  font-family:var(--font-display);font-stretch:78%;font-weight:900;text-transform:uppercase;
+  font-size:clamp(17px,2.4vw,34px);line-height:1;letter-spacing:-.005em;
+  padding:.44em .8em;color:var(--paper);
 }
 @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.marquee__track{animation:none}}

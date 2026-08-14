@@ -34,6 +34,11 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       { source: "/estudio", destination: "/estudio/index.html" },
+      /* /landing-page é a segunda página estática: o destino do tráfego
+         pago da Meta. Ela mora em public/landing-page/index.html mas usa
+         o CSS e os módulos da /estudio pelos dois mapas abaixo, então a
+         página nova não duplica uma linha de layout. */
+      { source: "/landing-page", destination: "/landing-page/index.html" },
       { source: "/css/:path*", destination: "/estudio/css/:path*" },
       { source: "/js/:path*", destination: "/estudio/js/:path*" },
       { source: "/briefing", destination: "/briefing.html" },

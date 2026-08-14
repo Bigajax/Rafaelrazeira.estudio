@@ -81,6 +81,27 @@ function validarPasso1(form){
   return true;
 }
 
+/* ---------- a validação do formulário de um passo só ----------
+   Os quatro campos são conferidos de uma vez, de cima para baixo, e o
+   foco vai para o primeiro que falhar: numa lista curta isso é mais
+   rápido do que espalhar erro por dois passos.
+
+   "Site ou Instagram" é OBRIGATÓRIO aqui, ao contrário do campo
+   equivalente do briefing da /estudio: sem saber para onde os anúncios
+   apontam hoje, não existe análise para entregar, e a análise é o que a
+   página inteira promete. */
+function validarUmPasso(form){
+  const checa = (campo, errId) =>
+    marcarErro(form[campo], document.getElementById(errId), !form[campo].value.trim());
+  for (const [campo, errId] of [["nome","err-nome"],["instagram","err-insta"],["vende","err-vende"]]){
+    if (!checa(campo, errId)){ form[campo].focus(); return false; }
+  }
+  if (!marcarErro(form.whatsapp, document.getElementById("err-whats"), !whatsValido(form.whatsapp.value))){
+    form.whatsapp.focus(); return false;
+  }
+  return true;
+}
+
 function validarPasso2(form){
   // Tipo de projeto (pills) — obrigatório; o erro marca o grupo inteiro
   const grupo  = form.querySelector(".choices");
@@ -104,6 +125,13 @@ export function initForm(){
   const passo1 = form.querySelector('[data-fstep="1"]');
   const passo2 = form.querySelector('[data-fstep="2"]');
   const steps  = document.querySelectorAll(".stepper .step");
+  /* Sem o passo 2 no DOM, este é o formulário de um passo só da
+     /landing-page (ver js/sections/contact.js). Tudo que é de dois
+     passos (stepper, botão continuar, botão voltar, InitiateCheckout ao
+     avançar) fica desligado a partir daqui, e nada disso pode ser
+     assumido como existente: os `getElementById` de antes davam TypeError
+     na página nova. */
+  const umPasso = !passo2;
   let icDisparado = false;   // InitiateCheckout: uma vez por visita
 
   function irParaPasso(n){
@@ -117,50 +145,66 @@ export function initForm(){
     }
   }
 
-  // limpa o erro do campo enquanto digita
-  [["nome","err-nome"],["whatsapp","err-whats"],["vende","err-vende"]].forEach(([campo, errId]) => {
-    form[campo].addEventListener("input", () => {
-      form[campo].classList.remove("is-invalid");
-      document.getElementById(errId).hidden = true;
+  // limpa o erro do campo enquanto digita (o "instagram" só tem erro na
+  // versão de um passo, então a lista é montada conforme o que existe)
+  [["nome","err-nome"],["whatsapp","err-whats"],["vende","err-vende"],["instagram","err-insta"]].forEach(([campo, errId]) => {
+    const el = form[campo], err = document.getElementById(errId);
+    if (!el || !err) return;
+    el.addEventListener("input", () => {
+      el.classList.remove("is-invalid");
+      err.hidden = true;
     });
   });
 
-  // limpa o erro do tipo de projeto ao escolher uma pill
-  form.querySelectorAll('input[name="tipo_projeto"]').forEach(r => {
-    r.addEventListener("change", () => {
-      form.querySelector(".choices").classList.remove("is-invalid");
-      document.getElementById("err-tipo").hidden = true;
+  if (!umPasso){
+    // limpa o erro do tipo de projeto ao escolher uma pill
+    form.querySelectorAll('input[name="tipo_projeto"]').forEach(r => {
+      r.addEventListener("change", () => {
+        form.querySelector(".choices").classList.remove("is-invalid");
+        document.getElementById("err-tipo").hidden = true;
+      });
     });
-  });
 
-  document.getElementById("btn-continue").addEventListener("click", () => {
-    if (!validarPasso1(form)) return;
-    irParaPasso(2);
-    if (!icDisparado){ icDisparado = true; trackInitiateCheckout(); }
-  });
+    document.getElementById("btn-continue").addEventListener("click", () => {
+      if (!validarPasso1(form)) return;
+      irParaPasso(2);
+      if (!icDisparado){ icDisparado = true; trackInitiateCheckout(); }
+    });
 
-  document.getElementById("btn-back").addEventListener("click", () => irParaPasso(1));
+    document.getElementById("btn-back").addEventListener("click", () => irParaPasso(1));
+  }
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     if (form._gotcha.value) return; // honeypot preenchido = bot
-    if (!validarPasso1(form)){ irParaPasso(1); return; }
-    if (!validarPasso2(form)) return;
+    if (umPasso){
+      if (!validarUmPasso(form)) return;
+    } else {
+      if (!validarPasso1(form)){ irParaPasso(1); return; }
+      if (!validarPasso2(form)) return;
+    }
 
+    /* O payload tem as MESMAS chaves nas duas versões: a tabela é uma só,
+       e a coluna legada `email` não aceita nulo. O que a versão curta não
+       pergunta vai como string vazia.
+       O `origem` é o que separa as duas páginas nos dados. Sem ele não dá
+       para saber qual das duas está trazendo lead, que é a primeira coisa
+       que a campanha vai precisar responder. */
+    const opc = (nome) => (form[nome] ? form[nome].value.trim() : "");
     const payload = {
       nome: form.nome.value.trim(),
       whatsapp: form.whatsapp.value.trim(),
       instagram: form.instagram.value.trim(),
-      tipo_projeto: form.tipo_projeto.value,
-      vende: form.vende.value.trim(),
-      objetivo: form.objetivo.value,
-      identidade: form.identidade.value,
-      detalhes: form.detalhes.value.trim(),
+      tipo_projeto: opc("tipo_projeto"),
+      vende: opc("vende"),
+      objetivo: opc("objetivo"),
+      identidade: opc("identidade"),
+      detalhes: opc("detalhes"),
       email: "",                       // coluna legada (not null) no Supabase
-      origem: "landing-rafael-razeira",
+      origem: umPasso ? "landing-rafael-razeira-lp" : "landing-rafael-razeira",
     };
 
-    const btn = passo2.querySelector(".btn-submit");
+    const btn = form.querySelector(".btn-submit[type=submit]") || passo2.querySelector(".btn-submit");
     const original = btn.innerHTML;
     btn.disabled = true;
     btn.textContent = "Enviando…";

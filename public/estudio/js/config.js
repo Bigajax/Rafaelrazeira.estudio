@@ -23,7 +23,7 @@ const WHATSAPP_NUMBER = "5544999997219";
    MP_URL em js/lib/tracking.js para api-eu.mixpanel.com. */
 const MIXPANEL_TOKEN = "56f4afa648bf59c45e417b084fdb4aa4";
 
-const CONFIG = {
+const CONFIG_ESTUDIO = {
   brand: {
     name: "RAFAEL RAZEIRA",       // aparece no header e no footer
     suffix: "ESTÚDIO",            // segunda parte do logo (mais leve)
@@ -36,10 +36,42 @@ const CONFIG = {
     // <em>…</em> na headline = destaque em esmeralda (css/sections/hero.css)
     headline: ["SUA MARCA", "VENDENDO ONLINE", "EM ATÉ <em>7 DIAS ÚTEIS.</em>"],
     // <em>…</em> no subtítulo = destaque em esmeralda (css/sections/hero.css)
-    subheadline: "<em>Landing pages, vitrines e lojas completas</em>: estratégia, copy e design sob medida. O saldo, você só quita <b>depois de aprovar</b>.",
+    /* A frase do saldo ("o saldo você só quita depois de aprovar") saiu
+       daqui em 14/08, junto com a da linha de prova. Ela continua inteira
+       no bloco de garantia e no passo 03 do "Como funciona", que é onde
+       alguém lê condição de pagamento. No cartão do hero ela custava duas
+       linhas para responder uma pergunta que ninguém faz na primeira
+       tela: ali a pessoa ainda está decidindo se conversa, não se paga. */
+    subheadline: "<em>Landing pages, vitrines e lojas completas</em>: estratégia, copy e design sob medida.",
     cta: "QUERO MINHA ANÁLISE GRATUITA",
+    /* ⬇ O CARTÃO DO HERO É UM FORMULÁRIO (14/08)
+       Antes ele tinha só um botão que ROLAVA até o briefing lá no fim da
+       página. Agora ele captura ali mesmo: dois campos obrigatórios e um
+       opcional, o mínimo para conseguir responder.
+       O briefing completo do fim da página continua existindo e continua
+       sendo o caminho de quem quer contar o projeto inteiro; este aqui é
+       para quem decidiu na primeira tela e não vai rolar dez mil pixels.
+       Os dois gravam na mesma tabela e disparam o mesmo Lead. */
+    form: {
+      nome:      { label: "SEU NOME",             ph: "Como devo te chamar" },
+      whatsapp:  { label: "WHATSAPP COM DDD",     ph: "(44) 99999-9999" },
+      instagram: { label: "INSTAGRAM OU SITE",    ph: "@seuperfil (opcional)" },
+      enviar: "QUERO MINHA ANÁLISE GRATUITA",
+      enviando: "ENVIANDO…",
+      errNome:  "Escreva seu nome.",
+      errWhats: "Confira o número: faltou dígito.",
+      okTitulo: "RECEBI SEU CONTATO.",
+      okTexto:  "Vou olhar seu negócio e te responder pelo WhatsApp em até 24 horas úteis.",
+      okCta:    "ADIANTAR PELO WHATSAPP",
+      erro:     "Não consegui enviar agora. Tente de novo ou me chame no WhatsApp.",
+    },
     // Linha de prova sob o CTA — responde às 3 dúvidas de quem acabou de clicar no anúncio
-    proof: "SEM COMPROMISSO · RETORNO EM ATÉ 24H · SALDO SÓ APÓS APROVAR",
+    proof: "SEM COMPROMISSO · RETORNO EM ATÉ 24H",
+    // `ctaWhats` não é mais usado no hero: o link "prefiro conversar pelo
+    // WhatsApp" saiu do cartão em 14/08 (era uma porta de saída ao lado do
+    // botão de envio, competindo com ele). O WhatsApp continua no rodapé e
+    // na confirmação de quem enviou. `whatsMsg` segue em uso pela
+    // confirmação, então não apague nenhum dos dois.
     ctaWhats: "PREFIRO CONVERSAR PELO WHATSAPP",
     whatsMsg: "Olá, Rafael. Vi seu trabalho e gostaria de entender como uma landing page poderia funcionar para o meu negócio.",
   },
@@ -216,6 +248,221 @@ const CONFIG = {
 
   pillText: "ANALISAR MEU PROJETO",
 };
+
+/* ============================================================
+   A SEGUNDA PÁGINA: /landing-page
+
+   Este arquivo passou a servir DUAS páginas, e é bom entender por quê
+   antes de mexer.
+
+   A /landing-page é o destino do tráfego pago da Meta. Ela fala com
+   quem JÁ anuncia, e por isso muda tudo o que é argumento (o problema é
+   o clique que se perde, não "presença digital") e nada do que é
+   estrutura: o hero com o cartão de captura, o processo em 3 passos, os
+   cases no mockup de celular, o quem faz e o formulário são os MESMOS
+   componentes da /estudio, com o mesmo CSS.
+
+   Duplicar a pasta inteira teria sido mais rápido hoje e mais caro para
+   sempre: toda correção de layout precisaria ser feita duas vezes, e a
+   segunda seria esquecida. Então o conteúdo se separa aqui e o resto
+   continua um só.
+
+   COMO FUNCIONA: as chaves de CONFIG_LP SUBSTITUEM as de CONFIG_ESTUDIO
+   inteiras, no primeiro nível. Se você mexer só em `hero.cta`, precisa
+   repetir o bloco `hero` todo. É proposital: mesclagem profunda
+   esconderia de onde cada texto veio.
+
+   As seções que a /landing-page NÃO usa (o que está incluso, valores,
+   depoimentos, projetos fundadores, brandband) continuam definidas
+   acima e simplesmente não entram na ordem de `js/main-lp.js`.
+   ============================================================ */
+const CONFIG_LP = {
+  brand: {
+    name: "RAFAEL RAZEIRA",
+    suffix: "ESTÚDIO",
+    navCta: "ANÁLISE GRATUITA",
+  },
+
+  hero: {
+    status: "AGENDA ABERTA",
+    tagline: "CAPTAÇÃO · VENDA · LANÇAMENTO",
+    /* Lida em voz alta: "Você já pagou pelo clique. A venda é aqui."
+       Ela nomeia o dinheiro que já saiu do bolso e aponta o lugar. Nenhuma
+       promessa de número, que é o que todo concorrente escreve.
+       O <em> da última linha ganha a largura 100% e a faixa grafite (ver
+       css/sections/hero.css); os pontos finais saem em rosa. */
+    headline: ["VOCÊ JÁ PAGOU", "PELO CLIQUE.", "A VENDA <em>É AQUI.</em>"],
+    subheadline: "<em>Landing pages para quem já anuncia.</em> Estratégia, texto e design da página que recebe o seu tráfego, no ar em 7 dias úteis.",
+    cta: "QUERO MINHA ANÁLISE GRATUITA",
+    form: {
+      nome:      { label: "SEU NOME",          ph: "Como devo te chamar" },
+      whatsapp:  { label: "WHATSAPP COM DDD",  ph: "(44) 99999-9999" },
+      instagram: { label: "SITE OU INSTAGRAM", ph: "Para onde seus anúncios vão hoje" },
+      enviar: "QUERO MINHA ANÁLISE GRATUITA",
+      enviando: "ENVIANDO…",
+      errNome:  "Escreva seu nome.",
+      errWhats: "Confira o número: faltou dígito.",
+      okTitulo: "RECEBI SEU CONTATO.",
+      okTexto:  "Vou olhar para onde o seu tráfego cai hoje e te respondo pelo WhatsApp em até 24 horas úteis.",
+      okCta:    "ADIANTAR PELO WHATSAPP",
+      erro:     "Não consegui enviar agora. Tente de novo ou me chame no WhatsApp.",
+    },
+    proof: "RESPOSTA EM ATÉ 24H · SEM COMPROMISSO",
+    ctaWhats: "PREFIRO CONVERSAR PELO WHATSAPP",
+    whatsMsg: "Olá, Rafael. Eu já anuncio e quero uma landing page para receber o meu tráfego.",
+  },
+
+  marquee: [
+    "SEU ANÚNCIO MERECE UM DESTINO MELHOR QUE O LINK DA BIO.",
+    "FEITO PARA CONVERTER.",
+  ],
+
+  cue: "VEJA ONDE O DINHEIRO VAZA",
+
+  /* ---------- O VAZAMENTO ----------
+     Ocupa o lugar do "Para quem é" da /estudio, e o trabalho dele é
+     outro: criar o problema e provar que o estúdio entende do assunto
+     SEM depender de um único resultado de cliente. É a seção que segura
+     a página enquanto não houver número para mostrar. */
+  audience: {
+    label: "ONDE O DINHEIRO VAZA.",
+    headline: "O PROBLEMA QUASE NUNCA É O ANÚNCIO.",
+    intro: "Você paga por cada clique. Se o que vem depois do clique não estiver à altura, o dinheiro sai do mesmo jeito e a venda não acontece. Os três vazamentos mais caros:",
+    /* Liga o marcador numerado em rosa no lugar do traço esmeralda (ver
+       .aud__item--marcado, no CSS). Só esta página usa: é a única das
+       duas que descreve um problema, e o rosa da casa marca a ação em
+       todo lugar menos aqui, onde ele inverte e marca o que está errado. */
+    marcador: "VAZAMENTO",
+    /* Fundo grafite. O miolo da página eram SEIS seções de papel
+       seguidas, sem uma quebra: cada uma bem resolvida sozinha e todas
+       iguais em peso, o que faz a leitura virar rolagem. Esta é a única
+       que dá uma má notícia, então é ela que apaga a luz. */
+    escura: true,
+    blocks: [
+      { title:"O CLIQUE CAI NO LUGAR ERRADO", text:"Link da bio, home do site, direct do Instagram. Três destinos que obrigam a pessoa a procurar sozinha o que ela veio buscar. Boa parte desiste no caminho." },
+      { title:"A PÁGINA NÃO REPETE A PROMESSA DO ANÚNCIO", text:"Ela clicou por causa de uma frase. Se essa frase não estiver na primeira tela, ela acha que errou de lugar e volta." },
+      { title:"NO CELULAR, NADA DISSO SE SUSTENTA", text:"É de onde vem quase todo o seu tráfego pago, e é onde as páginas feitas no computador quebram primeiro." },
+    ],
+  },
+
+  /* O passo 01 é o próprio botão da página: a pessoa lê o processo e
+     descobre que o começo é exatamente o que ela já podia ter feito. E o
+     pixel no passo 03 é entrega real, que este cliente valoriza e o dono
+     de loja da /vitrine-digital nem entenderia. */
+  process: {
+    label: "COMO FUNCIONA.",
+    steps: [
+      /* O `prazo` não acrescenta promessa: as três frases já estavam
+         dentro dos parágrafos. Ele só tira do meio do texto o dado que
+         este cliente está tentando descobrir enquanto lê, e põe no
+         trilho da esquerda, embaixo do número. */
+      { num:"01", prazo:"RESPOSTA EM 24H ÚTEIS", title:"VOCÊ PEDE A ANÁLISE",     text:"Você me manda o seu site ou Instagram em dois campos. Eu olho para onde o seu tráfego cai hoje e te respondo em até 24 horas úteis, sem compromisso." },
+      { num:"02", prazo:"7 DIAS ÚTEIS",          title:"EU FAÇO A PÁGINA INTEIRA", text:"Estratégia, texto, design e desenvolvimento. Você não escreve nada e não manda nada pronto. Fica em até 7 dias úteis, com a sua campanha em mente." },
+      { num:"03", prazo:"SALDO APÓS O SEU OK",   title:"VOCÊ APROVA E VAI AO AR",  text:"Domínio conectado, formulário caindo no seu WhatsApp e o pixel configurado, para você ver quanto custa cada contato. O saldo só é quitado depois do seu OK." },
+    ],
+    note: "ENTRADA DE 50% · SALDO SÓ APÓS APROVAR O DESIGN",
+  },
+
+  /* A Xavier's Sports saiu e a Baixudos.PR entrou. Não é gosto: a
+     manchete diz "páginas feitas para uma tarefa só", e a Xavier's é uma
+     vitrine de catálogo, ou seja, o contrário disso. Manter os três
+     antigos faria a própria seção de prova desmentir o título. */
+  cases: {
+    label: "PROJETOS DO ESTÚDIO",
+    headline: "PÁGINAS FEITAS PARA UMA TAREFA SÓ.",
+    intro: "Cada uma nasceu de um objetivo específico, não de um layout bonito escolhido antes.",
+    cta: "QUERO UMA PÁGINA PARA A MINHA CAMPANHA",
+    items: [
+      { video:"", img:"assets/case-lancellotti.jpg", tag:"", category:"LANDING PAGE · CAPTAÇÃO",   name:"Lancellotti Tattoo", result:"Hero cinematográfico, acervo em galeria e orçamento guiado por etapas: quem chega interessado sai com o pedido já descrito." },
+      { video:"", img:"assets/case-baixudos.jpg",    tag:"", category:"LANDING PAGE · EVENTO",     name:"Baixudos.PR",        result:"Página de campanha com data marcada: uma promessa, uma ação e o caminho até o ingresso sem desvio." },
+      /* A Sölo Urb saiu em 14/08, pelo mesmo motivo que a Xavier's já
+         tinha saído: a manchete promete "páginas feitas para uma tarefa
+         só" e um e-commerce de catálogo é exatamente a exceção disso.
+         Sobraram DUAS, e duas é o número certo aqui: com três, a terceira
+         era a que desmentia o título. A grade se ajusta sozinha ao número
+         de itens (ver .cases__grid, no CSS). */
+    ],
+  },
+
+  /* ---------- QUEM FAZ ----------
+     O "um homem só" deixa de ser charme de estúdio e vira a solução de um
+     problema técnico que este cliente conhece pelo nome: message match.
+     Quando o anúncio e a página saem de mãos diferentes, é no meio do
+     caminho que a promessa se perde. */
+  about: {
+    label: "QUEM FAZ.",
+    paragraphs: [
+      "Sou eu que desenho, escrevo e publico a sua página.",
+      "Um estúdio de um homem só. Você não fala com atendimento nem com estagiário: <b>fala comigo</b>, do briefing ao ar.",
+      "<span class='muted'>Estratégia, texto e design saindo do mesmo par de mãos é o que faz o <b>anúncio e a página falarem igual</b>. Quando são pessoas diferentes, é no meio do caminho que a promessa se perde.</span>",
+    ],
+    cta: "QUERO MINHA ANÁLISE GRATUITA",
+  },
+
+  contact: {
+    status: "AGENDA ABERTA",
+    headline: "COMECE PELA ANÁLISE.",
+    intro: "Me conte o que você vende e para onde o seu tráfego vai hoje. Eu analiso e retorno pelo WhatsApp em até 24 horas úteis.",
+    scarcity: "Pego poucos projetos por mês, e todos passam por análise antes de aceitar.",
+    email: "rafael.rbarbon@gmail.com",
+    /* O bloco que na /estudio é a GARANTIA aqui descreve a entrega da
+       análise. É a mesma caixa no mesmo lugar, com outro trabalho: lá ela
+       tira o risco de pagar, aqui ela diz o que a pessoa ganha de graça,
+       que é o que faz o formulário valer o preenchimento. */
+    guarantee: {
+      label: "A ANÁLISE",
+      title: "O QUE VOCÊ RECEBE.",
+      text:  "Eu abro o seu Instagram e o destino que os seus anúncios usam hoje, e te mando <b>em vídeo</b>: onde o clique se perde, o que a página precisa ter para segurar quem chega e <b>que tipo de projeto o seu caso pede</b>. Se eu achar que não consigo ajudar, eu falo.",
+    },
+    /* Sem preço na página: cada campanha pede um escopo diferente, e um
+       "a partir de" aqui filtraria pelo número antes de a pessoa entender
+       o que recebe. O valor fechado sai depois da análise. */
+    pricing: "",
+    pricingNote: "Cada campanha pede um escopo diferente. Depois da análise eu te mando o valor fechado, sem surpresa no meio do caminho.",
+    /* ---------- um passo só, quatro campos ----------
+       A /estudio pergunta em dois passos porque lá o formulário É o
+       briefing. Aqui ele é o pedido de uma ANÁLISE: objetivo, identidade
+       visual e detalhes eu pergunto no WhatsApp, depois que a conversa
+       existir. Cada campo a mais numa página de tráfego pago é gente que
+       desiste no meio. */
+    passoUnico: true,
+    /* Inverte quem brilha na seção escura: o bloco da análise vira
+       contorno e o formulário vira a etiqueta de papel. Ver o comentário
+       em js/sections/contact.js. */
+    formClaro: true,
+    form: {
+      nome:      { label:"Qual seu nome?",  placeholder:"Seu nome", err:"Digite seu nome." },
+      whatsapp:  { label:"WhatsApp com DDD", placeholder:"(44) 99999-9999", err:"Digite o WhatsApp com DDD (10 a 11 dígitos)." },
+      instagram: { label:"Site ou Instagram", placeholder:"Para onde seus anúncios vão hoje", err:"Diga para onde seus anúncios vão hoje." },
+      vende:     { label:"O que você vende?", placeholder:"Ex.: estética, mentoria, curso, serviço local…", err:"Conte o que você vende." },
+      submit:  "RECEBER MINHA ANÁLISE GRATUITA",
+      note:    "Sem compromisso. Seus dados serão usados apenas para responder sobre o seu projeto.",
+      successTitle: "ANÁLISE SOLICITADA!",
+      successText:  "Vou olhar para onde o seu tráfego cai hoje e te respondo pelo WhatsApp em até 24 horas úteis. Quer adiantar a conversa?",
+    },
+    schedule: { url: "", cta: "CHAMAR NO WHATSAPP" },
+  },
+
+  footer: {
+    name: "RAFAEL RAZEIRA ESTÚDIO",
+    email: "rafael.rbarbon@gmail.com",
+    instagram: { handle:"@rafaelrazeira", url:"https://instagram.com/rafaelrazeira" },
+    whatsapp: { display:"(44) 99999-7219", url:`https://wa.me/${WHATSAPP_NUMBER}` },
+    location: "MARINGÁ · PR · ATENDO O BRASIL INTEIRO",
+    legal: [
+      { label:"TERMOS DE USO",            url:"/termos" },
+      { label:"POLÍTICA DE PRIVACIDADE",  url:"/privacidade" },
+    ],
+  },
+
+  pillText: "QUERO MINHA ANÁLISE",
+};
+
+/* Qual das duas o navegador está lendo. É a única linha que decide, e ela
+   olha o caminho porque as duas páginas compartilham TODO o resto dos
+   arquivos: mesmo CSS, mesmos módulos de seção, mesmo js/lib. */
+const naLP = typeof location !== "undefined" && location.pathname.startsWith("/landing-page");
+const CONFIG = naLP ? { ...CONFIG_ESTUDIO, ...CONFIG_LP } : CONFIG_ESTUDIO;
 
 /* ============================================================
    ENDPOINT DE ENVIO DO FORMULÁRIO

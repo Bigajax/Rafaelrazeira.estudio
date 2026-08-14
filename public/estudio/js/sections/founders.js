@@ -2,6 +2,7 @@
    com borda esmeralda sutil, convite para os primeiros cases do estúdio.
    Tom de acesso antecipado ("founding partners"), nunca de promoção. */
 import { CONFIG } from "../config.js";
+import { ponto } from "../lib/ponto.js";
 
 export function founders(){
   const f = CONFIG.founders;
@@ -15,7 +16,7 @@ export function founders(){
         <div class="eyebrow founders__eyebrow">
           <span class="dot"></span><span class="status">${f.status}</span>
         </div>
-        <h2 class="founders__title">${f.title}</h2>
+        <h2 class="founders__title">${ponto(f.title)}</h2>
         <p class="founders__text">${f.text}</p>
         <ul class="founders__benefits">${items}
       </ul>

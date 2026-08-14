@@ -4,29 +4,90 @@
    Edite AQUI para mudanças globais. Estilos de cada seção ficam
    em css/sections/<nome>.css
    ============================================================ */
-:root{
-  /* —— Cor principal da marca: ESMERALDA —— */
-  --emerald:#10B981;         /* base — CTAs, status, destaques */
-  --emerald-dark:#065F46;    /* hover / fundos escuros de apoio */
-  --emerald-light:#D1FAE5;   /* fundo do CTA pill flutuante */
+/* ============================================================
+   A CASA INTEIRA PASSOU A FALAR A MESMA LÍNGUA (14/08)
 
-  /* —— Neutros —— */
-  --off-white:#FAFAF7;
-  --black:#0A0A0A;
-  --ink-60:rgba(10,10,10,.60);
-  --ink-40:rgba(10,10,10,.40);
-  --line:rgba(10,10,10,.10);
-  --line-dark:rgba(255,255,255,.10);
+   Esta página era quase-branca (#FAFAF7) com esmeralda vivo (#10B981) e
+   preto (#0A0A0A). A /vitrine-digital, a /e-commerce e o /portfolio
+   usavam papel (#F2EFE6), grafite (#14181A), esmeralda em três tons e
+   rosa como acento. Quatro páginas do mesmo estúdio, dois sistemas de
+   cor, e a /estudio é justamente a que assina as outras três.
+
+   Agora os tokens são os mesmos, e a paleta funciona em 60/30/10:
+
+     60%  --paper   o chão
+     30%  --ink     estrutura, seções escuras
+          --green   a marca: filetes, sinais, grifos
+     10%  --rosa    a AÇÃO: o pill flutuante e o botão do formulário
+
+   ---------- os nomes antigos continuam valendo ----------
+   `--off-white`, `--black`, `--emerald` e companhia NÃO foram apagados:
+   eles viraram apelidos dos novos. São dezoito arquivos de seção
+   apontando para esses nomes, e trocar todos de uma vez só serviria para
+   transformar uma mudança de cor num diff ilegível. Quem escrever CSS
+   novo aqui usa os nomes novos; os antigos ficam para o que já existe.
+
+   ---------- o esmeralda virou TRÊS ----------
+   Mesma regra das outras páginas, e ela existe porque um esmeralda só
+   não faz os dois trabalhos: sobre papel, o verde vivo da identidade dá
+   2,2:1, que é ilegível como texto.
+
+     --green       #0C9159  traço, moldura, grifo grande (3,5:1 no papel)
+     --green-dark  #076B42  SÓ texto miúdo sobre papel (5,7:1)
+     --green-live  #1FBF7A  SÓ sobre grafite (7,7:1 contra o --ink)
+
+   Regra prática: menos de 18px sobre papel usa --green-dark; qualquer
+   coisa dentro de seção escura usa --green-live.
+   ============================================================ */
+:root{
+  /* —— a paleta da casa —— */
+  --paper:#F2EFE6;
+  --paper-2:#EAE6D9;
+  --ink:#14181A;
+  --ink-soft:#3A4144;
+  --green:#0C9159;
+  --green-dark:#076B42;
+  --green-live:#1FBF7A;
+  --rosa:#E31B62;
+  --rosa-dark:#B81250;
+  /* ---------- o rosa também virou dois ----------
+     Mesma história do esmeralda, e pelo mesmo motivo. O `--rosa` foi
+     desenhado para ser lido em BRANCO POR CIMA (botão cheio: 4,57:1 de
+     branco sobre ele). Como TEXTO sobre grafite ele dá 3,5:1, o que já
+     não passa em 10px, que é o corpo dos rótulos desta casa.
+     O `--rosa-live` existe só para isso: texto miúdo rosa sobre fundo
+     escuro (6,1:1 contra o --ink). Não use em botão cheio nem sobre
+     papel; ali ele fica lavado. */
+  --rosa-live:#FF5C8A;
+  --linha:#D8D3C4;
+  --linha-dark:#2A3134;
+
+  /* —— apelidos: o CSS de seção que já existe aponta para cá —— */
+  --emerald:var(--green);
+  --emerald-dark:var(--green-dark);
+  --emerald-light:#CDEFDD;
+  --off-white:var(--paper);
+  --black:var(--ink);
+  --ink-60:rgba(20,24,26,.66);
+  --ink-40:rgba(20,24,26,.45);
+  --line:var(--linha);
+  --line-dark:var(--linha-dark);
 
   /* —— Layout —— */
-  --maxw:1760px;   /* container largo, margens enxutas como a referência */
-  --pad:clamp(20px, 6vw, 72px);
+  /* 1360 e não 1760: o container largo espalhava as seções por uma faixa
+     que nenhuma outra página do estúdio usa, e era ele que fazia a
+     leitura andar de canto a canto da tela. 1360 é a medida das outras
+     três. */
+  --maxw:1360px;
+  --pad:clamp(20px, 5vw, 64px);
   --pill-h:88px;
 
   /* —— Tipografia —— */
   --font-display:"Archivo", "Arial Narrow", system-ui, sans-serif; /* headlines */
   --font-body:"Inter", system-ui, -apple-system, sans-serif;        /* corpo */
-  --font-mono:"Space Mono", ui-monospace, monospace;                /* labels / dados */
+  /* JetBrains Mono e não Space Mono: é a mono das outras três páginas, e
+     etiqueta é justamente onde a diferença de voz aparecia mais. */
+  --font-mono:"JetBrains Mono", ui-monospace, monospace;            /* labels / dados */
 }
 
 *{margin:0;padding:0;box-sizing:border-box}
@@ -44,92 +105,235 @@ a{color:inherit;text-decoration:none}
 button{font-family:inherit;cursor:pointer}
 :focus-visible{outline:2px solid var(--emerald);outline-offset:3px}
 
-/* ---------- Linhas verticais de grid ---------- */
-.grid-lines{
-  position:fixed;inset:0;z-index:0;pointer-events:none;
-  max-width:var(--maxw);margin:0 auto;
-  display:flex;justify-content:space-between;padding:0 var(--pad);
-}
-.grid-lines span{width:1px;background:var(--line)}
-.grid-lines span:first-child,.grid-lines span:last-child{opacity:0}
-@media (max-width:640px){ .grid-lines span:nth-child(2),.grid-lines span:nth-child(4){display:none} }
+/* ---------- as linhas verticais de grid saíram (14/08) ----------
+   Cinco fios fixos atravessando a página inteira, do topo ao rodapé. Elas
+   não marcavam coluna nenhuma: as seções não se alinham a elas, e o
+   conteúdo cruzava os fios em posições diferentes a cada dobra. Era
+   textura de "site de agência", o gesto mais genérico que a página tinha,
+   e ainda por cima competia com os filetes que carregam informação de
+   verdade (o do cabeçalho, os das listas, os das fichas).
+
+   O elemento `.grid-lines` continua no HTML por enquanto para não quebrar
+   nada que o consulte; sem regra, ele não pinta. */
+.grid-lines{display:none}
 
 /* conteúdo acima das linhas */
 .site-header,main,.site-footer,.pill{position:relative;z-index:1}
 
 /* ---------- Largura ---------- */
 .wrap{max-width:var(--maxw);margin:0 auto;padding-left:var(--pad);padding-right:var(--pad)}
-section{padding-block:clamp(64px,12vw,140px)}
+/* ---------- o respiro entre seções encolheu ----------
+   Eram 140px em cima e 140px embaixo, ou seja, 280px de nada entre um
+   assunto e o seguinte, catorze vezes. Numa página de doze mil pixels
+   isso não é elegância, é distância: a pessoa rola meia tela de papel
+   liso antes de cada bloco novo, e o argumento perde o fio.
+
+   92px é a medida das outras três páginas do estúdio (lá é
+   clamp(56px,6.4vw,84px)), com uma folga a mais porque as seções daqui
+   são maiores. Só isso tirou perto de 1300px de altura da página, sem
+   mexer em uma linha de conteúdo. */
+section{padding-block:clamp(52px,6.6vw,92px)}
 
 /* ---------- Eyebrow + status pulsante (ASSINATURA) ---------- */
+/* ---------- o eyebrow virou régua de duas pontas ----------
+   Os quatro pedaços (ponto, status, traço, tagline) andavam colados na
+   esquerda, e o traço existia só para separar dois deles. Agora a linha
+   ocupa a largura inteira e os dois assuntos vão para pontas opostas: o
+   QUE o estúdio faz abre à esquerda, SE ele pode começar fecha à
+   direita. É a mesma forma da faixa que encerra o lockup logo abaixo,
+   e o traço solto deixou de ser necessário. */
 .eyebrow{
-  display:inline-flex;align-items:center;gap:12px;flex-wrap:wrap;
-  font-family:var(--font-mono);font-size:clamp(11px,3vw,13px);font-weight:400;
-  letter-spacing:.06em;text-transform:uppercase;color:var(--ink-60);
+  display:flex;align-items:center;justify-content:space-between;gap:14px 20px;flex-wrap:wrap;width:100%;
+  font-family:var(--font-mono);font-size:clamp(10px,2.6vw,11.5px);font-weight:400;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);
 }
-.status{color:var(--emerald-dark);font-weight:700;white-space:nowrap}
-/* Mobile: tagline desce para a própria linha, sem o traço solto */
+/* ---------- a tagline virou linha de inventário ----------
+   Ela era uma frase com pontos no meio. São três categorias, e o filete à
+   esquerda de cada uma é o mesmo desenho que o /portfolio usa para contar
+   o que tem na grade: quem separa passa a ser um traço, que é desenho, e
+   não um caractere de pontuação fazendo trabalho de estrutura.
+   O filete fica em TODOS os itens, inclusive no primeiro: como separador
+   ele deixaria uma marca solta quando a lista quebrasse de linha; como
+   marca de item, ele funciona em qualquer largura. */
+/* ============================================================
+   O PICOTE DAS TRÊS ENTREGAS (portado da /vitrine-digital)
+
+   Esta linha já foi três coisas, e as três estavam erradas pelo mesmo
+   motivo: uma frase com pontos no meio, depois itens separados por um
+   filete, depois etiquetas com borda cinza. Frase, separador e caixinha
+   são desenhos de INTERFACE. Esta página é papel e tinta.
+
+   O gesto certo já existia na casa: o CANHOTO da etiqueta da vitrine,
+   aquela tira destacável presa por um picote esmeralda que carrega os
+   fatos verificáveis do projeto. É exatamente o que estas três palavras
+   são: o que o estúdio entrega, dito em três palavras, sem adjetivo.
+
+   Então elas ganham o picote. O tracejado esmeralda atravessa a largura
+   inteira acima delas e transforma a linha numa tira destacável do topo
+   da página. Repetir o picote aqui não gasta o gesto: ele é a gramática
+   da casa para "isto é fato conferível", e é a segunda vez que a mesma
+   ideia usa o mesmo desenho.
+
+   O respiro acima do picote é maior que o de baixo, de propósito: filete
+   com pouco ar em cima encosta no que veio antes e lê como sublinhado,
+   não como divisão. É a mesma nota que a vitrine registrou na conta da
+   dor.
+   ============================================================ */
+.eyebrow__tagline{
+  list-style:none;margin:0;padding:14px 0 0;
+  border-top:1.5px dashed var(--green);
+  display:flex;flex-wrap:wrap;gap:8px clamp(20px,3.4vw,52px);
+  width:100%;
+}
+.eyebrow__tagline li{color:var(--ink-soft);white-space:nowrap}
+/* a primeira palavra é a que nomeia o estúdio ("posicionamento"): ela leva
+   a tinta da marca, as outras duas ficam em cinza. Mesma hierarquia do
+   `b` dentro do canhoto da vitrine. */
+.eyebrow__tagline li:first-child{color:var(--green-dark);font-weight:700}
+
+/* ---------- o chip de agenda, na forma da /vitrine-digital ----------
+   "AGENDA ABERTA" era texto miúdo com um ponto ao lado, e é a informação
+   mais perecível da página: ela diz se dá para começar AGORA. Texto solto
+   não carrega esse peso.
+
+   Agora é o MESMO chip que a vitrine ancora no aparelho do hero dela
+   (`.liveTag`, lá): grafite cheio, texto branco em mono 9px com .14em de
+   espacejamento, e o ponto esmeralda VIVO pulsando na frente. Nada de
+   borda e nada de rotação — o chip é da casa, não um enfeite desta
+   página.
+
+   O esmeralda vivo é obrigatório aqui e não é escolha: o chip é grafite,
+   e sobre grafite os outros dois esmeraldas somem (o vivo dá 7,7:1).
+
+   O ponto pulsa com o mesmo keyframe do "NO AR" das capas do /portfolio e
+   do placar do hero de lá: a casa tem um sinal só para "isto vale agora",
+   e ele é sempre este. */
+.eyebrow__status{
+  display:inline-flex;align-items:center;gap:7px;white-space:nowrap;
+  background:var(--ink);color:#fff;
+  padding:8px 12px;
+}
+.status{color:inherit;font-weight:400;white-space:nowrap;letter-spacing:.14em}
+.eyebrow__status .dot{width:6px;height:6px;background:var(--green-live)}
+
+/* Mobile: os dois empilham, cada um na própria linha, e o carimbo vai
+   para cima porque numa tela estreita ele é a informação mais escassa */
 @media(max-width:560px){
-  .eyebrow__dash{display:none}
-  .eyebrow__tagline{
-    flex-basis:100%;margin-top:2px;line-height:1.6;
-    font-size:10px;letter-spacing:.04em;   /* cabe numa linha só em telas ≥360px */
-  }
+  .eyebrow{flex-direction:column;align-items:flex-start;gap:14px}
+  .eyebrow__status{order:-1;margin-left:2px}
+  .eyebrow__tagline{font-size:9px;letter-spacing:.12em;gap:6px 16px;padding-top:11px}
 }
 .dark .status{color:var(--emerald)}
+/* ---------- o ponto vivo entrou no vocabulário da casa ----------
+   Ele tinha 12px e soltava um anel que crescia 2,6 vezes, o que é grande
+   demais para um sinal ao lado de uma etiqueta de 10px: o anel invadia o
+   texto e o ponto lia como notificação de aplicativo.
+
+   As outras três páginas usam um ponto de 6px que pisca na opacidade, e
+   ele aparece nelas em três lugares (cabeçalho, chip NO AR das capas,
+   placar do hero). É o mesmo sinal, então tem que ser o mesmo desenho. */
 .dot{
-  width:12px;height:12px;border-radius:50%;background:var(--emerald);flex:none;position:relative;
+  width:7px;height:7px;border-radius:50%;background:var(--green);flex:none;
+  animation:pulse 1.6s infinite;
 }
-.dot::after{
-  content:"";position:absolute;inset:0;border-radius:50%;background:var(--emerald);
-  animation:pulse 2.2s ease-out infinite;
-}
-@keyframes pulse{0%{transform:scale(1);opacity:.6}70%{transform:scale(2.6);opacity:0}100%{opacity:0}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
 @media(prefers-reduced-motion:reduce){.dot::after{animation:none}}
 
 /* ---------- Label de seção (bold compacto, como a referência) ---------- */
+/* ---------- o rótulo de seção virou etiqueta ----------
+   Ele era Inter 700 caixa alta, quase do tamanho do corpo: um rótulo com
+   peso de frase, disputando a leitura com a manchete logo abaixo. Agora é
+   mono miúda com espacejamento largo, que é a voz de etiqueta das quatro
+   páginas do estúdio, e o traço esmeralda na frente abre o bloco. O traço
+   é a mesma marca de margem dos cards do /portfolio: a faixa dos 30% da
+   paleta fazendo estrutura em vez de enfeite. */
 .section-label{
-  font-family:var(--font-body);font-weight:700;text-transform:uppercase;
-  font-size:clamp(12px,3.2vw,14px);letter-spacing:.02em;color:var(--black);
+  display:flex;align-items:center;gap:10px;
+  font-family:var(--font-mono);font-weight:700;text-transform:uppercase;
+  font-size:10px;letter-spacing:.2em;color:var(--ink-soft);
 }
+.section-label::before{content:"";flex:none;width:20px;height:2px;background:var(--green)}
 
-/* ---------- Botão outline ---------- */
+/* ---------- o ponto final das manchetes é rosa ----------
+   O menor lugar possível para a cor de acento, e o mais deliberado: numa
+   manchete de display o ponto é a única pontuação, e no corpo em que
+   essas manchetes vivem ele tem tamanho de sobra para ser lido como
+   escolha, não como sujeira.
+
+   Vale em TODA manchete de display que termina em ponto (hero, o que está
+   incluso, contato, garantia, projetos fundadores). Usado uma vez seria
+   enfeite; usado em todas, é gramática. É a mesma regra do /portfolio.
+
+   A marcação nasce em js/lib/ponto.js, na hora de montar o HTML, e não no
+   config: assim manchete nova entra sem ninguém precisar lembrar da tag.
+   Rosa sobre papel dá 4,9:1 e sobre grafite 3,5:1, os dois de sobra para
+   um ponto desse tamanho. */
+.ponto{color:var(--rosa)}
+
+/* ---------- os botões viraram OBJETO ----------
+   Eram retângulos chapados, a única peça da página sem espessura. Agora
+   carregam a sombra dura deslocada da casa, e ela COLAPSA no clique: o
+   botão afunda 4px e a sombra some, que é o gesto de um carimbo sendo
+   apertado contra o papel.
+
+   Aplicar isso a TODOS os botões não é repetição, é o oposto: um gesto
+   usado uma vez é enfeite; usado em todos, é gramática. O que separa o
+   botão de ação dos outros continua sendo só a cor.
+
+   Guarda de toque em todo `:hover`: no celular o navegador entrega o
+   hover junto com o toque e só o solta quando a pessoa toca em outro
+   lugar, então o botão fica preso na cor de hover, o que lê como
+   "travou". O `:active` NÃO leva guarda: ele é o retorno do toque. */
 .btn-outline{
   display:inline-flex;align-items:center;gap:16px;justify-content:center;
-  border:1.5px solid var(--black);padding:20px 28px;width:100%;
+  border:1.5px solid var(--ink);padding:19px 28px;width:100%;
   font-family:var(--font-mono);font-weight:700;font-size:clamp(12px,3.4vw,14px);
-  letter-spacing:.04em;text-transform:uppercase;background:transparent;color:var(--black);
-  transition:background .25s,color .25s;
+  letter-spacing:.04em;text-transform:uppercase;background:transparent;color:var(--ink);
+  box-shadow:4px 4px 0 var(--ink);
+  transition:background .2s,color .2s,transform .1s,box-shadow .1s;
 }
 @media(min-width:560px){.btn-outline{width:auto}}
-.btn-outline:hover{background:var(--black);color:var(--off-white)}
+@media(hover:hover) and (pointer:fine){
+  .btn-outline:hover{background:var(--ink);color:var(--paper)}
+  .btn-outline:hover .arrow{transform:translate(3px,-3px)}
+}
+.btn-outline:active{transform:translate(4px,4px);box-shadow:0 0 0 var(--ink)}
 .btn-outline .arrow{font-size:1.2em;transition:transform .25s}
-.btn-outline:hover .arrow{transform:translate(3px,-3px)}
 
-/* ---------- CTA PILL flutuante (fixo em todas as seções) ---------- */
+/* ---------- CTA PILL flutuante ----------
+   Era um comprimido verde-menta com um brilho difuso embaixo: a única
+   peça arredondada e a única com sombra macia numa página que agora é
+   toda de arestas. Virou rosa com o mesmo carimbo dos outros botões.
+
+   O rosa aqui não é gosto: é a faixa dos 10% da paleta, reservada para o
+   que a página quer que aconteça. Ele aparece em dois lugares, e os dois
+   levam ao mesmo formulário: este pill e o botão do cartão do hero. */
 .pill{
   position:fixed;left:50%;transform:translateX(-50%);bottom:clamp(16px,4vw,28px);z-index:50;
-  display:inline-flex;align-items:center;gap:8px;justify-content:center;
-  width:min(92vw,560px);padding:20px clamp(24px,6vw,40px);
-  background:var(--emerald-light);color:var(--black);border-radius:999px;
-  box-shadow:0 10px 40px -8px rgba(6,95,70,.45);
-  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
-  font-size:clamp(15px,4.2vw,19px);letter-spacing:.01em;
-  transition:transform .2s,box-shadow .2s,opacity .3s;
+  display:inline-flex;align-items:center;gap:10px;justify-content:center;
+  width:min(92vw,560px);padding:19px clamp(24px,6vw,40px);
+  background:var(--rosa);color:#fff;
+  box-shadow:4px 4px 0 var(--ink);
+  font-family:var(--font-mono);font-weight:700;text-transform:uppercase;
+  font-size:clamp(12px,3.4vw,14px);letter-spacing:.05em;
+  transition:background .2s,transform .1s,box-shadow .1s,opacity .3s;
 }
-.pill:hover{transform:translateX(-50%) translateY(-2px);box-shadow:0 16px 48px -8px rgba(6,95,70,.55)}
-.pill .arrow{font-size:1.15em}
-.pill .divider{width:1px;height:22px;background:rgba(10,10,10,.25);margin:0 6px}
-/* Desktop: pill ancorado no canto inferior direito (como um botão flutuante) */
+@media(hover:hover) and (pointer:fine){
+  .pill:hover{background:var(--rosa-dark)}
+}
+.pill:active{transform:translateX(-50%) translate(4px,4px);box-shadow:0 0 0 var(--ink)}
+.pill .arrow{font-size:1.1em}
+.pill .divider{width:1px;height:18px;background:rgba(255,255,255,.4);margin:0 4px}
+/* Desktop: pill ancorado no canto inferior direito */
 @media(min-width:1024px){
-  .pill{left:auto;right:clamp(24px,3vw,48px);transform:none;width:auto;min-width:0;padding:20px 36px}
-  .pill:hover{transform:translateY(-2px)}
+  .pill{left:auto;right:clamp(24px,3vw,48px);transform:none;width:auto;min-width:0;padding:19px 32px}
+  .pill:active{transform:translate(4px,4px)}
 }
 /* Mobile: pill mais compacto para cobrir menos conteúdo */
 @media(max-width:560px){
   :root{--pill-h:60px}
-  .pill{width:auto;min-width:64vw;padding:14px 24px;font-size:14px;bottom:14px;white-space:nowrap}
-  .pill .divider{height:16px}
+  .pill{width:auto;min-width:64vw;padding:15px 22px;font-size:12px;bottom:14px;white-space:nowrap}
+  .pill .divider{height:14px}
 }
 
 /* ---------- Reveal on scroll ---------- */

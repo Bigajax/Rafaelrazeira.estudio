@@ -30,7 +30,26 @@ function phone(inner){
 function media(it){
   if (it.video) return phone(`<video src="${it.video}" muted loop playsinline preload="auto"
                      aria-label="Demonstração em vídeo — ${it.name}"></video>`);
-  if (it.img) return phone(`<div class="phone__feed"><img src="${it.img}" alt="Página de ${it.name} aberta no celular" loading="lazy" /></div>`);
+  /* ---------- AVIF e WebP, com o JPEG de reserva ----------
+     Cada captura de página inteira tem ~760KB em JPEG, e são duas ou três
+     por página: a /landing-page fechava em 1,68MB, quase tudo aqui. Numa
+     página de tráfego pago, que argumenta justamente que o celular é onde
+     tudo quebra, esse era o pior lugar para gastar banda. O AVIF corta uns
+     65% e o WebP uns 42%.
+
+     Os derivados são gerados por scripts/webp-assets.mjs e entram
+     versionados. O `<img>` continua sendo o elemento que o CSS anima
+     (`.phone__feed img`), então a rolagem dentro do aparelho não muda.
+
+     A ordem importa: o navegador pega a PRIMEIRA source que entende. */
+  if (it.img) {
+    const base = it.img.replace(/\.jpe?g$/i, "");
+    return phone(`<div class="phone__feed"><picture>
+                <source type="image/avif" srcset="${base}.avif" />
+                <source type="image/webp" srcset="${base}.webp" />
+                <img src="${it.img}" alt="Página de ${it.name} aberta no celular" loading="lazy" decoding="async" fetchpriority="low" />
+              </picture></div>`);
+  }
   return `<div class="case__placeholder"><span>${it.name}</span></div>`;
 }
 

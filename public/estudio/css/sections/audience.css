@@ -1,12 +1,118 @@
 /* ============================================================
    PARA QUEM É — blocos numerados 01 / 02 / 03
    ============================================================ */
-.audience__label{margin-bottom:clamp(36px,7vw,60px)}
+.audience__label{margin-bottom:clamp(20px,3vw,28px)}
+/* Manchete e intro só existem na /landing-page (ver js/sections/audience.js).
+   Na /estudio a seção começa direto nos blocos, e o rótulo sozinho pede o
+   respiro maior que vem no `:last-child` logo abaixo. */
+.audience__head{
+  font-family:var(--font-display);font-stretch:62%;font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.9rem,6vw,3.4rem);line-height:1;letter-spacing:-.03em;max-width:20ch;
+}
+.audience__head em{display:inline-block;font-stretch:100%;font-size:1.16em;line-height:.9;color:var(--green)}
+.audience__intro{
+  margin-top:20px;max-width:56ch;
+  font-size:clamp(1rem,3.8vw,1.15rem);line-height:1.55;color:var(--ink-soft);
+}
+.audience__label:last-child,
+.audience__intro{margin-bottom:clamp(30px,5vw,48px)}
+.audience__label:not(:has(+ .audience__head)){margin-bottom:clamp(36px,7vw,60px)}
 .aud__item{
-  padding-block:clamp(32px,6vw,52px);border-top:1px solid var(--line);
-  display:grid;grid-template-columns:1fr;gap:16px;
+  padding-block:clamp(30px,5.4vw,48px);border-top:1px solid var(--linha);
+  display:grid;grid-template-columns:1fr;gap:14px;
 }
 @media(min-width:820px){.aud__item{grid-template-columns:110px 1fr}}
-.aud__num{font-family:var(--font-mono);font-weight:700;font-size:clamp(1rem,4vw,1.35rem);color:var(--emerald-dark);letter-spacing:.02em}
-.aud__title{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.5rem,6.5vw,2.6rem);line-height:1;letter-spacing:-.025em}
-.aud__text{margin-top:16px;font-size:clamp(1rem,4vw,1.2rem);color:var(--ink-60);line-height:1.45;max-width:44ch}
+/* ---------- o número virou traço ----------
+   Eram 01 / 02 / 03, e aqui não existe sequência: são três tipos de
+   cliente, e ninguém é o segundo depois de ser o primeiro. Numerar isso
+   promete uma ordem que a seção não tem, e ainda repete o desenho do
+   "Como funciona", que tem uma sequência de verdade e por isso merece os
+   números.
+
+   O traço esmeralda é a marca de margem que abre o bloco: mesmo gesto dos
+   cards do /portfolio, e é a faixa dos 30% da paleta fazendo estrutura em
+   vez de enfeite. O `.aud__num` fica no HTML e some no CSS, porque o
+   índice ainda é útil para quem for mexer no JS. */
+.aud__num{
+  font-size:0;line-height:0;
+}
+/* margem em px e não em em: o rótulo tem font-size 0, então qualquer
+   medida em em daria zero e o traço encostaria no topo da célula por
+   acidente. 14px é o que alinha o traço com a altura de caixa alta do
+   título ao lado. */
+.aud__num::before{
+  content:"";display:block;width:34px;height:2px;background:var(--green);margin-top:14px;
+}
+@media(max-width:819px){.aud__num::before{margin-top:0}}
+
+
+/* ============================================================
+   A SEÇÃO DO VAZAMENTO APAGA A LUZ (só na /landing-page)
+
+   O problema não era desta seção sozinha: o miolo da página eram SEIS
+   blocos de papel em sequência (vazamento, processo, projetos, quem faz),
+   cada um bem resolvido e todos com o mesmo peso. Uma página sem
+   contraste de superfície não tem ritmo, e sem ritmo a leitura vira
+   rolagem: a pessoa passa por tudo sem parar em lugar nenhum.
+
+   Esta é a única seção das duas páginas que dá uma MÁ NOTÍCIA. Então é
+   ela que apaga a luz. O escuro aqui não é tema nem estilo: é o assunto.
+   A página vai clara enquanto fala do que você ganha, escurece no lugar
+   onde o dinheiro sai, e volta ao papel para contar como se resolve.
+
+   É também o que faz o marcador funcionar de verdade: "VAZAMENTO 01" em
+   rosa sobre papel é uma etiqueta; sobre grafite é um alarme.
+
+   O esmeralda inverte para o VIVO em tudo que estiver aqui dentro, pela
+   regra de sempre: os outros dois tons somem contra o --ink.
+   ============================================================ */
+.audience.dark{background:var(--ink);color:var(--paper)}
+/* o rótulo da seção e o traço dele */
+.audience.dark .section-label{color:#9BA6A0}
+.audience.dark .section-label::before{background:var(--green-live)}
+.audience.dark .audience__head{color:var(--paper)}
+.audience.dark .audience__head em{color:var(--green-live)}
+.audience.dark .audience__intro{color:#C9CDC6}
+/* os filetes entre os blocos: no escuro, tinta sobre tinta some */
+.audience.dark .aud__item{border-top-color:rgba(255,255,255,.16)}
+.audience.dark .aud__title{color:var(--paper)}
+.audience.dark .aud__text{color:#B6BCB6}
+/* o traço de quem NÃO usa marcador (a /estudio nunca cai aqui, mas a
+   regra fica de pé caso a seção escura seja usada sem numeração) */
+.audience.dark .aud__num::before{background:var(--green-live)}
+/* O marcador precisa do rosa VIVO: o rosa da marca dá 3,5:1 contra o
+   grafite, e estes rótulos têm 10px. Ver a nota do token em base.css. */
+.audience.dark .aud__item--marcado .aud__num{color:var(--rosa-live)}
+/* ============================================================
+   O MARCADOR DE VAZAMENTO (só na /landing-page)
+
+   A seção era uma lista competente e nada mais: três títulos com um
+   traço esmeralda igual ao que abre todas as outras seções da página.
+   O sinal não dizia nada sobre ESTA seção.
+
+   Ela é o único lugar das duas páginas que descreve um PROBLEMA, e a
+   casa já tem uma cor para isso. A /vitrine-digital registrou a regra
+   quando pintou de rosa as três palavras da dor: o rosa marca a AÇÃO em
+   toda parte, e aqui ele inverte e marca o que está errado. É a mesma
+   inversão, na mesma família, pelo mesmo motivo.
+
+   Vale porque são três rótulos de 10px sem preenchimento, e não existe
+   botão nesta seção para eles competirem. Se um dia entrar um CTA aqui
+   dentro, este marcador é o primeiro a rever.
+
+   E a numeração, que o "para quem é" da /estudio não pode ter, aqui é
+   honesta: a intro promete "os três vazamentos mais caros", ou seja, a
+   lista já nasce contada pelo próprio texto.
+   ============================================================ */
+@media(min-width:820px){
+  .aud__item--marcado{grid-template-columns:152px 1fr}
+}
+.aud__item--marcado .aud__num{
+  font-family:var(--font-mono);font-weight:700;font-size:10px;
+  line-height:1.6;letter-spacing:.14em;color:var(--rosa);
+  white-space:nowrap;
+}
+/* o traço esmeralda some: quem abre o bloco agora é o rótulo */
+.aud__item--marcado .aud__num::before{content:none}
+.aud__title{font-family:var(--font-display);font-stretch:78%;font-weight:900;text-transform:uppercase;font-size:clamp(1.5rem,6.5vw,2.6rem);line-height:1;letter-spacing:-.025em}
+.aud__text{margin-top:14px;font-size:clamp(1rem,4vw,1.15rem);color:var(--ink-soft);line-height:1.5;max-width:46ch}

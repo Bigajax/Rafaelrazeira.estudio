@@ -1,13 +1,43 @@
 /* ============================================================
-   CUE — "conheça mais" com setinha, convite discreto para rolar
+   CUE — o convite para rolar
+
+   Ele já foi duas coisas erradas. Primeiro uma linha cinza claríssima
+   CENTRADA, boiando no vazio: fora do eixo da página e sem material
+   nenhum. Depois um filete vertical descendo do rótulo, que resolveu o
+   eixo mas continuou sendo um fio de 2px num campo de papel: presença
+   de menos para o único elemento que fecha a primeira dobra.
+
+   Agora ele é um OBJETO, e o mesmo objeto que o resto da página usa:
+   quina reta, filete de tinta de 1,5px e sombra dura deslocada que
+   colapsa no clique. Nesta página, sombra dura significa "isto é uma
+   coisa, e dá para apertar" — e ele É um link, então merece dizer isso.
+
+   Encostado na margem esquerda, no eixo em que a página inteira se lê.
+
+   A seta desce e volta sozinha. É a única animação de laço da dobra e
+   ela tem um trabalho: dizer para onde o toque leva. Com "reduzir
+   movimento" ligado ela fica parada, e a aba continua funcionando.
    ============================================================ */
-.cue{width:100%;display:flex;justify-content:center;text-align:center;padding-block:clamp(24px,4vw,40px)}
+.cue{width:100%;display:flex;justify-content:flex-start;padding-block:0}
 .cue a{
-  display:inline-flex;align-items:center;justify-content:center;gap:8px;margin-inline:auto;
-  font-family:var(--font-body);font-weight:700;font-size:12px;
-  letter-spacing:.02em;text-transform:uppercase;color:#b6b6b3;
-  transition:color .25s;
+  display:inline-flex;align-items:center;gap:14px;
+  padding:13px 18px;
+  border:1.5px solid var(--ink);
+  box-shadow:4px 4px 0 var(--ink);
+  background:transparent;
+  font-family:var(--font-mono);font-weight:700;font-size:10px;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--ink);
+  transition:background .2s,color .2s,transform .1s,box-shadow .1s;
 }
-.cue a:hover{color:var(--black)}
-.cue__arrow{font-size:.75em;line-height:1;animation:cue-bob 2.2s ease-in-out infinite}
-@keyframes cue-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}
+@media(hover:hover) and (pointer:fine){
+  .cue a:hover{background:var(--ink);color:var(--paper)}
+  .cue a:hover .cue__arrow{color:var(--green-live)}
+}
+.cue a:active{transform:translate(4px,4px);box-shadow:0 0 0 var(--ink)}
+
+.cue__arrow{
+  display:block;line-height:1;font-size:13px;color:var(--green);
+  animation:cue-bob 1.9s ease-in-out infinite;
+}
+@keyframes cue-bob{0%,100%{transform:translateY(-2px)}50%{transform:translateY(3px)}}
+@media(prefers-reduced-motion:reduce){.cue__arrow{animation:none;transform:none}}

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Rafael Razeira Estúdio: landing pages para quem já anuncia</title>
+<meta name="description" content="A página que recebe o seu tráfego pago. Estratégia, texto e design, no ar em até 7 dias úteis. Análise gratuita, resposta em 24 horas." />
+
+<!-- Open Graph -->
+<meta property="og:title" content="Você já pagou pelo clique. A venda é aqui." />
+<meta property="og:description" content="Landing pages para quem já anuncia. Estratégia, texto e design da página que recebe o seu tráfego, no ar em 7 dias úteis." />
+<meta property="og:type" content="website" />
+<meta name="theme-color" content="#14181A" />
+
+<link rel="icon" type="image/png" href="/assets/favicon.png" />
+<link rel="apple-touch-icon" href="/assets/favicon.png" />
+
+<!-- ============================================================
+     Esta página compartilha TODO o CSS e todos os módulos de seção
+     com a /estudio. Os caminhos absolutos (/css, /js, /assets) caem
+     em public/estudio/* pelos rewrites do next.config.ts, e é por
+     isso que eles não são relativos aqui: a /estudio é servida sem
+     barra no fim e a /landing-page também, então caminho relativo
+     resolveria na raiz nas duas e quebraria numa.
+
+     O que separa as duas páginas: o conteúdo (CONFIG_LP em
+     js/config.js, escolhido pelo caminho da URL) e a ordem de seções
+     (js/main-lp.js). Nada de layout é duplicado.
+     ============================================================ -->
+
+<!-- ============================================================
+     ESTA PÁGINA NÃO TEM TELA DE CARREGAMENTO, e não é esquecimento.
+
+     O loader que a /estudio usa cobre a tela até o evento `load` (que
+     espera todas as imagens não-lazy e as fontes) e só então começa a
+     se desfazer numa grade de quadrados: num celular de 390x844 são 20
+     fileiras a 55ms cada, ou seja, mais 1,5s DEPOIS de a espera acabar.
+
+     A /vitrine-digital já pagou essa conta com dado: lá o rito custava
+     um piso de ~2s em conexão boa e ~3,5s no 4G, numa sessão mediana de
+     8,6 segundos. Perto de 40% da visita gasta olhando uma logo. Ele foi
+     removido de lá em 05/08 por isso.
+
+     Esta página tem exatamente o mesmo perfil de tráfego: anúncio pago
+     da Meta, quase tudo 4G, muita gente pelo navegador interno do
+     Instagram. Ninguém clicou no anúncio para ver uma abertura.
+
+     A /estudio continua com o loader: lá o visitante já conhece a marca
+     ou chegou por vontade própria.
+     ============================================================ -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..100,400..900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+<link rel="stylesheet" href="/css/base.css" />
+<link rel="stylesheet" href="/css/sections/header.css" />
+<link rel="stylesheet" href="/css/sections/hero.css" />
+<link rel="stylesheet" href="/css/sections/marquee.css" />
+<link rel="stylesheet" href="/css/sections/cue.css" />
+<link rel="stylesheet" href="/css/sections/about.css" />
+<link rel="stylesheet" href="/css/sections/process.css" />
+<link rel="stylesheet" href="/css/sections/cases.css" />
+<link rel="stylesheet" href="/css/sections/audience.css" />
+<link rel="stylesheet" href="/css/sections/contact.css" />
+<link rel="stylesheet" href="/css/sections/footer.css" />
+<link rel="stylesheet" href="/css/sections/pill.css" />
+</head>
+<body>
+
+<div id="app"></div>
+
+<script type="module" src="/js/main-lp.js"></script>
+</body>
+</html>

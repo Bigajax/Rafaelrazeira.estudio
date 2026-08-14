@@ -7,7 +7,7 @@
    ============================================================ */
 .loader{
   position:fixed;inset:0;z-index:999;
-  background:#0A0A0A;
+  background:#14181A;
   display:flex;align-items:center;justify-content:center;
 }
 /* trava o scroll enquanto o loader está na tela */
@@ -43,15 +43,15 @@ body.loading{overflow:hidden}
 }
 .loader.leaving{background:transparent}
 .loader__grid span{
-  background:#0A0A0A;
+  background:#14181A;
   /* cobre as emendas subpixel entre as células (sem isso aparecem fiapos claros) */
-  box-shadow:0 0 0 1px #0A0A0A;
+  box-shadow:0 0 0 1px #14181A;
   opacity:1;transition:opacity .22s ease;
 }
 .loader.leaving .loader__grid span{opacity:0}
 
 @media(prefers-reduced-motion:reduce){
   .loader{transition:opacity .4s ease}
-  .loader.leaving{background:#0A0A0A;opacity:0}
+  .loader.leaving{background:#14181A;opacity:0}
   .loader__text{animation:none}
 }

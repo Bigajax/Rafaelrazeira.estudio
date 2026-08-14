@@ -2,55 +2,104 @@
    CASES — headline + grid de 3 projetos
    ============================================================ */
 /* Projetos reais desenvolvidos no estúdio */
+/* ---------- a seção saiu do centro ----------
+   Ela era o único bloco centralizado da página: rótulo centrado, manchete
+   centrada em caixa alta espacejada e um parágrafo centrado. O eixo desta
+   página é a margem esquerda do começo ao fim, e centralizar um bloco no
+   meio dela não cria destaque, cria desalinho.
+
+   A manchete também deixou de ser manchete disfarçada de rótulo: era
+   Inter 700 a 16px com .28em de espacejamento, ou seja, tinha a forma de
+   uma etiqueta e o trabalho de um título. Agora é display condensada de
+   verdade, no tamanho que o assunto merece. */
 .cases__eyebrow{
-  font-family:var(--font-mono);font-weight:700;font-size:clamp(11px,3vw,13px);
-  letter-spacing:.12em;text-transform:uppercase;color:var(--emerald-dark);
-  text-align:center;margin-bottom:14px;
+  display:flex;align-items:center;gap:10px;
+  font-family:var(--font-mono);font-weight:700;font-size:10px;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft);
+  margin-bottom:16px;
 }
+.cases__eyebrow::before{content:"";flex:none;width:20px;height:2px;background:var(--green)}
 .cases__head{
-  font-family:var(--font-body);font-weight:700;text-transform:uppercase;
-  font-size:clamp(13px,1.6vw,16px);letter-spacing:.28em;line-height:1.5;
-  text-align:center;margin-bottom:0;
+  font-family:var(--font-display);font-stretch:78%;font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.9rem,6vw,3.4rem);letter-spacing:-.03em;line-height:1;
+  max-width:20ch;margin-bottom:0;
 }
 .cases__intro{
-  max-width:58ch;margin:16px auto clamp(44px,7vw,84px);
-  text-align:center;font-size:clamp(.95rem,3.6vw,1.1rem);
-  line-height:1.55;color:var(--ink-60);
+  max-width:56ch;margin:20px 0 clamp(40px,6vw,72px);
+  font-size:clamp(.95rem,3.6vw,1.1rem);
+  line-height:1.55;color:var(--ink-soft);
 }
-.cases__grid{display:grid;grid-template-columns:1fr;gap:clamp(40px,7vw,72px);max-width:1300px;margin-inline:auto}
-@media(min-width:760px){.cases__grid{grid-template-columns:repeat(3,1fr);gap:clamp(24px,3vw,48px)}}
+/* ---------- a grade conta os casos sozinha ----------
+   Era `repeat(3, 1fr)` fixo, e a /landing-page mostra DOIS: com a regra
+   antiga eles ocupavam dois terços da largura e sobrava uma coluna vazia
+   à direita, que lê como card que não carregou.
+   Com `auto-fit` a conta é do navegador: dois casos ocupam metade cada,
+   três ocupam um terço, e nenhuma das duas páginas precisa saber da
+   outra. */
+.cases__grid{
+  display:grid;grid-template-columns:1fr;
+  gap:clamp(40px,7vw,72px);max-width:1300px;margin-inline:auto;
+}
+@media(min-width:760px){
+  .cases__grid{grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:clamp(28px,3.4vw,56px)}
+}
 
-.case__media{aspect-ratio:4/5;border-radius:14px;overflow:hidden;background:var(--black)}
+/* ============================================================
+   O APARELHO PASSOU A POUSAR NO PAPEL (14/08)
+
+   Cada caso vinha dentro de um painel grafite de proporção 4/5, com o
+   celular flutuando no meio: é a foto de produto que toda página de
+   agência tem, e ela não pertence a esta casa. O painel também competia
+   com a sala grafite do /portfolio e com as seções escuras daqui, sem
+   ser nenhuma das duas.
+
+   Agora o aparelho pousa direto no papel, com a sombra dura da
+   /vitrine-digital: um bloco sólido em `--paper-2` deslocado, com um fio
+   de tinta contornando ele. Não é sombra de luz, é sombra de OBJETO
+   IMPRESSO, e é a mesma que o celular do "como funciona" de lá usa.
+
+   O `overflow` teve que sair junto: ele cortava a sombra, que por
+   definição vive fora da caixa.
+   ============================================================ */
+/* O teto de largura não é capricho: com três casos cada coluna dá uns
+   400px e o aparelho nasce no tamanho certo, mas com DOIS a coluna passa
+   de 600px e o celular vira um outdoor de tela inteira, mais alto que a
+   dobra. O teto faz as duas contagens caírem no mesmo tamanho de
+   aparelho, e é a legenda embaixo que ocupa a largura toda da coluna. */
+.case__media{aspect-ratio:4/5;background:transparent;max-width:min(100%,400px)}
 .case__media img{width:100%;height:100%;object-fit:cover}
 .case__placeholder{
   width:100%;height:100%;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;
-  background:
-    radial-gradient(120% 120% at 30% 0%,rgba(16,185,129,.22),transparent 55%),
-    linear-gradient(160deg,#141414,#0a0a0a);
+  background:var(--ink);
   color:rgba(255,255,255,.85);
 }
 .case__placeholder span{
-  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-family:var(--font-display);font-stretch:78%;font-weight:900;text-transform:uppercase;
   font-size:clamp(1.1rem,4vw,1.5rem);letter-spacing:-.02em;line-height:1;
 }
 /* —— Vídeo dentro de mockup de iPhone —— */
 .case__stage{
   width:100%;height:100%;
   display:flex;align-items:center;justify-content:center;
-  padding:clamp(20px,4vw,32px);
-  background:
-    radial-gradient(120% 120% at 30% 0%,rgba(16,185,129,.22),transparent 55%),
-    linear-gradient(160deg,#141414,#0a0a0a);
+  padding:clamp(16px,3vw,28px) clamp(28px,4vw,44px) clamp(28px,4vw,40px) clamp(8px,1.4vw,16px);
+  /* Sem fundo: o que sustenta o aparelho agora é a sombra dele, não uma
+     caixa atrás. O respiro assimétrico acima existe para a sombra caber
+     à direita e embaixo sem encostar no card vizinho. */
+  background:transparent;
 }
 .phone{
   position:relative;height:100%;aspect-ratio:392/800;max-width:100%;
   padding:9px;                             /* espessura da moldura */
   background:linear-gradient(160deg,#2a2a2e,#131315);
   border-radius:clamp(30px,4.5vw,44px);
+  /* O brilho interno de titânio fica: ele é o material do aparelho, e
+     material autêntico é a regra da casa. O que muda é a sombra de fora,
+     que deixa de ser desfoque de luz e vira o bloco sólido deslocado com
+     fio de tinta, igual ao `.phoneSmall` da /vitrine-digital. */
   box-shadow:
     inset 0 0 0 1.5px rgba(255,255,255,.09), /* brilho da borda de titânio */
-    0 30px 60px -22px rgba(0,0,0,.75),
-    0 8px 24px -12px rgba(16,185,129,.18);   /* eco esmeralda sutil */
+    14px 18px 0 var(--paper-2),
+    14px 18px 0 1.5px var(--ink);
 }
 .phone__screen{
   width:100%;height:100%;overflow:hidden;background:#000;
@@ -70,6 +119,9 @@
 /* Captura de página inteira que rola sozinha dentro do iPhone (topo → rodapé → topo).
    Roda só com o card visível (.is-inview, via js/lib/videos.js). */
 .phone__feed{flex:1;min-height:0;overflow:hidden;container-type:size}
+/* o <picture> é inline por padrão e deixaria um vão de linha de base
+   embaixo da captura dentro do aparelho */
+.phone__feed picture{display:block}
 .phone__feed img{
   display:block;width:100%;height:auto;
   animation:case-scroll 20s linear infinite alternate;
@@ -91,9 +143,11 @@
 }
 
 .case__cat{
-  margin-top:20px;font-family:var(--font-body);font-size:13px;font-weight:600;
-  letter-spacing:.06em;text-transform:uppercase;color:var(--emerald-dark);
+  display:flex;align-items:center;gap:10px;
+  margin-top:20px;font-family:var(--font-mono);font-size:10px;font-weight:700;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);
 }
+.case__cat::before{content:"";flex:none;width:18px;height:2px;background:var(--green)}
 /* Rótulo opcional acima do título (config: tag) */
 .case__tag{
   display:inline-block;margin-top:12px;padding:5px 10px;
@@ -101,11 +155,13 @@
   font-family:var(--font-mono);font-size:11px;font-weight:700;
   letter-spacing:.1em;text-transform:uppercase;color:var(--ink-60);
 }
-.case__name{margin-top:10px;font-family:var(--font-body);font-weight:700;text-transform:uppercase;font-size:clamp(1.1rem,1.5vw,1.35rem);letter-spacing:.01em}
-.case__result{margin-top:10px;font-size:clamp(.95rem,1.2vw,1.05rem);color:var(--ink-60);line-height:1.5;max-width:38ch}
+/* Mesma medida dos nomes de cliente no /portfolio: condensada em peso
+    900, caixa MISTA. Caixa alta apagaria a grafia própria das marcas. */
+.case__name{margin-top:9px;font-family:var(--font-display);font-stretch:78%;font-weight:900;font-size:clamp(1.3rem,1.9vw,1.7rem);line-height:1.04;letter-spacing:-.018em}
+.case__result{margin-top:9px;font-size:clamp(.95rem,1.2vw,1.02rem);color:var(--ink-soft);line-height:1.5;max-width:38ch}
 
 /* CTA da seção — mesma linguagem mono do resumo do processo */
-.cases__ctawrap{text-align:center;margin-top:clamp(40px,7vw,72px)}
+.cases__ctawrap{margin-top:clamp(40px,6vw,64px)}
 .cases__cta{
   display:inline-flex;align-items:center;gap:12px;padding:8px 4px;
   font-family:var(--font-mono);font-weight:700;font-size:clamp(12px,3.2vw,14px);
@@ -113,5 +169,5 @@
   transition:color .2s;
 }
 .cases__cta .arrow{transition:transform .2s}
-.cases__cta:hover{color:var(--black)}
+@media(hover:hover) and (pointer:fine){.cases__cta:hover{color:var(--ink)}}
 .cases__cta:hover .arrow{transform:translateX(4px)}

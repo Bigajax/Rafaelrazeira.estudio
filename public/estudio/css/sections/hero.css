@@ -8,8 +8,33 @@
   .hero__headline{line-height:.88}
   .hero__bottom{gap:18px}
 }
+/* ============================================================
+   A MANCHETE EM DUAS LARGURAS (portada da /vitrine-digital)
+
+   A Archivo é carregada com o eixo `wdth` (ver index.html), e esta página
+   usava UMA largura só em tudo. Uma manchete inteira num peso e numa
+   largura é um bloco, não uma frase: nada dentro dela diz o que importa
+   mais.
+
+   Agora a frase tem dois tempos, e a divisão é de SENTIDO, não de
+   estética. O preparo ("SUA MARCA VENDENDO ONLINE EM ATÉ") vai a 62%, o
+   extremo condensado do eixo, e cabe mais palavra por linha; a promessa
+   ("7 DIAS ÚTEIS.") volta a 100% e cresce 18%, virando a batida final. É
+   a mesma frase lida em voz alta, com a ênfase caindo onde cairia.
+
+   Duas larguras da MESMA família, e não duas famílias: é exatamente para
+   isso que existe um eixo variável.
+
+   O gancho já existia no JSX: o `<em>` do config, que antes só pintava de
+   esmeralda, agora carrega também a largura e o corpo. `display:inline-block`
+   para o tamanho maior não descolar o line-height da linha.
+
+   O herofit.js continua funcionando: ele mede a LARGURA RENDERIZADA de
+   cada linha a 100px e escala, então largura mista dentro da linha entra
+   na conta certa sem nenhuma mudança lá.
+   ============================================================ */
 .hero__headline{
-  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-family:var(--font-display);font-stretch:62%;font-weight:900;text-transform:uppercase;
   /* limitado também pela ALTURA (16vh): headline + CTA + sub cabem na 1ª dobra em qualquer monitor */
   font-size:min(clamp(3.4rem,18.5vw,11rem),16vh);
   line-height:.9;letter-spacing:-.04em;
@@ -20,39 +45,302 @@
    <br>: a altura de cada linha é a dela mesma — sem os vãos do tamanho-base */
 .hero__line{display:block;width:fit-content;white-space:nowrap;line-height:1.02}
 /* Grifo esmeralda na parte mais importante da headline (<em> no config) */
-.hero__headline em{font-style:normal;color:var(--emerald)}
-/* Ordem no mobile = ordem de leitura: subtítulo (o motivo) ANTES do CTA (o pedido) */
+.hero__headline em{font-style:normal;color:var(--green)}
+.hero__headline em{display:inline-block;font-stretch:100%;font-size:1.18em;line-height:.88}
+
+/* ============================================================
+   A FAIXA DA ÚLTIMA LINHA (14/08)
+
+   O lockup eram três linhas de tipo chapado, uma embaixo da outra, e a
+   única diferença entre elas era a cor da última. Isso não é ênfase: as
+   três têm o mesmo material, e o olho lê um bloco só de preto.
+
+   A terceira linha agora mora numa faixa grafite que sangra até a borda
+   esquerda da tela. E a linha escolhida não é qualquer uma: as duas de
+   cima descrevem ("sua marca vendendo online"), a de baixo PROMETE ("em
+   até 7 dias úteis"). Dar material diferente para a promessa é separar o
+   que a página garante do que ela descreve, e é a única coisa dessa
+   dobra que o estúdio assina.
+
+   ---------- a conta do sangramento ----------
+   O truque comum (`margin-left: calc(50% - 50vw)`) só funciona quando o
+   elemento está CENTRADO na tela, e aqui não está: no desktop a manchete
+   é a coluna 1 de uma grade de duas. A distância real da margem do
+   conteúdo até a borda da tela é sempre a mesma conta, e ela vale
+   também no celular, onde a manchete ocupa a largura toda:
+
+       (100vw - largura do wrap) / 2  +  o respiro lateral
+
+   `--sangria` guarda isso, o `margin-left` desconta e o `padding-left`
+   devolve, então a primeira letra nasce exatamente alinhada com as
+   linhas de cima.
+
+   A faixa passa da coluna só pelo respiro da direita, que cabe no vão
+   entre as duas colunas do desktop e no padding da página no celular.
+
+   ---------- por que a faixa é uma linha só ----------
+   O `.hero__line` de dentro é o elemento que o herofit.js mede, e ele
+   precisa continuar sendo texto puro. Qualquer chip ou selo colocado
+   dentro dele entraria na conta de largura e o lockup deixaria de fechar
+   com as linhas de cima. Por isso o sinal de agenda ficou no eyebrow, na
+   ponta oposta, em vez de entrar aqui.
+   ============================================================ */
+.hero__faixa{
+  --sangria:calc((100vw - min(var(--maxw), 100vw)) / 2 + var(--pad));
+  display:block;width:fit-content;max-width:none;
+  background:var(--ink);
+  margin-left:calc(-1 * var(--sangria));
+  padding:clamp(6px,.9vw,14px) clamp(14px,2vw,28px) clamp(9px,1.3vw,20px) var(--sangria);
+}
+/* dentro da faixa o preto some, então o tipo inverte para papel e o
+   grifo sobe para o esmeralda VIVO, que é o único dos três legível
+   sobre grafite (7,7:1) */
+.hero__faixa .hero__line{color:var(--paper)}
+.hero__faixa em{color:var(--green-live)}
+/* ============================================================
+   O CARTÃO DO HERO (14/08)
+
+   A metade direita do hero era texto solto no ar: o subtítulo, um botão
+   de contorno, uma linha de prova e um link de WhatsApp, quatro coisas
+   empilhadas sem nada segurando. Contra uma manchete que ocupa a tela
+   inteira, isso não é contraste, é sobra.
+
+   Agora os quatro moram DENTRO de um cartão de papel com filete de tinta
+   e sombra dura deslocada. É o mesmo objeto físico que a etiqueta de
+   preço da /vitrine-digital e o cartão de contato do /portfolio são, e a
+   função é a mesma nos três: dar borda ao único lugar da dobra onde a
+   pessoa pode agir.
+
+   É também o único objeto com sombra dura acima da dobra. Isso é o que o
+   destaca sem precisar de mais cor: na página inteira, sombra dura
+   significa "isto é uma coisa, e dá para apertar".
+
+   Fundo #FBF9F3 e não o papel puro: o cartão precisa se levantar do chão,
+   e um branco de verdade brigaria com o grafite da manchete.
+   ============================================================ */
+/* O cartão apertou quando o formulário entrou: com três campos, um
+   botão e duas linhas de prova dentro, os respiros de antes empurravam o
+   bloco para além da altura da manchete ao lado. Nada de conteúdo saiu;
+   o que encolheu foram os vãos. */
+/* ---------- o selo mora pendurado na quina ----------
+   `position:relative` no cartão porque o carimbo é absoluto contra ele. */
 .hero__bottom{
-  display:flex;flex-wrap:wrap;gap:clamp(20px,5vw,48px);
-  align-items:flex-end;justify-content:flex-end;margin-top:clamp(22px,5vw,56px);
+  position:relative;
+  display:flex;flex-direction:column;gap:clamp(14px,2.2vw,20px);
+  margin-top:clamp(24px,4.4vw,40px);
+  background:#FBF9F3;
+  border:1.5px solid var(--ink);
+  box-shadow:6px 6px 0 var(--ink);
+  padding:clamp(20px,3vw,28px);
 }
+/* ---------- o subtítulo entrou na medida do lead da vitrine ----------
+   Lá o par manchete/subtítulo funciona por CONTRASTE DE ESCALA: a
+   manchete ocupa a tela e o lead fica em 16 a 18,5px, com peso normal e
+   uma largura de leitura curta. É o lead que faz a manchete parecer
+   grande.
+
+   Aqui ele estava em peso 500 e num corpo intermediário: nem manchete
+   nem legenda, disputando com o lockup ao lado em vez de servi-lo. Agora
+   é a mesma medida, o mesmo peso e a mesma altura de linha de lá. */
+/* ---------- o lead com espinha (portado da /vitrine-digital) ----------
+   Ele era Inter cinza uniforme, o veículo mais neutro possível para a
+   frase mais importante depois da manchete. Lá o trecho que carrega a
+   promessa ganha tinta cheia e o resto recua para o cinza; aqui o mesmo:
+   o `<em>` do config leva o que o estúdio entrega, e a explicação fica em
+   cinza atrás dele.
+
+   O entrelinha é 1,45 e não 1,6: além de deixar o parágrafo mais
+   desenhado e menos "texto de sistema", ele devolve alguns pixels de
+   dobra, que é onde a manchete maior vai gastar. */
+/* ---------- o subtítulo reserva a quina do selo ----------
+   O carimbo fica pendurado no canto de cima à direita, e sem essa reserva
+   a primeira linha do texto passava por baixo dele. Na /vitrine-digital o
+   mesmo problema é resolvido do mesmo jeito: lá a linha do preço quebra
+   de propósito para deixar a faixa do selo livre.
+
+   A reserva acompanha o tamanho do selo (ele é uma porcentagem do
+   cartão), então ela vale em qualquer largura sem número mágico. */
 .hero__sub{
-  max-width:min(46ch,100%);
-  font-size:clamp(1.05rem,4.4vw,1.5rem);line-height:1.35;font-weight:500;color:var(--ink-60);
+  max-width:none;
+  padding-right:clamp(78px,26%,106px);
+  font-size:clamp(16.5px,1.35vw,19px);line-height:1.45;font-weight:400;color:var(--ink-soft);
 }
-.hero__sub b{color:var(--black);font-weight:600}
-/* Grifo esmeralda no subtítulo (<em> no config) — mesmo verde da headline */
-.hero__sub em{font-style:normal;color:var(--emerald);font-weight:600}
+.hero__sub b{color:var(--ink);font-weight:600}
+
+/* ============================================================
+   O CARIMBO DA AGENDA (portado da /vitrine-digital)
+
+   "AGENDA ABERTA" já foi três coisas aqui: texto miúdo com um ponto ao
+   lado, um retângulo torto com borda esmeralda e um chip grafite. As
+   três eram etiqueta, não carimbo.
+
+   O selo REDONDO é a forma que carrega a ideia sozinha: dois anéis
+   concêntricos, o nome do estúdio curvado no arco de cima, o recado no
+   miolo e a praça embaixo, que é exatamente a anatomia de um carimbo de
+   cartório.
+
+   A forma também resolveu o conteúdo: um selo TEM que dizer de quem é e
+   de onde vem, então "RAFAEL RAZEIRA ESTÚDIO" e "MARINGÁ · PR" entraram
+   porque a forma pediu, e as duas coisas são o diferencial que a página
+   vende (uma pessoa, não uma agência) aparecendo onde ninguém lê como
+   argumento de venda.
+
+   Fica pendurado no canto de cima à direita, MEIO PARA FORA do cartão:
+   selo que respeita a borda parece impresso junto; selo que atravessa a
+   borda parece aplicado depois, que é o que ele é. Gira -13 graus, e o
+   `pointer-events:none` existe porque ele passa por cima da quina e não
+   pode roubar toque de nada.
+
+   `mix-blend-mode:multiply` não é enfeite: é o que faz a tinta SOMAR com
+   o que estiver embaixo em vez de tapar, então onde o selo cruza o filete
+   do cartão a cor escurece, como tinta de verdade sobre traço.
+
+   Cresce com o cartão em vez de ter tamanho fixo: a conta é pouco menos
+   de um quarto da largura dele nas duas pontas.
+   ============================================================ */
+.hero__selo{
+  position:absolute; top:-18px; right:-16px; z-index:2;
+  width:clamp(84px,25%,104px); aspect-ratio:1;
+  transform:rotate(-13deg);
+  color:var(--green); opacity:.9; mix-blend-mode:multiply;
+  pointer-events:none;
+}
+.hero__selo text{font-family:var(--font-mono);font-weight:700;fill:currentColor}
+/* No celular o cartão encosta nas margens da página, e um selo saindo
+   16px para fora sairia da tela: ali ele recolhe para dentro da quina. */
+@media(max-width:560px){
+  .hero__selo{top:-14px;right:-10px;width:clamp(72px,22%,86px)}
+}
+/* No lead o grifo é a ESPINHA da frase: tinta cheia e peso, não cor de
+   marca. O esmeralda ficaria competindo com o da manchete logo acima, e
+   `--green-dark` em 16px sobre papel já é o limite do legível. */
+.hero__sub em{font-style:normal;color:var(--ink);font-weight:600}
 
 /* Cue "conheça mais" dentro do hero — logo abaixo do subtítulo */
 .hero__cue{padding-block:0;margin-top:clamp(28px,7vw,48px)}
 
 /* CTA duplo: botão primário (formulário) + linha discreta do WhatsApp */
-.hero__ctas{display:flex;flex-direction:column;gap:16px;align-items:stretch;flex:1;min-width:min(100%,320px)}
-/* Botão sempre em UMA linha: fonte e respiros escalam com a largura da tela */
-.hero__ctas .btn-outline{white-space:nowrap;gap:10px;padding:20px 14px;font-size:clamp(10.5px,3.2vw,14px)}
-@media(min-width:560px){.hero__ctas .btn-outline{gap:16px;padding:20px 28px}}
+.hero__ctas{display:flex;flex-direction:column;gap:12px;align-items:stretch;width:100%}
+/* Regras do botão que existia aqui antes do formulário. Ficam porque o
+   .btn-outline segue em uso em outras seções e, se o cartão voltar a ter
+   um botão de navegação um dia, ele já nasce certo. */
+.hero__ctas .btn-outline{width:100%;white-space:nowrap;gap:10px;padding:19px 14px;font-size:clamp(10.5px,3.2vw,13px)}
+@media(min-width:560px){.hero__ctas .btn-outline{gap:16px;padding:19px 26px}}
+/* ---------- este é o botão de AÇÃO, e por isso é rosa ----------
+   Ele leva ao formulário, que é a única coisa que esta página precisa que
+   aconteça. O rosa cheio cercado de papel no meio do cartão é o ponto de
+   fuga da dobra, e é assim que a hierarquia se segura: não por ser o
+   único rosa da página (o pill flutuante também é), mas por ser o único
+   rosa cheio dentro de um objeto branco.
+   Branco sobre rosa dá 4,57:1; o contrário não passa, então nunca
+   inverta. */
+.hero__ctas .btn-outline{background:var(--rosa);border-color:var(--rosa);color:#fff}
+@media(hover:hover) and (pointer:fine){
+  .hero__ctas .btn-outline:hover{background:var(--rosa-dark);border-color:var(--rosa-dark);color:#fff}
+}
+/* ============================================================
+   O CARTÃO VIROU FORMULÁRIO (14/08)
+
+   Ele tinha um botão que ROLAVA até o briefing no fim da página. Quem
+   decidia na primeira tela precisava atravessar onze mil pixels para
+   conseguir falar, e cada seção no caminho é uma chance de fechar a aba.
+   Agora a captura acontece aqui, com o mínimo: nome, WhatsApp e o perfil
+   se a pessoa quiser.
+
+   O briefing completo do fim NÃO saiu: ele continua sendo o caminho de
+   quem quer contar o projeto inteiro. Os dois gravam na mesma tabela e
+   disparam o mesmo Lead; o que os separa nos dados é o campo `origem`.
+
+   Três decisões vieram direto do que a /vitrine-digital aprendeu:
+
+   1. RÓTULO VISÍVEL em cada campo, e não só placeholder. Placeholder some
+      quando a pessoa digita e deixa o campo anônimo na hora de conferir.
+   2. OS CAMPOS TÊM 16px. Abaixo disso o Safari do iPhone dá zoom ao
+      focar: a página salta de escala e volta desalinhada. Foi exatamente
+      onde as pessoas largaram o formulário de lá.
+   3. O CAMPO É UMA LINHA, não uma caixa. Filete embaixo, nada em volta:
+      dentro de um cartão que já tem borda, caixa dentro de caixa vira
+      moldura em moldura. O foco engrossa o filete e o pinta de rosa, que
+      é a cor da ação nesta página.
+   ============================================================ */
+/* ---------- nome e WhatsApp dividem a linha ----------
+   Empilhados, os três campos somavam três fileiras e o cartão passava da
+   altura da manchete ao lado. Os dois obrigatórios são curtos (um nome e
+   um telefone), então cabem lado a lado e o formulário perde uma fileira
+   inteira sem perder um campo. Abaixo de 560px eles voltam a empilhar,
+   porque aí meia largura não comporta "(44) 99999-9999". */
+.hero-form{display:flex;flex-direction:column;gap:0}
+.hero-form__par{display:grid;grid-template-columns:1fr;gap:0}
+@media(min-width:560px){.hero-form__par{grid-template-columns:1fr 1fr;gap:0 18px}}
+.hero-form__linha{margin-top:12px}
+.hero-form__par > .hero-form__linha:first-child{margin-top:0}
+@media(min-width:560px){.hero-form__par > .hero-form__linha{margin-top:0}}
+.hero-form__campo{display:grid;gap:4px}
+.hero-form__campo > span{
+  font-family:var(--font-mono);font-weight:700;font-size:8.5px;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--green-dark);
+}
+.hero-form__campo input{
+  width:100%;background:transparent;border:0;border-bottom:1.5px solid var(--linha);
+  padding:6px 0 7px;
+  font-family:var(--font-body);font-size:16px;font-weight:500;color:var(--ink);
+  transition:border-color .18s,border-width .18s;
+}
+.hero-form__campo input::placeholder{color:#a8ada6}
+.hero-form__campo input:focus{outline:none;border-bottom-color:var(--rosa);border-bottom-width:2.5px;padding-bottom:6px}
+.hero-form__campo input.is-invalid{border-bottom-color:var(--rosa)}
+.hero-form__err{
+  margin-top:5px;font-family:var(--font-mono);font-size:9.5px;letter-spacing:.06em;color:var(--rosa-dark);
+}
+/* honeypot: fora da tela para gente, no DOM para robô */
+.hero-form__pote{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+
+/* O botão de envio herda o carimbo dos outros botões da casa: afunda 4px
+   no clique e a sombra colapsa. Rosa porque é A ação da página. */
+.hero-form__btn{
+  margin-top:20px;width:100%;
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  border:0;padding:16px 18px;
+  font-family:var(--font-mono);font-weight:700;font-size:clamp(10.5px,3.2vw,12.5px);
+  letter-spacing:.06em;text-transform:uppercase;
+  background:var(--rosa);color:#fff;
+  box-shadow:4px 4px 0 var(--ink);
+  transition:background .2s,transform .1s,box-shadow .1s;
+}
+@media(hover:hover) and (pointer:fine){
+  .hero-form__btn:hover{background:var(--rosa-dark)}
+}
+.hero-form__btn:active{transform:translate(4px,4px);box-shadow:0 0 0 var(--ink)}
+.hero-form__btn[disabled]{opacity:.75;cursor:progress}
+.hero-form__erro{
+  margin-top:12px;font-family:var(--font-mono);font-size:10.5px;line-height:1.6;
+  letter-spacing:.04em;color:var(--rosa-dark);
+}
+
+/* ---------- a confirmação ocupa o próprio cartão ----------
+   Por estado, sem navegação: assim ela aparece igual dentro do navegador
+   interno do Instagram, que é de onde vem boa parte do tráfego. */
+.hero-ok{display:none}
+#hero-card.is-enviado .hero__sub,
+#hero-card.is-enviado .hero__ctas{display:none}
+#hero-card.is-enviado .hero-ok{display:block}
+.hero-ok__titulo{
+  font-family:var(--font-display);font-stretch:78%;font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.4rem,5vw,1.9rem);line-height:1;letter-spacing:-.02em;color:var(--ink);
+}
+.hero-ok__texto{margin-top:12px;font-size:15px;line-height:1.5;color:var(--ink-soft)}
+
 /* Prova sob o botão: responde compromisso, espera e preço no momento do clique */
 .hero__proof{
-  font-family:var(--font-mono);font-size:clamp(9.5px,2.6vw,11px);font-weight:400;
-  letter-spacing:.05em;text-transform:uppercase;color:var(--ink-40);
-  text-align:center;line-height:1.7;margin-top:-4px;
+  font-family:var(--font-mono);font-size:clamp(8.5px,2.3vw,9.5px);font-weight:400;
+  letter-spacing:.04em;text-transform:uppercase;color:var(--ink-40);
+  text-align:center;line-height:1.7;margin-top:-2px;
 }
 .hero__proof span{white-space:nowrap}
 .hero__whats{
   align-self:center;display:inline-flex;align-items:center;gap:8px;padding:6px 2px;
-  font-family:var(--font-mono);font-weight:700;font-size:clamp(11px,3vw,13px);
-  letter-spacing:.06em;text-transform:uppercase;color:var(--ink-60);
+  font-family:var(--font-mono);font-weight:700;font-size:clamp(10px,2.8vw,11.5px);
+  letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);
   border-bottom:1.5px solid transparent;
   transition:color .2s,border-color .2s;
 }
@@ -64,28 +352,25 @@
   .hero__ctas{align-items:center}
 }
 
-/* —— Desktop: duas colunas (headline à esquerda; sub em caixa alta + botão à direita) —— */
+/* —— Desktop: duas colunas (manchete à esquerda; cartão à direita) —— */
 @media(min-width:1024px){
   .hero .wrap{
-    display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);
-    column-gap:clamp(32px,4vw,72px);align-items:center;
+    display:grid;grid-template-columns:minmax(0,1.24fr) minmax(0,.76fr);
+    column-gap:clamp(32px,4vw,64px);align-items:center;
   }
   .hero .eyebrow{grid-column:1/-1}
   .hero__headline{grid-column:1}
-  .hero__bottom{
-    grid-column:2;margin-top:0;
-    flex-direction:column;align-items:flex-end;justify-content:center;
-    gap:clamp(32px,4vw,56px);
-  }
-  .hero__sub{
-    margin-left:0;text-align:right;text-transform:uppercase;
-    font-size:clamp(1.2rem,1.6vw,1.75rem);line-height:1.32;max-width:31ch;
-    color:var(--black);font-weight:500;
-  }
-  .hero__sub b{font-weight:500}
-  .hero__sub em{font-weight:500}
-  .hero__ctas{flex:none;align-items:flex-end;min-width:0}
-  .hero__proof{text-align:right}
-  .hero__whats{align-self:flex-end}
+  .hero__bottom{grid-column:2;margin-top:0}
+  /* ---------- o subtítulo saiu da caixa alta alinhada à direita ----------
+     Ele era um segundo bloco de manchete: caixa alta, 28px, encostado na
+     margem direita. Duas manchetes na mesma dobra disputam a mesma
+     leitura, e a de 11rem sempre ganha, então a segunda só atrasava.
+     Dentro do cartão ele é o que sempre foi: a legenda que explica a
+     manchete, em caixa mista, alinhada à esquerda como todo o resto da
+     página. */
+  .hero__sub{text-align:left;text-transform:none;max-width:38ch}
+  .hero__ctas{align-items:stretch}
+  .hero__proof{text-align:center}
+  .hero__whats{align-self:center}
   .hero__cue{grid-column:1/-1;margin-top:clamp(32px,5vw,56px)}
 }
