@@ -22,6 +22,8 @@ const SITES = {
   "baixudos": "https://baixudos.vercel.app",
   "star-point": "https://star-point-wheat.vercel.app",
   "bella-black": "https://bella-black-three.vercel.app",
+  // veritlab.com.br não resolve DNS; o deploy da Vercel é o endereço válido
+  "verit-lab": "https://verit-lab.vercel.app",
 };
 
 // slug=url na linha de comando entra na lista (ou substitui a URL padrão)

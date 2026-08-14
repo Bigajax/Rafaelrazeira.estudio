@@ -1,266 +1,600 @@
 /* ============================================================
-   Portfólio: link da bio redesenhado como mesa de trabalho.
-   Papel quadriculado creme, capas como fotos impressas presas
-   com fita adesiva, carimbo NO AR em tinta vermelha e rótulos
-   de marca-texto amarelo. Display Titan One, corpo Baloo 2,
-   etiquetas em Space Mono, anotações à mão em Caveat.
+   Portfólio: o link da bio na gramática "papel e tinta" da
+   /vitrine-digital (14/08).
+
+   ---------- por que o visual anterior saiu ----------
+   Ele era uma mesa de trabalho: papel quadriculado creme, capas
+   presas com fita adesiva, carimbo NO AR em tinta vermelha,
+   marca-texto amarelo, uma estrela adesiva com carinha e quatro
+   famílias tipográficas (Titan One, Baloo 2, Space Mono,
+   Caveat). Bonito e completamente sozinho: a /vitrine-digital
+   manda o tráfego para cá com a frase "VER OS 9 PROJETOS NO
+   PORTFÓLIO", e quem clicava trocava de alfabeto, de paleta e de
+   temperatura no mesmo passo. Duas identidades para um estúdio
+   só, e a segunda aparecia exatamente no clique em que a
+   primeira pedia confiança.
+
+   Agora as duas páginas usam a MESMA gramática, e ela é a de lá:
+   fundo papel, grafite quase-preto, Archivo condensada 900 em
+   caixa alta nos títulos, JetBrains Mono nas etiquetas, filetes
+   e sombras duras deslocadas.
+
+   ---------- a paleta em 60/30/10 ----------
+   Herdada inteira da vitrine, tokens iguais, nenhuma cor nova:
+
+     60%  --paper   o chão do hero e do contato
+     30%  --ink     a sala das capas, a estrutura
+          --green   a marca: filetes, ponto vivo, o `em`
+     10%  --rosa    o ACENTO: a tira rolante entre o hero e a
+                    sala, o ponto final das manchetes, a barra
+                    fixa do celular e o botão do contato
+
+   A grade não gasta rosa nenhum, e isso é o que deixa a cor
+   livre para o resto: os botões "Abrir o site" de cada card
+   morreram no redesign e o card inteiro virou o link. Ver o
+   comentário em ProjectCard.tsx.
+
+   ---------- o esmeralda em dois tons, e onde cada um vale ----------
+   Mesma regra da vitrine, e ela importa mais aqui porque quase
+   tudo desta página vive sobre grafite:
+
+     --green       #0C9159  filete e elemento gráfico sobre papel
+     --green-dark  #076B42  SÓ texto miúdo sobre papel
+     --green-live  #1FBF7A  SÓ sobre grafite (7,7:1 contra o --ink),
+                            que é onde os dois de cima somem
+
+   Regra prática: menos de 18px sobre papel usa --green-dark;
+   qualquer coisa dentro da sala grafite usa --green-live.
+   Branco sobre --rosa dá 4,57:1, então o botão de ação é sempre
+   branco sobre rosa, nunca o contrário.
    ============================================================ */
 
 .site {
-  --papel: #f4efe3;
-  --grade: #e6dfca;
-  --tinta: #065f46;
-  --tinta-suave: #567064;
-  --sol: #ffd64d;
-  --carimbo: #d9482f;
-  --branco: #fffdf7;
+  --green: #0C9159;
+  --green-dark: #076B42;
+  --green-live: #1FBF7A;
+  --rosa: #E31B62;
+  --rosa-dark: #B81250;
+  --ink: #14181A;
+  --ink-soft: #3A4144;
+  --paper: #F2EFE6;
+  --paper-2: #EAE6D9;
+  --line: #D8D3C4;
+  --line-dark: #2A3134;
   --pad: clamp(20px, 5vw, 64px);
-  --display: var(--font-display), "Arial Black", sans-serif;
+  --display: var(--font-display), Arial, sans-serif;
   --body: var(--font-body), Arial, sans-serif;
   --mono: var(--font-mono), monospace;
-  --hand: var(--font-hand), cursive;
-  background:
-    linear-gradient(var(--grade) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grade) 1px, transparent 1px),
-    var(--papel);
-  background-size: 28px 28px, 28px 28px, auto;
-  color: var(--tinta);
+  background: var(--paper);
+  color: var(--ink);
   font-family: var(--body);
   overflow: clip;
   min-height: 100dvh;
 }
 
+/* Rolagem suave escopada pela rota, igual à vitrine: só casa quando o
+   wrapper desta página está montado, então as outras rotas seguem com o
+   comportamento delas. O `auto` sob reduced-motion não é acessório:
+   rolagem longa e suave é o movimento que dispara náusea vestibular, e é
+   o único tipo de animação que o bloco de reduced-motion lá do fim NÃO
+   pegaria, já que `scroll-behavior` não é transition nem animation. */
+html:has(.site) { scroll-behavior: smooth }
+@media (prefers-reduced-motion: reduce) {
+  html:has(.site) { scroll-behavior: auto }
+}
+
 .site * { box-sizing: border-box }
 .site a { text-decoration: none; color: inherit }
-.site :focus-visible { outline: 3px solid var(--carimbo); outline-offset: 3px; border-radius: 4px }
+.site :focus-visible { outline: 2px solid var(--green); outline-offset: 3px }
+.dark :focus-visible { outline-color: var(--green-live) }
 
-.site h1, .site h3 {
+.site h1, .site h2, .site h3 {
   font-family: var(--display);
-  font-weight: 400;
-  line-height: 1.04;
-  letter-spacing: .01em;
   margin: 0;
   text-wrap: balance;
-  color: var(--tinta);
 }
-.site h1 { font-size: clamp(34px, 4.6vw, 60px) }
+.site h1, .site h2 { font-stretch: 78%; font-weight: 900; text-transform: uppercase; letter-spacing: -.01em }
+/* ---------- a manchete é o cartaz ----------
+   Ela nasceu no mesmo corpo da vitrine (68px no teto) e ficou errada aqui
+   pelo motivo mais simples: lá a metade direita do hero tem a etiqueta e o
+   aparelho, e aqui não tem nada, porque a prova desta página está toda na
+   sala grafite logo abaixo. Uma manchete de 68px num campo de 1300px deixa
+   metade da primeira tela vazia sem que o vazio signifique coisa alguma.
+   Em 116px "TODOS ABREM AGORA." atravessa a largura inteira e o hero passa
+   a ser o que ele é: um cartaz de uma frase só, com a legenda miúda
+   embaixo. O contraste entre 116px e os 18px do parágrafo é a hierarquia,
+   e ele não custa um elemento novo. */
+/* O teto caiu de 116 para 108 quando o placar entrou na faixa: a 116px a
+   linha mais o chip passavam da largura do `.wrap` e o chip caía sozinho
+   numa segunda fileira dentro da faixa, dobrando a altura do bloco preto.
+   A faixa é uma linha só, e o corpo da manchete é que se ajusta a ela. */
+.site h1 { font-size: clamp(36px, 7vw, 108px); line-height: .92; letter-spacing: -.022em }
+.site h2 { font-size: clamp(28px, 3.6vw, 48px); line-height: 1 }
+.site h3 { font-size: clamp(20px, 1.7vw, 25px); line-height: 1.1; font-stretch: 100%; font-weight: 800; letter-spacing: -.015em }
+.site em { font-style: normal; color: var(--green) }
+.site p { line-height: 1.6; color: var(--ink-soft); margin: 0 }
+.lead { font-size: clamp(16px, 1.3vw, 18.5px); max-width: 620px; margin-top: 22px }
+.eyebrow { font: 10.5px var(--mono); letter-spacing: .24em; text-transform: uppercase; color: var(--ink-soft); margin: 0 0 20px }
 
-/* marca-texto amarelo atrás do trecho destacado, seguro em várias linhas */
-.site em {
-  font-style: normal;
-  background: var(--sol);
-  padding: .04em .16em;
-  box-decoration-break: clone;
-  -webkit-box-decoration-break: clone;
-}
+.wrap { max-width: 1360px; margin: auto }
+.section { padding: clamp(56px, 6.4vw, 84px) var(--pad); scroll-margin-top: 72px }
 
-.site p { line-height: 1.55; color: var(--tinta-suave); margin: 0 }
-.lead { font-size: clamp(16px, 1.3vw, 19px); font-weight: 500; max-width: 560px; margin-top: 18px }
-.micro { font: 12px/1.65 var(--mono); color: var(--tinta-suave); letter-spacing: .01em }
-
-/* eyebrow como tira de fita washi amarela, levemente torta */
-.eyebrow {
-  display: inline-block;
-  font: 700 10.5px var(--mono);
-  letter-spacing: .14em;
-  color: var(--tinta);
-  background: color-mix(in srgb, var(--sol) 62%, transparent);
-  padding: 7px 14px;
-  transform: rotate(-1.4deg);
-  box-shadow: 0 1px 2px #00000014;
-  margin: 0 0 22px;
-}
-
-.wrap { max-width: 1280px; margin: auto }
-
-/* ---------- header ---------- */
+/* ---------- cabeçalho ----------
+   O filete duplo (tinta cheia com um segundo mais claro logo abaixo) é a
+   régua de tipografia impressa, e é o que separa este cabeçalho de um
+   hairline de interface. Vai por `box-shadow` e não por `border-bottom`
+   porque são duas linhas com um vão entre elas. */
 .header {
-  height: 66px; position: sticky; top: 0; z-index: 50;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 var(--pad);
-  background: color-mix(in srgb, var(--papel) 88%, transparent);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px dashed var(--grade);
+  height: 64px; position: sticky; top: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 0 var(--pad); background: #f2efe6e8; backdrop-filter: blur(10px);
+  box-shadow: 0 1.5px 0 var(--ink), 0 4px 0 var(--line);
+}
+.brand { font-family: var(--display); font-stretch: 62%; font-weight: 900; font-size: 21px; line-height: .86; letter-spacing: .004em }
+.brand b, .brand span { display: block }
+.brand span { font: 400 8.5px var(--mono); letter-spacing: .42em; color: var(--green-dark); margin-top: 3px }
+
+/* O sinal de vida ocupa o vão morto entre a logo e o botão. Não é
+   enfeite: com o WhatsApp como único destino da página, "tem alguém do
+   outro lado?" é a pergunta que antecede o clique. Some abaixo de 900px,
+   onde o vão não existe. */
+.headStatus { display: inline-flex; align-items: center; gap: 8px; font: 700 9.5px var(--mono); letter-spacing: .16em; color: var(--ink-soft); white-space: nowrap }
+.headStatus i { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: livePulse 1.6s infinite }
+
+/* grafite e não rosa: este botão só ROLA até o contato. O rosa está
+   reservado para o que abre conversa de verdade. */
+.site .headCta { font: 700 11px var(--mono); letter-spacing: .06em; background: var(--ink); color: #fff; padding: 11px 16px; white-space: nowrap; transition: background .15s ease }
+
+/* ---------- POR QUE TODO :hover DESTA PÁGINA TEM GUARDA ----------
+   `@media (hover: hover) and (pointer: fine)` em cada estado de hover. O
+   tráfego é quase todo celular vindo do Instagram, e no toque o navegador
+   entrega o `:hover` junto com o toque e só o solta quando a pessoa toca
+   em outro lugar: o elemento fica preso no estado de hover depois de
+   tocado, o que lê como "travou" bem no momento em que ela precisa de
+   resposta clara. O `:active` NÃO leva guarda, é o oposto: ele é o
+   afundar que dá o retorno do toque. Hover novo nasce aqui dentro. */
+@media (hover: hover) and (pointer: fine) {
+  .site .headCta:hover { background: #000 }
 }
 
-/* a marca é um adesivo branco recortado, de leve torto */
-.brand {
-  font-family: var(--display); font-weight: 400; line-height: .94;
-  background: var(--branco);
-  padding: 7px 12px 8px;
-  transform: rotate(-1.2deg);
-  box-shadow: 0 2px 8px #065f4622;
-  border-radius: 6px;
+/* ---------- hero ----------
+   Curto por decisão, não por falta de assunto: a prova desta página são
+   as capas, e no celular a primeira delas precisa começar dentro da
+   primeira tela. Eyebrow, manchete de duas linhas, uma linha de instrução
+   e o inventário. O que saiu daqui foi a mascote (estrela adesiva com
+   carinha) e a anotação à mão: nenhuma das duas dizia nada sobre os
+   projetos, e as duas empurravam as capas para baixo. */
+.hero { padding: clamp(38px, 4.4vw, 64px) var(--pad) clamp(34px, 3.6vw, 48px) }
+
+/* ============================================================
+   A FAIXA DA MANCHETE
+
+   O hero tinha cinco elementos empilhados (rótulo, manchete, parágrafo,
+   inventário) e nenhum OBJETO: tudo era tipo chapado sobre papel, sem uma
+   única aresta. Competente e sem cara nenhuma, e num link da bio a
+   primeira tela é quase toda a visita.
+
+   A faixa resolve isso sem acrescentar enfeite, porque ela faz três
+   trabalhos ao mesmo tempo:
+
+   1. É CONTRASTE DE FORMA. A segunda linha deixa de ser texto verde sobre
+      papel e vira tinta cheia com letra viva dentro. O hero passa a ter
+      duas temperaturas em vez de uma.
+   2. É ANÚNCIO DA SALA. A faixa é exatamente o --ink da seção das
+      capas, que começa 200px abaixo. A página diz o que vem antes de
+      chegar lá, e a descida do papel para o grafite deixa de ser um corte
+      e vira consequência.
+   3. CARREGA O PLACAR. A ponta direita leva o "9 DE 9 NO AR" com o ponto
+      pulsante, que é o mesmo vocabulário do chip das capas e do
+      cabeçalho. Sem ele a faixa seria decoração; com ele ela é a barra de
+      status da afirmação que a própria manchete acabou de fazer.
+
+   ---------- o sangramento ----------
+   `margin-left: calc(50% - 50vw)` com o padding devolvido do outro lado é
+   o truque de sangria de largura total: a faixa encosta na borda da tela
+   em qualquer viewport, e não só até 1488px como faria um
+   `margin-left: -var(--pad)`. A `.site` tem `overflow: clip`, então a
+   sobra que a barra de rolagem cria em `100vw` é aparada em vez de virar
+   rolagem horizontal.
+
+   Ela termina onde o conteúdo termina (`width: fit-content`), não na
+   borda direita: uma faixa de ponta a ponta seria listra, e o que dá o
+   gesto de cartaz é justamente ela ser cortada de um lado só.
+   ============================================================ */
+/* O `padding-left` é EXATAMENTE a distância que a faixa recuou, e nada
+   mais: `50vw - 50%` já é a folga entre a borda da tela e a margem do
+   `.wrap` (o `.wrap` mora dentro do padding do `.hero`). Somar mais um
+   `var(--pad)` aqui, como a primeira versão fazia, cobrava o respiro duas
+   vezes e a segunda linha nascia recuada em relação à primeira. */
+.faixa {
+  display: flex; align-items: center; flex-wrap: wrap;
+  gap: 2px clamp(14px, 1.8vw, 30px);
+  /* O teto NÃO é `100%`. A faixa começa fora do `.wrap` (ela sangrou para
+     a esquerda), então limitá-la à largura do wrap descontava o
+     sangramento do espaço útil do texto: numa tela de 1920 o recuo é de
+     280px, sobrava menos de mil pixels e a manchete quebrava em duas
+     linhas com o placar numa terceira, virando um paredão preto. O teto
+     certo é "da borda da tela até a margem direita do wrap", que é o
+     sangramento MAIS a largura do wrap. */
+  width: fit-content; max-width: calc(50vw - 50% + 100%);
+  background: var(--ink);
+  margin-left: calc(50% - 50vw);
+  padding: .1em clamp(18px, 2.2vw, 34px) .16em calc(50vw - 50%);
 }
-.brand b { display: block; font-weight: 400; font-size: 14px; letter-spacing: .02em }
-.brand span { display: block; font-family: var(--mono); font-size: 8px; letter-spacing: .4em; color: var(--tinta-suave) }
-
-.site .navcta {
-  background: var(--sol); color: var(--tinta);
-  padding: 12px 18px; border-radius: 999px;
-  font: 700 13px var(--body); letter-spacing: .02em;
-  box-shadow: 0 0 0 3px var(--branco), 0 4px 12px #065f4626;
-  transition: transform .15s ease;
+.faixaTxt { color: var(--green-live) }
+/* ---------- o ponto final é rosa ----------
+   O menor lugar possível para a cor de acento, e o mais deliberado: o
+   ponto é a única pontuação da manchete, e em 108px ele tem tamanho de
+   sobra para ser lido como escolha e não como sujeira. É o rosa entrando
+   na primeira tela sem virar mais um botão nem competir com a tira.
+   Vale nas duas linhas do hero e na manchete do contato: usado uma vez
+   seria enfeite, usado em toda manchete da página é regra. */
+.ponto { color: var(--rosa) }
+/* O placar sai da voz da manchete e volta para a voz de etiqueta: a
+   condensada 78% em 900 é da manchete, e herdar isso num texto de 11px
+   deixaria o chip com cara de manchete miúda em vez de instrumento. */
+.faixaLive {
+  display: inline-flex; align-items: center; gap: 8px; flex: none;
+  font: 700 11px var(--mono); font-stretch: 100%; letter-spacing: .16em;
+  color: #C9CDC6; white-space: nowrap;
 }
-.site .navcta:hover { transform: rotate(-2deg) translateY(-1px) }
+.faixaLive i { width: 7px; height: 7px; border-radius: 50%; background: var(--green-live); animation: livePulse 1.6s infinite }
 
-/* ---------- intro curta ---------- */
-.intro { padding: clamp(44px, 5.5vw, 72px) var(--pad) 0; position: relative }
-.intro .wrap { position: relative }
+/* ---------- o inventário ----------
+   Uma linha em mono contando o que são os projetos, montada a partir do
+   próprio dado (ver page.tsx). É estrutura carregando informação: um
+   visitante frio precisa saber o que o estúdio faz antes de olhar capa
+   por capa, e essa informação já existia espalhada nas etiquetas.
+   O filete à esquerda de cada item é o mesmo traço do cabeçalho, e é ele
+   que faz a linha ler como lista de embalagem em vez de legenda. */
+.inventario {
+  list-style: none; padding: 0;
+  margin: clamp(26px, 3vw, 38px) 0 0;
+  display: flex; flex-wrap: wrap; gap: 10px 0;
+}
+/* O filete fica em TODOS os itens, inclusive no primeiro. Ele começou como
+   separador (só entre itens) e a segunda linha do celular denunciava a
+   ideia: o item que abre a linha de baixo herdava um separador que não
+   separa nada, e a lista ficava com uma marca solta no meio do nada.
+   Como marca de item ele funciona nas duas larguras e vira a mesma régua
+   do cabeçalho, repetida em quatro pedaços. */
+.inventario li {
+  font: 10.5px var(--mono); letter-spacing: .14em; text-transform: uppercase;
+  color: var(--ink-soft);
+  padding: 3px 20px 3px 12px;
+  border-left: 1.5px solid var(--line);
+}
+.inventario b { font-weight: 700; color: var(--green-dark) }
 
-/* anotação à mão apontando para a grade */
-.nota {
-  display: inline-block;
-  font: 600 clamp(19px, 1.6vw, 23px) var(--hand);
-  color: var(--carimbo);
-  transform: rotate(-2.2deg);
-  margin-top: 18px;
+/* ============================================================
+   A TIRA ROSA: A CHAMADA DOS CLIENTES
+
+   O rosa da casa não aparecia em nenhum lugar da primeira tela: ele
+   estava só no botão do contato e na barra fixa, os dois no fim. Numa
+   página que herdou a paleta da vitrine, faltar a faixa dos 10% é sentir
+   falta da assinatura inteira.
+
+   A tira resolve isso trabalhando, não decorando. Ela é a costura entre o
+   papel (onde a página argumenta) e o grafite (onde ela prova), e leva os
+   nomes dos clientes rolando: a chamada deles, montada do próprio
+   `data/portfolio.ts`, então lista nova entra sozinha.
+
+   ---------- reta, e não inclinada ----------
+   A da vitrine é girada -3,5° sobre um chão de grafite, com `clip-path`
+   para o corte não deixar cunha. Aqui ela é reta de propósito: o hero já
+   tem a faixa grafite sangrando pela esquerda, que é um gesto forte, e
+   duas faixas tortas na mesma tela viram maneirismo em vez de assinatura.
+   O movimento é que dá a vida desta, não o ângulo.
+
+   ---------- a volta contínua ----------
+   O JSX manda a lista DUPLICADA e a animação anda meia pista
+   (`translateX(-50%)`), que é exatamente uma cópia inteira: quando ela
+   termina, o quadro é idêntico ao inicial e a emenda não existe. Ela
+   corre para a DIREITA, igual à da vitrine, para as duas páginas terem o
+   mesmo sentido de leitura.
+   ============================================================ */
+.tira {
+  background: var(--rosa);
+  overflow: hidden; white-space: nowrap;
+  pointer-events: none; user-select: none;
+}
+.tiraTrack { display: inline-flex; will-change: transform; animation: tiraSlide 34s linear infinite }
+.tiraTrack span {
+  display: inline-flex; align-items: center; gap: .42em;
+  font-family: var(--display); font-stretch: 78%; font-weight: 900; text-transform: uppercase;
+  font-size: clamp(17px, 2.1vw, 32px); line-height: 1; letter-spacing: -.005em;
+  padding: .44em .21em; color: var(--paper);
+}
+/* o separador nasce no `::after` de cada nome, e não como texto no JSX:
+   assim ele acompanha a repetição da lista e a volta nunca fica com dois
+   nomes colados nem com um ponto sobrando na emenda */
+.tiraTrack span::after { content: "·"; opacity: .5 }
+@keyframes tiraSlide { from { transform: translateX(-50%) } to { transform: translateX(0) } }
+
+/* ---------- a sala grafite ----------
+   Mesma `.dark` que a vitrine usa toda vez que a seção é conferível. Aqui
+   ela tem um segundo trabalho: as nove capas são capturas de sites
+   claros, quase todas com fundo branco, e sobre o papel da página elas
+   viravam nove manchas de temperatura parecida. Contra o grafite cada uma
+   vira um objeto iluminado. */
+.dark { background: var(--ink); color: #fff }
+.dark h3 { color: #fff }
+
+.grade { display: grid; grid-template-columns: 1fr; gap: clamp(38px, 4vw, 52px) clamp(24px, 3vw, 40px) }
+
+/* ============================================================
+   A GRADE TEM OPINIÃO (14/08)
+
+   Ela era dez cards do mesmo tamanho, do mesmo peso e no mesmo ritmo. Isso
+   não é neutralidade: é CATÁLOGO, e catálogo não escolhe nada. Um estúdio
+   que mostra dez trabalhos exatamente iguais está dizendo que os dez valem
+   o mesmo, o que não é verdade e não ajuda ninguém a olhar.
+
+   Dois projetos (marcados com `destaque` em data/portfolio.ts) ocupam duas
+   colunas. Só isso, sem tipo maior nem cor diferente: o tamanho já é a
+   opinião, e qualquer coisa a mais viraria selo de "destaque", que é o
+   contrário de deixar o trabalho falar.
+
+   ---------- por que exatamente dois, e naquelas posições ----------
+   São dez itens em três colunas. Com os destaques na 1ª e na 4ª posição, a
+   conta fecha em quatro fileiras cheias, sem buraco:
+
+       2+1  |  1+2  |  3  |  3
+
+   E o alternar das duas primeiras (grande à esquerda, depois grande à
+   direita) é o que dá a batida da grade: sem ele, dois cards largos
+   empilhados do mesmo lado leriam como coluna, não como ritmo.
+
+   Em DUAS colunas a conta também fecha (o destaque toma a fileira
+   inteira). Em UMA, o `span 2` não pode existir: numa grade de uma coluna
+   ele criaria uma segunda coluna implícita e jogaria metade do card para
+   fora da tela. Por isso a regra mora DENTRO do breakpoint, e não fora.
+   ============================================================ */
+@media (min-width: 700px) {
+  .grade { grid-template-columns: 1fr 1fr }
+  .destaque { grid-column: span 2 }
+  /* ---------- o corte cinematográfico do destaque ----------
+     Com 16/10 e o dobro da largura, a janela em destaque ficava mais de
+     200px mais alta que a vizinha, e a fileira inteira herdava essa
+     altura: sobrava um vão de grafite embaixo do card pequeno que lia
+     como falha de montagem, não como respiro.
+
+     O 21/9 resolve pela imagem e não por hack de grade: a janela larga
+     fica com altura parecida com a da estreita, e o formato mais aberto é
+     por si só o que diz "este é maior". A captura é sempre ancorada pelo
+     topo (`object-position: top`), então o que o corte tira é o pé da
+     primeira dobra: cabeçalho, manchete e botões continuam todos dentro. */
+  .destaque .tela { aspect-ratio: 21 / 9 }
+}
+@media (min-width: 1080px) { .grade { grid-template-columns: 1fr 1fr 1fr } }
+
+/* ---------- o card ----------
+   O card inteiro é o link (ver ProjectCard.tsx). `display: grid` com
+   `align-content: start` para que cards de nomes curtos e longos deixem a
+   moldura na mesma altura da linha. */
+.card { display: grid; gap: 0; align-content: start; color: inherit }
+
+/* ============================================================
+   A JANELA DE NAVEGADOR (14/08, pedido do Rafael)
+
+   A captura era um retângulo solto com um fio de contorno. Agora cada uma
+   mora dentro da janela clara do sistema, semáforos e barra de endereço
+   inclusive, que é o mesmo objeto que a /vitrine-digital desenha nos dois
+   cards de prova dela.
+
+   ---------- o que a janela reorganizou no card ----------
+   Ela não é só moldura: ela é o lugar NATURAL do endereço, e isso
+   redistribuiu o card inteiro.
+
+   O endereço subiu para a barra, onde ele já estaria num navegador de
+   verdade, e o chip "NO AR" subiu junto, ao lado dele. Com os dois lá em
+   cima, a linha conferida do pé (endereço em mono com o ✓ na margem
+   direita) passou a dizer pela terceira vez a mesma coisa que a barra diz,
+   e saiu. O card ficou: janela, tipo, nome, ramo.
+
+   REGISTRADO PARA QUEM MEXER DEPOIS: aquela linha era a assinatura da
+   página, e a troca foi consciente. O que ela afirmava ("este endereço
+   abre") a barra afirma melhor, porque mostra o endereço no objeto que
+   abre endereços. Se a janela sair um dia, a linha conferida tem que
+   voltar junto, senão o card fica sem nenhuma prova de que o site existe.
+
+   ---------- a janela é CLARA ----------
+   Mesma razão da vitrine, e ela vale em dobro aqui: a seção é grafite, e
+   janela escura sobre fundo escuro é mancha dentro de mancha. Clara, ela
+   flutua. E é o modo claro que a cliente vai ver quando abrir para
+   conferir, que é a única coisa que esta página pede.
+
+   A sombra é funda e suave, não a sombra dura da página: janela de sistema
+   flutua e projeta assim. ============================================ */
+.janela {
+  width: 100%; overflow: hidden; border-radius: 12px;
+  background: #f6f6f7;
+  box-shadow: 0 20px 44px #00000066, 0 3px 12px #00000047;
+  transition: transform .22s ease, box-shadow .22s ease;
+}
+.barra {
+  display: flex; align-items: center; gap: 9px; padding: 8px 11px;
+  background: linear-gradient(#f7f7f8, #eaeaec);
+  border-bottom: 1px solid #d2d2d6;
+  box-shadow: inset 0 1px 0 #fff;
+}
+.dots { display: flex; gap: 5px; flex: none }
+.dots i { width: 8px; height: 8px; border-radius: 50%; box-shadow: inset 0 0 0 .5px #00000038 }
+.dots i:nth-child(1) { background: #ff5f57 }
+.dots i:nth-child(2) { background: #febc2e }
+.dots i:nth-child(3) { background: #28c840 }
+.urlChip {
+  flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font: 9.5px var(--mono); letter-spacing: .02em; color: #5c5e63;
+  background: #fff; border: 1px solid #dcdce1; border-radius: 100px; padding: 4px 10px;
 }
 
-/* estrela adesiva com carinha, a única mascote da página */
-.estrela {
-  position: absolute; right: clamp(4px, 4vw, 72px); top: -10px;
-  width: clamp(72px, 8vw, 112px); height: auto;
-  transform: rotate(10deg);
-  filter: drop-shadow(0 3px 6px #065f4630);
-  pointer-events: none;
+/* a tela: a captura, na proporção da janela de 1280x800 em que ela foi
+   tirada, para o site não aparecer esticado nem cortado fora de esquadro */
+.tela { position: relative; width: 100%; aspect-ratio: 16 / 10; overflow: hidden; background: var(--paper-2) }
+.tela img { object-fit: cover; object-position: top }
+
+@media (hover: hover) and (pointer: fine) {
+  .card:hover .janela { transform: translateY(-4px); box-shadow: 0 28px 56px #00000080, 0 4px 14px #00000052 }
 }
-
-/* ---------- grade de projetos ---------- */
-.gridSec { padding: clamp(40px, 5vw, 64px) var(--pad) clamp(72px, 8vw, 110px) }
-.grid { display: grid; grid-template-columns: 1fr; gap: clamp(52px, 5.5vw, 72px) clamp(28px, 3.2vw, 48px) }
-@media (min-width: 700px) { .grid { grid-template-columns: 1fr 1fr } }
-@media (min-width: 1080px) { .grid { grid-template-columns: 1fr 1fr 1fr } }
-
-.card { display: grid; gap: 12px; justify-items: start; align-content: start }
-
-/* a capa é uma foto impressa: borda branca, fita no topo, de leve torta */
-.print {
-  position: relative; width: 100%;
-  background: var(--branco);
-  padding: 10px 10px 12px;
-  border-radius: 4px;
-  box-shadow: 0 10px 26px #065f461f, 0 2px 6px #065f4618;
-  transform: rotate(-1.1deg);
-  transition: transform .25s ease, box-shadow .25s ease;
-}
-.card:nth-child(even) .print { transform: rotate(1deg) }
-.card:hover .print { transform: rotate(0deg) translateY(-4px); box-shadow: 0 16px 34px #065f4628, 0 3px 8px #065f461a }
-
-/* fita adesiva translúcida segurando a foto no papel */
-.tape {
-  position: absolute; z-index: 2;
-  top: -13px; left: 50%;
-  width: 104px; height: 28px;
-  transform: translateX(-50%) rotate(-2.5deg);
-  background: color-mix(in srgb, var(--sol) 46%, #ffffff5c);
-  box-shadow: 0 1px 3px #00000018;
-}
-.card:nth-child(even) .tape { transform: translateX(-50%) rotate(2deg) }
-
-.cover { display: block; position: relative; width: 100%; aspect-ratio: 16 / 10; overflow: hidden; border-radius: 2px; background: #e9e2d0 }
-.cover img { object-fit: cover; object-position: top }
+.card:active .janela { transform: translateY(0); box-shadow: 0 10px 22px #0000004d }
 
 /* capa ausente: papel liso com o nome segurando o lugar, nada quebra */
 .placeholder {
   position: absolute; inset: 0; display: grid; place-content: center; gap: 8px;
-  text-align: center; padding: 20px;
-  background: repeating-linear-gradient(-45deg, #f0e9d8 0 14px, #ece4d0 14px 28px);
+  text-align: center; padding: 20px; background: var(--paper-2);
 }
-.placeholder b { font-family: var(--display); font-weight: 400; font-size: 21px; color: var(--tinta) }
-.placeholder small { font: 700 9px var(--mono); letter-spacing: .14em; color: var(--tinta-suave) }
+.placeholder b { font-family: var(--display); font-stretch: 78%; font-weight: 900; text-transform: uppercase; font-size: 20px; color: var(--ink) }
+.placeholder small { font: 700 9px var(--mono); letter-spacing: .14em; color: var(--ink-soft) }
 
-/* etiqueta da foto: tipo em marca-texto + carimbo de situação */
-.cardMeta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap }
-.tag {
-  font: 700 9.5px var(--mono); letter-spacing: .12em;
-  color: var(--tinta); background: var(--sol);
-  padding: 4px 9px; transform: rotate(-1deg);
+/* ---------- o rótulo, e o traço que abre a ficha ----------
+   O rótulo de tipo é a informação MENOS útil do card: sete dos dez dizem
+   a mesma coisa, e o que se repete sete vezes não separa nada. Por isso
+   ele fica em texto miúdo, do tamanho do trabalho que faz. Quem separa
+   uma loja da outra é a linha do ramo, lá embaixo.
+
+   O traço esmeralda na frente dele é que faz o trabalho de estrutura. Sem
+   ele o bloco de texto começava no ar: a janela acima é um objeto fechado
+   e forte, e embaixo vinham três linhas soltas sem nada marcando onde a
+   ficha começa. O traço é a marca de margem, o mesmo gesto dos filetes do
+   cabeçalho e do inventário, e é a ÚNICA presença da faixa esmeralda dos
+   30% dentro da grade: antes dele o verde aparecia só no ponto de 6px do
+   chip "NO AR", e a cor da marca sumia da parte mais longa da página.
+
+   `--green-live` porque aqui é grafite, onde os outros dois esmeraldas
+   somem. */
+.kind { display: flex; align-items: center; gap: 9px; font: 700 9px var(--mono); letter-spacing: .12em; color: #8E958F; margin: 16px 0 8px }
+.kind::before { content: ""; flex: none; width: 18px; height: 2px; background: var(--green-live) }
+
+/* ---------- o nome entra na voz da casa ----------
+   Ele era Archivo de largura natural em peso 800, herdada do `.site h3`
+   que a vitrine usa em títulos internos. Só que ali o h3 é subtítulo
+   dentro de uma seção, e aqui ele é o NOME DA MARCA do cliente, a coisa
+   mais importante do card: era o único display da página fora da
+   condensada 78% do hero, e por isso a grade inteira não parecia da mesma
+   página que a manchete.
+
+   Agora ele é a mesma condensada em peso 900, e pôde crescer porque
+   condensada ocupa menos: mais presença no mesmo espaço.
+
+   O QUE ELE NÃO É, de propósito: caixa alta. A manchete é, e a tentação de
+   igualar era grande, mas estes são nomes de marca com grafia própria
+   ("vérít.lab" é minúsculo por decisão da dona, "Sölo Urb" tem trema).
+   Caixa alta apaga a identidade do cliente na página que existe para
+   mostrar o cliente. */
+.card h3 { font-stretch: 78%; font-weight: 900; font-size: clamp(22px, 1.9vw, 30px); line-height: 1.02; letter-spacing: -.018em }
+
+/* ---------- o sinal de vida, e por que ele é o esmeralda ESCURO ----------
+   Este chip mora dentro da barra CLARA da janela, não sobre o grafite. O
+   `--green-live` existe para fundo escuro e daria 1,9:1 aqui; o
+   `--green-dark` dá 5,7:1 contra o branco da barra. É a mesma correção que
+   a vitrine registrou quando a janela dela deixou de ser escura.
+   O ponto pulsa com o keyframe que o cabeçalho e a faixa do hero já usam:
+   a página tem um vocabulário só para "está no ar agora". */
+.live { display: inline-flex; align-items: center; gap: 5px; flex: none; font: 700 8.5px var(--mono); letter-spacing: .1em; color: var(--green-dark); white-space: nowrap }
+.live i { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: livePulse 1.6s infinite }
+@keyframes livePulse { 0%, 100% { opacity: 1 } 50% { opacity: .25 } }
+
+/* ---------- o ramo: a única voz da grade ----------
+   A grade inteira era nove capturas, nove nomes e nove endereços, sem uma
+   palavra dizendo o que cada loja É. Um portfólio que não diz o que o
+   cliente vende mostra o meu trabalho e esconde o dele, que é justamente
+   o que faz as nove parecerem nove negócios em vez de nove telas.
+
+   Vem do campo `ramo` em data/portfolio.ts. Precisa das duas classes:
+   `.site p` declara a cor com seletor de elemento e, no grafite, o
+   `--ink-soft` dela desapareceria. */
+.dark .ramo { font-size: 14px; line-height: 1.45; color: #A9B0AA; margin-top: 9px; max-width: 40ch }
+
+/* ---------- contato ----------
+   O único lugar da página que abre o WhatsApp, e ele vem depois da prova
+   inteira. Volta para o papel: a sala grafite acabou, e o bloco branco
+   com filete de tinta e sombra dura deslocada é o mesmo objeto físico que
+   a etiqueta do hero da vitrine é. Nesta página ele é o ÚNICO objeto com
+   sombra dura, e é assim que ele se destaca sem precisar de mais cor. */
+.contatoSec { padding: clamp(56px, 6.4vw, 88px) var(--pad) clamp(56px, 6.4vw, 88px); scroll-margin-top: 72px }
+/* Encostado na margem ESQUERDA, não centralizado: o eixo desta página é a
+   margem esquerda do começo ao fim (manchete, inventário, as três colunas
+   de cards), e um cartão centralizado no último bloco quebrava o prumo
+   justo onde ele precisa parecer conclusão do que veio antes. */
+.contato {
+  max-width: 720px;
+  background: #FBF9F3;
+  border: 1.5px solid var(--ink);
+  box-shadow: 6px 6px 0 var(--ink);
+  padding: clamp(28px, 4vw, 46px);
 }
-
-/* carimbo de tinta: contorno duplo, torto, meio falhado */
-.stamp, .done {
-  font: 700 10px var(--mono); letter-spacing: .14em; white-space: nowrap;
-  border: 2px solid currentColor; border-radius: 7px;
-  padding: 3px 9px 2px;
-  transform: rotate(-4deg);
-  opacity: .88;
-}
-.stamp { color: var(--carimbo) }
-.done { color: #8b8574 }
-
-.card h3 { font-size: clamp(21px, 1.8vw, 25px) }
-.dominio { font: 11px var(--mono); letter-spacing: .02em; color: var(--tinta-suave); margin-top: -4px }
+.contato .lead { margin-top: 18px }
 
 .site .button {
-  display: inline-flex; justify-content: center; align-items: center; gap: 6px;
-  padding: 13px 24px; border: 0; cursor: pointer; border-radius: 999px;
-  font: 700 14px var(--body); letter-spacing: .02em;
-  color: var(--branco); background: var(--tinta);
-  box-shadow: 0 0 0 3px var(--branco), 0 5px 14px #065f462e;
-  transition: transform .15s ease;
-  margin-top: 4px;
+  display: inline-flex; justify-content: center; align-items: center;
+  padding: 17px 26px; border: 0; cursor: pointer;
+  font: 700 11.5px var(--mono); letter-spacing: .05em;
+  margin-top: 30px;
 }
-.site .button:hover { transform: rotate(-1.5deg) translateY(-2px) }
+/* A cor da ação, e o carimbo que ela dá: o botão afunda 4px e a sombra
+   colapsa no clique, que é o gesto de um carimbo sendo apertado contra o
+   papel. Prefixo `.site` porque `.site a` declara color com seletor de
+   elemento, e uma classe simples perderia o branco. */
+.site .acao { background: var(--rosa); color: #fff; box-shadow: 4px 4px 0 var(--ink); transition: background .15s ease, transform .1s ease, box-shadow .1s ease }
+@media (hover: hover) and (pointer: fine) {
+  .site .acao:hover { background: var(--rosa-dark) }
+}
+.site .acao:active { transform: translate(4px, 4px); box-shadow: 0 0 0 var(--ink) }
 
 /* ---------- rodapé ---------- */
 .footer {
-  border-top: 2px dashed var(--grade);
-  padding: 52px var(--pad) 60px;
-  display: flex; flex-direction: column; align-items: center; gap: 26px;
+  border-top: 1.5px solid var(--line);
+  padding: 44px var(--pad) 52px;
+  display: flex; flex-direction: column; align-items: center; gap: 24px;
   text-align: center;
 }
-.footer nav { display: flex; gap: 10px 12px; flex-wrap: wrap; justify-content: center; font: 700 9.5px var(--mono); letter-spacing: .1em }
-.footer nav a {
-  padding: 6px 11px;
-  background: color-mix(in srgb, var(--sol) 40%, transparent);
+.footer nav { display: flex; gap: 8px 20px; flex-wrap: wrap; justify-content: center }
+.footer nav a { font: 700 9.5px var(--mono); letter-spacing: .14em; color: var(--ink-soft); padding-bottom: 3px; border-bottom: 1px solid var(--line) }
+@media (hover: hover) and (pointer: fine) {
+  .footer nav a:hover { color: var(--ink); border-bottom-color: var(--ink) }
 }
-.footer nav a:nth-child(odd) { transform: rotate(-1.2deg) }
-.footer nav a:nth-child(even) { transform: rotate(1deg) }
-.footer small { font: 10px var(--mono); color: #a29a85; letter-spacing: .06em }
+.footer small { font: 9.5px var(--mono); letter-spacing: .14em; color: #A29D8E }
 
-/* ---------- CTA fixo ---------- */
-.site .pill {
-  position: fixed; z-index: 60; right: 22px; bottom: 22px;
-  background: var(--sol); color: var(--tinta);
-  padding: 16px 22px; border-radius: 999px;
-  font: 700 14px var(--body); letter-spacing: .01em;
-  box-shadow: 0 0 0 3px var(--branco), 0 10px 28px #065f4642;
-  transform: rotate(-2deg);
-  transition: transform .15s ease;
-}
-.site .pill:hover { transform: rotate(0deg) translateY(-2px) }
-
-.bar {
+/* ---------- barra fixa do celular ----------
+   Só existe abaixo de 900px, e ela também desce para o contato em vez de
+   abrir conversa: uma porta de saída só, no fim, depois das nove. O
+   desktop não ganhou equivalente (a pílula amarela flutuante morreu com o
+   visual anterior) porque lá o cabeçalho fica colado no topo o tempo
+   todo, com o mesmo destino. */
+.site .bar {
   position: fixed; z-index: 60; left: 0; right: 0; bottom: 0;
   display: none; align-items: center; justify-content: space-between; gap: 14px;
-  background: var(--tinta); color: var(--branco);
-  padding: 9px 14px calc(9px + env(safe-area-inset-bottom));
+  background: var(--rosa); color: #fff;
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+  box-shadow: 0 -2px 0 var(--rosa-dark);
 }
 .barCopy { display: grid; gap: 2px; min-width: 0 }
-.barCopy b { font: 700 11px var(--mono); letter-spacing: .06em; color: var(--sol) }
-.barCopy span { font: 500 12px var(--body); color: #cde8da }
-.bar .button { flex: none; margin: 0; padding: 12px 20px; background: var(--sol); color: var(--tinta); box-shadow: none }
+.barCopy b { font: 700 10px var(--mono); letter-spacing: .12em }
+.barCopy span { font: 500 12px var(--body); color: #ffdbe7 }
+.barCta { flex: none; font: 700 11px var(--mono); letter-spacing: .06em; background: #fff; color: var(--ink); padding: 12px 16px }
+.site .bar:active .barCta { transform: translateY(1px) }
 
 /* ---------- responsivo ---------- */
 @media (max-width: 900px) {
-  .pill { display: none }
-  .bar { display: flex }
-  /* a barra fixa nunca sai de cena aqui, então o rodapé carrega a folga dela */
+  .headStatus { display: none }
+  .site .bar { display: flex }
+  /* a barra fixa nunca sai de cena aqui, então o rodapé carrega a folga */
   .footer { padding-bottom: calc(84px + env(safe-area-inset-bottom)) }
 }
 
 @media (max-width: 600px) {
-  .site h1 { font-size: clamp(31px, 8.4vw, 38px) }
-  .intro { padding-top: 30px }
-  .intro .eyebrow { margin-bottom: 16px }
-  .lead { margin-top: 14px; font-size: 16px }
-  .estrela { position: static; display: block; width: 64px; margin: 18px 0 0; transform: rotate(8deg) }
-  .gridSec { padding-top: 34px }
-  .site .button { justify-self: stretch; min-height: 52px }
-  .bar .button { justify-self: auto; min-height: 0 }
+  .site h1 { font-size: clamp(32px, 8.6vw, 40px) }
+  .hero { padding-top: 30px }
+  .lead { margin-top: 16px; font-size: 16px }
+  /* aperta o rastreio para caberem dois itens por linha: em quatro itens,
+     2+1+1 deixa a lista com cara de sobra, 2+2 lê como tabela */
+  .inventario { margin-top: 22px }
+  .inventario li { font-size: 9.5px; letter-spacing: .1em; padding: 3px 12px 3px 10px }
+  .site .button { width: 100%; min-height: 54px; margin-top: 26px }
+  .contato { box-shadow: 4px 4px 0 var(--ink) }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .site *, .site .button, .site .navcta, .site .pill { transition: none !important; animation: none !important }
+  .site *, .site .acao, .site .headCta, .frame, .confere { transition: none !important; animation: none !important }
 }
