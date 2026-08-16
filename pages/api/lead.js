@@ -128,6 +128,191 @@ async function avisar(lead) {
   }
 }
 
+/* ============================================================
+   REGRA 7 — INBOUND ENTRA SOZINHO
+
+   O mesmo envio que vira uma linha em `leads` (a captura, histórico do
+   formulário) vira também um lead no pipeline, em `crm_leads`. As duas
+   tabelas continuam separadas de propósito: a primeira é o que a pessoa
+   respondeu naquele dia e não muda nunca; a segunda é um negócio que anda.
+
+   ---------- não duplicar ----------
+   Se já existe lead com o mesmo WhatsApp ou e-mail, NÃO nasce um segundo:
+   entra uma interação de entrada no que já existe. É o caso mais comum de
+   todos, e o mais fácil de errar: a mesma pessoa preenche o formulário de
+   novo duas semanas depois, e um CRM que cria um segundo card faz o Rafael
+   abordar como frio quem já está em negociação.
+
+   A checagem é uma leitura seguida de uma escrita, então dois envios no
+   mesmo segundo passariam os dois. Quem fecha essa fresta é o índice único
+   do banco (ver supabase/crm.sql): quando ele recusa com 23509/23505, esta
+   função lê de novo e cai no caminho da interação.
+
+   ---------- por que a falha aqui é silenciosa ----------
+   O lead do site JÁ ESTÁ SALVO quando esta função roda. Nada do que
+   acontecer aqui pode mudar a resposta ao navegador: um CRM fora do ar não
+   pode fazer o formulário do site parecer quebrado para a cliente. Todo
+   erro vai para o log da Vercel e a rota segue.
+   ============================================================ */
+
+/* De qual página veio → que tipo de projeto é. O vocabulário de `pagina` é
+   o mesmo da Mixpanel, e o de `tipo_projeto` é o do CRM. */
+const TIPO_POR_PAGINA = {
+  "e-commerce": "ecommerce",
+  "vitrine-digital": "vitrine",
+  "landing-page": "landing",
+};
+
+/* Tráfego pago ou orgânico. A régua é a UTM: quem chega por campanha traz
+   `utm_source`, e a distinção importa porque as duas origens pedem abordagem
+   diferente (quem veio de anúncio não conhece o estúdio de lugar nenhum). */
+function origemDaUtm(utm) {
+  const fonte = String(utm.utm_source || "").toLowerCase();
+  const meio = String(utm.utm_medium || "").toLowerCase();
+  if (!fonte && !meio) return "inbound";
+  if (/paid|cpc|ppc|ads?$/.test(meio)) return "trafego_pago";
+  if (/facebook|meta|instagram|^ig$|^fb$/.test(fonte)) return "trafego_pago";
+  return "inbound";
+}
+
+const soDigitos = (v) => {
+  const d = String(v ?? "").replace(/\D/g, "");
+  if (!d) return null;
+  return d.startsWith("55") && d.length > 11 ? d.slice(2) : d;
+};
+
+async function crmREST(url, chave, caminho, opcoes = {}) {
+  return comTimeout(`${url.replace(/\/$/, "")}/rest/v1/${caminho}`, {
+    ...opcoes,
+    headers: {
+      "Content-Type": "application/json",
+      apikey: chave,
+      Authorization: `Bearer ${chave}`,
+      ...(opcoes.headers || {}),
+    },
+  });
+}
+
+async function sincronizarCRM(linha, utm) {
+  const url = process.env.SUPABASE_URL;
+  const chave = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  /* A service role key não tem usuário, então `auth.uid()` é nulo e o
+     `default` do owner_id não resolve: o dono precisa vir explícito. Ver a
+     seção INBOUND no fim de supabase/crm.sql para pegar o uuid. */
+  const dono = process.env.CRM_OWNER_ID;
+  if (!dono) {
+    console.warn("[lead] CRM_OWNER_ID ausente: o lead não foi para o pipeline.");
+    return { ok: false, motivo: "sem CRM_OWNER_ID" };
+  }
+
+  const whatsapp = soDigitos(linha.whatsapp);
+  const email = linha.email ? String(linha.email).trim().toLowerCase() : null;
+
+  const procurar = async () => {
+    const filtros = [];
+    if (whatsapp) filtros.push(`whatsapp.eq.${whatsapp}`);
+    if (email) filtros.push(`email.eq.${email}`);
+    if (!filtros.length) return null;
+    const r = await crmREST(
+      url,
+      chave,
+      `crm_leads?owner_id=eq.${dono}&or=(${filtros.join(",")})&select=id&limit=1`,
+    );
+    if (!r.ok) return null;
+    const corpo = await r.json().catch(() => []);
+    return Array.isArray(corpo) && corpo[0] ? corpo[0].id : null;
+  };
+
+  /* O resumo diz de onde veio e o que a pessoa respondeu de mais decisivo.
+     Numa timeline, "Preencheu o formulário da /vitrine-digital" é o que faz
+     o toque ser útil dois meses depois. */
+  const resumo = [
+    `Preencheu o formulário da /${linha.pagina}`,
+    linha.investimento ? `investimento: ${linha.investimento}` : "",
+    linha.plano ? `plano: ${linha.plano}` : "",
+  ]
+    .filter(Boolean)
+    .join(" · ")
+    .slice(0, 400);
+
+  /* Canal `whatsapp` e direção `entrada`. A direção é a parte que importa:
+     preencher o formulário É a pessoa procurando o estúdio, e por isso o
+     toque zera o contador da regra dos 2 retornos. O canal é a aproximação
+     conhecida desta rota: a lista de canais do CRM não tem "formulário", e
+     o formulário do site promete "te chamo no WhatsApp", que é onde a
+     conversa continua. */
+  const registrarInteracao = async (leadId) =>
+    crmREST(url, chave, "crm_interacoes", {
+      method: "POST",
+      body: JSON.stringify({
+        owner_id: dono,
+        lead_id: leadId,
+        canal: "whatsapp",
+        direcao: "entrada",
+        resumo,
+      }),
+    });
+
+  try {
+    const existente = await procurar();
+    if (existente) {
+      await registrarInteracao(existente);
+      return { ok: true, novo: false, id: existente };
+    }
+
+    const novo = {
+      owner_id: dono,
+      nome: linha.nome,
+      empresa: linha.empresa,
+      whatsapp,
+      email,
+      instagram: linha.canal,
+      cidade: null,
+      tipo_projeto: TIPO_POR_PAGINA[linha.pagina] || null,
+      origem: origemDaUtm(utm),
+      estagio: "lista",
+      /* Sem próximo passo de propósito: quem chega pelo site cai no grupo
+         "sem próximo passo" do painel Hoje, que é exatamente onde ele
+         precisa ser visto e decidido. Inventar um retorno automático aqui
+         esconderia o lead novo no meio dos agendados. */
+      notas: [linha.vende, linha.produtos, linha.site, linha.necessidade]
+        .filter(Boolean)
+        .join("\n")
+        .slice(0, 2000) || null,
+    };
+
+    const r = await crmREST(url, chave, "crm_leads", {
+      method: "POST",
+      headers: { Prefer: "return=representation" },
+      body: JSON.stringify(novo),
+    });
+
+    if (!r.ok) {
+      const corpo = await r.json().catch(() => null);
+      /* 23505 é o índice único de duplicata: outro envio ganhou a corrida
+         no meio do caminho. Não é erro, é o caso da regra 7 chegando por
+         outro lado. */
+      if (corpo?.code === "23505") {
+        const agora = await procurar();
+        if (agora) {
+          await registrarInteracao(agora);
+          return { ok: true, novo: false, id: agora };
+        }
+      }
+      console.error("[lead] CRM recusou:", r.status, JSON.stringify(corpo).slice(0, 300));
+      return { ok: false, motivo: `crm ${r.status}` };
+    }
+
+    const corpo = await r.json().catch(() => null);
+    const criado = Array.isArray(corpo) ? corpo[0] : corpo;
+    if (criado?.id) await registrarInteracao(criado.id);
+    return { ok: true, novo: true, id: criado?.id || null };
+  } catch (e) {
+    console.error("[lead] falha ao sincronizar com o CRM:", e?.message || e);
+    return { ok: false, motivo: "exceção" };
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") return erro(res, 405, "use POST");
 
@@ -207,13 +392,27 @@ export default async function handler(req, res) {
     return erro(res, 502, "não foi possível gravar o lead");
   }
 
-  /* O aviso é aguardado, e não solto: numa função serverless o processo pode
-     ser congelado assim que a resposta sai, e uma promessa pendente morre com
-     ele. Como o lead JÁ está salvo, o resultado do aviso não muda a resposta;
-     ele viaja junto só para dar para conferir no teste. */
-  const aviso = await avisar(linha);
+  /* Os dois são aguardados, e não soltos: numa função serverless o processo
+     pode ser congelado assim que a resposta sai, e uma promessa pendente
+     morre com ele. Como o lead JÁ está salvo, o resultado dos dois não muda
+     a resposta; eles viajam junto só para dar para conferir no teste.
+
+     Em paralelo porque são independentes: o aviso por e-mail e a entrada no
+     pipeline não sabem um do outro, e em série a rota pagaria a soma dos
+     dois tempos de rede na cara da pessoa que está esperando a tela. */
+  const [aviso, crm] = await Promise.all([avisar(linha), sincronizarCRM(linha, utm)]);
 
   res.statusCode = 200;
   res.setHeader("Content-Type", "application/json");
-  res.end(JSON.stringify({ ok: true, id: salvo?.id || null, avisado: aviso.enviado }));
+  res.end(
+    JSON.stringify({
+      ok: true,
+      id: salvo?.id || null,
+      avisado: aviso.enviado,
+      /* `novo: false` quer dizer que o contato já estava no pipeline e o
+         envio virou uma interação de entrada, que é o caminho certo da
+         regra 7 e não uma falha. */
+      crm: crm.ok ? { id: crm.id, novo: crm.novo } : null,
+    }),
+  );
 }

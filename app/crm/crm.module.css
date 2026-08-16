@@ -1,0 +1,2401 @@
+/* ============================================================
+   CRM — a mesma gramática "papel e tinta" da vitrine, virada para dentro
+
+   NENHUM TOKEN NOVO. As dezoito variáveis abaixo são cópia literal do
+   portfolio.module.css, que por sua vez copiou da /vitrine-digital. Se um
+   dia a paleta da casa mudar, ela muda nos três lugares ao mesmo tempo, e é
+   por isso que os valores estão escritos e não inventados aqui.
+
+   ------------------------------------------------------------
+   O QUE MUDA QUANDO A PÁGINA VIRA FERRAMENTA
+
+   A vitrine é um cartaz: manchete de 108px, uma decisão por tela, o dedo do
+   visitante em um botão só. O CRM é o contrário: dez decisões por tela, a
+   mesma tela vinte vezes por dia, e quem olha já sabe onde tudo fica.
+
+   Três consequências, e elas explicam quase todo tamanho deste arquivo:
+
+   1. A TIPOGRAFIA ENCOLHE, A HIERARQUIA NÃO. A Archivo condensada 900 em
+      caixa alta continua sendo a voz dos títulos, mas em 15 a 34px em vez de
+      108. O contraste passa a ser entre a condensada e a mono, não entre
+      grande e pequeno.
+   2. A COR PARA DE CONVIDAR E PASSA A INFORMAR. Na vitrine o rosa é o botão
+      que abre conversa. Aqui ele é "isto está atrasado". Mesma cor, mesmo
+      peso na tela, e o significado continua sendo "olhe para cá agora".
+   3. O ESPAÇO APERTA. `--pad` cai de `clamp(20px,5vw,64px)` para
+      `clamp(14px,2.4vw,28px)`: uma fila de execução com margem de cartaz
+      mostra seis leads onde caberiam doze, e o que a ferramenta vende é
+      justamente ver tudo de uma vez.
+
+   ------------------------------------------------------------
+   OS ESTADOS SEMÂNTICOS, E POR QUE ELES SÃO DOIS EIXOS E NÃO UM
+
+   O escopo pede quatro estados (atrasado, esfriando, ganho, perdido) sem
+   cor avulsa. Empilhar os quatro num sinal só daria um semáforo de cinco
+   cores, que é exatamente o CRM genérico que este não é. Eles são dois
+   eixos independentes, e cada um tem seu suporte físico:
+
+   ┌─ A MARCA DE MARGEM (filete de 3px na borda esquerda) = URGÊNCIA
+   │  Responde "preciso agir?". É o mesmo traço do `.inventario` do
+   │  portfólio e do filete duplo do cabeçalho, de pé.
+   │    rosa cheio ....... atrasado
+   │    verde cheio ...... é hoje
+   │    linha ............ agendado, tudo em ordem
+   │    tracejado ........ SEM próximo passo. A ausência desenhada como
+   │                       ausência: o filete existe e está interrompido.
+   │    verde escuro ..... ganho
+   │
+   └─ O CHÃO DA FICHA = TEMPERATURA
+      Responde "há quanto tempo isto está parado?". Não é cor, é tom de
+      papel, exatamente o que o escopo pede:
+        #FBF9F3 (o papel do cartão de contato) ... normal
+        --paper-2 ............................... esfriando, 8 a 14 dias
+        --paper-2 + texto em --ink-soft ......... frio, 15 dias ou mais
+        --paper-2 + texto em --ink-soft ......... perdido
+
+   Ler os dois juntos é imediato e não precisa de legenda: um lead atrasado
+   E frio é uma ficha desbotada com um filete rosa, e essa é literalmente a
+   pior combinação possível na fila. A tela desenha a prioridade sozinha.
+   ============================================================ */
+
+.app {
+  --green: #0C9159;
+  --green-dark: #076B42;
+  --green-live: #1FBF7A;
+  --rosa: #E31B62;
+  --rosa-dark: #B81250;
+  /* ---------- O ROSA TEM UM TERCEIRO TOM, PELO MESMO MOTIVO QUE O VERDE ----------
+     O `--rosa` da casa sobre o grafite dá 3,5:1, abaixo do mínimo para
+     texto. É exatamente o problema que o esmeralda já tinha e que o
+     `--green-live` resolveu no portfolio.module.css, e a solução é a mesma
+     jogada: um tom mais claro do MESMO rosa, reservado para o que vive
+     sobre tinta. `--rosa-live` sobre `--ink` dá 6,3:1.
+
+     Não é cor nova: é o rosa da casa clareado, do mesmo jeito que
+     `--rosa-dark` é o rosa da casa escurecido para o hover.
+
+     Regra prática, gêmea da do esmeralda:
+       --rosa       sobre papel
+       --rosa-dark  hover sobre papel
+       --rosa-live  SÓ sobre grafite (a faixa de status, as placas do quadro,
+                    o trilho) */
+  --rosa-live: #FF5C8D;
+  --ink: #14181A;
+  --ink-soft: #3A4144;
+  /* ---------- O TERCEIRO DEGRAU DA TINTA ----------
+     A ferramenta tem três alturas de voz, não duas: o que se lê (`--ink`), o
+     que se lê depois (`--ink-soft`) e o que só precisa estar lá para quem
+     procurar. Esse terceiro degrau existia espalhado em seis cinzas
+     inventados na hora (#A29D8E, #8B857A, #948D80…), todos entre 2,1:1 e
+     3,2:1 sobre papel, que é a definição de texto que não se lê.
+
+     `--ink-fraco` é o mesmo cinza-azulado do `--ink-soft`, dois tons acima, e
+     dá 5,2:1 sobre `--paper` e 5,7:1 sobre `--paper-alto`. Continua sendo o
+     mais apagado da tela, que é o trabalho dele, e passa a ser legível, que é
+     a diferença entre discreto e ausente. */
+  --ink-fraco: #5C6467;
+  /* ---------- E AS DUAS VOZES SOBRE GRAFITE ----------
+     Mesma história do outro lado: o trilho, a faixa e as placas escreviam em
+     #6E7572 (3,7:1) e #5F6663 (2,8:1). Dois tons, escritos uma vez:
+       --sobre-ink        o corpo do que vive sobre tinta (12,4:1)
+       --sobre-ink-fraco  a nota, a legenda, o que veio junto (6,2:1) */
+  --sobre-ink: #C9CDC6;
+  --sobre-ink-fraco: #949B97;
+  --paper: #F2EFE6;
+  --paper-2: #EAE6D9;
+  --paper-alto: #FBF9F3;
+  --line: #D8D3C4;
+  --line-dark: #2A3134;
+  --pad: clamp(14px, 2.4vw, 28px);
+  --display: var(--font-display), Arial, sans-serif;
+  --body: var(--font-body), Arial, sans-serif;
+  --mono: var(--font-mono), monospace;
+
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--body);
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  /* Mesma guarda da /vitrine-digital e do /portfolio: a faixa de status
+     sangra até `50vw`, e `vw` inclui a largura da barra de rolagem. Sem o
+     clip, sobra uma tira de alguns pixels que vira rolagem horizontal da
+     página inteira. `clip` e não `hidden`: `hidden` criaria um contexto de
+     rolagem e o cabeçalho grudento pararia de grudar. */
+  overflow-x: clip;
+}
+
+.app * { box-sizing: border-box }
+.app a { color: inherit; text-decoration: none }
+.app :focus-visible { outline: 2px solid var(--green); outline-offset: 2px }
+
+/* Raio zero em tudo. É regra da casa, e aqui ela tem um segundo motivo: a
+   ficha precisa parecer papel cortado, e papel cortado não tem canto
+   arredondado. */
+.app input, .app select, .app textarea, .app button { border-radius: 0; font-family: inherit }
+
+.app h1, .app h2, .app h3 {
+  font-family: var(--display);
+  font-stretch: 78%;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -.012em;
+  margin: 0;
+}
+
+/* ============================================================
+   O PONTO FINAL ROSA — a assinatura da casa, e ela faltava aqui
+
+   É a regra registrada no /portfolio, copiada palavra por palavra: o ponto
+   é a única pontuação da manchete, e em corpo de manchete ele tem tamanho
+   de sobra para ser lido como escolha e não como sujeira. Vale em TODA
+   manchete de página do CRM, e é isso que o faz ser assinatura em vez de
+   enfeite: "usado uma vez seria enfeite, usado em toda manchete da página
+   é regra".
+
+   Ele é o menor lugar possível para a cor de acento, e o mais deliberado.
+   Uma ferramenta interna não pode gastar rosa em botão decorativo, mas
+   também não pode ser a única tela da casa sem a cor da casa.
+   ============================================================ */
+.ponto { color: var(--rosa); font-style: normal }
+.app h1 { font-size: clamp(26px, 3.4vw, 38px); line-height: .94 }
+.app h2 { font-size: clamp(17px, 1.6vw, 21px); line-height: 1 }
+.app h3 { font-size: 15.5px; line-height: 1.05; font-stretch: 88%; letter-spacing: .012em }
+.app p { margin: 0; line-height: 1.55; color: var(--ink-soft) }
+
+/* ============================================================
+   A MESA E O TRILHO
+
+   A ferramenta é uma mesa clara com uma lombada preta na esquerda. O
+   trilho é o único elemento que não se move: as colunas rolam, as listas
+   crescem, os modais abrem, e ele fica. É dele que a tela ganha prumo.
+
+   Por que grafite: é o `--ink` da casa, a mesma sala escura que a
+   /vitrine-digital e o /portfolio usam na seção da prova. Aqui ele faz o
+   trabalho complementar, que é fazer TUDO à direita ler como papel.
+   ============================================================ */
+.mesa { flex: 1; display: flex; align-items: stretch; min-height: 0 }
+
+.trilho {
+  flex: none; width: 190px;
+  position: sticky; top: 0; align-self: flex-start;
+  height: 100dvh; z-index: 40;
+  background: var(--ink); color: var(--sobre-ink);
+  display: flex; flex-direction: column;
+  padding: 26px 0 20px;
+}
+
+/* ============================================================
+   O TRILHO GANHA UM TRILHO
+
+   O nome era só uma metáfora do comentário: na tela eram quatro rótulos
+   empilhados num retângulo escuro, com quatrocentos pixels de vão embaixo,
+   e um filete de 3px que só existia no item aceso. Um objeto chamado trilho
+   sem trilho nenhum.
+
+   Agora ele corre a altura inteira, o tempo todo, e o item aceso é o trecho
+   que fica verde. É o MESMO objeto da régua do dia, de pé: uma linha
+   inteira com uma marca viva dizendo onde você está. E é ele que resolve o
+   vão de baixo: o espaço deixa de ser o que sobrou e passa a ser trilho que
+   continua.
+
+   ---------- ELE NÃO PODE ENCOSTAR NA BORDA ----------
+   A primeira tentativa pôs a linha em `left: 0`, que é onde o marcador do
+   item ativo já morava. Ela renderizou perfeitamente e ninguém viu: colada
+   na borda esquerda da janela, uma linha de 3px não lê como trilho, lê como
+   moldura do navegador. Trilho precisa de campo dos dois lados.
+
+   Agora ele corre a 21px da margem e o nome das rotas recua para depois
+   dele. O que aparece é uma linha com UMA estação acesa.
+
+   ---------- uma estação, e não quatro ----------
+   As rotas apagadas não ganham marca nenhuma. Quatro quadrados cinzas
+   seriam quatro estações competindo para dizer onde você NÃO está, e a
+   linha já diz isso por não estar acesa ali. Uma marca viva sobre uma linha
+   inteira é a forma mais curta de dizer "você está aqui", e é o mesmo
+   instrumento da régua do dia, de pé.
+
+   O tom da linha é o mesmo cinza do contorno do `.btnEscuro` e da banda em
+   repouso da folha. `--line-dark` foi tentado e sumiu: ele é o token de
+   "linha sobre escuro", mas sobre `--ink` cheio ele É praticamente a tinta.
+   Terceira vez que isso acontece neste arquivo, e sempre com a mesma
+   conclusão: sobre `--ink`, filete que precisa ser visto começa em #4A5350.
+   ============================================================ */
+/* `flex: 1` para a lista tomar a altura que sobra: é isso que faz a linha
+   correr até o pé em vez de parar no último nome, e é o que transforma o
+   vão de baixo em trilho que continua. */
+.trilhoLista { flex: 1; position: relative }
+.trilhoLista::before {
+  content: ""; position: absolute; z-index: 0;
+  left: 21px; top: 0; bottom: 0; width: 2px;
+  background: #4A5350;
+}
+.trilhoMarca, .trilhoPe { position: relative; z-index: 1 }
+
+/* ============================================================
+   A MARCA É UMA PLACA DE PAPEL
+
+   Ela era texto branco sobre a mesma tinta do resto: o objeto mais
+   importante do trilho tinha exatamente o mesmo material que o fundo dele,
+   e por isso não era um objeto, era uma legenda.
+
+   Agora é papel cheio com margem de tinta em volta: uma placa aparafusada
+   na lombada preta. É a inversão de material da casa (o mesmo gesto do
+   cartão de contato da vitrine e das placas do quadro), e é a ÚNICA peça de
+   papel dentro do trilho, o que a torna o começo inequívoco da ferramenta.
+
+   ---------- e o rosa volta a ser --rosa ----------
+   Aqui dentro o chão é PAPEL, não grafite. Então o ponto da assinatura usa
+   o `--rosa` da casa e a nota usa `--green-dark`, que são os tons de papel.
+   O `--rosa-live` que estava neste seletor saiu por isso: ele é a versão
+   para tinta e sobre papel fica lavado. A regra não mudou, mudou o chão.
+
+   O `--green-live` continua valendo para o RESTO do trilho, que é grafite:
+   ele é o único esmeralda legível ali (7,7:1), e essa regra está registrada
+   desde o portfolio.module.css.
+   ============================================================ */
+/* Prefixo `.app` obrigatório: a marca É um `<a>`, e `.app a { color: inherit }`
+   é seletor de elemento (0,1,1) que vence uma classe simples (0,1,0). Sem
+   ele o nome herdava o `--sobre-ink` do trilho e a placa saía com o texto
+   lavado sobre papel. É a mesma armadilha registrada no portfólio e na
+   /e-commerce, e a terceira vez que ela aparece neste arquivo. */
+.app .trilhoMarca {
+  display: block; margin: 0 14px 26px; padding: 13px 14px 12px;
+  background: var(--paper); color: var(--ink);
+  transition: background .15s ease;
+}
+.trilhoMarca b {
+  display: block; font-family: var(--display); font-stretch: 72%; font-weight: 900;
+  text-transform: uppercase; font-size: 18px; line-height: .86; letter-spacing: .004em;
+}
+.trilhoMarca .ponto { color: var(--rosa) }
+.trilhoMarca span { display: block; font: 700 9px var(--mono); letter-spacing: .24em; color: var(--green-dark); margin-top: 6px }
+@media (hover: hover) and (pointer: fine) {
+  .app .trilhoMarca:hover { background: #fff }
+}
+
+.trilhoLista { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column }
+
+/* O nome recua para depois da linha. `position: relative` porque a estação
+   do item aceso é um pseudo-elemento dele, e ela precisa se posicionar pela
+   própria rota para acompanhar a altura da linha. */
+.trilhoLink {
+  display: block; position: relative; z-index: 1;
+  padding: 13px 20px 13px 40px;
+  transition: background .15s ease;
+}
+/* A ESTAÇÃO. Quadrado cheio, sem raio, sentado em cima da linha: é o mesmo
+   objeto da marca da régua do dia (`.marcaAgora`), de pé. O `left` é o x da
+   linha (21) menos metade da diferença de largura, para ele ficar centrado
+   nela em vez de encostado. */
+.app .trilhoAtivo::before {
+  content: ""; position: absolute;
+  left: 16px; top: 14px; width: 12px; height: 12px;
+  background: var(--green-live);
+}
+/* ---------- A CONDENSADA NÃO SERVE AQUI ----------
+   Ela estava em 78% de largura, caixa alta, 15px, em #A7AEA9: o tratamento
+   de manchete da casa aplicado em corpo de interface, dentro de uma coluna
+   de 190px. Em cartaz de 108px a 78% é o que dá força ao título; em 15px é
+   o que gruda "TEMPLATES" numa palavra só, porque a condensação tira
+   justamente o vão entre as hastes, que é o que o olho usa para separar
+   letra de letra.
+
+   Três correções, e todas atacam a mesma coisa:
+     LARGURA ....... 78% para 88%. É o maior ganho, e mantém a família.
+     CORPO ......... 15px para 16,5px.
+     ESPACEJAMENTO . de -0,005em para +0,02em. Caixa alta em corpo pequeno
+                     PEDE tracking positivo; o negativo é da manchete, onde
+                     as letras são grandes o bastante para se separarem
+                     sozinhas.
+
+   E a cor sai de um cinza inventado (#A7AEA9) para o token de corpo sobre
+   tinta, que é a mesma correção de contraste já registrada neste arquivo
+   para o trilho e para as placas. */
+.trilhoLink b {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
+  font-family: var(--display); font-stretch: 88%; font-weight: 900;
+  text-transform: uppercase; font-size: 16.5px; line-height: 1; letter-spacing: .02em;
+  color: var(--sobre-ink); transition: color .15s ease;
+}
+
+/* ---------- O NÚMERO DE CADA ROTA ----------
+   Ele sai da voz de manchete e volta para a de instrumento: o `font` por
+   atalho zera o `font-stretch` herdado, senão o número sairia condensado
+   junto com o nome. Mesma peça do `.rotuloCont` da fila e do `.colunaCont`
+   do quadro, e o mesmo critério de cor: só quem cobra tem cor.
+
+   `tabular-nums` para o número não dançar de largura quando a fila passa de
+   9 para 10, que numa coluna de 190px é um pulo visível. */
+.trilhoCont {
+  font: 700 12px var(--mono); font-stretch: 100%; letter-spacing: .04em;
+  font-style: normal; font-variant-numeric: tabular-nums;
+  color: var(--sobre-ink-fraco); flex: none;
+}
+.trilhoCobra { color: var(--rosa-live); font-size: 13.5px }
+.trilhoEmDia { color: var(--green-live) }
+/* A nota em duas palavras: "Hoje" e "Pipeline" são nomes que só significam
+   alguma coisa para quem já usou a ferramenta. Ela vivia em 9px sobre 2,8:1
+   de contraste, ou seja: existia no HTML e não existia na tela. */
+.trilhoLink span { display: block; font: 500 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--sobre-ink-fraco); margin-top: 5px }
+
+@media (hover: hover) and (pointer: fine) {
+  .trilhoLink:hover { background: #ffffff0d }
+  .trilhoLink:hover b { color: #fff }
+}
+
+/* A rota atual: a estação acesa (ver `.trilhoAtivo::before`) e o nome em
+   branco cheio, sobre um trecho de tinta um tom acima. */
+.trilhoAtivo { background: #ffffff0f }
+.trilhoAtivo b { color: #fff }
+.trilhoAtivo span { color: var(--green-live) }
+
+.trilhoPe { margin-top: auto; padding: 0 20px }
+.app .trilhoSair {
+  background: none; border: 0; padding: 6px 0; cursor: pointer;
+  font: 700 10.5px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--sobre-ink-fraco);
+  transition: color .15s ease;
+}
+@media (hover: hover) and (pointer: fine) { .app .trilhoSair:hover { color: #fff } }
+
+/* Sair no pé do conteúdo: só existe no celular, onde a barra de baixo leva
+   as quatro rotas e não pode levar uma quinta que custa uma senha para
+   desfazer. */
+.sairNoPe { display: none }
+
+.main { flex: 1; min-width: 0; padding: clamp(20px, 2.6vw, 34px) var(--pad) clamp(60px, 8vw, 90px) }
+.wrap { max-width: 1360px; margin: 0 auto }
+/* O kanban precisa da largura inteira da tela: com teto de 1360px, a oitava
+   coluna nasce fora do campo em qualquer monitor. */
+.wrapLargo { max-width: none; margin: 0 }
+/* ---------- O PAINEL HOJE OCUPA A JANELA INTEIRA ----------
+   A versão anterior era uma coluna de 940px encostada na esquerda, com as
+   fichas empilhadas dentro. Em qualquer monitor acima de 1400px isso era
+   metade de tela em papel vazio, e o desperdício era o sintoma: o problema
+   real era a forma. Nove nomes iguais numa pilha não respondem "quem eu
+   falo agora", eles pedem que alguém escolha, que é o trabalho que a ordem
+   de prioridade já tinha feito.
+
+   Agora a tela é uma carta por vez, e por isso ela precisa da ALTURA: sem
+   `min-height`, as três faixas (topo, palco, pé) teriam a altura do próprio
+   texto e a carta voltaria a boiar num terço de janela.
+
+   A conta do vão é o padding vertical do `.main`, repetido aqui. Se o
+   padding de lá mudar, muda aqui junto: são os dois lugares e é o preço de
+   não pôr `display: flex` no `.main`, que é compartilhado por quatro telas
+   que não pediram nada disso. */
+.wrapVez {
+  --vao: calc(clamp(20px, 2.6vw, 34px) + clamp(60px, 8vw, 90px));
+  max-width: none; margin: 0;
+  min-height: calc(100dvh - var(--vao));
+  display: flex; flex-direction: column;
+}
+.vezTopo { flex: none }
+
+/* ============================================================
+   A FOLHA DE TINTA — o objeto do dia
+
+   A versão anterior era tudo em papel: o placar numa tarja, o nome solto, o
+   dossiê solto, os botões soltos, e três filetes de 1,5px tentando segurar
+   1500px de tela. O Rafael leu isso em duas palavras ("tudo muito solto"), e
+   ele estava certo: nada tinha CHÃO. Cada peça flutuava na própria margem,
+   e um arranjo de peças flutuando não é um objeto.
+
+   Agora o placar e a carta são a MESMA folha de tinta, sangrando de ponta a
+   ponta da janela. O dia deixa de ser um arranjo e passa a ser uma coisa
+   só, com um cabeçalho (a régua) e um corpo (o lead). O papel fica com o
+   que sobra, e o que sobra é exatamente o que não é o dia: a pergunta em
+   cima e as duas teclas embaixo.
+
+   ---------- por que grafite, e não um cartão de papel ----------
+   Porque é o material da casa, e ele já faz esse trabalho em três telas: a
+   sala escura da prova na /vitrine-digital e no /portfolio, as placas do
+   quadro, o trilho. Um cartão de papel-alto sobre papel é um retângulo de
+   4% de contraste, ou seja, a mesma falta de chão com uma borda em volta
+   (essa versão existiu e foi descartada). Tinta cheia é o único material
+   desta casa que aguenta ser o fundo de um nome de 88px, e é ela que faz o
+   dia inteiro virar UM objeto em vez de um arranjo de peças.
+
+   ---------- a urgência subiu para a testa ----------
+   O filete de margem de 5px virou uma BANDA no topo da folha, atravessando
+   a janela inteira. É a mesma informação e o mesmo gesto (a marca de
+   margem), na escala do objeto novo: de pé ela media a altura de um card,
+   deitada ela mede o dia. E o "sem próximo passo" continua sendo a ausência
+   desenhada como ausência, agora interrompida de ponta a ponta.
+   ============================================================ */
+.vezFolha {
+  flex: 1; min-height: 0;
+  display: flex; flex-direction: column;
+  background: var(--ink); color: var(--sobre-ink);
+  border-top: 5px solid var(--line-dark);
+  margin: clamp(16px, 2vw, 24px) calc(50% - 50vw) 0;
+  padding: 0 calc(50vw - 50%) clamp(24px, 4vh, 44px);
+  /* ---------- O FILETE DUPLO DA CASA ----------
+     A banda de urgência ganha uma segunda linha logo abaixo, com um vão de
+     tinta entre as duas: é o mesmo filete duplo do cabeçalho da
+     /vitrine-digital e do /portfolio, na largura da janela. Ele dá testa ao
+     objeto sem gastar cor nenhuma, e é a diferença entre uma borda e uma
+     aresta.
+
+     Duas sombras internas, e a ORDEM importa: a primeira da lista pinta por
+     cima. A de baixo desenha 4,5px de linha clara a partir do topo, e a de
+     cima cobre os 3px iniciais com tinta. Sobra 1,5px de filete, a 3px da
+     banda. Feito por sombra e não por `::before` porque a folha é um flex
+     column, e um pseudo-elemento viraria mais um item empurrando o placar.
+
+     O tom do segundo filete é o mesmo cinza do contorno do `.btnEscuro` e
+     da banda em repouso. `--ink-soft` foi a primeira tentativa e sumiu:
+     sobre `--ink` ele é praticamente a própria tinta, e um filete que não
+     se vê não é um filete duplo, é um filete só com um comentário. */
+  box-shadow: inset 0 3px 0 var(--ink), inset 0 4.5px 0 #4A5350;
+}
+.folhaAtrasado { border-top-color: var(--rosa) }
+.folhaHoje { border-top-color: var(--green-live) }
+/* `--line-dark` sobre `--ink` é quase o próprio `--ink`: a banda sumia e a
+   folha perdia a aresta de cima no único estado que não pede nada. Banda
+   que existe só quando há urgência não é banda, é alarme, e o objeto ficava
+   sem testa metade do tempo. Este cinza é o mesmo do contorno do
+   `.btnEscuro`: presente, e sem dizer nada. */
+.folhaAgendado { border-top-color: #4A5350 }
+/* ---------- SEM PASSO É ROSA CHEIO, IGUAL AO ATRASADO ----------
+   Ela passou por dois estados antes deste: cinza interrompida (que punha um
+   lead prestes a sumir do lado de "está tudo em ordem") e rosa interrompida
+   (cor dizendo a urgência, forma dizendo de que tipo). O Rafael cortou o
+   listrado, e a banda vira rosa cheio.
+
+   O que a banda passa a dizer, então, é uma coisa só e mais simples:
+   PRECISA DE VOCÊ. Atrasado e sem passo desenham a mesma testa, e a
+   diferença entre eles é dita onde ela muda o que fazer, que é dentro da
+   carta: o sinal escreve "Atrasado 5 dias" ou "Parado 12 dias", e a fileira
+   de botões oferece adiar num caso e "Decidir passo" no outro.
+
+   O tracejado da casa não se perdeu do sistema: ele continua sendo o filete
+   de margem do card sem passo no quadro (`.urgSemPasso`) e o alvo da coluna
+   vazia. O que saiu foi o uso dele nesta banda. */
+.folhaSemPasso { border-top-color: var(--rosa) }
+
+/* Dentro da folha o placar não sangra de novo: a folha já sangrou por ele.
+   Ele vira a primeira linha do objeto, separada do corpo por um filete de
+   tinta clara, que é a mesma divisão da placa do quadro. */
+.vezFolha .faixa {
+  margin: 0; background: none; min-height: 0;
+  padding: clamp(12px, 1.8vh, 18px) 0;
+  border-bottom: 1.5px solid var(--line-dark);
+}
+
+/* O palco é quem cresce. `center` e não `flex-start`: com a carta colada no
+   topo, um lead sem empresa e sem ticket deixava trezentos pixels de papel
+   entre os botões e a borda de baixo. Centrada, ela ocupa o meio da folha
+   em qualquer altura de conteúdo.
+
+   `min-height: 0` porque o palco é filho de um flex column: sem ele, uma
+   gaveta aberta numa janela curta empurra o pé para fora em vez de rolar. */
+.vezPalco {
+  flex: 1; min-height: 0;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: clamp(20px, 3.5vh, 44px) 0 0;
+}
+
+/* O rótulo miúdo acima da manchete: mesma peça do `.eyebrow` da vitrine.
+   Aqui ele carrega a data por extenso, que numa fila diária é informação e
+   não enfeite. */
+.eyebrow { font: 10.5px var(--mono); letter-spacing: .2em; text-transform: uppercase; color: var(--ink-soft); margin: 0 0 10px }
+
+/* Manchete e a ação da tela na mesma linha, com o botão empurrado para a
+   direita. Em telas estreitas o botão desce para a linha de baixo em vez de
+   espremer a manchete. */
+.tituloLinha { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; flex-wrap: wrap }
+
+/* a linha de instrução embaixo da manchete, quando a tela precisa de uma */
+.subtitulo { font-size: 13.5px; max-width: 62ch; margin-top: 10px }
+
+/* ============================================================
+   A FAIXA DE STATUS — o placar da vitrine, virado para dentro
+
+   A /portfolio tem uma faixa de tinta que sangra pela margem esquerda e
+   carrega o placar "9 DE 9 NO AR". É a assinatura da casa, e ela cai aqui
+   sem nenhuma adaptação porque o trabalho é o mesmo: uma linha de status
+   pregada embaixo da manchete.
+
+   ---------- A ASSINATURA DESTA TELA ----------
+   Dentro da faixa, a meta da semana é desenhada como uma RÉGUA QUE ENCHE:
+   um filete de 4px em `--line-dark` que vira `--green-live` na proporção
+   dos toques feitos. Não é uma barra de progresso de painel de controle, é
+   o mesmo filete que separa as seções do site inteiro, agora carregando um
+   número. Estrutura informando, que é a regra da casa: o traço já estava
+   ali, ele só passou a significar alguma coisa.
+
+   Ela some quando a meta é batida? Não: ela fica cheia, em verde, e o
+   número ao lado passa de "34/50" para "52/50". Barra que desaparece ao
+   completar é barra que rouba a única comemoração que a semana tem.
+   ============================================================ */
+/* ---------- ELA ATRAVESSA A JANELA INTEIRA ----------
+   Antes era `width: fit-content`, e o resultado era uma tarja que começava
+   na margem esquerda e PARAVA no meio da tela, com o comprimento decidido
+   pela soma dos três textos dentro dela. Isso é uma etiqueta que cresceu,
+   não uma faixa: o objeto da casa é a tinta atravessando o papel de ponta a
+   ponta (é o que a /portfolio faz com o placar "9 de 9 no ar"), e cortada
+   no meio ela lia como conteúdo inacabado.
+
+   O sangramento agora é dos DOIS lados, pelo truque clássico: as margens
+   negativas de `calc(50% - 50vw)` esticam a faixa até as bordas da janela,
+   e os paddings de `calc(50vw - 50%)` trazem o texto de volta para o
+   alinhamento do conteúdo. Os dois `50%` resolvem contra a largura do
+   `.wrapVez`, e é isso que faz a conta fechar em qualquer largura.
+
+   O `overflow-x: clip` do `.app` é o que impede os `vw` (que incluem a
+   barra de rolagem) de virarem rolagem horizontal da página. */
+.faixa {
+  display: flex; align-items: center; flex-wrap: wrap;
+  gap: 10px clamp(16px, 2.4vw, 34px);
+  background: var(--ink); color: var(--sobre-ink);
+  margin: clamp(16px, 2vw, 24px) calc(50% - 50vw) 0;
+  padding: 10px calc(50vw - 50%);
+  min-height: 52px;
+}
+/* ---------- E POR QUE "ANOTAR LEAD" NÃO MORA AQUI ----------
+   Ele chegou a viver no fim da faixa, como contorno sobre tinta, e a lógica
+   era boa: é a única ação da tela que não é sobre um lead, e o dia é o que
+   a faixa mede. O que quebrou foi a COR. Rosa cheio dentro da folha
+   disputaria com o botão da carta, e a regra desta tela é um rosa por
+   carta; em contorno cinza ele deixava de ser a ação de criar alguma coisa
+   e virava mais um item do placar.
+
+   Então ele volta para o papel, ao lado da manchete, em `.btnAcao` cheio: é
+   o único rosa da margem de cima, o da carta é o único rosa da folha, e os
+   dois nunca dividem a mesma faixa de altura. */
+.faixaItem {
+  display: inline-flex; align-items: center; gap: 9px; flex: none;
+  font: 700 10.5px var(--mono); letter-spacing: .14em; text-transform: uppercase;
+  white-space: nowrap;
+}
+.faixaNum { color: #fff; font-size: 13px }
+.faixaVivo { color: var(--green-live) }
+.faixaAlerta { color: var(--rosa-live) }
+
+/* a régua: 96px de trilho, cheia à esquerda */
+.regua { width: clamp(64px, 9vw, 108px); height: 4px; background: var(--line-dark); flex: none; overflow: hidden }
+.reguaFill { display: block; height: 100%; background: var(--green-live); transition: width .4s cubic-bezier(.2,.7,.2,1) }
+.reguaCheia { background: var(--green-live) }
+
+/* ============================================================
+   BOTÕES
+
+   Três pesos, e o critério de qual usar é sempre o mesmo: quantas vezes por
+   dia isto é apertado, e o que acontece se for apertado sem querer.
+
+   .btn      contorno de tinta. O padrão. Quase tudo.
+   .btnAcao  rosa cheio com sombra dura e o carimbo no clique (o botão
+             afunda 3px e a sombra colapsa). Reservado para o que abre
+             conversa de verdade: WhatsApp e salvar. Um por tela, no máximo.
+   .btnMini  a versão de 24px de altura, para a linha da ficha, onde três
+             botões dividem espaço com o nome do lead.
+   ============================================================ */
+.btn, .btnAcao, .btnMini {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  font-family: var(--mono); font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  cursor: pointer; white-space: nowrap;
+  transition: background .15s ease, color .15s ease, transform .1s ease, box-shadow .1s ease;
+}
+.app .btn {
+  font-size: 10.5px; padding: 10px 14px;
+  background: transparent; color: var(--ink); border: 1.5px solid var(--ink);
+}
+@media (hover: hover) and (pointer: fine) {
+  .app .btn:hover { background: var(--ink); color: var(--paper) }
+}
+.app .btn:active { transform: translateY(1px) }
+
+.app .btnMini {
+  font-size: 10px; padding: 6px 9px; min-height: 28px;
+  background: transparent; color: var(--ink-soft); border: 1.5px solid var(--line);
+}
+@media (hover: hover) and (pointer: fine) {
+  .app .btnMini:hover { border-color: var(--ink); color: var(--ink); background: var(--paper-alto) }
+}
+.app .btnMini:active { transform: translateY(1px) }
+
+/* Prefixo `.app` obrigatório: `.app a` declara `color: inherit` com seletor
+   de elemento, e uma classe simples perderia o branco em cima do rosa. É a
+   mesma armadilha registrada no portfólio e na /e-commerce. */
+.app .btnAcao {
+  font-size: 10.5px; padding: 11px 16px;
+  background: var(--rosa); color: #fff; border: 0;
+  box-shadow: 3px 3px 0 var(--ink);
+}
+@media (hover: hover) and (pointer: fine) {
+  .app .btnAcao:hover { background: var(--rosa-dark) }
+}
+.app .btnAcao:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--ink) }
+
+.app .btnVerde { background: var(--green-dark) }
+@media (hover: hover) and (pointer: fine) {
+  .app .btnVerde:hover { background: var(--green) }
+}
+
+.app .btn:disabled, .app .btnAcao:disabled, .app .btnMini:disabled { opacity: .4; cursor: not-allowed }
+
+/* ============================================================
+   RÓTULO DE SEÇÃO
+   ============================================================ */
+/* ---------- RÓTULO DE GRUPO ----------
+   Ele é um <h2>, e por isso herda a voz condensada da casa. Está escrito
+   com o prefixo `.app` de propósito: `.app h2` é seletor de elemento e
+   venceria uma classe simples, e o resultado seria o rótulo mudando de
+   tamanho conforme a tag em que ele fosse usado. Aqui a decisão é explícita.
+
+   E ela É uma decisão: em 18px condensado, "ATRASADO" é lido de relance
+   enquanto a tela rola, que é a única coisa que este rótulo precisa fazer.
+   Em mono de 10px, os três grupos da fila viravam três linhas iguais de
+   texto miúdo e o olho tinha que ler para saber onde estava.
+
+   O traço antes do texto é a marca de margem da casa, de pé: o mesmo gesto
+   do filete da ficha e do `.kind` do card do portfólio, e é ele que carrega
+   a cor do grupo. */
+.app .rotulo {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  font-family: var(--display); font-stretch: 78%; font-weight: 900;
+  font-size: clamp(15px, 1.5vw, 18px); line-height: 1;
+  letter-spacing: -.005em; text-transform: uppercase; color: var(--ink);
+  margin: clamp(26px, 3vw, 38px) 0 12px;
+}
+.app .rotulo::before { content: ""; width: 18px; height: 2px; background: var(--ink); flex: none }
+/* O contador sai da voz de manchete e volta para a de instrumento: o `font`
+   por atalho zera o `font-stretch` herdado, senão ele sairia condensado. */
+.rotuloCont { font: 700 12px var(--mono); font-stretch: 100%; letter-spacing: .06em; color: var(--ink-soft) }
+.app .rotuloAlerta::before { background: var(--rosa) }
+.rotuloAlerta .rotuloCont { color: var(--rosa) }
+.app .rotuloHoje::before { background: var(--green) }
+.rotuloHoje .rotuloCont { color: var(--green-dark) }
+
+/* ============================================================
+   A FICHA — o objeto que a ferramenta inteira é feita de
+
+   Uma só, usada na fila do painel Hoje e no card do kanban. A diferença
+   entre as duas é a largura da coluna, não o desenho: quem aprende a ler a
+   ficha em uma tela já sabe ler na outra.
+
+   O filete de margem vai por `border-left` e não por `::before` porque ele
+   precisa crescer com a altura da ficha, inclusive quando o próximo passo
+   quebra em duas linhas.
+   ============================================================ */
+.ficha {
+  display: block; width: 100%; text-align: left;
+  /* Âncora do link esticado do card do quadro (ver `.fichaCheia`). */
+  position: relative;
+  background: var(--paper-alto);
+  border: 1.5px solid var(--line);
+  border-left: 3px solid var(--line);
+  padding: 11px 13px;
+  transition: border-color .15s ease, background .15s ease, transform .1s ease;
+}
+.ficha + .ficha { margin-top: 8px }
+
+@media (hover: hover) and (pointer: fine) {
+  .ficha:hover { border-color: var(--ink); border-left-color: inherit }
+  /* `border-left-color: inherit` seria a cor do texto. O filete de margem é
+     informação e não pode mudar no hover, então cada estado repõe a sua. */
+  .urgAtrasado:hover { border-left-color: var(--rosa) }
+  .urgHoje:hover { border-left-color: var(--green) }
+  .urgGanho:hover { border-left-color: var(--green-dark) }
+}
+
+/* ---------- eixo 1: urgência, no filete de margem ---------- */
+.urgAtrasado { border-left-color: var(--rosa) }
+.urgHoje { border-left-color: var(--green) }
+.urgAgendado { border-left-color: var(--line) }
+.urgGanho { border-left-color: var(--green-dark) }
+/* A ausência desenhada como ausência: o traço existe e está interrompido.
+   Vai por `border-image` porque `border-left: dashed` desenha traços muito
+   curtos em 3px e lê como ruído; o gradiente repetido dá o ritmo certo. */
+.urgSemPasso {
+  border-left-color: transparent;
+  border-image: repeating-linear-gradient(180deg, var(--ink-soft) 0 5px, transparent 5px 10px) 1;
+  border-top-width: 0; border-right-width: 0; border-bottom-width: 0;
+  box-shadow: inset 0 0 0 1.5px var(--line);
+}
+
+/* ---------- eixo 2: temperatura, no chão da ficha ---------- */
+.tempEsfriando { background: var(--paper-2) }
+.tempFrio { background: var(--paper-2) }
+.tempFrio .fichaNome { color: var(--ink-soft) }
+.fechadoPerdido { background: var(--paper-2) }
+.fechadoPerdido .fichaNome { color: var(--ink-soft) }
+
+/* ---------- linha 1: nome à esquerda, dinheiro à direita ----------
+   As duas pontas da mesma linha, e é o alinhamento à direita do número que
+   faz uma coluna inteira do kanban ser varrida pela margem: os valores
+   ficam empilhados um sobre o outro, como numa fatura. */
+.fichaTopo { display: flex; align-items: baseline; justify-content: space-between; gap: 10px }
+.fichaNome {
+  font-family: var(--display); font-stretch: 78%; font-weight: 900;
+  font-size: 16px; line-height: 1.05; letter-spacing: -.01em;
+  /* NÃO é caixa alta, pela mesma razão do card do portfólio: são nomes de
+     pessoa e de marca, com grafia própria. */
+  text-transform: none; min-width: 0; overflow-wrap: anywhere;
+}
+/* O ticket na voz de display, e não em mono: ele é o mesmo número que o
+   cabeçalho da coluna soma, e em mono miúda ele desaparecia no meio das
+   outras três etiquetas. Tabular para os dígitos alinharem entre cards. */
+.fichaValor {
+  flex: none; font-family: var(--display); font-stretch: 78%; font-weight: 900;
+  font-size: 14px; line-height: 1.05; letter-spacing: -.01em;
+  font-variant-numeric: tabular-nums; color: var(--ink-soft);
+}
+
+
+/* ---------- linha 2: empresa · tipo ----------
+   Corpo miúdo, uma linha só. O ponto médio esmeralda é o que sobrou da
+   etiqueta de mono que gastava uma linha inteira para dizer "VITRINE", e é
+   a presença da cor da marca dentro da grade, que é onde ela sumia. */
+.fichaContexto {
+  display: block; font: 500 12px var(--body); color: var(--ink-soft);
+  margin-top: 3px; overflow-wrap: anywhere;
+}
+.pontoVerde { font-style: normal; color: var(--green); padding: 0 5px; font-weight: 700 }
+
+/* O nome é o alvo de "abrir o lead". `display: block` para a área de toque
+   cobrir a linha inteira do topo, e não só as letras. */
+.fichaLink { display: block }
+@media (hover: hover) and (pointer: fine) {
+  .fichaLink:hover .fichaNome { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px }
+}
+
+/* ============================================================
+   NO CARD DO QUADRO, O CARD INTEIRO É O LINK
+
+   Na fila do Hoje o alvo é só o nome, e por um motivo bom: a linha tem
+   cinco alvos dentro dela (WhatsApp, registrar toque, os três adiares), e
+   um link envolvendo botões é marcação inválida e um pesadelo de teclado.
+
+   O card do quadro não tem botão nenhum. Ali o nome sozinho é um alvo de
+   16px de altura no meio de um card de 90px, e clicar no próximo passo (que
+   é a linha que a pessoa está lendo quando decide abrir) não fazia nada. É
+   a mesma regra do /portfolio, e é lá que ela nasceu: quando o objeto tem
+   um destino só, o objeto inteiro é o link.
+
+   ---------- por que ::after e não um <a> em volta de tudo ----------
+   O link continua envolvendo o nome e a empresa, que é o texto que um
+   leitor de tela precisa ouvir ao chegar nele. O pseudo-elemento só estica
+   a área de CLIQUE até as bordas do card. Envolver tudo mudaria o nome
+   acessível do link para o card inteiro, incluindo o sinal de "atrasado 7
+   dias", e o teclado passaria a ouvir um parágrafo onde deveria ouvir um
+   nome.
+
+   ---------- e por que ele não atrapalha o arrasto ----------
+   `pointerdown` no pseudo-elemento sobe para o `<div>` do card, que é onde
+   o dnd-kit escuta. O `distance: 6` do sensor continua sendo o que separa
+   um clique de um arrasto: sem folga, o clique viraria um arrasto de zero
+   pixel e o link nunca abriria.
+
+   `cursor: inherit` para o cursor continuar sendo o `grab` do card acima de
+   861px: a mão de "pode pegar" diz mais sobre um card de kanban do que a
+   mãozinha de link, e o sublinhado do nome no hover já avisa que ele abre. */
+.fichaCheia { cursor: inherit }
+.fichaCheia::after { content: ""; position: absolute; inset: 0; z-index: 1 }
+
+.fichaPasso {
+  display: block; font: 500 13px var(--body); color: var(--ink);
+  margin-top: 7px; overflow-wrap: anywhere;
+}
+.fichaSemPasso { color: var(--ink-soft); font-style: italic }
+
+/* ---------- linha 4: O SINAL ----------
+   Um por ficha (a escada está em lib/crm/regras.ts). Quatro tons, e eles
+   são graus da MESMA voz: mesma fonte, mesmo corpo, mesmo espaçamento. O
+   que muda é só a cor e, no alerta, o peso. Tons diferentes com corpos
+   diferentes seriam quatro elementos; assim são quatro estados de um. */
+.sinal {
+  display: block; margin-top: 8px;
+  font: 700 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase;
+}
+.sinalAlerta { color: var(--rosa) }
+.sinalAgora { color: var(--green-dark) }
+.sinalMorno { color: var(--ink-soft) }
+/* O estado saudável é o mais apagado da tela de propósito: "volta 22/08" é
+   a única linha que NÃO pede nada, e ela só precisa estar lá para quem
+   procurar. Mas "apagado" era 2,1:1, que não é discrição, é sumiço: quem
+   procurasse também não achava. `--ink-fraco` continua sendo o mais claro
+   dos quatro tons do sinal, agora com 5,7:1. */
+.sinalQuieto { color: var(--ink-fraco); font-weight: 500 }
+
+/* ---------- o aviso dos 2 retornos ----------
+   Regra 5: sugestão, nunca ação. Por isso ele é um bloco de texto com um
+   filete rosa e não um botão: o CRM aponta, o Rafael decide. */
+.aviso {
+  display: flex; align-items: flex-start; gap: 8px;
+  margin-top: 8px; padding: 7px 9px;
+  background: var(--paper); border-left: 2px solid var(--rosa);
+  font: 500 11.5px var(--body); color: var(--ink-soft); line-height: 1.4;
+}
+.aviso b { font: 700 10.5px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--rosa); flex: none }
+
+.fichaAcoes { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px }
+/* O trio de adiar anda junto e encosta: três botões colados leem como um
+   controle só ("adiar"), três botões separados leem como três decisões. */
+.adiar { display: inline-flex; gap: 0 }
+.adiar .btnMini + .btnMini { border-left-width: 0 }
+
+/* ---------- O MINI QUE RESOLVE ----------
+   Um `.btnMini` de contorno cheio, e ele existe porque a fileira de botões
+   da ficha ficou com uma hierarquia só: cinco contornos claros do mesmo
+   peso, um deles sendo a ação que a própria ficha está pedindo duas linhas
+   acima ("Decida o próximo passo").
+
+   Não vira `.btnAcao`: o rosa desta ferramenta quer dizer "isto está
+   atrasado", e um botão rosa em toda ficha sem passo pintaria de urgência
+   um lead que só precisa de uma decisão. Contorno de tinta é o degrau
+   exato entre o mini de repouso e o rosa cheio, e é o mesmo gesto do
+   `.btn` da casa em tamanho de linha. */
+.app .btnMiniForte { border-color: var(--ink); color: var(--ink) }
+@media (hover: hover) and (pointer: fine) {
+  .app .btnMiniForte:hover { background: var(--ink); color: var(--paper-alto); border-color: var(--ink) }
+}
+
+/* ============================================================
+   A GAVETA DA FILA — a pergunta dentro da própria linha
+
+   Filete esmeralda na margem e papel um tom abaixo: é o mesmo objeto do
+   `.blocoPergunta` dos modais, que nesta casa quer dizer "o CRM está te
+   perguntando alguma coisa". A diferença é que aqui ele não escurece a
+   tela nem tira o lugar de quem está varrendo a lista de cima para baixo.
+
+   Ela abre DENTRO da ficha, abaixo dos botões, e é por isso que o filete
+   verde entra por dentro da borda do papel em vez de encostar nela: a
+   gaveta pertence àquele lead, e um bloco sangrando até a borda da ficha
+   leria como um segundo cartão empilhado.
+   ============================================================ */
+.gavetaFila {
+  margin-top: 10px; padding: 11px 12px 12px;
+  background: var(--paper); border-left: 2px solid var(--green);
+  animation: abrirGaveta .18s cubic-bezier(.2, .7, .2, 1);
+}
+@keyframes abrirGaveta {
+  from { opacity: 0; transform: translateY(-5px) }
+  to { opacity: 1; transform: none }
+}
+@media (prefers-reduced-motion: reduce) { .gavetaFila { animation: none } }
+
+/* `.app` no seletor por um motivo escrito e não adivinhado: `.app p` é
+   seletor de elemento e venceria a classe simples, e o título voltaria a
+   ser cinza com margem zero. */
+.app .gavetaTitulo {
+  font-family: var(--display); font-stretch: 88%; font-weight: 900;
+  text-transform: uppercase; font-size: 13px; line-height: 1;
+  letter-spacing: .015em; color: var(--ink); margin: 0 0 9px;
+}
+.gavetaCampo { width: 100%; margin-bottom: 9px }
+
+.gavetaQuando { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 11px }
+.gavetaRot { font: 700 10px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft) }
+/* O chip da coluna do celular em tamanho de linha de ficha. */
+.chipMini { padding: 6px 9px }
+/* Empatado com `.app input[type="date"]` em especificidade e escrito
+   depois: sem o elemento no seletor, a classe perderia para o atributo e o
+   campo de data ficaria dois degraus mais alto que os chips ao lado. */
+.app input.gavetaData { font-size: 11px; padding: 6px 8px; flex: none }
+
+.gavetaPe { display: flex; gap: 6px; justify-content: flex-end; flex-wrap: wrap }
+
+/* ---------- A GAVETA QUE AVISA ----------
+   Mesma caixa, filete rosa. Nesta ferramenta o rosa quer dizer "olhe para
+   cá agora", e apagar é a única ação da fila que não tem volta.
+
+   O botão de confirmar continua sendo o `.btnMiniForte` de tinta, e não um
+   `.btnAcao` rosa: rosa cheio nesta casa é o que ABRE conversa (o WhatsApp,
+   o salvar), e usá-lo para destruir ensinaria a mão a apertar sem ler. Quem
+   avisa aqui é o filete e é a frase; o botão só precisa ser o mais firme da
+   gaveta. */
+.gavetaRisco { border-left-color: var(--rosa) }
+.app .gavetaTexto {
+  font-size: 12.5px; line-height: 1.5; color: var(--ink-soft);
+  margin: 0 0 11px; max-width: 62ch;
+}
+
+/* O controle sem volta fica sozinho na outra ponta da fileira. Encostado no
+   "+7d", ele seria um alvo irreversível a seis pixels de um alvo que a mão
+   aperta vinte vezes por dia. */
+.acaoIsolada { margin-left: auto }
+
+/* ---------- o apagar da ficha do lead ----------
+   Último bloco da gaveta de cadastro, separado do resto por um filete: ele
+   não é mais um campo, é a saída da tela. Quando abre, ganha o filete rosa
+   da margem, que é o mesmo aviso da gaveta da fila e a única cor que ele
+   usa. */
+/* Último bloco da ficha, e o único que não é um cartão: ele não é mais uma
+   coisa que se faz com o lead, é a saída dele. Filete em cima e ar em volta
+   é o que separa uma saída de um bloco de conteúdo. */
+.apagarFicha { margin-top: 22px; padding-top: 16px; border-top: 1.5px solid var(--line) }
+.apagarAberto { border-left: 2px solid var(--rosa); padding: 16px 0 0 13px; border-top-width: 0 }
+
+/* ============================================================
+   A CARTA DA VEZ — o corpo do painel Hoje
+
+   Um lead, em tamanho de cartaz. A nota inteira de por que a lista saiu
+   está no componente (components/crm/Hoje.tsx); aqui fica o desenho.
+
+   ---------- ela NÃO é uma caixa ----------
+   Nenhuma borda em volta, e isso é a decisão que faz a tela parar de ser
+   uma lista de um item só: um cartão de 1500px com um nome dentro é
+   exatamente a ficha de antes, esticada. O que fica é a MARCA DE MARGEM da
+   casa de corpo inteiro, um filete de 5px correndo a altura toda na cor da
+   urgência. Mesmo traço da ficha e do `.inventario` do portfólio, na
+   escala desta tela.
+
+   As classes de urgência (`.urgAtrasado`, `.urgHoje`, `.urgSemPasso`) são
+   as MESMAS do card do quadro, reaproveitadas inteiras: o filete rosa quer
+   dizer atrasado nas duas telas, e é isso que faz quem aprendeu a ler uma
+   já saber ler a outra. Por isso o `border-left-width` vem depois delas,
+   para engrossar sem repintar. */
+/* A carta não carrega mais filete nenhum: a urgência dela subiu para a
+   banda no topo da folha, e um segundo traço aqui diria a mesma coisa duas
+   vezes dentro do mesmo objeto.
+
+   Teto de largura, e não largura livre: num monitor de 2560px a coluna de
+   consulta ficaria a um metro e meio do nome, e dois blocos que se leem
+   juntos parariam de ser um objeto só. */
+.vezCarta {
+  display: grid; gap: clamp(24px, 3vw, 56px);
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  max-width: 1420px;
+}
+
+.vezCorpo { min-width: 0 }
+
+/* ---------- OS QUATRO TONS DO SINAL ----------
+   Os mesmos quatro estados da escada do `sinalDaFicha`, nas versões que
+   vivem SOBRE TINTA. Os da ficha somem aqui: o `--rosa` da casa dá 3,5:1
+   sobre grafite e o `--green-dark` dá menos ainda. É a mesma regra já
+   registrada para o trilho e para as placas do quadro: `--rosa-live` e
+   `--green-live` sobre grafite, sempre. */
+.vezSinal { display: block; font: 700 11.5px var(--mono); letter-spacing: .16em; text-transform: uppercase }
+.vezSinalAlerta { color: var(--rosa-live) }
+.vezSinalAgora { color: var(--green-live) }
+.vezSinalMorno { color: var(--sobre-ink) }
+.vezSinalQuieto { color: var(--sobre-ink-fraco); font-weight: 500 }
+
+/* ---------- A COLUNA DE CONSULTA ----------
+   Ela só existe onde há largura para ela. Abaixo de 1080px a carta vira
+   uma coluna só e o dossiê desce para o pé, ainda em fileira: quatro fatos
+   de mono em 900px de tela cabem lado a lado, e empilhados eles gastariam
+   a altura que o nome precisa.
+
+   O filete da esquerda é o mesmo gesto da marca de margem, no terceiro
+   nível: a carta tem o dela em 5px, o dossiê tem o dele em 1,5px. */
+.vezDossie { display: grid; gap: 16px; align-content: start }
+.vezFato { display: grid; gap: 3px }
+.vezFatoRot { font: 700 10px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--sobre-ink-fraco) }
+.vezFatoVal {
+  font-family: var(--display); font-stretch: 78%; font-weight: 900;
+  font-size: clamp(17px, 1.5vw, 21px); line-height: 1.05; letter-spacing: -.012em;
+  color: #fff; font-variant-numeric: tabular-nums;
+}
+/* O dado que não existe continua ocupando a linha, e diz que não existe:
+   "sem estimativa" num lead em proposta é um furo do pipeline, e ele fica
+   visível justamente por não ter sumido. Em corpo de nota, não de número. */
+.vezFatoVazio { font-family: var(--body); font-stretch: 100%; font-weight: 500; font-size: 13px; color: var(--sobre-ink-fraco) }
+.vezFatoNota { font: 500 11px var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--sobre-ink) }
+
+@media (min-width: 1080px) {
+  .vezCarta { grid-template-columns: minmax(0, 1fr) minmax(180px, 232px) }
+  .vezDossie { border-left: 1.5px solid var(--line-dark); padding-left: clamp(20px, 2vw, 30px) }
+}
+@media (max-width: 1079px) {
+  .vezDossie {
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    border-top: 1.5px solid var(--line-dark); padding-top: 16px; gap: 16px 24px;
+  }
+}
+
+/* ---------- O NOME É A MANCHETE ----------
+   Ele é o <h1> da tela, e o tamanho é a resposta inteira à pergunta que o
+   título faz logo acima. Caixa BAIXA, pela mesma regra do card do
+   portfólio: são nomes de pessoa e de marca, com grafia própria, e caixa
+   alta transformaria "Vérit.lab" em outra palavra.
+
+   O teto de 88px não é gosto: acima disso um nome de quatro palavras
+   ("Studio Ana Paula Fotografia") passa de três linhas e a carta empurra os
+   botões para fora da janela numa tela de notebook. */
+.app .vezNome {
+  font-size: clamp(34px, 6.4vw, 88px); line-height: .9;
+  text-transform: none; letter-spacing: -.024em; color: #fff;
+  margin: clamp(10px, 1.4vh, 18px) 0 0; overflow-wrap: anywhere;
+}
+@media (hover: hover) and (pointer: fine) {
+  .app .vezNome a:hover { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 3px }
+}
+
+.app .vezContexto { font-size: clamp(14px, 1.2vw, 17px); color: var(--sobre-ink); margin-top: 10px }
+
+/* A frase que faz agir, e a única em corpo de leitura de verdade. O filete
+   antes dela é a marca de margem outra vez, deitada: o mesmo traço do
+   `.rotulo` de seção, agora apontando para a única instrução da tela. */
+.app .vezPasso {
+  display: flex; align-items: baseline; gap: 14px;
+  font-size: clamp(16px, 1.5vw, 21px); line-height: 1.4; color: #fff;
+  margin-top: clamp(16px, 2.4vh, 28px); max-width: 46ch;
+}
+.app .vezPasso::before {
+  content: ""; flex: none; width: 26px; height: 2px; background: var(--sobre-ink);
+  transform: translateY(-.4em);
+}
+.app .vezSemPasso { color: var(--sobre-ink-fraco); font-style: italic }
+.app .vezSemPasso::before { background: var(--sobre-ink-fraco) }
+
+/* Teto na fileira, e ele é o que faz o `.acaoIsolada` funcionar: sem
+   limite, a coluna do corpo tem mil pixels e o "Apagar" ia parar a meio
+   metro dos outros quatro, longe demais para ainda ler como parte da mesma
+   fileira. A ideia é que ele fique FORA do alcance do polegar, não fora da
+   fileira. */
+.vezAcoes {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  margin-top: clamp(20px, 3vh, 34px); max-width: 720px;
+}
+/* O trio de adiar encosta e vira um controle só, igual ao `.adiar` da
+   ficha. Classe própria porque aqui ele é feito de `.btnEscuro` e não de
+   `.btnMini`, e a regra que come a borda precisa casar com o vizinho. */
+.adiarGrande { display: inline-flex; gap: 0 }
+.adiarGrande .btnEscuro + .btnEscuro { border-left-width: 0 }
+
+/* ---------- OS CONTROLES SOBRE TINTA ----------
+   O `.btnEscuro` já existia (ele é o "Instagram" no cabeçalho da ficha do
+   lead) e é exatamente esta peça: contorno sobre grafite. O que faltava era
+   a versão miúda dele, para o "Apagar" continuar sendo o mais quieto da
+   fileira também aqui. */
+.app .btnMiniEscuro {
+  display: inline-flex; align-items: center; justify-content: center;
+  font: 700 10px var(--mono); letter-spacing: .06em; text-transform: uppercase;
+  padding: 6px 10px; min-height: 28px; cursor: pointer; white-space: nowrap;
+  background: transparent; color: var(--sobre-ink-fraco); border: 1.5px solid #333B3E;
+  transition: border-color .15s ease, color .15s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .app .btnMiniEscuro:hover { border-color: var(--rosa-live); color: var(--rosa-live) }
+}
+.app .btnMiniEscuro:disabled { opacity: .4; cursor: not-allowed }
+
+/* A sombra dura do `.btnAcao` é `--ink`, e sobre `--ink` ela é invisível: o
+   botão perderia o carimbo justo na tela em que ele é o único rosa. Aqui a
+   sombra é da cor da voz de trás, e o clique continua afundando nela. */
+.vezFolha .btnAcao { box-shadow: 3px 3px 0 var(--sobre-ink-fraco) }
+.vezFolha .btnAcao:active { box-shadow: 0 0 0 var(--sobre-ink-fraco) }
+
+
+/* ============================================================
+   O PÉ — as duas teclas do baralho
+
+   Elas eram dois `.btnMini` anônimos ("Anterior", "Pular") com um "← →"
+   solto ao lado, e uma tira de nomes acima. Duas peças fracas dizendo
+   pedaços da mesma coisa.
+
+   Agora cada tecla carrega o NOME de para onde ela leva, e isso mata a
+   tira: "Pular" não dizia nada, "→ Studio Ana Paula" diz quem é o próximo.
+
+   ---------- por que sombra dura ----------
+   É o carimbo do `.btnAcao`, e a razão é a mesma: numa tela que se varre
+   com a mão, os dois controles apertados o dia inteiro precisam PARECER
+   teclas. Elas afundam 3px no clique e a sombra colapsa, que é o gesto
+   físico que o `.btn` de contorno não tem. Sem cor nenhuma: o rosa da carta
+   é o que se deve apertar, e uma tecla rosa disputaria com ele.
+
+   A desabilitada perde a sombra em vez de perder opacidade. Botão apagado
+   por transparência continua parecendo apertável e some junto com o texto;
+   sem sombra ele deitou no papel, e isso se lê antes de qualquer palavra.
+   ============================================================ */
+/* Sem filete próprio: a borda de baixo da folha de tinta já é a linha que
+   separa o objeto do dia das duas teclas, e nenhum filete de papel compete
+   com uma aresta de grafite. */
+.vezPe {
+  flex: none; display: flex; align-items: center; justify-content: space-between;
+  gap: 14px 20px; flex-wrap: wrap;
+  padding-top: clamp(16px, 2.4vh, 24px);
+}
+
+.app .vezSeta {
+  display: flex; align-items: center; gap: 12px;
+  min-width: 0; max-width: 320px; text-align: left;
+  padding: 9px 15px; cursor: pointer;
+  background: var(--paper-alto); color: var(--ink);
+  border: 1.5px solid var(--ink); box-shadow: 3px 3px 0 var(--ink);
+  transition: transform .1s ease, box-shadow .1s ease, background .15s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .app .vezSeta:hover { background: #fff }
+}
+.app .vezSeta:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--ink) }
+.app .vezSeta:disabled {
+  cursor: not-allowed; background: transparent;
+  border-color: var(--line); color: var(--ink-fraco); box-shadow: none;
+}
+
+.vezSetaGlifo {
+  flex: none; font-style: normal;
+  font-family: var(--display); font-stretch: 78%; font-weight: 900;
+  font-size: 22px; line-height: 1;
+}
+.vezSetaTexto { display: grid; gap: 3px; min-width: 0 }
+.vezSetaRot { font: 700 9.5px var(--mono); letter-spacing: .18em; text-transform: uppercase; color: var(--ink-fraco) }
+/* Uma linha, cortada com reticências: o nome aqui é uma placa de destino,
+   não conteúdo. Em duas linhas ele faria a tecla mudar de altura conforme
+   o próximo lead, e as duas parariam de ser um par. */
+.vezSetaNome {
+  font-family: var(--display); font-stretch: 78%; font-weight: 900;
+  font-size: 15px; line-height: 1.05; letter-spacing: -.01em; text-transform: none;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+/* A tecla da direita é a mesma peça espelhada: a seta troca de lado e o
+   texto encosta nela. */
+.vezSetaProxima { flex-direction: row-reverse; text-align: right }
+.vezSetaProxima .vezSetaTexto { justify-items: end }
+
+.vezPosicao {
+  font: 700 11px var(--mono); letter-spacing: .16em; text-transform: uppercase;
+  color: var(--ink-fraco); flex: none;
+}
+.vezPosicao b { font-size: 16px; color: var(--ink); font-variant-numeric: tabular-nums }
+
+/* A pergunta da tela, agora em voz de rótulo e não de manchete: a resposta
+   (o nome, em até 76px) é que ficou com a voz grande, e duas manchetes
+   numa tela é uma tela sem manchete nenhuma. */
+.app .vezPergunta { font-size: clamp(19px, 1.9vw, 24px); line-height: 1 }
+/* A pergunta e o "Anotar lead" se encontram EMBAIXO. `baseline` (o padrão
+   do `.tituloLinha`) alinharia o botão pela primeira linha do bloco da
+   esquerda, que é a data em mono de 10,5px, e ele subiria para a altura do
+   rótulo em vez de acompanhar a manchete. */
+.vezTopo.tituloLinha { align-items: flex-end }
+
+/* ============================================================
+   A RÉGUA DO DIA — a assinatura desta tela
+
+   Uma marca por lead do dia: as riscadas em tinta cheia, a da vez em rosa,
+   as que faltam vazias. A nota de por que ela substituiu a pilha de nomes
+   riscados está no componente.
+
+   Por que marcas contáveis e não uma barra que enche, como a da meta da
+   semana logo ao lado: cinquenta toques são um volume, e nove pessoas são
+   nove decisões. Nove marcas dizem "faltam seis"; uma barra em 33% diz "um
+   terço", que é a mesma informação em pior forma para quem executa uma a
+   uma. As duas réguas convivem porque medem coisas de naturezas diferentes,
+   e a forma de cada uma diz qual é qual.
+   ============================================================ */
+.reguaDia { display: inline-flex; align-items: center; gap: 3px; flex-wrap: wrap; max-width: 340px }
+.marca { width: 7px; height: 14px; flex: none; background: var(--line-dark) }
+
+/* ---------- O QUE FOI FEITO É UM VISTO, NÃO UM TRAÇO ----------
+   As riscadas eram traços claros, iguais em forma às que faltam e
+   diferentes só na cor. Duas formas para dois estados diz mais, e é grátis:
+   o ✓ é a mesma marca de margem do /portfólio, aqui em 12px, e ele traz de
+   volta o esmeralda de "resolvido" que morreu junto com o bloco "Riscados
+   hoje". Numa régua de nove marcas, dá para contar os vistos sem ler o
+   número ao lado. */
+.marcaFeita {
+  width: 11px; background: none;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-style: normal; font-weight: 700; font-size: 12px; line-height: 1;
+  color: var(--green-live);
+}
+/* `--rosa-live` e não `--rosa`: isto vive sobre grafite, onde o rosa da
+   casa dá 3,5:1. Mesma regra do `--green-live`. */
+.marcaAgora { background: var(--rosa-live); height: 18px }
+
+/* ---------- O PONTO ROSA, EM CORPO DE CARTAZ ----------
+   A mesma assinatura do `.ponto` da manchete, na escala do nome da carta.
+   Em 88px o ponto é um quadrado do tamanho de uma moeda: o menor lugar
+   possível para a cor de acento, e o mais deliberado.
+
+   `--rosa-live` porque isto vive sobre grafite. O `.ponto` continua sendo
+   `--rosa` porque ele mora na manchete, que é papel: mesma assinatura,
+   cada uma na cor que o material dela pede. */
+.vezPonto { color: var(--rosa-live); font-style: normal }
+
+/* ============================================================
+   VAZIO — a tela sem nada é convite, não silêncio
+   ============================================================ */
+.vazio {
+  border: 1.5px dashed var(--line); padding: clamp(18px, 3vw, 30px);
+  background: var(--paper-alto);
+}
+.vazio b { display: block; font-family: var(--display); font-stretch: 88%; font-weight: 900; text-transform: uppercase; font-size: 15.5px; letter-spacing: .012em; margin-bottom: 6px }
+.vazio p { font-size: 13px }
+.vazio .btn { margin-top: 14px }
+
+/* ============================================================
+   O DIA LIMPO — e por que ele NÃO usa a caixa tracejada acima
+
+   O tracejado desta casa tem um significado só, e ele está escrito em três
+   lugares deste arquivo: ausência. É o filete interrompido do lead sem
+   próximo passo, é o alvo da coluna vazia, é o buraco que o card deixa
+   quando a mão o levanta. "A ausência desenhada como ausência."
+
+   Fila limpa não é ausência, é conclusão. Vestir o dia terminado com a
+   roupa do dado que falta é o que fazia esta tela ser lida como erro de
+   carregamento: um quadro cheio de leads agendados para a semana que vem
+   desenha exatamente a mesma caixa que um CRM que nunca recebeu uma linha.
+
+   Por isso aqui a moldura é cheia: uma folha terminada, e não um espaço
+   reservado.
+
+   ---------- e por que ele não tem cor nenhuma ----------
+   Nesta ferramenta a cor não convida, ela informa, e o que ela informa é
+   urgência. O dia limpo é o único estado que não pede nada de ninguém, e um
+   bloco sem cor é a forma honesta de dizer isso. A manchete da página logo
+   acima já leva o ponto rosa, que é onde a cor da casa aparece nesta tela.
+   ============================================================ */
+/* Mais estreito que a coluna da fila, e encostado na esquerda como todo o
+   resto da casa. A fila tem 940px porque uma ficha precisa deles: nome,
+   próximo passo e cinco botões numa linha só. Este bloco tem quatro linhas
+   curtas, e esticado até 940 ele lê como caixa vazia justamente na tela que
+   existe para provar que não há nada vazio. */
+.diaLimpo {
+  max-width: 640px;
+  background: var(--paper-alto);
+  border: 1.5px solid var(--line);
+  padding: clamp(18px, 3vw, 30px);
+  margin-top: clamp(20px, 2.6vw, 30px);
+}
+/* Filho DIRETO: o `<b>` da linha de fatos lá embaixo também vive dentro
+   deste bloco, e um seletor descendente daria a ele a voz de manchete e o
+   `display: block` que quebraria a linha em duas. */
+.diaLimpo > b {
+  display: block; font-family: var(--display); font-stretch: 78%; font-weight: 900;
+  text-transform: uppercase; font-size: clamp(17px, 1.8vw, 21px); line-height: 1;
+  letter-spacing: -.008em; margin-bottom: 8px;
+}
+.diaLimpo p { font-size: 13.5px; max-width: 54ch }
+.diaLimpo .btn { margin-top: clamp(16px, 2vw, 20px) }
+
+/* ============================================================
+   A LINHA DO HORIZONTE — a assinatura desta tela
+
+   O mesmo filete de 4px da régua da meta, na faixa logo acima, e do traço
+   que atravessa os vãos entre as placas do quadro. Aqui ele carrega os
+   próximos quatorze dias, e cada dia em que alguém volta a cobrar ganha um
+   dente. O mais próximo é tinta cheia; os outros são a voz de trás.
+
+   O que ela resolve, e é a razão inteira de ela existir: linha reta quer
+   dizer quadro vazio, linha com dentes quer dizer quadro carregado. O mesmo
+   objeto responde as duas coisas sem legenda, e um dia limpo para de poder
+   ser confundido com uma ferramenta quebrada.
+
+   ---------- uma coisa por elemento ----------
+   A linha diz QUANDO. A linha de mono embaixo dela diz QUANTOS. A altura do
+   dente foi deliberadamente deixada fixa: com um ou três leads, altura
+   proporcional vira ruído, e seria um gráfico no lugar onde cabe um
+   instrumento.
+
+   `--ink-soft` no trilho e não `--line`: é a mesma correção que a régua de
+   carga do quadro já carrega. Em `--line` sobre papel alto o trecho vazio
+   some, e uma régua com o vazio invisível deixa de ser régua e vira um
+   risco solto de comprimento aleatório. É o vazio que dá escala ao cheio.
+   ============================================================ */
+.horizonteRot { display: block; font: 10.5px var(--mono); letter-spacing: .2em; text-transform: uppercase; color: var(--ink-soft); margin: clamp(18px, 2.2vw, 24px) 0 0 }
+
+.horizonte { position: relative; height: 20px; margin-top: 10px }
+/* ---------- DOIS PIXELS, E NÃO QUATRO ----------
+   A régua da meta e a régua de carga têm 4px porque medem 96px e 220px de
+   largura. Esta atravessa o bloco inteiro, e em 4px de tinta ela vira uma
+   tarja de ponta a ponta, mais pesada que a manchete logo acima. É a mesma
+   lição que a barra de rolagem do quadro já registra neste arquivo: uma
+   régua é um instrumento, e instrumento não pode ser o objeto mais forte da
+   tela. Em 2px ela continua sendo um filete e passa a ser fundo para os
+   dentes, que é o trabalho dela. */
+.horizonteTrilho { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--ink-soft) }
+/* `translateX(-50%)` para o dente ficar centrado no dia que ele marca, e
+   não começando nele: no dia 14 o dente encosta na ponta direita do trilho,
+   que é exatamente onde a janela termina. */
+.horizonteDente {
+  position: absolute; bottom: 0; width: 3px; height: 11px;
+  background: var(--ink-soft); transform: translateX(-50%);
+}
+.horizonteProximo { width: 4px; height: 18px; background: var(--ink) }
+
+/* A escala em duas palavras. Sem ela os dentes são posições sem unidade;
+   com uma régua de datas numeradas, a caixa vira um calendário e passa a
+   convidar para o trabalho de amanhã, que é justamente o que esta tela
+   existe para não fazer. */
+.horizonteEscala {
+  display: flex; justify-content: space-between; margin-top: 7px;
+  font: 700 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-fraco);
+}
+
+/* O vão entre os dois fatos é largo de propósito: em mono de caixa alta,
+   com 20px eles leem como uma frase só e "1 LEAD NO QUADRO" vira uma
+   informação que ninguém escreveu. */
+.horizonteFatos { display: flex; flex-wrap: wrap; gap: 7px clamp(22px, 3.4vw, 42px); margin-top: clamp(14px, 1.8vw, 18px) }
+.horizonteFato {
+  display: inline-flex; align-items: baseline; gap: 8px;
+  font: 700 10.5px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft);
+}
+.horizonteFato b { font-size: 12.5px; letter-spacing: .05em; color: var(--ink); white-space: nowrap }
+
+/* ============================================================
+   KANBAN
+
+   Rolagem horizontal SÓ no quadro, nunca na página: é critério de aceite, e
+   é também a diferença entre "arrastar a coluna" e "a tela inteira escapou".
+   ============================================================ */
+.quadroCaixa { position: relative; margin-top: 14px }
+
+/* ---------- POR QUE NÃO TEM ESMAECIDO NA BORDA ----------
+   A primeira versão tinha um degradê branco na direita, para dizer "o
+   quadro continua para lá". Ele foi a única coisa da tela que não era
+   papel nem tinta: esta casa não usa degradê em lugar nenhum, e o efeito
+   apagava metade da última coluna para dar um recado que a própria coluna
+   cortada já dá. Um card fatiado pela borda é a afordância mais honesta
+   que existe, e a barra de tinta logo abaixo é a segunda. */
+/* ---------- O QUADRO TEM CHÃO ----------
+   Com `align-items: flex-start` cada coluna terminava na altura do próprio
+   conteúdo, e o resultado eram sete cartões soltos de alturas diferentes
+   boiando no papel: um quadro recém-aberto, com uma coluna cheia e seis
+   vazias, parecia um gráfico de barras tombado.
+
+   Altura declarada e `stretch`: as sete colunas dividem uma faixa só, com
+   uma linha de base comum, e o objeto na tela passa a ser O QUADRO em vez
+   de sete listas. O ganho não é só de desenho: coluna com chão é alvo de
+   soltar do tamanho da coluna, e não do tamanho da pilha que já está lá.
+
+   `clamp` e não `100dvh` cru: num monitor curto o quadro não pode empurrar
+   a barra de puxar para fora da tela, e num monitor muito alto ele não
+   precisa virar um poço de 900px de papel vazio. */
+.quadro {
+  display: flex; gap: 8px; align-items: stretch;
+  height: clamp(330px, calc(100dvh - 268px), 760px);
+  overflow-x: auto; overflow-y: visible;
+  padding-bottom: 14px;
+  /* O encaixe suave faz o arrasto do quadro parar com uma coluna inteira à
+     vista em vez de deixar uma fatia de 40px na borda. `proximity` e não
+     `mandatory`: com mandatory, um empurrão pequeno seria sempre desfeito
+     ou sempre exagerado, e quem quer só espiar a coluna vizinha fica
+     brigando com a tela. */
+  scroll-snap-type: x proximity;
+}
+.coluna, .placas { scroll-snap-align: start }
+
+/* ---------- A BARRA DE PUXAR ----------
+   A do navegador é cinza, arredondada e de outro sistema de desenho: num
+   quadro que é todo tinta sobre papel, ela era a única peça que não era da
+   casa. Aqui ela é um filete de tinta correndo sobre papel escurecido, sem
+   raio nenhum.
+
+   4px, e não 8: em 8px ela virava uma tarja preta de ponta a ponta embaixo
+   do quadro, mais pesada que qualquer coisa que o quadro mostra. Uma barra
+   de rolagem é um instrumento, e instrumento não pode ser o objeto mais
+   forte da tela. A área de clique não sofre: o `::-webkit-scrollbar` mede a
+   pista inteira, e o alvo de arrasto continua sendo a faixa toda. */
+.quadro { scrollbar-width: thin; scrollbar-color: var(--ink) var(--paper-2) }
+.quadro::-webkit-scrollbar { height: 4px }
+.quadro::-webkit-scrollbar-track { background: var(--paper-2) }
+.quadro::-webkit-scrollbar-thumb { background: var(--ink); border: 0; border-radius: 0 }
+@media (hover: hover) and (pointer: fine) {
+  .quadro::-webkit-scrollbar-thumb:hover { background: var(--rosa) }
+}
+
+/* ============================================================
+   A COLUNA NÃO É UM BLOCO CINZA
+
+   Ela era `--paper-2` cheio, com filete em volta, do topo ao pé: sete
+   retângulos MAIS ESCUROS que o papel da página, cada um de 700px de
+   altura. Num quadro com dois leads, isso é 90% da tela em cinza, e cinza
+   mais escuro que o fundo não lê como caixa, lê como buraco. O objeto que
+   aparecia era o vazio, não o pipeline.
+
+   ---------- mas ela precisa ter SILHUETA ----------
+   A primeira correção tirou o fundo E o contorno, e foi longe demais: sem
+   os dois, a coluna vazia simplesmente deixa de existir na tela e o quadro
+   vira sete placas pretas boiando sobre papel liso. Não dá para ver onde
+   começa e termina o território de cada etapa, que é a única coisa que uma
+   coluna de kanban precisa mostrar quando está vazia.
+
+   O acerto é o meio-termo: CONTORNO SEM PREENCHIMENTO. O filete de 1,5px
+   volta e o `--paper-2` não. A coluna passa a ser uma área demarcada em vez
+   de um bloco cinza, e a diferença é toda de peso: um filete gasta 1,5px de
+   tinta para dizer "aqui", o fundo gastava setecentos pixels de altura.
+
+   Sem o topo, porque ali está a placa: o contorno abre para dentro dela e
+   as duas viram um objeto só, em vez de uma caixa embaixo de uma etiqueta.
+
+   E o que fica em destaque são os CARDS: eles são `--paper-alto`, mais
+   claros que a página, então dentro de uma área só contornada eles leem
+   como folhas sobre a mesa. Antes eram manchas claras dentro de um bloco
+   cinza, que é a mesma coisa dita ao contrário e muito mais pesada.
+   ============================================================ */
+.coluna {
+  position: relative;
+  flex: 0 0 clamp(208px, 16vw, 238px); min-width: 0;
+  background: none;
+  border: 1.5px solid var(--line); border-top: 0;
+  display: flex; flex-direction: column; min-height: 0;
+}
+
+/* ============================================================
+   O FILETE QUE ATRAVESSA OS VÃOS
+
+   Sete placas pretas separadas por 8px de papel são sete etiquetas. Com um
+   filete de tinta preenchendo cada vão, elas viram UMA barra interrompida,
+   e o quadro passa a ser lido como um cano com sete válvulas em vez de uma
+   tabela com sete colunas.
+
+   É a mesma ideia do "trilho operacional" que assina a /e-commerce, e é
+   estrutura carregando informação, não enfeite: um pipeline É uma
+   sequência, e a sequência é a única coisa que a disposição em colunas não
+   estava dizendo. O filete atravessa até as placas de ganho e perdido, que
+   é onde o cano termina.
+
+   ONDE ELE CORRE, e por que mudou: ele saía do meio da placa, na altura do
+   nome. Agora sai da RÉGUA DE CARGA, no pé dela, e passa a ser o mesmo
+   traço: as sete réguas mais os seis pedaços de vão viram UMA linha
+   atravessando o quadro inteiro, interrompida só onde as colunas se
+   separam. O corte do funil e o cano são a mesma linha, que é o que faz
+   duas ideias virarem uma.
+
+   O vão leva a cor do TRILHO da régua, nunca a do filete cheio. É o que faz
+   as sete réguas virarem UMA: o trilho corre sem parar de ponta a ponta do
+   quadro, e o que se lê são os sete trechos cheios sobre ele, como barras
+   numa base só. Pintar o vão de papel diria que há dinheiro no espaço entre
+   duas etapas, que é o único lugar onde não há.
+
+   Ele não existe depois da última coluna porque `right: -8px` cai
+   exatamente sobre o `gap`, e depois do último elemento não há gap nenhum. */
+.colunaCab::after {
+  content: ""; position: absolute; z-index: 1;
+  bottom: 0; right: -8px; width: 8px; height: 4px;
+  background: var(--ink-soft);
+}
+
+/* ---------- A PLACA DE TINTA ----------
+   O cabeçalho da coluna é o mesmo objeto da faixa de status e do trilho:
+   grafite cheio, condensada branca, mono nos números. Sete placas
+   atravessando o topo do quadro dão a ele a régua que faltava, e é isso
+   que separa este kanban de uma tabela com bordas. */
+.colunaCab {
+  padding: 9px 10px 0; background: var(--ink); color: #fff;
+  position: sticky; top: 0; z-index: 2;
+}
+.colunaTopo { display: flex; align-items: baseline; gap: 7px }
+/* ---------- MESMA CORREÇÃO DO TRILHO ----------
+   Ela estava em 78% de largura, caixa alta, 14,5px, com espacejamento
+   NEGATIVO: o tratamento de manchete aplicado num rótulo de 210px. A
+   condensação tira o vão entre as hastes, que é o que o olho usa para
+   separar letra de letra, e "CONTATADO" virava um bloco.
+
+   A regra que saiu disso, e que vale para o arquivo inteiro: caixa alta em
+   condensada 78% só funciona a partir de uns 18px. Abaixo disso, abrir a
+   largura (88%) e trocar o tracking para positivo. */
+.colunaNome { font-family: var(--display); font-stretch: 88%; font-weight: 900; text-transform: uppercase; font-size: 15.5px; letter-spacing: .015em; color: #fff; min-width: 0; overflow-wrap: anywhere }
+/* ---------- a contagem é um sinal ----------
+   `--green-live` é o único esmeralda legível sobre grafite (7,7:1). O rosa
+   sobre grafite dá 4,9:1, que passa folgado para texto de 10px em peso 700.
+   Três estados, um número: rosa quer dizer "tem gente esperando aqui",
+   esmeralda quer dizer "em dia", cinza quer dizer "vazia". */
+.colunaCont { font: 700 11px var(--mono); letter-spacing: .04em; color: var(--green-live); flex: none }
+.colunaPedindo { color: var(--rosa-live); font-size: 13px }
+.colunaZero { color: var(--sobre-ink-fraco) }
+.colunaSoma { font: 500 10.5px var(--mono); letter-spacing: .02em; color: var(--sobre-ink); margin-left: auto; flex: none; white-space: nowrap }
+/* A legenda de duas ou três palavras: "Lista" e "Prévia" são nomes
+   internos, e um quadro de sete etapas não pode depender de memória. Ela
+   estava em 8,5px sobre 3,7:1, que é uma legenda que só cumpre o papel para
+   quem já sabia o que ela dizia. */
+.colunaNota { display: block; font: 500 10.5px var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--sobre-ink-fraco); margin-top: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+
+/* ---------- A MESA RESPONDE NA MÃO ----------
+   Enquanto um card está no ar, a legenda de cada coluna sai de cena e o
+   lugar dela diz o que AQUELA etapa vai exigir DESTE lead: "pede ticket",
+   "pede passo e data", "pede motivo". As regras 1 a 4 pararam de ser uma
+   parede depois do soltar e viraram uma resposta antes dele.
+
+   É a mudança que mais muda o uso da tela, e ela é informação pura: nenhum
+   objeto novo, nenhuma cor nova, nenhum movimento. Sobrevive inteira em
+   `prefers-reduced-motion`, porque nunca dependeu de movimento.
+
+   ---------- e por que só quem cobra fala ----------
+   Marcar de verde as colunas que aceitam seria pintar sete colunas para
+   destacar duas. O silêncio é o "pode soltar": no quadro inteiro, quem tem
+   voz é quem vai te parar, e o olho vai direto no rosa.
+
+   `--rosa-live` porque isto vive sobre grafite, e o rosa da casa dá 3,5:1
+   lá. É a mesma regra do `--green-live`. */
+.colunaPede { color: var(--rosa-live) }
+
+/* ============================================================
+   A RÉGUA DE CARGA — a assinatura desta tela
+
+   Sete placas pretas iguais eram sete etiquetas: elas diziam o nome da
+   etapa e o quanto tem parado ali, e nada sobre a FORMA do funil. Um
+   pipeline é justamente uma forma, e ela era a única coisa que o quadro
+   não estava dizendo.
+
+   No pé de cada placa corre um filete de 3px que enche na proporção do
+   dinheiro daquela etapa contra a etapa mais carregada. Lidas da esquerda
+   para a direita, as sete réguas desenham o corte do funil em cima das
+   colunas que elas descrevem: dá para ver onde o dinheiro empoçou antes de
+   ler um número.
+
+   ---------- por que este objeto e não um gráfico ----------
+   É a MESMA régua da meta da semana, na faixa do painel Hoje: trilho em
+   `--line-dark`, filete que enche por cima. Aqui ela enche em papel e não
+   em esmeralda, e isso é deliberado: a cor no quadro está reservada para
+   urgência (o rosa da contagem, o filete de margem da ficha), e uma régua
+   colorida disputaria com ela. Papel enchendo tinta é o gesto da casa e não
+   custa nenhuma cor nova.
+
+   Ela mora colada no fundo da placa, sem margem: é a base da placa, e é
+   também a linha onde a coluna começa.
+
+   O trilho é `--ink-soft` e não `--line-dark`: em `--line-dark` sobre tinta
+   ele sumia, e uma régua com o trecho vazio invisível deixa de ser régua e
+   vira um risco solto de comprimento aleatório. É o vazio que dá a escala
+   ao cheio. */
+.carga { display: block; height: 4px; margin: 10px -10px 0; background: var(--ink-soft) }
+.cargaFill { display: block; height: 100%; background: var(--sobre-ink); transition: width .45s cubic-bezier(.2, .7, .2, 1) }
+/* A etapa mais carregada leva o filete cheio em branco: é a única marca de
+   "é aqui" da fileira, e ela se move sozinha conforme o quadro anda. */
+.cargaMaior { background: #fff }
+
+/* ============================================================
+   A COLUNA VAZIA É PAPEL PAUTADO
+
+   Contorno sozinho resolvia a silhueta e não dizia nada: sete retângulos
+   vazios em volta de sete placas pretas. Área demarcada, sem caráter.
+
+   A pauta é a resposta, e ela é literal: esta casa se chama "papel e
+   tinta", e papel de anotar tem pauta. Uma etapa vazia deixa de ser um
+   buraco e passa a ser uma FOLHA ESPERANDO NOME, que é exatamente o que
+   uma coluna vazia de um quadro de prospecção é.
+
+   ---------- e ela some sozinha ----------
+   Nenhuma regra condicional: o card é `--paper-alto` opaco e simplesmente
+   cobre a pauta onde ele está. A coluna cheia é uma folha escrita, a vazia
+   é uma folha em branco, e as duas são o mesmo objeto. Uma coluna cheia
+   pela metade mostra as duas coisas de uma vez, que é a leitura mais
+   honesta de "cabe mais aqui".
+
+   ---------- o mesmo tom que era o problema ----------
+   A linha é `--line`, e o vão entre elas é o papel da página. É a mesma
+   diferença de tom que antes preenchia a coluna inteira e a fazia ler como
+   buraco: em faixa de 700px ela era peso morto, em filete de 1px a cada
+   34px ela é textura. O tom não mudou, mudou a quantidade.
+
+   O `background-position` alinha a primeira pauta com o topo do padding,
+   para o primeiro card nascer EM CIMA de uma linha e não no meio de um vão.
+   ============================================================ */
+.colunaLista {
+  padding: 8px; overflow-y: auto; flex: 1; min-height: 70px;
+  background-image: repeating-linear-gradient(
+    180deg,
+    transparent 0 33px,
+    var(--line) 33px 34px
+  );
+  background-position: 0 8px;
+}
+
+/* ---------- A COLUNA VAZIA NÃO ESCREVE "VAZIA", E AGORA NÃO DESENHA NADA ----------
+   O comentário antigo prometia "silêncio até fazer falta" e o CSS não
+   cumpria: o retângulo tracejado era desenhado o tempo todo, e seis deles
+   num quadro de dois leads eram a coisa mais presente da tela. O quadro
+   anunciava o próprio vazio seis vezes.
+
+   Agora ele só existe com um card no ar (`.quadroEmVoo`, posto pelo
+   componente). Sem arrasto, coluna vazia é papel liso: o zero já está dito
+   na placa preta logo acima, que é onde ele pertence.
+
+   `height` e não `display: none` no repouso: o alvo precisa aparecer sem
+   empurrar nada quando a mão levanta um card, e uma coluna que cresce 62px
+   no instante do gesto é a tela se mexendo no pior momento possível. */
+.colunaAlvoVazio {
+  display: block; height: 62px;
+  border: 1.5px dashed transparent;
+  transition: border-color .15s ease, background .15s ease;
+}
+.quadroEmVoo .colunaAlvoVazio { border-color: var(--line) }
+.quadroEmVoo .colunaAlvo .colunaAlvoVazio { border-color: var(--ink); border-style: solid; background: var(--paper-alto) }
+
+/* ============================================================
+   AS PLACAS DE SAÍDA — ganho e perdido no fim do quadro
+   ============================================================ */
+.placas { flex: 0 0 clamp(150px, 12vw, 178px); display: flex; flex-direction: column; gap: 8px; align-self: stretch }
+
+/* As duas dividem a altura do quadro, com o trio centrado no meio de cada
+   uma: agora que as colunas têm chão, uma placa do tamanho do próprio texto
+   ficaria boiando no fim da fileira e o quadro terminaria em nada. Centrado
+   e não espalhado de topo a pé: o nome, o número e a soma são uma coisa só,
+   e separá-los pela altura da caixa transformaria o ar em distância entre
+   dois dados que se leem juntos. */
+.app .placa {
+  display: flex; flex-direction: column; justify-content: center; flex: 1;
+  text-align: left; cursor: pointer;
+  padding: 12px 13px 13px; border: 1.5px solid var(--ink); background: var(--paper-alto);
+  border-left-width: 4px;
+  transition: background .15s ease, box-shadow .15s ease;
+}
+.placaNome { display: block; font-family: var(--display); font-stretch: 78%; font-weight: 900; text-transform: uppercase; font-size: 14.5px; letter-spacing: -.005em; color: var(--ink) }
+/* O número na voz de manchete: estas duas placas são o placar do mês, e
+   elas são a única coisa do quadro que se lê de longe. */
+.placaNum { display: block; font-family: var(--display); font-stretch: 78%; font-weight: 900; font-size: 34px; line-height: 1; letter-spacing: -.03em; margin: 8px 0 4px; font-variant-numeric: tabular-nums }
+.placaSoma { display: block; font: 700 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft) }
+/* As duas saídas também respondem na mão, e elas são justamente as que mais
+   cobram: ganho pede valor e data, perdido pede o motivo. Se as sete colunas
+   avisassem e estas duas ficassem caladas, o silêncio delas leria como
+   "aqui pode", que é o contrário da verdade. `--rosa` e não `--rosa-live`:
+   a placa é papel. */
+.placaPede { color: var(--rosa) }
+
+.placaGanho { border-left-color: var(--green) }
+.placaGanho .placaNum { color: var(--green-dark) }
+.placaPerda { border-left-color: var(--line) }
+/* O número do perdido é o mais quieto do quadro, e continua sendo: o que
+   muda é que 2,1:1 não passava nem no mínimo de texto grande. */
+.placaPerda .placaNum { color: var(--ink-fraco) }
+
+@media (hover: hover) and (pointer: fine) {
+  .app .placa:hover { background: #fff; box-shadow: 3px 3px 0 var(--ink) }
+}
+/* Alvo de arrasto e estado aberto usam o mesmo carimbo de tinta: os dois
+   querem dizer "é aqui". */
+.app .placaAlvo, .app .placaAberta { background: var(--ink); box-shadow: 3px 3px 0 var(--line) }
+.placaAlvo .placaNome, .placaAberta .placaNome { color: #fff }
+.placaAlvo .placaSoma, .placaAberta .placaSoma { color: var(--sobre-ink) }
+.placaGanho.placaAlvo .placaNum, .placaGanho.placaAberta .placaNum { color: var(--green-live) }
+.placaPerda.placaAlvo .placaNum, .placaPerda.placaAberta .placaNum { color: #C9CDC6 }
+
+/* a lista da saída aberta, em largura cheia embaixo do quadro */
+.saidaLista { margin-top: 8px }
+.saidaGrade { display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(238px, 1fr)) }
+.app .recolher {
+  font: 700 10px var(--mono); letter-spacing: .1em; text-transform: uppercase;
+  color: var(--ink-soft); background: none; border: 0; padding: 2px 0; cursor: pointer;
+  text-decoration: underline; text-underline-offset: 3px; margin-left: auto;
+}
+@media (hover: hover) and (pointer: fine) { .app .recolher:hover { color: var(--ink) } }
+/* O alvo de soltar acende quando o card entra: filete de tinta cheio e o
+   chão em papel alto. É a única resposta que diz "aqui vale" durante o
+   arrasto, e ela precisa ser legível pelo canto do olho. */
+.colunaAlvo { background: var(--paper-alto); box-shadow: inset 0 0 0 2px var(--ink) }
+
+.lombada {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 12px;
+  writing-mode: vertical-rl; padding: 14px 0;
+  font: 700 10px var(--mono); letter-spacing: .18em; text-transform: uppercase; color: var(--ink-soft);
+}
+.lombada b { font-family: var(--display); font-stretch: 78%; font-weight: 900; font-size: 13px; letter-spacing: .02em; color: var(--ink) }
+
+/* ============================================================
+   O ARRASTO EM TRÊS TEMPOS
+
+   Trocar um lead de etapa é o gesto principal desta tela, e ele era o mais
+   mudo dela: o card ficava a 35% de opacidade e um clone com sombra seguia
+   o cursor. Correto e anônimo, igual ao arrasto de qualquer quadro.
+
+   Aqui ele é uma folha de papel saindo de uma mesa, que é o objeto que esta
+   casa desenha desde a vitrine. Três momentos, um gesto só:
+
+     1. LEVANTA ... o papel sai da mesa e entorta um grau
+     2. O BURACO .. o lugar de onde ele saiu fica desenhado como ausência
+     3. ASSENTA ... ele desce e a sombra fecha, o carimbo do botão da casa
+
+   Frequência importa: um arrasto acontece dezenas de vezes por dia, não
+   centenas, e nenhum dos três passa de 260ms. Nada aqui atrasa o trabalho:
+   a gravação sai na hora do soltar, e a animação corre por cima dela.
+   ============================================================ */
+
+/* ---------- 2. O BURACO ----------
+   `opacity: .35` deixava um card fantasma legível, e dois cards iguais na
+   tela (o fantasma e o que voa) é a única coisa que um arrasto não pode
+   ter. Aqui o lugar vazio é desenhado como vazio: o mesmo contorno
+   tracejado do `.urgSemPasso` e do alvo da coluna vazia, que é o jeito
+   desta casa de dizer "aqui não tem nada, e a falta é o assunto".
+
+   `visibility` e não `display` nos filhos: o buraco precisa ter exatamente
+   a altura do card que saiu, senão a coluna inteira pula no instante em que
+   a mão levanta. */
+.cardArrastando {
+  background: transparent;
+  border: 1.5px dashed var(--line);
+  border-image: none;
+  box-shadow: none;
+}
+.cardArrastando > * { visibility: hidden }
+
+/* ---------- 1. LEVANTA ----------
+   A inclinação é de UM grau e pouco. Papel na mão nunca sai reto, e essa é
+   a diferença entre "o elemento está sendo arrastado" e "peguei isto".
+   Mais que isso vira adesivo de aplicativo de tarefa.
+
+   O `transform` é declarado ESTÁTICO e a animação só faz a entrada nele: em
+   `prefers-reduced-motion` a regra geral desliga a animação, e o que sobra
+   é o papel já levantado e torto, parado. O estado continua legível sem o
+   movimento, que é a única forma honesta de respeitar movimento reduzido. */
+.cardVoo {
+  box-shadow: 6px 6px 0 var(--ink);
+  cursor: grabbing;
+  transform: rotate(-1.2deg);
+  animation: levantar 140ms cubic-bezier(.2, .7, .2, 1);
+}
+@keyframes levantar {
+  from { transform: rotate(0deg); box-shadow: 2px 2px 0 var(--ink) }
+}
+
+/* ---------- A TARJA DO CARD EM VOO ----------
+   O que este lead vai exigir em QUALQUER destino não é condição de coluna
+   nenhuma, é falta dele, e por isso viaja com ele em vez de aparecer sete
+   vezes nas placas.
+
+   Tinta cheia porque é o sistema falando, que é a regra da casa inteira:
+   tinta onde o sistema fala, papel onde o trabalho acontece. A margem
+   negativa devolve o `padding` da ficha (11px 13px) para a tarja encostar
+   nas três bordas, como uma faixa impressa e não como um bloco flutuando
+   dentro de uma margem. */
+.vooFalta {
+  display: block;
+  margin: 10px -13px -11px;
+  padding: 7px 13px 8px;
+  background: var(--ink);
+  font: 700 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase;
+  color: var(--rosa-live);
+}
+
+/* ---------- 3. ASSENTA ----------
+   O papel desce os mesmos 5px que a sombra tinha, e a sombra fecha junto.
+   É exatamente o carimbo do `.btnAcao` no clique, e é de propósito: nesta
+   casa, "aconteceu" tem um gesto só, e ele é sombra dura colapsando.
+
+   Ele roda uma vez, no card recém-solto, e é o recibo do arrasto. O outro
+   recibo é a régua de carga das duas colunas envolvidas, que refaz a
+   largura em 450ms: uma diz "este card chegou", a outra diz "e isto mudou
+   no funil". */
+.cardAssentando { animation: assentar 260ms cubic-bezier(.2, .7, .2, 1) }
+@keyframes assentar {
+  from { transform: translate(-5px, -5px); box-shadow: 5px 5px 0 var(--ink) }
+  to { transform: none; box-shadow: 0 0 0 var(--ink) }
+}
+
+/* ---------- ARRASTAR SÓ ONDE ARRASTAR FAZ SENTIDO ----------
+   `touch-action: none` é o que o dnd-kit precisa para o dedo mover o card
+   em vez de rolar a página. E é exatamente por isso que ele NÃO pode valer
+   no celular: lá a coluna é uma lista vertical comprida, rolar é o gesto
+   principal, e um card que engole a rolagem transforma a tela em armadilha.
+   Acima de 860px o quadro é horizontal, a rolagem vertical dentro da coluna
+   é curta, e o arrasto passa a ser o gesto que vale a pena.
+
+   No celular o lugar de mover é o <select> "Mover para" dentro do card,
+   que é também o caminho de teclado no computador. */
+@media (min-width: 861px) {
+  .arrastavel { cursor: grab; touch-action: none }
+  .arrastavel:active { cursor: grabbing }
+}
+
+/* o seletor de estágio do card: escondido onde o arrasto existe. `z-index`
+   porque ele precisa ficar ACIMA do link esticado do card, senão a área de
+   clique que abre a ficha cobriria o único jeito de mover um lead no
+   celular. */
+.moverNoCelular { display: none; position: relative; z-index: 2; margin-top: 10px }
+.moverNoCelular select { width: 100% }
+
+/* chips de coluna, só no celular */
+.chips { display: none; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin-top: 12px; scrollbar-width: none }
+.chips::-webkit-scrollbar { display: none }
+.chip {
+  flex: none; font: 700 10px var(--mono); letter-spacing: .1em; text-transform: uppercase;
+  padding: 9px 12px; border: 1.5px solid var(--line); background: var(--paper-alto); color: var(--ink-soft);
+  cursor: pointer;
+}
+.chipAtivo { background: var(--ink); color: var(--paper); border-color: var(--ink) }
+.chip small { font-weight: 400; opacity: .7; margin-left: 5px }
+
+/* ============================================================
+   A LINHA IMPRESSA — busca e filtros
+
+   Nesta gramática não se escreve dentro de uma caixa: escreve-se sobre um
+   filete. O bloco inteiro é uma folha com duas linhas de formulário, e o
+   filete duplo do topo é o mesmo do cabeçalho do site.
+
+   A forma carrega informação: campo em uso fica com o filete em tinta
+   cheia e o texto em preto; campo em repouso fica com filete claro e texto
+   cinza. Dá para ver o que está ligado sem ler nenhuma palavra, que é o
+   mesmo princípio do filete de margem da ficha aplicado ao controle.
+   ============================================================ */
+/* O filete duplo do topo (tinta cheia com um segundo mais claro logo
+   abaixo) é a régua de tipografia impressa que o cabeçalho do site usa. Vai
+   como `border-top` mais um `::before` porque são duas linhas com um vão
+   entre elas, e nenhuma borda sozinha faz isso. */
+.impresso {
+  position: relative;
+  margin-top: clamp(14px, 1.8vw, 20px);
+  padding: 14px 0 4px;
+  border-top: 1.5px solid var(--ink);
+}
+.impresso::before { content: ""; position: absolute; left: 0; right: 0; top: 2.5px; height: 1.5px; background: var(--line) }
+
+/* ---------- a linha de busca ----------
+   O filete é de TINTA CHEIA, e não do `--line` claro que os filtros usam.
+   Isso é hierarquia, não capricho: a busca é o controle principal desta
+   tela e ela estava desenhada com o mesmo peso dos três filtros
+   secundários, num campo bege sobre bege em que nada tinha peso nenhum.
+   Numa folha impressa, a linha em que se escreve é a linha marcada. */
+.buscaLinha {
+  display: flex; align-items: center; gap: 12px;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 7px;
+  transition: border-color .15s ease;
+}
+/* ---------- o rótulo é um CARIMBO ----------
+   Mono branca sobre tinta cheia: o mesmo objeto da placa da coluna, da
+   faixa de status e do trilho. É o que dá presença à linha sem transformá-la
+   de volta numa caixa, e é o que amarra a busca ao resto do vocabulário. */
+.buscaRot {
+  flex: none; font: 700 10.5px var(--mono); letter-spacing: .16em; text-transform: uppercase;
+  color: #fff; background: var(--ink); padding: 6px 9px 7px;
+  transition: background .15s ease;
+}
+/* O `[type="search"]` no seletor não é enfeite: a regra genérica de campos
+   lá embaixo também casa com este input e tem a MESMA especificidade, e
+   como ela vem depois no arquivo, ela vencia e devolvia a caixa que esta
+   linha existe para não ser. Com o atributo aqui, esta ganha. */
+.app .buscaLinha input[type="search"] {
+  flex: 1; min-width: 0; border: 0; background: none; padding: 0;
+  font: 500 clamp(15px, 1.5vw, 18px) var(--body); color: var(--ink);
+  -webkit-appearance: none; appearance: none;
+}
+.app .buscaLinha input[type="search"]::placeholder { color: var(--ink-fraco) }
+.app .buscaLinha input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none }
+/* O foco engorda o filete em vez de desenhar um contorno em volta: o
+   contorno é a linguagem da caixa, e esta linha existe justamente para não
+   ser uma caixa. O `outline: 0` só é aceitável porque o estado focado é
+   inconfundível (filete de tinta cheia e rótulo em preto). */
+.app .buscaLinha input[type="search"]:focus { outline: 0 }
+/* Digitando, o filete vira ROSA e o carimbo acompanha. É a cor da casa
+   dizendo "é aqui que você está agindo", que é exatamente o trabalho que
+   ela faz no botão do site. Uma linha inteira de rosa aparece só enquanto o
+   cursor está no campo, e some quando ele sai: acento que trabalha. */
+.buscaLinha:focus-within { border-bottom-color: var(--rosa) }
+.buscaLinha:focus-within .buscaRot { background: var(--rosa) }
+
+/* ---------- os três filtros, na segunda linha do impresso ---------- */
+.filtros { display: flex; gap: 8px 22px; flex-wrap: wrap; align-items: baseline; padding: 12px 0 8px }
+
+.filtro { display: inline-flex; align-items: baseline; gap: 8px; min-width: 0 }
+.filtroRot { flex: none; font: 700 10.5px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft) }
+.app .filtro select {
+  border: 0; border-bottom: 1.5px solid var(--line); background: none; padding: 0 20px 4px 0;
+  font: 500 13.5px var(--body); color: var(--ink-fraco); cursor: pointer;
+  background-position: right 6px center, right 1px center;
+  transition: border-color .15s ease, color .15s ease;
+}
+/* Filtro ligado: filete de tinta e texto preto. É o "campo preenchido" de
+   um impresso, e é a única diferença entre um e outro. */
+.filtroAtivo .filtroRot { color: var(--ink) }
+.app .filtroAtivo select { border-bottom-color: var(--ink); color: var(--ink); font-weight: 600 }
+@media (hover: hover) and (pointer: fine) {
+  .app .filtro select:hover { border-bottom-color: var(--ink-soft) }
+}
+
+/* ---------- o placar da busca ----------
+   Ele ocupa a ponta direita da linha, que estava morta, e diz quantos leads
+   o quadro está mostrando. Sem ele, "não achei o lead" e "o filtro escondeu
+   o lead" são a mesma tela vazia. */
+.placarBusca { display: inline-flex; align-items: center; gap: 8px; margin-left: auto; font: 500 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft) }
+.placarBusca b { font-weight: 700; font-size: 13px; color: var(--ink) }
+.placarBusca .recolher { margin-left: 6px }
+
+/* ---------- O PONTO PULSANTE ----------
+   A assinatura registrada do estúdio, e o mesmo keyframe que a
+   /vitrine-digital e o /portfolio usam: 1,6s, opacidade de 1 a 0,25. Aqui
+   ele diz que o número ao lado é o de agora.
+
+   `--green` e não `--green-live`: este ponto vive sobre papel, e o
+   `--green-live` existe só para grafite. É a mesma correção que o portfólio
+   registrou quando a janela dele deixou de ser escura. */
+.pontoVivo { width: 7px; height: 7px; border-radius: 50%; background: var(--green); flex: none; animation: vivo 1.6s infinite }
+/* O mesmo ponto, dentro da faixa de tinta. Mesma regra do `--green-live`:
+   sobre grafite o esmeralda de papel some. */
+.pontoVivoClaro { background: var(--green-live) }
+@keyframes vivo { 0%, 100% { opacity: 1 } 50% { opacity: .25 } }
+
+.app input[type="text"], .app input[type="date"], .app input[type="number"],
+.app input[type="email"], .app input[type="password"], .app input[type="search"],
+.app input[type="tel"], .app select, .app textarea {
+  font: 500 13px var(--body); color: var(--ink);
+  background: var(--paper-alto); border: 1.5px solid var(--line);
+  padding: 9px 11px; min-width: 0; max-width: 100%;
+  transition: border-color .15s ease;
+}
+.app input:focus, .app select:focus, .app textarea:focus { border-color: var(--ink); outline-offset: 1px }
+.app textarea { resize: vertical; min-height: 78px; line-height: 1.5 }
+.app select { cursor: pointer; appearance: none; padding-right: 26px;
+  background-image: linear-gradient(45deg, transparent 50%, var(--ink-soft) 50%), linear-gradient(135deg, var(--ink-soft) 50%, transparent 50%);
+  background-position: right 12px center, right 7px center;
+  background-size: 5px 5px, 5px 5px; background-repeat: no-repeat;
+}
+
+/* ---------- par de botões no lugar de um select ----------
+   Para escolhas de duas opções em que a escolha muda o significado do
+   formulário inteiro. Encostados, com um filete só entre eles: dois botões
+   colados leem como um controle, dois separados leem como duas decisões. */
+.grupo { border: 0; padding: 0; margin: 0 0 12px }
+.opcoes { display: flex }
+.app .opcao {
+  flex: 1; font: 700 10.5px var(--mono); letter-spacing: .06em; text-transform: uppercase;
+  padding: 11px 12px; cursor: pointer;
+  background: var(--paper-alto); color: var(--ink-soft); border: 1.5px solid var(--line);
+  transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+.app .opcao + .opcao { border-left-width: 0 }
+.app .opcaoAtiva { background: var(--ink); color: var(--paper); border-color: var(--ink) }
+@media (hover: hover) and (pointer: fine) {
+  .app .opcao:not(.opcaoAtiva):hover { border-color: var(--ink); color: var(--ink) }
+}
+
+/* ---------- a pergunta que o CRM faz de volta ----------
+   A regra 6 e a regra 1 acontecem dentro de outro formulário, e precisam
+   parecer uma voz diferente da dele: papel mais claro, filete verde na
+   margem. É o CRM falando, não mais um campo a preencher. */
+.blocoPergunta { background: var(--paper); border-left: 2px solid var(--green); padding: 12px 12px 2px; margin-bottom: 14px }
+.perguntaTitulo { font-family: var(--display); font-stretch: 88%; font-weight: 900; text-transform: uppercase; font-size: 13.5px; letter-spacing: .015em; color: var(--ink); margin-bottom: 10px }
+
+.campoRot { display: block; font: 700 10.5px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 5px }
+.campo { display: block; margin-bottom: 12px }
+.campo input, .campo select, .campo textarea { width: 100% }
+.dupla { display: grid; grid-template-columns: 1fr 1fr; gap: 12px }
+
+/* ============================================================
+   MODAL — as regras 1 a 4 têm corpo
+
+   Ele é o cartão de contato da vitrine: papel alto, filete de tinta de
+   1,5px e a sombra dura deslocada. O mesmo objeto físico, aparecendo por
+   cima em vez de deitado na página, e é isso que faz "o CRM te parou" ler
+   como uma decisão do produto e não como um alerta de navegador.
+   ============================================================ */
+.fundo {
+  position: fixed; inset: 0; z-index: 90;
+  background: #14181ac9; backdrop-filter: blur(2px);
+  display: flex; align-items: center; justify-content: center; padding: 16px;
+  animation: entrar .16s ease-out;
+}
+.modal {
+  width: min(100%, 440px); max-height: calc(100dvh - 32px); overflow-y: auto;
+  background: var(--paper-alto); border: 1.5px solid var(--ink);
+  box-shadow: 6px 6px 0 var(--ink); padding: clamp(18px, 3vw, 26px);
+}
+.modalRot { font: 700 10.5px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--rosa); margin-bottom: 8px }
+.modal h2 { margin-bottom: 8px }
+.modal p { font-size: 13px; margin-bottom: 16px }
+.modalPe { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; flex-wrap: wrap }
+@keyframes entrar { from { opacity: 0 } to { opacity: 1 } }
+
+/* ============================================================
+   A FICHA DO LEAD
+
+   Coluna única, quatro blocos, e um cabeçalho de tinta em cima. Ela é a
+   mesma no modal e na página; o que muda é só o casco em volta.
+   ============================================================ */
+
+/* a versão página: coluna estreita, encostada na margem esquerda como o
+   resto da casa */
+.wrapFicha { max-width: 720px; margin: 0 }
+
+/* ---------- o casco do modal ----------
+   Papel alto com filete de tinta e a sombra dura deslocada: o mesmo objeto
+   físico do cartão de contato da vitrine, aparecendo por cima em vez de
+   deitado na página. */
+.fichaCaixa {
+  position: relative;
+  width: min(100%, 720px); max-height: calc(100dvh - 40px); overflow-y: auto;
+  background: var(--paper); border: 1.5px solid var(--ink);
+  box-shadow: 8px 8px 0 var(--ink);
+  padding: 0 clamp(16px, 2.6vw, 26px) clamp(18px, 2.6vw, 26px);
+  animation: subir .18s cubic-bezier(.2, .7, .2, 1);
+}
+@keyframes subir { from { opacity: 0; transform: translateY(10px) } to { opacity: 1; transform: none } }
+
+.app .fechar {
+  position: absolute; top: 12px; right: 12px; z-index: 3;
+  width: 30px; height: 30px; display: grid; place-items: center;
+  background: none; border: 0; cursor: pointer;
+  font: 700 15px var(--mono); color: var(--sobre-ink-fraco); line-height: 1;
+  transition: color .15s ease;
+}
+@media (hover: hover) and (pointer: fine) { .app .fechar:hover { color: #fff } }
+
+/* ---------- 1. QUEM É: o cabeçalho de tinta ----------
+   Sangra pelas três bordas do casco (`margin` negativa devolvida em
+   `padding`), então ele encosta na moldura como uma faixa impressa e não
+   como um bloco flutuando dentro de uma margem. */
+.fichaCab {
+  background: var(--ink); color: #fff;
+  margin: 0 calc(-1 * clamp(16px, 2.6vw, 26px)) clamp(14px, 2vw, 18px);
+  padding: clamp(18px, 2.6vw, 26px) clamp(16px, 2.6vw, 26px) clamp(14px, 2vw, 18px);
+}
+.fichaCabTopo { display: flex; align-items: baseline; justify-content: space-between; gap: 14px }
+.app .fichaCabNome {
+  font-size: clamp(24px, 3.4vw, 34px); line-height: .95; color: #fff;
+  text-transform: none; min-width: 0; overflow-wrap: anywhere;
+}
+/* Sobre grafite o rosa da casa some (3,5:1). O ponto final usa o tom vivo,
+   pela mesma regra do `--green-live`. */
+.pontoClaro { color: var(--rosa-live); font-style: normal }
+.fichaCabValor {
+  flex: none; font-family: var(--display); font-stretch: 78%; font-weight: 900;
+  font-size: clamp(17px, 2vw, 22px); line-height: 1; letter-spacing: -.01em;
+  color: var(--green-live); font-variant-numeric: tabular-nums;
+}
+.fichaCabContexto { font: 500 13px var(--body); color: var(--sobre-ink); margin-top: 7px }
+.fichaCabAcoes { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: clamp(14px, 2vw, 18px) }
+.fichaCabOrigem { font: 500 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--sobre-ink-fraco); margin-left: auto }
+
+/* o botão secundário do cabeçalho: contorno claro sobre a tinta, porque o
+   contorno de tinta do `.btn` sumiria dentro dela */
+.app .btnEscuro {
+  display: inline-flex; align-items: center; justify-content: center;
+  font: 700 10.5px var(--mono); letter-spacing: .06em; text-transform: uppercase;
+  padding: 11px 16px; background: transparent; color: #fff;
+  border: 1.5px solid #4A5350; cursor: pointer; transition: border-color .15s ease, background .15s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .app .btnEscuro:hover { border-color: #fff; background: #ffffff14 }
+}
+
+/* ---------- 2. O QUE FAZER: estágio e data lado a lado ---------- */
+.decisao { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 14px; align-items: start }
+@media (max-width: 560px) { .decisao { grid-template-columns: minmax(0, 1fr) } }
+.campoNota { display: block; font: 500 10.5px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); margin-top: 6px }
+/* Dentro da grade de decisão o campo de data usa o layout de campo simples,
+   e não a grade de rótulo à esquerda do resto da ficha. */
+.decisao .dado { grid-template-columns: minmax(0, 1fr); gap: 5px }
+.decisao .dado > span { font-size: 10px }
+
+/* ---------- a gaveta do cadastro ---------- */
+.app .gaveta {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%;
+  background: none; border: 0; padding: 2px 0; cursor: pointer;
+  font: 700 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft);
+  transition: color .15s ease;
+}
+@media (hover: hover) and (pointer: fine) { .app .gaveta:hover { color: var(--ink) } }
+.app .gaveta i { font-style: normal; transition: transform .18s ease; display: inline-block }
+.gavetaAberta { transform: rotate(180deg) }
+.gavetaCorpo { margin-top: 16px; border-top: 1.5px solid var(--line); padding-top: 16px }
+.gavetaCorpo .campoRot { margin-top: 18px }
+
+.bloco { background: var(--paper-alto); border: 1.5px solid var(--line); padding: clamp(14px, 2vw, 20px) }
+.bloco + .bloco { margin-top: 14px }
+.blocoCab { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 14px }
+/* O bloco de próximo passo é o único com filete de tinta cheio: é a única
+   coisa desta tela que, faltando, quebra a regra 1. */
+.blocoPasso { border: 1.5px solid var(--ink); box-shadow: 4px 4px 0 var(--line) }
+
+.atalhos { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px }
+
+/* ---------- timeline ----------
+   O filete vertical que costura os toques é o mesmo traço de margem da
+   ficha, deitado no eixo do tempo. Cada toque é um ponto nele. */
+.timeline { list-style: none; margin: 0; padding: 0 0 0 18px; position: relative }
+.timeline::before { content: ""; position: absolute; left: 3px; top: 5px; bottom: 5px; width: 1.5px; background: var(--line) }
+.toque { position: relative; padding: 0 0 16px }
+.toque:last-child { padding-bottom: 0 }
+.toque::before {
+  content: ""; position: absolute; left: -18px; top: 5px;
+  width: 9px; height: 9px; background: var(--paper-alto);
+  box-shadow: inset 0 0 0 2px var(--ink-soft);
+}
+/* Entrada é o que importa: responderam. Ela ganha o ponto cheio em verde,
+   e é o único lugar da timeline com cor. */
+.toqueEntrada::before { background: var(--green); box-shadow: inset 0 0 0 2px var(--green-dark) }
+.toqueCab { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; font: 700 10.5px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft) }
+.toqueDir { color: var(--ink) }
+.toqueEntrada .toqueDir { color: var(--green-dark) }
+.toqueResumo { font: 500 13px var(--body); color: var(--ink); margin-top: 4px; overflow-wrap: anywhere }
+
+/* a nota do cabeçalho do bloco: contexto miúdo que não é título nem campo */
+.blocoNota { font: 500 11.5px var(--body); color: var(--ink-soft); line-height: 1.5 }
+.bloco .blocoNota + .blocoNota { margin-top: 4px }
+
+.app .estagioSelect { width: 100%; font-family: var(--mono); font-weight: 700; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; padding: 11px }
+
+.linkFicha { border-bottom: 1.5px solid var(--line); color: var(--ink) }
+@media (hover: hover) and (pointer: fine) { .linkFicha:hover { border-bottom-color: var(--ink) } }
+
+.listaFichas { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 7px }
+.listaFichas li { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 13px }
+.listaFichas li > span { font: 700 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft) }
+
+/* canal e resumo na mesma linha: o canal é curto e fixo, o resumo é o que
+   cresce. Em telas estreitas eles empilham. */
+.linhaToque { display: grid; grid-template-columns: minmax(110px, 140px) minmax(0, 1fr); gap: 8px; margin-bottom: 12px }
+@media (max-width: 560px) { .linhaToque { grid-template-columns: minmax(0, 1fr) } }
+.bloco form .btnAcao { width: 100% }
+
+.dados { display: grid; gap: 10px }
+.dado { display: grid; grid-template-columns: 104px minmax(0, 1fr); gap: 10px; align-items: center }
+.dado > span { font: 700 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft) }
+/* O campo e o seu sinal de gravação dividem a mesma célula: o sinal entra à
+   direita sem empurrar o campo, que é o que faria a coluna inteira dançar
+   toda vez que alguém salvasse uma linha. */
+.dadoCampo { display: flex; align-items: center; gap: 8px; min-width: 0 }
+.dadoCampo input, .dadoCampo select { flex: 1; min-width: 0 }
+.dadoCampo i { font-style: normal; flex: none }
+.app .campoErro { border-color: var(--rosa) }
+@media (max-width: 520px) { .dado { grid-template-columns: minmax(0, 1fr); gap: 4px } }
+
+/* o salvo automático: um sinal de vida, não um alerta */
+.salvo { font: 700 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--green-dark) }
+.erro { font: 700 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--rosa) }
+.app .blocoErro { border-color: var(--rosa); box-shadow: 4px 4px 0 var(--rosa) }
+
+/* ============================================================
+   MÉTRICAS
+
+   Sem biblioteca de gráfico: as duas formas que o escopo pede (barras
+   verticais por semana, barras horizontais por motivo) são divs com altura
+   e largura em porcentagem. Uma dependência de 90 kB para desenhar
+   retângulos seria a definição de peso sem função, e nenhum gráfico
+   pronto sai na tipografia da casa.
+   ============================================================ */
+.cartoes { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 16px }
+.cartao { background: var(--paper-alto); border: 1.5px solid var(--line); padding: 14px }
+.cartao span { display: block; font: 700 10.5px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft) }
+.cartaoNum { font-family: var(--display); font-stretch: 78%; font-weight: 900; font-size: clamp(26px, 3vw, 34px); line-height: 1; margin-top: 8px; letter-spacing: -.02em }
+.cartao small { display: block; font: 500 11.5px var(--body); color: var(--ink-soft); margin-top: 6px; text-transform: none; letter-spacing: 0 }
+
+/* barras verticais: a semana */
+.semanas { display: flex; align-items: flex-end; gap: clamp(5px, 1vw, 12px); height: 150px; margin-top: 16px; padding-top: 20px; position: relative }
+/* a linha da meta atravessa o gráfico inteiro: sem ela as barras são só
+   alturas relativas entre si, e a pergunta da tela é "bati ou não bati" */
+.linhaMeta { position: absolute; left: 0; right: 0; border-top: 1.5px dashed var(--rosa); pointer-events: none }
+.linhaMeta b { position: absolute; right: 0; top: -15px; font: 700 10px var(--mono); letter-spacing: .1em; color: var(--rosa); background: var(--paper); padding: 0 3px }
+.semana { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 5px; min-width: 0; height: 100% }
+.semanaBarra { width: 100%; background: var(--ink); min-height: 2px; transition: height .4s cubic-bezier(.2,.7,.2,1) }
+.semanaBateu { background: var(--green) }
+.semanaRot { font: 700 10px var(--mono); letter-spacing: .04em; color: var(--ink-soft); white-space: nowrap }
+.semanaNum { font: 700 10.5px var(--mono); color: var(--ink) }
+
+/* barras horizontais: canais e motivos de perda */
+.barras { display: grid; gap: 9px; margin-top: 14px }
+.barra { display: grid; grid-template-columns: minmax(96px, 132px) minmax(0, 1fr) auto; gap: 10px; align-items: center }
+.barraRot { font: 700 10.5px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft) }
+.barraTrilho { height: 12px; background: var(--paper-2); min-width: 0 }
+.barraFill { display: block; height: 100%; background: var(--ink) }
+.barraPerda { background: var(--rosa) }
+.barraNum { font: 700 11px var(--mono); color: var(--ink); text-align: right; min-width: 26px }
+
+/* funil: uma etapa por linha, com a queda em porcentagem entre elas */
+.funil { display: grid; gap: 0; margin-top: 14px }
+.funilEtapa { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 12px; align-items: baseline; padding: 11px 0; border-bottom: 1.5px solid var(--line) }
+.funilEtapa:last-child { border-bottom: 0 }
+.funilNome { font-family: var(--display); font-stretch: 78%; font-weight: 900; text-transform: uppercase; font-size: 15px }
+.funilNum { font: 700 13px var(--mono); color: var(--ink) }
+.funilPct { font: 700 10.5px var(--mono); letter-spacing: .06em; color: var(--ink-soft); min-width: 52px; text-align: right }
+.funilQueda { color: var(--rosa) }
+
+/* o campo da meta, dentro do cabeçalho do bloco de atividade */
+.metaCampo { display: flex; align-items: center; gap: 8px; margin-left: auto }
+.metaCampo .campoRot { margin-bottom: 0; white-space: nowrap }
+.metaCampo input { width: 72px }
+.metaCampo i { font-style: normal }
+
+.periodo { display: inline-flex; margin-top: 4px }
+.periodo a { font: 700 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; padding: 9px 13px; border: 1.5px solid var(--line); color: var(--ink-soft) }
+.periodo a + a { border-left-width: 0 }
+.periodo .periodoAtivo { background: var(--ink); color: var(--paper); border-color: var(--ink) }
+
+/* ============================================================
+   TEMPLATES
+   ============================================================ */
+.templates { display: grid; gap: 12px; margin-top: 16px }
+@media (min-width: 760px) { .templates { grid-template-columns: 1fr 1fr } }
+.template { background: var(--paper-alto); border: 1.5px solid var(--line); padding: 14px; display: flex; flex-direction: column; gap: 10px }
+.templateCab { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap }
+/* a categoria é etiqueta, não título: mono miúda em papel escurecido */
+.categoria { font: 700 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft); background: var(--paper-2); padding: 3px 7px; flex: none }
+.rotuloPrevia { margin-top: 14px }
+.templateTexto { font: 500 13px var(--body); color: var(--ink-soft); line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; flex: 1 }
+.templatePe { display: flex; gap: 6px; flex-wrap: wrap; margin-top: auto }
+.variaveis { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px }
+.variaveis code { font: 700 10.5px var(--mono); letter-spacing: .04em; color: var(--green-dark); background: var(--paper-2); padding: 3px 6px }
+
+/* nota de rodapé de modal: diz o efeito colateral antes de ele acontecer */
+.nota { font: 500 11px var(--body); color: var(--ink-soft); margin-top: 14px; line-height: 1.45 }
+
+/* a pré-visualização com os dados do lead: o texto que vai sair mesmo */
+.previa { background: var(--paper); border-left: 2px solid var(--green); padding: 10px 12px; font: 500 13px var(--body); color: var(--ink); line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; margin: 10px 0 }
+
+/* ============================================================
+   LOGIN
+   ============================================================ */
+.login { min-height: 100dvh; display: grid; place-items: center; padding: 24px var(--pad) }
+.loginCartao { width: min(100%, 380px); background: var(--paper-alto); border: 1.5px solid var(--ink); box-shadow: 6px 6px 0 var(--ink); padding: clamp(22px, 4vw, 32px) }
+.loginCartao h1 { font-size: clamp(24px, 5vw, 30px); margin-bottom: 6px }
+.loginCartao p { font-size: 13px; margin-bottom: 20px }
+.loginCartao .btnAcao { width: 100%; min-height: 48px; margin-top: 4px }
+
+/* ============================================================
+   CELULAR — o critério de aceite é 390px sem rolagem horizontal
+   ============================================================ */
+@media (max-width: 860px) {
+  /* ---------- o trilho deita ----------
+     Vira a barra fixa de baixo, que é onde o polegar chega. A marca sai
+     (numa ferramenta interna aberta por atalho, ela é decoração ocupando
+     um quinto da barra) e a nota de duas palavras sai junto: em 390px cada
+     rota tem 97px, e "TEMPLATES" já usa quase todos. */
+  .mesa { flex-direction: column }
+  .trilho {
+    position: fixed; inset: auto 0 0 0; top: auto;
+    width: auto; height: auto; align-self: auto;
+    flex-direction: row; padding: 0;
+    z-index: 60; box-shadow: 0 -2px 0 var(--line-dark);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .trilhoMarca, .trilhoPe { display: none }
+  /* O trilho de pé não existe deitado: uma linha vertical na ponta esquerda
+     de uma barra horizontal não é trilho, é sujeira. A estação some junto,
+     e quem marca a rota aqui volta a ser o filete de cima. */
+  .trilhoLista::before { display: none }
+  .app .trilhoAtivo::before { display: none }
+  .trilhoLista { flex-direction: row; flex: 1 }
+  .trilhoLista li { flex: 1; min-width: 0 }
+  .trilhoLink {
+    text-align: center; padding: 11px 4px;
+    border-top: 3px solid transparent;
+  }
+  /* Centrado, e não nas duas pontas: em 97px de largura o
+     `space-between` jogaria o nome e o número contra as bordas da célula,
+     com um vão no meio maior que as duas palavras. */
+  .trilhoLink b { font-size: 12px; justify-content: center; gap: 6px }
+  .trilhoLink span { display: none }
+  .trilhoAtivo { border-left-color: transparent; border-top-color: var(--green-live) }
+
+  /* A barra nunca sai de cena, então o conteúdo carrega a folga. */
+  .main { padding-bottom: calc(72px + env(safe-area-inset-bottom)) }
+  /* E o vão do painel Hoje acompanha, senão a carta calcula a altura pelo
+     padding do computador e o pé fica embaixo da barra de rotas. */
+  .wrapVez { --vao: calc(clamp(20px, 2.6vw, 34px) + 72px + env(safe-area-inset-bottom)) }
+  .sairNoPe { display: block; padding: 0 var(--pad) calc(86px + env(safe-area-inset-bottom)); margin-top: -40px }
+  /* O quadro inteiro dá lugar ao seletor de coluna: oito colunas de 240px
+     em 390px de tela não é kanban, é uma tira de rolagem. */
+  .chips { display: flex }
+  /* Uma coluna por vez, em lista comprida: o chão declarado do computador
+     viraria uma janela de rolagem dentro de outra. */
+  .quadro { display: block; height: auto; overflow: visible; padding-bottom: 0 }
+  .quadro { scroll-snap-type: none }
+  .coluna { flex: none; width: 100%; border: 0; background: transparent }
+  /* Sem placas lado a lado, não há vão para atravessar. */
+  .colunaCab::after { display: none }
+  /* A placa de tinta some: no celular a coluna escolhida já está dita pelo
+     chip aceso logo acima, e repetir o nome numa placa preta gastaria uma
+     tela inteira de altura para não dizer nada de novo. */
+  .colunaCab { display: none }
+  .colunaLista { padding: 0; overflow: visible }
+  /* A coluna que o chip não escolheu sai da tela E da ordem de leitura: a
+     alternativa (rolar sete colunas empilhadas) é a tela que o seletor de
+     coluna existe para evitar. */
+  .coluna[data-visivel="nao"] { display: none }
+  /* As duas saídas viram uma dupla lado a lado embaixo da lista: continuam
+     sendo o placar, e continuam abrindo a lista ao toque. */
+  .placas { flex: none; width: 100%; flex-direction: row; margin-top: 14px }
+  .placas > * { flex: 1 }
+  .placaNum { font-size: 28px }
+  .moverNoCelular { display: block }
+  .dupla { grid-template-columns: 1fr }
+}
+
+@media (max-width: 560px) {
+  /* ---------- a carta no celular ----------
+     Os dois botões que abrem trabalho ocupam a largura inteira, que é o
+     alvo de polegar que o escopo pede, e o trio de adiar divide a linha de
+     baixo entre os três. O "Apagar" é o único que NÃO cresce: com `flex: 1`
+     ele viraria uma barra de 360px sem volta, logo abaixo do "+7d", que é
+     onde a mão vai por reflexo. */
+  .vezAcoes { gap: 7px }
+  .vezAcoes > .btn, .vezAcoes > .btnAcao { flex: 1 1 100%; justify-content: center }
+  .adiarGrande { flex: 1 1 100% }
+  .adiarGrande .btn { flex: 1 }
+  .vezAcoes .acaoIsolada { flex: 0 0 auto; margin-left: auto }
+  /* Sem o teto de 76px o nome ainda cabe, mas o `5.6vw` some numa tela
+     estreita: aqui ele volta a crescer com a largura disponível. */
+  .app .vezNome { font-size: clamp(30px, 10vw, 46px) }
+  /* As duas teclas dividem a linha e o contador desce para o meio delas:
+     numa tela de 390px, "4 DE 6 NA FILA" entre duas teclas de 160px
+     espremeria as três coisas em nada. */
+  .vezPe { gap: 10px }
+  .app .vezSeta { flex: 1 1 0; max-width: none; padding: 9px 12px }
+  .vezPosicao { order: 3; flex: 1 1 100%; text-align: center }
+}
+
+@media (max-width: 420px) {
+  .fichaAcoes .btnMini { flex: 1 1 auto }
+  .adiar { flex: 1 1 100% }
+  .adiar .btnMini { flex: 1 }
+  .fichaAcoes .acaoIsolada { flex: 0 0 auto }
+  .barra { grid-template-columns: minmax(74px, 96px) minmax(0, 1fr) auto; gap: 7px }
+  .semanas { gap: 4px }
+  .semanaRot { font-size: 9px; letter-spacing: 0 }
+}
+
+/* ============================================================
+   O CARREGANDO — a régua da casa fazendo o trabalho de espera
+
+   Nenhuma roda girando, nenhum esqueleto cinza pulsando. Esta casa já tem
+   um instrumento para dizer "quanto", e ele aparece em três telas: a régua
+   da meta na faixa, a régua de carga no pé das placas, a régua do dia no
+   painel Hoje. Um filete de tinta correndo sobre um filete claro é o MESMO
+   objeto, agora dizendo "espera".
+
+   A palavra embaixo é a metade que dá caráter, e ela é informação: cada
+   rota diz o que está sendo buscado, no gerúndio e na voz de quem trabalha
+   ali. Ver a nota do componente (components/crm/Carregando.tsx).
+   ============================================================ */
+.carregando { padding-top: clamp(18px, 2.6vw, 30px) }
+
+.carregandoRegua {
+  display: block; position: relative; overflow: hidden;
+  height: 4px; background: var(--line);
+}
+/* Sangra até as bordas da janela só quando o carregando É a página. Dentro
+   do casco do modal ele fica preso à moldura, senão a régua estoura o
+   cartão. É a mesma conta da `.faixa`, e o `50%` resolve contra o bloco que
+   a contém, que é a largura do conteúdo. */
+.carregandoSangra .carregandoRegua { margin: 0 calc(50% - 50vw) }
+
+.carregandoCorre {
+  position: absolute; top: 0; bottom: 0; left: 0; width: 26%;
+  background: var(--ink);
+  animation: correNaRegua 1.15s cubic-bezier(.62, 0, .38, 1) infinite;
+}
+/* 385% é a largura da pista dividida pela do filete (100/26), que é o
+   quanto ele precisa andar para sair inteiro pela direita depois de ter
+   entrado inteiro pela esquerda. */
+@keyframes correNaRegua {
+  from { transform: translateX(-100%) }
+  to { transform: translateX(385%) }
+}
+
+.carregandoPalavra {
+  display: block; margin-top: clamp(15px, 2vw, 20px);
+  font: 700 10.5px var(--mono); letter-spacing: .22em; text-transform: uppercase;
+  color: var(--ink-fraco);
+}
+
+/* Dentro do casco do modal: o cartão tem `padding: 0 ...` no topo porque o
+   cabeçalho de tinta da ficha sangra até a borda. Sem conteúdo, esse zero
+   colaria a régua na moldura. */
+.carregandoNaCaixa { padding: clamp(18px, 2.6vw, 26px) 0 clamp(10px, 1.6vw, 16px) }
+
+/* Sob movimento reduzido o filete não corre: ele fica cheio, de ponta a
+   ponta. A guarda global deste arquivo já zera a animação; o que falta é
+   dar ao filete parado uma forma que signifique alguma coisa, e um filete
+   de tinta inteiro com a palavra embaixo diz o mesmo sem se mexer. É por
+   isso que a informação foi posta na PALAVRA e não no movimento. */
+@media (prefers-reduced-motion: reduce) {
+  .carregandoCorre { width: 100% }
+}
+
+/* ============================================================
+   MOVIMENTO REDUZIDO
+   Vale para tudo, inclusive para o preenchimento da régua da meta e para o
+   crescimento das barras: são as duas únicas animações de valor da
+   ferramenta, e as duas continuam legíveis paradas.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .app *, .app .btn, .app .btnAcao, .app .btnMini, .reguaFill, .semanaBarra, .fundo {
+    transition: none !important; animation: none !important;
+  }
+}
