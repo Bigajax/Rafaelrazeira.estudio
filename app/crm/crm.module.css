@@ -668,6 +668,13 @@
 .app .rotuloHoje::before { background: var(--green) }
 .rotuloHoje .rotuloCont { color: var(--green-dark) }
 
+/* A chama do card: o verde de PAPEL (o `--green-live` da carta é voz de
+   grafite e sobre papel fica lavado), parada, do tamanho de uma letra. */
+.fichaChama { width: 10px; height: 12px; flex: none; fill: var(--green); align-self: center; margin-right: 1px }
+/* Com a chama, o topo tem três filhos e o space-between empurraria o nome
+   para o meio: o nome cresce e devolve o ticket para a margem direita. */
+.fichaTopo .fichaNome { flex: 1 }
+
 /* ============================================================
    A FICHA — o objeto que a ferramenta inteira é feita de
 
@@ -970,6 +977,35 @@
    registrada para o trilho e para as placas do quadro: `--rosa-live` e
    `--green-live` sobre grafite, sempre. */
 .vezSinal { display: block; font: 700 11.5px var(--mono); letter-spacing: .16em; text-transform: uppercase }
+
+/* ---------- O CALOR NA CARTA ----------
+   A linha do sinal carrega as DUAS prioridades da fila: a urgência (o
+   grupo) e o veredito da pesquisa (a ordem dentro do grupo). O quente é
+   `--green-live`, a voz de "o CRM está te sugerindo"; morno e frio falam
+   na voz fraca, presentes mas sem disputar atenção. O separador é um
+   filete vertical de tinta, não texto. */
+.app .vezLinhaSinal { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin: 0 }
+.vezVeredito {
+  font: 700 10.5px var(--mono); letter-spacing: .16em; text-transform: uppercase;
+  color: var(--sobre-ink-fraco);
+  padding-left: 12px; border-left: 1.5px solid #4A5350;
+}
+.vezVereditoQuente { color: var(--green-live); display: inline-flex; align-items: center; gap: 7px }
+
+/* ---------- A CHAMA ----------
+   Desenhada, nunca emoji (pedido do Rafael). O corpo é `currentColor`
+   (a esmeralda do quente) e o miolo é a PRÓPRIA TINTA da folha, vazado
+   como estêncil: a chama pertence ao material da casa, não a um teclado.
+   O tremular é curto e de amplitude pequena, fogo de vela e não de
+   festa; nasce da base (`transform-origin` no pé) e a guarda global de
+   reduced-motion o congela junto com as outras animações. */
+.vezChama { width: 13px; height: 15px; flex: none; fill: currentColor; transform-origin: 50% 100%; animation: chamaViva 1.9s ease-in-out infinite }
+.vezChamaMiolo { fill: var(--ink) }
+@keyframes chamaViva {
+  0%, 100% { transform: scaleY(1) }
+  38% { transform: scaleY(.9) scaleX(1.07) }
+  72% { transform: scaleY(1.05) scaleX(.96) }
+}
 .vezSinalAlerta { color: var(--rosa-live) }
 .vezSinalAgora { color: var(--green-live) }
 .vezSinalMorno { color: var(--sobre-ink) }
@@ -1042,6 +1078,19 @@
 }
 .app .vezSemPasso { color: var(--sobre-ink-fraco); font-style: italic }
 .app .vezSemPasso::before { background: var(--sobre-ink-fraco) }
+
+/* ---------- o gancho da pesquisa, sobre grafite ----------
+   O mesmo objeto do `.dossieGancho` da ficha, nas vozes que vivem sobre
+   tinta: filete `--green-live` (o esmeralda de papel some no grafite) e
+   corpo em `--sobre-ink`. Três linhas no máximo: a carta é uma tela de
+   decisão, e um gancho de parágrafo inteiro viraria um bloco de leitura
+   no meio dela; o texto completo mora na ficha, a um clique no nome. */
+.app .vezGancho {
+  font: 500 13.5px var(--body); line-height: 1.55; color: var(--sobre-ink);
+  border-left: 2px solid var(--green-live); padding-left: 12px;
+  margin-top: clamp(12px, 1.8vh, 20px); max-width: 52ch;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
 
 /* Teto na fileira, e ele é o que faz o `.acaoIsolada` funcionar: sem
    limite, a coluna do corpo tem mil pixels e o "Apagar" ia parar a meio
@@ -1145,9 +1194,13 @@
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 /* A tecla da direita é a mesma peça espelhada: a seta troca de lado e o
-   texto encosta nela. */
+   texto encosta nela. O alinhamento à direita é SÓ do text-align: um
+   `justify-items: end` aqui tirava o esticamento dos itens da grade, e
+   sem esticar o nome comprido parava de ganhar reticências e vazava
+   pela esquerda da tecla ("Amanda Fernandes Consultoria de Imagem e
+   Estilo" atravessando a borda). Esticado, o corte volta a valer e o
+   text-align encosta o texto na seta do mesmo jeito. */
 .vezSetaProxima { flex-direction: row-reverse; text-align: right }
-.vezSetaProxima .vezSetaTexto { justify-items: end }
 
 .vezPosicao {
   font: 700 11px var(--mono); letter-spacing: .16em; text-transform: uppercase;
@@ -1164,6 +1217,53 @@
    esquerda, que é a data em mono de 10,5px, e ele subiria para a altura do
    rótulo em vez de acompanhar a manchete. */
 .vezTopo.tituloLinha { align-items: flex-end }
+
+/* ---------- OS MONTES DA FILA ----------
+   A fileira vive no papel, colada na pergunta, porque ela decide qual
+   fila a folha mostra: é controle da tela, não medida do dia. A forma é a
+   da LINHA IMPRESSA (`.impresso`): nesta gramática não se escreve dentro
+   de uma caixa, escreve-se sobre um filete. Cada segmento é um monte
+   escrito sobre o seu; o ligado fica com filete de tinta cheia e texto em
+   preto, o em repouso com filete claro e voz cinza. A primeira versão
+   usava os `.chip` de caixinha e caiu com "deixa com mais personalidade":
+   caixinha cinza é a voz de qualquer ferramenta, o filete é a desta.
+
+   `flex: none` porque o `.wrapVez` é uma coluna flex e a folha é quem
+   estica. O vão vertical maior (10px) existe porque em tela estreita a
+   fileira quebra em duas linhas de filetes, e filetes empilhados sem ar
+   leem como texto riscado. */
+.vezSegmentos { display: flex; flex-wrap: wrap; gap: 10px 18px; margin-top: 18px; flex: none }
+
+.app button.vezMonte {
+  display: inline-flex; align-items: center; gap: 8px;
+  font: 700 10.5px var(--mono); letter-spacing: .14em; text-transform: uppercase;
+  color: var(--ink-fraco);
+  background: none; border: 0; border-bottom: 1.5px solid var(--line);
+  padding: 0 2px 7px; cursor: pointer;
+}
+.app button.vezMonte:hover { color: var(--ink); border-bottom-color: var(--line-dark) }
+.app button.vezMonte:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px }
+/* O ligado não muda de tamanho nem ganha caixa: só o filete engrossa um
+   fio e vira tinta cheia, e a voz sobe para o preto. O mesmo código da
+   linha impressa: campo em uso, filete em tinta. */
+.app button.vezMonteAtivo {
+  color: var(--ink); border-bottom: 2.5px solid var(--ink); padding-bottom: 6px;
+}
+
+/* ---------- AS MARCAS DO MONTE ----------
+   A régua do dia em miniatura, uma marca por lead: cinco tatuagens são
+   cinco decisões, contáveis sem ler número. Em repouso as marcas falam na
+   MESMA voz do rótulo (`--ink-fraco`): a primeira versão usou `--line` e
+   elas sumiam no papel, e marca que não se conta perdeu o emprego. No
+   monte ligado, marcas e rótulo enchem de tinta juntos, que é o gesto da
+   régua da meta: ligou, encheu. De dez para cima a conta vira número
+   (`.vezMonteNum`), porque dez para cima é volume, e volume é número. */
+.vezMonteMarcas { display: inline-flex; gap: 2px }
+.vezMonteMarcas i { width: 5px; height: 11px; flex: none; background: var(--ink-fraco) }
+.vezMonte:hover .vezMonteMarcas i,
+.vezMonteAtivo .vezMonteMarcas i { background: var(--ink) }
+
+.vezMonteNum { font-size: 14px; font-variant-numeric: tabular-nums; line-height: 1 }
 
 /* ============================================================
    A RÉGUA DO DIA — a assinatura desta tela
@@ -1198,6 +1298,72 @@
 /* `--rosa-live` e não `--rosa`: isto vive sobre grafite, onde o rosa da
    casa dá 3,5:1. Mesma regra do `--green-live`. */
 .marcaAgora { background: var(--rosa-live); height: 18px }
+
+/* ---------- A RÉGUA VIROU MAPA (17/08) ----------
+   "Contactei e o contato some, não sei para onde ele vai": o riscado sai
+   da fila por ter sido resolvido, e a marca dele na régua é a porta de
+   volta. O ✓ abre a ficha; a marca pendente traz aquela carta para a
+   frente. A forma não muda NADA em repouso (a régua continua régua): o
+   clique é uma segunda camada, dita pelo cursor, pelo title e por um
+   alvo de dedo maior que a marca (o ::after invisível). */
+.app button.marca { border: 0; padding: 0; background: var(--line-dark); cursor: pointer }
+.app a.marca { text-decoration: none; cursor: pointer }
+.marcaViva { position: relative }
+.marcaViva::after { content: ""; position: absolute; inset: -5px -3px }
+.app button.marca:hover, .app button.marca:focus-visible { background: var(--sobre-ink) }
+.app button.marca.marcaAgora, .app button.marca.marcaAgora:hover { background: var(--rosa-live) }
+.app a.marcaFeita:hover, .app a.marcaFeita:focus-visible { filter: brightness(1.3) }
+.marcaViva:focus-visible { outline: 2px solid var(--sobre-ink); outline-offset: 3px }
+
+/* ---------- A FOLHA DO DIA ----------
+   A gaveta da régua: a lista NOMEADA do dia, que responde "qual check é
+   qual loja". É papel solto sobre a tinta (a regra das gavetas da casa)
+   e só existe quando pedida: o bloco "Riscados hoje" morreu por ocupar a
+   tela em repouso, não por listar nomes. O rótulo "O dia" é o puxador,
+   com o filete tracejado da linha impressa dizendo "isto abre". */
+.reguaArea { position: relative }
+.app button.reguaRotulo {
+  background: none; border: 0; padding: 0 0 2px; cursor: pointer;
+  font: inherit; color: inherit; letter-spacing: inherit; text-transform: inherit;
+  border-bottom: 1px dashed var(--sobre-ink-fraco);
+}
+.app button.reguaRotulo:hover, .app button.reguaRotulo[aria-expanded="true"] { color: var(--sobre-ink); border-bottom-color: var(--sobre-ink) }
+
+.diaFolha {
+  position: absolute; top: calc(100% + 12px); left: 0; z-index: 40;
+  min-width: 300px; max-height: 340px; overflow-y: auto;
+  background: var(--paper-alto); border: 1.5px solid var(--ink);
+  box-shadow: 5px 5px 0 rgba(0, 0, 0, .45);
+  padding: 8px;
+}
+.app .diaLinha {
+  display: flex; align-items: center; gap: 9px; width: 100%;
+  background: none; border: 0; cursor: pointer; text-decoration: none;
+  padding: 7px 9px; text-align: left;
+  font: 600 12.5px var(--body); color: var(--ink);
+  /* a folha vive DENTRO da faixa, que fala em caixa alta: os nomes
+     voltam para a voz de gente (o botão não herda text-transform e o
+     link herda, e a folha inteira tem que falar numa voz só) */
+  text-transform: none; letter-spacing: 0;
+}
+.app .diaLinha:hover { background: var(--paper) }
+.diaLinhaAgora { box-shadow: inset 3px 0 0 var(--rosa) }
+.diaVisto { font-style: normal; font-weight: 700; font-size: 12px; color: var(--green-dark, #157A50); flex: none; width: 12px }
+.diaTraco { width: 7px; height: 12px; background: var(--line-dark); flex: none; margin: 0 2.5px }
+.diaNome { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis }
+.diaEtapa { font: 700 9.5px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-fraco); flex: none }
+
+/* ---------- OS RISCADOS DO PÉ ----------
+   A mesma folha, ancorada de baixo para cima: quem acabou de mandar a
+   mensagem está com a mão no pé da tela. O puxador vive no PAPEL (o pé é
+   papel), então fala nas vozes de papel, não nas de grafite. */
+.app .vezMeio { display: flex; flex-direction: column; align-items: center; gap: 7px; flex: none }
+.app button.riscadosPuxador {
+  font: 700 10px var(--mono); letter-spacing: .14em; text-transform: uppercase;
+  color: var(--ink-fraco); border-bottom-color: var(--ink-fraco);
+}
+.app button.riscadosPuxador:hover, .app button.riscadosPuxador[aria-expanded="true"] { color: var(--ink); border-bottom-color: var(--ink) }
+.diaFolhaCima { top: auto; bottom: calc(100% + 12px); left: 50%; transform: translateX(-50%) }
 
 /* ---------- O PONTO ROSA, EM CORPO DE CARTAZ ----------
    A mesma assinatura do `.ponto` da manchete, na escala do nome da carta.
@@ -1360,7 +1526,14 @@
    precisa virar um poço de 900px de papel vazio. */
 .quadro {
   display: flex; gap: 8px; align-items: stretch;
-  height: clamp(330px, calc(100dvh - 268px), 760px);
+  /* 140 e não os 268 originais, apertado em duas rodadas no mesmo dia
+     ("ta muito pequeno o quadro", "da para expandir um pouco para
+     baixo"): com 69 leads, papel morto embaixo vale mais como linha de
+     card. O preço assumido: com a página no topo, o pé do quadro passa
+     um pouco da janela e pede um rolar curto, que o Rafael já fazia de
+     qualquer jeito para chegar na barra. O teto subiu junto: coluna
+     cheia não é poço vazio. */
+  height: clamp(330px, calc(100dvh - 140px), 960px);
   overflow-x: auto; overflow-y: visible;
   padding-bottom: 14px;
   /* O encaixe suave faz o arrasto do quadro parar com uma coluna inteira à
@@ -1587,6 +1760,16 @@
     var(--line) 33px 34px
   );
   background-position: 0 8px;
+  /* A barra vertical de cada coluna segue a regra da barra do quadro: o
+     Windows desenhava sete calhas cinzas de 17px serrando o papel, mais
+     pesadas que os cards. Fina, na cor de linha, e só de tinta no hover. */
+  scrollbar-width: thin; scrollbar-color: var(--line-dark) transparent;
+}
+.colunaLista::-webkit-scrollbar { width: 5px }
+.colunaLista::-webkit-scrollbar-track { background: transparent }
+.colunaLista::-webkit-scrollbar-thumb { background: var(--line-dark); border: 0; border-radius: 0 }
+@media (hover: hover) and (pointer: fine) {
+  .colunaLista::-webkit-scrollbar-thumb:hover { background: var(--ink) }
 }
 
 /* ---------- A COLUNA VAZIA NÃO ESCREVE "VAZIA", E AGORA NÃO DESENHA NADA ----------
@@ -2149,24 +2332,119 @@
    e largura em porcentagem. Uma dependência de 90 kB para desenhar
    retângulos seria a definição de peso sem função, e nenhum gráfico
    pronto sai na tipografia da casa.
-   ============================================================ */
-.cartoes { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 16px }
-.cartao { background: var(--paper-alto); border: 1.5px solid var(--line); padding: 14px }
-.cartao span { display: block; font: 700 10.5px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft) }
-.cartaoNum { font-family: var(--display); font-stretch: 78%; font-weight: 900; font-size: clamp(26px, 3vw, 34px); line-height: 1; margin-top: 8px; letter-spacing: -.02em }
-.cartao small { display: block; font: 500 11.5px var(--body); color: var(--ink-soft); margin-top: 6px; text-transform: none; letter-spacing: 0 }
 
-/* barras verticais: a semana */
-.semanas { display: flex; align-items: flex-end; gap: clamp(5px, 1vw, 12px); height: 150px; margin-top: 16px; padding-top: 20px; position: relative }
+   ---------- A ASSINATURA DESTA TELA: A PLACA DE APURAÇÃO ----------
+   Os quatro números do período moravam em quatro cartões brancos com
+   número grande e legenda pequena, que é o painel que qualquer ferramenta
+   desenharia por conta própria. Esta era a única tela do CRM sem nenhum
+   objeto de tinta, e a apuração do mês é justamente a linha de status
+   desta rota, o mesmo trabalho que a faixa faz no Hoje e o placar
+   "9 de 9 no ar" faz no portfólio.
+
+   Então os quatro números viram UMA placa de tinta sangrando de borda a
+   borda (o mesmo truque de `50vw` da faixa), com os números em condensada
+   branca e as divisórias no grafite claro das placas do quadro. É a única
+   tinta cheia da tela: tudo abaixo dela é papel, e é esse contraste que
+   faz a placa ser lida primeiro.
+
+   A cor dentro dela informa, nunca decora: o faturamento fica
+   `--green-live` quando existe (verde é "ganho" na casa inteira) e
+   "sem dado" fala na voz fraca, porque ausência de dado não é um número
+   que mereça branco. */
+.placar {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  background: var(--ink);
+  margin: clamp(18px, 2.4vw, 26px) calc(50% - 50vw) 0;
+  padding: clamp(14px, 1.8vw, 20px) calc(50vw - 50%);
+}
+.placarCel { padding: 2px 16px 2px 18px; border-left: 1.5px solid var(--line-dark); min-width: 0 }
+.placarCel:first-child { border-left: 0; padding-left: 0 }
+.placarCel span { display: block; font: 700 10.5px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--sobre-ink) }
+.placarNum { display: block; font-family: var(--display); font-stretch: 78%; font-weight: 900; font-size: clamp(27px, 3.2vw, 38px); line-height: 1; letter-spacing: -.02em; color: #fff; margin-top: 9px }
+.placarGanho { color: var(--green-live) }
+.placarSem { color: var(--sobre-ink-fraco) }
+.placarCel small { display: block; font: 500 11px var(--body); color: var(--sobre-ink-fraco); line-height: 1.45; margin-top: 7px; max-width: 30ch }
+/* No celular a placa dobra em duas colunas e duas linhas, e as divisórias
+   acompanham: some a da esquerda das células que abrem linha, nasce uma
+   horizontal entre as duas fileiras. Quatro células empilhadas seriam uma
+   torre de tinta mais alta que a manchete; duas a duas, ela continua sendo
+   uma placa. */
+@media (max-width: 700px) {
+  .placar { grid-template-columns: 1fr 1fr }
+  .placarCel { padding: 2px 12px 12px 14px }
+  .placarCel:nth-child(odd) { border-left: 0; padding-left: 0 }
+  .placarCel:nth-child(n + 3) { border-top: 1.5px solid var(--line-dark); padding-top: 12px; padding-bottom: 2px }
+}
+
+/* ---------- barras verticais: a semana ----------
+   As barras tinham vão entre si e nada embaixo: cinco retângulos boiando
+   na folha. Agora as colunas se tocam (o vão virou gutter interno de cada
+   coluna) e cada rótulo carrega um trecho de `border-top`; lidos em
+   sequência, os trechos viram UMA linha de base atravessando o gráfico.
+   É o chão que o quadro já tem no pé das placas: barra sem chão é mancha,
+   barra apoiada é medida. */
+.semanas { display: flex; align-items: stretch; height: 168px; margin-top: 16px; padding-top: 20px; position: relative }
+/* ---------- a geometria que faz linha e barra dizerem a mesma coisa ----------
+   Barra, chão e linha da meta precisam medir contra a MESMA caixa, senão
+   uma semana de 52 toques desenha o topo abaixo da linha de 50. Por isso:
+   os 20px de cima do `.semanas` reservam o número da barra mais alta, o
+   rótulo tem altura fixa de 20px no pé (12.5 de linha + 6 de respiro +
+   1.5 de chão), `.semanaArea` é só a área de barra entre os dois, e o
+   `.semanasPlano` é um plano absoluto com exatamente essas bordas
+   (20px em cima, 20px embaixo), onde a linha da meta corre na mesma
+   porcentagem das barras. */
+.semanasPlano { position: absolute; left: 0; right: 0; top: 20px; bottom: 20px; pointer-events: none }
 /* a linha da meta atravessa o gráfico inteiro: sem ela as barras são só
    alturas relativas entre si, e a pergunta da tela é "bati ou não bati" */
-.linhaMeta { position: absolute; left: 0; right: 0; border-top: 1.5px dashed var(--rosa); pointer-events: none }
+.linhaMeta { position: absolute; left: 0; right: 0; border-top: 1.5px dashed var(--rosa) }
 .linhaMeta b { position: absolute; right: 0; top: -15px; font: 700 10px var(--mono); letter-spacing: .1em; color: var(--rosa); background: var(--paper); padding: 0 3px }
-.semana { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 5px; min-width: 0; height: 100% }
-.semanaBarra { width: 100%; background: var(--ink); min-height: 2px; transition: height .4s cubic-bezier(.2,.7,.2,1) }
+.semana { flex: 1; display: flex; flex-direction: column; align-items: center; min-width: 0 }
+.semanaArea { flex: 1; width: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; min-height: 0 }
+/* ---------- a coluna com opinião: toques, falta e meta batida ----------
+   A barra sozinha respondia "quanto fiz" e deixava a conta com o leitor:
+   olhar a barra, olhar a linha, subtrair de cabeça. Agora cada semana
+   desenha a própria conta contra a linha da meta:
+
+     tinta cheia ..... os toques de uma semana que NÃO bateu a meta.
+                       Preto nunca quer dizer conquista nesta casa, é a
+                       tinta do volume (as barras de canal e as réguas do
+                       funil escrevem volume na mesma tinta)
+     hachura rosa .... o que FALTOU para a meta, empilhada em cima da
+                       tinta. Ausência desenhada como ausência (a hachura
+                       é tinta interrompida, o gesto do filete tracejado
+                       de "sem próximo passo"), e urgente como todo rosa
+     verde cheio ..... a semana que bateu a meta, INTEIRA. É a mesma
+                       regra da régua da meta no painel Hoje: quando
+                       bate, ela fica cheia em verde. Comemoração não é
+                       uma pontinha em cima de uma coluna preta
+
+   Toda semana encerrada abaixo da meta encosta o topo na linha
+   tracejada, então a silhueta do gráfico vira uma fileira de colunas
+   tentando alcançar a mesma linha: quem bateu é verde e fura a linha,
+   quem não bateu mostra o buraco em rosa. A conta está desenhada antes
+   do número, e uma semana zerada é uma coluna inteira de falta, que é
+   exatamente o tamanho do problema. */
+/* ---------- a legenda das tintas ----------
+   O resto da ferramenta se orgulha de dispensar legenda, mas lá são dois
+   eixos com dois estados cada; aqui são quatro tintas numa coluna só, e
+   quatro é além do que se adivinha. A amostra de cada item é a PRÓPRIA
+   tinta do gráfico (as mesmas classes de preenchimento num quadrado de
+   12px), então a legenda nunca desatualiza da coluna que ela explica. */
+.legenda { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 12px }
+.legendaItem { display: inline-flex; align-items: center; gap: 7px; font: 700 10px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); white-space: nowrap }
+.legendaCor { width: 12px; height: 12px; flex: none }
+.semanaSeg { width: 56%; min-height: 2px; flex: none; transition: height .4s cubic-bezier(.2,.7,.2,1) }
+.semanaCheio { background: var(--ink) }
 .semanaBateu { background: var(--green) }
-.semanaRot { font: 700 10px var(--mono); letter-spacing: .04em; color: var(--ink-soft); white-space: nowrap }
-.semanaNum { font: 700 10.5px var(--mono); color: var(--ink) }
+.semanaFalta { background: repeating-linear-gradient(-45deg, var(--rosa) 0 3px, transparent 3px 7px) }
+/* A semana corrente não deve nada: dívida é coisa de semana encerrada.
+   Enquanto ela corre, o que já foi feito sai em hachura de tinta, "ainda
+   em curso", e vira tinta cheia (ou verde, se passar da meta) quando a
+   semana fecha. */
+.semanaAndamento { background: repeating-linear-gradient(-45deg, var(--ink) 0 4px, transparent 4px 8px) }
+.semanaRot { flex: none; width: 100%; text-align: center; border-top: 1.5px solid var(--line-dark); padding-top: 6px; font: 700 10px/1.25 var(--mono); letter-spacing: .04em; color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.semanaNum { font: 700 10.5px var(--mono); color: var(--ink); margin-bottom: 5px }
+.semanaNumBateu { color: var(--green-dark) }
 
 /* barras horizontais: canais e motivos de perda */
 .barras { display: grid; gap: 9px; margin-top: 14px }
@@ -2177,13 +2455,30 @@
 .barraPerda { background: var(--rosa) }
 .barraNum { font: 700 11px var(--mono); color: var(--ink); text-align: right; min-width: 26px }
 
-/* funil: uma etapa por linha, com a queda em porcentagem entre elas */
-.funil { display: grid; gap: 0; margin-top: 14px }
-.funilEtapa { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 12px; align-items: baseline; padding: 11px 0; border-bottom: 1.5px solid var(--line) }
+/* ---------- funil: uma etapa por linha, com a queda entre elas ----------
+   As linhas diziam o número de cada etapa e nada sobre a FORMA do funil,
+   que é a mesma falta que a régua de carga corrigiu no quadro. Cada etapa
+   ganha a régua da casa (trilho em papel escurecido, filete de tinta por
+   cima), com a largura proporcional à base de leads novos do período:
+   lidas de cima para baixo, as cinco réguas desenham o corte do funil
+   antes de qualquer número ser lido. A régua de Ganho enche em verde,
+   que é a cor de ganho na casa inteira, e a queda menor que 50% continua
+   falando em rosa na margem direita.
+
+   A base é sempre o total que ENTROU, e não a primeira etapa: o trecho
+   vazio da primeira régua já é informação (quem entrou e nunca foi
+   contatado), e contra a primeira etapa esse vazio desapareceria. */
+.funil { display: grid; gap: 0; margin-top: 6px }
+.funilEtapa { display: grid; grid-template-columns: minmax(86px, 122px) minmax(0, 1fr) auto minmax(44px, auto); gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1.5px solid var(--line) }
 .funilEtapa:last-child { border-bottom: 0 }
-.funilNome { font-family: var(--display); font-stretch: 78%; font-weight: 900; text-transform: uppercase; font-size: 15px }
-.funilNum { font: 700 13px var(--mono); color: var(--ink) }
-.funilPct { font: 700 10.5px var(--mono); letter-spacing: .06em; color: var(--ink-soft); min-width: 52px; text-align: right }
+/* 88% e tracking positivo, não 78%: a regra do arquivo para caixa alta
+   condensada abaixo de 18px, a mesma das placas do quadro. */
+.funilNome { font-family: var(--display); font-stretch: 88%; font-weight: 900; text-transform: uppercase; font-size: 14.5px; letter-spacing: .015em; overflow-wrap: anywhere }
+.funilTrilho { height: 12px; background: var(--paper-2); min-width: 0 }
+.funilFill { display: block; height: 100%; background: var(--ink); transition: width .45s cubic-bezier(.2, .7, .2, 1) }
+.funilGanho { background: var(--green) }
+.funilNum { font: 700 13px var(--mono); color: var(--ink); text-align: right; min-width: 26px }
+.funilPct { font: 700 10.5px var(--mono); letter-spacing: .06em; color: var(--ink-soft); text-align: right }
 .funilQueda { color: var(--rosa) }
 
 /* o campo da meta, dentro do cabeçalho do bloco de atividade */
@@ -2211,6 +2506,58 @@
 .templatePe { display: flex; gap: 6px; flex-wrap: wrap; margin-top: auto }
 .variaveis { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px }
 .variaveis code { font: 700 10.5px var(--mono); letter-spacing: .04em; color: var(--green-dark); background: var(--paper-2); padding: 3px 6px }
+
+/* ============================================================
+   O DOSSIÊ — a pesquisa com IA dentro da ficha
+
+   Nenhum objeto novo: o resumo fala na voz de corpo, os achados levam a
+   marca de margem da casa (filete curto à esquerda, o mesmo gesto do
+   `.inventario` do portfólio), o gancho leva o filete esmeralda que nesta
+   casa quer dizer "o CRM está te sugerindo" (o do `.blocoPergunta` e da
+   `.previa`), e a mensagem pronta reusa a `.previa` literal, porque ela É
+   uma prévia: o texto que vai sair.
+   ============================================================ */
+.dossie { display: grid; gap: 12px }
+/* O veredito é a marca de margem da casa com a cor dizendo a decisão:
+   verde = vá (quente), tinta = avalie (morno), voz fraca = não gaste
+   tempo (frio). Um selo colorido diria o mesmo gritando. */
+.dossieVeredito { font: 500 13px var(--body); color: var(--ink-soft); line-height: 1.5; padding-left: 11px; border-left: 3px solid var(--ink) }
+.dossieVeredito b { font: 700 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink); margin-right: 4px }
+.dossieQuente { border-left-color: var(--green) }
+.dossieQuente b { color: var(--green-dark) }
+.dossieFrio { border-left-color: var(--line-dark); color: var(--ink-fraco) }
+.dossieFrio b { color: var(--ink-fraco) }
+.dossieResumo { font: 500 13.5px var(--body); color: var(--ink); line-height: 1.55 }
+.dossieRot { display: block; font: 700 10px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-fraco); margin-bottom: 3px }
+.dossieLista { display: grid; gap: 7px; list-style: none; margin: 0; padding: 0 }
+.dossieLista li { font: 500 13px var(--body); color: var(--ink-soft); line-height: 1.5; padding-left: 11px; border-left: 2px solid var(--line-dark) }
+.dossieGancho { background: var(--paper); border-left: 2px solid var(--green); padding: 10px 12px; font: 500 13.5px var(--body); color: var(--ink); line-height: 1.55 }
+.dossieFontes { display: flex; flex-wrap: wrap; gap: 6px 14px }
+.dossieFontes a { font: 700 10.5px var(--mono); letter-spacing: .04em; color: var(--ink-fraco); text-decoration: underline; text-underline-offset: 3px }
+/* o projeto do portfólio escolhido como prova social: verde escuro porque
+   é uma sugestão do CRM, a mesma voz do filete esmeralda */
+.dossieExemplo { color: var(--green-dark); text-decoration: underline; text-underline-offset: 3px; font-weight: 700 }
+.dossiePe { display: flex; justify-content: flex-end; gap: 8px }
+
+/* ---------- a pesquisa em lote, no topo da coluna Lista ----------
+   Ele mora DENTRO da lista e não na placa: a placa tem altura sagrada (a
+   régua de carga e o cano atravessam por ela), e um botão ali empurraria
+   o quadro inteiro. Aqui ele rola junto com as fichas, como a primeira
+   folha da pilha. */
+.lote { margin-bottom: 8px; display: grid; gap: 6px }
+/* o filtro do garimpo: uma linha de caixa + explicação, na voz de nota */
+.garimpoFiltro { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 14px; cursor: pointer }
+.garimpoFiltro input { margin-top: 2px; accent-color: var(--green-dark) }
+.garimpoFiltro span { font: 500 12px var(--body); color: var(--ink-soft); line-height: 1.5 }
+.loteBotao {
+  width: 100%; text-align: center; cursor: pointer;
+  font: 700 10.5px var(--mono); letter-spacing: .08em; text-transform: uppercase;
+  color: var(--green-dark); background: var(--paper-alto);
+  border: 1.5px dashed var(--green); padding: 9px 10px;
+}
+.loteBotao:hover { background: var(--paper) }
+.loteBotao:disabled { opacity: .6; cursor: default }
+.loteNota { font: 500 11px var(--body); color: var(--ink-soft); line-height: 1.45; background: var(--paper-alto); border: 1.5px solid var(--line); padding: 8px 10px }
 
 /* nota de rodapé de modal: diz o efeito colateral antes de ele acontecer */
 .nota { font: 500 11px var(--body); color: var(--ink-soft); margin-top: 14px; line-height: 1.45 }
@@ -2331,29 +2678,55 @@
 }
 
 /* ============================================================
-   O CARREGANDO — a régua da casa fazendo o trabalho de espera
+   O CARREGANDO — a manchete chegando
 
-   Nenhuma roda girando, nenhum esqueleto cinza pulsando. Esta casa já tem
-   um instrumento para dizer "quanto", e ele aparece em três telas: a régua
-   da meta na faixa, a régua de carga no pé das placas, a régua do dia no
-   painel Hoje. Um filete de tinta correndo sobre um filete claro é o MESMO
-   objeto, agora dizendo "espera".
+   Nenhuma roda girando, nenhum esqueleto cinza pulsando. A primeira
+   versão era uma régua de 4px com uma palavra mono de 10,5px, e ela era
+   correta e não era da casa: uma espera com a voz de nota de rodapé, numa
+   casa que fala em manchete.
 
-   A palavra embaixo é a metade que dá caráter, e ela é informação: cada
-   rota diz o que está sendo buscado, no gerúndio e na voz de quem trabalha
-   ali. Ver a nota do componente (components/crm/Carregando.tsx).
+   Agora a palavra do gerúndio ("Puxando a fila", "Fazendo as contas") É a
+   manchete: condensada 900 em caixa alta, no mesmo corpo e no mesmo lugar
+   do h1 da tela que está vindo. A troca do carregando pela página vira um
+   preenchimento (a manchete de espera dá lugar à manchete de verdade) em
+   vez de um pulo. E ela carrega o ponto final rosa da casa, PULSANDO no
+   ritmo da régua: é o menor movimento possível com a cor da casa, no
+   único lugar onde a manchete aceita cor.
+
+   A régua embaixo continua sendo o instrumento da casa, com um voto novo:
+   o trilho é HACHURA, a tinta interrompida que no gráfico de semanas quer
+   dizer "ainda não consolidado", e o filete cheio corre por cima. O que a
+   tinta ainda não alcançou está em rascunho, que é exatamente o estado da
+   tela.
    ============================================================ */
 .carregando { padding-top: clamp(18px, 2.6vw, 30px) }
 
+/* A palavra na voz de manchete: a mesma receita do `.app h1`, escrita aqui
+   porque o carregando é um `span` com `role="status"`, não um título de
+   documento. */
+.carregandoPalavra {
+  display: block;
+  font-family: var(--display); font-stretch: 78%; font-weight: 900;
+  text-transform: uppercase; letter-spacing: -.012em;
+  font-size: clamp(26px, 3.4vw, 38px); line-height: .94;
+  color: var(--ink);
+}
+.carregandoPonto { animation: pulsaPonto 1.15s ease-in-out infinite }
+@keyframes pulsaPonto {
+  0%, 100% { opacity: 1 }
+  50% { opacity: .18 }
+}
+
 .carregandoRegua {
   display: block; position: relative; overflow: hidden;
-  height: 4px; background: var(--line);
+  height: 6px; margin-top: clamp(14px, 2vw, 20px);
+  background: repeating-linear-gradient(-45deg, var(--line) 0 4px, transparent 4px 8px);
 }
 /* Sangra até as bordas da janela só quando o carregando É a página. Dentro
    do casco do modal ele fica preso à moldura, senão a régua estoura o
    cartão. É a mesma conta da `.faixa`, e o `50%` resolve contra o bloco que
    a contém, que é a largura do conteúdo. */
-.carregandoSangra .carregandoRegua { margin: 0 calc(50% - 50vw) }
+.carregandoSangra .carregandoRegua { margin-top: clamp(14px, 2vw, 20px); margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw) }
 
 .carregandoCorre {
   position: absolute; top: 0; bottom: 0; left: 0; width: 26%;
@@ -2368,22 +2741,17 @@
   to { transform: translateX(385%) }
 }
 
-.carregandoPalavra {
-  display: block; margin-top: clamp(15px, 2vw, 20px);
-  font: 700 10.5px var(--mono); letter-spacing: .22em; text-transform: uppercase;
-  color: var(--ink-fraco);
-}
-
 /* Dentro do casco do modal: o cartão tem `padding: 0 ...` no topo porque o
    cabeçalho de tinta da ficha sangra até a borda. Sem conteúdo, esse zero
    colaria a régua na moldura. */
 .carregandoNaCaixa { padding: clamp(18px, 2.6vw, 26px) 0 clamp(10px, 1.6vw, 16px) }
 
 /* Sob movimento reduzido o filete não corre: ele fica cheio, de ponta a
-   ponta. A guarda global deste arquivo já zera a animação; o que falta é
-   dar ao filete parado uma forma que signifique alguma coisa, e um filete
-   de tinta inteiro com a palavra embaixo diz o mesmo sem se mexer. É por
-   isso que a informação foi posta na PALAVRA e não no movimento. */
+   ponta. A guarda global deste arquivo já zera a animação (o ponto para
+   de pulsar sozinho); o que falta é dar ao filete parado uma forma que
+   signifique alguma coisa, e um filete de tinta inteiro com a manchete em
+   cima diz o mesmo sem se mexer. É por isso que a informação foi posta na
+   PALAVRA e não no movimento. */
 @media (prefers-reduced-motion: reduce) {
   .carregandoCorre { width: 100% }
 }

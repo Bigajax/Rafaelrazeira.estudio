@@ -29,6 +29,11 @@ import { lacunas, linkWhatsapp, renderTemplate } from "@/lib/crm/regras";
 import { NOME_CATEGORIA, type LeadPainel, type Template } from "@/lib/crm/tipos";
 import s from "@/app/crm/crm.module.css";
 
+/* A mensagem da pesquisa entra no seletor como se fosse um template, com
+   este id reservado. Ela já vem escrita para ESTE lead, então não passa
+   pelo render de variáveis nem pela checagem de lacunas. */
+const ID_PESQUISA = "__pesquisa";
+
 export function ModalMensagem({
   lead,
   templates,
@@ -38,11 +43,21 @@ export function ModalMensagem({
   templates: Template[];
   aoFechar: () => void;
 }) {
-  const [escolhido, setEscolhido] = useState(templates[0]?.id ?? "");
+  const daPesquisa = lead.dossie?.status === "ok" ? (lead.dossie.mensagem ?? null) : null;
+
+  /* Quando a pesquisa escreveu uma mensagem, ela é a primeira opção E a
+     escolhida de partida: é a única do seletor feita sob medida para este
+     lead, e o template genérico vira o plano B. */
+  const [escolhido, setEscolhido] = useState(daPesquisa ? ID_PESQUISA : (templates[0]?.id ?? ""));
   const [copiado, setCopiado] = useState(false);
 
-  const template = templates.find((t) => t.id === escolhido) ?? null;
-  const texto = template ? renderTemplate(template.conteudo, lead) : "";
+  const template = escolhido === ID_PESQUISA ? null : (templates.find((t) => t.id === escolhido) ?? null);
+  const texto =
+    escolhido === ID_PESQUISA && daPesquisa
+      ? daPesquisa
+      : template
+        ? renderTemplate(template.conteudo, lead)
+        : "";
   const faltando = template ? lacunas(template.conteudo, lead) : [];
   const link = linkWhatsapp(lead.whatsapp, texto);
 
@@ -72,7 +87,8 @@ export function ModalMensagem({
     void registrarToque(lead.id, {
       canal: "whatsapp",
       direcao: "saida",
-      resumo: template?.titulo ?? "Mensagem no WhatsApp",
+      resumo:
+        escolhido === ID_PESQUISA ? "Mensagem da pesquisa" : (template?.titulo ?? "Mensagem no WhatsApp"),
     });
     aoFechar();
   };
@@ -83,7 +99,7 @@ export function ModalMensagem({
         <p className={s.modalRot}>Mandar mensagem</p>
         <h2 id="msg-titulo">{lead.nome}</h2>
 
-        {templates.length === 0 ? (
+        {templates.length === 0 && !daPesquisa ? (
           <p>
             Você ainda não tem template nenhum. Crie o primeiro em Templates e ele aparece aqui.
           </p>
@@ -92,6 +108,9 @@ export function ModalMensagem({
             <label className={s.campo}>
               <span className={s.campoRot}>Template</span>
               <select value={escolhido} onChange={(e) => setEscolhido(e.target.value)}>
+                {daPesquisa ? (
+                  <option value={ID_PESQUISA}>Mensagem da pesquisa · feita para este lead</option>
+                ) : null}
                 {templates.map((t) => (
                   <option key={t.id} value={t.id}>
                     {t.titulo}

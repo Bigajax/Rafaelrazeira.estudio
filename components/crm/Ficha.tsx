@@ -73,6 +73,8 @@ import {
 import { CampoInline, NotaInline } from "./CampoInline";
 import { ModalMensagem } from "./ModalMensagem";
 import { ModalPassagem } from "./ModalPassagem";
+import { Pesquisa } from "./Pesquisa";
+import { SugerirResposta } from "./SugerirResposta";
 import { AvisoDoisRetornos } from "./pecas";
 import s from "@/app/crm/crm.module.css";
 
@@ -229,8 +231,21 @@ export function Ficha({
         <AvisoDoisRetornos lead={lead} />
       </section>
 
+      {/* ============ A PESQUISA ============
+          Entre "o que fazer" e "o que fiz" de propósito: o dossiê é o que
+          informa a primeira mexida. Ele dispara sozinho quando o lead nasce
+          pelo modal, então aqui ele costuma chegar já rodando. */}
+      <Pesquisa lead={lead} aoMandarMensagem={() => setMensagem(true)} />
+
       {/* ============ 3. O QUE FIZ ============ */}
       <FormToque lead={lead} hoje={hoje} />
+
+      {/* ============ RESPONDER COM IA ============
+          Depois do registro do toque de propósito: o fluxo real é
+          "responderam, registro a entrada, decido o que dizer". O campo
+          nasce com o resumo da última entrada, então registrar antes deixa
+          a sugestão meio pronta. */}
+      <SugerirResposta lead={lead} interacoes={interacoes} />
 
       {/* ============ 4. O QUE ROLOU ============ */}
       <section className={s.bloco}>

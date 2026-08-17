@@ -39,9 +39,10 @@
               serem escolhidos.
    ============================================================ */
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { diasEntre, dinheiroCurto, JANELA_HORIZONTE, urgencia } from "@/lib/crm/regras";
-import type { LeadPainel, Template } from "@/lib/crm/tipos";
+import { NOME_ESTAGIO, type LeadPainel, type Template } from "@/lib/crm/tipos";
 import { CartaDaVez } from "./CartaDaVez";
 import { ModalMensagem } from "./ModalMensagem";
 import { ModalNovoLead } from "./ModalNovoLead";
@@ -108,16 +109,69 @@ export function Hoje({ painel, templates }: { painel: Painel; templates: Templat
   const [toque, setToque] = useState<LeadPainel | null>(null);
   const [novo, setNovo] = useState(false);
   const [posicao, setPosicao] = useState(0);
+  const [segmento, setSegmento] = useState<string | null>(null);
 
   const { atrasados, paraHoje, semPasso, riscados } = painel;
 
   /* A emenda dos três grupos, na ordem de prioridade. É a única lista que
      sobrou, e ela não aparece em lugar nenhum da tela: é só a ordem em que
      as cartas saem. */
-  const fila = useMemo(
+  const filaDia = useMemo(
     () => [...atrasados, ...paraHoje, ...semPasso],
     [atrasados, paraHoje, semPasso],
   );
+
+  /* ---------- os segmentos ----------
+     O garimpo importa por nicho, e trinta cartas embaralhadas de oito
+     nichos obrigam a cabeça a trocar de assunto a cada seta. O filtro
+     deixa varrer um segmento por sentada: as cinco tatuagens numa voz, as
+     decorações na outra. O nicho vem livre do cadastro, então o segmento
+     É o texto do campo; quem não tem entra em "sem segmento", porque
+     sumir com lead por falta de rótulo seria um buraco na regra da fila. */
+  const segmentos = useMemo(() => {
+    const conta = new Map<string, number>();
+    for (const l of filaDia) {
+      const chave = l.nicho?.trim() || "";
+      conta.set(chave, (conta.get(chave) ?? 0) + 1);
+    }
+    return [...conta.entries()]
+      .map(([chave, n]) => ({ chave, n }))
+      .sort((a, b) => b.n - a.n || a.chave.localeCompare(b.chave, "pt-BR"));
+  }, [filaDia]);
+
+  const fila = useMemo(
+    () => (segmento === null ? filaDia : filaDia.filter((l) => (l.nicho?.trim() || "") === segmento)),
+    [filaDia, segmento],
+  );
+
+  /* Riscou o último do segmento, o baralho volta sozinho para o monte
+     inteiro: um filtro apontando para uma fila vazia seria a tela dizendo
+     "acabou" com trabalho ainda na mesa. */
+  useEffect(() => {
+    if (segmento !== null && !filaDia.some((l) => (l.nicho?.trim() || "") === segmento)) {
+      setSegmento(null);
+    }
+  }, [filaDia, segmento]);
+
+  const escolherSegmento = (chave: string | null) => {
+    setSegmento(chave);
+    setPosicao(0);
+  };
+
+  /* ---------- pular direto para um nome ----------
+     A régua do dia virou mapa: clicar numa marca pendente traz aquela
+     carta para a frente. Se o nome está fora do segmento filtrado, o
+     filtro cai primeiro: um clique explícito num nome vale mais que o
+     recorte que escondia ele. */
+  const irPara = (id: string) => {
+    const naFiltrada = fila.findIndex((l) => l.id === id);
+    if (naFiltrada >= 0) return setPosicao(naFiltrada);
+    const noDia = filaDia.findIndex((l) => l.id === id);
+    if (noDia >= 0) {
+      setSegmento(null);
+      setPosicao(noDia);
+    }
+  };
 
   /* A posição é PRESA aqui, e não corrigida por efeito. Quando o lead da vez
      é resolvido, ele sai da fila do servidor e a fila encolhe embaixo do
@@ -183,6 +237,57 @@ export function Hoje({ painel, templates }: { painel: Painel; templates: Templat
         </button>
       </div>
 
+      {/* ---------- os segmentos: um monte por sentada ----------
+          A fileira mora no PAPEL, com a pergunta, porque ela decide QUAL
+          fila a folha vai mostrar: é controle da tela, não medida do dia
+          (a régua lá dentro continua contando o dia inteiro). Ela só
+          existe com dois segmentos ou mais: filtro de uma opção é ruído.
+
+          A forma é a da linha impressa da casa: nada de caixinhas, cada
+          monte é ESCRITO SOBRE UM FILETE. O escolhido fica com o filete
+          em tinta cheia e o texto em preto; os em repouso, filete claro e
+          voz cinza. Dá para ver qual está ligado sem ler nada.
+
+          E a conta segue a regra das duas réguas: até nove leads são
+          MARCAS CONTÁVEIS (a régua do dia em miniatura, cinco tatuagens
+          são cinco decisões), de dez para cima vira número, porque aí é
+          volume. O monte some quando zera: é a fileira dizendo "este
+          acabou". */}
+      {segmentos.length > 1 ? (
+        <div className={s.vezSegmentos} role="group" aria-label="Varrer a fila por segmento">
+          <button
+            type="button"
+            className={`${s.vezMonte} ${segmento === null ? s.vezMonteAtivo : ""}`}
+            onClick={() => escolherSegmento(null)}
+            aria-pressed={segmento === null}
+            aria-label={`Todos os segmentos, ${filaDia.length} na fila`}
+          >
+            Todos<b className={s.vezMonteNum}>{filaDia.length}</b>
+          </button>
+          {segmentos.map(({ chave, n }) => (
+            <button
+              key={chave || "__sem"}
+              type="button"
+              className={`${s.vezMonte} ${segmento === chave ? s.vezMonteAtivo : ""}`}
+              onClick={() => escolherSegmento(segmento === chave ? null : chave)}
+              aria-pressed={segmento === chave}
+              aria-label={`${chave || "sem segmento"}, ${n} na fila`}
+            >
+              {chave || "sem segmento"}
+              {n <= 9 ? (
+                <span className={s.vezMonteMarcas} aria-hidden="true">
+                  {Array.from({ length: n }, (_, i) => (
+                    <i key={i} />
+                  ))}
+                </span>
+              ) : (
+                <b className={s.vezMonteNum}>{n}</b>
+              )}
+            </button>
+          ))}
+        </div>
+      ) : null}
+
       {/* ---------- a folha de tinta: o dia inteiro num objeto só ----------
           O placar e a carta eram duas peças soltas na mesma margem de
           papel, e um arranjo de peças flutuando não é um objeto. Agora eles
@@ -194,7 +299,7 @@ export function Hoje({ painel, templates }: { painel: Painel; templates: Templat
           janela. */}
       {atual ? (
         <div className={`${s.vezFolha} ${FOLHA[urgencia(atual, painel.hoje)] ?? s.folhaAgendado}`}>
-          <ReguaDoDia riscados={riscados} fila={fila} indice={indice} painel={painel} />
+          <ReguaDoDia riscados={riscados} fila={filaDia} atualId={atual.id} painel={painel} aoIrPara={irPara} />
 
           <div className={s.vezPalco}>
             <CartaDaVez
@@ -212,7 +317,7 @@ export function Hoje({ painel, templates }: { painel: Painel; templates: Templat
            limpo é uma conclusão: ele vive na mesa, com a moldura fechada
            que o `.diaLimpo` já tem. O placar continua, sozinho. */
         <>
-          <ReguaDoDia riscados={riscados} fila={fila} indice={indice} painel={painel} />
+          <ReguaDoDia riscados={riscados} fila={filaDia} atualId={null} painel={painel} aoIrPara={irPara} />
           <div className={s.vezPalco}>
             <DiaLimpo painel={painel} aoAnotar={() => setNovo(true)} />
           </div>
@@ -252,8 +357,18 @@ export function Hoje({ painel, templates }: { painel: Painel; templates: Templat
             </span>
           </button>
 
-          <span className={s.vezPosicao}>
-            <b>{indice + 1}</b> de {fila.length} na fila
+          {/* Com um segmento escolhido, o contador diz DE QUAL monte a
+              conta é: "2 de 5 em tatuagem" e não um "2 de 5" que parece o
+              dia inteiro encolhido. E embaixo dele mora o HISTÓRICO do
+              dia: quem já foi riscado, com a etapa para onde foi. É a
+              mesma folha da régua, ancorada aqui porque a mão que acabou
+              de mandar a mensagem está no pé da tela, não no topo. */}
+          <span className={s.vezMeio}>
+            <span className={s.vezPosicao}>
+              <b>{indice + 1}</b> de {fila.length}{" "}
+              {segmento === null ? "na fila" : `em ${segmento || "sem segmento"}`}
+            </span>
+            {riscados.length ? <RiscadosDoPe riscados={riscados} /> : null}
           </span>
 
           <button
@@ -284,6 +399,59 @@ export function Hoje({ painel, templates }: { painel: Painel; templates: Templat
 }
 
 /* ============================================================
+   OS RISCADOS DO PÉ — o histórico de contato onde a mão está
+
+   O mesmo conteúdo dos ✓ da régua, ancorado embaixo ("coloca o
+   histórico riscado em baixo tbm"): quem acabou de apertar WhatsApp está
+   com a mão no pé da tela, e subir até a faixa para reencontrar o lead é
+   caminho comprido. O puxador diz a conta ("9 riscados hoje") e abre a
+   folha PARA CIMA, com cada nome, a etapa para onde o trilho o levou, e
+   o clique abrindo a ficha.
+   ============================================================ */
+function RiscadosDoPe({ riscados }: { riscados: LeadPainel[] }) {
+  const [aberta, setAberta] = useState(false);
+  const areaRef = useRef<HTMLSpanElement | null>(null);
+  useEffect(() => {
+    if (!aberta) return;
+    const aoClicarFora = (e: MouseEvent) => {
+      if (areaRef.current && !areaRef.current.contains(e.target as Node)) setAberta(false);
+    };
+    const aoTeclar = (e: KeyboardEvent) => e.key === "Escape" && setAberta(false);
+    document.addEventListener("mousedown", aoClicarFora);
+    document.addEventListener("keydown", aoTeclar);
+    return () => {
+      document.removeEventListener("mousedown", aoClicarFora);
+      document.removeEventListener("keydown", aoTeclar);
+    };
+  }, [aberta]);
+
+  return (
+    <span className={s.reguaArea} ref={areaRef}>
+      <button
+        type="button"
+        className={`${s.reguaRotulo} ${s.riscadosPuxador}`}
+        onClick={() => setAberta((a) => !a)}
+        aria-expanded={aberta}
+      >
+        {plural(riscados.length, "riscado", "riscados")} hoje
+      </button>
+
+      {aberta ? (
+        <div className={`${s.diaFolha} ${s.diaFolhaCima}`} role="menu" aria-label="Riscados de hoje">
+          {riscados.map((l) => (
+            <Link key={l.id} href={`/crm/lead/${l.id}`} className={s.diaLinha} role="menuitem">
+              <i className={s.diaVisto}>✓</i>
+              <span className={s.diaNome}>{l.nome}</span>
+              <span className={s.diaEtapa}>{NOME_ESTAGIO[l.estagio]}</span>
+            </Link>
+          ))}
+        </div>
+      ) : null}
+    </span>
+  );
+}
+
+/* ============================================================
    A RÉGUA DO DIA — a assinatura desta tela
 
    Uma marca por lead do dia, numa linha só: as riscadas em tinta cheia, a
@@ -309,15 +477,45 @@ export function Hoje({ painel, templates }: { painel: Painel; templates: Templat
 function ReguaDoDia({
   riscados,
   fila,
-  indice,
+  atualId,
   painel,
+  aoIrPara,
 }: {
   riscados: LeadPainel[];
+  /* SEMPRE a fila do dia inteiro, nunca a filtrada por segmento: o filtro
+     muda o que a mão varre, não o tamanho do dia. A marca da vez acha o
+     lead pelo id, então ela continua acesa no lugar certo do dia mesmo
+     quando a carta veio de um monte filtrado. */
   fila: LeadPainel[];
-  indice: number;
+  atualId: string | null;
   painel: Painel;
+  aoIrPara: (id: string) => void;
 }) {
   const total = riscados.length + fila.length;
+  const posicaoNoDia = atualId ? fila.findIndex((l) => l.id === atualId) : -1;
+
+  /* ---------- a folha do dia ----------
+     A marca é anônima até o hover, e "como vou saber que cada check é a
+     loja que quero" não se responde com tooltip caçado um a um. O rótulo
+     "O dia" abre uma GAVETA: a lista nomeada do dia, riscados com o ✓ e
+     a etapa para onde foram, pendentes com o traço. É o velho bloco
+     "Riscados hoje" reencarnado do jeito certo: em folha solta que só
+     existe quando pedida, nunca ocupando a tela em repouso. */
+  const [aberta, setAberta] = useState(false);
+  const areaRef = useRef<HTMLSpanElement | null>(null);
+  useEffect(() => {
+    if (!aberta) return;
+    const aoClicarFora = (e: MouseEvent) => {
+      if (areaRef.current && !areaRef.current.contains(e.target as Node)) setAberta(false);
+    };
+    const aoTeclar = (e: KeyboardEvent) => e.key === "Escape" && setAberta(false);
+    document.addEventListener("mousedown", aoClicarFora);
+    document.addEventListener("keydown", aoTeclar);
+    return () => {
+      document.removeEventListener("mousedown", aoClicarFora);
+      document.removeEventListener("keydown", aoTeclar);
+    };
+  }, [aberta]);
   const bateu = painel.toquesSemana >= painel.metaSemana;
   const proporcao = Math.min(
     100,
@@ -327,35 +525,92 @@ function ReguaDoDia({
   return (
     <div className={s.faixa}>
       {total > 1 ? (
-        <span className={s.faixaItem}>
-          O dia
+        <span className={`${s.faixaItem} ${s.reguaArea}`} ref={areaRef}>
+          <button
+            type="button"
+            className={s.reguaRotulo}
+            onClick={() => setAberta((a) => !a)}
+            aria-expanded={aberta}
+          >
+            O dia
+          </button>
           <span
             className={s.reguaDia}
-            role="img"
-            aria-label={`${riscados.length} de ${total} riscados. Você está no ${indice + 1}º da fila.`}
+            role="group"
+            aria-label={`${riscados.length} de ${total} riscados.${posicaoNoDia >= 0 ? ` Você está no ${posicaoNoDia + 1}º da fila do dia.` : ""}`}
           >
             {/* O ✓ esmeralda é o que sobrou do bloco "Riscados hoje", e ele
                 é a única coisa daquele bloco que valia a pena manter: a
                 mesma marca de margem do /portfólio dizendo "resolvido". Duas
                 formas para dois estados é mais honesto do que duas cores da
                 mesma forma: o que foi feito é um visto, o que falta é um
-                traço. */}
+                traço.
+
+                E desde 17/08 a régua é MAPA, não só medida: o riscado some
+                da fila quando o trabalho é feito ("não sei para onde ele
+                vai"), então o ✓ dele vira a porta de volta, abrindo a ficha.
+                As marcas pendentes pulam a fila para aquela carta. O nome
+                continua no title, agora com um clique atrás dele. */}
             {riscados.map((l) => (
-              <i key={l.id} className={`${s.marca} ${s.marcaFeita}`} title={l.nome}>
-                ✓
-              </i>
-            ))}
-            {fila.map((l, i) => (
-              <i
+              <Link
                 key={l.id}
-                className={`${s.marca} ${i === indice ? s.marcaAgora : ""}`}
-                title={l.nome}
+                href={`/crm/lead/${l.id}`}
+                className={`${s.marca} ${s.marcaFeita} ${s.marcaViva}`}
+                title={`${l.nome} · abrir a ficha`}
+                aria-label={`${l.nome}, riscado: abrir a ficha`}
+              >
+                ✓
+              </Link>
+            ))}
+            {fila.map((l) => (
+              <button
+                key={l.id}
+                type="button"
+                className={`${s.marca} ${s.marcaViva} ${l.id === atualId ? s.marcaAgora : ""}`}
+                title={`${l.nome} · trazer para a frente`}
+                aria-label={`${l.nome}, na fila: trazer para a frente`}
+                onClick={() => aoIrPara(l.id)}
               />
             ))}
           </span>
           <b className={s.faixaNum}>
             {riscados.length}/{total}
           </b>
+
+          {aberta ? (
+            <div className={s.diaFolha} role="menu" aria-label="Os nomes do dia">
+              {riscados.map((l) => (
+                <Link
+                  key={l.id}
+                  href={`/crm/lead/${l.id}`}
+                  className={s.diaLinha}
+                  role="menuitem"
+                >
+                  <i className={s.diaVisto}>✓</i>
+                  <span className={s.diaNome}>{l.nome}</span>
+                  {/* a resposta literal do "para onde ele vai": a etapa
+                      em que o trilho (ou a mão) o deixou */}
+                  <span className={s.diaEtapa}>{NOME_ESTAGIO[l.estagio]}</span>
+                </Link>
+              ))}
+              {fila.map((l) => (
+                <button
+                  key={l.id}
+                  type="button"
+                  className={`${s.diaLinha} ${l.id === atualId ? s.diaLinhaAgora : ""}`}
+                  role="menuitem"
+                  onClick={() => {
+                    aoIrPara(l.id);
+                    setAberta(false);
+                  }}
+                >
+                  <i className={s.diaTraco} aria-hidden="true" />
+                  <span className={s.diaNome}>{l.nome}</span>
+                  {l.id === atualId ? <span className={s.diaEtapa}>a da vez</span> : null}
+                </button>
+              ))}
+            </div>
+          ) : null}
         </span>
       ) : null}
 

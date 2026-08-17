@@ -82,6 +82,14 @@ create table if not exists public.crm_leads (
   fechado_em date,
 
   notas text,
+
+  -- O DOSSIÊ DA PESQUISA COM IA (16/08/2026): o que a rota
+  -- /api/crm/pesquisa escreve depois de pesquisar o negócio na web.
+  -- jsonb e não colunas porque o dossiê é um documento de leitura (resumo,
+  -- achados, gancho, mensagem pronta, fontes) que nunca entra em filtro
+  -- nem em índice; o formato vive em lib/crm/tipos.ts (type Dossie).
+  dossie jsonb,
+
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -394,3 +402,43 @@ alter table public.crm_leads
   not valid;
 
 alter table public.crm_leads validate constraint crm_leads_estagio_check;
+
+
+-- ============================================================
+-- ⚠️ MIGRAÇÃO (16/08/2026) — o DOSSIÊ da pesquisa com IA.
+--
+-- Rode este bloco se você já executou este arquivo antes. Quem estiver
+-- criando o banco agora não precisa: o `create table` lá em cima já
+-- conhece a coluna.
+--
+-- O QUE ELE É: quando um lead entra, a rota /api/crm/pesquisa manda a IA
+-- pesquisar o negócio na web e escreve aqui o dossiê (resumo, presença
+-- digital, dor, gancho, primeira mensagem pronta, fontes). A ficha e o
+-- modal de mensagem leem daqui.
+--
+-- POR QUE A VIEW É DERRUBADA E RECRIADA: ela seleciona `l.*`, e o
+-- Postgres congela a lista de colunas de uma view no momento do create.
+-- `create or replace` recusa coluna nova no meio da lista, então o
+-- caminho é drop + create com o MESMO corpo da seção 8. Nenhum dado se
+-- perde: view não guarda nada.
+-- ============================================================
+alter table public.crm_leads add column if not exists dossie jsonb;
+
+drop view if exists public.crm_leads_painel;
+
+create view public.crm_leads_painel
+with (security_invoker = on) as
+select
+  l.*,
+  (select count(*) from public.crm_interacoes i where i.lead_id = l.id) as toques,
+  (select count(*) from public.crm_interacoes i where i.lead_id = l.id and i.direcao = 'entrada') as toques_entrada,
+  (select count(*)
+     from public.crm_interacoes i
+    where i.lead_id = l.id
+      and i.direcao = 'saida'
+      and i.created_at > coalesce(
+            (select max(e.created_at) from public.crm_interacoes e
+              where e.lead_id = l.id and e.direcao = 'entrada'),
+            '-infinity'::timestamptz)
+  ) as saidas_seguidas
+from public.crm_leads l;

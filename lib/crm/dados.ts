@@ -116,15 +116,32 @@ export async function painelHoje() {
 
   const limite = somarDias(hoje, JANELA_HORIZONTE);
 
+  /* ---------- O QUENTE FURA A FILA ----------
+     Dentro de cada grupo, quem a pesquisa marcou como quente vem antes:
+     quente é prospect ideal identificado, e prospect ideal esfriando na
+     posição 14 da fila é dinheiro parado. A ordem dos GRUPOS não muda
+     (atrasado continua sendo dívida antes de tudo): o veredito só
+     reordena dentro de cada um, e o sort estável preserva o critério
+     antigo (mais atrasado, mais parado) como desempate entre iguais.
+     Sem dossiê fica entre morno e frio: não sabemos, e o não-sei anda
+     atrás de quem já foi conferido. */
+  const FILA_VEREDITO: Record<string, number> = { quente: 0, morno: 1, frio: 3 };
+  const calorDaFila = (l: (typeof lista)[number]) =>
+    FILA_VEREDITO[(l.dossie?.status === "ok" && l.dossie.veredito) || ""] ?? 2;
+  const quentePrimeiro = <T extends (typeof lista)[number]>(grupo: T[]) =>
+    [...grupo].sort((a, b) => calorDaFila(a) - calorDaFila(b));
+
   return {
     hoje,
     /* Mais atrasado primeiro: a fila é de execução, e o que espera há mais
        tempo é o que corre mais risco de virar "sumiu, sem resposta". */
-    atrasados,
-    paraHoje,
+    atrasados: quentePrimeiro(atrasados),
+    paraHoje: quentePrimeiro(paraHoje),
     /* Sem próximo passo não tem data para ordenar, então ordena pelo que
        está parado há mais tempo, que é a mesma pergunta por outro caminho. */
-    semPasso: [...semPasso].sort((a, b) => a.entrou_no_estagio_em.localeCompare(b.entrou_no_estagio_em)),
+    semPasso: quentePrimeiro(
+      [...semPasso].sort((a, b) => a.entrou_no_estagio_em.localeCompare(b.entrou_no_estagio_em)),
+    ),
     /* Na ordem em que foram riscados: a pilha do dia se lê de cima para
        baixo, como a folha foi sendo preenchida. */
     riscados,

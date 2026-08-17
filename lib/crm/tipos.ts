@@ -173,6 +173,63 @@ export const NOME_CATEGORIA: Record<CategoriaTemplate, string> = {
 };
 
 /* ============================================================
+   O DOSSIÊ — o que a pesquisa com IA escreve na coluna `dossie`
+
+   Um documento, não uma tabela: a rota /api/crm/pesquisa manda a IA
+   pesquisar o negócio na web e grava aqui o que achou. `status` existe
+   porque a pesquisa demora um ou dois minutos e a ficha precisa saber se
+   está esperando, se deu certo ou se falhou; `pesquisando` sem resultado
+   novo é o estado que o botão "Refazer" resolve.
+   ============================================================ */
+
+export type Dossie = {
+  status: "pesquisando" | "ok" | "erro";
+  /* só quando status = "erro": a frase para mostrar na ficha */
+  erro?: string;
+  gerado_em?: string;
+  /* o que o negócio é, em duas ou três frases */
+  resumo?: string;
+  /* os achados sobre a presença digital, um por linha: tem site? o link
+     da bio leva aonde? as avaliações aparecem em algum lugar? */
+  presenca?: string[];
+  /* a dor provável, na lente do que o estúdio vende */
+  dor?: string;
+  /* o gancho concreto para abrir conversa */
+  gancho?: string;
+  /* a primeira mensagem pronta, no tom dos templates da casa */
+  mensagem?: string;
+  ticket_sugerido?: number | null;
+  fontes?: { titulo: string; url: string }[];
+  /* o que esta pesquisa custou no OpenRouter, em dólares; o painel de uso
+     deles fica a um clique de distância, mas o custo por lead pertence ao
+     lead */
+  custo_usd?: number;
+  /* o que a pesquisa CONFIRMOU sobre o negócio, para preencher a ficha.
+     A rota aplica isso só nos campos vazios do lead, nunca por cima do
+     que o Rafael digitou; `cadastro_aplicado` registra quais entraram. */
+  cadastro?: {
+    empresa?: string | null;
+    instagram?: string | null;
+    whatsapp?: string | null;
+    email?: string | null;
+    nicho?: string | null;
+    cidade?: string | null;
+  };
+  cadastro_aplicado?: string[];
+  /* o projeto do portfólio que a IA escolheu como prova social para ESTE
+     público; sempre validado contra data/portfolio.ts na volta */
+  exemplo?: { nome: string; url: string };
+  /* a qualificação do lead na lente do que o estúdio vende:
+       quente ... sem site ou presença própria: o prospect ideal
+       morno .... tem presença, mas com furo real e citável
+       frio ..... já bem servido (loja própria completa): não perder tempo
+     Lead frio vem SEM mensagem de propósito: pitch forçado para quem não
+     tem a dor queima a credibilidade da prospecção inteira. */
+  veredito?: "quente" | "morno" | "frio";
+  veredito_motivo?: string;
+};
+
+/* ============================================================
    AS LINHAS DO BANCO
    ============================================================ */
 
@@ -200,6 +257,7 @@ export type Lead = {
   valor_fechado: number | null;
   fechado_em: string | null;
   notas: string | null;
+  dossie: Dossie | null;
   created_at: string;
   updated_at: string;
 };

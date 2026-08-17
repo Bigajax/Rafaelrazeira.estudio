@@ -26,6 +26,7 @@
    e no cliente quando quem chama é cliente.
    ============================================================ */
 
+import { Fragment } from "react";
 import {
   dinheiro,
   doisRetornos,
@@ -78,6 +79,16 @@ export function TopoDaFicha({ lead }: { lead: LeadPainel }) {
   const valor = lead.valor_fechado ?? lead.ticket_estimado;
   return (
     <span className={s.fichaTopo}>
+      {/* A chama do quente, a mesma da carta do Hoje, aqui PARADA e no
+          verde de papel: trinta cards com fogo tremulando seria parque
+          de diversões, e a silhueta sozinha já responde "quem desta
+          coluna eu atendo primeiro". Sem miolo vazado: em 10px ele só
+          sujaria a forma. */}
+      {lead.dossie?.status === "ok" && lead.dossie.veredito === "quente" ? (
+        <svg className={s.fichaChama} viewBox="0 0 14 16" role="img" aria-label="Lead quente">
+          <path d="M9.6 0 C10.6 2.6 9.8 4.2 7.6 6 C5.4 7.8 3.4 9 3.4 11 A4.9 4.9 0 0 0 13 11.6 C13.4 8.4 11 7.2 10.6 4.6 C10.4 3.2 10.2 1.4 9.6 0 Z M5 2.6 C5.6 4 5 5 3.8 6.4 C2.6 7.8 1.6 9 1.6 10.6 C1.6 11.4 1.8 12 2.2 12.8 C.8 11.6 0 10.2 0 8.6 C0 6 3.2 4.6 5 2.6 Z" />
+        </svg>
+      ) : null}
       <b className={s.fichaNome}>{lead.nome}</b>
       {valor ? <span className={s.fichaValor}>{dinheiro(valor)}</span> : null}
     </span>
@@ -85,19 +96,30 @@ export function TopoDaFicha({ lead }: { lead: LeadPainel }) {
 }
 
 /* ---------- linha 2: de quem é, e do que se trata ----------
-   Empresa e tipo de projeto numa linha só, separados por um ponto médio
-   esmeralda. O ponto é o que sobrou da etiqueta de mono que ocupava uma
-   linha inteira para dizer sete caracteres, e ele mantém a cor da marca
-   dentro da grade, que é onde ela sumia. */
+   Partes separadas pelo ponto médio esmeralda, e a linha SÓ DIZ O QUE
+   VARIA: empresa igual ao nome não repete (prospecção local é cheia de
+   "Padaria do Zé" duas vezes, a mesma regra da carta do Hoje), e o nicho
+   fala no lugar do tipo de projeto quando existe: num quadro em que 90%
+   é vitrine, "Vitrine digital" carimbado em todo card é ruído, enquanto
+   "tatuagem · Sarandi" é o que diferencia um card do vizinho. */
 export function ContextoDaFicha({ lead }: { lead: LeadPainel }) {
-  const tipo = lead.tipo_projeto ? NOME_TIPO[lead.tipo_projeto] : null;
-  if (!lead.empresa && !tipo) return null;
+  const mesmoNome =
+    lead.empresa?.trim().toLocaleLowerCase("pt-BR") === lead.nome.trim().toLocaleLowerCase("pt-BR");
+  const partes = [
+    mesmoNome ? null : lead.empresa,
+    lead.nicho || (lead.tipo_projeto ? NOME_TIPO[lead.tipo_projeto] : null),
+    lead.cidade,
+  ].filter((p): p is string => Boolean(p));
+  if (!partes.length) return null;
 
   return (
     <span className={s.fichaContexto}>
-      {lead.empresa}
-      {lead.empresa && tipo ? <i className={s.pontoVerde}>·</i> : null}
-      {tipo}
+      {partes.map((p, i) => (
+        <Fragment key={i}>
+          {i ? <i className={s.pontoVerde}>·</i> : null}
+          {p}
+        </Fragment>
+      ))}
     </span>
   );
 }

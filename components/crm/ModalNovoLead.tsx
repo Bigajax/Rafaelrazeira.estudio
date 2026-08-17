@@ -63,6 +63,16 @@ export function ModalNovoLead({ aoFechar }: { aoFechar: () => void }) {
         origem,
       });
       if (r.ok) {
+        /* A pesquisa com IA dispara aqui, sem esperar: a rota trabalha
+           sozinha por um ou dois minutos e a ficha, que abre em seguida,
+           mostra "pesquisando" e se atualiza quando o dossiê chegar. O
+           `catch` vazio é deliberado: pesquisa que falha não pode impedir
+           o lead de ser anotado, e a ficha tem o botão de refazer. */
+        void fetch("/api/crm/pesquisa", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ lead_id: r.id }),
+        }).catch(() => {});
         aoFechar();
         /* Vai direto para a ficha: quem acabou de anotar um nome quase
            sempre quer escrever a primeira mensagem em seguida. */

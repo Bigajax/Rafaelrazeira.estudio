@@ -71,6 +71,7 @@ import {
 import { CardLead, CardVoando } from "./CardLead";
 import { ModalNovoLead } from "./ModalNovoLead";
 import { ModalPassagem } from "./ModalPassagem";
+import { PesquisaLote } from "./PesquisaLote";
 import s from "@/app/crm/crm.module.css";
 
 const idDaColuna = (e: Estagio) => `col:${e}`;
@@ -771,6 +772,11 @@ function Coluna({
       </header>
 
       <div ref={setNodeRef} className={`${s.colunaLista} ${isOver ? s.colunaAlvo : ""}`}>
+        {/* Só a Lista tem o lote: é onde lead importado aterrissa, e é o
+            único lugar onde "pesquisar todo mundo" faz sentido. Nas outras
+            colunas a conversa já começou e o dossiê se pede pela ficha. */}
+        {estagio === "lista" ? <PesquisaLote leads={leads} /> : null}
+
         <SortableContext items={leads.map((l) => l.id)} strategy={verticalListSortingStrategy}>
           {leads.map((lead) => (
             <CardLead

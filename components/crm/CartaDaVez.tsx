@@ -162,7 +162,35 @@ export function CartaDaVez({
   return (
     <article className={s.vezCarta}>
       <div className={s.vezCorpo}>
-        <span className={`${s.vezSinal} ${TOM[sinal.tom]}`}>{sinal.texto}</span>
+        {/* O sinal de urgência e o calor da pesquisa dividem a linha: são
+            as duas prioridades que ordenam a fila (o grupo e, dentro
+            dele, o veredito), então a carta as mostra juntas. O quente
+            fala em `--green-live` (o CRM sugerindo, nunca rosa: o rosa
+            da carta já tem dono); morno e frio ficam na voz fraca. */}
+        <p className={s.vezLinhaSinal}>
+          <span className={`${s.vezSinal} ${TOM[sinal.tom]}`}>{sinal.texto}</span>
+          {lead.dossie?.status === "ok" && lead.dossie.veredito === "quente" ? (
+            /* A CHAMA do quente: desenhada, nunca emoji (pedido do
+               Rafael). Estêncil da casa: o corpo em esmeralda e o miolo
+               vazado na tinta da folha, com um tremular curto de fogo
+               vivo (a guarda global de reduced-motion o congela). */
+            <span className={`${s.vezVeredito} ${s.vezVereditoQuente}`}>
+              <svg className={s.vezChama} viewBox="0 0 14 16" aria-hidden="true">
+                {/* duas línguas assimétricas: a primeira versão era uma
+                    gota simétrica e gota não é fogo */}
+                <path d="M9.6 0 C10.6 2.6 9.8 4.2 7.6 6 C5.4 7.8 3.4 9 3.4 11 A4.9 4.9 0 0 0 13 11.6 C13.4 8.4 11 7.2 10.6 4.6 C10.4 3.2 10.2 1.4 9.6 0 Z M5 2.6 C5.6 4 5 5 3.8 6.4 C2.6 7.8 1.6 9 1.6 10.6 C1.6 11.4 1.8 12 2.2 12.8 C.8 11.6 0 10.2 0 8.6 C0 6 3.2 4.6 5 2.6 Z" />
+                <path
+                  className={s.vezChamaMiolo}
+                  d="M8.6 7.6 C9.6 9 10.6 9.8 10.4 11.6 A2.6 2.6 0 0 1 5.4 11.2 C5.4 9.8 7.4 9.2 8.6 7.6 Z"
+                />
+              </svg>
+              Lead quente
+            </span>
+          ) : null}
+          {lead.dossie?.status === "ok" && lead.dossie.veredito && lead.dossie.veredito !== "quente" ? (
+            <span className={s.vezVeredito}>Lead {lead.dossie.veredito}</span>
+          ) : null}
+        </p>
 
         {/* O nome é o <h1> desta tela. A manchete da página faz a pergunta;
             a resposta não pode chegar em corpo de legenda. Caixa BAIXA, pela
@@ -192,6 +220,17 @@ export function CartaDaVez({
         <p className={`${s.vezPasso} ${lead.proximo_passo ? "" : s.vezSemPasso}`}>
           {lead.proximo_passo ?? "Decida o próximo passo"}
         </p>
+
+        {/* ---------- o gancho da pesquisa ----------
+            A IA pesquisou este negócio e achou o fato concreto para abrir a
+            conversa; a carta é onde essa munição é usada, então ela mora
+            aqui, entre o passo e os botões. Filete esmeralda porque nesta
+            casa ele quer dizer "o CRM está te sugerindo", e `--green-live`
+            porque isto vive sobre grafite. Só aparece quando existe:
+            gancho vazio não ganha moldura vazia. */}
+        {lead.dossie?.status === "ok" && lead.dossie.gancho ? (
+          <p className={s.vezGancho}>{lead.dossie.gancho}</p>
+        ) : null}
 
         <div className={s.vezAcoes}>
           {temZap ? (

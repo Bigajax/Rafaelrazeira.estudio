@@ -179,6 +179,30 @@ export async function reordenar(
    ACEITAR a resposta junto, num envio só, para que registrar um toque e
    marcar o retorno não sejam dois formulários.
    ============================================================ */
+/* ---------- O TRILHO DO FUNIL ----------
+   O toque registrado JÁ DIZ em que pé o lead está, e obrigar a arrastar o
+   card depois de cada mensagem é registrar o mesmo fato duas vezes. O
+   trilho anda sozinho SÓ nos degraus mecânicos, onde o toque é prova
+   suficiente:
+
+     saída em lista ........ contatado   (a primeira mensagem foi)
+     saída em contatado .... follow_up   (segunda mensagem sem resposta é
+                                          follow-up por definição)
+     entrada até follow_up . conversa    (responderam: é conversa)
+
+   De conversa em diante NADA anda sozinho: prévia, proposta e negociação
+   são julgamento do Rafael, não consequência de um toque. E o trilho só
+   anda se a regra 1 estiver satisfeita (todo estágio ativo exige próximo
+   passo com data): sem passo, o toque grava normal e o lead fica onde
+   está, esperando a decisão. */
+function proximoDegrau(direcao: Direcao, estagio: Estagio): Estagio | null {
+  if (direcao === "saida" && estagio === "lista") return "contatado";
+  if (direcao === "saida" && estagio === "contatado") return "follow_up";
+  if (direcao === "entrada" && ["lista", "contatado", "follow_up"].includes(estagio))
+    return "conversa";
+  return null;
+}
+
 export async function registrarToque(
   leadId: string,
   dados: {
@@ -191,6 +215,13 @@ export async function registrarToque(
 ): Promise<Resultado> {
   const usuario = await exigirSessao();
   const supabase = await clienteServidor();
+
+  /* O lead é lido antes: o trilho precisa saber de onde ele parte. */
+  const { data: lead } = await supabase
+    .from("crm_leads")
+    .select("*")
+    .eq("id", leadId)
+    .single<Lead>();
 
   const { error } = await supabase.from("crm_interacoes").insert({
     owner_id: usuario.id,
@@ -210,6 +241,43 @@ export async function registrarToque(
       })
       .eq("id", leadId);
     if (erroPasso) return { ok: false, erro: traduzirErro(erroPasso) };
+  }
+
+  if (lead) {
+    const degrau = proximoDegrau(dados.direcao, lead.estagio);
+    if (degrau) {
+      /* A regra 1 (estágio ativo exige passo com data) continua valendo, e
+         é o TRILHO quem a cumpre: nos degraus mecânicos o próximo passo
+         também é mecânico, e a primeira versão que parava o card por
+         falta de passo parou no primeiro uso real (a Mister Tattoo ficou
+         na Lista com a mensagem já mandada). Mandou e não responderam
+         ainda: o passo é cobrar em três dias. Responderam: o passo é
+         responder hoje. O que o Rafael digitou vence sempre; o padrão só
+         entra em campo vazio. */
+      const passoAtual = dados.proximo_passo?.trim() || lead.proximo_passo;
+      const dataAtual = dados.proxima_acao_em || lead.proxima_acao_em;
+
+      const mudanca: Record<string, unknown> = { estagio: degrau };
+      if (!passoAtual) {
+        mudanca.proximo_passo =
+          degrau === "conversa" ? "Responder a conversa" : "Cobrar retorno no WhatsApp";
+      }
+      if (!dataAtual) {
+        mudanca.proxima_acao_em = degrau === "conversa" ? hojeSP() : somarDias(hojeSP(), 3);
+      }
+
+      const leadFinal: Lead = {
+        ...lead,
+        proximo_passo: (mudanca.proximo_passo as string | undefined) ?? passoAtual,
+        proxima_acao_em: (mudanca.proxima_acao_em as string | undefined) ?? dataAtual,
+      };
+      /* A régua do moverLead confere por último: se ainda assim faltar
+         algo (um degrau futuro que exija mais), o toque fica gravado e o
+         card espera. Trilho é bônus, nunca bloqueio nem erro. */
+      if (!oQueFalta(degrau, leadFinal).length) {
+        await supabase.from("crm_leads").update(mudanca).eq("id", leadId);
+      }
+    }
   }
 
   atualizarTelas();
