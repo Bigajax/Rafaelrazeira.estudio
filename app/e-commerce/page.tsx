@@ -24,6 +24,11 @@ export const metadata: Metadata = {
     siteName: "Rafael Razeira Estúdio",
     locale: "pt_BR",
     type: "website",
+    /* Repetida de propósito: o openGraph do filho SUBSTITUI o do layout
+       raiz inteiro no Next, e sem esta linha a página perderia o cartão. */
+    images: [
+      { url: "/assets/og-rr.png", width: 1200, height: 630, alt: "Monograma RR do Rafael Razeira Estúdio" },
+    ],
   },
 };
 
