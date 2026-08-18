@@ -835,6 +835,16 @@ export async function sugerirResposta(
 ): Promise<{ mensagem: string; custo_usd?: number }> {
   const d = lead.dossie?.status === "ok" ? lead.dossie : null;
 
+  /* Onde a conversa está acontecendo: o canal do último toque de entrada
+     é a verdade (foi por ali que o cliente falou); sem entrada registrada,
+     o canal que o lead TEM decide. Dizer "respondeu no WhatsApp" para uma
+     conversa de direct faz a mensagem prometer o canal errado ("te chamo
+     no WhatsApp" para quem não tem número). */
+  const canalDaConversa =
+    [...interacoes].reverse().find((i) => i.direcao === "entrada")?.canal ??
+    (lead.whatsapp ? "whatsapp" : lead.instagram ? "instagram" : "whatsapp");
+  const ondeConversa = canalDaConversa === "instagram" ? "no direct do Instagram" : "no WhatsApp";
+
   const dados = [
     `Nome do contato: ${lead.nome}`,
     lead.empresa ? `Negócio: ${lead.empresa}` : null,
@@ -868,7 +878,7 @@ export async function sugerirResposta(
     )
     .join("\n");
 
-  const pedido = `O lead abaixo respondeu no WhatsApp e o Rafael precisa da próxima mensagem.
+  const pedido = `O lead abaixo respondeu ${ondeConversa} e o Rafael precisa da próxima mensagem, para mandar pelo mesmo canal.
 
 ${dados}
 ${dossie ? `\nDo dossiê da pesquisa:\n${dossie}\n` : ""}${historico ? `\nA linha do tempo (resumos anotados pelo Rafael, não as mensagens literais):\n${historico}\n` : ""}
@@ -886,7 +896,7 @@ Escreva a próxima mensagem do Rafael. Regras:
 - Sem travessão, sem emoji, sem formalidade de agência. E NUNCA o verbo "desenhar" (cliente entende rabisco): fale "faço", "crio", "monto".
 
 Responda SOMENTE com um JSON neste formato, sem texto antes nem depois:
-{"mensagem": "a mensagem pronta para colar no WhatsApp"}`;
+{"mensagem": "a mensagem pronta para colar na conversa"}`;
 
   const { texto, custo_usd } = await chamarModelo({
     pedido,

@@ -3,13 +3,16 @@
 /* ============================================================
    RESPONDER COM IA — a fase 2 do método, na ficha
 
-   O cliente respondeu no WhatsApp. O Rafael cola a resposta aqui, a IA
-   lê o dossiê e a linha do tempo, e devolve a próxima mensagem no tom da
-   casa: responde ao que a pessoa disse e avança um degrau só do funil.
+   O cliente respondeu. O Rafael cola a resposta aqui, a IA lê o dossiê e
+   a linha do tempo, e devolve a próxima mensagem no tom da casa: responde
+   ao que a pessoa disse e avança um degrau só do funil. A saída segue o
+   canal da CONVERSA (o do último toque de entrada; sem número, o direct),
+   e o prompt do motor recebe esse canal para a mensagem não prometer o
+   canal errado.
 
    A sugestão NÃO vai para o banco: ela vale para aquele momento da
-   conversa. O que fica registrado é o toque de saída, quando o botão do
-   WhatsApp for apertado, pela mesma regra do modal de mensagem: o CRM
+   conversa. O que fica registrado é o toque de saída, quando o botão de
+   sair for apertado, pela mesma regra do modal de mensagem: o CRM
    avisa antes do efeito colateral, nunca age pelas costas.
 
    O campo nasce pré-preenchido com o resumo do último toque de entrada,
@@ -19,8 +22,8 @@
 
 import { useState } from "react";
 import { registrarToque } from "@/app/crm/acoes";
-import { linkWhatsapp } from "@/lib/crm/regras";
-import type { Interacao, LeadPainel } from "@/lib/crm/tipos";
+import { linkDirectInstagram, linkWhatsapp } from "@/lib/crm/regras";
+import type { Canal, Interacao, LeadPainel } from "@/lib/crm/tipos";
 import s from "@/app/crm/crm.module.css";
 
 export function SugerirResposta({
@@ -38,7 +41,17 @@ export function SugerirResposta({
   const [erro, setErro] = useState<string | null>(null);
   const [copiado, setCopiado] = useState(false);
 
-  const link = sugestao ? linkWhatsapp(lead.whatsapp, sugestao) : null;
+  /* A resposta sai pelo canal da CONVERSA, não pelo canal padrão: o último
+     toque de entrada diz por onde o cliente falou, e sem entrada registrada
+     o canal que o lead tem decide. Mesma regra do ModalMensagem: sem número,
+     a saída é o direct e o toque registra no canal certo, senão o card de
+     quem conversa pelo Instagram não anda no trilho. */
+  const canalConversa: Canal =
+    ultimaEntrada?.canal ??
+    (linkWhatsapp(lead.whatsapp) ? "whatsapp" : lead.instagram ? "instagram" : "whatsapp");
+  const link =
+    sugestao && canalConversa === "whatsapp" ? linkWhatsapp(lead.whatsapp, sugestao) : null;
+  const direct = sugestao && !link ? linkDirectInstagram(lead.instagram) : null;
 
   const sugerir = async () => {
     setErro(null);
@@ -87,18 +100,18 @@ export function SugerirResposta({
      ordem em que a vida aconteceu), pulada quando o texto colado é o
      mesmo do último toque de entrada, que é o caso de quem já registrou
      o "me responderam" pelo botão de toque. */
-  const registrar = () => {
+  const registrar = (canal: Canal) => {
     void (async () => {
       const colada = resposta.trim();
       if (colada && colada !== (ultimaEntrada?.resumo ?? "").trim()) {
         await registrarToque(lead.id, {
-          canal: "whatsapp",
+          canal,
           direcao: "entrada",
           resumo: colada.slice(0, 500),
         });
       }
       await registrarToque(lead.id, {
-        canal: "whatsapp",
+        canal,
         direcao: "saida",
         resumo: "Resposta sugerida pela IA",
       });
@@ -160,14 +173,34 @@ export function SugerirResposta({
                 href={link}
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={registrar}
+                onClick={() => registrar("whatsapp")}
               >
                 Abrir no WhatsApp
               </a>
             ) : null}
+            {direct ? (
+              /* Mesma mecânica do ModalMensagem: o Instagram não aceita
+                 texto na URL, então o clique copia antes de sair, e o <a>
+                 mantém a navegação como efeito direto do gesto. */
+              <a
+                className={s.btnMini}
+                href={direct}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => {
+                  void navigator.clipboard.writeText(sugestao).catch(() => {});
+                  registrar("instagram");
+                }}
+              >
+                Copiar e abrir no direct
+              </a>
+            ) : null}
           </div>
-          {link ? (
-            <p className={s.nota}>Abrir no WhatsApp registra o toque na linha do tempo</p>
+          {link || direct ? (
+            <p className={s.nota}>
+              {link ? "Abrir no WhatsApp" : "Copiar e abrir no direct"} registra o toque na linha
+              do tempo
+            </p>
           ) : null}
         </>
       ) : null}

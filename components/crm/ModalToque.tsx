@@ -21,7 +21,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { registrarToque } from "@/app/crm/acoes";
-import { hojeSP, somarDias } from "@/lib/crm/regras";
+import { hojeSP, linkWhatsapp, somarDias } from "@/lib/crm/regras";
 import { CANAIS, NOME_CANAL, type Canal, type Direcao, type LeadPainel } from "@/lib/crm/tipos";
 import s from "@/app/crm/crm.module.css";
 
@@ -36,7 +36,12 @@ export function ModalToque({
 }) {
   const hoje = hojeSP();
   const [direcao, setDirecao] = useState<Direcao>(direcaoInicial);
-  const [canal, setCanal] = useState<Canal>("whatsapp");
+  /* O canal de partida é o canal que o lead TEM: sem número, a conversa
+     real está acontecendo no direct, e nascer em "WhatsApp" é um erro de
+     registro esperando um esquecimento. */
+  const [canal, setCanal] = useState<Canal>(
+    linkWhatsapp(lead.whatsapp) ? "whatsapp" : lead.instagram ? "instagram" : "whatsapp",
+  );
   const [resumo, setResumo] = useState("");
   const [erro, setErro] = useState<string | null>(null);
   const [salvando, comecar] = useTransition();

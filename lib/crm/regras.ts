@@ -448,6 +448,20 @@ export function linkInstagram(bruto: string | null): string | null {
   return usuario ? `https://instagram.com/${usuario}` : null;
 }
 
+/** O wa.me do Instagram: ig.me/m/ cai direto na caixa de mensagem, não no
+    perfil. Sem parâmetro de texto de propósito, porque o Instagram não
+    aceita mensagem pré-escrita na URL; quem chama copia o texto antes. */
+export function linkDirectInstagram(bruto: string | null): string | null {
+  const v = String(bruto || "").trim();
+  if (!v) return null;
+  const usuario = v
+    .replace(/^https?:\/\/(www\.)?/i, "")
+    .replace(/^instagram\.com\//i, "")
+    .replace(/^@/, "")
+    .split(/[/?#]/)[0];
+  return usuario ? `https://ig.me/m/${usuario}` : null;
+}
+
 /* ============================================================
    POSIÇÃO NO KANBAN
 

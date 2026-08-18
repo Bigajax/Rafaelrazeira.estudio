@@ -152,7 +152,10 @@ export function Ficha({
         {contexto ? <p className={s.fichaCabContexto}>{contexto}</p> : null}
 
         <div className={s.fichaCabAcoes}>
-          {zap ? (
+          {/* Basta UM canal para o botão existir: o modal é quem decide a
+              saída (WhatsApp com número, direct sem). Antes ele exigia o
+              número, e lead só de Instagram ficava sem porta de mensagem. */}
+          {zap || insta ? (
             <button type="button" className={s.btnAcao} onClick={() => setMensagem(true)}>
               Mandar mensagem
             </button>
@@ -506,7 +509,12 @@ function ApagarLead({ lead }: { lead: LeadPainel }) {
    ============================================================ */
 function FormToque({ lead, hoje }: { lead: LeadPainel; hoje: string }) {
   const [direcao, setDirecao] = useState<Direcao>("saida");
-  const [canal, setCanal] = useState<Canal>("whatsapp");
+  /* O canal de partida é o canal que o lead TEM: sem número, a conversa
+     real está acontecendo no direct, e nascer em "WhatsApp" é um erro de
+     registro esperando um esquecimento. */
+  const [canal, setCanal] = useState<Canal>(
+    linkWhatsapp(lead.whatsapp) ? "whatsapp" : lead.instagram ? "instagram" : "whatsapp",
+  );
   const [resumo, setResumo] = useState("");
   const [erro, setErro] = useState<string | null>(null);
   const [salvando, comecar] = useTransition();

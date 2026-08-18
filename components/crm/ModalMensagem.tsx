@@ -4,7 +4,10 @@
    MANDAR A MENSAGEM
 
    Escolher o template, ver o texto com os dados deste lead já dentro, e
-   sair para o WhatsApp. Três passos numa tela só, e a tela some depois.
+   sair para a conversa. Três passos numa tela só, e a tela some depois.
+   A saída é o WhatsApp quando há número; sem número, o direct do
+   Instagram assume (com o texto copiado no clique, porque o Instagram
+   não aceita mensagem pré-escrita na URL).
 
    ---------- por que o botão do WhatsApp é um <a> e não um <button> ----------
    Abrir o WhatsApp precisa ser o efeito DIRETO de um clique. Se a saída
@@ -25,8 +28,8 @@
 
 import { useEffect, useState } from "react";
 import { registrarToque } from "@/app/crm/acoes";
-import { lacunas, linkWhatsapp, renderTemplate } from "@/lib/crm/regras";
-import { NOME_CATEGORIA, type LeadPainel, type Template } from "@/lib/crm/tipos";
+import { lacunas, linkDirectInstagram, linkWhatsapp, renderTemplate } from "@/lib/crm/regras";
+import { NOME_CANAL, NOME_CATEGORIA, type Canal, type LeadPainel, type Template } from "@/lib/crm/tipos";
 import s from "@/app/crm/crm.module.css";
 
 /* A mensagem da pesquisa entra no seletor como se fosse um template, com
@@ -61,6 +64,13 @@ export function ModalMensagem({
   const faltando = template ? lacunas(template.conteudo, lead) : [];
   const link = linkWhatsapp(lead.whatsapp, texto);
 
+  /* O plano B quando o número não dá link: o direct. Só entra em campo sem
+     WhatsApp, porque duas saídas para a mesma mensagem seriam duas
+     primeiras ações. Foi o caso real do nove3: sem número, o modal não
+     tinha saída nenhuma, a mensagem foi no braço pelo Instagram e o toque
+     ficou sem registro, com o card parado na Lista. */
+  const linkInsta = !link ? linkDirectInstagram(lead.instagram) : null;
+
   useEffect(() => {
     const aoTeclar = (e: KeyboardEvent) => e.key === "Escape" && aoFechar();
     document.addEventListener("keydown", aoTeclar);
@@ -83,12 +93,14 @@ export function ModalMensagem({
   /* Registra e fecha. Não espera a resposta para fechar: o link já levou a
      pessoa para o WhatsApp, e segurar o modal aberto atrás de uma requisição
      que ela não vai ver é atrito puro. */
-  const registrar = () => {
+  const registrar = (canal: Canal) => {
     void registrarToque(lead.id, {
-      canal: "whatsapp",
+      canal,
       direcao: "saida",
       resumo:
-        escolhido === ID_PESQUISA ? "Mensagem da pesquisa" : (template?.titulo ?? "Mensagem no WhatsApp"),
+        escolhido === ID_PESQUISA
+          ? "Mensagem da pesquisa"
+          : (template?.titulo ?? `Mensagem no ${NOME_CANAL[canal]}`),
     });
     aoFechar();
   };
@@ -130,11 +142,17 @@ export function ModalMensagem({
           </>
         )}
 
-        {!link ? (
+        {!link && linkInsta ? (
+          <p className={s.nota}>
+            Sem WhatsApp no cadastro: a saída deste lead é o direct. O texto vai copiado no clique,
+            é só colar na conversa.
+          </p>
+        ) : null}
+        {!link && !linkInsta ? (
           <p className={s.erro}>
             {lead.whatsapp
               ? "O WhatsApp cadastrado não tem número suficiente."
-              : "Este lead não tem WhatsApp cadastrado."}
+              : "Este lead não tem WhatsApp nem Instagram no cadastro. Preencha um dos dois em Ver todos os dados."}
           </p>
         ) : null}
 
@@ -151,9 +169,28 @@ export function ModalMensagem({
               href={link}
               target="_blank"
               rel="noopener noreferrer"
-              onClick={registrar}
+              onClick={() => registrar("whatsapp")}
             >
               Abrir no WhatsApp
+            </a>
+          ) : null}
+          {linkInsta ? (
+            /* O texto não cabe na URL (o Instagram não aceita mensagem
+               pré-escrita), então o MESMO clique copia antes de sair. E
+               continua sendo um <a> pelo mesmo motivo do WhatsApp: a
+               navegação precisa ser o efeito direto do gesto, ou o
+               bloqueador de pop-up engole a janela. */
+            <a
+              className={s.btnAcao}
+              href={linkInsta}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => {
+                void navigator.clipboard.writeText(texto).catch(() => {});
+                registrar("instagram");
+              }}
+            >
+              Copiar e abrir no direct
             </a>
           ) : null}
         </div>
@@ -161,7 +198,12 @@ export function ModalMensagem({
         {/* Dito antes de acontecer, e não depois: o botão faz duas coisas, e
             uma delas grava no histórico. Descobrir isso pela timeline seria
             o CRM agindo pelas costas de quem o usa. */}
-        <p className={s.nota}>Abrir no WhatsApp registra o toque na linha do tempo</p>
+        {link || linkInsta ? (
+          <p className={s.nota}>
+            {link ? "Abrir no WhatsApp" : "Copiar e abrir no direct"} registra o toque na linha do
+            tempo
+          </p>
+        ) : null}
       </div>
     </div>
   );
