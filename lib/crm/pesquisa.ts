@@ -178,12 +178,12 @@ async function perfilOficial(arroba: string): Promise<Colheita> {
    parou de procurar, enquanto o perfil VERDADEIRO era o @manareoficial,
    com 50 mil seguidores e o WhatsApp na bio. Perfil que abre não é
    perfil confirmado; perfil vazio manda a descoberta continuar. */
-type Colheita =
+export type Colheita =
   | { tipo: "ok"; texto: string; fraco: boolean }
   | { tipo: "nao_existe" }
   | { tipo: "falhou" };
 
-async function perfilInstagram(instagram: string | null): Promise<Colheita> {
+export async function perfilInstagram(instagram: string | null): Promise<Colheita> {
   const arroba = arrobaLimpo(instagram);
   if (!arroba) return { tipo: "falhou" };
 
@@ -201,9 +201,24 @@ async function perfilInstagram(instagram: string | null): Promise<Colheita> {
   const primeira = await tentarPerfil(arroba);
   if (primeira.tipo === "ok") return primeira;
   if (primeira.tipo === "nao_existe") return primeira;
-  if (oficial.tipo === "nao_existe") return oficial;
+
+  /* AQUI MORAVA UM "não existe" MENTIROSO, e ele custou uma colheita
+     inteira em 19/08: quando o endpoint público estava bloqueado, a
+     função devolvia o "nao_existe" da Business Discovery, e o dossiê
+     passava a AFIRMAR que o perfil não existe. Só que o código 110 da
+     Business Discovery quer dizer "não achei uma conta comercial com
+     esse nome", o que é verdade para toda conta PESSOAL: metade da
+     prospecção local. Ela nunca pode provar ausência sozinha.
+
+     Provado ao vivo com @carinamelo.shop, que abre normalmente no
+     navegador e voltava daqui como inexistente. Agora só o 404 do
+     endpoint público (que enxerga conta pessoal) prova morte; se ele
+     não responde, a resposta é "falhou", que é DESCONHECIDO, e
+     desconhecido nunca vira afirmação no dossiê. */
   await new Promise((r) => setTimeout(r, 5000));
-  return tentarPerfil(arroba);
+  const segunda = await tentarPerfil(arroba);
+  if (segunda.tipo === "falhou" && oficial.tipo === "falhou") return { tipo: "falhou" };
+  return segunda;
 }
 
 async function tentarPerfil(arroba: string): Promise<Colheita> {
@@ -297,7 +312,7 @@ const CANAL =
 const RUIDO =
   /(?:linktr\.ee|beacons\.ai|bio\.link|taplink|lnk\.bio|campsite|linkin\.bio|abre\.bio|linkme\.bio|allmylinks|solo\.to|gstatic|googletagmanager|google-analytics|googleapis|doubleclick|facebook\.net|fbcdn|cdninstagram|sentry|cookielaw|onetrust|apple\.com|play\.google|w3\.org|schema\.org|cloudinary|imgix|twimg|jsdelivr|unpkg|vercel\.app\/api|amplitude|hotjar|clarity\.ms|tinybird|cloudfront\.net\/(?:assets|static)|privacy|terms|thanks\.is|kqzyfj\.com|dpbolvw\.net|anrdoezrs\.net|jdoqocy\.com|tkqlhce\.com|linksynergy|shareasale|awin1\.com|\.sjv\.io|\.pxf\.io|\.7eer\.net|\.evyy\.net|\.ojrq\.net)/i;
 
-async function colherLinkDaBio(url: string): Promise<string | null> {
+export async function colherLinkDaBio(url: string): Promise<string | null> {
   try {
     const r = await fetch(url, {
       headers: {
