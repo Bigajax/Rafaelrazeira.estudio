@@ -53,6 +53,7 @@ import {
 } from "@/lib/crm/regras";
 import {
   CANAIS,
+  ehAtivo,
   ESTAGIOS,
   NOME_CANAL,
   NOME_ESTAGIO,
@@ -229,6 +230,37 @@ export function Ficha({
             Fechou {dinheiro(lead.valor_fechado)}
             {lead.fechado_em ? ` em ${dataCurta(lead.fechado_em)}` : ""}
           </p>
+        ) : null}
+
+        {/* ---------- as duas saídas, com nome ----------
+            Elas sempre existiram dentro do seletor de estágio, e foi a
+            terceira vez que uma ação decisiva escondida num controle neutro
+            não foi encontrada na hora H (Apagar lead e Registrar toque
+            vieram antes): a Lígia recusou a prévia e o Rafael não achou
+            onde marcar a perda. Encerrar uma conversa é decisão, e decisão
+            merece botão com nome, não uma opção no fim de um dropdown.
+            Os dois chamam o MESMO fluxo do seletor, então o modal continua
+            pedindo o valor do ganho e o motivo da perda. Discretos de
+            propósito (btnMini): são as saídas, não a primeira ação. */}
+        {ehAtivo(lead.estagio) ? (
+          <div className={s.opcoes}>
+            <button
+              type="button"
+              className={s.btnMini}
+              onClick={() => trocarEstagio("ganho")}
+              disabled={salvando}
+            >
+              Fechou, ganho
+            </button>
+            <button
+              type="button"
+              className={s.btnMini}
+              onClick={() => trocarEstagio("perdido")}
+              disabled={salvando}
+            >
+              Não vai rolar, perdido
+            </button>
+          </div>
         ) : null}
 
         <AvisoDoisRetornos lead={lead} />

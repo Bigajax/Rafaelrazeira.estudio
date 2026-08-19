@@ -58,6 +58,18 @@ const PROPOSTAS = {
       saldo_card: { label: "Saldo do projeto no cartão, em 4x", valor: 800, metodo: "card", maxParcelas: 4 },
     },
   },
+  arrazou: {
+    titulo: "Rafael Razeira Estúdio — Vitrine Digital ArraZou Semijoias",
+    whatsapp: "5544999997219",
+    /* Duas parcelas iguais, e cada uma paga uma etapa: a primeira o
+       desenho, a segunda a entrega. Diferente do modelo de entrada
+       simbólica das propostas antigas (199 + 800), aqui a metade da
+       frente cobre o trabalho que acontece antes de existir site. */
+    itens: {
+      entrada_pix: { label: "1ª parcela: design do projeto", valor: 500, metodo: "pix" },
+      saldo_pix: { label: "2ª parcela: na entrega", valor: 499, metodo: "pix" },
+    },
+  },
   "verit-lab": {
     titulo: "Rafael Razeira Estúdio — Vitrine Digital vérít.lab",
     whatsapp: "5544999997219",
