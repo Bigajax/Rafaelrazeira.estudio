@@ -14,6 +14,14 @@
    com um buraco. Essa escolha é do render (lib/crm/regras.ts) e ela é
    deliberada: um colchete no meio da frase é impossível de não ver na
    prévia, e um espaço vazio é impossível de ver.
+
+   ---------- a quinta, que não vem do cadastro ----------
+   {saudacao} não tem lacuna possível: quem responde por ela é o relógio,
+   no fuso de Maringá, no instante em que o modal monta o texto. É por isso
+   que ela existe. Saudação escrita à mão dentro do template envelhece na
+   hora seguinte, e "boa tarde" às nove da manhã entrega na primeira linha
+   que o texto foi escrito antes, o que é o começo de nenhuma conversa.
+   {Saudacao} é a mesma coisa com inicial maiúscula, para abrir frase.
    ============================================================ */
 
 import { useState, useTransition } from "react";
@@ -37,7 +45,7 @@ const EXEMPLO = {
   cidade: "Maringá",
 };
 
-const VARIAVEIS = ["{nome}", "{empresa}", "{nicho}", "{cidade}"];
+const VARIAVEIS = ["{nome}", "{empresa}", "{nicho}", "{cidade}", "{saudacao}"];
 
 export function Templates({ templates }: { templates: Template[] }) {
   const [editando, setEditando] = useState<Template | "novo" | null>(null);

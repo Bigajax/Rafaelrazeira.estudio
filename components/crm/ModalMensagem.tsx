@@ -24,17 +24,36 @@
    Um template que usa {empresa} num lead sem empresa vira "a [empresa] de
    vocês". A prévia mostra o colchete, e um aviso diz quais faltam. Nunca
    substituir por vazio: "Oi, !" já foi mandado por CRM demais.
+
+   ---------- os dois toques ----------
+   A pesquisa escreve DUAS mensagens, e a ordem entre elas é a regra que
+   decide se alguém lê: a ABERTURA é o primeiro toque (duas linhas, uma
+   pergunta, sem oferta e sem link, cabendo inteira na notificação) e a
+   MENSAGEM é o segundo, com a apresentação, a prévia e o exemplo, para
+   depois que a pessoa responder. Por isso a abertura é a opção de
+   partida, e escolher a mensagem 2 num lead que nunca respondeu levanta
+   um aviso: link e oferta antes da resposta é exatamente o que faz a
+   conversa ser reconhecida como propaganda antes de ser aberta.
    ============================================================ */
 
 import { useEffect, useState } from "react";
 import { registrarToque } from "@/app/crm/acoes";
-import { lacunas, linkDirectInstagram, linkWhatsapp, renderTemplate } from "@/lib/crm/regras";
+import {
+  aplicarSaudacao,
+  degrauDoSilencio,
+  lacunas,
+  linkDirectInstagram,
+  linkWhatsapp,
+  renderTemplate,
+} from "@/lib/crm/regras";
 import { NOME_CANAL, NOME_CATEGORIA, type Canal, type LeadPainel, type Template } from "@/lib/crm/tipos";
 import s from "@/app/crm/crm.module.css";
 
-/* A mensagem da pesquisa entra no seletor como se fosse um template, com
-   este id reservado. Ela já vem escrita para ESTE lead, então não passa
-   pelo render de variáveis nem pela checagem de lacunas. */
+/* As duas mensagens da pesquisa entram no seletor como se fossem
+   templates, com estes ids reservados. Elas já vêm escritas para ESTE
+   lead, então não passam pelo render de variáveis nem pela checagem de
+   lacunas; só pela saudação, que é do relógio e não do cadastro. */
+const ID_ABERTURA = "__abertura";
 const ID_PESQUISA = "__pesquisa";
 
 export function ModalMensagem({
@@ -46,22 +65,56 @@ export function ModalMensagem({
   templates: Template[];
   aoFechar: () => void;
 }) {
-  const daPesquisa = lead.dossie?.status === "ok" ? (lead.dossie.mensagem ?? null) : null;
+  const pesquisaOk = lead.dossie?.status === "ok";
+  const aAbertura = pesquisaOk ? (lead.dossie?.abertura ?? null) : null;
+  const daPesquisa = pesquisaOk ? (lead.dossie?.mensagem ?? null) : null;
 
-  /* Quando a pesquisa escreveu uma mensagem, ela é a primeira opção E a
-     escolhida de partida: é a única do seletor feita sob medida para este
-     lead, e o template genérico vira o plano B. */
-  const [escolhido, setEscolhido] = useState(daPesquisa ? ID_PESQUISA : (templates[0]?.id ?? ""));
+  /* QUAL DEGRAU É A VEZ. Um lead em Contatado não quer a abertura de novo,
+     quer o primeiro retorno; um com quatro toques no vácuo não quer o
+     quinto pedido, quer a saída honrosa. A escada mora em regras.ts e o
+     modal só a lê, para a mesma resposta valer aqui e em qualquer tela
+     que venha a mostrar a sugestão. */
+  const degrau = degrauDoSilencio(lead);
+  const sugerido =
+    degrau
+      ? (templates.filter((t) => t.categoria === degrau.categoria)[degrau.indice] ?? null)
+      : null;
+
+  /* A ORDEM DA ESCOLHA DE PARTIDA, do mais específico para o mais genérico:
+     (1) quem já respondeu abre na mensagem 2 da pesquisa, que é a que
+     continua a conversa; (2) quem nunca respondeu e nunca foi tocado abre
+     na abertura sob medida; (3) quem está no meio da escada abre no degrau
+     dela; (4) o resto cai no primeiro template, que é como era antes. */
+  const dePartida = () => {
+    if (lead.toques_entrada > 0 && daPesquisa) return ID_PESQUISA;
+    if (degrau?.categoria === "abertura_fria" && aAbertura) return ID_ABERTURA;
+    if (sugerido) return sugerido.id;
+    if (aAbertura) return ID_ABERTURA;
+    if (daPesquisa) return ID_PESQUISA;
+    return templates[0]?.id ?? "";
+  };
+
+  const partida = dePartida();
+  const [escolhido, setEscolhido] = useState(partida);
   const [copiado, setCopiado] = useState(false);
 
-  const template = escolhido === ID_PESQUISA ? null : (templates.find((t) => t.id === escolhido) ?? null);
+  const doDossie = escolhido === ID_ABERTURA || escolhido === ID_PESQUISA;
+  const template = doDossie ? null : (templates.find((t) => t.id === escolhido) ?? null);
   const texto =
-    escolhido === ID_PESQUISA && daPesquisa
-      ? daPesquisa
-      : template
-        ? renderTemplate(template.conteudo, lead)
-        : "";
+    escolhido === ID_ABERTURA && aAbertura
+      ? aplicarSaudacao(aAbertura)
+      : escolhido === ID_PESQUISA && daPesquisa
+        ? aplicarSaudacao(daPesquisa)
+        : template
+          ? renderTemplate(template.conteudo, lead)
+          : "";
   const faltando = template ? lacunas(template.conteudo, lead) : [];
+
+  /* O aviso da ordem: a mensagem 2 leva oferta e link, e antes de uma
+     resposta é justamente ela que faz a pessoa não abrir. `toques_entrada`
+     vem da view e conta o que ENTROU: zero significa que este lead nunca
+     respondeu nada, por nenhum canal. */
+  const foraDeOrdem = escolhido === ID_PESQUISA && Boolean(aAbertura) && lead.toques_entrada === 0;
   const link = linkWhatsapp(lead.whatsapp, texto);
 
   /* O plano B quando o número não dá link: o direct. Só entra em campo sem
@@ -98,9 +151,11 @@ export function ModalMensagem({
       canal,
       direcao: "saida",
       resumo:
-        escolhido === ID_PESQUISA
-          ? "Mensagem da pesquisa"
-          : (template?.titulo ?? `Mensagem no ${NOME_CANAL[canal]}`),
+        escolhido === ID_ABERTURA
+          ? "Abertura da pesquisa (primeiro toque)"
+          : escolhido === ID_PESQUISA
+            ? "Mensagem da pesquisa"
+            : (template?.titulo ?? `Mensagem no ${NOME_CANAL[canal]}`),
     });
     aoFechar();
   };
@@ -111,7 +166,7 @@ export function ModalMensagem({
         <p className={s.modalRot}>Mandar mensagem</p>
         <h2 id="msg-titulo">{lead.nome}</h2>
 
-        {templates.length === 0 && !daPesquisa ? (
+        {templates.length === 0 && !daPesquisa && !aAbertura ? (
           <p>
             Você ainda não tem template nenhum. Crie o primeiro em Templates e ele aparece aqui.
           </p>
@@ -120,19 +175,55 @@ export function ModalMensagem({
             <label className={s.campo}>
               <span className={s.campoRot}>Template</span>
               <select value={escolhido} onChange={(e) => setEscolhido(e.target.value)}>
+                {aAbertura ? (
+                  <option value={ID_ABERTURA}>
+                    Abertura · primeiro toque, sem link
+                    {degrau?.categoria === "abertura_fria" ? " · sugerido" : ""}
+                  </option>
+                ) : null}
                 {daPesquisa ? (
-                  <option value={ID_PESQUISA}>Mensagem da pesquisa · feita para este lead</option>
+                  <option value={ID_PESQUISA}>
+                    {aAbertura
+                      ? "Mensagem 2 · depois que responder"
+                      : "Mensagem da pesquisa · feita para este lead"}
+                  </option>
                 ) : null}
                 {templates.map((t) => (
                   <option key={t.id} value={t.id}>
                     {t.titulo}
                     {t.categoria ? ` · ${NOME_CATEGORIA[t.categoria]}` : ""}
+                    {sugerido?.id === t.id ? " · sugerido" : ""}
                   </option>
                 ))}
               </select>
             </label>
 
+            {/* POR QUE ESTE, e não "sugerido" sozinho. O rótulo no seletor
+                diz qual; esta linha diz o fato que escolheu (quantos toques
+                foram no vácuo), que é o que permite discordar com base em
+                alguma coisa. Sugestão sem motivo é ordem disfarçada. */}
+            {degrau && escolhido === partida ? <p className={s.nota}>{degrau.porque}</p> : null}
+
             <p className={s.previa}>{texto}</p>
+
+            {/* Dito na hora de mandar, e não num manual: a abertura só faz
+                sentido se quem manda souber que ela é curta DE PROPÓSITO, e
+                que a oferta tem hora para entrar. */}
+            {escolhido === ID_ABERTURA ? (
+              <p className={s.nota}>
+                Curta de propósito: cabe inteira na notificação, e é lá que a pessoa decide se abre.
+                A apresentação, a prévia e o link do exemplo estão na mensagem 2, para mandar depois
+                que ela responder.
+              </p>
+            ) : null}
+
+            {foraDeOrdem ? (
+              <p className={s.erro}>
+                Este lead ainda não respondeu nada. A mensagem 2 leva a oferta e o link, e o cartão
+                de preview aparece na lista de conversas antes da primeira palavra ser lida: é ela
+                que faz a pessoa não abrir. A abertura é o primeiro toque.
+              </p>
+            ) : null}
 
             {faltando.length ? (
               <p className={s.erro}>

@@ -41,6 +41,28 @@ const ISO = new Intl.DateTimeFormat("en-CA", {
 
 export const hojeSP = (base: Date = new Date()) => ISO.format(base);
 
+/* ---------- a saudação, pela hora de Maringá ----------
+   "Boa tarde" às nove da manhã é o erro mais barato de cometer e o mais
+   caro de mandar: quem recebe entende na hora que o texto foi escrito
+   antes, por outra pessoa ou por uma máquina, e a conversa morre na
+   primeira linha. Dois caminhos levavam a isso: a mensagem da pesquisa
+   nasce horas ou dias antes de ser mandada (a saudação de quando foi
+   ESCRITA não é a de quando é MANDADA), e o servidor da Vercel roda em
+   UTC, três horas à frente, então das 21h em diante ele já acha que é
+   outro dia. Por isso a saudação nunca vem escrita no texto: vem daqui,
+   no instante em que o modal monta a mensagem, sempre no fuso da casa.
+
+   `hourCycle: "h23"` porque `hour12: false` devolve "24" para a
+   meia-noite em algumas versões do ICU, e "24" cairia no ramo errado. */
+const HORA = new Intl.DateTimeFormat("en-GB", { timeZone: FUSO, hour: "2-digit", hourCycle: "h23" });
+
+export function saudacaoSP(base: Date = new Date()): string {
+  const h = Number(HORA.format(base)) % 24;
+  if (h < 12) return "bom dia";
+  if (h < 18) return "boa tarde";
+  return "boa noite";
+}
+
 /* Soma dias a uma data ISO sem passar por Date local: `Date.UTC` ao meio-dia
    evita que horário de verão em qualquer ponto do intervalo empurre o
    resultado para o dia anterior. */
@@ -181,6 +203,77 @@ export function temperatura(
    e o Rafael decide. Um lead que não respondeu duas vezes pode estar de
    férias, e mover sozinho para perdido seria o CRM inventando um fato. */
 export const doisRetornos = (lead: Pick<LeadPainel, "saidas_seguidas">) => lead.saidas_seguidas >= 2;
+
+/* ============================================================
+   A ESCADA DO SILÊNCIO
+
+   Um lead que não respondeu não precisa da mesma frase de novo, mais
+   educada. Precisa de OUTRO TRABALHO. Repetir "passando para não sumir"
+   três vezes é a forma mais rápida de virar a pessoa que a gente arquiva
+   sem ler, porque cada mensagem dessas custa alguma coisa para quem
+   recebe e não traz nada de novo. Então cada degrau tem uma função
+   diferente, e nenhuma delas é insistir:
+
+   1º retorno .. TROCA A PERGUNTA. A primeira pode ter sido a errada, ou
+                 ter chegado numa terça de movimento. Curto, sem cobrança,
+                 sem "você viu minha mensagem?" (que só faz a pessoa
+                 lembrar que escolheu não responder).
+   2º retorno .. PARA DE PEDIR E MOSTRA. Nada de pergunta: uma prova do
+                 trabalho, de graça, sem pedir nada em troca. É o único
+                 degrau em que o link é bem-vindo, porque agora ele é o
+                 presente e não a isca.
+   3º ......... ENCERRA. A saída honrosa é o que mais recebe resposta em
+                 prospecção, e é a única honesta: sem culpa, sem "última
+                 chance", dizendo de verdade que vai parar de chamar.
+
+   O CRM SUGERE, o Rafael decide: mesma regra do aviso dos 2 retornos. E
+   ele só palpita em quem NUNCA respondeu, porque a partir da primeira
+   resposta quem conduz é a conversa, não a escada (aí entra o
+   SugerirResposta, que lê a linha do tempo).
+   ============================================================ */
+export type Degrau = {
+  categoria: "abertura_fria" | "follow_up" | "encerramento";
+  /* Qual template DAQUELA categoria, na ordem em que eles chegam da
+     consulta, que é `order("ordem")` em lib/crm/dados.ts: o primeiro
+     retorno é o primeiro follow-up, o segundo é o segundo. Por isso a
+     coluna `ordem` deixou de ser só arrumação de tela e passou a
+     significar alguma coisa; a migração de 19/08 renumera tudo por causa
+     disso. Um terceiro follow-up escrito à mão não vira degrau 3 sozinho:
+     depois de dois retornos no vácuo, o próximo passo honesto é encerrar,
+     e é isso que a escada devolve. */
+  indice: number;
+  porque: string;
+};
+
+export function degrauDoSilencio(
+  lead: Pick<LeadPainel, "toques_entrada" | "saidas_seguidas">,
+): Degrau | null {
+  if (lead.toques_entrada > 0) return null;
+
+  const n = lead.saidas_seguidas;
+  if (n === 0) {
+    return { categoria: "abertura_fria", indice: 0, porque: "Ninguém falou com este lead ainda" };
+  }
+  if (n === 1) {
+    return {
+      categoria: "follow_up",
+      indice: 0,
+      porque: "Uma mensagem, sem resposta: troque a pergunta em vez de repetir",
+    };
+  }
+  if (n === 2) {
+    return {
+      categoria: "follow_up",
+      indice: 1,
+      porque: "Duas sem resposta: pare de pedir e mostre alguma coisa",
+    };
+  }
+  return {
+    categoria: "encerramento",
+    indice: 0,
+    porque: `${n} toques sem resposta: a saída honrosa recebe mais resposta que o quarto pedido`,
+  };
+}
 
 /* ============================================================
    UM SINAL POR FICHA
@@ -385,23 +478,39 @@ export function exigenciaDeTodas(estagios: readonly Estagio[], lead: Lead): Camp
 /* ============================================================
    TEMPLATES
 
-   Quatro variáveis, e o que falta vira uma lacuna visível em vez de sumir.
-   Um "Oi, !" enviado por engano custa o lead inteiro; um "Oi, [nome]!" na
-   pré-visualização é impossível de não ver antes de mandar.
+   Quatro variáveis do cadastro, e o que falta vira uma lacuna visível em
+   vez de sumir. Um "Oi, !" enviado por engano custa o lead inteiro; um
+   "Oi, [nome]!" na pré-visualização é impossível de não ver antes de
+   mandar.
+
+   E uma quinta que não vem do cadastro nem pode faltar: `{saudacao}`, que
+   o relógio resolve no instante do envio. `{Saudacao}` é a mesma coisa
+   com inicial maiúscula, para quem abre a frase com ela.
    ============================================================ */
 export type DadosTemplate = Pick<Lead, "nome" | "empresa" | "nicho" | "cidade">;
 
-export function renderTemplate(conteudo: string, lead: DadosTemplate): string {
+/* Aplicada separada do resto porque a mensagem da pesquisa NÃO passa pelo
+   render de variáveis (ela já nasce escrita para este lead), mas passa
+   por esta: o texto foi escrito ontem, e a saudação é de agora. */
+export function aplicarSaudacao(texto: string, base: Date = new Date()): string {
+  const s = saudacaoSP(base);
+  return texto.replace(/\{(saudacao|Saudacao)\}/g, (_, chave: string) =>
+    chave === "Saudacao" ? s.charAt(0).toUpperCase() + s.slice(1) : s,
+  );
+}
+
+export function renderTemplate(conteudo: string, lead: DadosTemplate, agora?: Date): string {
   const mapa: Record<string, string | null> = {
     nome: primeiroNome(lead.nome),
     empresa: lead.empresa,
     nicho: lead.nicho,
     cidade: lead.cidade,
   };
-  return conteudo.replace(/\{(nome|empresa|nicho|cidade)\}/g, (_, chave: string) => {
+  const comDados = conteudo.replace(/\{(nome|empresa|nicho|cidade)\}/g, (_, chave: string) => {
     const v = mapa[chave];
     return v && v.trim() ? v.trim() : `[${chave}]`;
   });
+  return aplicarSaudacao(comDados, agora);
 }
 
 /** Quais variáveis do texto ficariam sem valor para este lead. */

@@ -3,8 +3,12 @@
 
    Recebe um lead recém-anotado (nome, Instagram, cidade, nicho) e devolve
    um DOSSIÊ: o que o negócio é, como está a presença digital dele, a dor
-   provável na lente do que o estúdio vende, um gancho concreto e a
-   primeira mensagem pronta no tom dos templates da casa.
+   provável na lente do que o estúdio vende, um gancho concreto e as duas
+   mensagens prontas no tom dos templates da casa: a ABERTURA (o primeiro
+   toque, duas linhas e uma pergunta, sem oferta e sem link) e a MENSAGEM
+   (o segundo toque, com a apresentação, a prévia e o exemplo, para depois
+   que a pessoa responder). A separação é a regra: na notificação do
+   WhatsApp cabem duas linhas, e é ali que a pessoa decide se abre.
 
    COMO, em duas frentes:
 
@@ -68,7 +72,20 @@ const CATALOGO_PORTFOLIO = projetos
 const BLOCO_PORTFOLIO = `O PORTFÓLIO DO ESTÚDIO, todos no ar (para escolher UM exemplo, se algum conversar com este negócio):
 ${CATALOGO_PORTFOLIO}
 
-Regra do exemplo: escolha no máximo UM projeto cujo público ou ramo conversa com o negócio pesquisado (mesmo segmento ou vizinho). Se nenhum conversar de verdade, não escolha nenhum: exemplo forçado é pior que nenhum. Quando escolher, cite o projeto e o ramo na mensagem ("fiz a vitrine da Star Point, que vende sneakers aqui de Maringá") e COLE O LINK COMPLETO (https://...) na mensagem, de preferência numa linha própria no fim: no WhatsApp o link em linha própria vira o cartão de prévia, e é o trabalho se mostrando sozinho. "Posso te mandar o link" não vale: exemplo citado sem link é vitrine de porta fechada. Nunca mais de um exemplo por mensagem.`;
+Regra do exemplo: escolha no máximo UM projeto cujo público ou ramo conversa com o negócio pesquisado (mesmo segmento ou vizinho). Se nenhum conversar de verdade, não escolha nenhum: exemplo forçado é pior que nenhum. Quando escolher, cite o projeto e o ramo na "mensagem" ("fiz a vitrine da Star Point, que vende sneakers aqui de Maringá") e COLE O LINK COMPLETO (https://...) na "mensagem", de preferência numa linha própria no fim. O exemplo e o link vivem SÓ na "mensagem", nunca na "abertura": link no primeiro toque vira cartão de preview na lista de conversas, e o cartão é o que faz a pessoa reconhecer propaganda antes de abrir. no WhatsApp o link em linha própria vira o cartão de prévia, e é o trabalho se mostrando sozinho. "Posso te mandar o link" não vale: exemplo citado sem link é vitrine de porta fechada. Nunca mais de um exemplo por mensagem.`;
+
+/* ---------- a saudação nunca vai escrita, garantido por código ----------
+   O prompt pede a variável {saudacao}, mas "Boa tarde" é a coisa mais
+   automática que um modelo escreve, e toda mensagem daqui é mandada horas
+   ou dias depois de nascer: saudação errada para a hora entrega na
+   primeira linha que o texto foi escrito antes, por outra pessoa ou por
+   uma máquina, e a conversa morre ali. A maiúscula do modelo é
+   preservada, porque ela diz se a saudação abria a frase. */
+function semSaudacaoFixa(t: string): string {
+  return t.replace(/\b(bom dia|boa tarde|boa noite)\b/gi, (m) =>
+    m[0] === m[0].toUpperCase() ? "{Saudacao}" : "{saudacao}",
+  );
+}
 
 /* ---------- o arroba, limpo ----------
    O campo aceita "@x", "instagram.com/x" e "x"; o endpoint só quer o x. */
@@ -397,21 +414,34 @@ O que NÃO entra no dossiê:
 ${vozes ? `O tom das mensagens do Rafael, para calibrar a sua:\n\n${vozes}\n` : ""}
 ${BLOCO_PORTFOLIO}
 
-A mensagem, em quatro tempos:
+SÃO DUAS MENSAGENS, E ESSA SEPARAÇÃO É A REGRA MAIS IMPORTANTE DAQUI. Na lista de conversas do WhatsApp a pessoa lê umas duas linhas na notificação e decide ali se abre. Uma mensagem que já se apresenta ("aqui é o Rafael, do estúdio de web design"), já traz link (o cartão de preview é a etiqueta visual de anúncio) e já oferece alguma coisa é reconhecida como propaganda ANTES de ser lida, e nem o melhor texto sobrevive a isso. Então a oferta não vai no primeiro toque: ela vai no segundo, depois que a pessoa responder.
+
+"abertura" é o PRIMEIRO TOQUE. Uma pergunta que só quem olhou aquele negócio saberia fazer, e que a pessoa responde sem esforço. Regras duras:
+- No máximo 200 caracteres, no máximo duas frases. Precisa caber inteira na notificação.
+- NENHUM link, NENHUMA URL, nem "vercel.app", nem "instagram.com/...". Nenhum.
+- Nenhuma apresentação: não diga quem você é, não diga "estúdio", "web design", "site", "vitrine" nem o que você faz. Quem pergunta não se apresenta.
+- Nenhuma oferta, nenhuma prévia, nenhum elogio de venda ("que trabalho lindo", "adorei o perfil").
+- O assunto é o NEGÓCIO da pessoa, nunca o site dela. Pergunte como cliente que tentou algo e travou, porque geralmente é verdade: o link da bio que abre três destinos, o cardápio que não abre no celular, a dúvida de onde ver a grade ou o preço.
+- Escrita como alguém digita no celular: pode começar em minúscula, sem pontuação caprichada, sem ponto final obrigatório. Texto impecável em cinco frases denuncia texto copiado.
+- Uma pergunta só, respondível em uma palavra.
+- Se a pergunta for sobre algo que você VIU e não tem certeza, pergunte de verdade ("é assim mesmo ou tá quebrado?"). Honestidade aqui é o que faz a mensagem funcionar: é uma dúvida real.
+
+"mensagem" é o SEGUNDO TOQUE, para o Rafael mandar DEPOIS que a pessoa responder. Aqui o comprimento é cuidado, não mala direta. Quatro tempos:
 1. O GANCHO: uma frase que prova que você olhou o negócio. Sempre o que você VIU (o perfil, uma peça, as avaliações), nunca o que você fez: "fui procurar e não encontrei" e "vi que existe uma empresa registrada" são proibidos, soam vigilância.
 2. A CONSEQUÊNCIA: em uma frase, o cliente que o negócio perde por causa disso, na lente de quem vende.
 3. A OFERTA: a prévia sem compromisso, concreta ("monto uma prévia da vitrine de vocês e te mando para ver"); se houver exemplo do portfólio que conversa com o público, é aqui que ele entra.
 4. A PERGUNTA: leve, de responder com uma palavra.
+A "mensagem" continua a "abertura": ela responde ao que a pessoa acabou de dizer e SÓ AQUI o Rafael se apresenta ("é que eu faço site aqui em Maringá e entrei pra ver..."). Não repita o gancho com as mesmas palavras da abertura.
 
-Regras do tom:
-- Três a cinco frases no total, como se digitada no celular.
-- Apresente-se em meia frase onde fluir melhor; nem toda mensagem precisa começar com "Oi! Aqui é o Rafael": varie a abertura.
+Regras do tom, nas duas:
+- Três a cinco frases na "mensagem", uma ou duas na "abertura", como se digitadas no celular.
 - Nunca preço, nunca pressão, sem travessão, sem emoji, sem "Prezado", sem cara de mala direta.
+- NUNCA escreva "bom dia", "boa tarde" ou "boa noite" com todas as letras. A mensagem é escrita agora e mandada horas ou dias depois, e saudação errada para a hora entrega na primeira linha que o texto foi escrito antes. Se quiser saudar, escreva a variável {saudacao} (ou {Saudacao} para abrir a frase), que o CRM troca pela hora certa de Maringá no instante do envio.
 - NUNCA o verbo "desenhar" com o cliente (aconteceu de verdade: o cliente entendeu "desenho" como rabisco de papel, não como site). Fale "faço sites", "crio sites", "monto uma prévia". "Desenhar" é vocabulário de estúdio, não de loja.
 
 Honestidade acima de tudo: nunca cite no gancho algo que não apareceu nos resultados ou nos dados colhidos. E AUSÊNCIA DE RESULTADO NÃO É PROVA DE AUSÊNCIA: só afirme que o negócio "não tem" Instagram, site ou ficha se isso foi conferido; havendo candidato não conferido ou dúvida, não afirme nada sobre existir ou não.
 
-QUANDO A PESQUISA É INCONCLUSIVA, O DOSSIÊ ENCOLHE. Se você não confirmou NENHUMA presença real do negócio (nenhum perfil ativo conferido, nenhum site, nenhuma ficha no Maps), então: o resumo diz isso em uma ou duas frases, "presenca" leva no máximo dois itens do que dá para afirmar, e "dor", "gancho" e "mensagem" vão como null. Uma mensagem de prospecção sem nenhum fato confirmado por trás é pior que nenhuma: o Rafael completa o arroba na ficha e refaz a pesquisa. Não escreva parágrafos de "não foi possível confirmar" repetidos: uma frase basta.
+QUANDO A PESQUISA É INCONCLUSIVA, O DOSSIÊ ENCOLHE. Se você não confirmou NENHUMA presença real do negócio (nenhum perfil ativo conferido, nenhum site, nenhuma ficha no Maps), então: o resumo diz isso em uma ou duas frases, "presenca" leva no máximo dois itens do que dá para afirmar, e "dor", "gancho", "abertura" e "mensagem" vão como null. Uma mensagem de prospecção sem nenhum fato confirmado por trás é pior que nenhuma: o Rafael completa o arroba na ficha e refaz a pesquisa. Não escreva parágrafos de "não foi possível confirmar" repetidos: uma frase basta.
 
 Responda SOMENTE com um JSON neste formato exato, sem texto antes nem depois:
 {
@@ -419,7 +449,8 @@ Responda SOMENTE com um JSON neste formato exato, sem texto antes nem depois:
   "presenca": ["um achado por item, frases curtas"],
   "dor": "a dor provável, uma ou duas frases",
   "gancho": "o fato concreto para abrir a conversa",
-  "mensagem": "a primeira mensagem, pronta para colar no WhatsApp",
+  "abertura": "o primeiro toque: até 200 caracteres, uma pergunta, sem link e sem oferta",
+  "mensagem": "o segundo toque, para depois que a pessoa responder",
   "ticket_sugerido": 999,
   "fontes": [{"titulo": "nome da página", "url": "https://..."}],
   "cadastro": {"empresa": "...", "instagram": "...", "whatsapp": "...", "email": "...", "nicho": "...", "cidade": "..."},
@@ -447,12 +478,30 @@ function extrairJson(texto: string): ResultadoPesquisa {
   const lista = (v: unknown) =>
     Array.isArray(v) ? v.filter((x): x is string => typeof x === "string" && Boolean(x.trim())) : undefined;
 
+  /* A ABERTURA NÃO LEVA LINK, garantido por código. É a regra inteira do
+     primeiro toque: na lista de conversas o cartão de preview é a etiqueta
+     visual de anúncio, e ele aparece antes de qualquer palavra ser lida.
+     O prompt proíbe, mas o mesmo modelo que vivia esquecendo de colar o
+     link na mensagem também cola link onde não deve. */
+  const semLink = (t: string) =>
+    t
+      .replace(/https?:\/\/\S+/gi, "")
+      .replace(/\b[\w-]+\.(vercel\.app|com\.br|com)(\/\S*)?\b/gi, "")
+      .replace(/[ \t]{2,}/g, " ")
+      .replace(/\n{3,}/g, "\n\n")
+      .trim();
+
+  const aberturaBruta = texto_(bruto.abertura);
+  const abertura = aberturaBruta ? semLink(semSaudacaoFixa(aberturaBruta)) : undefined;
+  const mensagem = texto_(bruto.mensagem);
+
   const resultado: ResultadoPesquisa = {
     resumo: texto_(bruto.resumo),
     presenca: lista(bruto.presenca),
     dor: texto_(bruto.dor),
     gancho: texto_(bruto.gancho),
-    mensagem: texto_(bruto.mensagem),
+    abertura: abertura || undefined,
+    mensagem: mensagem ? semSaudacaoFixa(mensagem) : undefined,
     ticket_sugerido: typeof bruto.ticket_sugerido === "number" ? bruto.ticket_sugerido : null,
     fontes: Array.isArray(bruto.fontes)
       ? bruto.fontes
@@ -894,6 +943,7 @@ Escreva a próxima mensagem do Rafael. Regras:
 - Avança UM degrau só, de acordo com o estágio: quem ainda conversa anda para a prévia sem compromisso; quem já viu prévia anda para a proposta; quem travou no preço ouve o caminho da entrada menor. Nunca pula degrau, nunca pressiona.
 - Se a pessoa disse que não quer ou não pode agora, aceita com elegância e deixa a porta aberta, sem insistência.
 - Sem travessão, sem emoji, sem formalidade de agência. E NUNCA o verbo "desenhar" (cliente entende rabisco): fale "faço", "crio", "monto".
+- NUNCA escreva "bom dia", "boa tarde" ou "boa noite" com todas as letras: a sugestão é escrita agora e mandada depois, e saudação errada para a hora entrega o texto pronto. Se quiser saudar, escreva {saudacao} (ou {Saudacao} para abrir a frase), que o CRM troca pela hora certa de Maringá na hora do envio.
 
 Responda SOMENTE com um JSON neste formato, sem texto antes nem depois:
 {"mensagem": "a mensagem pronta para colar na conversa"}`;
@@ -914,8 +964,11 @@ Responda SOMENTE com um JSON neste formato, sem texto antes nem depois:
   const fim = texto.lastIndexOf("}");
   if (inicio === -1 || fim <= inicio) throw new Error("A sugestão veio sem JSON.");
   const bruto = JSON.parse(texto.slice(inicio, fim + 1)) as { mensagem?: unknown };
-  const mensagem = typeof bruto.mensagem === "string" ? bruto.mensagem.trim() : "";
-  if (!mensagem) throw new Error("A sugestão veio vazia.");
+  const cru = typeof bruto.mensagem === "string" ? bruto.mensagem.trim() : "";
+  if (!cru) throw new Error("A sugestão veio vazia.");
+  /* Mesma garantia do dossiê: a saudação vira variável e o relógio resolve
+     na hora de colar, não na hora de sugerir. */
+  const mensagem = semSaudacaoFixa(cru);
 
   return { mensagem, custo_usd };
 }

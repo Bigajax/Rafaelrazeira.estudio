@@ -22,7 +22,7 @@
 
 import { useState } from "react";
 import { registrarToque } from "@/app/crm/acoes";
-import { linkDirectInstagram, linkWhatsapp } from "@/lib/crm/regras";
+import { aplicarSaudacao, linkDirectInstagram, linkWhatsapp } from "@/lib/crm/regras";
 import type { Canal, Interacao, LeadPainel } from "@/lib/crm/tipos";
 import s from "@/app/crm/crm.module.css";
 
@@ -70,7 +70,11 @@ export function SugerirResposta({
       if (!r.ok || !corpo?.mensagem) {
         setErro(corpo?.erro ?? "A sugestão falhou. Tente de novo.");
       } else {
-        setSugestao(corpo.mensagem);
+        /* A saudação vem como variável do motor e vira palavra aqui, na
+           hora certa: entre sugerir e mandar passam minutos, mas o modelo
+           não tem relógio e "boa tarde" às nove da manhã queima a
+           conversa na primeira linha. */
+        setSugestao(aplicarSaudacao(corpo.mensagem));
       }
     } catch {
       setErro("A sugestão não respondeu. Confira a conexão e tente de novo.");

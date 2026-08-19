@@ -24,7 +24,7 @@
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { salvarLead } from "@/app/crm/acoes";
-import { dinheiro } from "@/lib/crm/regras";
+import { aplicarSaudacao, dinheiro } from "@/lib/crm/regras";
 import type { LeadPainel } from "@/lib/crm/tipos";
 import s from "@/app/crm/crm.module.css";
 
@@ -215,9 +215,25 @@ export function Pesquisa({
             </p>
           ) : null}
 
+          {/* A ORDEM NA TELA É A ORDEM DE MANDAR. A abertura vem primeiro e
+              sem rótulo de seção, porque é ela que vai; a mensagem 2 vem
+              abaixo, com o rótulo dizendo quando entra. Ler o dossiê de
+              cima para baixo é ensaiar a conversa na sequência certa. */}
+          {dossie.abertura ? (
+            <>
+              <p className={s.previa}>{aplicarSaudacao(dossie.abertura)}</p>
+              <p className={s.blocoNota}>
+                O primeiro toque: cabe inteiro na notificação, sem oferta e sem link.
+              </p>
+            </>
+          ) : null}
+
           {dossie.mensagem ? (
             <>
-              <p className={s.previa}>{dossie.mensagem}</p>
+              {dossie.abertura ? (
+                <p className={s.dossieRot}>Mensagem 2, depois que responder</p>
+              ) : null}
+              <p className={s.previa}>{aplicarSaudacao(dossie.mensagem)}</p>
               {/* `.btn` de papel, não o `.btnAcao` rosa: o rosa desta ficha
                   já mora no cabeçalho, no mesmo botão, e dois rosas para o
                   mesmo gesto seriam duas primeiras ações. Mandada a

@@ -154,9 +154,27 @@ export const NOME_MOTIVO: Record<MotivoPerda, string> = {
 export const CATEGORIAS_TEMPLATE = [
   "abertura_fria",
   "abertura_morna",
+  /* O segundo toque, que só existe depois de uma resposta: é onde a
+     apresentação, a prévia e o link do exemplo cabem sem queimar a
+     conversa. Ele é uma categoria própria e não um follow-up porque
+     follow-up é insistir sem resposta, e este é o contrário disso. */
+  "segundo_toque",
+  /* A ESCADA DO SILÊNCIO mora em `follow_up`, e a ORDEM dos templates
+     dentro dela é a escada: o primeiro retorno é o primeiro template de
+     follow-up, o segundo é o segundo. Não são duas categorias porque os
+     dois têm a mesma natureza (voltar em quem não respondeu); o que muda
+     é o trabalho de cada um. Ver `degrauDoSilencio` em regras.ts. */
   "follow_up",
+  /* Encerrar é uma DECISÃO, não mais um retorno, e por isso tem categoria
+     própria: separada, ela aparece na tela como a alternativa a insistir
+     de novo, que é exatamente a escolha que existe ali. */
+  "encerramento",
   "indicacao",
   "objecao",
+  /* A prévia é a etapa que separa este estúdio dos outros (desenha e manda
+     ver antes de cobrar), e até 19/08 era a única do funil sem texto
+     nenhum: a hora mais importante do processo era improvisada toda vez. */
+  "previa",
   "proposta",
   "reativacao",
 ] as const;
@@ -165,9 +183,12 @@ export type CategoriaTemplate = (typeof CATEGORIAS_TEMPLATE)[number];
 export const NOME_CATEGORIA: Record<CategoriaTemplate, string> = {
   abertura_fria: "Abertura fria",
   abertura_morna: "Abertura morna",
-  follow_up: "Follow-up",
+  segundo_toque: "Segundo toque",
+  follow_up: "Retorno sem resposta",
+  encerramento: "Encerramento",
   indicacao: "Indicação",
   objecao: "Objeção",
+  previa: "Prévia",
   proposta: "Proposta",
   reativacao: "Reativação",
 };
@@ -196,7 +217,16 @@ export type Dossie = {
   dor?: string;
   /* o gancho concreto para abrir conversa */
   gancho?: string;
-  /* a primeira mensagem pronta, no tom dos templates da casa */
+  /* O PRIMEIRO TOQUE: duas linhas, uma pergunta, sem oferta e sem link.
+     É a mensagem que cabe inteira na notificação do WhatsApp, e é ali,
+     na notificação, que a pessoa decide se abre. Tudo que denuncia venda
+     antes de ela abrir (a apresentação, o cartão de preview do link, as
+     cinco frases perfeitas) mora na `mensagem`, não aqui. */
+  abertura?: string;
+  /* O SEGUNDO TOQUE, para depois que a pessoa responder: aí sim a
+     apresentação, a prévia sem compromisso e o link do exemplo. Depois de
+     uma resposta, texto comprido lê como cuidado; antes dela, lê como
+     mala direta. Dossiês gerados antes de 19/08/2026 só têm este campo. */
   mensagem?: string;
   ticket_sugerido?: number | null;
   fontes?: { titulo: string; url: string }[];
