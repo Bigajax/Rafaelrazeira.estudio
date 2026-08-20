@@ -71,6 +71,19 @@ export const PROPOSTAS: Record<string, Proposta> = {
       saldo_card: { label: "Saldo do projeto no cartão, em 4x", valor: 800, metodo: "card", maxParcelas: 4 },
     },
   },
+  /* Duas parcelas iguais no molde da ArraZou, e cada uma paga uma etapa:
+     a primeira o desenho, a segunda a entrega. O saldo é `saldo_pix` e
+     não `saldo_card` de propósito: no cartão o Mercado Pago repassa de
+     uma vez e o Caixa perderia a data da segunda cobrança, que aqui é o
+     gatilho de "aprovou, agora paga". */
+  "carina-melo": {
+    titulo: "Rafael Razeira Estúdio — Vitrine Digital Carina Melo Shop",
+    whatsapp: "5544999997219",
+    itens: {
+      entrada_pix: { label: "1ª parcela: design do projeto", valor: 500, metodo: "pix" },
+      saldo_pix: { label: "2ª parcela: na entrega", valor: 499, metodo: "pix" },
+    },
+  },
   arrazou: {
     titulo: "Rafael Razeira Estúdio — Vitrine Digital ArraZou Semijoias",
     whatsapp: "5544999997219",

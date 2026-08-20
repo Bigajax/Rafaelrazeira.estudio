@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Proposta Carina Melo Shop · Rafael Razeira Estúdio</title>
+
+<!-- O cartao do link: a logo RR no preview do WhatsApp (URL absoluta de proposito) -->
+<meta property="og:image" content="https://rafaelrazeira-estudio.vercel.app/assets/og-rr.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Monograma RR do Rafael Razeira Estudio" />
+
+<!-- ============================================================
+     PROPOSTA COMERCIAL — CARINA MELO SHOP (vitrine digital, R$ 999)
+
+     Mesma gramática papel e tinta da ArraZou, e o CSS é o dela sem uma
+     vírgula de diferença: papel #F2EFE6, tinta #14181A, condensada 78%
+     nas manchetes, etiquetas em mono, bordas de 1.5px, sombra dura que
+     colapsa no clique, ✓ esmeralda na margem, sala grafite no fecho e
+     ROSA SÓ NA AÇÃO (os dois botões de pagar).
+
+     O QUE MUDA É O ESCOPO, e ele não é chute: a prévia dela JÁ EXISTE
+     (Desktop/carina-melo-shop, Next 16 + React 19 + Tailwind v4) com 24
+     peças reais, código e preço vindos do lookbook. Cada item da lista
+     de inclusos abaixo aponta para uma coisa construída e testada, e o
+     que ficou pendente naquele projeto (painel, estoque, medidas) está
+     na lista do que NÃO está incluso, onde tem que estar.
+
+     O MOCKUP fica desligado até as capturas existirem em
+     /assets/proposta/ (carina-desktop.png e carina-mobile.png). A
+     ArraZou foi ao ar uma vez com duas imagens quebradas no topo.
+
+     Para PDF: Ctrl+P → Salvar como PDF.
+     ============================================================ -->
+
+<link rel="icon" type="image/png" href="/assets/favicon.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+<!-- Checkout na proposta (modal Pix/cartão) -->
+<link rel="stylesheet" href="/css/proposta-checkout.css" />
+<script src="/js/proposta-checkout.js" defer></script>
+
+<style>
+/* ——— Tokens papel e tinta (de app/vitrine-digital/vitrine.module.css) ——— */
+:root{
+  --green:#0C9159;
+  --green-dark:#076B42;
+  --green-live:#1FBF7A;
+  --rosa:#E31B62;
+  --rosa-dark:#B81250;
+  --mint:#CDEFDD;
+  --ink:#14181A;
+  --ink-soft:#3A4144;
+  --paper:#F2EFE6;
+  --paper-2:#EAE6D9;
+  --line:#D8D3C4;
+  --line-dark:#2A3134;
+  --maxw:960px;
+  --pad:clamp(20px,5vw,64px);
+  --display:"Archivo",Arial,sans-serif;
+  --body:"Inter",system-ui,-apple-system,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--body);background:var(--paper);color:var(--ink);
+  line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+b{font-weight:600}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--green);outline-offset:3px}
+
+.doc{max-width:var(--maxw);margin:0 auto;padding:0 var(--pad)}
+
+h1,h2,h3{font-family:var(--display);text-wrap:balance}
+h1,h2{font-stretch:78%;font-weight:900;text-transform:uppercase;letter-spacing:-.01em}
+
+/* ——— Header: a marca na condensada 62, como na vitrine ——— */
+.doc-header{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding-block:clamp(18px,4vw,28px);border-bottom:1.5px solid var(--line-dark);
+}
+.brand{font-family:var(--display);font-stretch:62%;font-weight:900;text-transform:uppercase;font-size:clamp(17px,4vw,21px);line-height:.86;letter-spacing:.004em}
+.brand small{font-size:1em;font-weight:900;color:var(--ink-soft)}
+.doc-header .date{font-family:var(--mono);font-size:clamp(11px,3vw,12px);letter-spacing:.06em;color:var(--ink-soft);white-space:nowrap}
+
+/* ——— Abertura: etiqueta mono + manchete-cartaz ——— */
+.opening{padding-block:clamp(44px,9vw,88px)}
+.etiqueta{
+  display:inline-flex;align-items:center;gap:10px;
+  font-family:var(--mono);font-size:clamp(11px,3vw,12px);font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--green-dark);
+  border:1.5px solid var(--green);padding:7px 12px;background:var(--paper-2);
+}
+.etiqueta .dot{width:9px;height:9px;background:var(--green);flex:none}
+.opening h1{
+  font-size:clamp(2.4rem,9vw,5.2rem);line-height:.95;
+  margin-top:clamp(20px,4vw,30px);
+}
+.opening h1 em{font-style:normal;color:var(--green)}
+.opening .meta{
+  margin-top:clamp(22px,4vw,32px);font-size:clamp(1rem,4vw,1.12rem);color:var(--ink-soft);max-width:54ch;
+}
+.opening .meta b{color:var(--ink)}
+
+/* ——— Mockup (desligado até as capturas existirem) ——— */
+.mockup{
+  margin-top:clamp(36px,7vw,60px);
+  display:flex;align-items:flex-end;justify-content:center;gap:clamp(16px,3vw,32px);
+}
+.mockup img{display:block;width:100%;height:100%;object-fit:cover;object-position:top}
+.laptop{flex:none;max-width:100%}
+.laptop .screen{
+  width:600px;max-width:100%;aspect-ratio:16/10;overflow:hidden;
+  border:1.5px solid var(--line-dark);background:#fff;
+  box-shadow:6px 6px 0 var(--line-dark);
+}
+.laptop .base{height:10px;margin:6px -18px 0;background:var(--line-dark)}
+.phone{flex:none}
+.phone .screen{
+  width:148px;aspect-ratio:390/800;overflow:hidden;
+  border:1.5px solid var(--line-dark);background:#fff;
+  box-shadow:6px 6px 0 var(--green);
+}
+@media(max-width:979px){
+  .mockup{flex-direction:column;align-items:center;gap:24px}
+  .laptop .screen{width:320px}
+  .phone .screen{width:132px}
+}
+.mockup-note{
+  margin-top:14px;text-align:center;
+  font-family:var(--mono);font-size:clamp(10px,2.8vw,11px);font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);
+}
+
+/* ——— Seções numeradas: número mono no canhoto ——— */
+.sec{padding-block:clamp(38px,7vw,64px);border-top:1.5px solid var(--line)}
+@media(min-width:820px){.sec{display:grid;grid-template-columns:100px 1fr;gap:16px}}
+.sec .num{
+  font-family:var(--mono);font-weight:700;font-size:clamp(.95rem,4vw,1.2rem);
+  color:var(--green-dark);letter-spacing:.06em;margin-bottom:12px;
+}
+.sec h2{font-size:clamp(1.5rem,6.5vw,2.3rem);line-height:.98}
+.sec .body{margin-top:clamp(16px,3vw,22px);max-width:62ch}
+.sec .body--wide{max-width:none}
+.sec p{font-size:clamp(1rem,4vw,1.1rem);color:var(--ink-soft);line-height:1.55}
+.sec p + p{margin-top:12px}
+.sec p b{color:var(--ink)}
+
+/* ——— Inclusos: o ✓ na margem, marca da casa ——— */
+.grid-list{list-style:none;display:grid;gap:10px;margin-top:4px}
+@media(min-width:680px){.grid-list{grid-template-columns:1fr 1fr;gap:12px}}
+.grid-list li{
+  display:flex;gap:12px;align-items:flex-start;
+  border:1.5px solid var(--line);background:#fff;
+  padding:14px 16px;
+  font-size:clamp(.96rem,3.8vw,1.02rem);line-height:1.45;color:var(--ink-soft);
+}
+.grid-list .check{color:var(--green);font-family:var(--mono);font-weight:700;flex:none;line-height:1.45}
+.grid-list b{color:var(--ink)}
+
+/* ——— Exclusões: pauta simples ——— */
+.list{list-style:none}
+.list li{
+  display:flex;gap:14px;align-items:flex-start;
+  padding-block:12px;border-bottom:1px solid var(--line);
+  font-size:clamp(.98rem,4vw,1.06rem);line-height:1.5;color:var(--ink-soft);
+}
+.list li:last-child{border-bottom:none}
+.list li::before{content:"·";font-family:var(--mono);font-weight:700;color:var(--ink-soft);flex:none;line-height:1.5}
+.list-note{margin-top:16px;font-size:clamp(.88rem,3.4vw,.95rem);color:var(--ink-soft)}
+
+/* ——— Investimento ——— */
+.price-row{
+  display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;
+  padding-block:16px;border-bottom:1.5px solid var(--line-dark);margin-top:8px;
+}
+.price-row .p-tag{
+  font-family:var(--mono);font-weight:700;font-size:clamp(11px,3vw,12px);
+  letter-spacing:.1em;text-transform:uppercase;color:var(--green-dark);flex:none;
+}
+.price-main{
+  font-family:var(--display);font-stretch:78%;font-weight:900;letter-spacing:-.01em;
+  font-size:clamp(2.6rem,11vw,4rem);line-height:1;
+}
+.split{margin-top:clamp(18px,4vw,24px)}
+.split div{
+  display:flex;justify-content:space-between;gap:16px;align-items:baseline;
+  padding-block:13px;border-bottom:1px solid var(--line);
+}
+.split .tag{font-family:var(--mono);font-weight:700;font-size:clamp(11px,3vw,12px);letter-spacing:.06em;text-transform:uppercase;color:var(--green-dark);white-space:nowrap}
+.split .desc{font-size:clamp(.95rem,3.8vw,1.02rem);color:var(--ink-soft);text-align:right}
+@media(max-width:560px){
+  .split div{flex-direction:column;align-items:flex-start;gap:4px}
+  .split .desc{text-align:left}
+}
+.pay-obs{margin-top:14px;font-size:clamp(.9rem,3.5vw,.98rem);color:var(--ink-soft)}
+
+/* Risco zero: moldura esmeralda de 1.5px, sem arredondar */
+.guarantee{
+  display:block;margin-top:clamp(24px,5vw,36px);
+  border:1.5px solid var(--green);background:var(--paper-2);
+  padding:clamp(18px,4.5vw,28px);
+}
+.guarantee .g-label{
+  font-family:var(--mono);font-size:11px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--green-dark);
+}
+.guarantee p{margin-top:10px;font-size:clamp(.98rem,4vw,1.06rem);line-height:1.5;color:var(--ink-soft);max-width:58ch}
+.guarantee p b{color:var(--ink)}
+
+/* ——— Pagamento: cartões de papel, botão rosa de carimbo ——— */
+.pay-cards{margin-top:clamp(22px,4vw,30px);display:grid;gap:16px;align-items:stretch}
+@media(min-width:720px){.pay-cards{grid-template-columns:1fr 1fr}}
+.pay-cards--one{grid-template-columns:1fr;margin-top:16px}
+.pay{
+  display:flex;flex-direction:column;
+  border:1.5px solid var(--line-dark);background:#fff;overflow:hidden;
+}
+.pay--rec{box-shadow:6px 6px 0 var(--green)}
+.pay-head{
+  padding:12px 16px;text-align:center;
+  font-family:var(--display);font-stretch:78%;font-weight:900;text-transform:uppercase;
+  font-size:clamp(1rem,4vw,1.1rem);letter-spacing:.01em;
+  background:var(--paper-2);border-bottom:1.5px solid var(--line-dark);color:var(--ink);
+}
+.pay--rec .pay-head{background:var(--ink);color:var(--paper)}
+.pay--dark .pay-head{background:var(--line-dark);color:var(--paper)}
+.pay-body{display:flex;flex-direction:column;flex:1;padding:clamp(16px,4vw,22px)}
+.pay-ctx{font-family:var(--mono);font-size:clamp(10px,2.8vw,11px);font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
+.pay-price{
+  margin-top:8px;font-family:var(--display);font-stretch:78%;font-weight:900;letter-spacing:0;
+  font-size:clamp(1.7rem,7vw,2.1rem);line-height:1;white-space:nowrap;
+}
+.pay--rec .pay-price{color:var(--green-dark)}
+.pay-price small{display:block;white-space:normal;margin-top:6px;font-family:var(--mono);font-size:10px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em}
+.pay-feats{list-style:none;margin-top:14px;margin-bottom:18px}
+.pay-feats li{
+  display:flex;gap:10px;align-items:flex-start;
+  padding-block:8px;border-top:1px solid var(--line);
+  font-size:clamp(.88rem,3.4vw,.94rem);color:var(--ink-soft);line-height:1.45;
+}
+.pay-feats li::before{content:"✓";font-family:var(--mono);font-weight:700;color:var(--green);flex:none;line-height:1.45}
+.pay-feats b{color:var(--ink)}
+/* O botão de pagar é A ação: o único rosa da página, com a sombra de
+   carimbo que colapsa no clique, igual ao envio do formulário da vitrine */
+.btn-pay{
+  margin-top:auto;width:100%;
+  border:none;background:var(--rosa);color:#fff;
+  padding:14px 20px;cursor:pointer;
+  font-family:var(--display);font-stretch:78%;font-weight:900;font-size:15px;
+  letter-spacing:.04em;text-transform:uppercase;
+  box-shadow:4px 4px 0 var(--line-dark);
+  transition:background .15s ease,transform .1s ease,box-shadow .1s ease;
+}
+.btn-pay:hover{background:var(--rosa-dark)}
+.btn-pay:active{transform:translate(4px,4px);box-shadow:0 0 0 var(--line-dark)}
+.btn-pay:focus-visible{outline:2px solid var(--rosa-dark);outline-offset:2px}
+.btn-pay--ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line-dark);box-shadow:4px 4px 0 var(--line)}
+.btn-pay--ghost:hover{background:var(--paper-2)}
+.pay-note{margin-top:16px;font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft)}
+@media print{
+  .pay-cards .btn-pay{display:none}
+  .pay--rec{box-shadow:none}
+  .pay-head{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
+/* ——— Prazo ——— */
+.deadline{
+  font-family:var(--display);font-stretch:78%;font-weight:900;letter-spacing:0;
+  font-size:clamp(1.6rem,7vw,2.5rem);line-height:1.02;text-transform:uppercase;
+}
+.deadline em{font-style:normal;color:var(--green)}
+
+/* ——— Hospedagem ——— */
+.host-cards{margin-top:clamp(18px,4vw,26px);display:grid;gap:16px}
+@media(min-width:720px){.host-cards{grid-template-columns:1fr 1fr}}
+.host{border:1.5px solid var(--line-dark);padding:clamp(18px,4.5vw,26px);background:#fff}
+.host--rec{box-shadow:6px 6px 0 var(--green)}
+.host .h-tag{font-family:var(--mono);font-weight:700;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--green-dark)}
+.host h3{
+  margin-top:10px;font-stretch:78%;font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.15rem,4.6vw,1.4rem);line-height:1;letter-spacing:0;
+}
+.host .h-price{
+  margin-top:10px;font-family:var(--display);font-stretch:78%;font-weight:900;
+  font-size:clamp(1.5rem,6vw,1.9rem);line-height:1;
+}
+.host .h-price small{font-family:var(--mono);font-size:.5em;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.02em;white-space:nowrap}
+.host p{margin-top:12px;font-size:clamp(.93rem,3.8vw,1rem)}
+.host-note{margin-top:clamp(14px,3vw,20px);font-size:clamp(.9rem,3.5vw,.98rem);color:var(--ink-soft)}
+@media print{.host-cards{break-inside:avoid}}
+
+/* ——— Próximos passos ——— */
+.next{list-style:none;counter-reset:np}
+.next li{
+  counter-increment:np;display:flex;gap:14px;align-items:flex-start;
+  padding-block:13px;border-bottom:1px solid var(--line);
+  font-size:clamp(1rem,4vw,1.08rem);color:var(--ink-soft);line-height:1.5;
+}
+.next li:last-child{border-bottom:none}
+.next li::before{
+  content:counter(np,decimal-leading-zero);
+  font-family:var(--mono);font-weight:700;color:var(--green-dark);flex:none;line-height:1.5;
+}
+.next b{color:var(--ink)}
+
+/* ——— CTA final: a sala grafite ——— */
+.closing{
+  margin-block:clamp(40px,8vw,72px) 0;
+  background:var(--ink);color:var(--paper);
+  padding:clamp(40px,8vw,72px) var(--pad);text-align:center;
+  /* sangra até as bordas da janela */
+  margin-inline:calc(-1 * var(--pad));
+}
+.closing h2{
+  font-size:clamp(1.8rem,8vw,3.2rem);line-height:.98;
+  max-width:22ch;margin-inline:auto;
+}
+.closing h2 em{font-style:normal;color:var(--green-live)}
+.cta-alt{margin-top:clamp(24px,4vw,32px)}
+.cta-alt a{
+  display:inline-block;
+  background:var(--paper);color:var(--ink);
+  padding:14px 22px;
+  font-family:var(--display);font-stretch:78%;font-weight:900;font-size:15px;
+  letter-spacing:.04em;text-transform:uppercase;
+  box-shadow:4px 4px 0 var(--green);
+  transition:transform .1s ease,box-shadow .1s ease;
+}
+.cta-alt a:active{transform:translate(4px,4px);box-shadow:0 0 0 var(--green)}
+@media print{.closing{display:none}}
+
+/* ——— Rodapé ——— */
+.doc-footer{
+  padding-block:clamp(22px,4vw,32px);
+  border-top:1.5px solid var(--line-dark);margin-top:0;
+  display:flex;flex-wrap:wrap;gap:8px 24px;
+  font-family:var(--mono);font-size:clamp(10.5px,3vw,11.5px);font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);
+}
+
+/* ——— Impressão / PDF (A4) ——— */
+@page{size:A4;margin:16mm}
+@media print{
+  body{background:#fff}
+  .mockup,.mockup-note{display:none}
+  .doc{max-width:none;padding:0}
+  .opening{padding-block:24px 32px}
+  .sec{padding-block:22px;break-inside:avoid}
+  .guarantee{-webkit-print-color-adjust:exact;print-color-adjust:exact;break-inside:avoid}
+  .grid-list li{break-inside:avoid}
+}
+</style>
+</head>
+<body data-proposta="carina-melo">
+
+<div class="doc">
+
+  <header class="doc-header">
+    <div class="brand">RAFAEL RAZEIRA<br /><small>ESTÚDIO.</small></div>
+    <div class="date">20/08/2026</div>
+  </header>
+
+  <!-- 1 · HERO
+       A manchete não fala do site, fala do PEDIDO. É o que muda na
+       rotina dela, e é a única coisa desta vitrine que a loja da
+       Netshoes e o catálogo do WhatsApp não fazem. -->
+  <section class="opening">
+    <span class="etiqueta"><span class="dot"></span>PROPOSTA COMERCIAL</span>
+    <h1>A CLIENTE ESCOLHE. O PEDIDO CHEGA NO SEU WHATSAPP <em>COM O CÓDIGO</em>.</h1>
+    <p class="meta">Uma vitrine digital para a <b>Carina Melo Shop</b>: as 24 peças com foto, código real do estoque, preço e a garantia de 5 anos, num lugar só. A cliente escolhe com calma e toca em um botão. A mensagem chega até você <b>já identificada</b>, e a conversa começa no ponto em que hoje ela termina.</p>
+
+    <!-- MOCKUP DESLIGADO até as capturas existirem em /assets/proposta/
+         (carina-desktop.png 1280px de largura, carina-mobile.png 390px).
+         Gerar do dev server em Desktop/carina-melo-shop e remover este
+         comentário. A proposta da ArraZou foi ao ar uma vez sem elas e o
+         topo abriu com duas imagens quebradas.
+    <div class="mockup" aria-hidden="true">
+      <div class="laptop">
+        <div class="screen"><img src="/assets/proposta/carina-desktop.png" alt="" loading="lazy" /></div>
+        <div class="base"></div>
+      </div>
+      <div class="phone">
+        <div class="screen"><img src="/assets/proposta/carina-mobile.png" alt="" loading="lazy" /></div>
+      </div>
+    </div>
+    <p class="mockup-note">Pré-visualização real do projeto em notebook e smartphone</p>
+    -->
+  </section>
+
+  <!-- 2 · OBJETIVO -->
+  <section class="sec">
+    <div class="num">01</div>
+    <div>
+      <h2>O OBJETIVO DO PROJETO</h2>
+      <div class="body">
+        <p>Hoje a venda acontece no WhatsApp, e acontece bem. O que custa caro é o começo de cada conversa: quem chega do Instagram <b>não tem onde ver as peças com preço antes de perguntar</b>, então todo pedido nasce do zero. Qual o código? Quanto custa? Tem em ouro branco? Parcela em quantas? Você responde a mesma sequência várias vezes por dia, e quem não quer perguntar simplesmente não pergunta.</p>
+        <p>A vitrine não substitui o seu atendimento: ela <b>prepara a cliente</b>. Ela navega, filtra por categoria e material, vê o preço e o parcelamento, e toca em "Quero essa". A mensagem chega pronta no seu WhatsApp com o <b>nome, o código real e o preço</b> dentro dela. Menos pergunta repetida, mais conversa que já começa decidida.</p>
+        <p>E ela resolve uma coisa que catálogo nenhum resolve: <b>cada peça tem endereço próprio</b>. Quando alguém perguntar por um colar específico, você manda o link daquele colar, e não uma foto solta ou um "olha no catálogo".</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 · O QUE ESTÁ INCLUSO
+       Cada linha aqui aponta para uma coisa que já existe e foi testada
+       no projeto da prévia. Nada de item de catálogo de agência. -->
+  <section class="sec">
+    <div class="num">02</div>
+    <div>
+      <h2>O QUE ESTÁ INCLUSO</h2>
+      <div class="body body--wide">
+        <ul class="grid-list">
+          <li><span class="check">✓</span><span><b>Design sob medida</b> para a Carina Melo Shop, e não um modelo pronto trocado de cor</span></li>
+          <li><span class="check">✓</span><span><b>As 24 peças do seu lookbook</b>, cada uma com foto, código real do estoque e preço</span></li>
+          <li><span class="check">✓</span><span><b>Catálogo por categoria</b>: brincos, colares, anéis, pulseiras, braceletes e tornozeleiras</span></li>
+          <li><span class="check">✓</span><span><b>Filtro por material</b>: ouro, ouro branco e paládio</span></li>
+          <li><span class="check">✓</span><span><b>Página própria para cada peça</b>, com endereço próprio para você mandar no direct</span></li>
+          <li><span class="check">✓</span><span><b>Pedido identificado no WhatsApp</b>: a mensagem chega com nome, código e preço já escritos</span></li>
+          <li><span class="check">✓</span><span><b>Página da garantia de 5 anos</b>, o seu maior argumento, escrita e em destaque</span></li>
+          <li><span class="check">✓</span><span><b>Parcelamento em 3x sem juros</b> mostrado em cada peça, sem a cliente precisar perguntar</span></li>
+          <li><span class="check">✓</span><span><b>Peça esgotada</b> vira encomenda em vez de sumir: a foto esmaece, ganha faixa e o pedido continua chegando</span></li>
+          <li><span class="check">✓</span><span><b>Campo de personalização</b> pronto (nome, letra, data ou coordenada), e o que a cliente digita entra na mensagem</span></li>
+          <li><span class="check">✓</span><span><b>Feito para o celular primeiro</b>, que é por onde vem quem clica no seu Instagram</span></li>
+          <li><span class="check">✓</span><span><b>SEO configurado</b>: sitemap, dados estruturados e a Carina Melo aparecendo no Google de Maringá</span></li>
+          <li><span class="check">✓</span><span><b>Publicação do projeto</b></span></li>
+          <li><span class="check">✓</span><span><b>2 rodadas de revisão</b> após a apresentação</span></li>
+          <li><span class="check">✓</span><span><b>Treinamento de uso</b> + 30 dias de suporte pós-publicação</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 · O QUE NÃO ESTÁ INCLUSO
+       Honesto até onde dói: a vitrine é estática, e trocar preço passa
+       por mim. Prometer painel aqui seria vender o que a prévia não tem. -->
+  <section class="sec">
+    <div class="num">03</div>
+    <div>
+      <h2>O QUE NÃO ESTÁ INCLUSO</h2>
+      <div class="body">
+        <ul class="list">
+          <li><span>Carrinho de compras e checkout online</span></li>
+          <li><span>Sistema de pagamento na própria vitrine</span></li>
+          <li><span>Painel para você mesma cadastrar peças e trocar preços</span></li>
+          <li><span>Controle de estoque automático</span></li>
+          <li><span>Emissão fiscal</span></li>
+          <li><span>Fotografia profissional das peças</span></li>
+          <li><span>Produção contínua de banners e artes</span></li>
+          <li><span>Hospedagem e domínio</span></li>
+        </ul>
+        <p class="list-note">Nesta primeira versão, mudanças de peça e preço passam por mim e entram no mesmo dia. O painel para você mexer sozinha é a evolução natural da vitrine, e a gente conversa sobre ele quando fizer sentido: ele só se paga quando o catálogo passa a mudar toda semana.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 · INVESTIMENTO -->
+  <section class="sec">
+    <div class="num">04</div>
+    <div>
+      <h2>INVESTIMENTO</h2>
+      <div class="body">
+        <p>Projeto <b>desenhado sob medida</b> para a Carina Melo Shop: catálogo com código, página por peça, a garantia de 5 anos em destaque e o caminho direto para o seu WhatsApp.</p>
+        <div class="price-row">
+          <span class="p-tag">VALOR TOTAL DO PROJETO</span>
+          <span class="price-main">R$ 999,00</span>
+        </div>
+        <div class="split">
+          <div>
+            <span class="tag">1ª · NO ACEITE</span>
+            <span class="desc">R$ 500,00 no Pix, e o projeto entra na fila</span>
+          </div>
+          <div>
+            <span class="tag">2ª · NA ENTREGA</span>
+            <span class="desc">R$ 499,00 no Pix, com a vitrine pronta e aprovada por você</span>
+          </div>
+        </div>
+        <p class="pay-obs">Duas parcelas, e <b>cada uma paga uma etapa</b>: a primeira cobre o desenho do projeto, que é o trabalho que acontece antes de existir site; a segunda só é paga quando a vitrine está pronta, revisada e aprovada.</p>
+
+        <aside class="guarantee">
+          <span class="g-label">A SEGUNDA SÓ DEPOIS DE APROVAR</span>
+          <p>A parcela de R$ 499,00 <b>só existe depois que você aprovar o projeto</b>. Você vê a vitrine pronta, pede os ajustes das duas rodadas de revisão e só então paga a segunda metade.</p>
+        </aside>
+
+        <div class="pay-cards">
+          <div class="pay pay--rec">
+            <div class="pay-head">1ª parcela · no aceite</div>
+            <div class="pay-body">
+              <div class="pay-ctx">Design do projeto</div>
+              <div class="pay-price">R$ 500,00</div>
+              <ul class="pay-feats">
+                <li><span>É ela que <b>põe o projeto na fila</b> e destrava os ajustes finais</span></li>
+                <li><span>QR code aqui na página, confirmação na hora</span></li>
+              </ul>
+              <button class="btn-pay" type="button" data-checkout-item="entrada_pix">Pagar a 1ª parcela</button>
+            </div>
+          </div>
+          <div class="pay">
+            <div class="pay-head">2ª parcela · na entrega</div>
+            <div class="pay-body">
+              <div class="pay-ctx">Com a vitrine aprovada</div>
+              <div class="pay-price">R$ 499,00</div>
+              <ul class="pay-feats">
+                <li><span>Só depois de <b>você aprovar o projeto</b></span></li>
+                <li><span>Total do projeto: R$ 999,00</span></li>
+              </ul>
+              <button class="btn-pay btn-pay--ghost" type="button" data-checkout-item="saldo_pix">Pagar a 2ª parcela</button>
+            </div>
+          </div>
+        </div>
+        <p class="pay-note">Pagamento processado pelo Mercado Pago, sem sair desta página.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 · PRAZO
+       O prazo é curto porque é verdade: a prévia está construída com as
+       24 peças reais. O que falta é dado que só ela tem. -->
+  <section class="sec">
+    <div class="num">05</div>
+    <div>
+      <h2>PRAZO</h2>
+      <div class="body">
+        <p class="deadline">NO AR EM ATÉ <em>5 DIAS ÚTEIS</em> APÓS O ACEITE</p>
+        <p style="margin-top:14px">A prévia que você recebeu <b>já está construída</b>, com as suas 24 peças, os códigos e os preços do lookbook. O que falta não é trabalho de programação, é informação que só você tem.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 · O QUE EU PRECISO DE VOCÊ
+       Seção que a ArraZou não tem, e que existe porque a prévia da
+       Carina está pronta: o que trava a publicação são quatro dados
+       dela, e dizer isso por escrito é o que faz o prazo de 5 dias ser
+       promessa e não chute. -->
+  <section class="sec">
+    <div class="num">06</div>
+    <div>
+      <h2>O QUE EU PRECISO DE VOCÊ</h2>
+      <div class="body">
+        <ol class="next">
+          <li><span>O <b>número comercial oficial</b> do WhatsApp. O contato que achei publicado é (43) 99832-0102, e 43 é DDD de Londrina: preciso confirmar antes de pôr no ar.</span></li>
+          <li><span>A <b>leitura e aprovação do texto da garantia</b>. Ele está escrito, mas é um compromisso comercial seu: cada linha precisa passar por você.</span></li>
+          <li><span>O <b>endereço e o horário</b> de atendimento, se quiser que apareçam.</span></li>
+          <li><span>Uma <b>conferida nos 24 preços e códigos</b>, para o site não divergir do que você pratica hoje.</span></li>
+        </ol>
+        <p class="list-note">Duas coisas ficam de fora até você me dizer: as <b>medidas</b> das peças (o campo já existe e aparece sozinho quando for preenchido) e <b>quais códigos aceitam gravação</b>, que liga o campo de personalização.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 · HOSPEDAGEM -->
+  <section class="sec">
+    <div class="num">07</div>
+    <div>
+      <h2>DEPOIS DA PUBLICAÇÃO: HOSPEDAGEM</h2>
+      <div class="body body--wide">
+        <p>A vitrine precisa de um lugar para ficar no ar. Você escolhe um dos dois formatos:</p>
+        <div class="host-cards">
+          <div class="host host--rec">
+            <span class="h-tag">OPÇÃO A · RECOMENDADA</span>
+            <h3>HOSPEDAGEM GERENCIADA</h3>
+            <div class="h-price">R$ 89<small>/mês</small></div>
+            <p>Eu cuido de tudo: hospedagem em infraestrutura profissional, certificado de segurança (SSL), monitoramento e <b>1 ajuste pequeno por mês</b> (trocar uma foto, um preço, marcar uma peça como esgotada). Se algo acontecer, é comigo.</p>
+          </div>
+          <div class="host">
+            <span class="h-tag">OPÇÃO B</span>
+            <h3>ENTREGA COM TRANSFERÊNCIA</h3>
+            <div class="h-price">R$ 250<small> · taxa única</small></div>
+            <p>Transfiro o projeto e os acessos para as suas contas, com um guia de uso. A partir daí, a manutenção e os custos de infraestrutura ficam por sua conta.</p>
+          </div>
+        </div>
+        <p class="host-note">Em ambos os formatos, o domínio é registrado <b>no seu nome</b> e é seu. Eu apenas configuro (~R$ 40/ano no Registro.br).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 · PRÓXIMOS PASSOS -->
+  <section class="sec">
+    <div class="num">08</div>
+    <div>
+      <h2>PRÓXIMOS PASSOS</h2>
+      <div class="body">
+        <ol class="next">
+          <li><span>Você confirma o <b>aceite desta proposta</b> por WhatsApp.</span></li>
+          <li><span>Pagamento da <b>1ª parcela de R$ 500,00</b> no Pix, e eu destravo os ajustes finais.</span></li>
+          <li><span>Você me passa os quatro dados da seção 06, vê a vitrine pronta, pede os ajustes, aprova, paga a <b>2ª parcela de R$ 499,00</b> e a <b>Carina Melo Shop entra no ar</b>.</span></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 · CTA: a sala grafite -->
+  <section class="closing">
+    <h2>VAMOS PÔR A <em>CARINA MELO</em> NO AR, DO JEITO QUE AS PEÇAS MERECEM.</h2>
+    <p class="cta-alt"><a href="https://wa.me/5544999997219?text=Ol%C3%A1%20Rafael%2C%20tenho%20uma%20d%C3%BAvida%20sobre%20a%20proposta%20da%20Carina%20Melo%20Shop." target="_blank" rel="noopener">Ficou com uma dúvida? Fala comigo no WhatsApp →</a></p>
+  </section>
+
+  <footer class="doc-footer">
+    <span>RAFAEL RAZEIRA ESTÚDIO</span>
+    <span>rafael.rbarbon@gmail.com</span>
+    <span>(44) 99999-7219</span>
+    <span>@rafaelrazeira.estudio</span>
+  </footer>
+
+</div>
+
+</body>
+</html>
