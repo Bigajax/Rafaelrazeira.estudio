@@ -712,24 +712,102 @@ html:has(.site) { scroll-behavior: smooth }
 }
 .tagPrice b i:first-child { margin-right: .05em }
 .tagPrice b i:last-child { margin-left: .04em }
-/* ---------- a linha da entrega deixou de parecer rótulo (13/08) ----------
-   Ela estava em mono esmeralda 10px tracked, ou seja, EXATAMENTE o mesmo
-   desenho de "SEU NOME" e "SEU WHATSAPP" logo abaixo. Uma diz o que a
-   pessoa LEVA e as outras dizem o que ela DIGITA, e as três se pareciam.
-   Num cartão que é uma etiqueta, esta é a descrição do item: ela pertence
-   ao preço, não ao formulário.
+/* a atribuição do preço: esmeralda porque é ela que segura o sentido do
+   número grande, e é o único acento de cor que sobra aqui em cima com o
+   rosa reservado ao envio.
+   DUAS PALAVRAS EMPILHADAS, não uma linha só, e a razão é largura: numa
+   tela de 390px sobram ~297px dentro da etiqueta, o preço come ~135 e o
+   canto do carimbo reserva 66. "PARA COMEÇAR" numa linha pede ~100 e
+   estoura por pouco, então ela cairia para baixo do número justo onde o
+   tráfego todo está. Empilhada ela pede ~58 e cabe com folga, e ainda por
+   cima é o desenho que etiqueta de loja usa de verdade.
+   `align-self: flex-end` porque o container alinha por BASELINE, e para um
+   item de duas linhas a baseline é a da PRIMEIRA: "PARA" encostaria na
+   base do 199 e "COMEÇAR" desceria por cima da linha de baixo. */
+.tagPrice small {
+  align-self: flex-end; margin-bottom: 1px;
+  font: 700 11.5px/1.3 var(--mono); letter-spacing: .1em; color: var(--green-dark);
+}
 
-   Então ela sobe de corpo, vai para tinta cheia e o esmeralda fica só no
-   "+", que é o que a distingue dos rótulos sem inventar desenho novo.
+/* ============================================================
+   A ETIQUETA MOSTRA A CONTA (20/08)
 
-   O "+" é a DOBRADIÇA da frase, não pontuação: a linha é uma soma de duas
-   entregas, e é o sinal que carrega isso. Em corpo de texto ele sumia no
-   meio das letras; 1,3em e esmeralda o devolvem para o lugar de operador.
-   `vertical-align` porque o mono alinha o "+" acima do meio da caixa e
-   ele flutuava alto entre as duas palavras. */
-.tagPrice span { font: 700 11.5px var(--mono); letter-spacing: .1em; color: var(--ink) }
-.tagPrice span em { font-style: normal; font-size: 1.3em; font-weight: 700; color: var(--green); padding: 0 .1em; vertical-align: -.05em }
-.tagTerms { font: 11.5px/1.55 var(--mono); color: var(--ink-soft); margin-top: -3px }
+   Aqui moravam `.tagPrice span` (o rótulo da entrega) e `.tagEntrada` (as
+   condições em prosa). Os dois saíram porque diziam, em três frases
+   soltas, uma coisa só: R$199 para começar, o saldo em até 4x, R$999 no
+   total. Isso não é uma lista, é uma SOMA, e escrever soma por extenso
+   obriga a leitora a montar a conta de cabeça. A hesitação de montar a
+   conta é a hesitação que trava a compra.
+
+   Agora ela está escrita como vitrine de loja de rua escreve: entrada,
+   mais as parcelas, igual ao total, com os operadores numa calha de 17px à
+   esquerda. É a calha que faz as linhas lerem como conta e não como frases
+   empilhadas: sem ela os mesmos números viram três rótulos.
+
+   O sinal já era desta casa. O "+" de "vitrine + painel de estoque" nunca
+   foi pontuação, era a dobradiça de uma soma de duas entregas, e a nota
+   antiga do `.tagPrice span em` dizia isso com todas as letras. O que muda
+   é que agora ele tem irmãos, e a soma que ele abria fecha no "=": R$999 é
+   o total E é o que a caixa contém. A linha tem duas leituras e as duas
+   são verdadeiras ao mesmo tempo.
+
+   RISCO ASSUMIDO, para quem for mexer: numa tela de 390px isto é ~1 linha
+   a mais que a versão em prosa, e este bloco fica entre a leitora e o
+   primeiro campo, espaço pelo qual a etiqueta já brigou duas vezes (ver as
+   notas de 13/08). Aceito porque não há texto novo, é o mesmo texto
+   reorganizado, e a calha devolve em velocidade de leitura o que cobra em
+   altura. Se um dia precisar cortar, corte o `i` da linha do "+", nunca o
+   rótulo do "=": o painel é o que ninguém entrega junto por esse preço, e
+   é exatamente por isso que ele está na primeira tela. */
+/* TRÊS COLUNAS: operador, o que é, quanto é. A terceira coluna é o que
+   faz a conta fechar aos olhos, e ela custou uma versão: com os valores
+   correndo dentro do texto ("4x de R$200" / "R$999 no total") os dois
+   números caíam em x diferentes e as linhas voltavam a ler como frases
+   soltas. Encostados na mesma margem direita eles viram uma coluna de
+   nota de loja, que é o que a etiqueta está imitando.
+   SEM `padding-right` para o carimbo, ao contrário do `.tagPrice`: o selo
+   ocupa de -16px a ~86px da borda de cima e estas linhas começam depois
+   dos 100px, então reservar o canto aqui só encolheria a conta de graça.
+   Como efeito, a coluna de valores encosta na mesma margem que o picote
+   (`.tagRule`) logo abaixo, e as duas linhas passam a rimar. */
+.tag .tagConta {
+  display: grid; grid-template-columns: 17px 1fr auto; gap: 0 8px;
+  align-items: baseline; margin: 3px 0 0;
+}
+/* o operador é a única coisa que vive na calha, centralizado para que "+"
+   e "=" empilhem no mesmo eixo apesar de terem larguras de tinta
+   diferentes. Esmeralda cheia e não `--green-dark`: aqui ele é SINAL e não
+   texto miúdo, e a regra da paleta manda traço e sinal para o `--green`. */
+.tag .tagConta b { grid-column: 1; font: 700 17px/1 var(--mono); color: var(--green); text-align: center }
+.tag .tagConta span { grid-column: 2; font: 700 13px/1.45 var(--mono); letter-spacing: .04em; color: var(--ink) }
+/* os números da conta na CONDENSADA, a mesma largura do 199 e da manchete:
+   eles precisam ler como parentes do preço grande. Em mono neste corpo
+   ficariam idênticos às palavras ao redor e a conta viraria texto. */
+.tag .tagConta strong {
+  grid-column: 3; justify-self: end;
+  font-family: var(--display); font-stretch: 62%; font-weight: 900;
+  font-size: 20px; letter-spacing: -.005em;
+}
+/* a letra miúda desce alinhada com o QUE É, não com o operador: ela
+   qualifica a linha inteira, e `2 / -1` a deixa correr por baixo do valor
+   em vez de bater nele. */
+.tag .tagConta i { grid-column: 2 / -1; font: 400 10.5px/1.4 var(--mono); font-style: normal; letter-spacing: .01em; color: var(--ink-soft) }
+/* o rótulo da entrega, herdeiro do antigo `.tagPrice span`: mesmo corpo,
+   mesma tinta cheia, mesmo tracking. Só mudou de dono, e para melhor: ele
+   agora pendura no "=", ou seja, é a resposta literal de quanto vale a
+   soma. `grid-column: 2` para ele descer alinhado com os números em vez de
+   cair na calha dos operadores. */
+.tag .tagConta small { grid-column: 2 / -1; margin-top: 1px; font: 700 11.5px var(--mono); letter-spacing: .1em; color: var(--ink) }
+/* o "+" da dobradiça, agora rimando com o "+" da calha logo acima */
+.tag .tagConta em { font-style: normal; font-weight: 700; color: var(--green); padding: 0 .08em }
+/* o filete da soma: `1 / -1` para atravessar a calha junto com os números,
+   como risco de conta feita à mão. Ele para antes do carimbo porque o
+   `padding-right` do bloco já reserva aquele canto. */
+.tag .tagSoma { margin-top: 5px }
+.tag .tagSoma::before {
+  content: ""; grid-column: 1 / -1; height: 0;
+  border-top: 1.5px solid var(--ink); margin-bottom: 5px;
+}
 .tagRule { border: 0; border-top: 1.5px solid var(--green); margin: 3px 0 1px }
 
 .tag label { display: grid; gap: 5px; font: 700 9.5px var(--mono); letter-spacing: .18em; color: var(--green-dark) }
@@ -1664,20 +1742,92 @@ html:has(.site) { scroll-behavior: smooth }
    O inteiro foi de 75% para 62% de largura, a mesma condensada que a
    manchete e o número do escopo usam: a página inteira tem duas larguras
    de Archivo e este era o último lugar com uma terceira. */
-.price { display: flex; align-items: baseline; font-family: var(--display); font-stretch: 100%; font-weight: 800; margin: 14px 0 6px }
-.price strong { font-stretch: 62%; font-weight: 900; font-size: clamp(76px, 7vw, 108px); line-height: .8; letter-spacing: -.015em }
+/* o CORPO mora no container, não no `strong`, e isso conserta um bug de
+   herança que estava aqui desde sempre: os satélites são IRMÃOS do número
+   (ao contrário da etiqueta, onde eles são filhos do `b`), então o `.3em`
+   deles resolvia contra o `.price`, que herdava ~20px do card. Resultado:
+   a moeda e os centavos saíam com SEIS pixels, ilegíveis, no maior número
+   da página. Com a medida no pai, `.3em` vira ~32px e a proporção passa a
+   ser a mesma da etiqueta (lá é .32em de um corpo de 48 a 58px). */
+.price { display: flex; align-items: baseline; font-family: var(--display); font-stretch: 100%; font-weight: 800; font-size: clamp(76px, 7vw, 108px); margin: 14px 0 6px }
+.price strong { font-stretch: 62%; font-weight: 900; font-size: 1em; line-height: .8; letter-spacing: -.015em }
 /* largura normal nos satélites: condensados neste corpo eles viram riscos.
-   `vertical-align: top` e não `super`, pelo mesmo motivo da etiqueta:
-   `super` desloca por fração de entrelinha e joga o "R$" para fora da caixa
-   num corpo de 108px. */
+
+   `align-self: flex-start` e NÃO `vertical-align: top`, que era o que
+   estava escrito aqui e nunca funcionou: `.price` é `display: flex`, e em
+   item de flex o `vertical-align` é simplesmente ignorado. Na prática o
+   `align-items: baseline` do pai colava a moeda e os centavos na BASE do
+   número, que é o oposto do que a nota antiga dizia querer.
+   Dava para ver a olho: os dois maiores números da página, o 199 da
+   etiqueta e o 999 daqui, escreviam o mesmo preço de jeitos diferentes,
+   um com os satélites na altura de maiúscula e o outro com eles no chão.
+   Na etiqueta funcionava porque lá os `i` estão DENTRO do `b`, ou seja,
+   num contexto inline de verdade, onde `vertical-align` vale. */
 .price i {
+  align-self: flex-start; margin-top: .19em;
   font-style: normal; font-stretch: 100%; font-weight: 800;
-  font-size: .3em; line-height: 1; vertical-align: top; letter-spacing: .01em; color: var(--ink-soft);
+  font-size: .3em; line-height: 1; letter-spacing: .01em; color: var(--ink-soft);
 }
 .price i:first-child { margin-right: .06em }
 .price i:last-child { margin-left: .04em }
-.installments { font: 12.5px/1.7 var(--mono); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 14px 0; margin: 10px 0 6px }
-.installments b { color: var(--ink) }
+/* ============================================================
+   AS DUAS PORTAS DO BALCÃO (20/08)
+
+   Era `.installments`: três linhas de mono, mesmo corpo, mesma tinta,
+   empilhadas entre dois filetes. O problema não era feiura, era SENTIDO.
+   As duas primeiras linhas descrevem UM caminho (entrada mais parcelas) e
+   a terceira descreve OUTRO (Pix à vista). Empilhadas iguais, a terceira
+   lia como rodapé das duas de cima em vez de alternativa a elas, e o Pix
+   é justamente a única forma de pagamento que não me custa taxa de
+   parcelamento: ele precisa ser uma PORTA, não uma observação.
+
+   Agora são duas colunas divididas por um filete, que é a pergunta que
+   toda loja faz no balcão: parcelado ou à vista? A leitora não lê para
+   entender, ela lê para escolher, e a forma diz isso antes do texto.
+
+   O desconto entra como selo em `--mint`, o mesmo tratamento do "SEM
+   MENSALIDADE" no topo do card: já é o dialeto de bandeirinha desta peça,
+   e reaproveitá-lo evita inventar um segundo desenho para a mesma ideia.
+   O rosa continua fora daqui, reservado ao botão de envio.
+
+   Os valores na condensada, como a conta da etiqueta: os números desta
+   página são todos parentes e precisam se parecer. Em mono eles ficariam
+   idênticos às palavras ao lado e as colunas voltariam a virar texto.
+
+   Prefixos `.pricecard` em tudo porque `.pricecard small` e `.site p` têm
+   seletor de elemento e vencem classe simples. */
+.pagamento {
+  display: grid; grid-template-columns: 1fr 1fr;
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  margin: 12px 0 6px;
+}
+.pagamento > div { padding: 15px 0 16px }
+.pagamento > div:first-child { padding-right: clamp(14px, 2vw, 22px) }
+.pagamento > div + div { padding-left: clamp(14px, 2vw, 22px); border-left: 1px solid var(--line) }
+/* o rótulo da porta: esmeralda para separar do corpo em tinta cheia logo
+   abaixo, e `flex` para o selo do desconto ficar na mesma linha sem
+   deslocar a linha de base do texto. */
+.pricecard .pagamento small {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  font: 700 9.5px var(--mono); letter-spacing: .16em; color: var(--green-dark);
+}
+.pricecard .pagamento small b { font: 700 9.5px var(--mono); letter-spacing: .1em; color: var(--ink); background: var(--mint); padding: 3px 6px }
+.pricecard .pagamento p { font: 700 12.5px/1.45 var(--mono); letter-spacing: .02em; color: var(--ink); margin: 8px 0 0 }
+.pricecard .pagamento strong { font-family: var(--display); font-stretch: 62%; font-weight: 900; font-size: 21px; letter-spacing: -.005em }
+/* o mesmo "+" operador da conta da etiqueta: aqui ele diz que a segunda
+   linha SOMA com a primeira, e não que é outra opção. */
+.pricecard .pagamento em { font-style: normal; font-weight: 700; color: var(--green) }
+.pricecard .pagamento i { display: block; font: 400 10.5px/1.45 var(--mono); font-style: normal; color: var(--ink-soft); margin-top: 8px }
+/* 480px é onde as duas portas deixam de caber lado a lado, e a conta é
+   esta: o card fica com ~392px úteis, cada coluna com ~182, e
+   "R$199,00 para começar" pede ~161. Abaixo disso a coluna cai para ~157
+   e a linha quebra no meio do preço. Aí elas empilham e o filete vira
+   horizontal, sem perder a divisão entre as duas portas. */
+@media (max-width: 480px) {
+  .pricecard .pagamento { grid-template-columns: 1fr }
+  .pricecard .pagamento > div:first-child { padding-right: 0; padding-bottom: 14px }
+  .pricecard .pagamento > div + div { padding-left: 0; padding-top: 14px; border-left: 0; border-top: 1px solid var(--line) }
+}
 /* prefixadas com .pricecard para vencer .site p, que tem seletor de elemento.
    `margin-top: 0` porque ele deixou de ser uma faixa própria e virou o par
    do rótulo na primeira linha do card. */
@@ -2058,9 +2208,11 @@ html:has(.site) { scroll-behavior: smooth }
   /* card da oferta compacto: o preço não precisa de 96px para mandar na
      tela de um celular, e a lista respira menos para o botão chegar antes
      (alvo: topo do card ao botão em ~1,2 tela) */
-  .price { margin: 10px 0 4px }
-  .price strong { font-size: 62px }
-  .installments { padding: 10px 0; margin: 8px 0 4px }
+  /* o corpo desce no PAI e não no `strong`: os satélites são `.3em` do
+     container, então mexer só no número desalinharia a proporção da moeda
+     e dos centavos justo onde a tela é menor. */
+  .price { font-size: 62px; margin: 10px 0 4px }
+  .pagamento > div { padding: 12px 0 13px }
   .check { margin: 10px 0 6px }
   .check li { padding: 6px 0 }
   /* uma coluna no celular: nove itens em duas colunas de ~150px quebrariam

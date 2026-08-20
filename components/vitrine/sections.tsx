@@ -435,17 +435,45 @@ function HeroForm() {
         O que se perde: "completo" também dizia "não tem mais nada para
         pagar". Isso continua dito, e melhor, pelo R$0 DE MENSALIDADE do
         canhoto e pela lista de 9 itens da oferta. */}
-    {/* o "+" em <em> e não solto no texto: ele não é pontuação, é a
-        DOBRADIÇA da frase. A linha inteira é uma soma de duas entregas, e
-        é o sinal que conta isso; em corpo de texto ele desaparecia no meio
-        das letras. Ver `.tagPrice span em` no CSS. */}
-    <p className={s.tagPrice}><b><i>R$</i>999<i>,00</i></b><span>VITRINE <em>+</em> PAINEL DE ESTOQUE</span></p>
-    {/* AS CONDIÇÕES SAÍRAM DAQUI e foram para depois do botão. Duas
-        razões, e a segunda é a que importa: elas custavam duas linhas
-        entre a pessoa e o primeiro campo, o que atrasava o pedido em
-        ~46px de rolagem numa dobra que já estava no limite; e condição
-        de pagamento é coisa que se lê DEPOIS de decidir, não antes. O
-        preço continua onde estava, que é o que precisa vir na frente. */}
+    {/* ---------- o corpo da etiqueta virou o R$199 (20/08) ----------
+        Decisão do Rafael, e ela tem um risco que precisa ficar escrito:
+        etiqueta que anuncia a entrada e cala o total é isca, e esta
+        página inteira funciona por trocar adjetivo por fato. Por isso o
+        R$999 NÃO some da etiqueta: ele desce uma linha e continua na
+        primeira tela, junto do prazo do saldo. O que muda é a hierarquia,
+        não a informação.
+        `PARA COMEÇAR` não é enfeite nem rótulo: sem ele o 199 grande em
+        cima de `VITRINE + PAINEL DE ESTOQUE` diria que a vitrine custa
+        199, que é mentira. Ele é a atribuição do número e por isso mora na
+        MESMA linha dele, não abaixo. O `<small>` é só o gancho de estilo
+        que ainda não estava tomado: `b`, `i` e `span` já têm regra dentro
+        de `.tagPrice` e um elemento novo herdaria o corpo de 48px. */}
+    <p className={s.tagPrice}><b><i>R$</i>199<i>,00</i></b><small>PARA<br />COMEÇAR</small></p>
+    {/* a conta, e não três frases: ver o bloco A ETIQUETA MOSTRA A CONTA no
+        CSS. Os operadores são `aria-hidden` porque leitor de tela lendo
+        "mais" e "igual" no meio de reais vira sopa; sem eles as duas linhas
+        já se leem como frase inteira. */}
+    <p className={s.tagConta}><b aria-hidden>+</b><span>4 parcelas de</span><strong>R$200,00</strong><i>só depois de você aprovar</i></p>
+    <p className={`${s.tagConta} ${s.tagSoma}`}><b aria-hidden>=</b><span>no total</span><strong>R$999,00</strong><small>VITRINE <em>+</em> PAINEL DE ESTOQUE</small></p>
+    {/* ---------- a entrada voltou para o preço, e só ela (20/08) ----------
+        As CONDIÇÕES inteiras saíram daqui em 13/08 e foram para depois do
+        botão, por uma razão que continua boa: elas custavam DUAS linhas
+        entre a pessoa e o primeiro campo, ~46px de rolagem numa dobra que
+        já estava no limite.
+        O que volta agora é UMA linha, e não é a mesma coisa. Com a entrada
+        em R$199, o número que destrava a decisão deixou de ser o total: a
+        lojista não decide "tenho R$999?", decide "tenho isso hoje?". Deixar
+        essa resposta só no `.tagMicro`, em 10,5px cinza abaixo do botão,
+        é anunciar R$999 na primeira tela e esconder o R$199 na letra
+        miúda. Etiqueta de loja nenhuma faz isso: preço e condição vêm
+        juntos, e é por isso que ela mora ao lado do preço e não no rodapé.
+        O saldo continua sendo leitura de depois, então ele vem em corpo
+        menor e em tinta fraca dentro da própria linha, não em linha nova.
+        Custo líquido de altura: perto de zero. Esta linha soma ~19px aqui
+        em cima e o `.tagMicro` perde a frase das condições, o que devolve
+        uma linha inteira lá embaixo nas telas estreitas.
+        Ela é IRMÃ do `.tagPrice`, não filha: as regras de lá alcançam `b`,
+        `i` e `span` por descendência, e um `b` aninhado sairia com 48px. */}
     <hr className={s.tagRule} />
     {/* rótulo visível em vez de placeholder: o placeholder some quando a
         pessoa digita, e aí o campo fica anônimo justamente na hora de
@@ -501,7 +529,7 @@ function HeroForm() {
           <p>Abri o WhatsApp com sua mensagem pronta. Toque em <b>enviar</b> lá para eu receber, senão ela não chega.</p>
           <a className={`${s.button} ${s.primary}`} href={linkWa} data-cta="reabrir_whats" data-cta-dest="whatsapp">ABRIR O WHATSAPP ↗</a>
         </div>
-      : <small className={s.tagMicro}>Eu olho sua loja antes de te chamar no WhatsApp, ainda hoje. Começa com R$500, o saldo só depois de você aprovar.</small>}
+      : <small className={s.tagMicro}>Eu olho sua loja antes de te chamar no WhatsApp, ainda hoje.</small>}
     {/* o canhoto: o picote separa o que você dá do que eu já provei, que são
         as duas metades da decisão. Fatos verificáveis, não adjetivos: os 9
         são o catálogo inteiro do /portfolio, e "PROJETOS" e não "LOJAS"
@@ -1247,7 +1275,7 @@ export function Offer() {
      conversas chegaram. O primeiro pedido da página a um desconhecido era um
      compromisso de R$500, e o caminho de conversar estava rebaixado a link
      fantasma (zero cliques). Agora o convite principal é a conversa, que é
-     onde uma venda de R$999 fecha de verdade, e a reserva por R$500 vira o
+     onde uma venda de R$999 fecha de verdade, e a entrada menor vira o
      atalho de quem já decidiu. O preço continua inteiro à vista de todos:
      esconder valor filtra menos e piora a conversa.
      O pagamento à vista segue como opção dentro do formulário, escolhida
@@ -1259,7 +1287,26 @@ export function Offer() {
   const [telInvalido, setTelInvalido] = useState(false);
   const envioSuspeito = useGuardaDeFormulario();
   const formRef = useRef<HTMLFormElement>(null);
-  const plan = avista ? "À vista R$999" : "Entrada de R$500";
+  /* ---------- a entrada caiu de R$500 para R$199 (20/08) ----------
+     O TOTAL NÃO MUDOU, e não é para mudar: R$999 é o número que separa
+     esta página de agência, e "sem mensalidade" é o argumento mais
+     repetido do site (canhoto da etiqueta, cabeçalho do card, FAQ), então
+     trocar o preço fechado por uma parcela mensal desmentiria a própria
+     página no lugar onde ela é mais forte.
+     O que trava a lojista não é o total, é o PRIMEIRO valor: ela não
+     decide "tenho R$999?", decide "tenho R$500 hoje?". R$199 é decisão de
+     impulso para quem fatura com loja; R$500 espera o fim do mês, e o fim
+     do mês é onde o lead esfria. O saldo passa a caber em 4x, e o Pix à
+     vista ganha 10% de desconto: é a única forma de pagamento que não me
+     custa taxa de parcelamento, então é a que precisa ter motivo.
+     Custo conhecido da mudança: entrada baixa filtra menos, então a
+     desistência DEPOIS do sim tende a subir. A defesa continua sendo a
+     mesma e já está escrita na FAQ e no `includedDetails`: os 7 dias úteis
+     só começam quando o material da loja chega.
+     Este texto vai inteiro para a coluna `plano` do Supabase e para a
+     mensagem do WhatsApp (ver pages/api/lead.js). É texto livre, nada
+     ramifica nele, mas é o que eu leio para saber o que combinar. */
+  const plan = avista ? "À vista no Pix R$899" : "Entrada de R$199 + R$800 em até 4x";
   /* O foco continua: depois de um salto dentro da página, deixar o foco no
      botão que ficou para trás quebra a navegação por teclado e por leitor de
      tela. O que mudou é ele passar pelo `focarSemContar`, senão este clique
@@ -1311,7 +1358,7 @@ export function Offer() {
           e é o jeito mais curto de responder "o que exatamente eu compro":
           aquilo que você acabou de abrir. A segunda frase não mudou, é
           onde as condições de pagamento moram. */}
-      <p className={s.lead}>É a mesma vitrine das duas lojas que você abriu aí em cima, com o painel junto. Você reserva com R$500, acompanha o desenvolvimento e só paga o saldo depois de aprovar.</p>
+      <p className={s.lead}>É a mesma vitrine das duas lojas que você abriu aí em cima, com o painel junto. Você começa com R$199, acompanha o desenvolvimento e só paga o saldo depois de aprovar.</p>
       {/* prova antes do preço: fato verificável, sem citação inventada. Quando
           existir depoimento de cliente, ele entra aqui no lugar desta linha. */}
       <p className={s.proof}><b>PROVA NO AR</b> A PR Grife, multimarcas com loja física em Maringá, publica peça e ajusta o estoque sozinha no painel. <a href="#projetos" data-cta="oferta_projetos" data-cta-dest="projetos">Veja a loja dela acima.</a></p>
@@ -1337,7 +1384,23 @@ export function Offer() {
               maiores números da página estavam escritos de jeitos
               diferentes, e é o MESMO preço. */}
           <div className={s.price}><i>R$</i><strong>999</strong><i>,00</i></div>
-          <p className={s.installments}><b>R$500 PARA RESERVAR</b><br />R$499 APÓS A SUA APROVAÇÃO</p>
+          {/* AS DUAS PORTAS DO BALCÃO: eram três linhas de mono do mesmo
+              corpo e da mesma tinta, uma embaixo da outra, e a terceira (o
+              Pix) lia como rodapé das duas primeiras quando é a ALTERNATIVA
+              a elas. Ver o bloco de mesmo nome no CSS. */}
+          <div className={s.pagamento}>
+            <div>
+              <small>PARCELADO</small>
+              <p><strong>R$199,00</strong> para começar</p>
+              <p><em>+</em> 4 parcelas de <strong>R$200,00</strong></p>
+              <i>o saldo só depois de você aprovar</i>
+            </div>
+            <div>
+              <small>À VISTA NO PIX <b>10% OFF</b></small>
+              <p><strong>R$899,00</strong> de uma vez</p>
+              <i>economiza R$100 e é a forma que eu prefiro receber</i>
+            </div>
+          </div>
           {/* nove itens em DUAS COLUNAS: em uma só eles somavam ~330px e
               faziam do card a peça mais alta da página, com o botão saindo
               de qualquer tela. Item de escopo tem três a cinco palavras e
@@ -1360,7 +1423,7 @@ export function Offer() {
               O `data-cta` NÃO muda: oferta_entrada é a posição no funil, e
               trocar o rótulo não pode reiniciar a série histórica. */}
           <Button onClick={goToForm} cta="oferta_entrada">QUERO COMEÇAR A MINHA ↓</Button>
-          <p className={s.guarantee}>O saldo de R$499 é pago somente depois que você visualizar e aprovar o projeto.</p>
+          <p className={s.guarantee}>O saldo de R$800 é pago somente depois que você visualizar e aprovar o projeto.</p>
         </article>
         <div className={s.formCol}>
           <ChatStrip label="SUA PRÓXIMA MENSAGEM">
@@ -1391,7 +1454,7 @@ export function Offer() {
                 condição continua dita, mas com o momento dela junto, e a
                 segunda frase fecha a porta da dúvida antes de o dedo
                 chegar no primeiro campo. */}
-            <p className={s.formTitle}>COMEÇAR MINHA VITRINE<br /><span>Entrada de R$500 quando a gente combinar. Nada é cobrado agora.</span></p>
+            <p className={s.formTitle}>COMEÇAR MINHA VITRINE<br /><span>Entrada de R$199 quando a gente combinar. Nada é cobrado agora.</span></p>
             <label>NOME<input name="nome" autoComplete="name" required /></label>
             {/* O campo que esta página nunca teve. Ver a nota longa no submit:
                 sem número não dá para cumprir a promessa da tela de
@@ -1406,7 +1469,7 @@ export function Offer() {
             <label>INSTAGRAM OU SITE DA LOJA <i className={s.opcional}>opcional</i><input name="instagram" placeholder="@sualoja" /></label>
             <label className={s.avista}>
               <input type="checkbox" name="avista" checked={avista} onChange={e => setAvista(e.target.checked)} />
-              Prefiro pagar os R$999 à vista
+              Prefiro pagar à vista no Pix por R$899 (10% de desconto)
             </label>
             {/* sem a seta ↗: o envio agora acontece na própria tela. Rosa
                 porque é um dos três lugares da página que a cor dos 10%
@@ -1457,7 +1520,7 @@ export function Offer() {
    - "a página entra no ar" virou "a vitrine entra no ar": a coisa vendida
      tem UM nome nesta página, e não é "página". */
 const process = [
-  ["Reserva", "Você paga R$500 e manda o material da loja."],
+  ["Reserva", "Você paga R$199 e manda o material da loja."],
   ["Criação", "Eu desenho, desenvolvo e monto o catálogo."],
   ["Aprovação", "Você revisa a vitrine pronta e pede a rodada de ajustes."],
   ["Publicação", "Depois da sua aprovação e do saldo, a vitrine entra no ar."],
@@ -1476,8 +1539,8 @@ export function Process() {
           "Concluir o pagamento" é frase de tela de checkout, e "acompanha
           o projeto" é vago: acompanha como, vendo o quê?
           O que de fato acontece é melhor do que a versão burocrática: ela
-          vê a loja PRONTA, e só então paga a segunda metade. São R$500 e
-          R$499, ou seja, metade fica retida até ela aprovar, e isso é a
+          vê a loja PRONTA, e só então paga o resto. São R$199 e R$800, ou
+          seja, 80% do valor fica retido até ela aprovar, e isso é a
           resposta para a única pergunta que sobra nesta altura da página
           ("e se eu pagar e não gostar?").
           Cuidado ao mexer nisto: NÃO existe política de reembolso escrita,
@@ -1535,7 +1598,7 @@ const faq = [
   ["Existe mensalidade?", "Não. O projeto custa R$999 uma única vez. Um domínio próprio é opcional e tem custo anual pago direto no registrador."],
   ["Quem atualiza a vitrine depois?", "Você mesmo, pelo painel que acompanha a vitrine: troca preço e foto, marca esgotado ou pronta entrega e cadastra produtos novos."],
   ["Quanto tempo demora?", "Até 7 dias úteis depois do envio de todos os materiais da loja."],
-  ["Preciso pagar tudo antes?", "Não. São R$500 para reservar e R$499 somente depois da apresentação e da sua aprovação do projeto."],
+  ["Preciso pagar tudo antes?", "Não. São R$199 para começar e R$800 somente depois da apresentação e da sua aprovação, em até 4x no cartão. Quem prefere pagar à vista no Pix fecha por R$899."],
 ];
 /* por extenso porque é manchete: numeral em algarismo no meio de uma frase
    em caixa alta lê como preço, não como quantidade. Sete posições bastam
@@ -1607,7 +1670,7 @@ export function FinalCTA() {
       <h2 className={s.h2Duplo}>Sua loja já tem produtos.<br />Agora precisa de uma estrutura para<br /><em>vender melhor.</em></h2>
       {/* quem chega aqui leu a página inteira: o pedido pode ser o cheio,
           sem rodeio, e o caminho é o mesmo formulário de sempre */}
-      <p className={s.lead}>Deixa seu nome e WhatsApp que eu te chamo hoje e te mostro como a vitrine ficaria para a sua loja. Se você já decidiu, reserva com R$500.</p>
+      <p className={s.lead}>Deixa seu nome e WhatsApp que eu te chamo hoje e te mostro como a vitrine ficaria para a sua loja. Se você já decidiu, começa com R$199.</p>
       <div className={s.actions}>
         <a className={`${s.button} ${s.acao}`} href="#contratar" data-cta="final" data-cta-dest="form">DEIXAR MEU CONTATO ↑</a>
         <a className={s.ghost} href="#oferta" data-cta="final_reserva" data-cta-dest="oferta">VER O QUE ESTÁ INCLUSO</a>
@@ -1687,7 +1750,7 @@ export function MobileBar() {
      Rosa porque é a terceira e última superfície dos 10% da paleta: sobre
      grafite, é a única coisa desta barra que o olho precisa achar. */
   return <div className={`${s.bar} ${hidden ? s.barHidden : ""}`}>
-    <span className={s.barCopy}><b>R$999</b><span>Reserva com R$500</span></span>
+    <span className={s.barCopy}><b>R$999</b><span>Começa com R$199</span></span>
     <a className={`${s.button} ${s.acao}`} href="#contratar" data-cta="sticky_mobile" data-cta-dest="form">DEIXAR CONTATO</a>
   </div>;
 }

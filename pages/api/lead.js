@@ -353,7 +353,8 @@ export default async function handler(req, res) {
     site: texto(b.site),
     necessidade: texto(b.necessidade, LIMITE),
     investimento: texto(b.investimento),
-    /* só a /vitrine-digital manda: "Entrada de R$500" ou "À vista R$999".
+    /* só a /vitrine-digital manda: "Entrada de R$199 + R$800 em até 4x"
+       ou "À vista no Pix R$899".
        Exige a migração de 06/08 no fim de supabase/leads.sql. */
     plano: texto(b.plano),
     utm_source: texto(utm.utm_source),
