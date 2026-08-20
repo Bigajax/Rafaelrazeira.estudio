@@ -3,8 +3,9 @@
 /* ============================================================
    O KANBAN
 
-   Oito colunas, arrasto entre elas e dentro delas, e as regras 1 a 4
-   barrando a passagem quando falta informação.
+   Sete colunas de caminho e três placas de saída no fim, arrasto entre
+   elas e dentro delas, e as regras 1 a 4 barrando a passagem quando falta
+   informação.
 
    ---------- a ordem das operações num arrasto ----------
    1. O card é solto. A tela calcula destino e posição.
@@ -55,10 +56,10 @@ import {
   type Passagem,
 } from "@/lib/crm/regras";
 import {
-  ehAtivo,
+  ehNoPipeline,
   ESTAGIOS,
   ESTAGIOS_DO_QUADRO,
-  ESTAGIOS_FECHADOS,
+  ESTAGIOS_DE_PLACA,
   NOME_ESTAGIO,
   NOME_ORIGEM,
   NOME_TIPO,
@@ -104,7 +105,7 @@ export function Quadro({
   const [nicho, setNicho] = useState("");
   const [busca, setBusca] = useState("");
 
-  /* Qual das duas saídas está aberta embaixo do quadro, se alguma. */
+  /* Qual das três placas do fim está aberta embaixo do quadro, se alguma. */
   const [saidaAberta, setSaidaAberta] = useState<Estagio | null>(null);
   const [colunaMovel, setColunaMovel] = useState<Estagio>("lista");
   const [arrastando, setArrastando] = useState<LeadPainel | null>(null);
@@ -164,7 +165,13 @@ export function Quadro({
     let esperando = 0;
 
     for (const l of filtrados) {
-      if (!ehAtivo(l.estagio)) continue;
+      /* `ehNoPipeline` e não `ehAtivo`: a geladeira é ativa (ela devolve o
+         lead na fila do dia) mas não é pipeline aberto. O ticket de quem
+         pediu para ser chamado em novembro somado aqui faria a faixa
+         prometer um número que ninguém está perseguindo neste ciclo, e o
+         "esperando" contaria como decisão pendente um lead cuja decisão
+         já foi tomada: esperar. */
+      if (!ehNoPipeline(l.estagio)) continue;
       aberto += l.ticket_estimado ?? 0;
       if (l.estagio === "proposta" || l.estagio === "negociacao") naMesa += l.ticket_estimado ?? 0;
       const u = urgencia(l, hoje);
@@ -475,9 +482,9 @@ export function Quadro({
 
       {/* ---------- seletor de coluna do celular ----------
           As sete etapas do caminho viram sete chips com o contador dentro.
-          Ganho e perdido ficam de fora: eles não são coluna nem aqui nem
-          no computador, são as duas placas do fim do quadro, e elas
-          continuam visíveis e clicáveis logo abaixo. */}
+          Ganho, perdido e geladeira ficam de fora: eles não são coluna nem
+          aqui nem no computador, são as três placas do fim do quadro, e
+          elas continuam visíveis e clicáveis logo abaixo. */}
       <div className={s.chips} role="tablist" aria-label="Etapa do pipeline">
         {ESTAGIOS_DO_QUADRO.map((e) => (
           <button
@@ -511,7 +518,7 @@ export function Quadro({
         onDragEnd={aoSoltar}
       >
         {/* ---------- o quadro ----------
-            Sete colunas de caminho, e no fim a placa dos dois destinos. O
+            Sete colunas de caminho, e no fim as três placas de saída. O
             `.quadroCaixa` existe só para segurar o esmaecido da borda
             direita, que é o que diz "tem mais quadro para lá" sem depender
             de a pessoa notar uma barra de rolagem. */}
@@ -550,8 +557,13 @@ export function Quadro({
               />
             ))}
 
+            {/* Três placas e não duas desde 20/08: a geladeira entrou ao
+                lado das duas saídas porque ela é a mesma natureza de coisa
+                (não é etapa do caminho, é o que acontece com quem sai
+                dele), com uma diferença que o filete tracejado diz: dela
+                se volta, e sozinho, no dia marcado. */}
             <div className={s.placas}>
-              {ESTAGIOS_FECHADOS.map((estagio) => (
+              {ESTAGIOS_DE_PLACA.map((estagio) => (
                 <PlacaDeSaida
                   key={estagio}
                   estagio={estagio}
@@ -801,20 +813,30 @@ function Coluna({
 }
 
 /* ============================================================
-   A PLACA DE SAÍDA — ganho e perdido
+   A PLACA DE SAÍDA — ganho, perdido e geladeira
 
-   Elas eram duas colunas recolhidas: lombadas verticais de 52px com o nome
+   Elas eram colunas recolhidas: lombadas verticais de 52px com o nome
    deitado e um zero embaixo. Ocupavam a largura de duas etapas vivas para
    dizer dois números, e ninguém consegue ler texto girado de relance.
 
-   Agora são duas placas empilhadas num slot só, no fim do quadro, e a
-   forma diz o que elas são: não são etapas do caminho, são as duas saídas
-   dele. Continuam sendo alvo de arrasto (é assim que um lead fecha), e o
-   clique abre a lista inteira EMBAIXO do quadro, em largura cheia, que é
+   Agora são placas empilhadas num slot só, no fim do quadro, e a forma diz
+   o que elas são: não são etapas do caminho, são o que acontece com quem
+   sai dele. Continuam sendo alvo de arrasto (é assim que um lead fecha), e
+   o clique abre a lista inteira EMBAIXO do quadro, em largura cheia, que é
    como se lê histórico.
 
    O placar do ganho é o valor FECHADO, não o estimado: depois que o
-   negócio aconteceu, a estimativa deixou de ser notícia.
+   negócio aconteceu, a estimativa deixou de ser notícia. Perdido e
+   geladeira não têm valor fechado nenhum, então os dois caem na legenda da
+   etapa, que é o que se quer saber deles.
+
+   ---------- a terceira, que entrou em 20/08 ----------
+   A geladeira é a única daqui de onde o lead volta sozinho: ela é ATIVA, e
+   por isso o painel Hoje devolve o lead na data marcada. O que a põe nesta
+   fileira em vez de numa oitava coluna é a mesma pergunta que separou
+   ganho e perdido das outras: coluna é o que se trabalha todo dia, e a
+   geladeira é exatamente o que não se trabalha. O filete tracejado é o que
+   diz que esta saída tem volta.
    ============================================================ */
 function PlacaDeSaida({
   estagio,
@@ -831,7 +853,8 @@ function PlacaDeSaida({
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: idDaColuna(estagio) });
   const soma = leads.reduce((t, l) => t + (l.valor_fechado ?? 0), 0);
-  const ganho = estagio === "ganho";
+  const cor =
+    estagio === "ganho" ? s.placaGanho : estagio === "geladeira" ? s.placaGelo : s.placaPerda;
 
   return (
     <button
@@ -839,7 +862,7 @@ function PlacaDeSaida({
       type="button"
       onClick={aoAbrir}
       aria-expanded={aberta}
-      className={`${s.placa} ${ganho ? s.placaGanho : s.placaPerda} ${isOver ? s.placaAlvo : ""} ${aberta ? s.placaAberta : ""}`}
+      className={`${s.placa} ${cor} ${isOver ? s.placaAlvo : ""} ${aberta ? s.placaAberta : ""}`}
     >
       <span className={s.placaNome}>{NOME_ESTAGIO[estagio]}</span>
       <b className={s.placaNum}>{leads.length}</b>

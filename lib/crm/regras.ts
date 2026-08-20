@@ -10,10 +10,12 @@
 
 import {
   ehAtivo,
+  type Direcao,
   type Estagio,
   type Lead,
   type LeadPainel,
   type MotivoPerda,
+  type Resposta,
 } from "./tipos";
 
 /* ============================================================
@@ -193,7 +195,13 @@ export function temperatura(
   hoje = hojeSP(),
 ): { estado: Temperatura; dias: number } {
   const dias = diasDesde(lead.entrou_no_estagio_em, hoje);
-  if (!ehAtivo(lead.estagio)) return { estado: "normal", dias };
+  /* A geladeira entra na mesma isenção de ganho e perdido, e pelo mesmo
+     motivo: "parado" é uma acusação, e um lead que está parado PORQUE FOI
+     GUARDADO não está esfriando, está esperando a data. Sem esta linha, um
+     lead posto na geladeira por sessenta dias apareceria como "Parado 60
+     dias" em vez de "Volta 19/10" no dia seguinte ao sexagésimo, e o papel
+     da ficha desbotaria por obedecer. */
+  if (!ehAtivo(lead.estagio) || lead.estagio === "geladeira") return { estado: "normal", dias };
   if (dias >= 15) return { estado: "frio", dias };
   if (dias >= 8) return { estado: "esfriando", dias };
   return { estado: "normal", dias };
@@ -274,6 +282,83 @@ export function degrauDoSilencio(
     porque: `${n} toques sem resposta: a saída honrosa recebe mais resposta que o quarto pedido`,
   };
 }
+
+/* ============================================================
+   O TRILHO DO FUNIL — para onde um toque leva o lead
+
+   Ele morava dentro de `registrarToque` (app/crm/acoes.ts) e subiu para cá
+   em 20/08 pelo motivo de sempre nesta pasta: agora a TELA também precisa
+   da resposta, para escrever "vai para a geladeira" embaixo do botão antes
+   de o Rafael apertar. Duas metades calculando destino por conta própria é
+   o desenho que produz um modal prometendo uma coisa e um servidor
+   gravando outra.
+
+   O toque registrado JÁ DIZ em que pé o lead está, e obrigar a arrastar o
+   card depois de cada mensagem é registrar o mesmo fato duas vezes.
+
+   ---------- a saída anda sozinha só nos degraus mecânicos ----------
+     saída em lista ........ contatado   (a primeira mensagem foi)
+     saída em contatado .... follow_up   (segunda sem resposta é follow-up
+                                          por definição)
+   De conversa em diante nada anda sozinho: prévia, proposta e negociação
+   são julgamento do Rafael, não consequência de um toque.
+
+   ---------- a entrada anda pelo TEOR, não pela direção ----------
+   Esta é a mudança de 20/08. Antes, qualquer entrada em lista/contatado/
+   follow_up virava Conversa, o que promovia um "não tenho interesse" a
+   lead vivo e devolvia ele na fila do dia seguinte pedindo a mensagem 2.
+   Agora quem decide é a resposta:
+
+     interesse .. Conversa, e só a partir dos três primeiros estágios
+     depois ..... Geladeira, de QUALQUER estágio ativo
+     nao ........ Perdido, de QUALQUER estágio ativo
+
+   Sem teor (o registro automático do modal de mensagem e do SugerirResposta,
+   onde a pessoa demonstrou interesse pelo simples fato de ter escrito) o
+   comportamento é o antigo: `interesse`.
+
+   Devolve `null` quando o toque não move nada, que é o caso mais comum.
+   ============================================================ */
+export function destinoDoToque(
+  direcao: Direcao,
+  estagio: Estagio,
+  resposta?: Resposta,
+): Estagio | null {
+  if (direcao === "saida") {
+    if (estagio === "lista") return "contatado";
+    if (estagio === "contatado") return "follow_up";
+    return null;
+  }
+
+  /* As duas saídas do teor valem de onde quer que o lead esteja: um "é
+     não" depois da proposta é tão final quanto um "é não" na abertura, e
+     mandar a decisão para o quadro só porque o lead já andou seria pedir
+     um arrasto para registrar um fato que acabou de ser registrado. Fora
+     de estágio ativo (ganho, perdido) ninguém mexe: reabrir um negócio é
+     decisão de quadro. */
+  if (!ehAtivo(estagio)) return null;
+  if (resposta === "nao") return "perdido";
+  if (resposta === "depois") return "geladeira";
+  if (["lista", "contatado", "follow_up"].includes(estagio)) return "conversa";
+  return null;
+}
+
+/* O passo e o prazo que cada destino ganha QUANDO O CAMPO ESTÁ VAZIO. O que
+   o Rafael digitou vence sempre; isto só existe porque a primeira versão do
+   trilho parava o card por falta de próximo passo e a Mister Tattoo ficou na
+   Lista com a mensagem já mandada. Nos degraus mecânicos o próximo passo
+   também é mecânico.
+
+   Sessenta dias para a geladeira, e não trinta: quem diz "mais pra frente"
+   quase nunca quer dizer "mês que vem", e voltar cedo demais transforma a
+   reativação num quarto follow-up. O modal deixa a data à mão para os casos
+   em que a pessoa deu um mês. */
+export const PADRAO_DO_DESTINO: Partial<Record<Estagio, { passo: string; dias: number }>> = {
+  contatado: { passo: "Cobrar retorno no WhatsApp", dias: 3 },
+  follow_up: { passo: "Cobrar retorno no WhatsApp", dias: 3 },
+  conversa: { passo: "Responder a conversa", dias: 0 },
+  geladeira: { passo: "Reativar: pediu para chamar mais pra frente", dias: 60 },
+};
 
 /* ============================================================
    UM SINAL POR FICHA
@@ -366,6 +451,7 @@ export function sinalDaFicha(
    onde há espaço e onde a frase precisa ser precisa. */
 const NOME_MOTIVO_CURTO: Record<MotivoPerda, string> = {
   preco: "preço",
+  sem_interesse: "sem interesse",
   sem_resposta: "sumiu",
   timing: "timing",
   fechou_com_outro: "outro fornecedor",

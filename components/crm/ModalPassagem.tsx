@@ -27,7 +27,14 @@ import {
   type Estagio,
   type MotivoPerda,
 } from "@/lib/crm/tipos";
-import { hojeSP, NOME_CAMPO, type CampoExigido, type Passagem } from "@/lib/crm/regras";
+import {
+  hojeSP,
+  NOME_CAMPO,
+  PADRAO_DO_DESTINO,
+  somarDias,
+  type CampoExigido,
+  type Passagem,
+} from "@/lib/crm/regras";
 import s from "@/app/crm/crm.module.css";
 
 /* A frase de abertura é diferente por destino porque o motivo de a tela ter
@@ -37,6 +44,9 @@ const CHAMADA: Partial<Record<Estagio, string>> = {
   perdido: "Perder faz parte, mas perder sem saber por quê custa o aprendizado inteiro.",
   ganho: "Fechou. Registre o valor para o faturamento do mês bater.",
   proposta: "Proposta sem ticket estimado deixa a soma do pipeline mentindo.",
+  /* A geladeira sai do quadro e por isso a data é a única corda presa
+     nela: sem ela, guardar um lead é o mesmo que perdê-lo. */
+  geladeira: "Ele sai do quadro e volta sozinho na fila do dia, na data que você marcar.",
 };
 const CHAMADA_PADRAO = "Todo lead vivo sai daqui com um retorno marcado.";
 
@@ -58,11 +68,23 @@ export function ModalPassagem({
   aoConfirmar: (passagem: Passagem) => void;
 }) {
   const hoje = hojeSP();
-  const [passo, setPasso] = useState("");
+  /* Guardar na geladeira já vem com o passo escrito: quem arrasta um card
+     para lá está respondendo "não é a hora", e digitar de novo o que essa
+     resposta significa é trabalho de escrivão. Nas outras etapas o passo é
+     a decisão em si, e um padrão ali seria o CRM decidindo pelo Rafael. */
+  const [passo, setPasso] = useState(
+    estagio === "geladeira" ? (PADRAO_DO_DESTINO.geladeira?.passo ?? "") : "",
+  );
   /* A data já vem preenchida com hoje, e isso não é atalho: o valor mais
      provável de "quando eu volto nisso" é hoje ou amanhã, e um campo de data
-     vazio num modal é o lugar onde a pessoa desiste e cancela. */
-  const [data, setData] = useState(hoje);
+     vazio num modal é o lugar onde a pessoa desiste e cancela.
+
+     Menos na geladeira, onde o valor mais provável é o contrário de hoje:
+     "mais pra frente" quase nunca quer dizer "amanhã", e voltar cedo demais
+     transforma a reativação num quarto follow-up. */
+  const [data, setData] = useState(() =>
+    estagio === "geladeira" ? somarDias(hoje, PADRAO_DO_DESTINO.geladeira?.dias ?? 60) : hoje,
+  );
   const [ticket, setTicket] = useState("");
   const [motivo, setMotivo] = useState<MotivoPerda | "">("");
   const [valor, setValor] = useState("");

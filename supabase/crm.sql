@@ -66,7 +66,7 @@ create table if not exists public.crm_leads (
   indicado_por uuid references public.crm_leads(id) on delete set null,
 
   estagio text not null default 'lista'
-    check (estagio in ('lista','contatado','follow_up','conversa','proposta','negociacao','ganho','perdido')),
+    check (estagio in ('lista','contatado','follow_up','conversa','previa','proposta','negociacao','geladeira','ganho','perdido')),
   -- numérica de propósito: reordenar por arrastar vira "média entre o vizinho
   -- de cima e o de baixo", uma linha alterada em vez da coluna inteira.
   posicao numeric not null default 1000,
@@ -77,7 +77,7 @@ create table if not exists public.crm_leads (
   entrou_no_estagio_em timestamptz not null default now(),
 
   motivo_perda text
-    check (motivo_perda in ('preco','sem_resposta','timing','fechou_com_outro','fora_do_perfil','desistiu')),
+    check (motivo_perda in ('preco','sem_interesse','sem_resposta','timing','fechou_com_outro','fora_do_perfil','desistiu')),
   valor_fechado numeric,
   fechado_em date,
 
@@ -451,11 +451,18 @@ select u.id, t.titulo, 'whatsapp', t.categoria, t.conteudo, t.ordem
 -- tabela inteira enquanto confere linha por linha. Com o volume de um
 -- estúdio solo a diferença é imperceptível, mas o hábito é o certo.
 -- ============================================================
+-- ⚠️ A LISTA ABAIXO INCLUI 'geladeira', que é de 20/08 e não de 15/08, e
+-- isso é de propósito. Pela regra escrita no bloco de 19/08: este arquivo
+-- roda inteiro toda vez, então um `check` de um bloco antigo não pode ser
+-- mais estreito do que um bloco de baixo precisa. Escrito com as nove
+-- etapas daquela data, o primeiro lead que fosse para a geladeira faria
+-- esta linha derrubar o arquivo na próxima execução, e nada depois dela
+-- seria aplicado. Restrição é estado de HOJE; o histórico é o comentário.
 alter table public.crm_leads drop constraint if exists crm_leads_estagio_check;
 
 alter table public.crm_leads
   add constraint crm_leads_estagio_check
-  check (estagio in ('lista','contatado','follow_up','conversa','previa','proposta','negociacao','ganho','perdido'))
+  check (estagio in ('lista','contatado','follow_up','conversa','previa','proposta','negociacao','geladeira','ganho','perdido'))
   not valid;
 
 alter table public.crm_leads validate constraint crm_leads_estagio_check;
@@ -528,10 +535,27 @@ from public.crm_leads l;
 -- cujo conteúdo ainda é exatamente o texto semeado. Quem reescreveu o seu
 -- fica com o seu, e o de baixo entra do lado.
 -- ============================================================
-alter table public.crm_templates drop constraint if exists crm_templates_categoria_check;
-alter table public.crm_templates
-  add constraint crm_templates_categoria_check
-  check (categoria in ('abertura_fria','abertura_morna','segundo_toque','follow_up','indicacao','objecao','proposta','reativacao'));
+-- ⚠️ AQUI HAVIA UM `check` QUE QUEBRAVA O ARQUIVO INTEIRO (removido em
+-- 20/08). Ele reescrevia `crm_templates_categoria_check` com as OITO
+-- categorias que existiam nesta manhã, e o bloco de 19/08 setenta linhas
+-- abaixo alarga a lista para dez e insere templates em 'encerramento' e
+-- 'previa'. Rodar o arquivo pela segunda vez morria exatamente aqui:
+--
+--   ERROR: 23514: check constraint "crm_templates_categoria_check" of
+--   relation "crm_templates" is violated by some row
+--
+-- e como o editor do Supabase roda tudo numa transação só, NADA depois
+-- disto era aplicado, migração nova inclusive.
+--
+-- A REGRA QUE ISSO DEIXA, e que vale para as próximas: este arquivo é
+-- rodado INTEIRO, de cima a baixo, toda vez. Então um `check` escrito num
+-- bloco antigo não pode ser mais estreito do que um bloco de baixo precisa.
+-- Ou ele já nasce com a lista final, ou ele não existe. Restrição é estado
+-- de HOJE, não registro histórico; o registro histórico é este comentário.
+--
+-- Nada se perdeu ao tirar: a lista de dez está no `create table` da seção 3
+-- e no bloco da segunda migração de 19/08. O que este bloco veio fazer de
+-- verdade são os UPDATEs de texto logo abaixo.
 
 -- 2.1 o primeiro toque, encurtado
 update public.crm_templates
@@ -658,3 +682,69 @@ update public.crm_templates
      else ordem
    end
  where categoria is not null;
+
+
+-- ============================================================
+-- ⚠️ MIGRAÇÃO (20/08/2026) — a GELADEIRA e o "não tem interesse".
+--
+-- Rode este bloco se você já executou este arquivo antes. Quem estiver
+-- criando o banco agora precisa dele do mesmo jeito: os `check` da seção
+-- 1 já conhecem os dois valores novos, mas rodar isto de novo não custa
+-- nada e não muda nada.
+--
+-- SE VOCÊ CHEGOU AQUI PELO ERRO "check constraint
+-- crm_templates_categoria_check ... is violated by some row": era o bloco
+-- de 19/08, que reescrevia aquela restrição com uma lista velha e mais
+-- estreita. Está resolvido no próprio bloco, com a explicação inteira.
+--
+-- POR QUE. "Me responderam" era um balde só para dois fatos opostos: "me
+-- conta mais" e "não me chama mais". O trilho do funil lia os dois igual e
+-- promovia os dois para Conversa, então quem tinha acabado de dizer não
+-- voltava na fila do dia seguinte com o passo "Responder a conversa". O
+-- CRM mandava insistir com quem já tinha recusado, que é a coisa mais cara
+-- que uma ferramenta de prospecção pode fazer.
+--
+-- Agora o toque de entrada tem TEOR, e cada teor tem um destino:
+--
+--   quer saber mais .. Conversa    (o trilho de sempre)
+--   não é a hora ..... GELADEIRA   (novo)
+--   é não ............ Perdido, com motivo
+--
+-- 1. A GELADEIRA. "Agora não, me chame mais pra frente" é uma resposta, e
+--    ela não tinha lugar nenhum: virava Conversa (mentira, a conversa
+--    acabou) ou virava Perdido (mentira maior, ele volta em outubro).
+--    Ela é o único estágio dos dois lados da linha: ATIVA, então
+--    `painelHoje` a lê e devolve o lead na data marcada com o passo de
+--    reativação já escrito; e FORA DO QUADRO, porque coluna é o que se
+--    trabalha todo dia. Ela mora nas placas do fim, junto com ganho e
+--    perdido, com filete tracejado: é a única saída de onde se volta.
+--
+--    A ORDEM da coluna no quadro continua saindo de ESTAGIOS em
+--    lib/crm/tipos.ts, não daqui: o banco guarda o conjunto de valores
+--    aceitos, nunca a sequência.
+--
+-- 2. `sem_interesse` NÃO é `desistiu`. Desistir é ter tido um projeto e
+--    largar; quem responde "não tenho interesse" a uma abordagem fria
+--    nunca teve projeto nenhum. No mesmo balde, o gráfico de motivos das
+--    métricas deixaria de responder a única pergunta que ele faz.
+--
+-- POR QUE `not valid` e depois `validate`: sem isso o Postgres trava a
+-- tabela inteira enquanto confere linha por linha.
+-- ============================================================
+alter table public.crm_leads drop constraint if exists crm_leads_estagio_check;
+
+alter table public.crm_leads
+  add constraint crm_leads_estagio_check
+  check (estagio in ('lista','contatado','follow_up','conversa','previa','proposta','negociacao','geladeira','ganho','perdido'))
+  not valid;
+
+alter table public.crm_leads validate constraint crm_leads_estagio_check;
+
+alter table public.crm_leads drop constraint if exists crm_leads_motivo_perda_check;
+
+alter table public.crm_leads
+  add constraint crm_leads_motivo_perda_check
+  check (motivo_perda in ('preco','sem_interesse','sem_resposta','timing','fechou_com_outro','fora_do_perfil','desistiu'))
+  not valid;
+
+alter table public.crm_leads validate constraint crm_leads_motivo_perda_check;

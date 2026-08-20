@@ -39,6 +39,7 @@ import { apagarLead, moverLead, registrarToque } from "@/app/crm/acoes";
 import { mascararWhatsapp } from "@/components/telefone";
 import {
   dataCurta,
+  destinoDoToque,
   diasDesde,
   dinheiro,
   horaCurta,
@@ -46,6 +47,7 @@ import {
   linkInstagram,
   linkWhatsapp,
   oQueFalta,
+  PADRAO_DO_DESTINO,
   somarDias,
   temperatura,
   type CampoExigido,
@@ -53,15 +55,19 @@ import {
 } from "@/lib/crm/regras";
 import {
   CANAIS,
+  EFEITO_RESPOSTA,
   ehAtivo,
   ESTAGIOS,
+  MOTIVOS_PERDA,
   NOME_CANAL,
   NOME_ESTAGIO,
   NOME_MOTIVO,
   NOME_ORIGEM,
+  NOME_RESPOSTA,
   NOME_TIPO,
   NOTA_ESTAGIO,
   ORIGENS,
+  RESPOSTAS,
   TIPOS_PROJETO,
   type Canal,
   type Direcao,
@@ -69,6 +75,8 @@ import {
   type Interacao,
   type Lead,
   type LeadPainel,
+  type MotivoPerda,
+  type Resposta,
   type Template,
 } from "@/lib/crm/tipos";
 import { CampoInline, NotaInline } from "./CampoInline";
@@ -541,6 +549,11 @@ function ApagarLead({ lead }: { lead: LeadPainel }) {
    ============================================================ */
 function FormToque({ lead, hoje }: { lead: LeadPainel; hoje: string }) {
   const [direcao, setDirecao] = useState<Direcao>("saida");
+  const [resposta, setResposta] = useState<Resposta>("interesse");
+  const [motivo, setMotivo] = useState<MotivoPerda>("sem_interesse");
+  const [gelo, setGelo] = useState(() =>
+    somarDias(hojeSP(), PADRAO_DO_DESTINO.geladeira?.dias ?? 60),
+  );
   /* O canal de partida é o canal que o lead TEM: sem número, a conversa
      real está acontecendo no direct, e nascer em "WhatsApp" é um erro de
      registro esperando um esquecimento. */
@@ -551,9 +564,17 @@ function FormToque({ lead, hoje }: { lead: LeadPainel; hoje: string }) {
   const [erro, setErro] = useState<string | null>(null);
   const [salvando, comecar] = useTransition();
 
-  const precisaDePasso = !lead.proxima_acao_em || lead.proxima_acao_em < hoje;
   const [passo, setPasso] = useState("");
   const [data, setData] = useState(somarDias(hojeSP(), 3));
+
+  const teor = direcao === "entrada" ? resposta : undefined;
+  const destino = destinoDoToque(direcao, lead.estagio, teor);
+  const ehGeladeira = direcao === "entrada" && resposta === "depois";
+  const ehPerda = direcao === "entrada" && resposta === "nao";
+  /* Perdido não tem agenda e a geladeira tem a sua própria: a pergunta da
+     regra 6 só sobra para o caminho vivo. */
+  const precisaDePasso =
+    !ehGeladeira && !ehPerda && (!lead.proxima_acao_em || lead.proxima_acao_em < hoje);
 
   const enviar = (e: React.FormEvent) => {
     e.preventDefault();
@@ -563,12 +584,19 @@ function FormToque({ lead, hoje }: { lead: LeadPainel; hoje: string }) {
         canal,
         direcao,
         resumo,
-        proximo_passo: precisaDePasso && passo ? passo : undefined,
-        proxima_acao_em: precisaDePasso && passo ? data : undefined,
+        resposta: teor,
+        motivo_perda: ehPerda ? motivo : undefined,
+        proximo_passo: ehGeladeira
+          ? PADRAO_DO_DESTINO.geladeira?.passo
+          : precisaDePasso && passo
+            ? passo
+            : undefined,
+        proxima_acao_em: ehGeladeira ? gelo : precisaDePasso && passo ? data : undefined,
       });
       if (r.ok) {
         setResumo("");
         setPasso("");
+        setResposta("interesse");
       } else {
         setErro("erro" in r ? r.erro : "Não foi possível registrar.");
       }
@@ -600,6 +628,40 @@ function FormToque({ lead, hoje }: { lead: LeadPainel; hoje: string }) {
           </div>
         </fieldset>
 
+        {/* O TEOR DA RESPOSTA, igual ao ModalToque e pelo mesmo motivo: sem
+            ele, um "não tenho interesse" registrado aqui promovia o lead
+            para Conversa e o devolvia na fila do dia seguinte pedindo a
+            mensagem 2. Ver a nota longa em components/crm/ModalToque.tsx. */}
+        {direcao === "entrada" ? (
+          <fieldset className={s.grupo}>
+            <legend className={s.campoRot}>Como foi a resposta</legend>
+            <div className={s.opcoes}>
+              {RESPOSTAS.map((r) => (
+                <button
+                  key={r}
+                  type="button"
+                  className={`${s.opcao} ${resposta === r ? s.opcaoAtiva : ""} ${
+                    r === "nao" && resposta === r ? s.opcaoFim : ""
+                  }`}
+                  onClick={() => setResposta(r)}
+                  aria-pressed={resposta === r}
+                >
+                  {NOME_RESPOSTA[r]}
+                </button>
+              ))}
+            </div>
+            <p className={s.efeito}>
+              {EFEITO_RESPOSTA[resposta]}
+              {destino ? (
+                <>
+                  {" "}
+                  <b>Vai para {NOME_ESTAGIO[destino]}.</b>
+                </>
+              ) : null}
+            </p>
+          </fieldset>
+        ) : null}
+
         <div className={s.linhaToque}>
           <select
             value={canal}
@@ -620,6 +682,41 @@ function FormToque({ lead, hoje }: { lead: LeadPainel; hoje: string }) {
             aria-label="Resumo do toque"
           />
         </div>
+
+        {ehGeladeira ? (
+          <div className={s.blocoPergunta}>
+            <p className={s.perguntaTitulo}>Quando eu volto a chamar?</p>
+            <label className={s.campo}>
+              <span className={s.campoRot}>Data da reativação</span>
+              <input
+                type="date"
+                value={gelo}
+                min={hoje}
+                onChange={(e) => setGelo(e.target.value)}
+              />
+            </label>
+          </div>
+        ) : null}
+
+        {ehPerda ? (
+          <div className={s.blocoPergunta}>
+            <p className={s.perguntaTitulo}>Por quê?</p>
+            <label className={s.campo}>
+              <span className={s.campoRot}>Motivo da perda</span>
+              <select
+                value={motivo}
+                onChange={(e) => setMotivo(e.target.value as MotivoPerda)}
+                required
+              >
+                {MOTIVOS_PERDA.map((m) => (
+                  <option key={m} value={m}>
+                    {NOME_MOTIVO[m]}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+        ) : null}
 
         {precisaDePasso ? (
           <div className={s.blocoPergunta}>

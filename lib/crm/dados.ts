@@ -22,6 +22,7 @@ import {
 } from "./regras";
 import {
   ESTAGIOS_ATIVOS,
+  ESTAGIOS_NO_PIPELINE,
   type Interacao,
   type Lead,
   type LeadPainel,
@@ -30,6 +31,7 @@ import {
 } from "./tipos";
 
 const ATIVOS = ESTAGIOS_ATIVOS as readonly string[];
+const NO_PIPELINE = ESTAGIOS_NO_PIPELINE as readonly string[];
 
 /* ============================================================
    PAINEL HOJE — a fila de execução
@@ -154,9 +156,18 @@ export async function painelHoje() {
     proximoRetorno: futuros[0] ?? null,
     toquesSemana: toquesSemana ?? 0,
     metaSemana: meta?.toques_semana ?? 50,
-    /* Pipeline aberto: só estágio ativo, só ticket estimado. Ganho já não é
-       pipeline, é faturamento, e vive na tela de métricas. */
-    pipelineAberto: lista.reduce((soma, l) => soma + (l.ticket_estimado ?? 0), 0),
+    /* Pipeline aberto: só ticket estimado, e só de quem está no jogo AGORA.
+       Ganho já não é pipeline, é faturamento, e vive na tela de métricas; a
+       geladeira é ativa mas está dormindo, e somar o ticket de quem pediu
+       para ser chamado em novembro faria o número prometer dinheiro que
+       ninguém está perseguindo neste ciclo. Mesma conta da faixa do quadro
+       e da tela de métricas: os três precisam bater. */
+    pipelineAberto: lista
+      .filter((l) => NO_PIPELINE.includes(l.estagio))
+      .reduce((soma, l) => soma + (l.ticket_estimado ?? 0), 0),
+    /* `ativos` conta o quadro de pé, geladeira incluída: ela É um lead vivo
+       que ainda vai voltar, e o número existe para dizer o tamanho da
+       carteira, não o do ciclo. */
     ativos: lista.length,
   };
 }
@@ -370,7 +381,14 @@ export async function metricas(dias: 7 | 30 | 90) {
          perdido conta nas etapas anteriores só se o motivo indicar que a
          conversa aconteceu, o que o dado não diz. Ele fica de fora do
          numerador e dentro do denominador, que é a leitura pessimista e a
-         única honesta. */
+         única honesta.
+
+         A geladeira cai na mesma conta pelo mesmo motivo, e sem precisar
+         de linha própria: ela não está em `ordem`, então `indexOf` devolve
+         -1 e ela fica de fora do numerador. Um lead na geladeira PASSOU por
+         conversa (ele respondeu), então isto conta a menos. É a mesma
+         imprecisão do perdido, na mesma direção, e o dado que consertaria
+         as duas (o histórico de passagens) não existe. */
       return atual >= alvo;
     }).length;
   };
@@ -422,8 +440,12 @@ export async function metricas(dias: 7 | 30 | 90) {
     baseFunil: criadosNoPeriodo.length,
     respostas: { responderam, contatados: comSaida.size },
     cicloMedio,
+    /* NO_PIPELINE e não ATIVOS: a geladeira é ativa (o painel Hoje devolve
+       o lead na data marcada) mas o ticket de quem pediu para ser chamado
+       daqui a dois meses não é dinheiro deste ciclo. Mesma conta da faixa
+       do quadro, e o número precisa bater entre as duas telas. */
     pipelineAberto: todos
-      .filter((l) => ATIVOS.includes(l.estagio))
+      .filter((l) => NO_PIPELINE.includes(l.estagio))
       .reduce((s, l) => s + (l.ticket_estimado ?? 0), 0),
     faturamento: ganhosNoPeriodo.reduce((s, l) => s + (l.valor_fechado ?? 0), 0),
     ganhos: ganhosNoPeriodo.length,

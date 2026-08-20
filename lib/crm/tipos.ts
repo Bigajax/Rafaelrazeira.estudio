@@ -30,29 +30,58 @@ export const ESTAGIOS = [
   "previa",
   "proposta",
   "negociacao",
+  "geladeira",
   "ganho",
   "perdido",
 ] as const;
 export type Estagio = (typeof ESTAGIOS)[number];
 
-/* Os dois destinos. Eles saíram da fileira do kanban e viraram uma placa de
-   resultado no fim do quadro: não são etapas do caminho, são as duas saídas
-   dele, e como colunas recolhidas viravam duas lombadas verticais ilegíveis
-   ocupando a mesma largura de uma etapa viva. */
+/* ---------- A GELADEIRA ----------
+   "Agora não, me chame mais pra frente" é uma resposta, não um silêncio, e
+   até 20/08 ela não tinha lugar nenhum: o lead virava Conversa (mentira, a
+   conversa acabou) ou virava Perdido (mentira maior, ele voltaria em
+   outubro). Ficando em Conversa, ele entupia a coluna que existe para
+   dizer com quem eu estou falando AGORA; virando Perdido, ele sumia da
+   fila do Hoje para sempre, porque `painelHoje` só lê estágio ativo.
+
+   Então ela é o único estágio dos dois lados da linha: ATIVA (o Hoje
+   devolve o lead no dia marcado, com o passo de reativação já escrito) e
+   FORA DO QUADRO (nenhuma coluna, porque coluna é o que se trabalha todo
+   dia, e a geladeira é justamente o que não se trabalha). Ela mora nas
+   placas do fim, junto com os dois destinos, e é a única placa de onde um
+   lead sai sozinho. */
+
+/* As três placas do fim do quadro: não são etapas do caminho, são o que
+   acontece com quem sai dele. Elas saíram da fileira do kanban porque como
+   colunas recolhidas viravam lombadas verticais ilegíveis ocupando a
+   mesma largura de uma etapa viva. */
+export const ESTAGIOS_DE_PLACA = ["ganho", "perdido", "geladeira"] as const;
+/* O nome antigo, mantido para quem só quer os dois destinos definitivos. */
 export const ESTAGIOS_FECHADOS = ["ganho", "perdido"] as const;
-/* O que o quadro desenha como coluna. */
+
+/* O que o quadro desenha como coluna: o caminho, e só ele. */
 export const ESTAGIOS_DO_QUADRO = ESTAGIOS.filter(
-  (e) => e !== "ganho" && e !== "perdido",
+  (e) => !(ESTAGIOS_DE_PLACA as readonly string[]).includes(e),
 ) as readonly Estagio[];
 
-/* Os seis em que o negócio ainda está de pé. Ganho e perdido são as duas
-   saídas, e é essa separação que decide quem aparece no painel Hoje, quem
-   entra na soma do pipeline aberto e quem precisa de próximo passo. */
+/* Os oito em que o negócio ainda está de pé. Ganho e perdido são as duas
+   saídas, e é essa separação que decide quem aparece no painel Hoje e quem
+   precisa de próximo passo. A geladeira está DENTRO: um lead dormindo
+   continua devendo uma data, e é ela que o traz de volta. */
 export const ESTAGIOS_ATIVOS = ESTAGIOS.filter(
   (e) => e !== "ganho" && e !== "perdido",
 ) as readonly Estagio[];
 
+/* O que soma no PIPELINE ABERTO, que é uma pergunta mais estreita que
+   "ainda está de pé": dinheiro que pode entrar neste ciclo. O ticket de
+   quem pediu para ser chamado em novembro não é isso, e somá-lo faria a
+   faixa do quadro prometer um número que ninguém está perseguindo. */
+export const ESTAGIOS_NO_PIPELINE = ESTAGIOS_ATIVOS.filter((e) => e !== "geladeira");
+
 export const ehAtivo = (e: Estagio) => e !== "ganho" && e !== "perdido";
+
+/** Ativo e acordado: conta no pipeline aberto e na carga das colunas. */
+export const ehNoPipeline = (e: Estagio) => ehAtivo(e) && e !== "geladeira";
 
 export const NOME_ESTAGIO: Record<Estagio, string> = {
   lista: "Lista",
@@ -62,6 +91,7 @@ export const NOME_ESTAGIO: Record<Estagio, string> = {
   previa: "Prévia",
   proposta: "Proposta",
   negociacao: "Negociação",
+  geladeira: "Geladeira",
   ganho: "Ganho",
   perdido: "Perdido",
 };
@@ -78,6 +108,10 @@ export const NOTA_ESTAGIO: Record<Estagio, string> = {
   previa: "desenhei e mandei ver",
   proposta: "preço na mesa",
   negociacao: "ajustando para fechar",
+  /* Três palavras e não "volta mais pra frente": a legenda vive dentro de
+     uma placa de 150px em mono de 10,5px, e a frase inteira quebrava em
+     duas linhas ali. */
+  geladeira: "volta na data",
   ganho: "fechou",
   perdido: "não vai",
 };
@@ -132,8 +166,58 @@ export const NOME_DIRECAO: Record<Direcao, string> = {
   entrada: "Responderam",
 };
 
+/* ============================================================
+   O TEOR DA RESPOSTA — o que "me responderam" quis dizer
+
+   Até 20/08 a direção era a única coisa que o toque sabia, e "entrada" era
+   um balde só para dois fatos opostos: "me conta mais" e "não me chama
+   mais". O trilho lia os dois igual e promovia os dois para Conversa, o
+   que fazia o CRM mandar o Rafael insistir com quem já tinha dito não.
+
+   São três porque só existem três desfechos para uma resposta, e cada um
+   tem um destino diferente no funil:
+
+     interesse .. a conversa está de pé      → Conversa (o trilho de sempre)
+     depois ..... ela existe, mas não agora  → Geladeira, com data de volta
+     nao ........ ela acabou                 → Perdido, com motivo
+
+   Isto é vocabulário e não regra: PARA ONDE cada um leva mora em
+   `destinoDaResposta` (lib/crm/regras.ts), junto das outras funções puras
+   que a tela e o servidor precisam responder igual.
+   ============================================================ */
+export const RESPOSTAS = ["interesse", "depois", "nao"] as const;
+export type Resposta = (typeof RESPOSTAS)[number];
+
+export const NOME_RESPOSTA: Record<Resposta, string> = {
+  interesse: "Quer saber mais",
+  depois: "Não é a hora",
+  nao: "É não",
+};
+
+/* A frase que aparece embaixo dos três botões, dizendo o que vai acontecer
+   ANTES de acontecer. Um toque que move o lead de etapa sem avisar é a
+   forma mais rápida de alguém parar de confiar no registro.
+
+   Ela fala da CONSEQUÊNCIA e nunca do nome da etapa: o destino é escrito
+   em negrito ao lado, e só quando existe um. Um lead que já está em
+   Proposta e responde "quer saber mais" não se move para lugar nenhum, e a
+   frase precisa continuar verdadeira nesse caso. */
+export const EFEITO_RESPOSTA: Record<Resposta, string> = {
+  interesse: "A conversa está de pé e o lead segue no funil.",
+  depois: "Sai do quadro e volta sozinho na fila do dia, na data que você marcar.",
+  nao: "Sai do quadro, e o motivo fica guardado no gráfico das métricas.",
+};
+
+/* `sem_interesse` entrou em 20/08 e NÃO é sinônimo de `desistiu`: desistir
+   é ter tido um projeto e largar, e quem responde "não tenho interesse" a
+   uma abordagem fria nunca teve projeto nenhum. Somados no mesmo balde, o
+   gráfico de motivos das métricas deixaria de responder a única pergunta
+   que ele faz (por que os negócios não fecham), porque prospecção fria
+   produz muito mais "não quero" do que qualquer outra coisa, e o balde
+   inteiro viraria uma barra só. */
 export const MOTIVOS_PERDA = [
   "preco",
+  "sem_interesse",
   "sem_resposta",
   "timing",
   "fechou_com_outro",
@@ -144,6 +228,7 @@ export type MotivoPerda = (typeof MOTIVOS_PERDA)[number];
 
 export const NOME_MOTIVO: Record<MotivoPerda, string> = {
   preco: "Preço",
+  sem_interesse: "Não tem interesse",
   sem_resposta: "Sumiu, sem resposta",
   timing: "Não é a hora",
   fechou_com_outro: "Fechou com outro",

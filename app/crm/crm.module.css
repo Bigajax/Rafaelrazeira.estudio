@@ -1830,6 +1830,17 @@
    muda é que 2,1:1 não passava nem no mínimo de texto grande. */
 .placaPerda .placaNum { color: var(--ink-fraco) }
 
+/* ---------- a geladeira: a única placa de onde se volta ----------
+   Ganho e perdido são definitivos e por isso têm filete CHEIO. Este é
+   TRACEJADO, e o tracejado é o que a placa quer dizer: a saída é
+   provisória, o lead volta na data. Nada de cor nova inventada para isso
+   (a casa tem duas: verde para o CRM sugerindo, rosa para "olhe aqui
+   agora", e nenhuma das duas cabe em "está dormindo"). A forma carrega o
+   sentido, e a tinta continua sendo tinta. */
+.app .placaGelo { border-left-color: var(--ink-fraco); border-left-style: dashed }
+.placaGelo .placaNum { color: var(--ink-soft) }
+.placaGelo.placaAlvo .placaNum, .placaGelo.placaAberta .placaNum { color: var(--sobre-ink) }
+
 @media (hover: hover) and (pointer: fine) {
   .app .placa:hover { background: #fff; box-shadow: 3px 3px 0 var(--ink) }
 }
@@ -2124,9 +2135,27 @@
 }
 .app .opcao + .opcao { border-left-width: 0 }
 .app .opcaoAtiva { background: var(--ink); color: var(--paper); border-color: var(--ink) }
+/* A única escolha do formulário que tira o lead do quadro. Escrita depois
+   da `.opcaoAtiva` e com a mesma especificidade, ela vence por ordem, e
+   `--rosa-dark` e não `--rosa` porque o texto é branco por cima: o rosa da
+   casa dá 3,3:1 aqui e o escuro passa. É a mesma regra do "Apagar mesmo". */
+.app .opcao.opcaoFim { background: var(--rosa-dark); border-color: var(--rosa-dark); color: #fff }
 @media (hover: hover) and (pointer: fine) {
   .app .opcao:not(.opcaoAtiva):hover { border-color: var(--ink); color: var(--ink) }
 }
+
+/* ---------- o que este botão vai fazer, dito antes ----------
+   Mora embaixo do trio de teor da resposta e some quando não há teor. Um
+   registro que move o lead de etapa sem avisar é a forma mais rápida de
+   alguém parar de confiar no registro, e a frase é curta porque ela é lida
+   uma vez e depois só confirmada de relance. O `.modal p` é seletor de
+   elemento e venceria a classe simples: sem o `.modal` no começo, o texto
+   voltaria a 13px com 16px de margem embaixo. */
+.modal .efeito {
+  font: 400 12px var(--body); line-height: 1.45; color: var(--ink-soft);
+  margin: 9px 0 0; padding-left: 9px; border-left: 2px solid var(--green);
+}
+.modal .efeito b { font-weight: 700; color: var(--ink) }
 
 /* ---------- a pergunta que o CRM faz de volta ----------
    A regra 6 e a regra 1 acontecem dentro de outro formulário, e precisam
