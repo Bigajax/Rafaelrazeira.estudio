@@ -85,6 +85,8 @@ import { ModalPassagem } from "./ModalPassagem";
 import { Pesquisa } from "./Pesquisa";
 import { SugerirResposta } from "./SugerirResposta";
 import { AvisoDoisRetornos } from "./pecas";
+import { BlocoContrato } from "./BlocoContrato";
+import type { ContratoPainel } from "@/lib/crm/dados";
 import s from "@/app/crm/crm.module.css";
 
 type Vizinho = Pick<Lead, "id" | "nome" | "empresa" | "estagio">;
@@ -95,6 +97,7 @@ export type DadosFicha = {
   indicados: Vizinho[];
   quemIndicou: Vizinho | null;
   templates: Template[];
+  contratos: ContratoPainel[];
   hoje: string;
 };
 
@@ -104,6 +107,7 @@ export function Ficha({
   indicados,
   quemIndicou,
   templates,
+  contratos,
   hoje,
 }: DadosFicha) {
   const [mensagem, setMensagem] = useState(false);
@@ -273,6 +277,13 @@ export function Ficha({
 
         <AvisoDoisRetornos lead={lead} />
       </section>
+
+      {/* ============ O DINHEIRO ============
+          Entre a decisão e a pesquisa: quem abre a ficha para mandar
+          mensagem precisa saber que a pessoa deve R$ 499 ANTES de
+          escrever, não depois de rolar até a linha do tempo. Some inteiro
+          em lead sem contrato que ainda não foi ganho. */}
+      <BlocoContrato lead={lead} contratos={contratos} hoje={hoje} />
 
       {/* ============ A PESQUISA ============
           Entre "o que fazer" e "o que fiz" de propósito: o dossiê é o que

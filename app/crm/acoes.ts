@@ -23,6 +23,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { clienteServidor, usuarioAtual } from "@/lib/crm/supabase";
+import { centavos } from "@/lib/crm/financeiro";
 import {
   destinoDoToque,
   emailNormal,
@@ -440,6 +441,32 @@ export async function criarLead(
 export async function apagarLead(id: string): Promise<Resultado> {
   await exigirSessao();
   const supabase = await clienteServidor();
+
+  /* ---------- a trava que o dinheiro trouxe (20/08) ----------
+     `crm_contratos` e `crm_parcelas` apontam para o lead com `on delete
+     cascade`, e os recebimentos penduram nas parcelas. Ou seja: este botão,
+     que fica bem à mão na carta da vez e na ficha, passou a poder apagar o
+     caixa junto com o nome. A cascata está certa (contrato de lead que não
+     existe não é contrato), o que não pode é o caminho ser silencioso.
+
+     A soma aparece na frase de propósito: "tem contrato" é uma regra
+     abstrata que dá vontade de contornar, "tem R$ 399 recebidos" é um fato
+     que faz a mão parar. */
+  const { data: recebimentos } = await supabase
+    .from("crm_recebimentos")
+    .select("valor")
+    .eq("lead_id", id)
+    .is("estornado_em", null)
+    .returns<{ valor: number }[]>();
+
+  if (recebimentos?.length) {
+    const total = centavos(recebimentos.reduce((s, r) => s + Number(r.valor), 0));
+    return {
+      ok: false,
+      erro: `Este lead tem R$ ${total.toLocaleString("pt-BR")} recebidos. Apagar levaria o caixa junto.`,
+    };
+  }
+
   const { error } = await supabase.from("crm_leads").delete().eq("id", id);
   if (error) return { ok: false, erro: traduzirErro(error) };
   atualizarTelas();
@@ -503,6 +530,298 @@ export async function salvarMeta(toques: number): Promise<Resultado> {
       { onConflict: "owner_id" },
     );
 
+  if (error) return { ok: false, erro: traduzirErro(error) };
+  atualizarTelas();
+  return { ok: true };
+}
+
+/* ============================================================
+   O DINHEIRO
+
+   Contrato, parcela e recebimento. As três escritas seguem o mesmo contrato
+   `Resultado` do resto do arquivo, e a validação de negócio é refeita aqui
+   pelas mesmas funções puras que a tela usou para desenhar
+   (lib/crm/financeiro.ts): a tela decide o que mostrar por cortesia, o
+   servidor decide o que grava por segurança.
+   ============================================================ */
+
+/* ---------- FECHAR O CONTRATO ----------
+   Nasce inteiro: o contrato e as parcelas numa chamada só. Separar em duas
+   ("crie o contrato" e depois "agora adicione as parcelas") produziria
+   contrato sem plano de pagamento no primeiro fechamento apressado, que é
+   justamente o objeto inútil que esta aba existe para não ter.
+
+   E ele é o ÚNICO ESCRITOR do par `valor_fechado`/`fechado_em` a partir de
+   agora. É isso que impede as duas verdades: o contrato manda, e a coluna
+   antiga do lead vira espelho dele. Todo o código de métricas e a placa de
+   Ganho continuam lendo o que sempre leram. */
+export async function fecharContrato(
+  leadId: string,
+  dados: {
+    titulo: string;
+    valor_total: number;
+    proposta_slug?: string | null;
+    assinado_em?: string | null;
+    notas?: string | null;
+    parcelas: {
+      numero: number;
+      de: number | null;
+      rotulo: string;
+      valor: number;
+      vence_em: string;
+      item_slug?: string | null;
+      metodo_previsto?: string | null;
+    }[];
+  },
+): Promise<{ ok: true; id: string } | { ok: false; erro: string }> {
+  const usuario = await exigirSessao();
+  const supabase = await clienteServidor();
+
+  const titulo = String(dados.titulo || "").trim();
+  if (!titulo) return { ok: false, erro: "O contrato precisa de um título." };
+
+  const total = Number(dados.valor_total);
+  if (!Number.isFinite(total) || total <= 0) {
+    return { ok: false, erro: "O valor do contrato precisa ser maior que zero." };
+  }
+  if (!dados.parcelas?.length) {
+    return { ok: false, erro: "Um contrato sem parcela nenhuma não cobra ninguém." };
+  }
+
+  const { data: contrato, error } = await supabase
+    .from("crm_contratos")
+    .insert({
+      owner_id: usuario.id,
+      lead_id: leadId,
+      titulo,
+      proposta_slug: dados.proposta_slug || null,
+      tipo: "projeto",
+      valor_total: centavos(total),
+      assinado_em: dados.assinado_em || hojeSP(),
+      notas: dados.notas?.trim() || null,
+    })
+    .select("id")
+    .single();
+
+  if (error || !contrato) return { ok: false, erro: traduzirErro(error) };
+
+  const { error: erroParcelas } = await supabase.from("crm_parcelas").insert(
+    dados.parcelas.map((p) => ({
+      owner_id: usuario.id,
+      contrato_id: contrato.id,
+      lead_id: leadId,
+      numero: p.numero,
+      de: p.de,
+      rotulo: p.rotulo.trim() || `${p.numero}a parcela`,
+      valor: centavos(Number(p.valor)),
+      vence_em: p.vence_em,
+      item_slug: p.item_slug || null,
+      metodo_previsto: p.metodo_previsto || "pix",
+    })),
+  );
+
+  /* Contrato sem parcela é pior do que contrato nenhum: ele aparece na tela
+     prometendo um plano que não existe. Se as parcelas não entraram, o
+     contrato vai junto. */
+  if (erroParcelas) {
+    await supabase.from("crm_contratos").delete().eq("id", contrato.id);
+    return { ok: false, erro: traduzirErro(erroParcelas) };
+  }
+
+  /* O espelho. Não passa pelo `moverLead` de propósito: mover para ganho é
+     decisão de funil e pode já ter acontecido; aqui só se carimba o valor
+     do que foi combinado, sem mexer em estágio nenhum. E o `.eq("estagio",
+     "ganho")` é a guarda que impede um contrato assinado de carimbar valor
+     num lead que ainda está em negociação. */
+  await supabase
+    .from("crm_leads")
+    .update({ valor_fechado: centavos(total), fechado_em: dados.assinado_em || hojeSP() })
+    .eq("id", leadId)
+    .eq("estagio", "ganho");
+
+  atualizarTelas();
+  return { ok: true, id: contrato.id as string };
+}
+
+/* ---------- DAR BAIXA ----------
+   A ação mais apertada da aba, e por isso a que aceita menos coisa: valor,
+   data, método. Ela é chamada de três lugares (a linha da parcela na ficha,
+   a lista de devedores do Caixa e a carta da fila do dia) e nos três o caso
+   comum é um clique com tudo já preenchido. */
+export async function lancarRecebimento(dados: {
+  parcela_id?: string | null;
+  lead_id?: string | null;
+  valor: number;
+  recebido_em?: string;
+  metodo?: string;
+  valor_liquido?: number | null;
+  notas?: string | null;
+}): Promise<Resultado> {
+  const usuario = await exigirSessao();
+  const supabase = await clienteServidor();
+
+  const valor = centavos(Number(dados.valor));
+  if (!Number.isFinite(valor) || valor <= 0) {
+    return { ok: false, erro: "O valor recebido precisa ser maior que zero." };
+  }
+
+  /* O lead vem da parcela quando há parcela: pedir os dois à tela seria
+     deixar o dinheiro de um cliente cair na conta de outro por um campo
+     esquecido num formulário. */
+  let leadId = dados.lead_id ?? null;
+  if (dados.parcela_id) {
+    const { data: parcela } = await supabase
+      .from("crm_parcelas")
+      .select("lead_id")
+      .eq("id", dados.parcela_id)
+      .maybeSingle<{ lead_id: string }>();
+    if (!parcela) return { ok: false, erro: "Parcela não encontrada." };
+    leadId = parcela.lead_id;
+  }
+
+  const { error } = await supabase.from("crm_recebimentos").insert({
+    owner_id: usuario.id,
+    parcela_id: dados.parcela_id || null,
+    lead_id: leadId,
+    valor,
+    valor_liquido: dados.valor_liquido == null ? null : centavos(Number(dados.valor_liquido)),
+    /* `hojeSP()` e nunca `new Date()`: o servidor da Vercel roda em UTC, e
+       uma baixa lançada às 22h cairia no dia seguinte. Na virada do mês,
+       cairia no mês seguinte, e o mês fecharia errado todo mês. */
+    recebido_em: dados.recebido_em || hojeSP(),
+    metodo: dados.metodo || "pix",
+    origem: "manual",
+    notas: dados.notas?.trim() || null,
+  });
+
+  if (error) return { ok: false, erro: traduzirErro(error) };
+  atualizarTelas();
+  return { ok: true };
+}
+
+/** Desfazer uma baixa lançada por engano. Some de vez: erro de digitação
+    não é histórico, é erro. Estorno de verdade (o cliente pediu o dinheiro
+    de volta) é outra ação, logo abaixo, e ela guarda a linha. */
+export async function apagarRecebimento(id: string): Promise<Resultado> {
+  await exigirSessao();
+  const supabase = await clienteServidor();
+  const { error } = await supabase.from("crm_recebimentos").delete().eq("id", id);
+  if (error) return { ok: false, erro: traduzirErro(error) };
+  atualizarTelas();
+  return { ok: true };
+}
+
+/** O dinheiro voltou (estorno, chargeback). A linha FICA, com a data: ela
+    aconteceu, e um mês já fechado precisa poder ser reconstruído. O que muda
+    é que ela para de contar em toda soma de recebido. */
+export async function estornarRecebimento(id: string): Promise<Resultado> {
+  await exigirSessao();
+  const supabase = await clienteServidor();
+  const { error } = await supabase
+    .from("crm_recebimentos")
+    .update({ estornado_em: hojeSP() })
+    .eq("id", id);
+  if (error) return { ok: false, erro: traduzirErro(error) };
+  atualizarTelas();
+  return { ok: true };
+}
+
+/** Amarrar um recebimento órfão (o que o webhook gravou sem entender) a uma
+    parcela. O lead vem junto, pela mesma razão do `lancarRecebimento`. */
+export async function amarrarRecebimento(id: string, parcelaId: string): Promise<Resultado> {
+  await exigirSessao();
+  const supabase = await clienteServidor();
+
+  const { data: parcela } = await supabase
+    .from("crm_parcelas")
+    .select("lead_id")
+    .eq("id", parcelaId)
+    .maybeSingle<{ lead_id: string }>();
+  if (!parcela) return { ok: false, erro: "Parcela não encontrada." };
+
+  const { error } = await supabase
+    .from("crm_recebimentos")
+    .update({ parcela_id: parcelaId, lead_id: parcela.lead_id })
+    .eq("id", id);
+
+  if (error) return { ok: false, erro: traduzirErro(error) };
+  atualizarTelas();
+  return { ok: true };
+}
+
+/* ---------- ADIAR A COBRANÇA ----------
+   Mexe em `cobrar_em` e NUNCA em `vence_em`, e essa é a decisão inteira
+   desta função: o vencimento é fato combinado com o cliente, e empurrá-lo
+   para calar a tela reescreveria o combinado. O que se adia é a minha
+   vontade de cobrar, não a dívida dele.
+
+   A conta parte de HOJE, como o `adiar()` dos leads e pelo mesmo motivo
+   escrito lá em cima: "+1 dia" a partir de uma data velha não move a fila. */
+export async function adiarCobranca(parcelaId: string, dias: number): Promise<Resultado> {
+  await exigirSessao();
+  const supabase = await clienteServidor();
+  const { error } = await supabase
+    .from("crm_parcelas")
+    .update({ cobrar_em: somarDias(hojeSP(), dias) })
+    .eq("id", parcelaId);
+  if (error) return { ok: false, erro: traduzirErro(error) };
+  atualizarTelas();
+  return { ok: true };
+}
+
+/** Deixou de ser devida (escopo cortado, permuta que cobriu, acordo). Data
+    e não exclusão: um mês já fechado precisa continuar batendo. */
+export async function cancelarParcela(parcelaId: string): Promise<Resultado> {
+  await exigirSessao();
+  const supabase = await clienteServidor();
+  const { error } = await supabase
+    .from("crm_parcelas")
+    .update({ cancelada_em: hojeSP() })
+    .eq("id", parcelaId);
+  if (error) return { ok: false, erro: traduzirErro(error) };
+  atualizarTelas();
+  return { ok: true };
+}
+
+export async function reativarParcela(parcelaId: string): Promise<Resultado> {
+  await exigirSessao();
+  const supabase = await clienteServidor();
+  const { error } = await supabase
+    .from("crm_parcelas")
+    .update({ cancelada_em: null })
+    .eq("id", parcelaId);
+  if (error) return { ok: false, erro: traduzirErro(error) };
+  atualizarTelas();
+  return { ok: true };
+}
+
+export async function apagarContrato(id: string): Promise<Resultado> {
+  await exigirSessao();
+  const supabase = await clienteServidor();
+
+  /* A cascata do banco levaria as parcelas e, por elas, os recebimentos.
+     Apagar um contrato com dinheiro dentro é apagar caixa, e caixa não se
+     apaga por engano: se a venda não aconteceu, o caminho é cancelar. */
+  const { data: parcelas } = await supabase
+    .from("crm_parcelas")
+    .select("id")
+    .eq("contrato_id", id)
+    .returns<{ id: string }[]>();
+
+  if (parcelas?.length) {
+    const { count } = await supabase
+      .from("crm_recebimentos")
+      .select("id", { count: "exact", head: true })
+      .in(
+        "parcela_id",
+        parcelas.map((p) => p.id),
+      );
+    if (count) {
+      return { ok: false, erro: "Este contrato tem dinheiro recebido. Cancele em vez de apagar." };
+    }
+  }
+
+  const { error } = await supabase.from("crm_contratos").delete().eq("id", id);
   if (error) return { ok: false, erro: traduzirErro(error) };
   atualizarTelas();
   return { ok: true };

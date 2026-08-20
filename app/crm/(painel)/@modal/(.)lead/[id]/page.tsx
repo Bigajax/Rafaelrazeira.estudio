@@ -21,6 +21,7 @@ export default async function ModalDoLead({ params }: { params: Promise<{ id: st
       indicados={dados.indicados}
       quemIndicou={dados.quemIndicou}
       templates={dados.templates}
+      contratos={dados.contratos}
       hoje={dados.hoje}
     />
   );

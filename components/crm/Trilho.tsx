@@ -66,9 +66,22 @@ import s from "@/app/crm/crm.module.css";
 const ROTAS = [
   { href: "/crm", rotulo: "Hoje", nota: "a fila", conta: "fila" },
   { href: "/crm/pipeline", rotulo: "Pipeline", nota: "o quadro", conta: "ativos" },
+  /* "Caixa" e não "Financeiro" por duas razões que apontam para o mesmo
+     lado: é a palavra exata do que a tela responde (quanto entrou, quem me
+     deve), e cinco letras cabem na barra do celular, onde cada rota tem
+     78px com cinco itens. "Financeiro" é o nome do departamento de uma
+     empresa que este estúdio não é. */
+  { href: "/crm/caixa", rotulo: "Caixa", nota: "o dinheiro", conta: "cobrar" },
   { href: "/crm/templates", rotulo: "Templates", nota: "as mensagens", conta: "templates" },
   { href: "/crm/metricas", rotulo: "Métricas", nota: "os números", conta: null },
 ] as const;
+
+/* Quais números falam alto. A regra já estava escrita neste arquivo ("no
+   trilho inteiro, quem fala é quem vai te cobrar") e até 20/08 só Hoje
+   cabia nela. Parcela vencida é literalmente cobrança, então Caixa entra na
+   mesma escada de três estados. Pipeline e Templates continuam em cinza:
+   são inventário, não dívida. */
+const COBRAM: readonly string[] = ["fila", "cobrar"];
 
 export function Trilho({ sair, contagens }: { sair: () => void; contagens: Contagens }) {
   const caminho = usePathname() ?? "";
@@ -101,15 +114,16 @@ export function Trilho({ sair, contagens }: { sair: () => void; contagens: Conta
               >
                 <b>
                   {rotulo}
-                  {/* Só a fila tem cor, e ela tem três estados como a
+                  {/* Só quem cobra tem cor, e a cor tem três estados como a
                       contagem da coluna do quadro: rosa é "tem gente
                       esperando", esmeralda é "acabou", cinza é o resto do
                       inventário. No trilho inteiro, quem fala é quem vai te
-                      cobrar. */}
+                      cobrar — e é essa mesma frase que decide, na barra do
+                      celular, quais números sobrevivem ao aperto. */}
                   {n !== null ? (
                     <i
                       className={`${s.trilhoCont} ${
-                        conta === "fila" ? (n ? s.trilhoCobra : s.trilhoEmDia) : ""
+                        conta && COBRAM.includes(conta) ? (n ? s.trilhoCobra : s.trilhoEmDia) : ""
                       }`}
                     >
                       {n}

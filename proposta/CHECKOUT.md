@@ -85,11 +85,44 @@ aceite → contrato assinado → pagamento.
    para produção para o teste real (pague R$ 1 pra você mesmo criando
    um item temporário de teste na tabela).
 
-## Limitações conhecidas (v1)
+## O webhook (20/08/2026)
 
-- Sem webhook: a confirmação em tela usa polling; se o cliente fechar
-  o modal antes de pagar o Pix, o pagamento ainda vale — você vê no
-  app do MP. O comprovante chega no e-mail do cliente.
-- As etapas 2 e 3 do modelo parcelado não têm cobrança automática:
-  crie um link de pagamento no app do MP ou peça Pix manual a cada
-  aprovação (roadmap: item por etapa na tabela).
+Antes desta data, um pagamento aprovado existia em **um lugar só: o
+painel do Mercado Pago**. O `external_reference` era montado com toda a
+informação certa e jogado fora, não havia `notification_url`, e o
+`showSuccess()` desenhava um "✓" sem gravar nada. O CRM sabia que o
+cliente tinha fechado e não sabia se ele havia pagado.
+
+Agora `POST /api/mp-webhook` recebe a notificação, confere a assinatura,
+consulta o pagamento na API do MP (o corpo da notificação é um aviso, não
+um extrato) e grava em `crm_recebimentos`. Se ele bate com uma parcela em
+aberto, ela é dada como recebida; se for a primeira parcela do contrato, o
+lead ainda vai para **Ganho** sozinho e o pagamento aparece na linha do
+tempo dele.
+
+**Para ligar, três coisas:**
+
+1. `MP_WEBHOOK_SECRET` na Vercel, com a chave secreta que o painel do MP
+   mostra ao cadastrar a URL. **Sem ela a rota recusa tudo com 401 e a
+   baixa volta a ser manual em silêncio.**
+2. A URL cadastrada em Mercado Pago → Suas integrações → sua aplicação →
+   Webhooks, evento **Pagamentos**. O `notification_url` que a rota de
+   criação manda não substitui o cadastro: é do cadastro que sai o segredo.
+3. `SUPABASE_SERVICE_ROLE_KEY` e `CRM_OWNER_ID`, que a rota já usa por não
+   ter sessão de usuário (mesma postura de `/api/lead`).
+
+**Teste antes de contar com ele:** o simulador do painel do MP assina de
+verdade. Dispare o mesmo evento cinco vezes — tem que criar **uma** linha
+só, porque a idempotência é o índice único `crm_receb_mp_uniq`, não uma
+checagem na aplicação.
+
+## O que continua manual
+
+- Pagamento que chega sem contrato montado (o cliente paga a entrada no
+  minuto seguinte a receber a proposta) entra como **órfão** e aparece na
+  bandeja "Entrou sem contrato" do `/crm/caixa`, para amarrar em dois
+  cliques. Ele nunca é descartado.
+- As etapas 2 e 3 do modelo parcelado continuam sem cobrança automática:
+  crie um link de pagamento no app do MP ou peça Pix manual. O que mudou é
+  que o CRM agora **sabe que elas existem e quando vencem**, e põe o
+  cliente na fila do dia para você cobrar.

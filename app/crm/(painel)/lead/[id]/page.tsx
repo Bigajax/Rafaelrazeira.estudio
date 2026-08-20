@@ -36,6 +36,7 @@ export default async function PaginaLead({ params }: { params: Promise<{ id: str
         indicados={dados.indicados}
         quemIndicou={dados.quemIndicou}
         templates={dados.templates}
+        contratos={dados.contratos}
         hoje={dados.hoje}
       />
     </div>

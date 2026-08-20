@@ -2637,6 +2637,15 @@
      com um vão no meio maior que as duas palavras. */
   .trilhoLink b { font-size: 12px; justify-content: center; gap: 6px }
   .trilhoLink span { display: none }
+  /* ---------- o aperto da quinta rota (20/08) ----------
+     Com quatro rotas cada célula tinha 97px e "TEMPLATES" já usava quase
+     todos. O Caixa entrou e a conta caiu para 78px, então alguma coisa
+     tinha que sair — e quem sai é o número de quem NÃO cobra. É a mesma
+     frase que já governa a cor aqui ("quem fala é quem vai te cobrar"):
+     na barra do polegar sobrevivem os dois números que significam trabalho
+     esperando, e o inventário de pipeline e templates fica para o trilho
+     do computador, onde há espaço para curiosidade. */
+  .trilhoCont:not(.trilhoCobra):not(.trilhoEmDia) { display: none }
   .trilhoAtivo { border-left-color: transparent; border-top-color: var(--green-live) }
 
   /* A barra nunca sai de cena, então o conteúdo carrega a folga. */
@@ -2796,3 +2805,336 @@
     transition: none !important; animation: none !important;
   }
 }
+
+/* ============================================================
+   O CAIXA
+
+   Peças próprias são poucas de propósito: a placa, o funil, as barras de
+   mês e os blocos vêm inteiros da tela de Métricas, e reusar as classes de
+   lá é o que faz as duas telas parecerem o mesmo instrumento em vez de dois
+   relatórios. O que nasce aqui é só o que a tela de métricas não tinha:
+   linhas com AÇÃO dentro.
+   ============================================================ */
+
+/* O quarto tom da placa. Verde é dinheiro que entrou, voz fraca é ausência
+   de dado, e faltava a cor de "venceu e não entrou". `--rosa-live` e não
+   `--rosa`: a placa é tinta cheia, e o rosa da casa dá 3,5:1 sobre grafite,
+   a mesma regra já registrada para o trilho e para as placas do quadro. */
+.placarAtraso { color: var(--rosa-live) }
+
+/* Nota de bloco que precisa ser lida, e não só consultada: o plano de
+   pagamento que não fecha. Filete rosa na margem porque nesta ferramenta
+   ele quer dizer "olhe para cá". */
+.app .notaAlerta {
+  border-left: 2px solid var(--rosa); padding-left: 10px;
+  color: var(--ink-soft); margin-top: 12px;
+}
+
+/* ---------- a linha de quem deve ----------
+   Grade de quatro colunas e não uma tabela: tabela alinha tudo por igual e
+   aqui as quatro coisas têm pesos diferentes (o nome é quem se procura, o
+   valor é quem se lê de longe, o sinal é a urgência, os botões são o
+   trabalho). No celular ela desmonta para duas linhas, porque quatro
+   colunas em 390px viram quatro colunas ilegíveis. */
+.dividas { display: flex; flex-direction: column }
+.divida {
+  display: grid; align-items: center; gap: 4px 14px;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
+  padding: 12px 0; border-top: 1px solid var(--line);
+}
+.divida:first-child { border-top: 0; padding-top: 2px }
+.dividaQuem { min-width: 0 }
+.app .dividaNome {
+  display: block; font-family: var(--display); font-stretch: 88%; font-weight: 900;
+  font-size: 15px; letter-spacing: -.005em; color: var(--ink); text-decoration: none;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+@media (hover: hover) and (pointer: fine) {
+  .app .dividaNome:hover { color: var(--rosa) }
+}
+.dividaCtx {
+  display: block; font-size: 12px; color: var(--ink-fraco); margin-top: 2px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+/* Tabular para as casas de centavo alinharem entre linhas: numa coluna de
+   valores, número que dança é número que não se compara. */
+.dividaValor {
+  font-family: var(--display); font-stretch: 78%; font-weight: 900; font-size: 21px;
+  letter-spacing: -.02em; color: var(--ink); font-variant-numeric: tabular-nums;
+}
+.dividaSinal {
+  font: 700 10px var(--mono); letter-spacing: .1em; text-transform: uppercase;
+  color: var(--rosa); white-space: nowrap;
+}
+.dividaAcoes { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end }
+
+@media (max-width: 720px) {
+  .divida { grid-template-columns: 1fr auto }
+  .dividaSinal { grid-column: 1 }
+  .dividaAcoes { grid-column: 1 / -1; justify-content: flex-start; margin-top: 4px }
+}
+
+/* Os dois botões de baixa andam juntos e encostam: são um controle só,
+   "recebi", com a variação escondida no segundo. */
+.baixaLinha { display: inline-flex; gap: 6px; flex-wrap: wrap }
+
+/* ---------- o dinheiro sem dono ----------
+   Cartão de papel com filete rosa: é a única coisa da tela que exige uma
+   decisão, e ele fica com cara de coisa que chegou e está esperando. */
+.orfao {
+  border-left: 2px solid var(--rosa); background: var(--paper);
+  padding: 12px 14px; margin-top: 10px;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;
+}
+.orfaoQuem { min-width: 0 }
+.orfaoValor {
+  display: block; font-family: var(--display); font-stretch: 78%; font-weight: 900;
+  font-size: 23px; line-height: 1; letter-spacing: -.02em; color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.orfaoCtx { display: block; font-size: 12px; color: var(--ink-fraco); margin-top: 4px }
+/* A referência do checkout em mono e miúda: é uma pista para conferir com o
+   painel do Mercado Pago, não texto para ler. */
+.orfaoRef {
+  display: block; font: 400 10px var(--mono); color: var(--ink-fraco);
+  margin-top: 4px; overflow-wrap: anywhere;
+}
+.orfaoAcoes { display: flex; flex-wrap: wrap; gap: 6px; align-items: center }
+.app .orfaoAcoes select { font-size: 12px; padding: 7px 9px; max-width: 260px }
+
+/* ---------- o bloco do dinheiro na ficha do lead ---------- */
+.contratoCab {
+  display: flex; align-items: baseline; justify-content: space-between;
+  flex-wrap: wrap; gap: 8px; margin-bottom: 4px;
+}
+.contratoTotal {
+  font-family: var(--display); font-stretch: 78%; font-weight: 900; font-size: 22px;
+  letter-spacing: -.02em; color: var(--ink); font-variant-numeric: tabular-nums;
+}
+/* A régua de quitação: o mesmo trilho do funil, em corpo de ficha. */
+.reguaQuita { display: block; height: 8px; background: var(--paper); border: 1px solid var(--line); margin: 10px 0 4px }
+.reguaQuitaFill { display: block; height: 100%; background: var(--ink) }
+.reguaQuitaCheia { background: var(--green) }
+
+.parcelas { display: flex; flex-direction: column; margin-top: 10px }
+.parcela {
+  display: grid; align-items: center; gap: 4px 12px;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  padding: 10px 0; border-top: 1px solid var(--line);
+}
+.parcelaRot { font-weight: 600; font-size: 13.5px; color: var(--ink) }
+.parcelaCtx { display: block; font-size: 11.5px; color: var(--ink-fraco); margin-top: 2px }
+.parcelaValor {
+  font-weight: 700; font-size: 14px; color: var(--ink); font-variant-numeric: tabular-nums;
+}
+.parcelaSinal { font: 700 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-fraco) }
+.parcelaVencida { color: var(--rosa) }
+.parcelaPaga { color: var(--green-dark) }
+/* Parcela paga fica em voz baixa: ela já não pede nada, e a linha existe só
+   para o histórico fechar. */
+.parcelaQuitada .parcelaRot, .parcelaQuitada .parcelaValor { color: var(--ink-fraco) }
+.parcelaAcoes { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px }
+
+/* ---------- os itens do plano da proposta, no modal ----------
+   Caixa de marcar, rótulo e valor numa linha só. O valor à direita e
+   tabular porque a decisão aqui é comparar preços entre si: à vista contra
+   entrada mais saldo. */
+.itemPlano {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center; gap: 10px; padding: 8px 0; cursor: pointer;
+}
+.itemPlano + .itemPlano { border-top: 1px solid var(--line) }
+.itemPlanoRot { font-size: 13px; color: var(--ink); line-height: 1.35 }
+/* A nota do cartão existe para desfazer a leitura errada mais provável
+   desta tela: "até 4x" não vira quatro linhas no caixa. */
+.itemPlanoNota { display: block; font-style: normal; font-size: 11px; color: var(--ink-fraco); margin-top: 2px }
+.itemPlanoValor { font-weight: 700; font-size: 13.5px; font-variant-numeric: tabular-nums; white-space: nowrap }
+
+/* A prévia das parcelas antes de gravar. Três colunas fixas para as datas e
+   os valores alinharem entre linhas: é escaneando essa coluna que se vê a
+   data no passado. */
+.app .previaLinha {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 10px; align-items: baseline; font-size: 12.5px; margin-bottom: 6px;
+}
+.previaLinha i { font-style: normal; font: 700 10.5px var(--mono); color: var(--ink-fraco) }
+.previaLinha b { font-variant-numeric: tabular-nums; white-space: nowrap }
+
+/* ============================================================
+   A FOLHA DO CAIXA — o objeto que faltava
+
+   A primeira versão desta tela abria com uma placa de quatro números
+   iguais e três cartões brancos do mesmo tamanho. Com o CRM vazio, aquilo
+   era quatro "R$ 0" cinzas e três frases de desculpa: um relatório, não um
+   instrumento, e a única tela do CRM que começava por uma tabela.
+
+   Agora ela abre pelo mesmo plano de tinta da carta da vez: sangra de ponta
+   a ponta, o número em corpo de cartaz à esquerda com o ponto rosa, os
+   fatos da carteira na coluna da direita (o `.vezDossie`, reaproveitado
+   inteiro), e entre eles a régua do mês.
+
+   Ela NÃO usa `.vezFolha`: aquela tem `flex: 1` porque é o corpo da tela do
+   Hoje e precisa encher a janela. Esta é um cabeçalho e cresce com o
+   conteúdo. O que as duas compartilham é a técnica do sangramento
+   (`margin` e `padding` com `50vw`), que é a assinatura da casa.
+   ============================================================ */
+.caixaFolha {
+  background: var(--ink); color: var(--sobre-ink);
+  border-top: 5px solid var(--line-dark);
+  margin: clamp(18px, 2.4vw, 26px) calc(50% - 50vw) 0;
+  padding: clamp(22px, 3vw, 34px) calc(50vw - 50%) clamp(24px, 3.2vw, 36px);
+}
+/* A banda da testa acende quando há dívida vencida, exatamente como a
+   folha do painel Hoje faz com a urgência do lead. `--rosa` puro sobre
+   grafite dá 3,5:1, então aqui é `--rosa-live`: mesma regra já registrada
+   para o trilho e para as placas do quadro. */
+.caixaFolhaDeve { border-top-color: var(--rosa-live) }
+
+/* Uma coluna no celular, duas no computador. O ponto de virada é o mesmo
+   1080px da carta da vez: abaixo dele a coluna de fatos ficaria com 140px e
+   os valores quebrariam no meio. */
+.caixaCorpo { display: grid; gap: clamp(22px, 3vw, 48px); grid-template-columns: minmax(0, 1fr); align-items: start; max-width: 1420px }
+.caixaPrincipal { min-width: 0 }
+@media (min-width: 1080px) {
+  .caixaCorpo { grid-template-columns: minmax(0, 1fr) minmax(180px, 232px) }
+}
+
+/* O mês em mono maiúscula: a mesma peça de etiqueta que o `.modalRot` e o
+   `.vezFatoRot` usam. Ela diz de QUANDO fala o número gigante logo abaixo,
+   e sem ela "R$ 1.398" é um número sem período. */
+.caixaMes {
+  display: block; font: 700 10.5px var(--mono); letter-spacing: .16em;
+  text-transform: uppercase; color: var(--sobre-ink-fraco); margin-bottom: 12px;
+}
+
+/* ---------- O NÚMERO, EM CORPO DE CARTAZ ----------
+   A mesma voz do nome na carta da vez, e pela mesma razão: numa tela com um
+   objeto só, a resposta não pode chegar em corpo de legenda. Aqui ela é
+   menor que os 88px do nome (dinheiro tem menos caracteres e mais
+   dígitos), e tabular para as casas não dançarem entre um mês e outro.
+
+   Branco quando entrou dinheiro, cinza de trás quando não entrou: o zero
+   continua legível e para de gritar. */
+/* `.app` no seletor por um motivo escrito e não adivinhado: `.app p` na
+   linha 164 é seletor de ELEMENTO com classe (0,1,1) e vence a classe
+   simples (0,1,0). Sem o prefixo, este número nasce em `--ink-soft`, que é
+   cinza de papel: sobre grafite ele fica quase invisível, e a primeira
+   versão desta tela saiu assim. Mesma lição já registrada no
+   `.app .gavetaTitulo` deste arquivo. */
+.app .caixaNumero {
+  font-family: var(--display); font-stretch: 78%; font-weight: 900;
+  font-size: clamp(38px, 6.4vw, 76px); line-height: .92; letter-spacing: -.035em;
+  color: var(--sobre-ink-fraco); margin: 0; font-variant-numeric: tabular-nums;
+}
+.app .caixaNumeroVivo { color: #fff }
+.app .caixaLegenda {
+  font-size: 13px; color: var(--sobre-ink); margin: 12px 0 0; max-width: 46ch;
+}
+
+/* ---------- A RÉGUA DO MÊS ----------
+   A assinatura desta tela, e irmã da linha do horizonte do painel Hoje: um
+   instrumento que responde de relance, sem legenda e sem número dentro.
+   Trilho cheio é o previsto do mês; o preenchido é o que entrou.
+
+   O TRILHO APARECE SEMPRE, inclusive vazio, e é a mesma lição que a régua
+   de carga do quadro e a linha do horizonte já carregam neste arquivo: é o
+   vazio que dá escala ao cheio. Uma barra que só desenha a parte cheia vira
+   um risco solto de comprimento aleatório.
+
+   10px de altura e não 4: esta atravessa a folha inteira e precisa segurar
+   a hachura da parte vencida, que em 4px vira um borrão. */
+.caixaRegua {
+  display: flex; height: 10px; margin-top: clamp(18px, 2.2vw, 24px);
+  background: var(--line-dark);
+}
+.caixaReguaFill { display: block; height: 100%; background: var(--sobre-ink); transition: width .4s ease }
+/* Mês pago vira esmeralda, a mesma escada da régua da meta e da contagem
+   da coluna do quadro: verde quer dizer "acabou". */
+.caixaReguaPago { background: var(--green-live) }
+/* A hachura rosa é a MESMA do `.semanaFalta` do gráfico de metas, e o
+   reaproveitamento é de propósito: nesta casa hachura rosa quer dizer
+   "isto está faltando", e aprender o padrão uma vez basta. */
+.caixaReguaAtraso {
+  display: block; height: 100%;
+  background: repeating-linear-gradient(-45deg, var(--rosa-live) 0 3px, transparent 3px 7px);
+}
+
+.caixaLegendaRegua {
+  display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 10px;
+  font: 700 10px var(--mono); letter-spacing: .1em; text-transform: uppercase;
+  color: var(--sobre-ink-fraco);
+}
+.caixaLegendaRegua span { display: inline-flex; align-items: center; gap: 6px }
+/* A amostra reusa as PRÓPRIAS classes de preenchimento da régua, como a
+   legenda do gráfico de semanas já faz: assim ela nunca desatualiza quando
+   alguém trocar uma tinta. */
+.caixaAmostra { display: block; width: 12px; height: 10px; flex: none }
+.caixaAmostraVazia { background: var(--line-dark) }
+
+/* Os dois tons do "em atraso" na coluna de fatos: rosa quando há dívida,
+   esmeralda quando zerou. É a mesma escada de três estados do número do
+   trilho, e é ela que deixa a seção "quem está me devendo" SUMIR da tela
+   sem que a informação se perca. */
+.caixaDeve { color: var(--rosa-live) }
+.caixaEmDia { color: var(--green-live) }
+
+/* ---------- a folha quando não há nada ----------
+   Um convite, do jeito que o `DiaLimpo` resolve a fila limpa. Quatro zeros
+   numa placa e três cartões de desculpa não são "vazio": são uma
+   ferramenta parecendo quebrada no primeiro dia de uso, que é justamente
+   quando ela precisa parecer inteira. */
+.caixaVazio { max-width: 62ch }
+.app .caixaVazio .caixaNumero { font-size: clamp(30px, 4.4vw, 52px); color: #fff; letter-spacing: -.02em }
+.app .caixaConvite { font-size: 14px; line-height: 1.55; color: var(--sobre-ink); margin: 16px 0 0; max-width: 56ch }
+.app .caixaVazio .btnAcao { margin-top: clamp(18px, 2.2vw, 24px); box-shadow: 3px 3px 0 var(--sobre-ink-fraco) }
+.app .caixaVazio .btnAcao:active { box-shadow: 0 0 0 var(--sobre-ink-fraco) }
+
+/* O bloco de dívida ganha o filete rosa na margem, que nesta ferramenta
+   quer dizer "olhe para cá agora". Ele é o único bloco de papel desta tela
+   que carrega trabalho dentro. */
+.blocoDivida { border-left: 2px solid var(--rosa) }
+
+/* Os dois botões do vazio andam na mesma linha e quebram juntos: o rosa é o
+   caminho de verdade (ir montar um contrato), o escuro é o de olhar a tela
+   vestida antes de existir dado. */
+.caixaBotoes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: clamp(18px, 2.2vw, 24px) }
+.app .caixaBotoes .btnAcao, .app .caixaBotoes .btnEscuro { margin-top: 0 }
+
+/* A linha da média do Caixa, no lugar da linha da meta. Ela reusa a
+   geometria do `.linhaMeta` e troca a tinta: rosa nesta casa quer dizer
+   "olhe para cá agora", e uma média é fato neutro, não alarme. Meta é uma
+   promessa que se quebra; média é só o que aconteceu. */
+.linhaMedia { border-top-color: var(--ink-fraco) }
+.linhaMedia b { color: var(--ink-fraco) }
+
+/* Voz calma para a parcela que ainda NÃO venceu. O `.dividaSinal` é rosa
+   porque a lista de cima é dívida vencida; esta é agenda, e agenda em rosa
+   faria as duas listas gritarem igual, que é o mesmo que nenhuma gritar. */
+.dividaSinalCalmo { color: var(--ink-fraco) }
+
+/* ---------- O ARQUIVO ----------
+   Os contratos saíram da posição de lista e viraram gaveta fechada. Com
+   vinte contratos a lista virava duas telas de barras quase idênticas,
+   metade delas verdes dizendo "quitado" — e "quanto o Baummer já pagou" é
+   uma pergunta sobre UM cliente, que já está respondida na ficha dele.
+
+   `<details>` nativo: sem estado, sem client component, sem biblioteca. É o
+   mesmo padrão da placa de Ganho e Perdido no quadro, que também guarda o
+   histórico atrás de um clique. */
+.arquivo { margin-top: clamp(22px, 2.6vw, 30px) }
+.app .arquivoPuxador {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+  flex-wrap: wrap; cursor: pointer; list-style: none;
+  padding: 12px 0; border-top: 1.5px solid var(--line);
+  font: 700 10.5px var(--mono); letter-spacing: .12em; text-transform: uppercase;
+  color: var(--ink-soft);
+}
+/* O triângulo padrão do navegador não é desta casa, e ele muda de desenho
+   em cada um. O verbo escrito à direita diz a mesma coisa e diz melhor. */
+.arquivoPuxador::-webkit-details-marker { display: none }
+.arquivoAbre { font-style: normal; color: var(--ink-fraco); text-decoration: underline; text-underline-offset: 3px }
+@media (hover: hover) and (pointer: fine) {
+  .app .arquivoPuxador:hover { color: var(--ink) }
+  .app .arquivoPuxador:hover .arquivoAbre { color: var(--ink) }
+}
+.arquivo[open] .arquivoAbre { visibility: hidden }

@@ -21,12 +21,29 @@ import {
   somarDias,
 } from "./regras";
 import {
+  centavos,
+  deveAinda,
+  mesDe,
+  mesesAFrente,
+  mesesDoAno,
+  quitacaoDoContrato,
+  quitado,
+  situacaoDaParcela,
+  somar,
+} from "./financeiro";
+import {
+  ehAtivo,
   ESTAGIOS_ATIVOS,
   ESTAGIOS_NO_PIPELINE,
+  type Contrato,
   type Interacao,
   type Lead,
   type LeadPainel,
   type Meta,
+  type Metodo,
+  type Parcela,
+  type ParcelaPainel,
+  type Recebimento,
   type Template,
 } from "./tipos";
 
@@ -66,11 +83,56 @@ export async function painelHoje() {
       .lt("created_at", `${somarDias(segunda, 7)}T00:00:00-03:00`),
   ]);
 
-  const lista = leads ?? [];
+  /* ============================================================
+     A COBRANÇA ENTRA NA FILA (20/08)
 
-  const atrasados = lista.filter((l) => l.proxima_acao_em && l.proxima_acao_em < hoje);
-  const paraHoje = lista.filter((l) => l.proxima_acao_em === hoje);
-  const semPasso = lista.filter((l) => !l.proxima_acao_em);
+     Cobrar a ArraZou é uma conversa com a ArraZou, então a parcela não vira
+     um segundo tipo de item de fila: ela viaja NO LEAD, e `Hoje.tsx`
+     continua emendando `[...atrasados, ...paraHoje, ...semPasso]` sem saber
+     que alguma coisa mudou.
+
+     A consulta é separada por um motivo que não é preguiça: um cliente que
+     deve está em `ganho`, e `ganho` está FORA de `ESTAGIOS_ATIVOS`. A
+     consulta lá em cima nunca o traria. O único cliente que já entregou e
+     ainda não recebeu era justamente o invisível da fila.
+     ============================================================ */
+  const cobrancasPorLead = await cobrancasAbertas(supabase, hoje);
+  const jaNaLista = new Set((leads ?? []).map((l) => l.id));
+  const devedoresDeFora = [...cobrancasPorLead.keys()].filter((id) => !jaNaLista.has(id));
+
+  const { data: ganhosQueDevem } = devedoresDeFora.length
+    ? await supabase
+        .from("crm_leads_painel")
+        .select("*")
+        .in("id", devedoresDeFora)
+        .returns<LeadPainel[]>()
+    : { data: [] as LeadPainel[] };
+
+  const lista = [...(leads ?? []), ...(ganhosQueDevem ?? [])].map((l) => ({
+    ...l,
+    cobranca: cobrancasPorLead.get(l.id) ?? null,
+  }));
+
+  /* ---------- a data que põe na fila ----------
+     A mais próxima entre as duas: o retorno marcado e a cobrança vencida.
+     Nada de forjar `proxima_acao_em` no objeto com a data da parcela — um
+     lead ganho não tem próximo passo agendado, e escrever um seria mentir
+     justamente na coluna em que o resto do CRM confia. */
+  const naFila = (l: (typeof lista)[number]) => {
+    const cobranca = l.cobranca?.quando ?? null;
+    if (!l.proxima_acao_em) return cobranca;
+    if (!cobranca) return l.proxima_acao_em;
+    return l.proxima_acao_em < cobranca ? l.proxima_acao_em : cobranca;
+  };
+
+  const atrasados = lista.filter((l) => {
+    const d = naFila(l);
+    return d !== null && d < hoje;
+  });
+  const paraHoje = lista.filter((l) => naFila(l) === hoje);
+  /* Sem passo continua sendo só sobre o funil: um cliente ganho que não deve
+     nada não está "sem próximo passo", ele terminou. */
+  const semPasso = lista.filter((l) => !l.proxima_acao_em && !l.cobranca && ehAtivo(l.estagio));
 
   /* ---------- OS RISCADOS ----------
      Quem eu falei hoje E que já tem retorno marcado para depois de hoje.
@@ -192,13 +254,23 @@ export async function contagens() {
   const supabase = await clienteServidor();
   const hoje = hojeSP();
 
-  const [{ data: leads }, { count: templates }] = await Promise.all([
+  const [{ data: leads }, { count: templates }, { data: cobrancas }] = await Promise.all([
     supabase
       .from("crm_leads")
       .select("proxima_acao_em")
       .in("estagio", ATIVOS)
       .returns<Pick<Lead, "proxima_acao_em">[]>(),
     supabase.from("crm_templates").select("id", { count: "exact", head: true }),
+    /* As parcelas vivas que já chegaram no dia de cobrar. Traz as linhas em
+       vez de `head: true` porque quitação é soma de recebimentos, e o banco
+       não sabe disso sozinho: quem decide se ainda deve é a conta em
+       JavaScript logo abaixo. São poucas dezenas de linhas. */
+    supabase
+      .from("crm_parcelas")
+      .select("id, valor, vence_em, cobrar_em, cancelada_em, crm_recebimentos(valor, estornado_em)")
+      .is("cancelada_em", null)
+      .lte("vence_em", hoje)
+      .returns<ParcelaComRecebimentos[]>(),
   ]);
 
   const lista = leads ?? [];
@@ -210,8 +282,32 @@ export async function contagens() {
     fila: lista.filter((l) => !l.proxima_acao_em || l.proxima_acao_em <= hoje).length,
     ativos: lista.length,
     templates: templates ?? 0,
+    /* Parcelas vivas cujo dia de cobrança já chegou e que ainda devem. Ela
+       ganha cor no trilho pela regra que o próprio Trilho.tsx já escreve,
+       "no trilho inteiro, quem fala é quem vai te cobrar": parcela vencida
+       é literalmente cobrança. */
+    cobrar: (cobrancas ?? []).filter((p) => {
+      const quando = p.cobrar_em || p.vence_em;
+      if (quando > hoje) return false;
+      return !quitado(centavos(Number(p.valor) - recebidoDaParcela(p)));
+    }).length,
   };
 }
+
+/* A forma que o PostgREST devolve quando a parcela pede os recebimentos
+   junto. `crm_recebimentos` vem como array embutido pelo relacionamento. */
+type ParcelaComRecebimentos = {
+  id: string;
+  valor: number;
+  vence_em: string;
+  cobrar_em: string | null;
+  cancelada_em: string | null;
+  crm_recebimentos: { valor: number; estornado_em: string | null }[] | null;
+};
+
+/** Soma o que entrou numa parcela, ignorando o que foi estornado. */
+const recebidoDaParcela = (p: ParcelaComRecebimentos) =>
+  somar((p.crm_recebimentos ?? []).filter((r) => !r.estornado_em).map((r) => Number(r.valor)));
 
 export type Contagens = Awaited<ReturnType<typeof contagens>>;
 
@@ -287,8 +383,75 @@ export async function leadCompleto(id: string) {
     indicados: indicados ?? [],
     quemIndicou: quemIndicou ?? null,
     templates: templates ?? [],
+    contratos: await contratosDoLead(id),
     hoje: hojeSP(),
   };
+}
+
+/* ============================================================
+   O DINHEIRO DE UM LEAD — o bloco que a ficha desenha
+
+   Contratos, parcelas e o que já entrou em cada uma. Consulta separada da
+   `leadCompleto` para poder ser chamada sozinha pela tela do Caixa, e o
+   `recebido` de cada parcela é somado AQUI, em JavaScript, e não por uma
+   view: view congela colunas no create (a nota de 16/08 no crm.sql conta o
+   que isso custou), e três leads por tela não justificam a rigidez.
+   ============================================================ */
+export type ContratoPainel = Contrato & {
+  parcelas: ParcelaPainel[];
+  /* Recebimentos que não caíram em parcela nenhuma mas são deste lead. */
+  avulsos: Recebimento[];
+};
+
+export async function contratosDoLead(leadId: string): Promise<ContratoPainel[]> {
+  const supabase = await clienteServidor();
+
+  const [{ data: contratos }, { data: parcelas }, { data: recebimentos }] = await Promise.all([
+    supabase
+      .from("crm_contratos")
+      .select("*")
+      .eq("lead_id", leadId)
+      .order("created_at", { ascending: false })
+      .returns<Contrato[]>(),
+    supabase
+      .from("crm_parcelas")
+      .select("*")
+      .eq("lead_id", leadId)
+      .order("numero", { ascending: true })
+      .returns<Parcela[]>(),
+    supabase
+      .from("crm_recebimentos")
+      .select("*")
+      .eq("lead_id", leadId)
+      .order("recebido_em", { ascending: false })
+      .returns<Recebimento[]>(),
+  ]);
+
+  const pagoPorParcela = new Map<string, number>();
+  for (const r of recebimentos ?? []) {
+    if (!r.parcela_id || r.estornado_em) continue;
+    pagoPorParcela.set(r.parcela_id, (pagoPorParcela.get(r.parcela_id) ?? 0) + Number(r.valor));
+  }
+
+  const avulsos = (recebimentos ?? []).filter((r) => !r.parcela_id);
+
+  return (contratos ?? []).map((c) => ({
+    ...c,
+    parcelas: (parcelas ?? [])
+      .filter((p) => p.contrato_id === c.id)
+      .map((p) => ({
+        ...p,
+        recebido: centavos(pagoPorParcela.get(p.id) ?? 0),
+        contrato_titulo: c.titulo,
+        lead_nome: "",
+        lead_whatsapp: null,
+        lead_instagram: null,
+      })),
+    /* Os avulsos moram no contrato mais recente e não em todos: repetir a
+       mesma linha de dinheiro em dois blocos faria o total parecer dobrado
+       para quem lê de relance. */
+    avulsos: c.id === contratos?.[0]?.id ? avulsos : [],
+  }));
 }
 
 /* ============================================================
@@ -454,3 +617,289 @@ export async function metricas(dias: 7 | 30 | 90) {
     toquesPeriodo: toques.filter((t) => t.direcao === "saida").length,
   };
 }
+
+/* ============================================================
+   O CAIXA — a aba do dinheiro
+
+   Três leituras e toda a conta em memória, como o resto do arquivo. Ela
+   responde quatro perguntas, e a ordem delas na tela é a ordem em que se
+   pensa no dinheiro de um estúdio solo:
+
+     1. quanto entra este mês        (previsto contra recebido)
+     2. quem está me devendo         (o equivalente ao "atrasado" do Hoje)
+     3. quanto cada cliente já pagou (a régua de quitação por contrato)
+     4. o ano, mês a mês             (o estúdio está crescendo?)
+
+   E uma quinta que ninguém pede e todo mundo precisa: o dinheiro que
+   chegou e não bate com parcela nenhuma.
+
+   ---------- por que ela lê o ano inteiro ----------
+   O gráfico do ano precisa de doze meses, e um estúdio solo fecha algumas
+   dezenas de contratos por ano: são centenas de linhas, não milhares.
+   Trazer tudo de uma vez e fatiar em memória evita quatro consultas que
+   teriam que concordar entre si sobre o que é "este mês".
+   ============================================================ */
+export async function caixa(ano: number) {
+  const supabase = await clienteServidor();
+  const hoje = hojeSP();
+  const mesAtual = mesDe(hoje);
+  const inicio = `${ano}-01-01`;
+  const fim = `${ano}-12-31`;
+
+  const [{ data: contratos }, { data: parcelas }, { data: recebimentos }, { data: leads }] =
+    await Promise.all([
+      supabase.from("crm_contratos").select("*").returns<Contrato[]>(),
+      supabase
+        .from("crm_parcelas")
+        .select("*")
+        .order("vence_em", { ascending: true })
+        .returns<Parcela[]>(),
+      supabase
+        .from("crm_recebimentos")
+        .select("*")
+        .gte("recebido_em", inicio)
+        .lte("recebido_em", fim)
+        .order("recebido_em", { ascending: false })
+        .returns<Recebimento[]>(),
+      supabase
+        .from("crm_leads")
+        .select("id, nome, empresa, whatsapp, instagram")
+        .returns<Pick<Lead, "id" | "nome" | "empresa" | "whatsapp" | "instagram">[]>(),
+    ]);
+
+  const porLead = new Map((leads ?? []).map((l) => [l.id, l]));
+  const porContrato = new Map((contratos ?? []).map((c) => [c.id, c]));
+
+  /* O que entrou em cada parcela, estornos fora. */
+  const pagoPorParcela = new Map<string, number>();
+  for (const r of recebimentos ?? []) {
+    if (!r.parcela_id || r.estornado_em) continue;
+    pagoPorParcela.set(r.parcela_id, (pagoPorParcela.get(r.parcela_id) ?? 0) + Number(r.valor));
+  }
+
+  const enriquecida = (p: Parcela): ParcelaPainel => {
+    const lead = porLead.get(p.lead_id);
+    return {
+      ...p,
+      valor: Number(p.valor),
+      recebido: centavos(pagoPorParcela.get(p.id) ?? 0),
+      contrato_titulo: porContrato.get(p.contrato_id)?.titulo ?? "",
+      lead_nome: lead?.nome ?? "",
+      lead_whatsapp: lead?.whatsapp ?? null,
+      lead_instagram: lead?.instagram ?? null,
+    };
+  };
+
+  const todasParcelas = (parcelas ?? []).map(enriquecida);
+  const vivas = todasParcelas.filter((p) => !p.cancelada_em);
+
+  /* ---------- 1. o mês ----------
+     Previsto é o que VENCE no mês, recebido é o que ENTROU no mês, e os
+     dois quase nunca são o mesmo conjunto: a parcela de julho paga em
+     agosto conta como previsto de julho e recebido de agosto. É assim que
+     tem que ser, e é justamente a diferença entre as duas linhas que diz
+     se o estúdio está recebendo em dia. */
+  const doMes = vivas.filter((p) => mesDe(p.vence_em) === mesAtual);
+  const recebidoNoMes = (recebimentos ?? []).filter(
+    (r) => !r.estornado_em && mesDe(r.recebido_em) === mesAtual,
+  );
+
+  /* ---------- 2. quem está devendo ----------
+     Só o que já venceu, do maior atraso para o menor: a fila do dinheiro
+     tem a mesma ordem da fila do dia, e pelo mesmo motivo (quem espera há
+     mais tempo é quem corre mais risco de nunca pagar). */
+  const devendo = vivas
+    .map((p) => ({ parcela: p, s: situacaoDaParcela(p, hoje) }))
+    .filter((x) => x.s.situacao === "atrasada")
+    .sort((a, b) => b.s.atraso - a.s.atraso);
+
+  const aReceber = vivas
+    .map((p) => ({ parcela: p, s: situacaoDaParcela(p, hoje) }))
+    .filter((x) => deveAinda(x.s.situacao));
+
+  /* ---------- O QUE VEM ----------
+     A lista que faltava. Até aqui o "a receber" era um número solto na
+     folha e a única lista longa da tela era a de contratos, que cresce para
+     sempre: com vinte contratos ela vira duas telas de barras quase
+     idênticas, metade delas verdes dizendo "quitado", que é a informação
+     com menos trabalho dentro do CRM inteiro.
+
+     Esta é limitada pelo HORIZONTE e não pelo histórico, e por isso não
+     cresce com o tempo: só o que vence nos próximos 30 dias. Trinta e não
+     quatorze (a janela do painel Hoje) porque as parcelas daqui são
+     mensais, e uma janela menor que o ciclo esconde a parcela do fim do mês
+     até ela estar em cima. */
+  const limite = somarDias(hoje, 30);
+  const aVencer = aReceber
+    .filter((x) => x.s.situacao !== "atrasada" && x.s.quando <= limite)
+    .sort((a, b) => a.s.quando.localeCompare(b.s.quando));
+
+  /* A projeção por mês: altura fixa, seis colunas, sempre. O vencido cai no
+     mês corrente e não no mês em que venceu, porque a pergunta desta barra é
+     "quanto ainda pode entrar daqui para frente", e dívida velha continua
+     sendo dinheiro de agora. O que passa do sexto mês vira uma coluna
+     "depois", para o total da barra bater com o `aReceber` da folha. */
+  const HORIZONTE_MESES = 6;
+  const janela = mesesAFrente(mesAtual, HORIZONTE_MESES);
+  const previsao = new Map<string, { total: number; vencido: number }>(
+    janela.map((m) => [m, { total: 0, vencido: 0 }]),
+  );
+  let depois = 0;
+
+  for (const { s } of aReceber) {
+    const m = mesDe(s.quando);
+    const alvo = previsao.get(m > janela[0] ? m : janela[0]);
+    if (alvo) {
+      alvo.total += s.saldo;
+      if (s.situacao === "atrasada") alvo.vencido += s.saldo;
+    } else {
+      depois += s.saldo;
+    }
+  }
+
+  /* ---------- 3. a régua de cada contrato ----------
+     Cancelados fora, quitados no fim: a tela existe para mostrar o que
+     ainda anda, e um contrato fechado no topo empurra para baixo o que
+     precisa de atenção. */
+  const clientes = (contratos ?? [])
+    .filter((c) => c.status === "ativo")
+    .map((c) => {
+      const suas = todasParcelas.filter((p) => p.contrato_id === c.id);
+      return {
+        contrato: { ...c, valor_total: c.valor_total == null ? null : Number(c.valor_total) },
+        lead: porLead.get(c.lead_id) ?? null,
+        parcelas: suas,
+        q: quitacaoDoContrato(c, suas),
+      };
+    })
+    .sort((a, b) => Number(a.q.quitado) - Number(b.q.quitado) || b.q.saldo - a.q.saldo);
+
+  /* ---------- 4. o ano ----------
+     Doze meses sempre, mesmo os vazios: um gráfico que só desenha os meses
+     com dinheiro mente sobre o ritmo, porque some justamente com os meses
+     em que não entrou nada, que são os que se precisa ver. */
+  const porMes = new Map<string, number>(mesesDoAno(ano).map((m) => [m, 0]));
+  for (const r of recebimentos ?? []) {
+    if (r.estornado_em) continue;
+    const m = mesDe(r.recebido_em);
+    if (porMes.has(m)) porMes.set(m, (porMes.get(m) ?? 0) + Number(r.valor));
+  }
+
+  /* ---------- 5. o dinheiro sem dono ----------
+     O que o webhook gravou e não conseguiu amarrar. Fica em rosa na tela
+     porque é a única coisa ali que pede uma decisão. */
+  const semDono = (recebimentos ?? []).filter((r) => !r.parcela_id && !r.estornado_em);
+
+  /* ---------- 6. o que não fecha ----------
+     Contrato cujo plano de pagamento não cobre o total. Não é erro de
+     banco, é furo do plano, e ele fica visível pela mesma regra do dossiê
+     da carta: some da tela, some da cabeça. */
+  const desencontros = clientes.filter((c) => c.q.semParcela > 0.005);
+
+  return {
+    ano,
+    hoje,
+    mesAtual,
+    previstoNoMes: somar(doMes.map((p) => p.valor)),
+    recebidoNoMes: somar(recebidoNoMes.map((r) => Number(r.valor))),
+    parcelasDoMes: doMes.length,
+    recebimentosDoMes: recebidoNoMes.length,
+    emAtraso: somar(devendo.map((x) => x.s.saldo)),
+    aReceber: somar(aReceber.map((x) => x.s.saldo)),
+    aReceberN: aReceber.length,
+    contratado: somar(clientes.map((c) => c.q.total)),
+    devendo,
+    aVencer,
+    /* A projeção de altura fixa, mais o resto num balde só. */
+    previsao: [...previsao.entries()].map(([mes, v]) => ({
+      mes,
+      total: centavos(v.total),
+      vencido: centavos(v.vencido),
+    })),
+    depois: centavos(depois),
+    clientes,
+    /* Os quitados saem da lista e viram uma linha: eles são a parte que
+       cresce para sempre e a que não tem trabalho nenhum dentro. */
+    quitados: clientes.filter((c) => c.q.quitado).length,
+    quitadoTotal: somar(clientes.filter((c) => c.q.quitado).map((c) => c.q.pago)),
+    meses: [...porMes.entries()].map(([mes, valor]) => ({ mes, valor: centavos(valor) })),
+    semDono,
+    desencontros,
+    /* Os anos em que houve dinheiro, para o seletor não oferecer 2019. */
+    anos: [...new Set([ano, new Date().getUTCFullYear()])].sort((a, b) => b - a),
+  };
+}
+
+export type Caixa = Awaited<ReturnType<typeof caixa>>;
+
+/* ============================================================
+   AS COBRANÇAS ABERTAS — quem me deve, indexado por lead
+
+   Uma parcela por lead: a mais antiga que ainda deve. Um cliente com duas
+   parcelas vencidas de dois contratos aparece uma vez na fila, com a mais
+   velha, e a conversa cobre as duas — porque é uma conversa só. Mostrar duas
+   cartas do mesmo nome seguidas seria o CRM pedindo para ligar duas vezes.
+
+   O corte é `quando <= hoje`, a mesma régua de tudo mais nesta tela: o que
+   vence amanhã não é trabalho de hoje.
+   ============================================================ */
+async function cobrancasAbertas(
+  supabase: Awaited<ReturnType<typeof clienteServidor>>,
+  hoje: string,
+): Promise<Map<string, NonNullable<LeadPainel["cobranca"]>>> {
+  const { data } = await supabase
+    .from("crm_parcelas")
+    .select(
+      "id, lead_id, rotulo, valor, vence_em, cobrar_em, metodo_previsto, " +
+        "crm_contratos(titulo), crm_recebimentos(valor, estornado_em)",
+    )
+    .is("cancelada_em", null)
+    .lte("vence_em", hoje)
+    .order("vence_em", { ascending: true })
+    .returns<ParcelaDaFila[]>();
+
+  const porLead = new Map<string, NonNullable<LeadPainel["cobranca"]>>();
+
+  for (const p of data ?? []) {
+    const quando = p.cobrar_em || p.vence_em;
+    /* Adiada para depois de hoje sai da fila: é para isso que servem os
+       botões +3d e +7d, e o vencimento continua intacto no banco. */
+    if (quando > hoje) continue;
+
+    const recebido = somar(
+      (p.crm_recebimentos ?? []).filter((r) => !r.estornado_em).map((r) => Number(r.valor)),
+    );
+    const saldo = centavos(Number(p.valor) - recebido);
+    if (quitado(saldo)) continue;
+
+    /* A primeira que aparece é a mais antiga (a consulta vem ordenada), e é
+       ela que fica: `has` em vez de `set` incondicional. */
+    if (porLead.has(p.lead_id)) continue;
+
+    porLead.set(p.lead_id, {
+      parcela_id: p.id,
+      rotulo: p.rotulo,
+      valor: centavos(Number(p.valor)),
+      saldo,
+      vence_em: p.vence_em,
+      quando,
+      metodo_previsto: (p.metodo_previsto as Metodo | null) ?? null,
+      contrato_titulo: p.crm_contratos?.titulo ?? "",
+    });
+  }
+
+  return porLead;
+}
+
+/* A forma que o PostgREST devolve com os dois relacionamentos embutidos. */
+type ParcelaDaFila = {
+  id: string;
+  lead_id: string;
+  rotulo: string;
+  valor: number;
+  vence_em: string;
+  cobrar_em: string | null;
+  metodo_previsto: string | null;
+  crm_contratos: { titulo: string } | null;
+  crm_recebimentos: { valor: number; estornado_em: string | null }[] | null;
+};

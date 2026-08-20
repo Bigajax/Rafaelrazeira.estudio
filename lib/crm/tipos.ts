@@ -279,6 +279,110 @@ export const NOME_CATEGORIA: Record<CategoriaTemplate, string> = {
 };
 
 /* ============================================================
+   O DINHEIRO
+
+   Três palavras que não existiam no CRM até 20/08, e a ordem delas é a
+   ordem dos fatos:
+
+     contrato ...... o que foi COMBINADO
+     parcela ....... o que é ESPERADO, e quando
+     recebimento ... o dinheiro que CHEGOU
+
+   A separação entre as duas últimas é o que deixa o webhook do Mercado
+   Pago gravar primeiro e entender depois. Ver a nota longa na migração de
+   20/08 em supabase/crm.sql.
+   ============================================================ */
+
+export const METODOS = ["pix", "cartao", "boleto", "transferencia", "dinheiro", "permuta"] as const;
+export type Metodo = (typeof METODOS)[number];
+
+export const NOME_METODO: Record<Metodo, string> = {
+  pix: "Pix",
+  cartao: "Cartão",
+  boleto: "Boleto",
+  transferencia: "Transferência",
+  dinheiro: "Dinheiro",
+  permuta: "Permuta",
+};
+
+export type TipoContrato = "projeto" | "recorrencia";
+
+export type Contrato = {
+  id: string;
+  owner_id: string;
+  lead_id: string;
+  titulo: string;
+  /* A chave da constante PROPOSTAS em lib/propostas.js, que é quem cobra o
+     cliente de verdade. É por ela que o webhook acha este contrato. */
+  proposta_slug: string | null;
+  tipo: TipoContrato;
+  valor_total: number | null;
+  /* As quatro da recorrência: nulas em todo mundo hoje. */
+  valor_ciclo: number | null;
+  ciclo: "mensal" | "trimestral" | "anual" | null;
+  dia_vencimento: number | null;
+  vigente_ate: string | null;
+  status: "ativo" | "cancelado";
+  assinado_em: string | null;
+  notas: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type Parcela = {
+  id: string;
+  owner_id: string;
+  contrato_id: string;
+  lead_id: string;
+  numero: number;
+  de: number | null;
+  rotulo: string;
+  valor: number;
+  vence_em: string;
+  item_slug: string | null;
+  metodo_previsto: Metodo | null;
+  /* Quando eu quero ser cobrado, que não é o mesmo que quando vence: o
+     vencimento é fato combinado com o cliente, e adiar a cobrança não pode
+     reescrever o combinado. Nulo = cobre no dia. */
+  cobrar_em: string | null;
+  cancelada_em: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type Recebimento = {
+  id: string;
+  owner_id: string;
+  /* Nulos até alguém amarrar: é o que deixa o webhook gravar dinheiro que
+     ainda não sabe de quem é, em vez de descartar. */
+  parcela_id: string | null;
+  lead_id: string | null;
+  valor: number;
+  valor_liquido: number | null;
+  recebido_em: string;
+  metodo: Metodo;
+  origem: "manual" | "mercadopago";
+  mp_payment_id: string | null;
+  mp_status: string | null;
+  mp_external_reference: string | null;
+  estornado_em: string | null;
+  bruto: unknown;
+  notas: string | null;
+  created_at: string;
+};
+
+/* A parcela com o que a tela precisa saber junto: quanto já entrou nela e
+   de quem ela é. Montada em memória em lib/crm/dados.ts, nunca por view
+   (ver a nota sobre `crm_leads_painel` congelar colunas). */
+export type ParcelaPainel = Parcela & {
+  recebido: number;
+  contrato_titulo: string;
+  lead_nome: string;
+  lead_whatsapp: string | null;
+  lead_instagram: string | null;
+};
+
+/* ============================================================
    O DOSSIÊ — o que a pesquisa com IA escreve na coluna `dossie`
 
    Um documento, não uma tabela: a rota /api/crm/pesquisa manda a IA
@@ -384,6 +488,26 @@ export type LeadPainel = Lead & {
   toques: number;
   toques_entrada: number;
   saidas_seguidas: number;
+  /* ---------- A COBRANÇA QUE VIAJA COM O LEAD (20/08) ----------
+     A parcela vencida deste cliente, quando existe. Ela NÃO vem da view
+     `crm_leads_painel` (view congela a lista de colunas no create, e a nota
+     de 16/08 no crm.sql conta o que isso custou): é montada em memória por
+     `painelHoje()`.
+
+     Ela viaja no lead, e não como um segundo tipo de item de fila, porque
+     cobrar a ArraZou É uma conversa com a ArraZou. O painel Hoje já sabe pôr
+     a ArraZou na fila; o que faltava era ele saber por quê. */
+  cobranca?: {
+    parcela_id: string;
+    rotulo: string;
+    valor: number;
+    saldo: number;
+    vence_em: string;
+    /* Quando eu decidi cobrar, que pode ser depois do vencimento. */
+    quando: string;
+    metodo_previsto: Metodo | null;
+    contrato_titulo: string;
+  } | null;
 };
 
 export type Interacao = {

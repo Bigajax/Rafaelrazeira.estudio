@@ -135,13 +135,21 @@ export default async function PaginaMetricas({
           <small>soma dos tickets estimados nos estágios ativos, hoje</small>
         </div>
 
+        {/* "Vendas fechadas" e não "faturamento", desde que o Caixa existe
+            (20/08). As duas telas mostram números de dinheiro que NÃO batem,
+            e isso está certo: aqui é o que foi CONTRATADO no período, lá é o
+            que foi RECEBIDO. Fechar R$ 999 em agosto e receber R$ 199 em
+            agosto e R$ 800 em setembro é o caso normal deste estúdio, e um
+            número só teria que mentir sobre um dos dois meses. A palavra
+            "faturamento" prometia a segunda coisa e entregava a primeira. */}
         <div className={s.placarCel}>
-          <span>Faturamento fechado</span>
+          <span>Vendas fechadas</span>
           <b className={`${s.placarNum} ${m.faturamento ? s.placarGanho : ""}`}>
             {dinheiro(m.faturamento) || "R$ 0"}
           </b>
           <small>
-            {m.ganhos} {m.ganhos === 1 ? "projeto ganho" : "projetos ganhos"} no período
+            {m.ganhos} {m.ganhos === 1 ? "projeto ganho" : "projetos ganhos"} no período. O que
+            entrou de verdade fica no <Link href="/crm/caixa">Caixa</Link>.
           </small>
         </div>
 

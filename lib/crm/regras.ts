@@ -399,9 +399,29 @@ export function sinalDaFicha(
   lead: Pick<
     LeadPainel,
     "estagio" | "proxima_acao_em" | "entrou_no_estagio_em" | "saidas_seguidas" | "motivo_perda" | "valor_fechado"
-  >,
+  > & { cobranca?: LeadPainel["cobranca"] },
   hoje = hojeSP(),
 ): { texto: string; tom: TomDoSinal } {
+  /* ---------- O DEGRAU QUE O DINHEIRO ABRIU (20/08) ----------
+     Ele vem antes de tudo, inclusive de ganho e perdido, e a justificativa
+     é curta: nada em prospecção é mais urgente do que dinheiro já ganho e
+     não recebido. Um cliente em Ganho mostrava "Ganho" e mais nada, ou
+     seja, a ficha do único caso em que o estúdio já entregou e ainda não
+     recebeu era a mais silenciosa do quadro.
+
+     A regra do UM SINAL POR FICHA continua valendo: este é um sinal, não
+     um quarto aviso empilhado. */
+  if (lead.cobranca) {
+    const atraso = diasDesde(lead.cobranca.quando, hoje);
+    if (atraso > 0) {
+      return {
+        texto: `A receber ${dinheiro(lead.cobranca.saldo)}, venceu há ${atraso} ${atraso === 1 ? "dia" : "dias"}`,
+        tom: "alerta",
+      };
+    }
+    return { texto: `A receber ${dinheiro(lead.cobranca.saldo)} hoje`, tom: "agora" };
+  }
+
   if (lead.estagio === "ganho") return { texto: "Ganho", tom: "agora" };
   if (lead.estagio === "perdido") {
     return {

@@ -53,6 +53,7 @@ import {
   urgencia,
 } from "@/lib/crm/regras";
 import { NOME_ESTAGIO, NOME_TIPO, type LeadPainel } from "@/lib/crm/tipos";
+import { BaixaRapida } from "./BaixaRapida";
 import s from "@/app/crm/crm.module.css";
 
 type Gaveta = "passo" | "zap" | "apagar" | null;
@@ -217,9 +218,21 @@ export function CartaDaVez({
 
         {contexto ? <p className={s.vezContexto}>{contexto}</p> : null}
 
-        <p className={`${s.vezPasso} ${lead.proximo_passo ? "" : s.vezSemPasso}`}>
-          {lead.proximo_passo ?? "Decida o próximo passo"}
+        {/* ---------- o passo, e quem manda nele ----------
+            Quando há cobrança vencida, ela É o passo: o cliente já entregue
+            e não pago é a conversa mais fácil e mais esquecida do estúdio, e
+            deixar "Mandar a prévia" escrito por cima dela seria o CRM
+            pedindo a coisa errada. O passo de prospecção não se perde, ele
+            desce para a linha de contexto logo abaixo. */}
+        <p className={`${s.vezPasso} ${lead.proximo_passo || lead.cobranca ? "" : s.vezSemPasso}`}>
+          {lead.cobranca
+            ? `Cobrar ${lead.cobranca.rotulo.toLowerCase()}`
+            : (lead.proximo_passo ?? "Decida o próximo passo")}
         </p>
+
+        {lead.cobranca && lead.proximo_passo ? (
+          <p className={s.vezContexto}>Depois de cobrar: {lead.proximo_passo}</p>
+        ) : null}
 
         {/* ---------- o gancho da pesquisa ----------
             A IA pesquisou este negócio e achou o fato concreto para abrir a
@@ -251,6 +264,18 @@ export function CartaDaVez({
               Anotar WhatsApp
             </button>
           )}
+
+          {/* O "Recebi" só existe quando há o que receber, e ele fica ao
+              lado do WhatsApp de propósito: a sequência real é chamar,
+              esperar o Pix cair, e dar baixa sem trocar de tela. */}
+          {lead.cobranca ? (
+            <BaixaRapida
+              parcelaId={lead.cobranca.parcela_id}
+              saldo={lead.cobranca.saldo}
+              hoje={hoje}
+              metodoPrevisto={lead.cobranca.metodo_previsto}
+            />
+          ) : null}
 
           <button type="button" className={s.btnEscuro} onClick={() => aoRegistrarToque(lead)}>
             Registrar toque
