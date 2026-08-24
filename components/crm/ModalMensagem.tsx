@@ -45,6 +45,7 @@ import {
   linkDirectInstagram,
   linkWhatsapp,
   renderTemplate,
+  templateDaEtapa,
 } from "@/lib/crm/regras";
 import { NOME_CANAL, NOME_CATEGORIA, type Canal, type LeadPainel, type Template } from "@/lib/crm/tipos";
 import s from "@/app/crm/crm.module.css";
@@ -75,20 +76,35 @@ export function ModalMensagem({
      modal só a lê, para a mesma resposta valer aqui e em qualquer tela
      que venha a mostrar a sugestão. */
   const degrau = degrauDoSilencio(lead);
-  const sugerido =
+
+  /* DE PRÉVIA EM DIANTE, A ETAPA ESCOLHE. A mensagem 2 da pesquisa é texto
+     de apresentação, e um lead em Negociação já foi apresentado faz tempo:
+     abrir nela era o modal oferecendo a revelação do primeiro contato a
+     quem está ajustando preço (caso Carina Melo, 24/08). A regra mora em
+     regras.ts; aqui só se procura o template da categoria que ela devolve,
+     com o índice clampado porque objeção e reativação têm um texto só. */
+  const daEtapa = templateDaEtapa(lead);
+  const naCategoria = daEtapa ? templates.filter((t) => t.categoria === daEtapa.categoria) : [];
+  const sugeridoEtapa = naCategoria[Math.min(daEtapa?.indice ?? 0, naCategoria.length - 1)] ?? null;
+
+  const sugeridoEscada =
     degrau
       ? (templates.filter((t) => t.categoria === degrau.categoria)[degrau.indice] ?? null)
       : null;
+  const sugerido = sugeridoEtapa ?? sugeridoEscada;
+  const motivoDaSugestao = sugeridoEtapa ? daEtapa?.porque : degrau?.porque;
 
   /* A ORDEM DA ESCOLHA DE PARTIDA, do mais específico para o mais genérico:
-     (1) quem já respondeu abre na mensagem 2 da pesquisa, que é a que
-     continua a conversa; (2) quem nunca respondeu e nunca foi tocado abre
-     na abertura sob medida; (3) quem está no meio da escada abre no degrau
-     dela; (4) o resto cai no primeiro template, que é como era antes. */
+     (1) de Prévia em diante, o template da etapa; (2) quem já respondeu
+     abre na mensagem 2 da pesquisa, que é a que continua a conversa; (3)
+     quem nunca respondeu e nunca foi tocado abre na abertura sob medida;
+     (4) quem está no meio da escada abre no degrau dela; (5) o resto cai
+     no primeiro template, que é como era antes. */
   const dePartida = () => {
+    if (sugeridoEtapa) return sugeridoEtapa.id;
     if (lead.toques_entrada > 0 && daPesquisa) return ID_PESQUISA;
     if (degrau?.categoria === "abertura_fria" && aAbertura) return ID_ABERTURA;
-    if (sugerido) return sugerido.id;
+    if (sugeridoEscada) return sugeridoEscada.id;
     if (aAbertura) return ID_ABERTURA;
     if (daPesquisa) return ID_PESQUISA;
     return templates[0]?.id ?? "";
@@ -178,7 +194,7 @@ export function ModalMensagem({
                 {aAbertura ? (
                   <option value={ID_ABERTURA}>
                     Abertura · primeiro toque, sem link
-                    {degrau?.categoria === "abertura_fria" ? " · sugerido" : ""}
+                    {!sugeridoEtapa && degrau?.categoria === "abertura_fria" ? " · sugerido" : ""}
                   </option>
                 ) : null}
                 {daPesquisa ? (
@@ -202,7 +218,9 @@ export function ModalMensagem({
                 diz qual; esta linha diz o fato que escolheu (quantos toques
                 foram no vácuo), que é o que permite discordar com base em
                 alguma coisa. Sugestão sem motivo é ordem disfarçada. */}
-            {degrau && escolhido === partida ? <p className={s.nota}>{degrau.porque}</p> : null}
+            {motivoDaSugestao && escolhido === partida ? (
+              <p className={s.nota}>{motivoDaSugestao}</p>
+            ) : null}
 
             <p className={s.previa}>{texto}</p>
 

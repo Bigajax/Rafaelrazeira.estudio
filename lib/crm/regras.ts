@@ -10,6 +10,7 @@
 
 import {
   ehAtivo,
+  type CategoriaTemplate,
   type Direcao,
   type Estagio,
   type Lead,
@@ -281,6 +282,63 @@ export function degrauDoSilencio(
     indice: 0,
     porque: `${n} toques sem resposta: a saída honrosa recebe mais resposta que o quarto pedido`,
   };
+}
+
+/* ============================================================
+   O TEMPLATE DA ETAPA
+
+   A escada do silêncio cuida de quem nunca respondeu; quem já respondeu
+   caía sempre na mensagem 2 da pesquisa, que é texto de APRESENTAÇÃO. O
+   caso real foi a Carina Melo em Negociação com o modal abrindo na
+   revelação do primeiro contato ("tipo cada etapa tinha que ter um
+   template", 24/08). De Prévia em diante o funil já tem categoria de
+   template própria, então a etapa escolhe a partida.
+
+   O índice segue a mesma lógica da escada: `saidas_seguidas` zera a cada
+   resposta, então zero significa "é a minha vez de mandar" (o envio da
+   prévia, o envio da proposta) e um ou mais significa "mandei e ficou no
+   vácuo" (a cobrança daquela etapa). Clamp em quem usa, porque objeção e
+   reativação têm um texto só.
+
+   Até `conversa` a resposta é null de propósito: ali a mensagem 2 da
+   pesquisa e a escada continuam sendo os textos certos.
+   ============================================================ */
+export function templateDaEtapa(
+  lead: Pick<LeadPainel, "estagio" | "saidas_seguidas">,
+): { categoria: CategoriaTemplate; indice: number; porque: string } | null {
+  const cobrando = lead.saidas_seguidas > 0;
+  switch (lead.estagio) {
+    case "previa":
+      return {
+        categoria: "previa",
+        indice: cobrando ? 1 : 0,
+        porque: cobrando
+          ? "Prévia mandada e silêncio: cobre a reação, não recomece a apresentação"
+          : "Lead em Prévia: a mensagem da vez é a entrega da prévia",
+      };
+    case "proposta":
+      return {
+        categoria: "proposta",
+        indice: cobrando ? 1 : 0,
+        porque: cobrando
+          ? "Proposta mandada, sem resposta: cobre a decisão"
+          : "Lead em Proposta: a mensagem da vez é o envio da proposta",
+      };
+    case "negociacao":
+      return {
+        categoria: "objecao",
+        indice: 0,
+        porque: "Lead em Negociação: a conversa agora é destravar o fechamento, não se apresentar",
+      };
+    case "geladeira":
+      return {
+        categoria: "reativacao",
+        indice: 0,
+        porque: "Lead na geladeira: a mensagem da vez é a reativação",
+      };
+    default:
+      return null;
+  }
 }
 
 /* ============================================================
