@@ -38,7 +38,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createClient } from "@supabase/supabase-js";
 import { colherLinkDaBio, perfilInstagram } from "@/lib/crm/pesquisa";
-import type { Lead } from "@/lib/crm/tipos";
+import { ehAtivo, type Dossie, type Lead } from "@/lib/crm/tipos";
 
 function carregarEnv() {
   const arquivo = path.resolve(process.cwd(), ".env.local");
@@ -154,13 +154,21 @@ type Fato = {
 };
 
 async function principal() {
-  let q = supabase.from("crm_leads").select("*").eq("owner_id", dono).eq("estagio", "lista");
+  let q = supabase.from("crm_leads").select("*").eq("owner_id", dono);
   if (NICHO) q = q.eq("nicho", NICHO);
   if (CIDADE) q = q.eq("cidade", CIDADE);
   const { data, error } = await q.order("created_at", { ascending: true }).returns<Lead[]>();
   if (error) throw new Error(error.message);
 
-  const fila = (LIMITE ? (data ?? []).slice(0, LIMITE) : (data ?? [])).filter((l) => !l.dossie);
+  /* A MESMA fila de quem falta dossiê que pesquisar-lote.ts usa: qualquer
+     estágio ativo (era só "lista", e o lote de 24/08 tinha um lead em
+     Prévia esperando dossiê), sem dossiê OU com a marca de erro que uma
+     rodada falhada deixa para trás. Ganho e perdido ficam de fora: cliente
+     fechado não se prospecta. */
+  const comDossieVivo = (d: Dossie | null | undefined) => Boolean(d) && d?.status !== "erro";
+  const fila = (LIMITE ? (data ?? []).slice(0, LIMITE) : (data ?? [])).filter(
+    (l) => ehAtivo(l.estagio) && !comDossieVivo(l.dossie),
+  );
   console.log(`colhendo ${fila.length} leads${NICHO ? ` · ${NICHO}` : ""}${CIDADE ? ` · ${CIDADE}` : ""}`);
 
   /* Retomada: se o arquivo já existe, o que já foi colhido não é colhido

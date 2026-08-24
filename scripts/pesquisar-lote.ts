@@ -34,7 +34,7 @@ import path from "node:path";
 import { createClient } from "@supabase/supabase-js";
 import { pesquisarLead } from "@/lib/crm/pesquisa";
 import { emailNormal, soDigitos } from "@/lib/crm/regras";
-import type { Dossie, Lead, Template } from "@/lib/crm/tipos";
+import { ehAtivo, type Dossie, type Lead, type Template } from "@/lib/crm/tipos";
 
 /* ---------- o ambiente, que o Next carrega sozinho e o terminal não ---------- */
 function carregarEnv() {
@@ -88,7 +88,12 @@ async function filaDePesquisa(): Promise<Lead[]> {
   const morta = (d: Dossie) =>
     d.status === "pesquisando" && Date.now() - new Date(d.gerado_em ?? 0).getTime() > 5 * 60 * 1000;
 
-  const fila = (data ?? []).filter((l) => !l.dossie || l.dossie.status === "erro" || morta(l.dossie));
+  /* Ganho e perdido ficam de fora: o lote de 24/08 quase pesquisou a PR
+     Grife e a Xavier's, que são clientes da casa com contrato no Caixa.
+     Dossiê é ferramenta de prospecção, e cliente fechado não se prospecta. */
+  const fila = (data ?? []).filter(
+    (l) => ehAtivo(l.estagio) && (!l.dossie || l.dossie.status === "erro" || morta(l.dossie)),
+  );
   return LIMITE ? fila.slice(0, LIMITE) : fila;
 }
 
