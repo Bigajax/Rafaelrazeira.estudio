@@ -1,0 +1,1450 @@
+<title>Papel e Tinta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Inter:wght@400..600&family=JetBrains+Mono:wght@400..700&display=swap">
+
+<style>
+/* ============================================================
+   TOKENS  ·  a página é papel e tinta, um sistema só, por decisão.
+   ============================================================ */
+:root{
+  --paper:#F2EFE6;
+  --paper-2:#EAE6D9;
+  --paper-hi:#FBF9F3;
+  --ink:#14181A;
+  --ink-soft:#3A4144;
+  --green:#0C9159;
+  --green-dark:#076B42;
+  --green-live:#1FBF7A;
+  --rosa:#E31B62;
+  --rosa-dark:#B81250;
+  --rosa-live:#FF5C8A;
+  --linha:#D8D3C4;
+  --linha-dark:#2A3134;
+
+  --font-display:"Archivo","Arial Narrow",Helvetica,sans-serif;
+  --font-body:"Inter",-apple-system,Segoe UI,Roboto,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+
+  --maxw:1360px;
+  --pad:clamp(20px,5vw,64px);
+  --sangria:calc(max(0px,(100vw - var(--maxw)) / 2) + var(--pad));
+  --filete:1.5px solid var(--ink);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink-soft);
+  font-family:var(--font-body);
+  font-size:16.5px;
+  line-height:1.6;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+img,svg{max-width:100%}
+a{color:inherit}
+::selection{background:var(--green);color:var(--paper)}
+
+.wrap{max-width:var(--maxw);margin-inline:auto;padding-inline:var(--pad)}
+
+/* tipo utilitário */
+.mono{
+  font-family:var(--font-mono);
+  text-transform:uppercase;
+  letter-spacing:.18em;
+  font-size:10px;
+  font-weight:500;
+}
+.cond{font-family:var(--font-display);font-variation-settings:"wdth" 62,"wght" 900;text-transform:uppercase;line-height:.9;letter-spacing:-.03em}
+em.batida{
+  font-style:normal;
+  font-variation-settings:"wdth" 100,"wght" 900;
+  font-size:1.16em;
+  color:var(--green);
+  letter-spacing:-.045em;
+}
+
+:focus-visible{outline:2px solid var(--green);outline-offset:3px}
+
+/* ============================================================
+   CABEÇALHO  ·  filete duplo, objeto 8
+   ============================================================ */
+.hd{
+  position:fixed;inset:0 0 auto;z-index:60;height:64px;
+  background:var(--paper);
+  background:color-mix(in srgb,var(--paper) 92%,transparent);
+  backdrop-filter:blur(10px);
+  box-shadow:0 1.5px 0 var(--ink),0 4px 0 var(--linha);
+}
+.hd__in{height:64px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.hd__logo{display:flex;align-items:baseline;gap:8px;text-decoration:none}
+.hd__logo b{font-family:var(--font-display);font-variation-settings:"wdth" 62,"wght" 900;font-size:19px;letter-spacing:-.01em;text-transform:uppercase;color:var(--ink)}
+.hd__logo span{color:var(--green-dark);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.2em;font-size:9.5px}
+.hd__nav{display:flex;align-items:center;gap:22px;min-width:0}
+.hd__nav a{
+  font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.16em;font-size:9.5px;
+  color:var(--ink-soft);text-decoration:none;padding:6px 0;border-bottom:1.5px solid transparent;
+}
+.hd__nav a.hd__cta{
+  background:var(--ink);color:var(--paper);text-decoration:none;
+  font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.16em;font-size:9.5px;
+  padding:11px 16px;border:var(--filete);box-shadow:4px 4px 0 var(--green);
+  flex:none;white-space:nowrap;
+  transition:box-shadow .12s,transform .12s;
+}
+.hd__nav a.hd__cta:active{transform:translate(4px,4px);box-shadow:0 0 0}
+@media (hover:hover) and (pointer:fine){
+  .hd__nav a:hover{border-bottom-color:var(--green);color:var(--ink)}
+  .hd__nav a.hd__cta:hover{box-shadow:6px 6px 0 var(--green);border-bottom-color:var(--ink)}
+}
+@media (max-width:900px){.hd__nav a:not(.hd__cta){display:none}}
+
+/* ============================================================
+   HERO  ·  cartaz e ficha
+   ============================================================ */
+.hero{padding:132px 0 0;overflow-x:clip}
+.hero__eyebrow{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-bottom:34px}
+.hero__eyebrow span{color:var(--green-dark)}
+.hero__eyebrow i{display:block;width:26px;height:1.5px;background:var(--linha);flex:none}
+
+.lockup{display:block}
+.hero__line{
+  font-family:var(--font-display);
+  font-variation-settings:"wdth" 62,"wght" 900;
+  text-transform:uppercase;
+  color:var(--ink);
+  line-height:.88;
+  letter-spacing:-.04em;
+  white-space:nowrap;
+  font-size:clamp(2rem,8.4vw,5.4rem); /* piso; o herofit escala para preencher */
+  margin:0;
+}
+.hero__line span{display:inline-block}
+.hero__band{
+  background:var(--ink);
+  margin-left:calc(-1 * var(--sangria));
+  padding:.1em var(--pad) .16em var(--sangria);
+  margin-top:.04em;
+  width:max-content;
+  max-width:none;
+}
+.hero__band .hero__line{color:var(--paper)}
+.hero__band em.batida{color:var(--green-live)}
+
+.hero__grid{display:grid;grid-template-columns:minmax(0,1fr);gap:52px;align-items:start}
+@media (min-width:1000px){.hero__grid{grid-template-columns:minmax(0,1fr) 400px;gap:64px}}
+.hero__col{min-width:0}
+
+.lead{font-size:clamp(16.5px,1.35vw,19px);line-height:1.45;max-width:42ch;margin:0}
+.lead b{color:var(--ink);font-weight:600}
+.hero__meta{display:grid;gap:0;margin-top:34px;border-top:1.5px solid var(--linha)}
+.hero__meta div{display:flex;justify-content:space-between;gap:20px;padding:11px 0;border-bottom:1.5px solid var(--linha)}
+.hero__meta dt{color:var(--green-dark)}
+.hero__meta dd{margin:0;color:var(--ink);font-family:var(--font-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.14em;text-align:right}
+
+/* a ficha */
+.ficha{
+  position:relative;
+  background:var(--paper-hi);
+  border:var(--filete);
+  box-shadow:6px 6px 0 var(--ink);
+  padding:30px 26px 24px;
+}
+.ficha__kicker{color:var(--green-dark);display:block;margin-bottom:14px}
+.ficha__t{
+  font-family:var(--font-display);font-variation-settings:"wdth" 62,"wght" 900;
+  text-transform:uppercase;font-size:clamp(1.6rem,4.6vw,2.3rem);line-height:.92;letter-spacing:-.03em;
+  color:var(--ink);margin:0 0 14px;
+}
+.ficha__rows{margin:18px 0 0;padding:0;list-style:none;border-top:1.5px solid var(--linha)}
+.ficha__rows li{display:flex;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1.5px solid var(--linha);font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:.14em}
+.ficha__rows b{color:var(--ink);font-weight:500}
+.ficha__rows span{color:var(--green-dark)}
+.ficha__prova{margin-top:16px;color:var(--green-dark)}
+
+.selo{position:absolute;top:-16px;right:-14px;width:104px;height:104px;transform:rotate(13deg);mix-blend-mode:multiply;pointer-events:none}
+.selo text{font-family:var(--font-mono);font-size:8px;letter-spacing:.16em;fill:var(--green);text-transform:uppercase;font-weight:600}
+.selo .selo__mid{font-family:var(--font-display);font-size:15px;letter-spacing:0;fill:var(--green);font-variation-settings:"wdth" 62,"wght" 900}
+
+/* cue */
+.cue{margin:56px 0 0;padding-bottom:64px}
+.cue a{
+  display:inline-flex;align-items:center;gap:14px;text-decoration:none;
+  border:var(--filete);background:var(--paper-hi);box-shadow:4px 4px 0 var(--ink);
+  padding:13px 18px;color:var(--ink);
+  transition:box-shadow .12s,transform .12s;
+}
+.cue a:active{transform:translate(4px,4px);box-shadow:0 0 0}
+.cue svg{display:block;animation:bob 1.9s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(-2px)}50%{transform:translateY(3px)}}
+
+/* ============================================================
+   TIRA ROSA  ·  objeto 5. Aparece duas vezes, e é isso que a
+   torna estrutura em vez de enfeite.
+   ============================================================ */
+.tira{background:var(--rosa);border-block:var(--filete);overflow:hidden;padding:13px 0}
+.tira__t{display:flex;width:max-content;animation:desliza 46s linear infinite}
+.tira__t span{
+  font-family:var(--font-display);font-variation-settings:"wdth" 62,"wght" 900;
+  text-transform:uppercase;font-size:clamp(19px,3.4vw,32px);letter-spacing:.01em;
+  color:var(--paper);padding-right:.7em;white-space:nowrap;
+}
+@keyframes desliza{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ============================================================
+   SEÇÕES
+   ============================================================ */
+.sec{padding:96px 0}
+.sec--tight{padding:78px 0}
+.sec__head{display:grid;gap:18px;margin-bottom:52px;max-width:66ch}
+.sec__n{color:var(--green-dark)}
+.sec__t{
+  font-family:var(--font-display);font-variation-settings:"wdth" 62,"wght" 900;
+  text-transform:uppercase;font-size:clamp(1.9rem,7.5vw,4rem);line-height:.9;letter-spacing:-.035em;
+  color:var(--ink);margin:0;text-wrap:balance;
+}
+.sec__sub{margin:0;max-width:60ch}
+.dark{background:var(--ink);color:#C9CFD1}
+.dark .sec__t{color:var(--paper)}
+.dark .sec__n{color:var(--green-live)}
+.dark b,.dark strong{color:var(--paper)}
+
+/* §1 herda / não herda */
+.split{display:grid;gap:0;border-top:var(--filete)}
+@media (min-width:900px){.split{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.split__col{padding:28px 0;border-bottom:var(--filete)}
+.split__col + .split__col{border-top:1.5px solid var(--linha)}
+@media (min-width:900px){
+  .split__col{padding:30px 34px 34px 0}
+  .split__col + .split__col{border-top:0;border-left:var(--filete);padding-left:34px;padding-right:0}
+}
+.split__k{display:block;margin-bottom:16px}
+.split__k--sim{color:var(--green-dark)}
+.split__k--nao{color:var(--ink)}
+.split__h{font-family:var(--font-display);font-variation-settings:"wdth" 62,"wght" 800;text-transform:uppercase;font-size:1.6rem;line-height:.95;color:var(--ink);margin:0 0 14px;letter-spacing:-.02em}
+.split__l{margin:16px 0 0;padding:0;list-style:none;display:grid;gap:9px}
+.split__l li{padding-left:18px;position:relative;font-size:15.5px}
+.split__l li::before{content:"";position:absolute;left:0;top:.62em;width:9px;height:1.5px;background:var(--linha)}
+
+.tese{
+  margin-top:52px;border-top:var(--filete);padding-top:30px;
+  font-family:var(--font-display);font-variation-settings:"wdth" 62,"wght" 900;
+  text-transform:uppercase;font-size:clamp(2rem,8.2vw,5.2rem);line-height:.9;letter-spacing:-.04em;
+  color:var(--ink);
+}
+.tese em{font-style:normal;font-variation-settings:"wdth" 100,"wght" 900;font-size:1.18em;color:var(--green);letter-spacing:-.05em}
+
+/* §2 paleta */
+.barra{display:flex;border:var(--filete);box-shadow:6px 6px 0 var(--ink);height:96px;margin-bottom:44px}
+.barra div{display:flex;align-items:flex-end;padding:10px 12px;font-family:var(--font-mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase}
+.barra__60{flex:60;background:var(--paper);color:var(--green-dark);border-right:var(--filete)}
+.barra__30{flex:30;background:var(--ink);color:var(--green-live);border-right:var(--filete)}
+.barra__10{flex:10;background:var(--rosa);color:var(--paper)}
+
+.tabwrap{overflow-x:auto;border:var(--filete);background:var(--paper-hi)}
+table.tok{border-collapse:collapse;width:100%;min-width:620px;font-family:var(--font-mono);font-size:11px}
+table.tok th{
+  text-align:left;padding:12px 14px;border-bottom:var(--filete);
+  text-transform:uppercase;letter-spacing:.16em;font-size:9.5px;color:var(--green-dark);font-weight:600;white-space:nowrap;
+}
+table.tok td{padding:11px 14px;border-bottom:1.5px solid var(--linha);vertical-align:middle;color:var(--ink-soft)}
+table.tok tr:last-child td{border-bottom:0}
+table.tok td:first-child{color:var(--ink);white-space:nowrap}
+table.tok .hex{font-variant-numeric:tabular-nums;text-transform:uppercase;color:var(--ink);white-space:nowrap}
+.chip{display:inline-block;width:22px;height:22px;border:1.5px solid var(--ink);vertical-align:-6px;margin-right:10px}
+
+.dois{display:grid;gap:40px;margin-top:56px}
+@media (min-width:900px){.dois{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:52px}}
+.card{border:var(--filete);background:var(--paper-hi);padding:26px 24px 24px;box-shadow:8px 8px 0 var(--green)}
+.card__h{font-family:var(--font-display);font-variation-settings:"wdth" 62,"wght" 800;text-transform:uppercase;font-size:1.5rem;color:var(--ink);margin:0 0 8px;letter-spacing:-.02em;line-height:.95}
+.card p{margin:12px 0 0;font-size:15.5px}
+.esc{margin:20px 0 0;padding:0;list-style:none;display:grid;gap:0;border-top:1.5px solid var(--linha)}
+.esc li{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1.5px solid var(--linha);font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:.13em}
+.esc .r{margin-left:auto;font-variant-numeric:tabular-nums;color:var(--ink)}
+.esc .amostra{font-family:var(--font-mono);font-size:11px;letter-spacing:.1em}
+.regra{
+  margin-top:26px;border-top:var(--filete);padding-top:16px;color:var(--ink);
+  font-family:var(--font-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.13em;line-height:1.9;
+}
+.regra em{font-style:normal;color:var(--green-dark)}
+
+/* §3 tipografia */
+.spec{border:var(--filete);background:var(--paper-hi);box-shadow:8px 8px 0 var(--ink);padding:26px 24px 30px;overflow:hidden}
+.spec__bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:1.5px solid var(--linha);padding-bottom:16px;margin-bottom:26px}
+.spec__bar .mono{color:var(--green-dark)}
+.wbtns{display:flex;gap:0;margin-left:auto;border:var(--filete)}
+.wbtn{
+  appearance:none;background:var(--paper);border:0;cursor:pointer;
+  font-family:var(--font-mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  padding:9px 15px;color:var(--ink-soft);
+}
+.wbtn + .wbtn{border-left:var(--filete)}
+.wbtn[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.spec__line{
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(2.4rem,11vw,7rem);line-height:.88;letter-spacing:-.04em;color:var(--ink);
+  margin:0;white-space:nowrap;
+  font-variation-settings:"wdth" 62,"wght" 900;
+  transition:font-variation-settings .45s cubic-bezier(.2,.7,.2,1);
+}
+.spec__line[data-w="100"]{font-variation-settings:"wdth" 100,"wght" 900}
+.spec__note{margin:22px 0 0;font-size:15.5px;max-width:56ch}
+
+.frase{margin-top:44px;border-top:var(--filete);padding-top:30px}
+.frase__l{font-family:var(--font-display);font-variation-settings:"wdth" 62,"wght" 900;text-transform:uppercase;font-size:clamp(1.7rem,6.4vw,3.6rem);line-height:.9;letter-spacing:-.035em;color:var(--ink);margin:0}
+.frase__l em{font-style:normal;font-variation-settings:"wdth" 100,"wght" 900;font-size:1.18em;color:var(--green);letter-spacing:-.05em}
+.frase__cap{margin-top:16px;color:var(--green-dark)}
+
+/* §4 os nove objetos */
+.objs{display:grid;gap:0;border-top:var(--filete)}
+@media (min-width:760px){.objs{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+@media (min-width:1120px){.objs{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr)}}
+.obj{
+  min-width:0;
+  border-bottom:var(--filete);
+  padding:26px 0 30px;
+  display:flex;flex-direction:column;gap:18px;
+}
+@media (min-width:760px){
+  .obj{padding:26px 26px 30px 26px;border-left:var(--filete)}
+  .obj:nth-child(2n+1){border-left:0;padding-left:0}
+}
+@media (min-width:1120px){
+  .obj:nth-child(2n+1){border-left:var(--filete);padding-left:26px}
+  .obj:nth-child(3n+1){border-left:0;padding-left:0}
+}
+.obj__top{display:flex;align-items:baseline;gap:12px}
+.obj__n{font-family:var(--font-display);font-variation-settings:"wdth" 62,"wght" 900;font-size:2.1rem;line-height:.8;color:var(--green);font-variant-numeric:tabular-nums}
+.obj__t{font-family:var(--font-display);font-variation-settings:"wdth" 62,"wght" 800;text-transform:uppercase;font-size:1.22rem;letter-spacing:-.015em;color:var(--ink);margin:0;line-height:.98}
+.obj__p{margin:0;font-size:15px;line-height:1.55}
+.obj__p b{color:var(--ink);font-weight:600}
+.obj__demo{
+  background:var(--paper-2);border:1.5px solid var(--linha);
+  height:164px;display:flex;align-items:center;justify-content:center;
+  padding:22px 18px;position:relative;
+}
+.obj__demo--dark{background:var(--ink);border-color:var(--linha-dark)}
+.obj__code{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.06em;color:var(--green-dark);line-height:1.7;word-break:break-word}
+
+/* demos */
+.d-filete{display:grid;gap:14px;width:100%;max-width:220px}
+.d-filete i{display:block;height:0;border-top:var(--filete)}
+.d-filete u{display:block;height:0;border-top:1px solid rgba(20,24,26,.25);text-decoration:none}
+.d-filete span{font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+
+.d-sombra{display:flex;gap:20px;align-items:flex-end}
+.d-sombra div{background:var(--paper-hi);border:var(--filete);width:52px;height:40px}
+.d-s4{box-shadow:4px 4px 0 var(--ink)}
+.d-s6{box-shadow:6px 6px 0 var(--ink)}
+.d-s8{box-shadow:8px 8px 0 var(--green)}
+.d-s14{box-shadow:14px 14px 0 var(--paper-2),14px 14px 0 1.5px var(--ink)}
+
+.btn{
+  appearance:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;
+  min-height:44px;padding:13px 20px;border:var(--filete);
+  font-family:var(--font-mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+  text-decoration:none;transition:box-shadow .12s,transform .12s;
+}
+.btn:active{transform:translate(4px,4px);box-shadow:0 0 0 !important}
+.btn--faz{background:var(--rosa);color:#fff;box-shadow:4px 4px 0 var(--rosa-dark)}
+.btn--leva{background:var(--ink);color:var(--paper);box-shadow:4px 4px 0 var(--green)}
+.btn--linha{background:transparent;color:var(--ink);box-shadow:4px 4px 0 var(--ink)}
+.btn--papel{background:var(--paper);color:var(--ink);box-shadow:4px 4px 0 var(--green)}
+@media (hover:hover) and (pointer:fine){
+  .btn--faz:hover{background:var(--rosa-dark)}
+  .btn--leva:hover{box-shadow:6px 6px 0 var(--green)}
+  .btn--linha:hover{background:var(--paper-hi);box-shadow:6px 6px 0 var(--ink)}
+  .btn--papel:hover{box-shadow:6px 6px 0 var(--green)}
+}
+
+.d-selo{position:relative;width:120px;height:120px}
+.d-selo .selo{position:static;width:120px;height:120px;transform:rotate(-9deg)}
+
+.d-tira{width:100%;min-width:0;max-width:100%;background:var(--rosa);border-block:var(--filete);overflow:hidden;padding:7px 0}
+.d-tira div{display:flex;width:max-content;animation:desliza 22s linear infinite}
+.d-tira span{font-family:var(--font-display);font-variation-settings:"wdth" 62,"wght" 900;text-transform:uppercase;font-size:17px;color:var(--paper);padding-right:.6em;white-space:nowrap}
+
+.d-regua{width:100%;max-width:250px;border-top:1.5px solid var(--linha);margin:0;padding:0}
+.d-regua li{
+  list-style:none;display:flex;align-items:center;padding:9px 0;border-bottom:1.5px solid var(--linha);
+  font-family:var(--font-mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink);
+}
+.d-regua li::after{content:"✓";margin-left:auto;color:var(--green);font-size:13px;letter-spacing:0}
+
+.d-plaq{display:grid;gap:10px;width:100%;max-width:240px}
+.d-plaq b{
+  display:block;background:rgba(255,255,255,.07);
+  box-shadow:inset 0 1px 0 #ffffff26,0 1px 0 #00000045;
+  padding:11px 13px;color:var(--paper);
+  font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:500;
+}
+.d-plaq i{font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--green-live);font-style:normal}
+
+.d-hd{width:100%;max-width:240px}
+.d-hd div{background:var(--paper);box-shadow:0 1.5px 0 var(--ink),0 4px 0 var(--linha);padding:13px 14px 15px;display:flex;justify-content:space-between;align-items:center}
+.d-hd b{font-family:var(--font-display);font-variation-settings:"wdth" 62,"wght" 900;text-transform:uppercase;font-size:13px;color:var(--ink)}
+.d-hd span{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.2em;color:var(--green-dark);text-transform:uppercase}
+
+.d-campo{width:100%;max-width:250px;display:grid;gap:7px}
+.d-campo label{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--green-dark)}
+.d-campo input{
+  font-family:var(--font-body);font-size:16px;color:var(--ink);
+  background:transparent;border:0;border-bottom:1.5px solid var(--linha);
+  padding:7px 0 8px;outline:0;width:100%;
+}
+.d-campo input::placeholder{color:#9AA0A0}
+.d-campo input:focus{border-bottom:2.5px solid var(--rosa);padding-bottom:7px}
+
+/* §5 botões */
+.btabs{display:grid;gap:0;border-top:var(--filete);margin-bottom:40px}
+.btab{display:grid;gap:16px;grid-template-columns:minmax(0,1fr);padding:24px 0;border-bottom:1.5px solid var(--linha);align-items:center}
+@media (min-width:760px){.btab{grid-template-columns:190px minmax(0,1fr) 220px;gap:28px}}
+.btab__job{font-family:var(--font-display);font-variation-settings:"wdth" 62,"wght" 900;text-transform:uppercase;font-size:1.5rem;color:var(--ink);line-height:.95;letter-spacing:-.02em}
+.btab__d{font-size:15px;margin:0}
+.btab__d code{font-family:var(--font-mono);font-size:11.5px;color:var(--green-dark)}
+
+/* §6 dobra a dobra */
+.dobras{border-top:var(--filete)}
+.dobra{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;padding:26px 0;border-bottom:1.5px solid var(--linha)}
+@media (min-width:820px){.dobra{grid-template-columns:132px minmax(0,1fr);gap:34px}}
+.dobra__trilho{display:flex;align-items:baseline;gap:10px}
+@media (min-width:820px){.dobra__trilho{display:block}}
+.dobra__n{font-family:var(--font-display);font-variation-settings:"wdth" 62,"wght" 900;font-size:2.3rem;line-height:.82;color:var(--ink);font-variant-numeric:tabular-nums}
+.dobra__tag{display:block;margin-top:7px;color:var(--green-dark)}
+.dobra__tag--escura{color:var(--paper);background:var(--ink);display:inline-block;padding:4px 8px;margin-top:7px}
+.dobra__t{font-family:var(--font-display);font-variation-settings:"wdth" 62,"wght" 800;text-transform:uppercase;font-size:1.35rem;letter-spacing:-.015em;color:var(--ink);margin:0 0 10px;line-height:.98}
+.dobra__p{margin:0;font-size:15.5px;max-width:72ch}
+.dobra__p + .dobra__p{margin-top:11px}
+.dobra__p b{color:var(--ink);font-weight:600}
+
+/* §7 movimento + §8 a11y */
+.gridcols{display:grid;gap:44px}
+@media (min-width:960px){.gridcols{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:60px}}
+.lista{margin:0;padding:0;list-style:none;border-top:var(--filete)}
+.lista li{padding:15px 0;border-bottom:1.5px solid var(--linha);font-size:15.5px;display:grid;gap:5px}
+.lista b{color:var(--ink);font-family:var(--font-mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;font-weight:600}
+.dark .lista{border-top-color:var(--linha-dark)}
+.dark .lista li{border-bottom-color:var(--linha-dark)}
+.dark .lista b{color:var(--green-live)}
+
+/* §9 o que não entra */
+.nao{display:grid;gap:0;border-top:1.5px solid var(--linha-dark)}
+@media (min-width:820px){.nao{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.nao__i{padding:22px 0;border-bottom:1.5px solid var(--linha-dark);display:flex;gap:16px;align-items:flex-start}
+@media (min-width:820px){
+  .nao__i{padding:22px 28px 24px 0}
+  .nao__i:nth-child(2n){border-left:1.5px solid var(--linha-dark);padding-left:28px;padding-right:0}
+}
+.nao__n{font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;color:var(--rosa-live);flex:none;padding-top:5px;font-variant-numeric:tabular-nums}
+.nao__t{font-family:var(--font-display);font-variation-settings:"wdth" 62,"wght" 900;text-transform:uppercase;font-size:1.5rem;line-height:.95;color:var(--paper);margin:0 0 8px;letter-spacing:-.02em}
+.nao__p{margin:0;font-size:15px;line-height:1.55}
+
+.par{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0;margin-top:20px;border:1.5px solid var(--linha-dark)}
+.par__c{padding:20px 16px;display:flex;flex-direction:column;gap:14px;align-items:flex-start}
+.par__c + .par__c{border-left:1.5px solid var(--linha-dark)}
+.par__k{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase}
+.par__k--nao{color:var(--rosa-live)}
+.par__k--sim{color:var(--green-live)}
+.amostra-vidro{width:100%;height:56px;background:rgba(255,255,255,.09);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.22);border-radius:14px;box-shadow:0 24px 60px -24px rgba(0,0,0,.7)}
+.amostra-ficha{width:100%;height:56px;background:var(--paper-hi);border:var(--filete);box-shadow:8px 8px 0 var(--green)}
+.amostra-borrada{width:100%;height:56px;background:var(--paper-2);box-shadow:0 18px 40px -12px rgba(0,0,0,.75)}
+.amostra-dura{width:100%;height:56px;background:var(--paper-2);border:var(--filete);box-shadow:6px 6px 0 var(--green)}
+.amostra-chip{display:inline-block;border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:9px 14px;color:#C9CFD1;font-family:var(--font-mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase}
+.amostra-plaq{display:inline-block;background:rgba(255,255,255,.07);box-shadow:inset 0 1px 0 #ffffff26,0 1px 0 #00000045;padding:10px 14px;color:var(--paper);font-family:var(--font-mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase}
+
+/* §10 pendências */
+.pend{border-top:var(--filete)}
+.pitem{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;padding:26px 0;border-bottom:1.5px solid var(--linha)}
+@media (min-width:860px){.pitem{grid-template-columns:74px minmax(0,1fr) 168px;gap:30px}}
+.pitem__n{font-family:var(--font-display);font-variation-settings:"wdth" 62,"wght" 900;font-size:2.6rem;line-height:.8;color:var(--ink);font-variant-numeric:tabular-nums}
+.pitem__t{font-family:var(--font-display);font-variation-settings:"wdth" 62,"wght" 800;text-transform:uppercase;font-size:1.3rem;color:var(--ink);margin:0 0 10px;letter-spacing:-.015em;line-height:1}
+.pitem__p{margin:0;font-size:15.5px;max-width:66ch}
+.pitem__p + .pitem__p{margin-top:10px}
+.pitem__p b{color:var(--ink);font-weight:600}
+.pitem__st{display:flex;align-items:flex-start}
+.st{
+  font-family:var(--font-mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;
+  padding:7px 10px;border:1.5px solid var(--ink);color:var(--ink);white-space:nowrap;
+}
+.st--fila{background:var(--ink);color:var(--paper);box-shadow:4px 4px 0 var(--green)}
+.st--espera{background:var(--paper-2)}
+.st--medir{background:var(--paper-2)}
+.falta{margin:16px 0 0;padding:0;list-style:none;border-top:1.5px solid var(--linha);max-width:420px}
+.falta li{display:flex;padding:9px 0;border-bottom:1.5px solid var(--linha);font-family:var(--font-mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink)}
+.falta li::after{content:"pendente";margin-left:auto;color:var(--ink-soft);letter-spacing:.18em}
+
+/* §11 mapa */
+.mapa{overflow-x:auto;border:1.5px solid var(--linha-dark);background:rgba(255,255,255,.03);padding:26px 22px}
+.mapa pre{margin:0;font-family:var(--font-mono);font-size:12px;line-height:1.95;color:#C9CFD1;white-space:pre}
+.mapa b{color:var(--green-live);font-weight:400}
+.mapa i{color:var(--paper);font-style:normal}
+.rotas{display:grid;gap:0;margin-top:34px;border-top:1.5px solid var(--linha-dark)}
+.rotas div{display:flex;justify-content:space-between;gap:18px;padding:13px 0;border-bottom:1.5px solid var(--linha-dark);font-family:var(--font-mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase}
+.rotas span{color:#9FA8AA}
+.rotas b{color:var(--green-live);font-weight:500}
+
+/* §12 conferir */
+.conf{margin:0;padding:0;list-style:none;border-top:var(--filete);max-width:900px}
+.conf li{
+  display:flex;align-items:baseline;gap:16px;padding:19px 0;border-bottom:1.5px solid var(--linha);
+  font-size:16.5px;color:var(--ink);
+}
+.conf li::after{content:"✓";margin-left:auto;color:var(--green);font-size:17px;flex:none}
+.conf em{font-style:normal;font-family:var(--font-mono);font-size:10px;letter-spacing:.16em;color:var(--green-dark);flex:none;padding-top:3px}
+.conf b{font-weight:600}
+.conf code{font-family:var(--font-mono);font-size:13px;color:var(--green-dark)}
+
+/* pill */
+.pill{
+  position:fixed;z-index:70;bottom:20px;left:50%;transform:translateX(-50%);width:64vw;
+  background:var(--rosa);color:#fff;border:var(--filete);box-shadow:4px 4px 0 var(--ink);
+  text-decoration:none;text-align:center;padding:15px 18px;
+  font-family:var(--font-mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s;
+}
+.pill.on{opacity:1;visibility:visible}
+.pill:active{transform:translateX(-50%) translate(4px,4px);box-shadow:0 0 0}
+@media (min-width:1024px){
+  .pill{left:auto;right:26px;bottom:26px;transform:none;width:auto}
+  .pill:active{transform:translate(4px,4px)}
+}
+
+/* rodapé */
+.ft{background:var(--ink);color:#9FA8AA;padding:70px 0 0;overflow:hidden}
+.ft__top{display:flex;flex-wrap:wrap;gap:26px;justify-content:space-between;border-bottom:1.5px solid var(--linha-dark);padding-bottom:26px}
+.ft__top a{color:var(--green-live);text-decoration:none;font-family:var(--font-mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase}
+.ft__legal{display:flex;flex-wrap:wrap;gap:20px;justify-content:space-between;padding:22px 0 44px;font-family:var(--font-mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase}
+.ft__nome{
+  font-family:var(--font-display);font-variation-settings:"wdth" 62,"wght" 900;
+  text-transform:uppercase;font-size:23vw;line-height:.72;color:var(--paper);opacity:.13;
+  white-space:nowrap;margin:0;user-select:none;pointer-events:none;
+  transform:translateY(22%);
+}
+
+/* entrada: o repouso é sempre o CSS base */
+.rev{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s cubic-bezier(.2,.7,.2,1)}
+.rev.in{opacity:1;transform:none}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none !important;transition:none !important}
+  .rev{opacity:1 !important;transform:none !important}
+  html{scroll-behavior:auto}
+}
+</style>
+
+<header class="hd">
+  <div class="wrap hd__in">
+    <a class="hd__logo" href="#topo">
+      <b>Rafael Razeira</b><span>Estúdio</span>
+    </a>
+    <nav class="hd__nav" aria-label="Seções da régua">
+      <a href="#paleta">Paleta</a>
+      <a href="#tipo">Tipografia</a>
+      <a href="#lexico">Léxico</a>
+      <a href="#pagina">A página</a>
+      <a href="#nao-entra">Não entra</a>
+      <a class="hd__cta" href="#pendencias">Pendências</a>
+    </nav>
+  </div>
+</header>
+
+<main id="topo">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero__grid">
+        <div class="hero__col">
+      <p class="hero__eyebrow mono"><span>Régua do sistema</span><i></i><span>/estudio</span><i></i><span>21 · 08 · 2026</span></p>
+
+      <div class="lockup" id="lockup">
+        <h1 class="hero__line" data-fit><span>Gramática papel</span></h1>
+        <div class="hero__line" data-fit><span>e tinta, a régua</span></div>
+        <div class="hero__band"><div class="hero__line" data-fit><span>da <em class="batida">/estudio</em>.</span></div></div>
+      </div>
+
+          <p class="lead" style="margin-top:44px"><b>A /estudio é a home do estúdio e a página que assina as outras.</b> Ela era a única que ainda falava outra língua: quase branco, esmeralda vivo, vidro fosco no formulário. As outras três já eram papel, grafite, esmeralda em três tons e rosa de ação. Quatro páginas do mesmo estúdio, dois sistemas. Este documento é a régua: o que a página é hoje, por que cada peça é assim, o que ainda falta e o que nunca entra.</p>
+          <dl class="hero__meta mono">
+            <div><dt>Gramática</dt><dd>Papel e tinta</dd></div>
+            <div><dt>Referência viva</dt><dd>/vitrine-digital</dd></div>
+            <div><dt>Objetos no léxico</dt><dd>Nove</dd></div>
+            <div><dt>Larguras de Archivo</dt><dd>62 e 100</dd></div>
+          </dl>
+        </div>
+
+        <div class="ficha">
+          <svg class="selo" viewBox="0 0 120 120" role="img" aria-label="Selo do estúdio, Maringá PR">
+            <defs>
+              <path id="arcoAlto" d="M 20 60 A 40 40 0 0 1 100 60"></path>
+              <path id="arcoBaixo" d="M 24 60 A 36 36 0 0 0 96 60"></path>
+            </defs>
+            <circle cx="60" cy="60" r="55" fill="none" stroke="#0C9159" stroke-width="1.5"></circle>
+            <circle cx="60" cy="60" r="48" fill="none" stroke="#0C9159" stroke-width="1"></circle>
+            <text><textPath href="#arcoAlto" startOffset="50%" text-anchor="middle">Rafael Razeira Estúdio</textPath></text>
+            <text><textPath href="#arcoBaixo" startOffset="50%" text-anchor="middle">Maringá · PR</textPath></text>
+            <text class="selo__mid" x="60" y="57" text-anchor="middle">RÉGUA</text>
+            <text x="60" y="70" text-anchor="middle">21.08.26</text>
+          </svg>
+
+          <span class="ficha__kicker mono">Ficha do documento</span>
+          <h2 class="ficha__t">Cartaz e ficha,<br>os dois objetos.</h2>
+          <p class="lead" style="font-size:16px"><b>A manchete é cartaz:</b> lockup de tipo que ocupa a tela e sangra até a borda. <b>O lugar onde a pessoa age é ficha:</b> papel com filete de tinta, sombra dura, carimbo na quina, campos em linha. A página inteira é a costura entre esses dois objetos.</p>
+          <ul class="ficha__rows">
+            <li><span>Escrito em</span><b>21/08/2026</b></li>
+            <li><span>Depois da virada de</span><b>14/08/2026</b></li>
+            <li><span>Tokens em</span><b>estudio/css/base.css</b></li>
+            <li><span>Pendências abertas</span><b>Sete</b></li>
+          </ul>
+          <p class="ficha__prova mono">Esta página é o próprio sistema rodando: cada objeto abaixo está vivo, não descrito.</p>
+        </div>
+      </div>
+
+      <div class="cue">
+        <a href="#fundo">
+          <span class="mono">Começar pela decisão de fundo</span>
+          <svg width="13" height="18" viewBox="0 0 13 18" fill="none" aria-hidden="true"><path d="M6.5 0v15M1 10l5.5 6L12 10" stroke="#0C9159" stroke-width="1.8"></path></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TIRA 1 ============ -->
+  <div class="tira" aria-hidden="true">
+    <div class="tira__t">
+      <span>Papel e tinta · Quina reta · Sombra dura · Filete de 1,5px · Carimbo que afunda · Campo de linha · </span>
+      <span>Papel e tinta · Quina reta · Sombra dura · Filete de 1,5px · Carimbo que afunda · Campo de linha · </span>
+    </div>
+  </div>
+
+  <!-- ============ §1 ============ -->
+  <section class="sec" id="fundo">
+    <div class="wrap">
+      <div class="sec__head rev">
+        <span class="sec__n mono">§ 01 · A decisão de fundo</span>
+        <h2 class="sec__t">A /estudio herda a gramática da vitrine, não o argumento dela</h2>
+        <p class="sec__sub">A vitrine é o laboratório: recebe tráfego pago frio, mede tudo e paga o custo de descobrir o que funciona. Cada coisa que sobrevive lá vira padrão da casa e sobe para cá.</p>
+      </div>
+
+      <div class="split rev">
+        <div class="split__col">
+          <span class="split__k split__k--sim mono">Sobe · a gramática</span>
+          <h3 class="split__h">O que sobreviveu ao tráfego pago</h3>
+          <p>Testado em página que mede tudo, então vira padrão da casa sem discussão nova.</p>
+          <ul class="split__l">
+            <li>A sombra dura, sólida e deslocada</li>
+            <li>O botão que afunda como carimbo</li>
+            <li>As duas larguras de Archivo</li>
+            <li>A guarda de toque no hover</li>
+            <li>O campo de linha em vez de campo de caixa</li>
+          </ul>
+        </div>
+        <div class="split__col">
+          <span class="split__k split__k--nao mono">Não sobe · a metáfora</span>
+          <h3 class="split__h">A resposta de outra pergunta</h3>
+          <p>Existe porque aquela página vende para dona de loja de roupa, e o objeto mais banal do balcão dela é a prova do produto.</p>
+          <ul class="split__l">
+            <li>A etiqueta alfinetada</li>
+            <li>O furo do ilhó</li>
+            <li>O picote do canhoto</li>
+            <li>O fio de conversa do WhatsApp</li>
+            <li>O preço de loja</li>
+          </ul>
+        </div>
+      </div>
+
+      <p class="tese rev">Cartaz convence,<br><em>ficha coleta.</em></p>
+    </div>
+  </section>
+
+  <!-- ============ §2 PALETA ============ -->
+  <section class="sec" id="paleta">
+    <div class="wrap">
+      <div class="sec__head rev">
+        <span class="sec__n mono">§ 02 · A paleta</span>
+        <h2 class="sec__t">Sessenta de papel, trinta de tinta, <em class="batida">dez de rosa</em></h2>
+        <p class="sec__sub">O papel é o chão e a página é majoritariamente clara. O grafite estrutura e o esmeralda assina. O rosa é a ação, e só ela.</p>
+      </div>
+
+      <div class="barra rev" role="img" aria-label="Proporção da paleta: 60 por cento papel, 30 por cento tinta e marca, 10 por cento rosa">
+        <div class="barra__60">60 · papel, o chão</div>
+        <div class="barra__30">30 · tinta e marca</div>
+        <div class="barra__10">10 · ação</div>
+      </div>
+
+      <div class="tabwrap rev">
+        <table class="tok">
+          <caption class="mono" style="text-align:left;padding:14px;color:var(--green-dark);border-bottom:var(--filete)">Tokens em public/estudio/css/base.css</caption>
+          <thead>
+            <tr><th scope="col">Token</th><th scope="col">Valor</th><th scope="col">Trabalho</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="chip" style="background:#F2EFE6"></span>--paper</td><td class="hex">#F2EFE6</td><td>O chão da página</td></tr>
+            <tr><td><span class="chip" style="background:#EAE6D9"></span>--paper-2</td><td class="hex">#EAE6D9</td><td>A caixa atrás da sombra dura</td></tr>
+            <tr><td><span class="chip" style="background:#14181A"></span>--ink</td><td class="hex">#14181A</td><td>Tinta: filete, tipo, seção escura</td></tr>
+            <tr><td><span class="chip" style="background:#3A4144"></span>--ink-soft</td><td class="hex">#3A4144</td><td>Corpo de texto sobre papel</td></tr>
+            <tr><td><span class="chip" style="background:#0C9159"></span>--green</td><td class="hex">#0C9159</td><td>Traço, moldura, grifo grande</td></tr>
+            <tr><td><span class="chip" style="background:#076B42"></span>--green-dark</td><td class="hex">#076B42</td><td>Só texto miúdo sobre papel</td></tr>
+            <tr><td><span class="chip" style="background:#1FBF7A"></span>--green-live</td><td class="hex">#1FBF7A</td><td>Só sobre grafite</td></tr>
+            <tr><td><span class="chip" style="background:#E31B62"></span>--rosa</td><td class="hex">#E31B62</td><td>A ação</td></tr>
+            <tr><td><span class="chip" style="background:#B81250"></span>--rosa-dark</td><td class="hex">#B81250</td><td>Hover e sombra do próprio rosa</td></tr>
+            <tr><td><span class="chip" style="background:#FF5C8A"></span>--rosa-live</td><td class="hex">#FF5C8A</td><td>Só texto miúdo rosa sobre grafite</td></tr>
+            <tr><td><span class="chip" style="background:#D8D3C4"></span>--linha</td><td class="hex">#D8D3C4</td><td>Filete claro sobre papel</td></tr>
+            <tr><td><span class="chip" style="background:#2A3134"></span>--linha-dark</td><td class="hex">#2A3134</td><td>Filete dentro do grafite</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="dois">
+        <div class="card rev">
+          <h3 class="card__h">Por que o esmeralda são três</h3>
+          <p>Porque um esmeralda só não faz os dois trabalhos. O verde vivo da identidade dá 2,2:1 sobre papel, ilegível como texto.</p>
+          <ul class="esc">
+            <li><span class="chip" style="background:#0C9159;width:16px;height:16px;vertical-align:-3px;margin-right:0"></span><span class="amostra" style="color:#0C9159">Linha, moldura, grifo</span><span class="r">3,5:1</span></li>
+            <li><span class="chip" style="background:#076B42;width:16px;height:16px;vertical-align:-3px;margin-right:0"></span><span class="amostra" style="color:#076B42">Rótulo, dado em mono</span><span class="r">5,7:1</span></li>
+            <li style="background:#14181A;padding-inline:10px;border-bottom-color:#2A3134"><span class="chip" style="background:#1FBF7A;width:16px;height:16px;vertical-align:-3px;margin-right:0;border-color:#1FBF7A"></span><span class="amostra" style="color:#1FBF7A">Dentro de seção escura</span><span class="r" style="color:#1FBF7A">7,7:1</span></li>
+          </ul>
+          <p class="regra"><em>Regra prática:</em><br>Menos de 18px sobre papel usa green-dark. Qualquer coisa maior, ou que seja linha e não letra, usa green. Dentro de seção escura, green-live.</p>
+        </div>
+
+        <div class="card rev">
+          <h3 class="card__h">Por que o rosa são dois</h3>
+          <p>O rosa foi desenhado para ser lido em <b>branco por cima</b>: 4,57:1 de branco sobre ele. Como texto sobre grafite ele dá 3,5:1, que não passa nos 10px que os rótulos desta casa usam.</p>
+          <ul class="esc">
+            <li style="background:#E31B62;padding-inline:10px;border-bottom-color:#B81250"><span class="amostra" style="color:#fff">Branco sobre rosa, no botão</span><span class="r" style="color:#fff">4,57:1</span></li>
+            <li style="background:#14181A;padding-inline:10px;border-bottom-color:#2A3134"><span class="amostra" style="color:#FF5C8A">Rosa live, só sobre grafite</span><span class="r" style="color:#FF5C8A">6,1:1</span></li>
+          </ul>
+          <p class="regra"><em>O rosa nunca é a solução de um destaque novo.</em><br>Ele já está no botão do hero, no botão do briefing, no pill e em duas tiras. Destaque novo se resolve com escala e posição, não pintando mais uma coisa de rosa.</p>
+        </div>
+      </div>
+
+      <div class="card rev" style="margin-top:40px;box-shadow:8px 8px 0 var(--ink)">
+        <h3 class="card__h">Os apelidos antigos</h3>
+        <p><code style="font-family:var(--font-mono);font-size:13px;color:var(--green-dark)">--emerald · --off-white · --black · --line</code> continuam existindo como apelidos dos novos, porque são dezoito arquivos de seção apontando para eles. <b>CSS novo usa os nomes novos.</b> Os antigos ficam para o que já existe e vão saindo quando o arquivo for tocado por outro motivo.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ §3 TIPOGRAFIA ============ -->
+  <section class="sec" id="tipo">
+    <div class="wrap">
+      <div class="sec__head rev">
+        <span class="sec__n mono">§ 03 · A tipografia</span>
+        <h2 class="sec__t">Duas larguras da mesma família, <em class="batida">e nenhuma outra</em></h2>
+        <p class="sec__sub">Archivo na manchete, na logo, no número de passo e na assinatura. Inter no corpo de texto, e só. JetBrains Mono em rótulo, dado, prova e legenda de ficha, sempre em caixa alta com entreletra aberta.</p>
+      </div>
+
+      <div class="spec rev">
+        <div class="spec__bar">
+          <span class="mono">Archivo · eixo de largura</span>
+          <div class="wbtns" role="group" aria-label="Largura da Archivo">
+            <button class="wbtn" type="button" data-w="62" aria-pressed="true">wdth 62</button>
+            <button class="wbtn" type="button" data-w="100" aria-pressed="false">wdth 100</button>
+          </div>
+        </div>
+        <p class="spec__line" id="especime" data-w="62">Sete dias úteis</p>
+        <p class="spec__note"><b style="color:var(--ink)">62%, o extremo condensado:</b> o preparo da frase. Cabe mais palavra por linha e é a voz padrão da manchete e da logo. <b style="color:var(--ink)">100%, largura natural, com corpo 16 a 18% maior:</b> a batida final, onde a promessa acontece. É exatamente para isso que existe um eixo variável, e é o que quase nenhuma landing usa.</p>
+      </div>
+
+      <div class="frase rev">
+        <p class="frase__l">Sua marca vendendo online em até <em>7 dias úteis.</em></p>
+        <p class="frase__cap mono">No hero isso é literal: a mesma frase lida em voz alta, com a ênfase caindo onde cairia. O gancho no código é o &lt;em&gt; do config, que carrega cor, largura e corpo de uma vez.</p>
+      </div>
+
+      <div class="tabwrap rev" style="margin-top:52px">
+        <table class="tok">
+          <caption class="mono" style="text-align:left;padding:14px;color:var(--green-dark);border-bottom:var(--filete)">A escala. Largura de leitura: maxw 1360px, pad clamp(20px, 5vw, 64px)</caption>
+          <thead><tr><th scope="col">Papel</th><th scope="col">Regra</th></tr></thead>
+          <tbody>
+            <tr><td>Manchete do hero</td><td>min(clamp(3.4rem, 18.5vw, 11rem), 16vh) · wdth 62 · wght 900 · caixa alta · line-height .9 · tracking -.04em</td></tr>
+            <tr><td>Manchete de seção</td><td>clamp(1.9rem, 7.5vw, 4rem) · condensada, com &lt;em&gt; a 100 na batida</td></tr>
+            <tr><td>Palavra gigante</td><td>Até 11rem · wght 800 a 900</td></tr>
+            <tr><td>Subtítulo</td><td>clamp(16.5px, 1.35vw, 19px) · line-height 1.45 · máx. 40ch · com espinha</td></tr>
+            <tr><td>Corpo</td><td>Inter · line-height 1.5 a 1.6 · ink-soft</td></tr>
+            <tr><td>Rótulo</td><td>Mono 9,5 a 10,5px · tracking .16em a .24em · caixa alta</td></tr>
+            <tr><td>Campo de formulário</td><td>16px sempre: abaixo disso o iOS dá zoom sozinho</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ §4 LÉXICO ============ -->
+  <section class="sec" id="lexico">
+    <div class="wrap">
+      <div class="sec__head rev">
+        <span class="sec__n mono">§ 04 · O léxico</span>
+        <h2 class="sec__t">Os nove objetos da casa</h2>
+        <p class="sec__sub">Uma peça nova só entra se puder ser descrita com estes nove. Se ela precisar de um décimo, ou o décimo vale para a casa inteira ou a peça está errada. Aqui eles não estão descritos: estão ligados, e os botões afundam de verdade.</p>
+      </div>
+
+      <div class="objs">
+
+        <article class="obj rev">
+          <div class="obj__top"><span class="obj__n">01</span><h3 class="obj__t">O filete de tinta</h3></div>
+          <div class="obj__demo">
+            <div class="d-filete">
+              <span>1,5px de tinta, traço de caneta</span><i></i>
+              <span>1px translúcido, hairline de interface</span><u></u>
+            </div>
+          </div>
+          <p class="obj__p"><b>Nunca 1px, nunca translúcido.</b> Sobre grafite o filete vira linha-dark ou um véu de branco a 10 a 18%.</p>
+          <p class="obj__code">border: 1.5px solid var(--ink)</p>
+        </article>
+
+        <article class="obj rev">
+          <div class="obj__top"><span class="obj__n">02</span><h3 class="obj__t">A sombra dura deslocada</h3></div>
+          <div class="obj__demo">
+            <div class="d-sombra">
+              <div class="d-s4"></div><div class="d-s6"></div><div class="d-s8"></div><div class="d-s14"></div>
+            </div>
+          </div>
+          <p class="obj__p">Sempre sólida, sempre para baixo e à direita, porque a luz da casa vem de cima à esquerda. Nunca desfocada. <b>A distância diz o tamanho do objeto:</b> 4px no botão, 6px no cartão do hero, 8px esmeralda na ficha grande, e no aparelho a sombra ganha o próprio filete, uma segunda folha de papel atrás.</p>
+          <p class="obj__code">4 4 0 · 6 6 0 · 8 8 0 green · 14 18 0 paper-2 + 14 18 0 1.5px ink</p>
+        </article>
+
+        <article class="obj rev">
+          <div class="obj__top"><span class="obj__n">03</span><h3 class="obj__t">O carimbo que afunda</h3></div>
+          <div class="obj__demo">
+            <button class="btn btn--faz" type="button">Aperte aqui</button>
+          </div>
+          <p class="obj__p">Todo botão da casa tem a sombra dura, e ela <b>colapsa no clique</b>: é o gesto de um carimbo sendo apertado contra o papel. Aplicar em todos não é repetição: um gesto usado uma vez é enfeite, usado em todos os botões é gramática.</p>
+          <p class="obj__code">:active { transform: translate(4px,4px); box-shadow: 0 0 0 }</p>
+        </article>
+
+        <article class="obj rev">
+          <div class="obj__top"><span class="obj__n">04</span><h3 class="obj__t">O selo redondo</h3></div>
+          <div class="obj__demo">
+            <div class="d-selo">
+              <svg class="selo" viewBox="0 0 120 120" role="img" aria-label="Anatomia do selo">
+                <defs>
+                  <path id="arcoAlto2" d="M 20 60 A 40 40 0 0 1 100 60"></path>
+                  <path id="arcoBaixo2" d="M 24 60 A 36 36 0 0 0 96 60"></path>
+                </defs>
+                <circle cx="60" cy="60" r="55" fill="none" stroke="#0C9159" stroke-width="1.5"></circle>
+                <circle cx="60" cy="60" r="48" fill="none" stroke="#0C9159" stroke-width="1"></circle>
+                <text><textPath href="#arcoAlto2" startOffset="50%" text-anchor="middle">Rafael Razeira Estúdio</textPath></text>
+                <text><textPath href="#arcoBaixo2" startOffset="50%" text-anchor="middle">Maringá · PR</textPath></text>
+                <text class="selo__mid" x="60" y="57" text-anchor="middle">AGENDA</text>
+                <text x="60" y="70" text-anchor="middle">Setembro</text>
+              </svg>
+            </div>
+          </div>
+          <p class="obj__p">Dois anéis, o nome curvado no arco de cima, o recado no miolo, a praça embaixo: a anatomia de um carimbo de cartório. Vive pendurado na quina da ficha, <b>meio para fora</b>, girado 13 graus, em multiply para a tinta somar com o que está embaixo, e sem eventos de ponteiro porque passa por cima do canto e não pode roubar toque.</p>
+          <p class="obj__code">top:-16px; right:-14px; rotate(13deg); mix-blend-mode: multiply</p>
+        </article>
+
+        <article class="obj rev">
+          <div class="obj__top"><span class="obj__n">05</span><h3 class="obj__t">A tira rosa</h3></div>
+          <div class="obj__demo" style="padding-inline:0">
+            <div class="d-tira" aria-hidden="true"><div><span>Fecha o parêntese · Fecha o parêntese · </span><span>Fecha o parêntese · Fecha o parêntese · </span></div></div>
+          </div>
+          <p class="obj__p">Ela aparece <b>duas vezes</b> na página, e é isso que a torna estrutura em vez de enfeite: ela fecha o parêntese que abriu. Letras em papel, não em branco: o contraste interno mais baixo faz a tira ler como campo de energia, e é isso que impede que ela ganhe do botão. <b>Toda tira desta casa sobe para a direita</b>, sempre 3,5 graus, nunca o oposto.</p>
+          <p class="obj__code">Archivo wdth 62 · wght 900 · color: var(--paper)</p>
+        </article>
+
+        <article class="obj rev">
+          <div class="obj__top"><span class="obj__n">06</span><h3 class="obj__t">A régua de conferência</h3></div>
+          <div class="obj__demo">
+            <ul class="d-regua">
+              <li>Copy da página</li>
+              <li>Design e arte</li>
+              <li>Publicação</li>
+            </ul>
+          </div>
+          <p class="obj__p">Item à esquerda, o ✓ na <b>margem direita</b>, filete separando linha por linha. É o gesto de quem passa o dedo por uma lista dando baixa em cada item. O ✓ nasce no ::after: dentro de um flex ele vira item de flex e encosta sozinho na direita, sem posicionamento absoluto e sem largura reservada.</p>
+          <p class="obj__code">li::after { content: "✓"; margin-left: auto }</p>
+        </article>
+
+        <article class="obj rev">
+          <div class="obj__top"><span class="obj__n">07</span><h3 class="obj__t">A plaquinha gravada</h3></div>
+          <div class="obj__demo obj__demo--dark">
+            <div class="d-plaq">
+              <b>Onze anos de mercado</b>
+              <b>Maringá · PR</b>
+              <i>Fato dentro de seção escura</i>
+            </div>
+          </div>
+          <p class="obj__p">Sem borda: um véu de branco a 6 a 10%, um fio claro na aresta de cima e um escuro embaixo. <b>Lê como coisa estampada no material</b> em vez de desenhada por cima dele. É o substituto do chip de contorno, que é o desenho mais genérico que existe.</p>
+          <p class="obj__code">box-shadow: inset 0 1px 0 #ffffff26, 0 1px 0 #00000045</p>
+        </article>
+
+        <article class="obj rev">
+          <div class="obj__top"><span class="obj__n">08</span><h3 class="obj__t">O filete duplo do cabeçalho</h3></div>
+          <div class="obj__demo">
+            <div class="d-hd"><div><b>Rafael Razeira</b><span>Estúdio</span></div></div>
+          </div>
+          <p class="obj__p">Um traço de tinta cheia com um segundo mais claro logo abaixo. É a <b>régua de tipografia impressa</b>, e é ela que separa este cabeçalho de um hairline de interface. Vai por box-shadow e não por border-bottom porque são duas linhas com um vão entre elas, coisa que uma borda só não faz.</p>
+          <p class="obj__code">box-shadow: 0 1.5px 0 var(--ink), 0 4px 0 var(--linha)</p>
+        </article>
+
+        <article class="obj rev">
+          <div class="obj__top"><span class="obj__n">09</span><h3 class="obj__t">O campo de linha</h3></div>
+          <div class="obj__demo">
+            <div class="d-campo">
+              <label for="demo-campo">Seu nome</label>
+              <input id="demo-campo" type="text" placeholder="Rafael Razeira" autocomplete="off">
+            </div>
+          </div>
+          <p class="obj__p">Dentro de um objeto que já tem borda, campo com caixa vira <b>moldura dentro de moldura</b>. Então o input é fundo transparente com filete só embaixo, e no foco ele engrossa para 2,5px e vira rosa, com o padding compensando para o texto não pular. O rótulo fica acima, em mono. <b>Placeholder é exemplo, nunca rótulo.</b></p>
+          <p class="obj__code">border-bottom: 1.5px solid var(--linha) → :focus 2.5px var(--rosa)</p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ §5 BOTÕES ============ -->
+  <section class="sec sec--tight" id="botoes">
+    <div class="wrap">
+      <div class="sec__head rev">
+        <span class="sec__n mono">§ 05 · Os botões</span>
+        <h2 class="sec__t">Dois trabalhos, <em class="batida">e só</em></h2>
+      </div>
+
+      <div class="btabs rev">
+        <div class="btab">
+          <span class="btab__job">Leva</span>
+          <p class="btab__d">Até algum lugar. Grafite ou contorno de tinta. <code>.nav-cta · .cue a · .about__cta</code></p>
+          <div style="display:flex;gap:14px;flex-wrap:wrap"><button class="btn btn--leva" type="button">Ver serviços</button><button class="btn btn--linha" type="button">Portfólio</button></div>
+        </div>
+        <div class="btab">
+          <span class="btab__job">Faz</span>
+          <p class="btab__d">A única coisa que a página pede. Rosa cheio, texto branco, sombra em rosa-dark, porque rosa com aresta verde lê como duas cores brigando. <code>.hero-form__btn · .btn-submit · .pill</code></p>
+          <div><button class="btn btn--faz" type="button">Quero minha página</button></div>
+        </div>
+        <div class="btab" style="background:var(--ink);padding-inline:20px;border-bottom-color:var(--linha-dark)">
+          <span class="btab__job" style="color:var(--paper)">Leva, no escuro</span>
+          <p class="btab__d" style="color:#C9CFD1">Sobre grafite o botão de navegação <b style="color:var(--paper)">inverte para papel</b>: grafite sobre grafite some. <code style="color:var(--green-live)">.founders__btn</code></p>
+          <div><button class="btn btn--papel" type="button">Entrar na lista</button></div>
+        </div>
+      </div>
+
+      <div class="card rev" style="box-shadow:8px 8px 0 var(--ink)">
+        <h3 class="card__h">A guarda de toque, obrigatória</h3>
+        <p>Todo <code style="font-family:var(--font-mono);font-size:13px;color:var(--green-dark)">:hover</code> da casa vive dentro de <code style="font-family:var(--font-mono);font-size:13px;color:var(--green-dark)">@media (hover:hover) and (pointer:fine)</code>. O tráfego é quase todo celular, e no toque o navegador entrega o hover junto com o toque e só o solta quando a pessoa toca em outro lugar: o botão fica preso na cor de hover depois de tocado, o que lê como travado bem no momento em que ele precisa responder.</p>
+        <p><b style="color:var(--ink)">O :active não leva guarda.</b> Ele é o afundar de 4px, e é justamente no celular que ele importa.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ §6 A PÁGINA ============ -->
+  <section class="sec" id="pagina">
+    <div class="wrap">
+      <div class="sec__head rev">
+        <span class="sec__n mono">§ 06 · A página, dobra a dobra</span>
+        <h2 class="sec__t">Dezessete dobras <em class="batida">na ordem do array</em></h2>
+        <p class="sec__sub">A ordem vive em <code style="font-family:var(--font-mono);font-size:13px;color:var(--green-dark)">js/main.js</code>, no array page. Para reordenar a página, muda o array. Cada seção é um módulo em js/sections com o CSS irmão em css/sections. Aqui o número é informação: é o endereço da dobra.</p>
+      </div>
+
+      <div class="dobras">
+
+        <article class="dobra rev">
+          <div class="dobra__trilho"><span class="dobra__n">01</span><span class="dobra__tag mono">header · 64px</span></div>
+          <div>
+            <h3 class="dobra__t">Cabeçalho</h3>
+            <p class="dobra__p">Fixo, papel a 90% com desfoque atrás, filete duplo embaixo. Logo em Archivo condensada 62, a mesma largura do lockup, com ESTÚDIO em mono esmeralda, que é o único ponto de cor de marca acima da dobra que não é o grifo da manchete.</p>
+            <p class="dobra__p"><b>Nada de carimbo, selo, fita ou clipe aqui em cima.</b> Esses gestos moram na ficha do hero, e repetir qualquer um no cabeçalho transformaria a assinatura da página em padrão de fundo.</p>
+          </div>
+        </article>
+
+        <article class="dobra rev">
+          <div class="dobra__trilho"><span class="dobra__n">02</span><span class="dobra__tag mono">hero</span></div>
+          <div>
+            <h3 class="dobra__t">Hero</h3>
+            <p class="dobra__p">O ponto onde cartaz e ficha se encontram, e a única dobra que a maioria vê inteira.</p>
+            <p class="dobra__p"><b>Eyebrow:</b> a tagline virou lista, não frase. Eram três categorias disfarçadas de frase com pontos no meio. Quem separa agora é o traço, que é desenho, não pontuação.</p>
+            <p class="dobra__p"><b>Manchete:</b> lockup de cartaz, cada linha medida e escalada pelo herofit para preencher a coluna. A última linha mora numa faixa grafite que sangra até a borda esquerda da tela. A escolha não é estética: as duas de cima <b>descrevem</b>, a de baixo <b>promete</b>, e dar material diferente para a promessa é separar o que a página garante do que ela descreve. A conta do sangramento fica em --sangria, porque no desktop a manchete é a coluna 1 de uma grade, não um bloco centrado, e o truque de margem negativa de 50vw não serve. Dentro da faixa o tipo inverte para papel e o grifo sobe para green-live.</p>
+            <p class="dobra__p"><b>A ficha:</b> fundo paper-hi, e não papel puro, porque ela precisa se levantar do chão e um branco de verdade brigaria com o grafite da manchete. É o único objeto com sombra dura acima da dobra, e é isso que a destaca sem gastar mais cor: nesta página, sombra dura significa que aquilo é uma coisa e dá para apertar. O envio troca o miolo pela confirmação <b>no próprio cartão</b>: a pessoa não é jogada para outro lugar depois de fazer o que a página pediu.</p>
+            <p class="dobra__p"><b>Cue:</b> o convite para rolar é um objeto com quina reta, filete e sombra que colapsa no clique, encostado na margem esquerda, no eixo em que a página se lê. Ele é um link, então merece dizer isso.</p>
+          </div>
+        </article>
+
+        <article class="dobra rev">
+          <div class="dobra__trilho"><span class="dobra__n">03</span><span class="dobra__tag mono">marquee</span></div>
+          <div><h3 class="dobra__t">Tira rosa, primeira aparição</h3><p class="dobra__p">Fecha o hero e anuncia mudança de assunto.</p></div>
+        </article>
+
+        <article class="dobra rev">
+          <div class="dobra__trilho"><span class="dobra__n">04</span><span class="dobra__tag mono">about</span></div>
+          <div>
+            <h3 class="dobra__t">Quem somos</h3>
+            <p class="dobra__p">Rótulo à esquerda, texto editorial grande à direita. O primeiro parágrafo é a tese, em corpo de manchete; do segundo em diante o corpo cai para 0,72em, que é <b>o que impede a seção de ter duas manchetes</b>. O CTA é link com filete esmeralda de 2px embaixo, e no hover ele abre o vão em vez de mudar de cor.</p>
+          </div>
+        </article>
+
+        <article class="dobra rev">
+          <div class="dobra__trilho"><span class="dobra__n">05</span><span class="dobra__tag mono">brandband</span></div>
+          <div>
+            <h3 class="dobra__t">Assinatura</h3>
+            <p class="dobra__p">O nome do estúdio rolando devagar em Archivo condensada peso 800. <b>Peso 800 e não 900:</b> aqui o nome é assinatura, e assinatura não precisa do peso máximo. Em Inter 400, como já foi, ele lia como texto ampliado, não como marca.</p>
+          </div>
+        </article>
+
+        <article class="dobra rev">
+          <div class="dobra__trilho"><span class="dobra__n">06</span><span class="dobra__tag mono">process</span></div>
+          <div>
+            <h3 class="dobra__t">Como funciona</h3>
+            <p class="dobra__p">A única seção da página em que a ordem é informação de verdade, e por isso <b>a única que fica com números</b>. A coluna da esquerda é o trilho do tempo: o número em corpo de manchete condensada e, embaixo dele, o prazo daquele passo em mono. O prazo é opcional e só existe onde o dado é real: ele não inventa promessa, ele desenterra a que já estava no meio do parágrafo, que é justamente o que o cliente está tentando descobrir enquanto lê.</p>
+          </div>
+        </article>
+
+        <article class="dobra rev">
+          <div class="dobra__trilho"><span class="dobra__n">07</span><span class="dobra__tag mono">included</span></div>
+          <div>
+            <h3 class="dobra__t">O que está incluso</h3>
+            <p class="dobra__p">O romaneio: as entregas que saem do estúdio com todo projeto. Duas colunas, régua de conferência, item à esquerda, ✓ na margem direita.</p>
+            <p class="dobra__p"><b>Sem numeração, e isso é uma decisão.</b> Numerar promete sequência, e esta lista não tem nenhuma. Numerar o que não é sequência é o enfeite mais fácil de confundir com estrutura, e o Como funciona logo acima tem sequência de verdade: dois blocos numerados seguidos apagariam essa diferença.</p>
+          </div>
+        </article>
+
+        <article class="dobra rev">
+          <div class="dobra__trilho"><span class="dobra__n">08</span><span class="dobra__tag mono">cases</span></div>
+          <div>
+            <h3 class="dobra__t">Trabalhos</h3>
+            <p class="dobra__p">Cada projeto num aparelho de verdade: moldura em gradiente de titânio com brilho interno de 1,5px, barra de status, e a captura da página rolando dentro. Sombra dupla de 14 por 18 com fio de tinta, a mesma do aparelho da vitrine.</p>
+            <p class="dobra__p">O canto arredondado do aparelho é a <b>única exceção à regra de quina reta</b> da casa, e ela se justifica porque é material autêntico: telefone tem canto redondo. Imagens em AVIF e WebP com JPEG de reserva, porque cada captura de página inteira tem uns 760KB em JPEG.</p>
+          </div>
+        </article>
+
+        <article class="dobra rev">
+          <div class="dobra__trilho"><span class="dobra__n">09</span><span class="dobra__tag mono">audience</span></div>
+          <div>
+            <h3 class="dobra__t">Para quem é</h3>
+            <p class="dobra__p">Três tipos de cliente, com filete de tinta abrindo cada bloco. Sem numeração pelo mesmo motivo do romaneio: <b>são três tipos, não três passos.</b> Na /landing-page a mesma seção liga o marcador e vira VAZAMENTO 01 em rosa, e ali a numeração é honesta porque a própria intro anuncia os três vazamentos mais caros.</p>
+          </div>
+        </article>
+
+        <article class="dobra rev">
+          <div class="dobra__trilho"><span class="dobra__n">10</span><span class="dobra__tag dobra__tag--escura mono">values · escura</span></div>
+          <div>
+            <h3 class="dobra__t">Valores</h3>
+            <p class="dobra__p">Palavras gigantes em Archivo separadas por filete, em branco a 42% no repouso, acendendo em green-live no hover. <b>O estado parado precisa se sustentar sozinho:</b> no celular não existe hover, e o acender é prêmio do mouse, não a única forma de a seção existir.</p>
+          </div>
+        </article>
+
+        <article class="dobra rev">
+          <div class="dobra__trilho"><span class="dobra__n">11</span><span class="dobra__tag mono">founder</span></div>
+          <div>
+            <h3 class="dobra__t">Fundador</h3>
+            <p class="dobra__p">Retrato com o nome estourado por cima e letreiros gigantes ao fundo. É a peça mais editorial da página, e a que mais precisa de disciplina para não virar textura de site de agência. Ver a pendência 6.</p>
+          </div>
+        </article>
+
+        <article class="dobra rev">
+          <div class="dobra__trilho"><span class="dobra__n">12</span><span class="dobra__tag dobra__tag--escura mono">testimonials · escura</span></div>
+          <div><h3 class="dobra__t">Depoimentos</h3><p class="dobra__p">Dois vídeos. Liga e desliga pelo enabled no config, e hoje está desligada. Ver a pendência 2.</p></div>
+        </article>
+
+        <article class="dobra rev">
+          <div class="dobra__trilho"><span class="dobra__n">13</span><span class="dobra__tag dobra__tag--escura mono">founders · escura</span></div>
+          <div>
+            <h3 class="dobra__t">Projetos fundadores</h3>
+            <p class="dobra__p">Um cartão central: filete esmeralda de 1,5px, sombra dura esmeralda de 8 por 8, ✓ nos benefícios e botão de papel. <b>Tom de acesso antecipado, nunca de promoção.</b></p>
+          </div>
+        </article>
+
+        <article class="dobra rev">
+          <div class="dobra__trilho"><span class="dobra__n">14</span><span class="dobra__tag dobra__tag--escura mono">contact · escura</span></div>
+          <div>
+            <h3 class="dobra__t">Contato</h3>
+            <p class="dobra__p">O briefing completo. É o caminho de quem quer contar o projeto inteiro; o cartão do hero é o de quem decidiu na primeira tela e não vai rolar dez mil pixels. <b>Os dois gravam na mesma tabela e disparam o mesmo Lead.</b></p>
+            <p class="dobra__p">Esta é a seção que ainda não fala a língua da casa. Ver a pendência 1, que é a primeira da fila.</p>
+          </div>
+        </article>
+
+        <article class="dobra rev">
+          <div class="dobra__trilho"><span class="dobra__n">15</span><span class="dobra__tag mono">marquee</span></div>
+          <div><h3 class="dobra__t">Tira rosa, segunda aparição</h3><p class="dobra__p">Fecha o parêntese aberto depois do hero.</p></div>
+        </article>
+
+        <article class="dobra rev">
+          <div class="dobra__trilho"><span class="dobra__n">16</span><span class="dobra__tag dobra__tag--escura mono">footer · escura</span></div>
+          <div><h3 class="dobra__t">Rodapé</h3><p class="dobra__p">Redes em mono no topo, praça, barra legal, e o nome da marca gigante cortado na base, rolando.</p></div>
+        </article>
+
+        <article class="dobra rev">
+          <div class="dobra__trilho"><span class="dobra__n">17</span><span class="dobra__tag mono">pill · fixo</span></div>
+          <div>
+            <h3 class="dobra__t">Pill flutuante</h3>
+            <p class="dobra__p">O CTA fixo. Rosa cheio, sombra dura de tinta, carimbo que afunda. No celular ocupa 64vw centrado na base; no desktop ancora no canto inferior direito. <b>Some ao chegar no formulário.</b> O tracking o reporta como sticky_mobile abaixo de 1024px.</p>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ §7 + §8 ============ -->
+  <section class="sec" id="movimento">
+    <div class="wrap gridcols">
+      <div class="rev">
+        <div class="sec__head" style="margin-bottom:32px">
+          <span class="sec__n mono">§ 07 · Movimento</span>
+          <h2 class="sec__t" style="font-size:clamp(1.7rem,5vw,2.6rem)">Nenhuma animação define o repouso</h2>
+        </div>
+        <ul class="lista">
+          <li><b>Entrada</b><span>reveal.js sobe os blocos conforme entram na tela. Nada além disso.</span></li>
+          <li><b>Regra do estado final</b><span>O estado visível é sempre o CSS base, e as keyframes só descrevem de onde a peça vem. Isso não é preciosismo: o bloco de reduced-motion mata animation com !important, e se o estado visível dependesse da animação terminar, quem tem reduzir movimento ligado veria a peça invisível ou torta para sempre.</span></li>
+          <li><b>Orçamento acima da dobra</b><span>Se a ficha do hero ganhar entrada orquestrada, ela fecha em menos de 0,9s no total. A ficha é o formulário: alvo de toque que fica se mexendo por um segundo faz quem chegou decidido errar o campo.</span></li>
+          <li><b>Laços contínuos</b><span>As duas tiras e a assinatura. Nenhum outro.</span></li>
+          <li><b>Reduzir movimento</b><span>Laços param, entradas somem, a página continua inteira e clicável.</span></li>
+        </ul>
+      </div>
+      <div class="rev">
+        <div class="sec__head" style="margin-bottom:32px">
+          <span class="sec__n mono">§ 08 · Acessibilidade</span>
+          <h2 class="sec__t" style="font-size:clamp(1.7rem,5vw,2.6rem)">A regra dos três esmeraldas existe por causa disto</h2>
+        </div>
+        <ul class="lista">
+          <li><b>Branco sobre rosa · 4,57:1</b><span>O rosa não passa com texto grafite, que dá 4,0:1. Então o botão é branco sobre rosa, nunca o contrário.</span></li>
+          <li><b>Foco visível</b><span>focus-visible com contorno esmeralda de 2px e 3px de folga, na página inteira.</span></li>
+          <li><b>Rótulo acima do campo</b><span>Sempre visível. Placeholder é exemplo, nunca rótulo.</span></li>
+          <li><b>Input em 16px</b><span>Abaixo disso o iOS dá zoom sozinho ao focar.</span></li>
+          <li><b>Peça decorativa</b><span>O que passa por cima de outra leva pointer-events none: selo, tiras, letreiros de fundo.</span></li>
+          <li><b>Alvo de toque</b><span>Mínimo de 44px de altura nos botões e links de ação.</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ §9 NÃO ENTRA ============ -->
+  <section class="sec dark" id="nao-entra">
+    <div class="wrap">
+      <div class="sec__head rev">
+        <span class="sec__n mono">§ 09 · O que não entra</span>
+        <h2 class="sec__t">Regras negativas, e elas valem tanto quanto as positivas</h2>
+      </div>
+
+      <div class="nao">
+        <div class="nao__i rev">
+          <span class="nao__n">01</span>
+          <div style="flex:1">
+            <h3 class="nao__t">Vidro</h3>
+            <p class="nao__p">Nada de backdrop-filter com borda translúcida de 1px e sombra desfocada. Isso é interface de tela; a casa é papel e tinta.</p>
+            <div class="par">
+              <div class="par__c"><span class="par__k par__k--nao">Não</span><div class="amostra-vidro"></div></div>
+              <div class="par__c"><span class="par__k par__k--sim">Sim</span><div class="amostra-ficha"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="nao__i rev">
+          <span class="nao__n">02</span>
+          <div style="flex:1">
+            <h3 class="nao__t">Sombra desfocada</h3>
+            <p class="nao__p">Sombra aqui é sólida e deslocada. Se precisar de profundidade, é sombra dura.</p>
+            <div class="par">
+              <div class="par__c"><span class="par__k par__k--nao">Não</span><div class="amostra-borrada"></div></div>
+              <div class="par__c"><span class="par__k par__k--sim">Sim</span><div class="amostra-dura"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="nao__i rev">
+          <span class="nao__n">03</span>
+          <div style="flex:1">
+            <h3 class="nao__t">Chip de contorno</h3>
+            <p class="nao__p">Para fato dentro do escuro, usa a plaquinha gravada. O chip é o desenho mais genérico que existe, e o oposto do recado numa seção que argumenta que tem uma pessoa aqui.</p>
+            <div class="par">
+              <div class="par__c"><span class="par__k par__k--nao">Não</span><span class="amostra-chip">Onze anos</span></div>
+              <div class="par__c"><span class="par__k par__k--sim">Sim</span><span class="amostra-plaq">Onze anos</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="nao__i rev">
+          <span class="nao__n">04</span>
+          <div style="flex:1">
+            <h3 class="nao__t">Canto arredondado</h3>
+            <p class="nao__p">Quina reta é a regra. Exceção única: o aparelho dos cases, porque telefone tem canto redondo de verdade, e os 3px de uma fita de rótulo.</p>
+            <div class="par">
+              <div class="par__c"><span class="par__k par__k--nao">Não</span><div style="width:100%;height:44px;background:var(--paper-2);border-radius:14px"></div></div>
+              <div class="par__c"><span class="par__k par__k--sim">Sim</span><div style="width:100%;height:44px;background:var(--paper-2);border:1.5px solid var(--paper)"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="nao__i rev">
+          <span class="nao__n">05</span>
+          <div style="flex:1">
+            <h3 class="nao__t">Borrão de gradiente colorido</h3>
+            <p class="nao__p">Atrás de seção escura. Já saiu uma vez, no contact__glow, e não volta.</p>
+          </div>
+        </div>
+
+        <div class="nao__i rev">
+          <span class="nao__n">06</span>
+          <div style="flex:1">
+            <h3 class="nao__t">Linhas de grid decorativas</h3>
+            <p class="nao__p">Saíram em 14/08: cinco fios fixos que não marcavam coluna nenhuma, competindo com os filetes que carregam informação de verdade.</p>
+          </div>
+        </div>
+
+        <div class="nao__i rev">
+          <span class="nao__n">07</span>
+          <div style="flex:1">
+            <h3 class="nao__t">Rosa novo para resolver destaque</h3>
+            <p class="nao__p">Ele já está em cinco lugares. Hierarquia nova se resolve com escala e posição.</p>
+          </div>
+        </div>
+
+        <div class="nao__i rev">
+          <span class="nao__n">08</span>
+          <div style="flex:1">
+            <h3 class="nao__t">Glifo de fábrica</h3>
+            <p class="nao__p">Nada de seta de play, xis ou emoji em elemento de destaque. Se a peça merece existir, ela merece um SVG desenhado.</p>
+          </div>
+        </div>
+
+        <div class="nao__i rev">
+          <span class="nao__n">09</span>
+          <div style="flex:1">
+            <h3 class="nao__t">Numeração em lista que não é sequência</h3>
+            <p class="nao__p">Numerar promete ordem. Se a ordem não carrega informação, o número é enfeite disfarçado de estrutura.</p>
+          </div>
+        </div>
+
+        <div class="nao__i rev">
+          <span class="nao__n">10</span>
+          <div style="flex:1">
+            <h3 class="nao__t">Travessão na copy</h3>
+            <p class="nao__p">Nada de travessão em texto visível: reescreve com dois-pontos e vírgulas. Vale para toda a casa.</p>
+          </div>
+        </div>
+
+        <div class="nao__i rev">
+          <span class="nao__n">11</span>
+          <div style="flex:1">
+            <h3 class="nao__t">Uma terceira largura de Archivo</h3>
+            <p class="nao__p">São duas: 62 e 100. O 78 que ainda aparece em manchete de seção e assinatura é herança e deve convergir. Ver a pendência 7.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ §10 PENDÊNCIAS ============ -->
+  <section class="sec" id="pendencias">
+    <div class="wrap">
+      <div class="sec__head rev">
+        <span class="sec__n mono">§ 10 · Pendências</span>
+        <h2 class="sec__t">Em ordem, e a ordem é <em class="batida">a fila</em></h2>
+        <p class="sec__sub">Aqui o número é prioridade de verdade, então ele fica. A primeira é a mais cara porque é a seção que converte.</p>
+      </div>
+
+      <div class="pend">
+        <article class="pitem rev">
+          <span class="pitem__n">01</span>
+          <div>
+            <h3 class="pitem__t">O briefing do contato ainda é vidro</h3>
+            <p class="pitem__p">É a maior dívida e a mais cara: é a seção que converte. Hoje ela tem blur de 24px no cartão, bordas de 1px em branco translúcido, sombra desfocada de 60px e campos com fundo translúcido. <b>Tudo o que a seção 9 proíbe, num lugar só.</b></p>
+            <p class="pitem__p">O molde já existe, o form-card claro: papel, filete de 1,5px, sombra dura esmeralda de 8 por 8, campo de linha, rótulo em mono esmeralda, foco em rosa. Ele está escopado só para o formulário de um passo, que é o da /landing-page. Faltam quatro peças para o briefing de dois passos caber nele:</p>
+            <ul class="falta">
+              <li>O dropdown customizado</li>
+              <li>O radio em pílula</li>
+              <li>O textarea</li>
+              <li>O stepper de dois passos</li>
+            </ul>
+          </div>
+          <div class="pitem__st"><span class="st st--fila">Primeira da fila</span></div>
+        </article>
+
+        <article class="pitem rev">
+          <span class="pitem__n">02</span>
+          <div>
+            <h3 class="pitem__t">Depoimentos</h3>
+            <p class="pitem__p">A seta de play é glifo de fábrica e o cartão do vídeo não tem material nenhum: é um retângulo com overflow escondido. A seção inteira entra na gramática, com ficha de filete, sombra dura, nome em Archivo e função em mono, <b>ou continua desligada até merecer</b>.</p>
+          </div>
+          <div class="pitem__st"><span class="st st--espera">Desligada</span></div>
+        </article>
+
+        <article class="pitem rev">
+          <span class="pitem__n">03</span>
+          <div>
+            <h3 class="pitem__t">Elementos mortos no HTML</h3>
+            <p class="pitem__p">As linhas de grid e o glow do contato, os dois com display none. Ficaram para não quebrar nada que os consultasse. <b>Ninguém consulta. Saem.</b></p>
+          </div>
+          <div class="pitem__st"><span class="st">Remover</span></div>
+        </article>
+
+        <article class="pitem rev">
+          <span class="pitem__n">04</span>
+          <div>
+            <h3 class="pitem__t">Os apelidos de token</h3>
+            <p class="pitem__p">emerald, off-white, black e line ainda aparecem nos arquivos de seção. Trocar todos de uma vez transformaria uma mudança de cor num diff ilegível, então <b>a troca vai acontecendo por arquivo</b>, quando ele for tocado por outro motivo.</p>
+          </div>
+          <div class="pitem__st"><span class="st st--espera">Por arquivo</span></div>
+        </article>
+
+        <article class="pitem rev">
+          <span class="pitem__n">05</span>
+          <div>
+            <h3 class="pitem__t">O loader</h3>
+            <p class="pitem__p">A vitrine tirou o dela em 05/08: piso de uns 2s em conexão boa e 3,5s no 4G, contra uma sessão mediana de 8,6s. A /estudio mantém o dela, com a justificativa de que aqui o visitante já conhece a marca ou chegou por vontade própria. A justificativa é razoável e o custo é real: <b>vale medir a sessão mediana desta página antes de decidir de novo, e não decidir por analogia com a vitrine.</b></p>
+          </div>
+          <div class="pitem__st"><span class="st st--medir">Medir primeiro</span></div>
+        </article>
+
+        <article class="pitem rev">
+          <span class="pitem__n">06</span>
+          <div>
+            <h3 class="pitem__t">Fundador</h3>
+            <p class="pitem__p">Os letreiros gigantes ao fundo são a peça que mais se parece com textura de site de agência, que é exatamente o que as linhas de grid eram quando saíram. <b>Ou eles ganham função, dizer algo que a seção precisa dizer, ou viram um objeto do léxico.</b></p>
+          </div>
+          <div class="pitem__st"><span class="st">Decidir</span></div>
+        </article>
+
+        <article class="pitem rev">
+          <span class="pitem__n">07</span>
+          <div>
+            <h3 class="pitem__t">A terceira largura</h3>
+            <p class="pitem__p">Manchete de seção e assinatura ainda usam wdth 78. Convergir para o par 62 e 100 fecha a regra da seção 3.</p>
+          </div>
+          <div class="pitem__st"><span class="st">Convergir</span></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ §11 MAPA ============ -->
+  <section class="sec dark" id="mapa">
+    <div class="wrap">
+      <div class="sec__head rev">
+        <span class="sec__n mono">§ 11 · Mapa de arquivos</span>
+        <h2 class="sec__t">A página é estática, montada por JS no cliente</h2>
+        <p class="sec__sub">Não é Next. A rota Next só faz o redirect da barra. Referência viva da gramática: vitrine.module.css, que carrega o registro de cada decisão e de cada tentativa que caiu.</p>
+      </div>
+
+      <div class="mapa rev">
+<pre><i>public/estudio/</i>
+  index.html                    <b>fontes, ordem dos CSS, loader, ponto de entrada</b>
+  css/base.css                  <b>TOKENS, reset, botões globais, pill, animações</b>
+  css/sections/&lt;nome&gt;.css       <b>um arquivo por seção</b>
+  js/config.js                  <b>TODA a copy, cases, depoimentos, WhatsApp</b>
+  js/main.js                    <b>a ORDEM das seções (array page)</b>
+  js/sections/&lt;nome&gt;.js         <b>o HTML de cada seção</b>
+  js/lib/herofit.js             <b>mede e escala cada linha do lockup</b>
+  js/lib/reveal.js              <b>entrada dos blocos</b>
+  js/lib/hero-form.js           <b>captura do cartão do hero</b>
+  js/lib/form.js                <b>briefing completo</b>
+  js/lib/tracking.js            <b>Meta e Mixpanel</b></pre>
+      </div>
+
+      <div class="rotas rev">
+        <div><span>Mudança de cor ou de tipo</span><b>base.css</b></div>
+        <div><span>Mudança de texto</span><b>config.js</b></div>
+        <div><span>Mudança de ordem</span><b>main.js</b></div>
+        <div><span>Mudança de desenho de uma seção</span><b>o CSS irmão dela</b></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ §12 CONFERIR ============ -->
+  <section class="sec" id="conferir">
+    <div class="wrap">
+      <div class="sec__head rev">
+        <span class="sec__n mono">§ 12 · Como conferir uma mudança</span>
+        <h2 class="sec__t">Cinco passos, <em class="batida">na ordem</em></h2>
+      </div>
+      <ol class="conf rev">
+        <li><em>01</em><span><code>npm run dev</code> e abrir /estudio. <b>Um dev server por vez:</b> dois juntos quebram o build.</span></li>
+        <li><em>02</em><span>Conferir na largura de <b>390px antes</b> da de 1440px. O tráfego é celular.</span></li>
+        <li><em>03</em><span>Tocar em cada botão no celular de verdade e ver se algum fica preso na cor de hover. Se ficar, <b>faltou a guarda</b>.</span></li>
+        <li><em>04</em><span>Ligar reduzir movimento e recarregar: <b>nada pode sumir nem ficar torto</b>.</span></li>
+        <li><em>05</em><span><code>npm run build</code> e <b>ler o exit code</b>, não o texto do pipe.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ TIRA 2 ============ -->
+  <div class="tira" aria-hidden="true">
+    <div class="tira__t">
+      <span>Cartaz convence · Ficha coleta · Papel e tinta · Cartaz convence · Ficha coleta · Papel e tinta · </span>
+      <span>Cartaz convence · Ficha coleta · Papel e tinta · Cartaz convence · Ficha coleta · Papel e tinta · </span>
+    </div>
+  </div>
+</main>
+
+<footer class="ft">
+  <div class="wrap">
+    <div class="ft__top">
+      <a href="#topo">Voltar ao topo</a>
+      <span class="mono">Maringá · PR</span>
+      <span class="mono">Régua do sistema · 21.08.2026</span>
+    </div>
+    <div class="ft__legal">
+      <span>Rafael Razeira Estúdio</span>
+      <span>Papel e tinta, um sistema só</span>
+    </div>
+  </div>
+  <p class="ft__nome">Rafael Razeira</p>
+</footer>
+
+<a class="pill" href="#conferir" id="pill">Ir para a conferência</a>
+
+<script>
+(function(){
+  var reduz = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---- herofit: mede cada linha e escala para preencher a coluna ---- */
+  var lockup = document.getElementById("lockup");
+  function fit(){
+    if(!lockup) return;
+    var largura = lockup.clientWidth;
+    if(!largura) return;
+    var teto = Math.min(window.innerHeight * 0.16, 176); /* 16vh e 11rem, a regra da secao 3 */
+    var linhas = lockup.querySelectorAll("[data-fit]");
+    for(var i=0;i<linhas.length;i++){
+      var linha = linhas[i];
+      var span = linha.querySelector("span");
+      linha.style.fontSize = "100px";
+      var w = span.getBoundingClientRect().width;
+      if(!w) continue;
+      linha.style.fontSize = Math.min(100 * (largura / w), teto) + "px";
+    }
+  }
+  fit();
+  if(document.fonts && document.fonts.ready){ document.fonts.ready.then(fit); }
+  window.addEventListener("resize", fit);
+  window.addEventListener("orientationchange", fit);
+
+  /* ---- especime: duas larguras, e nenhuma outra ---- */
+  var especime = document.getElementById("especime");
+  var botoes = document.querySelectorAll(".wbtn");
+  for(var b=0;b<botoes.length;b++){
+    botoes[b].addEventListener("click", function(){
+      for(var k=0;k<botoes.length;k++){ botoes[k].setAttribute("aria-pressed","false"); }
+      this.setAttribute("aria-pressed","true");
+      especime.setAttribute("data-w", this.getAttribute("data-w"));
+    });
+  }
+
+  /* ---- entrada: o repouso é o CSS base ---- */
+  var alvos = document.querySelectorAll(".rev");
+  if(reduz || !("IntersectionObserver" in window)){
+    for(var r=0;r<alvos.length;r++){ alvos[r].classList.add("in"); }
+  } else {
+    var obs = new IntersectionObserver(function(entradas){
+      entradas.forEach(function(e){
+        if(e.isIntersecting){ e.target.classList.add("in"); obs.unobserve(e.target); }
+      });
+    }, {rootMargin:"0px 0px -8% 0px", threshold:0.08});
+    for(var o=0;o<alvos.length;o++){ obs.observe(alvos[o]); }
+  }
+
+  /* ---- pill: aparece depois do hero, some na conferência ---- */
+  var pill = document.getElementById("pill");
+  var conferir = document.getElementById("conferir");
+  function pillar(){
+    var passouHero = window.scrollY > window.innerHeight * 0.85;
+    var chegou = conferir.getBoundingClientRect().top < window.innerHeight * 0.85;
+    if(passouHero && !chegou){ pill.classList.add("on"); } else { pill.classList.remove("on"); }
+  }
+  pillar();
+  window.addEventListener("scroll", pillar, {passive:true});
+  window.addEventListener("resize", pillar);
+})();
+</script>
