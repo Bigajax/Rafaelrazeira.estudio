@@ -88,8 +88,7 @@ export async function painelHoje() {
 
      Cobrar a ArraZou é uma conversa com a ArraZou, então a parcela não vira
      um segundo tipo de item de fila: ela viaja NO LEAD, e `Hoje.tsx`
-     continua emendando `[...atrasados, ...paraHoje, ...semPasso]` sem saber
-     que alguma coisa mudou.
+     continua emendando os três grupos sem saber que alguma coisa mudou.
 
      A consulta é separada por um motivo que não é preguiça: um cliente que
      deve está em `ganho`, e `ganho` está FORA de `ESTAGIOS_ATIVOS`. A
@@ -184,8 +183,8 @@ export async function painelHoje() {
      Dentro de cada grupo, quem a pesquisa marcou como quente vem antes:
      quente é prospect ideal identificado, e prospect ideal esfriando na
      posição 14 da fila é dinheiro parado. A ordem dos GRUPOS não muda
-     (atrasado continua sendo dívida antes de tudo): o veredito só
-     reordena dentro de cada um, e o sort estável preserva o critério
+     aqui (quem emenda é `Hoje.tsx`, novos primeiro desde 24/08): o
+     veredito só reordena dentro de cada um, e o sort estável preserva o critério
      antigo (mais atrasado, mais parado) como desempate entre iguais.
      Sem dossiê fica entre morno e frio: não sabemos, e o não-sei anda
      atrás de quem já foi conferido. */

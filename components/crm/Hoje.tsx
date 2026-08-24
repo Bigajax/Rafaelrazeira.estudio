@@ -14,15 +14,21 @@
    onde começar, eles PEDEM que alguém escolha, e escolher era exatamente o
    trabalho que a ordem de prioridade já tinha feito.
 
-   ---------- a ordem, que não mudou ----------
+   ---------- a ordem (invertida em 24/08) ----------
    A fila é uma só, e a emenda dos três grupos é a ordem de prioridade:
 
-   1. ATRASADO   quem já esperou. Dívida acumulando.
-   2. HOJE       quem foi marcado para agora.
-   3. SEM PASSO  quem não está em fila nenhuma e vai sumir se ninguém
-                 decidir. É o grupo que impede a regra 1 de ter buraco: um
-                 lead criado direto (ou vindo do site) nunca é movido, então
-                 nenhum modal jamais o pegaria. Este grupo é a rede embaixo.
+   1. SEM PASSO  o lead novo, que ninguém tocou ainda. Era o último grupo
+                 e virou o primeiro a pedido do Rafael: com trezentos nomes
+                 do garimpo na fila, abrir o dia pelos atrasados significava
+                 nunca chegar em quem ele importou para ligar. Lead novo
+                 esfria por hora; atrasado já esperou dias e aguenta mais
+                 uma manhã. O grupo continua sendo a rede embaixo do funil:
+                 um lead criado direto (ou vindo do site) nunca é movido,
+                 então nenhum modal jamais o pegaria.
+   2. ATRASADO   quem já esperou. Dívida acumulando, inclusive cobrança de
+                 parcela, que viaja no lead: quem precisa dela antes dos
+                 novos chega pelo quadro, não por esta fila.
+   3. HOJE       quem foi marcado para agora.
 
    Nada de "próximos dias": a tela perde o sentido no instante em que mostra
    o que não é para hoje.
@@ -117,7 +123,7 @@ export function Hoje({ painel, templates }: { painel: Painel; templates: Templat
      sobrou, e ela não aparece em lugar nenhum da tela: é só a ordem em que
      as cartas saem. */
   const filaDia = useMemo(
-    () => [...atrasados, ...paraHoje, ...semPasso],
+    () => [...semPasso, ...atrasados, ...paraHoje],
     [atrasados, paraHoje, semPasso],
   );
 
