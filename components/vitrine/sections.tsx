@@ -403,115 +403,91 @@ function HeroForm() {
       <line x1="31" y1="69.5" x2="69" y2="69.5" stroke="currentColor" strokeWidth="1" />
       <text x="50" y="79.5" fontSize="7.2" letterSpacing=".5" textAnchor="middle">MARINGÁ · PR</text>
     </svg>
-    {/* o preço é o corpo da etiqueta: numa categoria que responde "solicite
-        orçamento", o número fechado na primeira tela é a oferta inteira */}
-    {/* moeda e centavos em <i> para a regra `.tagPrice b i` alcançá-los:
-        eles ficam pequenos e alçados à altura de maiúscula, que é como
-        etiqueta de loja escreve preço. Os centavos são autenticidade, não
-        precisão: R$999 e R$999,00 são o mesmo valor, e só o segundo se
-        parece com uma etiqueta. */}
-    {/* ---------- o rótulo do preço deixou de ser adjetivo ----------
-        Era "PROJETO COMPLETO". "Completo" é adjetivo, e esta página só
-        funciona porque troca adjetivo por fato em todo lugar: 9 projetos
-        que dá para abrir, 7 dias úteis, R$0 de mensalidade. "Completo"
-        era a única palavra da etiqueta que o leitor tinha que aceitar
-        no fio do bigode, e ainda por cima é o que TODO concorrente
-        escreve.
-        Agora o rótulo diz as duas coisas que entram na caixa, e a
-        segunda é a que ninguém entrega junto por esse preço: o painel.
-        Ele é o item 6 dos 9 do `offerItems`, tem seção própria com
-        print real da tela da Xavier's e resposta na FAQ, então não é
-        promessa nova, é a que estava escondida no meio da página.
-        "DE ESTOQUE" e não "DE GESTÃO", que é como o resto da página o
-        chama: na primeira tela quem lê nunca ouviu falar desse painel,
-        e estoque é a única palavra que faz entender para que serve sem
-        explicação. "Gestão" fica para depois, quando a seção do painel
-        mostra que ele também faz preço, foto e disponibilidade.
-        Custo de espaço: ZERO, medido. Os cinco rótulos testados (16 a
-        27 caracteres) dão a mesma altura de linha e o botão de envio no
-        mesmo pixel, porque o rótulo já quebra para baixo do preço de
-        qualquer jeito. O `padding-right: 66px` do `.tagPrice` é o que
-        reserva o canto do carimbo, e ele não mudou.
-        O que se perde: "completo" também dizia "não tem mais nada para
-        pagar". Isso continua dito, e melhor, pelo R$0 DE MENSALIDADE do
-        canhoto e pela lista de 9 itens da oferta. */}
-    {/* ---------- o corpo da etiqueta virou o R$199 (20/08) ----------
-        Decisão do Rafael, e ela tem um risco que precisa ficar escrito:
-        etiqueta que anuncia a entrada e cala o total é isca, e esta
-        página inteira funciona por trocar adjetivo por fato. Por isso o
-        R$999 NÃO some da etiqueta: ele desce uma linha e continua na
-        primeira tela, junto do prazo do saldo. O que muda é a hierarquia,
-        não a informação.
-        `PARA COMEÇAR` não é enfeite nem rótulo: sem ele o 199 grande em
-        cima de `VITRINE + PAINEL DE ESTOQUE` diria que a vitrine custa
-        199, que é mentira. Ele é a atribuição do número e por isso mora na
-        MESMA linha dele, não abaixo. O `<small>` é só o gancho de estilo
-        que ainda não estava tomado: `b`, `i` e `span` já têm regra dentro
-        de `.tagPrice` e um elemento novo herdaria o corpo de 48px. */}
-    <p className={s.tagPrice}><b><i>R$</i>199<i>,00</i></b><small>PARA<br />COMEÇAR</small></p>
-    {/* a conta, e não três frases: ver o bloco A ETIQUETA MOSTRA A CONTA no
-        CSS. Os operadores são `aria-hidden` porque leitor de tela lendo
-        "mais" e "igual" no meio de reais vira sopa; sem eles as duas linhas
-        já se leem como frase inteira. */}
-    <p className={s.tagConta}><b aria-hidden>+</b><span>4 parcelas de</span><strong>R$200,00</strong><i>só depois de você aprovar</i></p>
-    <p className={`${s.tagConta} ${s.tagSoma}`}><b aria-hidden>=</b><span>no total</span><strong>R$999,00</strong><small>VITRINE <em>+</em> PAINEL DE ESTOQUE</small></p>
-    {/* ---------- a entrada voltou para o preço, e só ela (20/08) ----------
-        As CONDIÇÕES inteiras saíram daqui em 13/08 e foram para depois do
-        botão, por uma razão que continua boa: elas custavam DUAS linhas
-        entre a pessoa e o primeiro campo, ~46px de rolagem numa dobra que
-        já estava no limite.
-        O que volta agora é UMA linha, e não é a mesma coisa. Com a entrada
-        em R$199, o número que destrava a decisão deixou de ser o total: a
-        lojista não decide "tenho R$999?", decide "tenho isso hoje?". Deixar
-        essa resposta só no `.tagMicro`, em 10,5px cinza abaixo do botão,
-        é anunciar R$999 na primeira tela e esconder o R$199 na letra
-        miúda. Etiqueta de loja nenhuma faz isso: preço e condição vêm
-        juntos, e é por isso que ela mora ao lado do preço e não no rodapé.
-        O saldo continua sendo leitura de depois, então ele vem em corpo
-        menor e em tinta fraca dentro da própria linha, não em linha nova.
-        Custo líquido de altura: perto de zero. Esta linha soma ~19px aqui
-        em cima e o `.tagMicro` perde a frase das condições, o que devolve
-        uma linha inteira lá embaixo nas telas estreitas.
-        Ela é IRMÃ do `.tagPrice`, não filha: as regras de lá alcançam `b`,
-        `i` e `span` por descendência, e um `b` aninhado sairia com 48px. */}
+    {/* ---------- a etiqueta parou de ser fatura (23/08) ----------
+        O corpo do cartão era a CONTA: R$199 em corpo 48, "+ 4 parcelas de
+        R$200,00", "= no total R$999,00". Três linhas amarradas por sinal
+        de mais e de igual, ou seja, fita de calculadora e não etiqueta de
+        loja. Este cartão é o primeiro objeto da página e o único lugar
+        onde se age nela: quem chegava de um anúncio recebia um carnê de
+        pagamento antes de saber o que compraria, e o olho lia CHECKOUT
+        onde havia formulário de contato.
+
+        A regra de 20/08 continua de pé, e é ela que impede esta troca de
+        virar isca: "etiqueta que anuncia a entrada e cala o total é
+        isca". Por isso NENHUM número saiu da primeira tela. Os três (a
+        entrada, o total e o prazo do saldo) desceram inteiros para o
+        `.tagMicro`, embaixo do botão, onde são condição de quem já
+        decidiu agir, e não pedágio de quem ainda está decidindo.
+
+        O que sobe no lugar é o trabalho que este cartão sempre teve e
+        que nunca esteve escrito nele: ele não vende, ele marca uma
+        conversa.
+
+        Herança do bloco antigo que sobrevive: o `padding-right` de 66px.
+        Ele não é respiro de layout, é o que reserva o canto do selo da
+        agenda e impede a manchete de correr por baixo dele. */}
+    <p className={s.tagLead}>Veja como ficaria<br />a sua vitrine.</p>
+    <p className={s.tagSub}>Deixa nome e WhatsApp. Eu olho sua loja hoje e te mostro como ela ficaria.</p>
     <hr className={s.tagRule} />
-    {/* rótulo visível em vez de placeholder: o placeholder some quando a
-        pessoa digita, e aí o campo fica anônimo justamente na hora de
-        conferir o que foi escrito */}
-    <label>SEU NOME<input name="nome" autoComplete="name" required /></label>
-    {/* a máscara reescreve o valor a cada tecla; digitar limpa o erro para a
-        mensagem não continuar acusando um número que já foi corrigido */}
-    <label>SEU WHATSAPP<input name="whatsapp" type="tel" autoComplete="tel" placeholder="(44) 99999-0000" required maxLength={16}
-           onInput={e => { e.currentTarget.value = mascararWhatsapp(e.currentTarget.value); if (telInvalido) setTelInvalido(false); }} /></label>
-    {telInvalido && <small className={s.tagErro} role="alert">Confere o número: é por ele que eu te chamo. Ex.: (44) 99999-0000.</small>}
+    <div className={s.tagCampos}>
+      {/* rótulo visível E placeholder, que não é contradição: o rótulo é
+          quem sobrevive à digitação (o campo não pode ficar anônimo na
+          hora de conferir), e o placeholder é o exemplo. Este campo era o
+          único dos três sem exemplo, e era o primeiro da fila: o rótulo
+          ficava sozinho sobre um vão vazio enquanto os dois de baixo
+          mostravam texto, e o vão lia como campo quebrado. */}
+      <label><span>NOME</span><input name="nome" autoComplete="name" required placeholder="Maria Silva" /></label>
+      {/* a máscara reescreve o valor a cada tecla; digitar limpa o erro para a
+          mensagem não continuar acusando um número que já foi corrigido */}
+      <label><span>WHATSAPP</span><input name="whatsapp" type="tel" autoComplete="tel" placeholder="(44) 99999-0000" required maxLength={16}
+             onInput={e => { e.currentTarget.value = mascararWhatsapp(e.currentTarget.value); if (telInvalido) setTelInvalido(false); }} /></label>
+      {telInvalido && <small className={s.tagErro} role="alert">Confere o número: é por ele que eu te chamo. Ex.: (44) 99999-0000.</small>}
     {/* ---------- o terceiro campo (13/08) ----------
-        Entrou a pedido do Rafael e OBRIGATÓRIO, ao contrário do mesmo
-        campo no formulário da oferta, que é opcional. Ele custa: a
-        etiqueta vendia "dois campos" e das quatro pessoas que tocaram no
-        formulário em 12-13/08 as três que largaram pararam no primeiro
-        campo, ou seja, a fricção aqui é real e já mordeu.
+        Entrou a pedido do Rafael e OBRIGATÓRIO, e deixou de ser em
+        23/08, igualando-se ao mesmo campo no formulário da oferta. Ele
+        custava: a etiqueta vendia "dois campos" e das quatro pessoas que
+        tocaram no formulário em 12-13/08 as três que largaram pararam no
+        primeiro campo, ou seja, a fricção aqui é real e já mordeu.
 
-        O que paga o custo é a promessa que a página já faz duas vezes
-        ("vou olhar sua loja antes de falar com você"): sem o @ ela não
-        acontece, e a primeira mensagem chega genérica. Por isso o rótulo
-        não pede o dado, ele diz o que vai ser FEITO com o dado.
+        O comentário antigo previa a saída pelo abandono medido
+        (`form_ultimo_campo` = `hero_instagram` no evento Saida). Quem
+        cobrou a conta antes foi o roteiro: o CTA1 dos anúncios promete
+        "dois campos, dez segundos" e a tela do anúncio escreve
+        `2 CAMPOS`. Três campos obrigatórios desmentem o anúncio no exato
+        ponto de maior atrito, e uma promessa quebrada custa mais caro
+        que um @ que falta.
 
-        Dá para medir se foi mau negócio: o `form_ultimo_campo` do evento
-        Saida grava `hero_instagram` para quem morrer aqui. Se ele virar
-        o campo campeão de abandono, o campo vira opcional.
+        O campo FICA, porque a promessa que a página faz duas vezes
+        ("vou olhar sua loja antes de falar com você") depende dele: sem
+        o @ a primeira mensagem chega genérica. Ele só deixa de ser
+        pedágio e vira convite. Por isso o rótulo continua não pedindo o
+        dado, e sim dizendo o que vai ser FEITO com o dado.
+
+        `lead-flow.ts` já aguentava vazio antes desta troca: o tipo
+        declara `instagram?`, a linha "Loja:" da mensagem só é montada se
+        houver valor, e `canal` cai para "".
 
         O `@` fica FORA do input, como prefixo fixo: dentro, ele seria
         apagado por quem digita por cima, e a limpeza no onInput cobre os
         três jeitos de errar que a pessoa tem (digitar o @ de novo, colar
         a URL inteira do perfil, ou deixar espaço no meio). */}
-    <label>SUA LOJA NO INSTAGRAM
-      <span className={s.tagAt}>
-        <i aria-hidden>@</i>
-        <input name="instagram" required autoCapitalize="off" autoCorrect="off" spellCheck={false} placeholder="sualoja"
+      {/* ---------- o @ virou o próprio rótulo (23/08) ----------
+          Com o nome do campo impresso na linha, a coluna da esquerda já é
+          o lugar do prefixo: o `@` deixa de ser um enfeite dentro da
+          linha e passa a ocupar a mesma casa em que NOME e WHATSAPP estão
+          impressos. Um elemento a menos e o alinhamento dos três campos
+          fica na mesma prumada.
+          O `aria-label` é obrigatório aqui: "@" sozinho não nomeia campo
+          nenhum para quem ouve a página. O `<span>` fica `aria-hidden`
+          para o leitor de tela não anunciar o símbolo duas vezes. */}
+      <label>
+        <span aria-hidden>@</span>
+        <input name="instagram" aria-label="Sua loja no Instagram" autoCapitalize="off" autoCorrect="off" spellCheck={false} placeholder="sualoja"
                onInput={e => { e.currentTarget.value = e.currentTarget.value.replace(/^\s*(?:https?:\/\/)?(?:www\.)?instagram\.com\//i, "").replace(/[@\s]/g, "").replace(/\/.*$/, ""); }} />
-      </span>
-    </label>
-    <CampoIsca />
+        <i className={s.opcional}>opcional</i>
+      </label>
+      <CampoIsca />
+    </div>
     {/* O rótulo era "ME CHAMA HOJE", e ele passou a brigar com a linha
         de baixo: "eu olho sua loja ANTES de te chamar" promete estudo, o
         botão prometia agora. Duas velocidades no mesmo par de linhas, e
@@ -529,7 +505,16 @@ function HeroForm() {
           <p>Abri o WhatsApp com sua mensagem pronta. Toque em <b>enviar</b> lá para eu receber, senão ela não chega.</p>
           <a className={`${s.button} ${s.primary}`} href={linkWa} data-cta="reabrir_whats" data-cta-dest="whatsapp">ABRIR O WHATSAPP ↗</a>
         </div>
-      : <small className={s.tagMicro}>Eu olho sua loja antes de te chamar no WhatsApp, ainda hoje.</small>}
+      : <small className={s.tagMicro}>
+          {/* aqui aterrissa a conta que saiu do topo. A ordem é a da
+              decisão de quem já vai agir: primeiro o total (para a linha
+              não ser isca), depois quanto custa hoje, depois o que
+              protege o resto, e por último a única frase que desarma o
+              medo de clicar. "Nada é cobrado agora" existia só no
+              formulário da oferta, a uma página de distância do lugar
+              onde o susto acontece. */}
+          <b>R$999</b> no total, começando com <b>R$199</b>. O resto só depois de você aprovar. Nada é cobrado agora.
+        </small>}
     {/* o canhoto: o picote separa o que você dá do que eu já provei, que são
         as duas metades da decisão. Fatos verificáveis, não adjetivos: os 9
         são o catálogo inteiro do /portfolio, e "PROJETOS" e não "LOJAS"
@@ -742,7 +727,20 @@ export function QuemFaz() {
           "De clientes" ficou só nas duas de baixo, porque é o que elas
           são: a Sölo Urb é projeto meu, e chamá-la de cliente seria
           ganhar uma prova de graça. */}
-      <p>A loja que rola no celular aí em cima, e as duas de clientes logo abaixo? Saíram desta mesa, junto com os outros seis projetos do portfólio.</p>
+      {/* a Sölo Urb passou a ser NOMEADA aqui em 23/08. Ela ocupa a
+          primeira tela inteira (é a loja que rola dentro do celular do
+          hero) e era a única das três marcas da página sem uma segunda
+          menção: a Xavier's aparece cinco vezes e a PR Grife quatro, cada
+          uma com link para a loja no ar, e a Sölo Urb só existia no chip
+          colado na base do aparelho. Marca que enche a primeira dobra e
+          nunca mais é dita lê como imagem de banco, não como cliente.
+          Nomear aqui custa duas palavras e não mexe em estrutura: este
+          parágrafo já apontava para ela ("a loja que rola no celular aí em
+          cima"), só que sem dizer o nome.
+          Ela também é o corpo C1 dos anúncios ("a vitrine da Sölo Urb
+          rolando do topo ao rodapé"), então quem chega por um C1 precisa
+          reencontrar o nome dentro da página. */}
+      <p>A Sölo Urb, que rola no celular aí em cima, e as duas lojas de clientes logo abaixo? Saíram desta mesa, junto com os outros seis projetos do portfólio.</p>
       {/* AQUI NÃO ENTRA UMA LINHA DE DEFESA. Existiu por meia hora um
           terceiro parágrafo respondendo "uma pessoa só dá conta?" com o
           prazo e a condição de pagamento, e o Rafael cortou.
@@ -963,7 +961,17 @@ export function HowItWorks() {
           {/* daqui para baixo o formulário mais perto é o da oferta, não o
               do hero: mandar a pessoa subir uma página inteira é pedir para
               ela desistir no caminho */}
-          <div className={`${s.actions} ${s.hideMobile}`}><a className={`${s.button} ${s.acao}`} href="#contratar" data-cta="como_funciona" data-cta-dest="form">QUERO UMA ASSIM ↓</a></div>
+          {/* O rótulo era "QUERO UMA ASSIM ↓". Em 23/08 a página passou a
+              ter DOIS vocabulários de CTA e só dois: "QUERO MINHA VITRINE"
+              em tudo que está no fluxo de leitura e nos dois botões de
+              envio, e "DEIXAR CONTATO" nas duas superfícies fixas (header
+              e barra do celular), que não é escolha de vocabulário e sim
+              de largura, como diz a nota lá no QuemFaz.
+              Antes disso eram cinco frases para a mesma ação, e nenhuma
+              delas aterrissava num botão escrito igual.
+              O `data-cta` NÃO muda: como_funciona é a posição no funil, e
+              trocar o rótulo não pode reiniciar a série histórica. */}
+          <div className={`${s.actions} ${s.hideMobile}`}><a className={`${s.button} ${s.acao}`} href="#contratar" data-cta="como_funciona" data-cta-dest="form">QUERO MINHA VITRINE ↓</a></div>
         </div>
         <div className={s.howVisual}>
           {/* Captura do catálogo da vérít.lab (verit-lab.vercel.app/pecas),
@@ -1009,7 +1017,7 @@ export function HowItWorks() {
               <Bubble out time="19:12" tick="read" delay={700}>tem sim! é peça única, separei a sua. te mando o Pix</Bubble>
             </ChatStrip>
           </div>
-          <div className={`${s.actions} ${s.mobileOnly}`}><a className={`${s.button} ${s.acao}`} href="#contratar" data-cta="como_funciona" data-cta-dest="form">QUERO UMA ASSIM ↓</a></div>
+          <div className={`${s.actions} ${s.mobileOnly}`}><a className={`${s.button} ${s.acao}`} href="#contratar" data-cta="como_funciona" data-cta-dest="form">QUERO MINHA VITRINE ↓</a></div>
         </div>
       </div>
     </div>
@@ -1243,8 +1251,11 @@ export function Panel() {
               que fecha a objeção de verdade: o painel não é um serviço
               cobrado à parte, é parte do que ela já pagou.
               O que continua fora daqui, de propósito: domínio próprio é
-              anual e pago no registrador, e isso é dito no acordeão da dobra
-              anterior, que é onde o leitor está comparando escopo.
+              anual e pago no registrador, e isso é dito no acordeão da
+              `Included`, que é onde o leitor está comparando escopo. Era "a
+              dobra anterior" até 23/08, quando esta seção desceu para
+              depois da `Offer` e a comparação de escopo ficou três blocos
+              acima.
               O ROSA vai só em "Sem mensalidade", que é o fato que fecha a
               objeção mais cara desta dobra. Ele é a única cor de acento da
               seção, e marca uma coisa só. */}
@@ -1422,7 +1433,12 @@ export function Offer() {
               card, onde são informação e não promessa de ato.
               O `data-cta` NÃO muda: oferta_entrada é a posição no funil, e
               trocar o rótulo não pode reiniciar a série histórica. */}
-          <Button onClick={goToForm} cta="oferta_entrada">QUERO COMEÇAR A MINHA ↓</Button>
+          {/* e em 23/08 virou "QUERO MINHA VITRINE ↓", junto com os outros
+              três da página. A razão de cima continua valendo: o rótulo
+              não pode prometer um ato que o formulário não pratica. Este
+              não promete, ele nomeia o que a pessoa GANHA, e a garantia
+              logo abaixo continua respondendo a mesma pergunta. */}
+          <Button onClick={goToForm} cta="oferta_entrada">QUERO MINHA VITRINE ↓</Button>
           <p className={s.guarantee}>O saldo de R$800 é pago somente depois que você visualizar e aprovar o projeto.</p>
         </article>
         <div className={s.formCol}>
@@ -1459,7 +1475,7 @@ export function Offer() {
             {/* O campo que esta página nunca teve. Ver a nota longa no submit:
                 sem número não dá para cumprir a promessa da tela de
                 confirmação, e era o handoff que carregava essa informação. */}
-            <label>WHATSAPP<input name="whatsapp" type="tel" autoComplete="tel" placeholder="(00) 00000-0000" required maxLength={16}
+            <label>WHATSAPP<input name="whatsapp" type="tel" autoComplete="tel" placeholder="(44) 99999-0000" required maxLength={16}
                    onInput={e => { e.currentTarget.value = mascararWhatsapp(e.currentTarget.value); if (telInvalido) setTelInvalido(false); }} /></label>
             {telInvalido && <small role="alert" style={{ color: "#b3261e" }}>Confere o número: é por ele que eu te chamo. Ex.: (44) 99999-0000.</small>}
             <CampoIsca />
@@ -1594,16 +1610,32 @@ export function Process() {
    ============================================================ */
 const faq = [
   ["A vitrine recebe pagamentos dos meus clientes?", "Não. A vitrine organiza o catálogo e leva o pedido pronto para o WhatsApp da loja, onde você combina pagamento e entrega."],
-  ["Quantos produtos estão incluídos?", "Até 20 produtos no cadastro inicial, todos cadastrados por mim. Novos cadastros podem ser combinados depois."],
+  /* a resposta dizia "Novos cadastros podem ser combinados depois", e
+     "combinados" quer dizer contratados de novo: ela transformava o limite
+     de 20 num teto pago, que é a leitura mais cara possível para uma loja
+     de semijoia com 200 SKUs. O que acontece de verdade é o contrário, e
+     já está provado duas seções à frente, na `Panel`: o cadastro é do
+     painel e não é serviço. O limite dos 20 é do MEU trabalho de cadastrar,
+     não da vitrine. */
+  ["Quantos produtos estão incluídos?", "A vitrine não tem limite de produtos. Os 20 primeiros eu cadastro para você, com foto, preço e tamanhos; os outros você mesmo cadastra no painel, em minutos e sem me chamar."],
   ["Existe mensalidade?", "Não. O projeto custa R$999 uma única vez. Um domínio próprio é opcional e tem custo anual pago direto no registrador."],
   ["Quem atualiza a vitrine depois?", "Você mesmo, pelo painel que acompanha a vitrine: troca preço e foto, marca esgotado ou pronta entrega e cadastra produtos novos."],
   ["Quanto tempo demora?", "Até 7 dias úteis depois do envio de todos os materiais da loja."],
+  /* quem pediu orçamento de agência ouviu R$4 mil ou R$8 mil, e preço
+     muito abaixo do mercado não tranquiliza, assusta: a pergunta que fica
+     é "o que vem faltando aí?". A resposta não defende o preço com
+     adjetivo, ela mostra a conta de onde ele sai. */
+  ["Por que R$999 e não R$5 mil?", "Porque não tem agência no meio. Você fala comigo do primeiro oi até a loja no ar, sem atendimento, sem gerente de projeto e sem repasse. O processo é o mesmo em todos os projetos, então o que sobra de custo é o meu tempo."],
   ["Preciso pagar tudo antes?", "Não. São R$199 para começar e R$800 somente depois da apresentação e da sua aprovação, em até 4x no cartão. Quem prefere pagar à vista no Pix fecha por R$899."],
 ];
 /* por extenso porque é manchete: numeral em algarismo no meio de uma frase
-   em caixa alta lê como preço, não como quantidade. Sete posições bastam
-   (a lista tem seis itens e o índice 0 nunca é usado). */
-const PORTEXTENSO = ["nenhuma", "Uma", "Duas", "Três", "Quatro", "Cinco", "Seis"];
+   em caixa alta lê como preço, não como quantidade.
+   A lista precisa ter uma posição a mais que o número de itens da `faq`,
+   porque o índice 0 existe e nunca é usado. Ao acrescentar pergunta,
+   conferir se ainda sobra posição: uma FAQ em que TODAS as respostas
+   começassem com "Não." estouraria o fim do array e a manchete sairia
+   como "undefined desta". */
+const PORTEXTENSO = ["nenhuma", "Uma", "Duas", "Três", "Quatro", "Cinco", "Seis", "Sete", "Oito"];
 const NAOS_DA_FAQ = faq.filter(([, resposta]) => resposta.startsWith("Não.")).length;
 export function FAQ() {
   return <section className={s.section} id="faq">
@@ -1672,7 +1704,10 @@ export function FinalCTA() {
           sem rodeio, e o caminho é o mesmo formulário de sempre */}
       <p className={s.lead}>Deixa seu nome e WhatsApp que eu te chamo hoje e te mostro como a vitrine ficaria para a sua loja. Se você já decidiu, começa com R$199.</p>
       <div className={s.actions}>
-        <a className={`${s.button} ${s.acao}`} href="#contratar" data-cta="final" data-cta-dest="form">DEIXAR MEU CONTATO ↑</a>
+        {/* "DEIXAR MEU CONTATO ↑" em 23/08: último dos quatro a entrar no
+            vocabulário único. Quem leu a página inteira chega aqui e o
+            botão diz a mesma coisa que o do topo e que o de envio. */}
+        <a className={`${s.button} ${s.acao}`} href="#contratar" data-cta="final" data-cta-dest="form">QUERO MINHA VITRINE ↑</a>
         <a className={s.ghost} href="#oferta" data-cta="final_reserva" data-cta-dest="oferta">VER O QUE ESTÁ INCLUSO</a>
       </div>
     </section>

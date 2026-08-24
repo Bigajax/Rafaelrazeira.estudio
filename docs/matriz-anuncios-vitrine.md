@@ -85,7 +85,7 @@ pelo qual a campanha otimiza.
   te chamo. Dois campos, dez segundos, e você recebe a proposta sem
   compromisso."
 - **CTA2 Risco invertido**: "Projeto completo por R$ 999. Você começa
-  com R$ 500 e o saldo só depois de aprovar. Toca no link e me deixa te
+  com R$ 199 e o saldo só depois de aprovar. Toca no link e me deixa te
   mostrar como ficaria a sua."
 - **CTA3 Urgência real**: "Sou uma pessoa, não uma agência: pego poucos
   projetos por mês. Preenche o formulário hoje e garante a próxima vaga

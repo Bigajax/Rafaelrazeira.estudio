@@ -677,165 +677,107 @@ html:has(.site) { scroll-behavior: smooth }
 /* o miolo do selo ocupa o canto onde "PROJETO COMPLETO" terminava, então
    a linha do preço reserva a faixa dele e quebra de propósito: R$999
    sozinho numa linha é leitura melhor do que os dois lado a lado */
-/* ---------- o preço escrito como etiqueta de loja escreve (13/08) ----------
-   Era "R$999" num corpo só, tudo do mesmo tamanho: um número grande, não
-   um PREÇO. A diferença entre as duas coisas é a hierarquia interna, e
-   toda etiqueta de loja do mundo usa a mesma: a moeda pequena e alçada, o
-   inteiro enorme, os centavos pequenos e alçados. O olho lê "novecentos e
-   noventa e nove" de um golpe e os satélites só confirmam a moeda e a
-   fração.
+/* ---------- a manchete do cartão (23/08) ----------
+   Aqui moravam o preço em corpo 48 (`.tagPrice`) e a conta de três linhas
+   (`.tagConta`, `.tagSoma`). A história inteira da troca está no JSX, em
+   `HeroForm`. O resumo: este cartão é o único lugar da primeira tela onde
+   se AGE, e ele abria com um carnê de pagamento. Agora abre dizendo o que
+   acontece quando a pessoa preenche, e os números foram para o
+   `.tagMicro`, embaixo do botão.
 
-   Os centavos entraram por autenticidade, não por precisão: R$999 e
-   R$999,00 são o mesmo valor, mas só o segundo se parece com uma
-   etiqueta. Numa página cuja assinatura é ser uma etiqueta, isso importa.
+   Caixa baixa, e não versal: as manchetes desta página são todas assim, e
+   o cartão passa a falar a língua delas. A caixa alta fica sendo só dos
+   rótulos impressos dos campos e do botão, que é o que uma etiqueta de
+   papel de fato imprime em versal.
 
-   O inteiro foi para a condensada 62%, a mesma largura da manchete, e é
-   ela que paga o aumento de corpo: 38px a 78% de largura ocupam quase o
-   mesmo que 50px a 62%. O preço cresce ~30% sem custar largura, e ainda
-   passa a falar a mesma língua do resto da página, que só usa duas
-   larguras de Archivo desde hoje.
+   A condensada de 62% é a mesma largura da manchete da página, herdada do
+   `.tagPrice`, que já usava esta largura pelo mesmo motivo.
 
-   `vertical-align: top` nos satélites em vez de `super`: `super` desloca
-   por uma fração da entrelinha e num corpo de 50px isso joga o "R$" para
-   fora da caixa. Alinhar ao topo da linha põe os dois na altura de maiúscula,
-   que é onde a impressão os coloca. */
-.tagPrice { display: flex; align-items: baseline; gap: 2px 10px; flex-wrap: wrap; padding-right: 66px }
-.tagPrice b {
+   O `padding-right` de 66px também é herança do `.tagPrice`, e não é
+   respiro de layout: é o canto reservado do selo da agenda. Sem ele a
+   segunda linha da manchete corre por baixo do selo. */
+/* `.tag .tagLead` e não `.tagLead`: os dois são `<p>`, e `.site p` tem uma
+   classe MAIS um elemento, então vence classe simples e impunha a
+   entrelinha de leitura (1.6) a uma manchete de 34px, abrindo 54px entre
+   as duas linhas. É o mesmo atropelo que `.site a` já fazia com os botões
+   desta página: aqui a regra também precisa de duas classes. */
+.tag .tagLead {
+  padding-right: 66px;
   font-family: var(--display); font-stretch: 62%; font-weight: 900;
-  font-size: clamp(48px, 5.2vw, 58px); line-height: .8; letter-spacing: -.015em; color: var(--ink);
+  font-size: clamp(29px, 3.1vw, 34px); line-height: 1.03; letter-spacing: -.015em;
+  color: var(--ink);
 }
-/* largura normal nos satélites: condensados neste corpo eles viram
-   riscos, e a moeda precisa continuar legível como moeda */
-.tagPrice b i {
-  font-style: normal; font-stretch: 100%; font-weight: 800;
-  font-size: .32em; line-height: 1; vertical-align: top; letter-spacing: .01em; color: var(--ink-soft);
-}
-.tagPrice b i:first-child { margin-right: .05em }
-.tagPrice b i:last-child { margin-left: .04em }
-/* a atribuição do preço: esmeralda porque é ela que segura o sentido do
-   número grande, e é o único acento de cor que sobra aqui em cima com o
-   rosa reservado ao envio.
-   DUAS PALAVRAS EMPILHADAS, não uma linha só, e a razão é largura: numa
-   tela de 390px sobram ~297px dentro da etiqueta, o preço come ~135 e o
-   canto do carimbo reserva 66. "PARA COMEÇAR" numa linha pede ~100 e
-   estoura por pouco, então ela cairia para baixo do número justo onde o
-   tráfego todo está. Empilhada ela pede ~58 e cabe com folga, e ainda por
-   cima é o desenho que etiqueta de loja usa de verdade.
-   `align-self: flex-end` porque o container alinha por BASELINE, e para um
-   item de duas linhas a baseline é a da PRIMEIRA: "PARA" encostaria na
-   base do 199 e "COMEÇAR" desceria por cima da linha de baixo. */
-.tagPrice small {
-  align-self: flex-end; margin-bottom: 1px;
-  font: 700 11.5px/1.3 var(--mono); letter-spacing: .1em; color: var(--green-dark);
-}
-
-/* ============================================================
-   A ETIQUETA MOSTRA A CONTA (20/08)
-
-   Aqui moravam `.tagPrice span` (o rótulo da entrega) e `.tagEntrada` (as
-   condições em prosa). Os dois saíram porque diziam, em três frases
-   soltas, uma coisa só: R$199 para começar, o saldo em até 4x, R$999 no
-   total. Isso não é uma lista, é uma SOMA, e escrever soma por extenso
-   obriga a leitora a montar a conta de cabeça. A hesitação de montar a
-   conta é a hesitação que trava a compra.
-
-   Agora ela está escrita como vitrine de loja de rua escreve: entrada,
-   mais as parcelas, igual ao total, com os operadores numa calha de 17px à
-   esquerda. É a calha que faz as linhas lerem como conta e não como frases
-   empilhadas: sem ela os mesmos números viram três rótulos.
-
-   O sinal já era desta casa. O "+" de "vitrine + painel de estoque" nunca
-   foi pontuação, era a dobradiça de uma soma de duas entregas, e a nota
-   antiga do `.tagPrice span em` dizia isso com todas as letras. O que muda
-   é que agora ele tem irmãos, e a soma que ele abria fecha no "=": R$999 é
-   o total E é o que a caixa contém. A linha tem duas leituras e as duas
-   são verdadeiras ao mesmo tempo.
-
-   RISCO ASSUMIDO, para quem for mexer: numa tela de 390px isto é ~1 linha
-   a mais que a versão em prosa, e este bloco fica entre a leitora e o
-   primeiro campo, espaço pelo qual a etiqueta já brigou duas vezes (ver as
-   notas de 13/08). Aceito porque não há texto novo, é o mesmo texto
-   reorganizado, e a calha devolve em velocidade de leitura o que cobra em
-   altura. Se um dia precisar cortar, corte o `i` da linha do "+", nunca o
-   rótulo do "=": o painel é o que ninguém entrega junto por esse preço, e
-   é exatamente por isso que ele está na primeira tela. */
-/* TRÊS COLUNAS: operador, o que é, quanto é. A terceira coluna é o que
-   faz a conta fechar aos olhos, e ela custou uma versão: com os valores
-   correndo dentro do texto ("4x de R$200" / "R$999 no total") os dois
-   números caíam em x diferentes e as linhas voltavam a ler como frases
-   soltas. Encostados na mesma margem direita eles viram uma coluna de
-   nota de loja, que é o que a etiqueta está imitando.
-   SEM `padding-right` para o carimbo, ao contrário do `.tagPrice`: o selo
-   ocupa de -16px a ~86px da borda de cima e estas linhas começam depois
-   dos 100px, então reservar o canto aqui só encolheria a conta de graça.
-   Como efeito, a coluna de valores encosta na mesma margem que o picote
-   (`.tagRule`) logo abaixo, e as duas linhas passam a rimar. */
-.tag .tagConta {
-  display: grid; grid-template-columns: 17px 1fr auto; gap: 0 8px;
-  align-items: baseline; margin: 3px 0 0;
-}
-/* o operador é a única coisa que vive na calha, centralizado para que "+"
-   e "=" empilhem no mesmo eixo apesar de terem larguras de tinta
-   diferentes. Esmeralda cheia e não `--green-dark`: aqui ele é SINAL e não
-   texto miúdo, e a regra da paleta manda traço e sinal para o `--green`. */
-.tag .tagConta b { grid-column: 1; font: 700 17px/1 var(--mono); color: var(--green); text-align: center }
-.tag .tagConta span { grid-column: 2; font: 700 13px/1.45 var(--mono); letter-spacing: .04em; color: var(--ink) }
-/* os números da conta na CONDENSADA, a mesma largura do 199 e da manchete:
-   eles precisam ler como parentes do preço grande. Em mono neste corpo
-   ficariam idênticos às palavras ao redor e a conta viraria texto. */
-.tag .tagConta strong {
-  grid-column: 3; justify-self: end;
-  font-family: var(--display); font-stretch: 62%; font-weight: 900;
-  font-size: 20px; letter-spacing: -.005em;
-}
-/* a letra miúda desce alinhada com o QUE É, não com o operador: ela
-   qualifica a linha inteira, e `2 / -1` a deixa correr por baixo do valor
-   em vez de bater nele. */
-.tag .tagConta i { grid-column: 2 / -1; font: 400 10.5px/1.4 var(--mono); font-style: normal; letter-spacing: .01em; color: var(--ink-soft) }
-/* o rótulo da entrega, herdeiro do antigo `.tagPrice span`: mesmo corpo,
-   mesma tinta cheia, mesmo tracking. Só mudou de dono, e para melhor: ele
-   agora pendura no "=", ou seja, é a resposta literal de quanto vale a
-   soma. `grid-column: 2` para ele descer alinhado com os números em vez de
-   cair na calha dos operadores. */
-.tag .tagConta small { grid-column: 2 / -1; margin-top: 1px; font: 700 11.5px var(--mono); letter-spacing: .1em; color: var(--ink) }
-/* o "+" da dobradiça, agora rimando com o "+" da calha logo acima */
-.tag .tagConta em { font-style: normal; font-weight: 700; color: var(--green); padding: 0 .08em }
-/* o filete da soma: `1 / -1` para atravessar a calha junto com os números,
-   como risco de conta feita à mão. Ele para antes do carimbo porque o
-   `padding-right` do bloco já reserva aquele canto. */
-.tag .tagSoma { margin-top: 5px }
-.tag .tagSoma::before {
-  content: ""; grid-column: 1 / -1; height: 0;
-  border-top: 1.5px solid var(--ink); margin-bottom: 5px;
+/* a linha que diz o que fazer e o que se ganha. Em corpo de leitura e não
+   em mono, porque ela é frase e não rótulo: é a única prosa do cartão.
+   Duas classes pelo mesmo motivo do `.tagLead`. */
+.tag .tagSub {
+  margin-top: 9px; padding-right: 18px;
+  font: 400 13.5px/1.5 var(--body); color: var(--ink-soft);
 }
 .tagRule { border: 0; border-top: 1.5px solid var(--green); margin: 3px 0 1px }
 
-.tag label { display: grid; gap: 5px; font: 700 9.5px var(--mono); letter-spacing: .18em; color: var(--green-dark) }
+.tagCampos { display: grid; gap: 15px }
+
+/* ---------- o campo virou linha de formulário impresso (23/08) ----------
+   O rótulo morava ACIMA do campo, e entre os dois somavam o gap do grid
+   e o padding de topo do input: ~14px de vão. No campo do nome, o único
+   dos três sem exemplo, esse vão ficava vazio e lia como campo quebrado.
+   E os quatro filetes do cartão (a calha do "+", o risco da soma, o
+   `.tagRule` e a linha do campo) tinham todos 1,5px de tinta, então nada
+   distinguia o que era conta do que era lugar de escrever.
+
+   Agora o nome do campo é IMPRESSO na mesma linha em que se escreve, que
+   é como um bloco de pedido de papel se comporta: a etiqueta faz parte da
+   linha, não paira sobre ela. A LINHA passa do input para o `label`,
+   porque a linha do campo agora contém dois elementos e não um.
+
+   Ganho lateral: os dois formulários da página passam a dizer NOME e
+   WHATSAPP. A voz partida entre eles ("SEU NOME" aqui, "NOME" na oferta)
+   era um dos achados da auditoria de 23/08. */
+.tag label {
+  display: flex; align-items: baseline; gap: 12px;
+  border-bottom: 1.5px solid var(--ink);
+  font: 700 9.5px var(--mono); letter-spacing: .18em; color: var(--green-dark);
+  transition: border-color .15s ease;
+}
+/* a coluna impressa tem largura FIXA: sem ela cada linha começaria o
+   campo num lugar diferente e a pauta perderia a prumada, que é a única
+   coisa que faz três linhas soltas lerem como um formulário só. 78px é o
+   que WHATSAPP pede, que é o mais longo dos três rótulos. */
+.tag label > span:first-child { flex: none; width: 78px }
+/* o @ é SÍMBOLO, não palavra: em 9,5px de mono ele saía do tamanho de um
+   cisco ao lado de NOME e WHATSAPP, que são palavras inteiras e enchem a
+   coluna. Ele sobe para o corpo do próprio campo, que é o que ele de fato
+   é (o prefixo do valor), e assim pesa na linha o mesmo que os outros
+   dois rótulos pesam na deles. Continua na coluna impressa, então a
+   prumada dos três campos não se mexe.
+   O seletor pega o `aria-hidden` de propósito: é o atributo que já marca
+   este span como símbolo decorativo, então a regra e a semântica apontam
+   para a mesma coisa e não podem se separar num redesenho. */
+.tag label > span[aria-hidden] { font: 500 16px var(--body); letter-spacing: 0; color: var(--ink-soft) }
+/* o "opcional" vai para a ponta direita da própria linha, que é onde
+   formulário impresso marca campo que dá para pular */
+.tag label > .opcional { flex: none; margin-left: auto; padding-bottom: 10px }
+/* o campo já é uma linha: o foco engorda e tinge a própria linha em vez
+   de desenhar um anel em volta. Mora no `label` junto com a borda. */
+.tag label:focus-within { border-bottom-color: var(--rosa); border-bottom-width: 2.5px }
 /* 16px NÃO É ESCOLHA DE ESTILO: abaixo disso o Safari do iPhone dá zoom
    ao focar o campo, a página salta de escala e volta desalinhada. Os
    campos antigos tinham 13px, e das quatro pessoas que tocaram no
    formulário em 12-13/08 as três que largaram pararam no primeiro campo,
    que é exatamente onde esse solavanco acontece. */
 .tag input {
-  width: 100%; border: 0; border-bottom: 1.5px solid var(--ink); border-radius: 0;
+  flex: 1; min-width: 0;
+  border: 0; border-radius: 0;
   background: transparent; font: 500 16px var(--body); padding: 9px 2px 10px; color: var(--ink);
-  transition: border-color .15s ease;
 }
-.tag input::placeholder { color: #a8ada6 }
-/* ---------- o campo do @ ----------
-   O arroba é prefixo FIXO fora do input: dentro do valor ele seria
-   apagado por quem digita por cima, e ainda entraria duplicado no que
-   chega no WhatsApp. Aqui ele é moldura, e o que a pessoa digita é só o
-   nome do perfil.
-   A linha e o foco passam do input para o embrulho, porque agora a
-   "linha do campo" contém dois elementos e não um. */
-.tagAt { display: flex; align-items: baseline; gap: 3px; border-bottom: 1.5px solid var(--ink); transition: border-color .15s ease }
-.tagAt i { font: 500 16px var(--body); font-style: normal; color: var(--ink-soft); padding-bottom: 10px }
-.tag .tagAt input { border-bottom: 0 }
-.tagAt:focus-within { border-bottom-color: var(--rosa); border-bottom-width: 2.5px }
-/* o campo já é uma linha: o foco engorda e tinge a própria linha em vez
-   de desenhar um anel em volta */
-.tag input:focus-visible { outline: none; border-bottom-color: var(--rosa); border-bottom-width: 2.5px; padding-bottom: 8.5px }
+.tag input:focus-visible { outline: none }
+/* #a8ada6 dava 2,3:1 sobre o branco do cartão. O exemplo virou trabalho
+   de verdade quando o campo do nome ganhou o dele (é o placeholder que
+   ensina o formato do telefone e do @), então subiu para ~3,1:1, que
+   ainda fica a meio caminho da tinta e não deixa o exemplo ser lido como
+   campo já preenchido. */
+.tag input::placeholder { color: #8B908A }
 /* a sombra dura e o afundar vêm de `.site .acao`; aqui fica só o que é
    desta caixa. `calc(100% - 4px)` e não 100%: a sombra de 4px do botão em
    largura cheia atravessava a borda direita da etiqueta e lia como erro

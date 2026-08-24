@@ -43,9 +43,36 @@ export default function VitrineDigitalPage() {
       <HowItWorks />
       <Projects />
       <Included />
-      <Panel />
-      <Offer />
+      {/* ---------- a garantia passou na frente do preço (23/08) ----------
+          A ordem era `Included → Panel → Offer → Process`, ou seja, a
+          pessoa recebia o preço e o formulário ANTES do motivo pelo qual
+          o preço é seguro. A `Process` inteira é essa resposta ("Você vê
+          a loja pronta antes de pagar o resto"), e ela chegava tarde
+          demais para servir de alguma coisa.
+
+          Quem cedeu o lugar foi a `Panel`, e ela ganha com a troca: a
+          manchete dela é "Depois de publicada, a vitrine é sua", que é
+          resposta a uma pergunta de DEPOIS do preço ("e aí, fico preso a
+          você?"). O painel como item de escopo já está dito antes, na
+          lista dos 9 itens da `Included`.
+
+          Por que não foi uma reordenação maior, que é o que a auditoria
+          de 23/08 pedia: a página alterna papel e grafite e nunca encosta
+          duas seções escuras. `Projects`, `Panel`, `QuemFaz` e `Process`
+          são todas escuras, e só sobra uma seção clara no miolo para
+          separá-las. Qualquer arranjo mais ambicioso exigiria clarear uma
+          seção, e as duas candidatas usam `--green-live`, `--mint` e
+          `--line-dark`, que são tokens de grafite: no papel eles violam a
+          paleta. Esta troca é a única que põe a garantia antes do preço
+          sem tocar em cor nenhuma.
+
+          A `QuemFaz` não se move por um terceiro motivo, além da cor: a
+          copy dela diz "a loja que rola no celular AÍ EM CIMA, e as duas
+          de clientes LOGO ABAIXO", o que a prende entre o Hero e a
+          `Projects`. */}
       <Process />
+      <Offer />
+      <Panel />
       <FAQ />
       <FinalCTA />
     </main>

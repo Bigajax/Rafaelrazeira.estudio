@@ -123,10 +123,10 @@ espelhando a fala. Formato 9:16.
 - Tela: TOQUE EM SAIBA MAIS → 2 CAMPOS → EU TE CHAMO.
 
 **CTA2 Risco invertido**
-- Fala: "Projeto completo por R$ 999. Você começa com R$ 500 e o saldo
+- Fala: "Projeto completo por R$ 999. Você começa com R$ 199 e o saldo
   só depois de aprovar. Toca no link e me deixa te mostrar como ficaria
   a sua."
-- Tela: R$ 999 · COMEÇA COM R$ 500 · SALDO SÓ APÓS APROVAR.
+- Tela: R$ 999 · COMEÇA COM R$ 199 · SALDO SÓ APÓS APROVAR.
 
 **CTA3 Urgência real**
 - Fala: "Sou uma pessoa, não uma agência: pego poucos projetos por mês.
