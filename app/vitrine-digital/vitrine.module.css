@@ -487,7 +487,13 @@ html:has(.site) { scroll-behavior: smooth }
   /* mesma gramática de sombra do aparelho e do card de preço */
   box-shadow: 12px 14px 0 var(--paper-2), 12px 14px 0 1.5px var(--ink);
   padding: 46px 22px 0;
-  display: grid; gap: 13px;
+  /* minmax(0,1fr) e NÃO a coluna implícita: `auto` tem min-content como
+     mínimo, então o filho mais largo da pauta esticava a trilha para 366px
+     dentro de um cartão de 276px e a ficha inteira sangrava para fora da
+     tela no celular. Como o `.site` tem `overflow: clip`, isso não virava
+     barra de rolagem, virava texto cortado na borda direita: o "opcional"
+     sumia, o preço quebrava no meio e o botão passava da margem. */
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 13px;
   scroll-margin-top: 84px;
   /* pendurada, não colada: a etiqueta gira em torno do PRÓPRIO FURO, que é
      o pivô que um cartão pendurado num cordão tem de verdade. Menos de um
@@ -716,7 +722,9 @@ html:has(.site) { scroll-behavior: smooth }
 }
 .tagRule { border: 0; border-top: 1.5px solid var(--green); margin: 3px 0 1px }
 
-.tagCampos { display: grid; gap: 15px }
+/* mesma trava da etiqueta: a pauta é UMA coluna e não pode crescer além
+   do cartão por causa do min-content de um campo */
+.tagCampos { display: grid; grid-template-columns: minmax(0, 1fr); gap: 15px }
 
 /* ---------- o campo virou linha de formulário impresso (23/08) ----------
    O rótulo morava ACIMA do campo, e entre os dois somavam o gap do grid
@@ -2043,7 +2051,13 @@ html:has(.site) { scroll-behavior: smooth }
      mais de um décimo da peça, e ela parece escorregando para fora */
   /* no celular o print do painel volta para baixo do argumento: em duas
      colunas ele ficaria com uns 170px e a tela do admin viraria borrão */
-  .painelGrid { grid-template-columns: 1fr }
+  /* minmax(0,1fr): `1fr` sozinho é `minmax(auto,1fr)`, e esse `auto`
+     deixava o print do painel (que tem aspect-ratio e imagem dentro)
+     puxar a trilha para 422px numa tela de 332px. A seção escura inteira
+     ia junto, porque o argumento divide a mesma coluna com ele. A versão
+     de duas colunas lá em cima já vinha com minmax(0,...), só esta
+     escapou. */
+  .painelGrid { grid-template-columns: minmax(0, 1fr) }
   .quem { grid-template-columns: 1fr; --respiro: clamp(44px, 10vw, 68px); --sobe: 22px }
   /* o impresso ganha teto de largura: papel que encosta nas duas bordas
      volta a ser painel, e era disso que a seção estava saindo. Com 300px
