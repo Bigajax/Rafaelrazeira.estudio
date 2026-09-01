@@ -113,7 +113,15 @@
    O `auto` sob `prefers-reduced-motion` não é acessório: rolagem suave
    longa é exatamente o movimento que dispara náusea em quem tem distúrbio
    vestibular, e é o único tipo de animação da página que o bloco lá do fim
-   NÃO pegaria, já que `scroll-behavior` não é `transition` nem `animation`. */
+   NÃO pegaria, já que `scroll-behavior` não é `transition` nem `animation`.
+
+   RESSALVA DE 01/09/2026: o `smooth` daqui deixou de valer para TODA
+   distância. Acima de duas telas, `components/vitrine/ancora.ts` troca esta
+   palavra por `auto` durante o clique e devolve logo depois. O argumento de
+   cima continua certo onde ele é verdade: numa viagem de 7000px não existe
+   relação entre CTA e destino para explicar, existe borrão, e a leitura de
+   31/08 e 01/09 mostrou gente tocando na barra fixa 2,4 vezes porque
+   achava que o toque não tinha pegado. O porquê inteiro está lá. */
 html:has(.site) { scroll-behavior: smooth }
 @media (prefers-reduced-motion: reduce) {
   html:has(.site) { scroll-behavior: auto }

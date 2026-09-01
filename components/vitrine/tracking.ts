@@ -513,8 +513,13 @@ export function irParaWhatsapp(href: string) {
 }
 
 /* ctrl/cmd/shift/botão do meio: a pessoa pediu outra aba de propósito.
-   Deixa o navegador fazer o que ele faz e não sequestra o clique. */
-const cliqueModificado = (e: MouseEvent) =>
+   Deixa o navegador fazer o que ele faz e não sequestra o clique.
+
+   Exportado porque `ancora.ts` precisa da MESMA régua: duas cópias da
+   pergunta "este clique é meu?" divergem caladas, e o dia em que uma
+   aprender o botão do meio e a outra não, o bug não aparece em teste
+   nenhum. */
+export const cliqueModificado = (e: MouseEvent) =>
   e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey;
 
 /* ---------- leitura da página: onde a pessoa desiste ----------

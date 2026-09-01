@@ -6,6 +6,7 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 import s from "@/app/vitrine-digital/vitrine.module.css";
 import { CampoIsca, useGuardaDeFormulario } from "@/components/form-guarda";
 import { mascararWhatsapp, whatsappValido } from "@/components/telefone";
+import { ligarAncoras } from "@/components/vitrine/ancora";
 import { enviarLeadVitrine } from "@/components/vitrine/lead-flow";
 import { focarSemContar, initTracking } from "@/components/vitrine/tracking";
 import { projetos } from "@/data/portfolio";
@@ -58,7 +59,12 @@ const NO_AR = projetos.filter(p => p.url).length;
    botões, que é exatamente por que aquela regra foi escrita assim.
    ============================================================ */
 
-export function Analytics() { useEffect(() => { initTracking(); }, []); return null; }
+/* O nome diz analytics e a segunda linha não é analytics, e isso é de
+   propósito: este é o único ponto de montagem de comportamento de cliente
+   desta página, e inventar um segundo componente vazio só para pendurar um
+   `useEffect` custaria mais do que este comentário. `ligarAncoras` cuida da
+   velocidade e do foco dos dez `href="#..."`; o porquê está em ancora.ts. */
+export function Analytics() { useEffect(() => { initTracking(); ligarAncoras(); }, []); return null; }
 
 const Eyebrow = ({ children }: { children: React.ReactNode }) => <p className={s.eyebrow}>{children}</p>;
 const Button = ({ href, children, outline = false, onClick, cta, dest }: { href?: string; children: React.ReactNode; outline?: boolean; onClick?: () => void; cta?: string; dest?: string }) =>
