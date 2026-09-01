@@ -9,7 +9,7 @@ const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
 
 export const metadata: Metadata = {
   title: "Vitrine Digital para lojas",
-  description: "Transforme seu Instagram em uma loja organizada. Catálogo profissional com WhatsApp integrado, projeto completo por R$999.",
+  description: "Eu desenho a sua vitrine antes de você pagar. Catálogo com foto, preço e tamanho, pedido pronto no WhatsApp, projeto completo por R$999.",
 };
 
 /* ---------- esta página não tem tela de carregamento ----------

@@ -720,6 +720,21 @@ html:has(.site) { scroll-behavior: smooth }
   margin-top: 9px; padding-right: 18px;
   font: 400 13.5px/1.5 var(--body); color: var(--ink-soft);
 }
+/* ---------- o aparte (28/08) ----------
+   A fala que fecha o cartão, fora da prosa: ela é a única linha aqui em
+   que EU falo, e no meio do parágrafo em corpo de leitura ela sumia.
+   Na condensada da casa, o mesmo desenho da manchete dois centímetros
+   acima, mas em corpo miúdo: parentesco sem competir.
+   Esmeralda escura e não a clara, pela régua do bloco de cor lá em cima:
+   abaixo de 18px o verde só passa no contraste em `--green-dark`.
+   Duas classes pelo mesmo motivo do `.tagLead` e do `.tagSub`: `.site p`
+   tem classe mais elemento e atropela classe simples. */
+.tag .tagAparte {
+  margin-top: 6px;
+  font-family: var(--display); font-stretch: 62%; font-weight: 900;
+  font-size: 16px; line-height: 1.15; letter-spacing: -.008em;
+  color: var(--green-dark);
+}
 .tagRule { border: 0; border-top: 1.5px solid var(--green); margin: 3px 0 1px }
 
 /* mesma trava da etiqueta: a pauta é UMA coluna e não pode crescer além
@@ -1718,8 +1733,27 @@ html:has(.site) { scroll-behavior: smooth }
   font-style: normal; font-stretch: 100%; font-weight: 800;
   font-size: .3em; line-height: 1; letter-spacing: .01em; color: var(--ink-soft);
 }
-.price i:first-child { margin-right: .06em }
-.price i:last-child { margin-left: .04em }
+/* `of-type` e não `child`: desde 28/08 existe um `<b>` depois dos dois
+   satélites (o "PARA COMEÇAR"), então `i:last-child` deixou de casar com os
+   centavos e eles perdiam a folga da direita, encostando no rótulo. */
+.price i:first-of-type { margin-right: .06em }
+.price i:last-of-type { margin-left: .04em }
+/* o rótulo que impede o número grande de mentir: sem ele, 199 em corpo 108
+   lê como o preço do produto. Mono e esmeralda, que é o dialeto de rótulo
+   do card (o mesmo de PARCELADO e À VISTA NO PIX logo abaixo), e alçado ao
+   topo do número em vez de colado na base, para o olho ler "199" e o
+   rótulo no mesmo bloco em vez de em duas alturas. */
+.price b {
+  align-self: flex-start; margin: .33em 0 0 .55em;
+  font: 700 9.5px/1.3 var(--mono); letter-spacing: .16em; color: var(--green-dark);
+}
+/* o total, colado no número grande. Mesma anatomia das portas (valor na
+   condensada, palavra em mono) porque é o mesmo tipo de informação, e em
+   tinta cheia porque ele não pode ler como observação: é o preço.
+   `.pricecard` na frente porque `.site p` tem classe MAIS elemento e vence
+   classe simples, o mesmo atropelo que as portas já precisaram driblar. */
+.pricecard .priceTotal { font: 400 12.5px/1.3 var(--mono); letter-spacing: .02em; color: var(--ink-soft); margin: 0 0 4px }
+.pricecard .priceTotal strong { font-family: var(--display); font-stretch: 62%; font-weight: 900; font-size: 23px; letter-spacing: -.005em; color: var(--ink); margin-right: 4px }
 /* ============================================================
    AS DUAS PORTAS DO BALCÃO (20/08)
 

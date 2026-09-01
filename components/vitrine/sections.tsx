@@ -8,6 +8,22 @@ import { CampoIsca, useGuardaDeFormulario } from "@/components/form-guarda";
 import { mascararWhatsapp, whatsappValido } from "@/components/telefone";
 import { enviarLeadVitrine } from "@/components/vitrine/lead-flow";
 import { focarSemContar, initTracking } from "@/components/vitrine/tracking";
+import { projetos } from "@/data/portfolio";
+
+/* ---------- o placar de projetos parou de ser digitado (28/08) ----------
+   A página dizia NOVE em três lugares (o canhoto da etiqueta, o Quem Faz e
+   o link do portfólio) e o /portfolio já mostrava DEZ, porque ele conta o
+   dado e a vitrine escrevia o número à mão. O décimo entrou e ninguém
+   avisou os três lugares.
+
+   Numa página cujo argumento inteiro é fato conferível, número que não bate
+   com a prova a um clique de distância é a coisa mais cara que pode estar
+   escrita: quem duvida clica, conta e encontra a página mentindo por um.
+
+   Agora os três leem daqui, com a mesma régua do /portfolio: vale o projeto
+   que tem endereço público, porque "no ar" é exatamente isso. No dia em que
+   entrar o décimo primeiro, os três se corrigem sozinhos. */
+const NO_AR = projetos.filter(p => p.url).length;
 
 /* ============================================================
    O WHATSAPP SAIU DO CAMINHO DE LEITURA (13/08)
@@ -112,7 +128,7 @@ export function Header() {
         topo: é a pergunta que tráfego frio faz antes de qualquer outra.
         Ver a nota em `.headStatus`, no CSS. */}
     <span className={s.headStatus}><i aria-hidden /> RESPOSTA NO MESMO DIA</span>
-    {/* encurtado em 13/08: "QUERO MINHA VITRINE ↓" e a logo somavam mais
+    {/* encurtado em 13/08: "QUERO MINHA PRÉVIA ↓" e a logo somavam mais
         que os 350px úteis de uma tela de 390, e os dois quebravam em duas
         linhas cada um, deixando o cabeçalho com o dobro da altura */}
     <a className={s.headCta} href="#hero-form" data-cta="header" data-cta-dest="form">DEIXAR CONTATO ↓</a>
@@ -373,7 +389,7 @@ function HeroForm() {
         SEM mês e SEM contagem de vagas de propósito. "AGOSTO" apodrece
         sozinho no dia 1º de setembro, e um número de vagas que não seja
         verdade quebra na primeira conferência, numa página cujo resto é
-        só fato verificável (9 projetos no ar, 7 dias úteis, R$0 de
+        só fato verificável (os projetos no ar, 7 dias úteis, R$0 de
         mensalidade, todos conferíveis no /portfolio).
         "AGENDA ABERTA" é o mesmo que a página já diz na seção do CTA
         final, então o carimbo não inventa nada: ele repete perto do
@@ -426,8 +442,52 @@ function HeroForm() {
         Herança do bloco antigo que sobrevive: o `padding-right` de 66px.
         Ele não é respiro de layout, é o que reserva o canto do selo da
         agenda e impede a manchete de correr por baixo dele. */}
-    <p className={s.tagLead}>Veja como ficaria<br />a sua vitrine.</p>
-    <p className={s.tagSub}>Deixa nome e WhatsApp. Eu olho sua loja hoje e te mostro como ela ficaria.</p>
+    {/* ---------- a oferta virou objeto (26/08) ----------
+        "Te mostro como ela ficaria" era promessa de CONVERSA: quem lia
+        não sabia o que ia receber, e mesmo assim o cartão pedia o esforço
+        de quem vai pedir orçamento. Agora o que se ganha aqui é uma
+        coisa, a vitrine desenhada, e o preço dela é dito na mesma
+        respiração: nenhum.
+        A oferta subiu para a manchete no mesmo dia (ver a nota longa no
+        Hero): o cartão foi o primeiro lugar a receber a promessa nova e
+        deixou de ser o único assim que os criativos foram liberados.
+        "Algumas peças" não é modéstia, é o escopo: a prévia é a loja
+        montada com uma amostra, e o catálogo inteiro é trabalho pago.
+        Sem esse limite escrito, cada lead pago custa um catálogo. */}
+    {/* o cartão NÃO repete a manchete: "antes de pagar" agora é dito em
+        corpo de manchete duas linhas acima, e dizer de novo aqui
+        gastaria a peça mais cara da dobra com uma informação que a
+        pessoa acabou de ler. Aqui ele diz a MECÂNICA, que é a dúvida
+        seguinte: em que ordem as coisas acontecem.
+        Duas frases de onze caracteres: a 34px, com os 66px reservados
+        para o selo, é o que cabe em duas linhas num celular de 390px
+        sem virar três. */}
+    <p className={s.tagLead}>Eu desenho.<br />Você decide.</p>
+    {/* ---------- o aparte (28/08) ----------
+        A frase é do Rafael e FICA: ele gosta dela, e ela diz o preço e a
+        saída na mesma respiração. O que mudou foi o lugar e o corpo, não o
+        conteúdo. No fim de uma linha de prosa de 13,5px ela morria de
+        cansaço, e ela é a única fala do cartão: precisa soar como fala.
+        Agora é linha própria, na condensada da casa, em esmeralda escura.
+
+        "Mesmo" e "nenhum" não são enfeite nem enchimento: são exatamente o
+        que a boca acrescenta quando quer ser acreditada. "De graça, sem
+        compromisso" é a frase escrita; "de graça mesmo, sem compromisso
+        nenhum" é a frase dita, e num cartão em que só existe uma voz, a
+        segunda é a certa.
+
+        Fica registrado o que NÃO passou, para a ideia não voltar do zero:
+        propus trocar tudo por "Você não paga para ver", argumentando que a
+        página já tinha aposentado "de graça" uma vez (ver a nota do
+        `.tagMicro`, onde "A prévia é de graça" saiu por ser a frase que
+        qualquer isca de landing page escreve) e que "sem compromisso" é
+        vocabulário de quem vende orçamento. O Rafael manteve a dele, e a
+        chamada é dele: aqui em cima a leitora ainda está decidindo se lê, e
+        as duas palavras que ela procura nesse momento são exatamente essas
+        duas. O trabalho fino de desarmar o dedo continua sendo do
+        `.tagMicro`, a uma tela de distância, perto do botão. */}
+    <p className={s.tagSub}>Deixa o seu @ que eu monto a sua loja com algumas peças suas e a cara da sua marca.</p>
+    <p className={s.tagAparte}>De graça mesmo, sem compromisso nenhum.</p>
     <hr className={s.tagRule} />
     <div className={s.tagCampos}>
       {/* rótulo visível E placeholder, que não é contradição: o rótulo é
@@ -482,9 +542,12 @@ function HeroForm() {
           para o leitor de tela não anunciar o símbolo duas vezes. */}
       <label>
         <span aria-hidden>@</span>
-        <input name="instagram" aria-label="Sua loja no Instagram" autoCapitalize="off" autoCorrect="off" spellCheck={false} placeholder="sualoja"
+        <input name="instagram" aria-label="Sua loja no Instagram" autoCapitalize="off" autoCorrect="off" spellCheck={false} required placeholder="sualoja"
                onInput={e => { e.currentTarget.value = e.currentTarget.value.replace(/^\s*(?:https?:\/\/)?(?:www\.)?instagram\.com\//i, "").replace(/[@\s]/g, "").replace(/\/.*$/, ""); }} />
-        <i className={s.opcional}>opcional</i>
+        {/* o "opcional" saiu em 26/08: o cartão logo acima passou a
+            prometer DESENHO, e sem o @ não existe o que desenhar. O campo
+            mais caro da dobra (68px medidos) virou o insumo do produto, e
+            de quebra filtra quem só queria espiar preço. */}
       </label>
       <CampoIsca />
     </div>
@@ -498,7 +561,7 @@ function HeroForm() {
         diz quem faz, em que ordem e quando.
         A manchete virou pergunta e perdeu o imperativo; o botão é onde
         ele volta, agora na voz de quem clica. */}
-    <button className={`${s.button} ${s.acao}`} disabled={enviando}>{enviando ? "ENVIANDO…" : "QUERO MINHA VITRINE"}</button>
+    <button className={`${s.button} ${s.acao}`} disabled={enviando}>{enviando ? "ENVIANDO…" : "QUERO MINHA PRÉVIA"}</button>
     {linkWa
       ? <div className={s.pendente} role="status">
           <b>Falta um toque.</b>
@@ -513,13 +576,28 @@ function HeroForm() {
               medo de clicar. "Nada é cobrado agora" existia só no
               formulário da oferta, a uma página de distância do lugar
               onde o susto acontece. */}
-          <b>R$999</b> no total, começando com <b>R$199</b>. O resto só depois de você aprovar. Nada é cobrado agora.
+          {/* ---------- a linha que desarma o dedo ----------
+              "A prévia é de graça" estava CORRETO e não tinha dono: é a
+              frase que qualquer isca de landing page escreve, e numa
+              página cujo argumento inteiro é "quem faz sou eu" ela soava
+              como termo de uso. "Por minha conta" é a mesma informação
+              dita por uma pessoa, e é de graça do jeito que se fala de
+              graça no balcão.
+              A segunda metade é a saída honrosa, e ela vale mais aqui do
+              que qualquer garantia: quem não sabe COMO recusar não pede.
+              "Me diz sem dó" é a mesma expressão do template de prévia
+              do CRM, ou seja, é o que eu digo no WhatsApp quando mando a
+              página pronta. A pessoa lê aqui e ouve igual depois.
+              O "resto só depois de você aprovar" saiu: virou a quarta
+              condição de uma linha que já tinha três, e ela continua
+              dita no passo 04 e no selo do processo. */}
+          <b>A prévia é por minha conta.</b> Se você gostar: <b>R$999</b> no total, começando com <b>R$199</b>. Se não gostar, me diz sem dó, que eu não fico chateado.
         </small>}
     {/* o canhoto: o picote separa o que você dá do que eu já provei, que são
         as duas metades da decisão. Fatos verificáveis, não adjetivos: os 9
         são o catálogo inteiro do /portfolio, e "PROJETOS" e não "LOJAS"
         porque dois dos nove não são loja. */}
-    <p className={s.tagStub}><span><b>9</b> PROJETOS NO AR</span><span><b>7</b> DIAS ÚTEIS</span><span><b>R$0</b> DE MENSALIDADE</span></p>
+    <p className={s.tagStub}><span><b>{NO_AR}</b> PROJETOS NO AR</span><span><b>7</b> DIAS ÚTEIS</span><span><b>R$0</b> DE MENSALIDADE</span></p>
   </form>;
 }
 
@@ -551,47 +629,39 @@ export function Hero() {
             LINK SÓ" saiu por estourar exatamente esse limite, então aqui
             não entra mais nada sem sair outra coisa. */}
         <Eyebrow>VITRINE PARA QUEM VENDE NO INSTAGRAM</Eyebrow>
-        {/* ---------- a ordem virou pergunta ----------
-            "Pare de perder venda" AFIRMA que a pessoa perde, e quem
-            discorda para de ler na primeira linha. A pergunta faz ela
-            mesma fazer a conta, e qualquer resposta maior que zero é a
-            pessoa se qualificando sozinha antes de rolar um pixel.
-            "Essa semana" é o que impede a resposta preguiçosa: sem
-            recorte de tempo a conta é abstrata e a frase vira slogan.
-            É o hook H01 do lote 01 palavra por palavra (ver
-            docs/matriz-anuncios-vitrine.md), então o vídeo e a primeira
-            linha da página passam a dizer a MESMA frase.
+        {/* ---------- a manchete virou a OFERTA (26/08) ----------
+            Aqui morava a pergunta do direct ("quantas vendas você perdeu
+            essa semana"), que era o hook H01 do lote 01 palavra por
+            palavra: a página e o vídeo diziam a mesma frase, e por isso
+            ela não podia ser tocada enquanto o lote rodasse.
 
-            CUSTA UMA LINHA, E A LINHA É DA FORMA, NÃO DO TAMANHO.
-            Medido a 390x740, pelo topo do botão de envio:
+            O Rafael liberou trocar os criativos junto, e isso desamarra
+            a manchete. O que sobe para cá é a inversão de risco, que é
+            a única coisa que a concorrência de template não consegue
+            oferecer: a loja existe ANTES de a pessoa pagar. A dor não
+            some da página, ela continua inteira na seção de baixo (os
+            balões verdes sem resposta) e no manifesto; o que ela perde é
+            a primeira tela, onde quem manda agora é a oferta.
 
-              595px  manchete anterior, antes do campo do Instagram
-              627px  só a pergunta entra          (+32)
-              663px  só o campo do Instagram entra (+68)
-              695px  as duas coisas
-              670px  hoje, com o lead cortado para duas linhas (-26)
+            A DOBRA GANHOU FÔLEGO, e isso não é detalhe: a nota antiga
+            media o botão de envio em 670px numa dobra de 740, "na
+            beira", com o navegador interno do Instagram comendo mais uns
+            60. A pergunta ocupava três linhas (98px) e esta frase ocupa
+            duas, então o campo do @ (68px), que virou obrigatório com a
+            oferta nova, cabe sem empurrar o botão para fora da tela.
 
-            Toda variante de pergunta testada deu as mesmas três linhas
-            (98px), inclusive "QUANTAS VENDAS VOCÊ PERDEU NO DIRECT?"
-            com 37 caracteres: encurtar a pergunta não devolve nada, o
-            que custa é ela ser pergunta. Então ou a pergunta fica
-            inteira ou volta a ordem; meio-termo só perde argumento.
+            O <em> leva "você pagar", e não "pagar" sozinho: é a pessoa
+            que a frase quer nomear, e o ponto final em rosa cai depois
+            do nome dela. Sem noBreak: o grupo aqui teria 20 caracteres e
+            forçaria uma linha larga demais em 390px, ao contrário do
+            "NO DIRECT?" antigo, que tinha dez.
 
-            O botão está em 670 numa dobra de 740, e o navegador interno
-            do Instagram come mais uns 60: ele está NA BEIRA. Se a taxa
-            de quem chega no formulário cair, este é o primeiro suspeito,
-            e o campo do Instagram (68px) é o mais caro dos dois.
-
-            A troca também mistura variável de página com variável de
-            criativo no meio do lote 01, que a política de LP da matriz
-            proíbe: anotar a data no doc do lote, senão o CPL de antes e
-            o de depois viram a mesma média.
-
-            "NO DIRECT?" não se separa: é onde a dor acontece, e o nome
-            do lugar partido em duas linhas ("no" órfão em cima,
-            "direct?" sozinho embaixo) tira a frase da leitura de um
-            golpe só. O text-wrap: balance global cuida do resto. */}
-        <h1>QUANTAS VENDAS VOCÊ PERDEU ESSA SEMANA <span className={s.noBreak}>NO <em>DIRECT?</em></span></h1>
+            AO TROCAR OS CRIATIVOS: o hook do vídeo tem que voltar a
+            dizer esta frase, porque é o que faz a pessoa reconhecer a
+            página como o lugar em que ela clicou. E anotar a data no doc
+            do lote (docs/matriz-anuncios-vitrine.md), senão o CPL de
+            antes e o de depois viram a mesma média. */}
+        <h1>SUA LOJA PRONTA ANTES DE <em>VOCÊ PAGAR.</em></h1>
         {/* encurtado em 13/08: a versão anterior tinha 27 palavras e ocupava
             cinco linhas num celular de 390px, empurrando a etiqueta para
             fora da dobra. Depois caiu de três linhas para DUAS, para
@@ -720,10 +790,12 @@ export function QuemFaz() {
           Sölo Urb entrou no celular do hero: quem lê acabou de ver TRÊS
           lojas, e o chip embaixo do aparelho diz o nome da terceira.
           Duas mais sete davam dez, num portfólio de nove.
-          Agora são três aqui e seis lá. Nove é o número que o canhoto da
-          etiqueta, o Quem Faz e o link do portfólio já prometem, e numa
-          página cujo argumento inteiro é fato conferível, número que não
-          fecha é a coisa mais cara que pode estar escrita.
+          Agora são três nomeadas aqui e o RESTO contado do dado (ver
+          `NO_AR` no topo do arquivo): três mais sete fecham os dez que o
+          /portfólio mostra. O número deixou de ser digitado em 28/08
+          justamente porque ele já tinha errado uma vez, e numa página cujo
+          argumento inteiro é fato conferível, número que não fecha é a
+          coisa mais cara que pode estar escrita.
           "De clientes" ficou só nas duas de baixo, porque é o que elas
           são: a Sölo Urb é projeto meu, e chamá-la de cliente seria
           ganhar uma prova de graça. */}
@@ -740,7 +812,7 @@ export function QuemFaz() {
           Ela também é o corpo C1 dos anúncios ("a vitrine da Sölo Urb
           rolando do topo ao rodapé"), então quem chega por um C1 precisa
           reencontrar o nome dentro da página. */}
-      <p>A Sölo Urb, que rola no celular aí em cima, e as duas lojas de clientes logo abaixo? Saíram desta mesa, junto com os outros seis projetos do portfólio.</p>
+      <p>A Sölo Urb, que rola no celular aí em cima, e as duas lojas de clientes logo abaixo? Saíram desta mesa, junto com os outros {NO_AR - 3} projetos do portfólio.</p>
       {/* AQUI NÃO ENTRA UMA LINHA DE DEFESA. Existiu por meia hora um
           terceiro parágrafo respondendo "uma pessoa só dá conta?" com o
           prazo e a condição de pagamento, e o Rafael cortou.
@@ -752,7 +824,7 @@ export function QuemFaz() {
           microcopy da etiqueta, ditos como oferta e não como desculpa,
           que é o lugar certo deles. */}
       <ul className={s.quemFacts}>
-        {["MARINGÁ · PR", "9 PROJETOS NO AR", "RESPOSTA NO MESMO DIA"].map(x => <li key={x}>{x}</li>)}
+        {["MARINGÁ · PR", `${NO_AR} PROJETOS NO AR`, "RESPOSTA NO MESMO DIA"].map(x => <li key={x}>{x}</li>)}
       </ul>
       {/* volta para a etiqueta, que está a uma tela acima: esta seção é a
           segunda pergunta de quem chegou pelo anúncio ("quem me vende
@@ -766,7 +838,7 @@ export function QuemFaz() {
           o rótulo não pode reiniciar a série histórica. O do header
           continua "DEIXAR CONTATO ↓" por largura, e não por vocabulário:
           lá o texto divide os 350px úteis com a logo. */}
-      <a className={`${s.button} ${s.acao}`} href="#hero-form" data-cta="quem_faz" data-cta-dest="form">QUERO MINHA VITRINE ↑</a>
+      <a className={`${s.button} ${s.acao}`} href="#hero-form" data-cta="quem_faz" data-cta-dest="form">QUERO MINHA PRÉVIA ↑</a>
       {/* AQUI FICAVA `RAFAEL RAZEIRA · ESTÚDIO` em mono. Saiu em 13/08: o
           letreiro logo abaixo diz o mesmo nome em corpo de 3,4rem, então
           a assinatura era a segunda vez em menos de cem pixels. Assinar
@@ -962,7 +1034,7 @@ export function HowItWorks() {
               do hero: mandar a pessoa subir uma página inteira é pedir para
               ela desistir no caminho */}
           {/* O rótulo era "QUERO UMA ASSIM ↓". Em 23/08 a página passou a
-              ter DOIS vocabulários de CTA e só dois: "QUERO MINHA VITRINE"
+              ter DOIS vocabulários de CTA e só dois: "QUERO MINHA PRÉVIA"
               em tudo que está no fluxo de leitura e nos dois botões de
               envio, e "DEIXAR CONTATO" nas duas superfícies fixas (header
               e barra do celular), que não é escolha de vocabulário e sim
@@ -971,7 +1043,7 @@ export function HowItWorks() {
               delas aterrissava num botão escrito igual.
               O `data-cta` NÃO muda: como_funciona é a posição no funil, e
               trocar o rótulo não pode reiniciar a série histórica. */}
-          <div className={`${s.actions} ${s.hideMobile}`}><a className={`${s.button} ${s.acao}`} href="#contratar" data-cta="como_funciona" data-cta-dest="form">QUERO MINHA VITRINE ↓</a></div>
+          <div className={`${s.actions} ${s.hideMobile}`}><a className={`${s.button} ${s.acao}`} href="#contratar" data-cta="como_funciona" data-cta-dest="form">QUERO MINHA PRÉVIA ↓</a></div>
         </div>
         <div className={s.howVisual}>
           {/* Captura do catálogo da vérít.lab (verit-lab.vercel.app/pecas),
@@ -1017,7 +1089,7 @@ export function HowItWorks() {
               <Bubble out time="19:12" tick="read" delay={700}>tem sim! é peça única, separei a sua. te mando o Pix</Bubble>
             </ChatStrip>
           </div>
-          <div className={`${s.actions} ${s.mobileOnly}`}><a className={`${s.button} ${s.acao}`} href="#contratar" data-cta="como_funciona" data-cta-dest="form">QUERO MINHA VITRINE ↓</a></div>
+          <div className={`${s.actions} ${s.mobileOnly}`}><a className={`${s.button} ${s.acao}`} href="#contratar" data-cta="como_funciona" data-cta-dest="form">QUERO MINHA PRÉVIA ↓</a></div>
         </div>
       </div>
     </div>
@@ -1126,7 +1198,7 @@ export function Projects() {
           não competir com os CTAs verdes dos cards; `data-cta-dest`
           "portfolio" nunca dispara Lead, só ClickCTA. */}
       <Link className={`${s.ghost} ${s.projMore}`} href="/portfolio" data-cta="projetos_portfolio" data-cta-dest="portfolio">
-        VER OS 9 PROJETOS NO PORTFÓLIO ↗
+        VER OS {NO_AR} PROJETOS NO PORTFÓLIO ↗
       </Link>
     </div>
   </section>;
@@ -1394,7 +1466,29 @@ export function Offer() {
               alçados à altura de maiúscula, inteiro enorme no meio. Os dois
               maiores números da página estavam escritos de jeitos
               diferentes, e é o MESMO preço. */}
-          <div className={s.price}><i>R$</i><strong>999</strong><i>,00</i></div>
+          {/* ---------- o número grande virou a ENTRADA (28/08) ----------
+              O card abria com R$999 em corpo 108, e esse é o número que
+              afasta: quem chega do anúncio ouviu "você só paga se gostar" e
+              a primeira coisa que a seção do preço mostrava era o total
+              inteiro, sem dizer que ele não é cobrado de uma vez nem agora.
+              A informação que decide o próximo passo é quanto custa
+              COMEÇAR, e ela estava em corpo 21, dentro de uma das duas
+              portas, competindo com o Pix ao lado.
+
+              O que NÃO muda é a regra de 20/08, que vale para esta peça
+              tanto quanto para a etiqueta do hero: "anunciar a entrada e
+              calar o total é isca". Por isso o R$999 não virou letra
+              miúda nem desceu para a lista: ele fica na linha seguinte, na
+              mesma condensada dos números das portas, colado no 199. Quem
+              lê o primeiro lê o segundo no mesmo movimento do olho.
+
+              A coluna PARCELADO perdeu a linha da entrada porque ela subiu
+              para cá: repetir "R$199,00 para começar" a 60px de distância
+              do 199 gigante gastaria a porta com um eco. O "+" que abre a
+              coluna agora soma contra o número grande, que é exatamente o
+              que ele sempre quis dizer. */}
+          <div className={s.price}><i>R$</i><strong>199</strong><i>,00</i><b>PARA<br />COMEÇAR</b></div>
+          <p className={s.priceTotal}><strong>R$999,00</strong> no total</p>
           {/* AS DUAS PORTAS DO BALCÃO: eram três linhas de mono do mesmo
               corpo e da mesma tinta, uma embaixo da outra, e a terceira (o
               Pix) lia como rodapé das duas primeiras quando é a ALTERNATIVA
@@ -1402,7 +1496,6 @@ export function Offer() {
           <div className={s.pagamento}>
             <div>
               <small>PARCELADO</small>
-              <p><strong>R$199,00</strong> para começar</p>
               <p><em>+</em> 4 parcelas de <strong>R$200,00</strong></p>
               <i>o saldo só depois de você aprovar</i>
             </div>
@@ -1433,12 +1526,12 @@ export function Offer() {
               card, onde são informação e não promessa de ato.
               O `data-cta` NÃO muda: oferta_entrada é a posição no funil, e
               trocar o rótulo não pode reiniciar a série histórica. */}
-          {/* e em 23/08 virou "QUERO MINHA VITRINE ↓", junto com os outros
+          {/* e em 23/08 virou "QUERO MINHA PRÉVIA ↓", junto com os outros
               três da página. A razão de cima continua valendo: o rótulo
               não pode prometer um ato que o formulário não pratica. Este
               não promete, ele nomeia o que a pessoa GANHA, e a garantia
               logo abaixo continua respondendo a mesma pergunta. */}
-          <Button onClick={goToForm} cta="oferta_entrada">QUERO MINHA VITRINE ↓</Button>
+          <Button onClick={goToForm} cta="oferta_entrada">QUERO MINHA PRÉVIA ↓</Button>
           <p className={s.guarantee}>O saldo de R$800 é pago somente depois que você visualizar e aprovar o projeto.</p>
         </article>
         <div className={s.formCol}>
@@ -1470,7 +1563,7 @@ export function Offer() {
                 condição continua dita, mas com o momento dela junto, e a
                 segunda frase fecha a porta da dúvida antes de o dedo
                 chegar no primeiro campo. */}
-            <p className={s.formTitle}>COMEÇAR MINHA VITRINE<br /><span>Entrada de R$199 quando a gente combinar. Nada é cobrado agora.</span></p>
+            <p className={s.formTitle}>COMEÇAR PELA PRÉVIA<br /><span>O desenho é sem custo. A entrada de R$199 só existe se você gostar.</span></p>
             <label>NOME<input name="nome" autoComplete="name" required /></label>
             {/* O campo que esta página nunca teve. Ver a nota longa no submit:
                 sem número não dá para cumprir a promessa da tela de
@@ -1482,7 +1575,7 @@ export function Offer() {
             {/* "NOME DA LOJA" saiu: o @ do instagram já entrega o nome, e eram
                 dois campos obrigatórios para uma informação só. O que sobrou
                 virou opcional, porque nome e telefone bastam para eu chamar. */}
-            <label>INSTAGRAM OU SITE DA LOJA <i className={s.opcional}>opcional</i><input name="instagram" placeholder="@sualoja" /></label>
+            <label>INSTAGRAM OU SITE DA LOJA<input name="instagram" placeholder="@sualoja" required /></label>
             <label className={s.avista}>
               <input type="checkbox" name="avista" checked={avista} onChange={e => setAvista(e.target.checked)} />
               Prefiro pagar à vista no Pix por R$899 (10% de desconto)
@@ -1496,7 +1589,7 @@ export function Offer() {
                 "reservar" e o outro de "quero minha vitrine" era inventar
                 uma diferença que não existe. Uma ação, um nome. */}
             <button className={`${s.button} ${s.acao}`} disabled={enviando}>
-              {enviando ? "ENVIANDO…" : "QUERO MINHA VITRINE"}
+              {enviando ? "ENVIANDO…" : "QUERO MINHA PRÉVIA"}
             </button>
             {/* Antes daqui saía "Tudo certo. Abrindo o WhatsApp…", que dizia à
                 pessoa que estava feito quando não estava: a mensagem abre
@@ -1535,11 +1628,20 @@ export function Offer() {
      mesma pessoa dizendo a mesma coisa em dois lugares da página.
    - "a página entra no ar" virou "a vitrine entra no ar": a coisa vendida
      tem UM nome nesta página, e não é "página". */
+/* A PRÉVIA ENTROU COMO PASSO 01 (26/08), e ela não é um passo a mais: é
+   o novo começo. O processo abria em "Reserva: você paga R$199", ou seja,
+   a primeira coisa que a pessoa lia depois de decidir era um boleto. Com
+   a oferta nova o dinheiro sai do primeiro marco e vai para o segundo,
+   atrás de um "gostou?".
+   Aprovação e publicação viraram UM marco para a lista continuar com
+   quatro: o percurso do CSS tem quatro marcos ligados pelo fio, e cinco
+   quebram o desenho. Não se perdeu conteúdo, as duas frases estão
+   inteiras dentro do mesmo passo. */
 const process = [
-  ["Reserva", "Você paga R$199 e manda o material da loja."],
-  ["Criação", "Eu desenho, desenvolvo e monto o catálogo."],
-  ["Aprovação", "Você revisa a vitrine pronta e pede a rodada de ajustes."],
-  ["Publicação", "Depois da sua aprovação e do saldo, a vitrine entra no ar."],
+  ["Prévia", "Você me manda o seu @. Eu desenho a sua vitrine e te mostro pronta, sem custo nenhum."],
+  ["Reserva", "Gostou? Aí sim: R$199 e o material da loja."],
+  ["Criação", "Eu desenho, desenvolvo e monto o catálogo inteiro."],
+  ["Aprovação e publicação", "Você revisa, pede a rodada de ajustes e, depois do saldo, a vitrine entra no ar."],
 ];
 export function Process() {
   return <section className={`${s.section} ${s.dark}`}>
@@ -1562,7 +1664,7 @@ export function Process() {
           Cuidado ao mexer nisto: NÃO existe política de reembolso escrita,
           então a frase pode dizer o que fica retido, e não pode prometer
           devolução do que já foi pago. */}
-      <h2>Você vê a loja pronta<br /><em>antes de pagar o resto.</em></h2>
+      <h2>Você vê a loja pronta<br /><em>antes de pagar nada.</em></h2>
       {/* ---------- o processo também é percurso (13/08) ----------
           Eram quatro células de uma tabela com filete em volta, e o
           conteúdo é uma SEQUÊNCIA no tempo: reserva, criação, aprovação,
@@ -1702,12 +1804,12 @@ export function FinalCTA() {
       <h2 className={s.h2Duplo}>Sua loja já tem produtos.<br />Agora precisa de uma estrutura para<br /><em>vender melhor.</em></h2>
       {/* quem chega aqui leu a página inteira: o pedido pode ser o cheio,
           sem rodeio, e o caminho é o mesmo formulário de sempre */}
-      <p className={s.lead}>Deixa seu nome e WhatsApp que eu te chamo hoje e te mostro como a vitrine ficaria para a sua loja. Se você já decidiu, começa com R$199.</p>
+      <p className={s.lead}>Deixa o seu @ que eu desenho a sua vitrine e te mostro pronta, de graça. Se você já decidiu, começa com R$199.</p>
       <div className={s.actions}>
         {/* "DEIXAR MEU CONTATO ↑" em 23/08: último dos quatro a entrar no
             vocabulário único. Quem leu a página inteira chega aqui e o
             botão diz a mesma coisa que o do topo e que o de envio. */}
-        <a className={`${s.button} ${s.acao}`} href="#contratar" data-cta="final" data-cta-dest="form">QUERO MINHA VITRINE ↑</a>
+        <a className={`${s.button} ${s.acao}`} href="#contratar" data-cta="final" data-cta-dest="form">QUERO MINHA PRÉVIA ↑</a>
         <a className={s.ghost} href="#oferta" data-cta="final_reserva" data-cta-dest="oferta">VER O QUE ESTÁ INCLUSO</a>
       </div>
     </section>
@@ -1785,7 +1887,11 @@ export function MobileBar() {
      Rosa porque é a terceira e última superfície dos 10% da paleta: sobre
      grafite, é a única coisa desta barra que o olho precisa achar. */
   return <div className={`${s.bar} ${hidden ? s.barHidden : ""}`}>
-    <span className={s.barCopy}><b>R$999</b><span>Começa com R$199</span></span>
-    <a className={`${s.button} ${s.acao}`} href="#contratar" data-cta="sticky_mobile" data-cta-dest="form">DEIXAR CONTATO</a>
+    {/* em 26/08 o preço saiu daqui: a barra é a única peça que acompanha
+        a pessoa a página inteira, e o que decide passou a ser o RISCO, não
+        o valor. "GRÁTIS" cabe exatamente onde "R$999" cabia; frase maior
+        estoura a barra ao lado do botão em 390px. */}
+    <span className={s.barCopy}><b>GRÁTIS</b><span>Sua vitrine desenhada</span></span>
+    <a className={`${s.button} ${s.acao}`} href="#contratar" data-cta="sticky_mobile" data-cta-dest="form">QUERO A PRÉVIA</a>
   </div>;
 }
