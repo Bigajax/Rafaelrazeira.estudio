@@ -14,6 +14,7 @@
    `plano` ausente e a rota o aceita como nulo.
    ============================================================ */
 
+import type { MotivoSuspeito } from "@/components/form-guarda";
 import { salvarLead } from "@/components/lead";
 import { contextoDaSessao, irParaWhatsapp, mpTrack, refDaVisita, trackLead } from "@/components/vitrine/tracking";
 
@@ -63,4 +64,40 @@ export async function enviarLeadVitrine(d: {
   mpTrack("AbriuWhatsApp", { cta_position: d.ctaPosition, plano: d.plano, origem: "fallback" });
   irParaWhatsapp(linkWa);
   return { salvo: false, linkWa };
+}
+
+/* ---------- o envio que a guarda acusou (01/09/2026) ----------
+   Até aqui, acusar era descartar, e um falso positivo custava o cliente
+   inteiro em silêncio: a pessoa via "RECEBI SEUS DADOS" e não sobrava
+   registro em lugar nenhum. Agora ele é gravado, e só gravado.
+
+   O que este caminho NÃO faz, e cada "não" tem dono:
+   • não dispara Lead, Contact nem nada na Mixpanel, porque um envio que
+     pode ser robô não pode ensinar a campanha a procurar mais robôs;
+   • não vira card no CRM nem e-mail, porque a fila do dia é feita para ser
+     trabalhada uma por uma e não aguenta ser envenenada;
+   • não abre o WhatsApp em falha, porque quem chama isto já vai mostrar a
+     confirmação de qualquer jeito, e a promessa da tela é a mesma para a
+     pessoa e para o robô.
+
+   Quem decide o que é suspeito continua sendo form-guarda.tsx. Aqui só se
+   registra, com o motivo junto, e sem esperar: a tela não pode ficar presa
+   num envio que ninguém vai ler agora. */
+export function registrarSuspeito(d: {
+  nome: string;
+  whatsapp: string;
+  instagram?: string;
+  plano?: string;
+  motivo: MotivoSuspeito;
+}) {
+  void salvarLead({
+    pagina: "vitrine-digital",
+    nome: d.nome,
+    whatsapp: d.whatsapp,
+    canal: d.instagram || "",
+    ...(d.plano ? { plano: d.plano } : {}),
+    ...contextoDaSessao(),
+    /* a rota traduz isto em `status: "suspeito"` e pula CRM e aviso */
+    suspeito: d.motivo,
+  });
 }

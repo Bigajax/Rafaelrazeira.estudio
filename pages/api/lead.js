@@ -341,6 +341,17 @@ export default async function handler(req, res) {
      onde a pessoa se verifica sozinha ao mandar a mensagem. */
   if (!whatsappValido(whatsapp)) return erro(res, 400, "whatsapp inválido");
 
+  /* ---------- o envio que a guarda anti-bot acusou (01/09/2026) ----------
+     A /vitrine-digital parou de descartar o envio suspeito e passou a
+     mandá-lo para cá marcado, porque descartar custava o cliente inteiro em
+     silêncio quando a guarda errava. Chega como "isca" ou "relogio", e a
+     lista fechada existe para o campo não virar texto livre vindo de fora.
+
+     O motivo entra no próprio `status` em vez de ganhar coluna: poupa uma
+     migração manual hoje e continua filtrável com `status like 'suspeito%'`.
+     Se um dia isso virar análise de verdade, aí sim vira coluna. */
+  const suspeito = b.suspeito === "isca" || b.suspeito === "relogio" ? b.suspeito : null;
+
   const utm = b.utm || {};
   const linha = {
     pagina: texto(b.pagina) || "e-commerce",
@@ -366,6 +377,9 @@ export default async function handler(req, res) {
     referrer: texto(b.referrer, 1000),
     ref: texto(b.ref, 64),
     distinct_id: texto(b.distinct_id, 64),
+    /* `undefined` some no JSON.stringify, então o lead normal continua
+       caindo no default 'novo' da tabela sem esta rota saber que ele existe. */
+    status: suspeito ? `suspeito:${suspeito}` : undefined,
   };
 
   let salvo;
@@ -401,7 +415,14 @@ export default async function handler(req, res) {
      Em paralelo porque são independentes: o aviso por e-mail e a entrada no
      pipeline não sabem um do outro, e em série a rota pagaria a soma dos
      dois tempos de rede na cara da pessoa que está esperando a tela. */
-  const [aviso, crm] = await Promise.all([avisar(linha), sincronizarCRM(linha, utm)]);
+  /* O suspeito para aqui. Ele já está gravado, que é o ponto inteiro da
+     mudança de 01/09, e nada além disso acontece: card no CRM envenenaria a
+     fila do dia, que é feita para ser trabalhada uma por uma, e aviso faria
+     o telefone tocar por robô. Se ele for gente, o lead está no banco
+     esperando, e é isso que antes não acontecia. */
+  const [aviso, crm] = suspeito
+    ? [{ enviado: false, motivo: "suspeito" }, { ok: false, motivo: "suspeito" }]
+    : await Promise.all([avisar(linha), sincronizarCRM(linha, utm)]);
 
   res.statusCode = 200;
   res.setHeader("Content-Type", "application/json");

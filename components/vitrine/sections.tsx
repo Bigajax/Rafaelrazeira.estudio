@@ -7,7 +7,7 @@ import s from "@/app/vitrine-digital/vitrine.module.css";
 import { CampoIsca, useGuardaDeFormulario } from "@/components/form-guarda";
 import { mascararWhatsapp, whatsappValido } from "@/components/telefone";
 import { ligarAncoras } from "@/components/vitrine/ancora";
-import { enviarLeadVitrine } from "@/components/vitrine/lead-flow";
+import { enviarLeadVitrine, registrarSuspeito } from "@/components/vitrine/lead-flow";
 import { focarSemContar, initTracking } from "@/components/vitrine/tracking";
 import { projetos } from "@/data/portfolio";
 
@@ -207,10 +207,24 @@ function HeroForm() {
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (enviando) return;              // toque duplo não grava duas linhas
-    /* robô cai na tela de confirmação e nada acontece: sem gravação, sem
-       Contact, sem aviso. Ver o porquê do sucesso falso em form-guarda.tsx. */
-    if (envioSuspeito(e.currentTarget)) { setEnviado(true); return; }
+    /* Os campos são lidos ANTES de qualquer coisa: `setEnviado` troca o
+       formulário pela confirmação, e depois disso não existe mais de onde
+       ler. */
     const f = new FormData(e.currentTarget);
+    /* Robô cai na tela de confirmação e não ensina nada à campanha, mas
+       desde 01/09 o envio é GRAVADO como suspeito em vez de descartado: se
+       for gente, o lead existe. Ver o porquê inteiro em form-guarda.tsx. */
+    const suspeito = envioSuspeito(e.currentTarget);
+    if (suspeito) {
+      registrarSuspeito({
+        nome: String(f.get("nome") || ""),
+        whatsapp: String(f.get("whatsapp") || ""),
+        instagram: String(f.get("instagram") || ""),
+        motivo: suspeito,
+      });
+      setEnviado(true);
+      return;
+    }
     /* telefone inválido nem vira evento: o Contact é o que a campanha
        otimiza, e número lixo aqui seria falso positivo ensinando a Meta */
     if (!whatsappValido(String(f.get("whatsapp") || ""))) { setTelInvalido(true); return; }
@@ -1415,10 +1429,22 @@ export function Offer() {
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (enviando) return;              // toque duplo não grava duas linhas
-    /* mesmas guardas do mini-formulário do hero: robô ganha a tela de
-       confirmação sem efeito nenhum, e telefone inválido nem vira evento */
-    if (envioSuspeito(e.currentTarget)) { setEnviado(true); return; }
+    /* mesmas guardas do mini-formulário do hero, na mesma ordem: campos
+       lidos antes de trocar a tela, envio suspeito gravado em vez de
+       descartado, e telefone inválido não virando evento */
     const f = new FormData(e.currentTarget);
+    const suspeito = envioSuspeito(e.currentTarget);
+    if (suspeito) {
+      registrarSuspeito({
+        nome: String(f.get("nome") || ""),
+        whatsapp: String(f.get("whatsapp") || ""),
+        instagram: String(f.get("instagram") || ""),
+        plano: plan,
+        motivo: suspeito,
+      });
+      setEnviado(true);
+      return;
+    }
     if (!whatsappValido(String(f.get("whatsapp") || ""))) { setTelInvalido(true); return; }
     setEnviando(true);
     const { salvo, linkWa: link } = await enviarLeadVitrine({
