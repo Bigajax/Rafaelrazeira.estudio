@@ -203,6 +203,9 @@ function HeroForm() {
   const [enviando, setEnviando] = useState(false);
   const [enviado, setEnviado] = useState(false);
   const [telInvalido, setTelInvalido] = useState(false);
+  /* o @ que a rota não achou na Meta (10/09): guarda o texto para a
+     mensagem dizer QUAL @ não existe, que é o que faz a pessoa conferir */
+  const [instaInvalido, setInstaInvalido] = useState("");
   const envioSuspeito = useGuardaDeFormulario();
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -229,7 +232,7 @@ function HeroForm() {
        otimiza, e número lixo aqui seria falso positivo ensinando a Meta */
     if (!whatsappValido(String(f.get("whatsapp") || ""))) { setTelInvalido(true); return; }
     setEnviando(true);
-    const { salvo, linkWa: link } = await enviarLeadVitrine({
+    const { salvo, linkWa: link, arrobaInvalido } = await enviarLeadVitrine({
       nome: String(f.get("nome") || ""),
       whatsapp: String(f.get("whatsapp") || ""),
       /* o lead-flow já sabia receber `instagram` desde 07/08 (o formulário
@@ -238,8 +241,11 @@ function HeroForm() {
       instagram: String(f.get("instagram") || ""),
       ctaPosition: "hero_form",
     });
-    setLinkWa(link);
     setEnviando(false);
+    /* o @ não existe na Meta: o campo volta para a pessoa, sem WhatsApp e
+       sem confirmação, porque não há prévia possível a partir dele */
+    if (arrobaInvalido) { setInstaInvalido(String(f.get("instagram") || "")); return; }
+    setLinkWa(link);
     if (salvo) setEnviado(true);
   }
   /* a confirmação ocupa a própria porta: estado do React, sem navegação,
@@ -563,12 +569,17 @@ function HeroForm() {
       <label>
         <span aria-hidden>@</span>
         <input name="instagram" aria-label="Sua loja no Instagram" autoCapitalize="off" autoCorrect="off" spellCheck={false} required placeholder="sualoja"
-               onInput={e => { e.currentTarget.value = e.currentTarget.value.replace(/^\s*(?:https?:\/\/)?(?:www\.)?instagram\.com\//i, "").replace(/[@\s]/g, "").replace(/\/.*$/, ""); }} />
+               onInput={e => { e.currentTarget.value = e.currentTarget.value.replace(/^\s*(?:https?:\/\/)?(?:www\.)?instagram\.com\//i, "").replace(/[@\s]/g, "").replace(/\/.*$/, ""); if (instaInvalido) setInstaInvalido(""); }} />
         {/* o "opcional" saiu em 26/08: o cartão logo acima passou a
             prometer DESENHO, e sem o @ não existe o que desenhar. O campo
             mais caro da dobra (68px medidos) virou o insumo do produto, e
             de quebra filtra quem só queria espiar preço. */}
       </label>
+      {/* A rota conferiu o @ na Meta e não achou (10/09). Diz QUAL @ e o
+          que precisa ser, porque os dois erros mais comuns da primeira
+          semana foram digitar o e-mail neste campo e dar o @ pessoal em
+          vez do da loja. O mesmo vermelho do erro de telefone. */}
+      {instaInvalido && <small role="alert" style={{ color: "#b3261e" }}>Não achei <b>@{instaInvalido}</b> no Instagram. Confere o @ da loja: precisa ser a conta profissional, é dela que eu tiro as fotos.</small>}
       <CampoIsca />
     </div>
     {/* O rótulo era "ME CHAMA HOJE", e ele passou a brigar com a linha
@@ -1384,6 +1395,8 @@ export function Offer() {
      O pagamento à vista segue como opção dentro do formulário, escolhida
      depois que a pessoa já decidiu contratar. */
   const [avista, setAvista] = useState(false);
+  /* o @ que a rota não achou na Meta (10/09), igual ao mini-formulário do hero */
+  const [instaInvalido, setInstaInvalido] = useState("");
   const [linkWa, setLinkWa] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [enviado, setEnviado] = useState(false);
@@ -1447,16 +1460,19 @@ export function Offer() {
     }
     if (!whatsappValido(String(f.get("whatsapp") || ""))) { setTelInvalido(true); return; }
     setEnviando(true);
-    const { salvo, linkWa: link } = await enviarLeadVitrine({
+    const { salvo, linkWa: link, arrobaInvalido } = await enviarLeadVitrine({
       nome: String(f.get("nome") || ""),
       whatsapp: String(f.get("whatsapp") || ""),
       instagram: String(f.get("instagram") || ""),
       plano: plan,
       ctaPosition: "form",
     });
+    setEnviando(false);
+    /* o @ não existe na Meta: o campo volta para a pessoa (mesma regra do
+       mini-formulário do hero) */
+    if (arrobaInvalido) { setInstaInvalido(String(f.get("instagram") || "")); return; }
     /* guardado nos dois caminhos: serve à confirmação e ao "Falta um toque" */
     setLinkWa(link);
-    setEnviando(false);
     if (salvo) setEnviado(true);
   }
   return <section className={`${s.section} ${s.offer}`} id="oferta">
@@ -1607,7 +1623,9 @@ export function Offer() {
             {/* "NOME DA LOJA" saiu: o @ do instagram já entrega o nome, e eram
                 dois campos obrigatórios para uma informação só. O que sobrou
                 virou opcional, porque nome e telefone bastam para eu chamar. */}
-            <label>INSTAGRAM OU SITE DA LOJA<input name="instagram" placeholder="@sualoja" required /></label>
+            <label>INSTAGRAM OU SITE DA LOJA<input name="instagram" placeholder="@sualoja" required autoCapitalize="off" autoCorrect="off" spellCheck={false}
+                   onInput={() => { if (instaInvalido) setInstaInvalido(""); }} /></label>
+            {instaInvalido && <small role="alert" style={{ color: "#b3261e" }}>Não achei <b>@{instaInvalido.replace(/^@+/, "")}</b> no Instagram. Confere o @ da loja: precisa ser a conta profissional, é dela que eu tiro as fotos.</small>}
             <label className={s.avista}>
               <input type="checkbox" name="avista" checked={avista} onChange={e => setAvista(e.target.checked)} />
               Prefiro pagar à vista no Pix por R$899 (10% de desconto)

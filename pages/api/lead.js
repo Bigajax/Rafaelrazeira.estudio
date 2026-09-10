@@ -28,11 +28,30 @@
    • LEAD_EMAIL_TO              (opcional) para onde vai o aviso.
    • LEAD_EMAIL_FROM            (opcional) remetente; o padrão só entrega no
      e-mail dono da conta Resend.
+   • O aviso que VIBRA no celular vive em lib/push.js e tem as variáveis dele
+     documentadas lá (Telegram ou ntfy, os dois opcionais). E-mail é registro,
+     push é pressa: quem responde em minutos ganha o lead.
 
    RODE ANTES: supabase/leads.sql, senão todo envio cai no fallback.
    ============================================================ */
 
 import { whatsappValido } from "../../components/telefone";
+import { avisarNoCelular } from "../../lib/push";
+import { conferirArroba } from "../../lib/arroba";
+
+/* ---------- a janela do envio repetido ----------
+   A /vitrine-digital tem dois formulários (o do hero e o da oferta) e a
+   mesma pessoa preenche os dois na mesma visita: primeiro deixa o contato
+   lá em cima, depois desce, escolhe o plano e preenche de novo. Até 10/09
+   cada um virava uma linha, um e-mail, um push e um Contact na Meta. Na
+   primeira semana da campanha "prévia grátis" foram 24 linhas para 16
+   pessoas, e o CPL da campanha parecia 40% melhor do que era.
+
+   Dentro desta janela, mesmo navegador (`distinct_id`) ou mesmo WhatsApp
+   na mesma página é a MESMA pessoa: a linha existente ganha o que veio de
+   novo (o plano, o @ corrigido) e nada mais dispara. Fora dela é outra
+   visita, e outra visita merece outro aviso. */
+const JANELA_REPETIDO_MS = 24 * 60 * 60 * 1000;
 
 /* Teto por campo. Não é validação de formulário, é limite de estrago: esta
    rota é pública e sem segredo (tem que ser, o formulário é anônimo), então o
@@ -347,17 +366,45 @@ export default async function handler(req, res) {
      silêncio quando a guarda errava. Chega como "isca" ou "relogio", e a
      lista fechada existe para o campo não virar texto livre vindo de fora.
 
-     O motivo entra no próprio `status` em vez de ganhar coluna: poupa uma
-     migração manual hoje e continua filtrável com `status like 'suspeito%'`.
-     Se um dia isso virar análise de verdade, aí sim vira coluna. */
-  const suspeito = b.suspeito === "isca" || b.suspeito === "relogio" ? b.suspeito : null;
+     O motivo entra no próprio `status` em vez de ganhar coluna: pouparia
+     uma migração manual hoje e continua filtrável com `status like
+     'suspeito%'`. Se um dia isso virar análise de verdade, aí sim vira
+     coluna. */
+  let suspeito = b.suspeito === "isca" || b.suspeito === "relogio" ? b.suspeito : null;
+
+  const pagina = texto(b.pagina) || "e-commerce";
+  let canal = texto(b.canal);
+
+  /* ---------- o @ é conferido na porta (10/09/2026) ----------
+     Só na vitrine, porque só ela promete montar a loja a partir do @. A
+     conferência é a mesma chamada que a oficina faz para colher as fotos:
+     se ela falha aqui, falharia lá, e o lead não teria como ser atendido.
+     Ver o porquê inteiro em lib/arroba.ts.
+
+     "invalido" vira `suspeito:arroba`: a linha é gravada (se for gente,
+     está no banco), mas não vira card, e-mail nem push, e a resposta avisa
+     o navegador, que devolve o campo à pessoa para corrigir em vez de
+     mostrar "recebi seus dados". O envio corrigido chega como outra
+     requisição e passa por aqui de novo.
+
+     "desconhecido" segue como ok: token vencido ou Meta fora do ar é
+     problema nosso, e ninguém perde a prévia por isso. */
+  let arroba = "nao_conferido";
+  if (pagina === "vitrine-digital" && !suspeito) {
+    const c = await conferirArroba(canal || "");
+    arroba = c.estado;
+    if (c.estado === "invalido") suspeito = "arroba";
+    /* o @ entra limpo no banco: "@Loja" e "instagram.com/loja/" viram "loja",
+       que é como a oficina e o CRM o procuram depois */
+    if (c.estado === "ok") canal = c.arroba;
+  }
 
   const utm = b.utm || {};
   const linha = {
-    pagina: texto(b.pagina) || "e-commerce",
+    pagina,
     nome,
     whatsapp,
-    canal: texto(b.canal),
+    canal,
     empresa: texto(b.empresa),
     vende: texto(b.vende),
     produtos: texto(b.produtos),
@@ -382,18 +429,65 @@ export default async function handler(req, res) {
     status: suspeito ? `suspeito:${suspeito}` : undefined,
   };
 
+  const cabecalhos = {
+    "Content-Type": "application/json",
+    apikey: chave,
+    Authorization: `Bearer ${chave}`,
+    Prefer: "return=representation",
+  };
+  const base = `${url.replace(/\/$/, "")}/rest/v1/leads`;
+
+  /* ---------- o mesmo envio, de novo ----------
+     Procura a linha desta pessoa nesta página dentro da janela. O suspeito
+     não entra na busca nem na atualização: uma linha marcada como robô não
+     pode ser "corrigida" por um envio seguinte, e um envio seguinte de robô
+     não pode encostar numa linha boa. Falha na busca é tratada como "não
+     achei": no pior caso nasce a linha dupla de antes, nunca um lead
+     perdido. */
+  let repetido = null;
+  if (!suspeito) {
+    try {
+      const desde = new Date(Date.now() - JANELA_REPETIDO_MS).toISOString();
+      const iguais = [];
+      if (linha.distinct_id) iguais.push(`distinct_id.eq.${linha.distinct_id}`);
+      /* aspas porque o número vai mascarado, com parênteses e espaço, e o
+         PostgREST lê parêntese solto como sintaxe do próprio `or` */
+      iguais.push(`whatsapp.eq."${whatsapp.replace(/"/g, "")}"`);
+      const filtro = [
+        `select=id,plano,canal`,
+        `pagina=eq.${encodeURIComponent(linha.pagina)}`,
+        `created_at=gte.${encodeURIComponent(desde)}`,
+        `status=not.like.suspeito*`,
+        `or=(${encodeURIComponent(iguais.join(","))})`,
+        `order=created_at.desc`,
+        `limit=1`,
+      ].join("&");
+      const r = await comTimeout(`${base}?${filtro}`, { headers: cabecalhos });
+      const corpo = r.ok ? await r.json().catch(() => []) : [];
+      if (Array.isArray(corpo) && corpo[0]) repetido = corpo[0];
+    } catch (e) {
+      console.warn("[lead] não deu para procurar envio repetido:", e?.message || e);
+    }
+  }
+
   let salvo;
   try {
-    const r = await comTimeout(`${url.replace(/\/$/, "")}/rest/v1/leads`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        apikey: chave,
-        Authorization: `Bearer ${chave}`,
-        Prefer: "return=representation",
-      },
-      body: JSON.stringify(linha),
-    });
+    let r;
+    if (repetido) {
+      /* Só o que veio preenchido sobrescreve: o envio do hero sem plano não
+         apaga o plano escolhido no formulário da oferta um minuto antes. */
+      const novidade = {};
+      for (const k of ["plano", "canal", "url", "utm_content", "utm_term", "referrer"]) {
+        if (linha[k]) novidade[k] = linha[k];
+      }
+      r = await comTimeout(`${base}?id=eq.${repetido.id}`, {
+        method: "PATCH",
+        headers: cabecalhos,
+        body: JSON.stringify(novidade),
+      });
+    } else {
+      r = await comTimeout(base, { method: "POST", headers: cabecalhos, body: JSON.stringify(linha) });
+    }
     const corpo = await r.json().catch(() => null);
     if (!r.ok) {
       /* o motivo mais provável de cair aqui é a migração não ter sido rodada:
@@ -412,17 +506,27 @@ export default async function handler(req, res) {
      morre com ele. Como o lead JÁ está salvo, o resultado dos dois não muda
      a resposta; eles viajam junto só para dar para conferir no teste.
 
-     Em paralelo porque são independentes: o aviso por e-mail e a entrada no
-     pipeline não sabem um do outro, e em série a rota pagaria a soma dos
-     dois tempos de rede na cara da pessoa que está esperando a tela. */
+     Em paralelo porque são independentes: o aviso por e-mail, o push e a
+     entrada no pipeline não sabem um do outro, e em série a rota pagaria a
+     soma dos três tempos de rede na cara da pessoa que está esperando a tela.
+
+     O push entra aqui e não dentro de `avisar` porque é outro trabalho: o
+     e-mail é o registro com o formulário inteiro, o push é o toque que faz
+     você pegar o telefone. Um pode existir sem o outro. */
   /* O suspeito para aqui. Ele já está gravado, que é o ponto inteiro da
      mudança de 01/09, e nada além disso acontece: card no CRM envenenaria a
      fila do dia, que é feita para ser trabalhada uma por uma, e aviso faria
-     o telefone tocar por robô. Se ele for gente, o lead está no banco
+     o telefone vibrar por robô. Se ele for gente, o lead está no banco
      esperando, e é isso que antes não acontecia. */
-  const [aviso, crm] = suspeito
-    ? [{ enviado: false, motivo: "suspeito" }, { ok: false, motivo: "suspeito" }]
-    : await Promise.all([avisar(linha), sincronizarCRM(linha, utm)]);
+  /* O repetido também para aqui, por outro motivo: a pessoa já tem card, já
+     vibrou o telefone, já contou na Meta. O que mudou está na linha. */
+  const [aviso, crm, push] = suspeito || repetido
+    ? [{ enviado: false, motivo: suspeito ? "suspeito" : "repetido" }, { ok: false, motivo: suspeito ? "suspeito" : "repetido" }, { enviado: false, motivo: suspeito ? "suspeito" : "repetido" }]
+    : await Promise.all([
+      avisar(linha),
+      sincronizarCRM(linha, utm),
+      avisarNoCelular(linha),
+    ]);
 
   res.statusCode = 200;
   res.setHeader("Content-Type", "application/json");
@@ -430,7 +534,17 @@ export default async function handler(req, res) {
     JSON.stringify({
       ok: true,
       id: salvo?.id || null,
+      /* "ok" | "invalido" | "desconhecido" | "nao_conferido". O navegador só
+         age sobre "invalido": devolve o campo do @ para a pessoa e não
+         dispara Lead nem Contact, que é o ponto inteiro da conferência. */
+      arroba,
+      /* true quando a linha existente foi atualizada em vez de nascer outra:
+         o navegador não conta o Contact de novo */
+      repetido: !!repetido,
       avisado: aviso.enviado,
+      /* Separado do `avisado` de propósito: dá para ver no teste que o e-mail
+         saiu e o push não, que é justamente o caso de variável faltando. */
+      push: push.enviado,
       /* `novo: false` quer dizer que o contato já estava no pipeline e o
          envio virou uma interação de entrada, que é o caminho certo da
          regra 7 e não uma falha. */

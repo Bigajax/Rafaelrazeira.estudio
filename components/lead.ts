@@ -22,7 +22,16 @@ const TIMEOUT_MS = 8000;
 
 export type LeadPayload = Record<string, unknown> & { pagina: string; nome: string; whatsapp: string };
 
-export async function salvarLead(dados: LeadPayload): Promise<boolean> {
+/* O que a rota responde além do 200. Desde 10/09 a vitrine precisa dos dois:
+   `arroba` para devolver o campo à pessoa quando o @ não existe, e
+   `repetido` para não contar o mesmo contato duas vezes na Meta. */
+export type RespostaLead = {
+  ok: boolean;
+  arroba?: "ok" | "invalido" | "desconhecido" | "nao_conferido";
+  repetido?: boolean;
+};
+
+export async function salvarLeadDetalhado(dados: LeadPayload): Promise<RespostaLead> {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
   try {
@@ -32,11 +41,18 @@ export async function salvarLead(dados: LeadPayload): Promise<boolean> {
       body: JSON.stringify(dados),
       signal: ctrl.signal,
     });
-    return r.ok;
+    if (!r.ok) return { ok: false };
+    const corpo = (await r.json().catch(() => null)) as Partial<RespostaLead> | null;
+    return { ok: true, arroba: corpo?.arroba, repetido: !!corpo?.repetido };
   } catch {
     /* rede caída, aba fechando, timeout: tudo cai no mesmo lugar */
-    return false;
+    return { ok: false };
   } finally {
     clearTimeout(t);
   }
+}
+
+/* O contrato antigo, mantido para a /e-commerce: só quer saber se gravou. */
+export async function salvarLead(dados: LeadPayload): Promise<boolean> {
+  return (await salvarLeadDetalhado(dados)).ok;
 }

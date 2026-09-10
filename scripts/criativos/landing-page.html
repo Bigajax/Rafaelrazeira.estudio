@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<title>Criativos estáticos · /landing-page</title>
+
+<!-- ============================================================
+     A PRANCHETA DOS CRIATIVOS ESTÁTICOS DA /LANDING-PAGE
+
+     Isto não é uma página do site: é de onde saem os PNGs. Cada `.peca`
+     é uma arte fechada e o scripts/capture-criativos.mjs fotografa uma
+     por uma, pelo id.
+
+     Por que em HTML e não num gerador de imagem: o argumento desta marca
+     é a tipografia. A Archivo com o eixo de LARGURA é o que faz o lockup
+     de cartaz, e gerador nenhum entrega isso, nem acerta acento em
+     português. Aqui as fontes são as mesmas do site, então o anúncio e a
+     primeira tela da landing são a mesma peça.
+
+     ---------- COMO O LOTE ESTÁ ORGANIZADO ----------
+     A regra é a da matriz da vitrine: uma variável por vez, senão o
+     resultado não diz o que ganhou.
+
+     MOLDE PADRÃO, muda só a manchete (o gancho):
+       A  a oferta        "eu desenho, gostou? aí paga"
+       B  o risco         "você vê pronta antes de pagar"
+       C  o diagnóstico   "você já pagou pelo clique"
+       D  o destino       "link da bio não é destino de anúncio pago"
+       E  quem faz        "sem agência, você fala comigo"
+       F  risco zero      "se não gostar, não paga nem um real"
+
+     ESTRUTURA DIFERENTE, mesma oferta:
+       G  a folha de orçamento: os três preços na cara. Filtra quem não
+          tem o orçamento antes do clique, que numa campanha por lead é
+          exatamente o que se quer.
+
+     COR DIFERENTE, mesma peça:
+       H  a A inteira invertida em grafite. Testa parada de rolagem: no
+          feed, quase tudo é claro. Só a cor muda, então a leitura do
+          resultado é limpa.
+
+     FORMATO:
+       STORY-A  a A em 9:16, com as zonas de segurança do stories
+                respeitadas (o topo e o rodapé do aplicativo comem
+                ~250px e ~340px, e é lá que fica o botão de "saiba
+                mais").
+     ============================================================ -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..100,400..900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+<style>
+:root{
+  --paper:#F2EFE6;
+  --ink:#14181A;
+  --ink-soft:#3A4144;
+  --green:#0C9159;
+  --green-live:#1FBF7A;
+  --rosa:#E31B62;
+  --linha-dark:#2A3134;
+  --font-display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --font-body:"Inter",system-ui,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,monospace;
+  --margem:90px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#8a8a8a;padding:40px;display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start}
+
+.peca{
+  width:1080px;height:1350px;
+  background:var(--paper);color:var(--ink);
+  font-family:var(--font-body);
+  padding:var(--margem);
+  display:flex;flex-direction:column;
+  overflow:hidden;position:relative;
+}
+
+/* ---------- a régua de dados ----------
+   Dois itens, não três. A página tem três (24h, 3 dias, R$0), mas no feed
+   a arte é vista por um segundo e meio: o "24H PARA RESPONDER" é o dado
+   de quem já está lendo a página, não de quem está passando o dedo. Os
+   dois que ficaram sustentam a oferta: quando fica pronta e quanto custa
+   até lá. */
+.dados{
+  list-style:none;display:flex;gap:64px;align-items:baseline;
+  padding-top:22px;border-top:2px dashed var(--green);
+}
+.dados li{display:flex;align-items:baseline;gap:10px;
+  font-family:var(--font-mono);font-size:22px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-soft);white-space:nowrap}
+.dados b{font-family:var(--font-display);font-weight:800;font-size:54px;
+  line-height:1;letter-spacing:-.02em;color:var(--ink);font-variant-numeric:tabular-nums}
+
+/* ---------- a manchete ----------
+   Cada linha é medida e esticada até encostar nas duas margens da coluna
+   (o `ajustar()`, no fim do arquivo). O eixo de largura da Archivo faz o
+   trabalho; o corpo só entra quando a largura chega no fim do curso. É a
+   mesma mecânica do herofit.js do site. */
+.manchete{flex:1;display:flex;flex-direction:column;justify-content:center}
+
+/* A entrelinha é .92 e não .88 como no site: lá as manchetes do lockup
+   não têm acento sobre a caixa alta e aqui têm (VOCÊ, JÁ, PÁGINA). Com
+   .88 o circunflexo de uma linha encostava na base da linha de cima.
+
+   O `word-spacing` existe pelo mesmo motivo que o site aprendeu na
+   manchete: no fim do curso do eixo de largura o espaço entre palavras
+   encolhe junto com as letras, e duas palavras brancas viram uma só
+   ("A VENDA" lia "AVENDA"). */
+.linha{
+  display:block;width:fit-content;
+  font-family:var(--font-display);font-weight:800;
+  font-size:150px;line-height:.92;letter-spacing:-.035em;word-spacing:.05em;
+  text-transform:uppercase;white-space:nowrap;
+}
+/* O grifo NÃO condensa: fica na largura cheia e num corpo maior, e é esse
+   contraste que separa a promessa da descrição. Mesma regra do
+   `.hero__headline em` do site. */
+.linha em{font-style:normal;font-stretch:100%;font-size:1.16em;color:var(--green)}
+.ponto{color:var(--rosa)}
+
+/* A faixa sangra até a borda ESQUERDA e morre depois da última letra:
+   assim ela é um objeto pousado na página, não uma tarja de rodapé. */
+.faixa{
+  background:var(--ink);width:fit-content;
+  margin-left:calc(-1 * var(--margem));
+  margin-top:14px;
+  padding:14px 46px 22px var(--margem);
+}
+.faixa .linha{color:var(--paper)}
+.faixa em{color:var(--green-live)}
+
+.rodape{display:flex;flex-direction:column;gap:34px}
+.apoio{font-size:31px;line-height:1.45;max-width:20ch;color:var(--ink-soft)}
+.apoio b{font-weight:600;color:var(--ink)}
+.assinatura{display:flex;align-items:center;gap:14px;
+  font-family:var(--font-mono);font-weight:700;font-size:21px;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--ink)}
+.assinatura::before{content:"";width:34px;height:3px;background:var(--green);flex:none}
+
+/* ============================================================
+   H — A PEÇA ESCURA
+
+   Mesma arte da A, invertida. No feed quase tudo é claro, e o grafite
+   cheio é a forma mais barata de parar o dedo sem gritar com selo nem
+   com seta. A inversão segue a regra dos três verdes da casa: sobre
+   grafite só o VIVO é legível, e dentro da faixa (que virou papel) o
+   grifo volta para o verde de papel.
+   ============================================================ */
+.peca--escura{background:var(--ink);color:var(--paper)}
+.peca--escura .dados{border-top-color:var(--green-live)}
+.peca--escura .dados li{color:#9BA6A0}
+.peca--escura .dados b{color:var(--paper)}
+.peca--escura .linha{color:var(--paper)}
+.peca--escura .linha em{color:var(--green-live)}
+.peca--escura .faixa{background:var(--paper)}
+.peca--escura .faixa .linha{color:var(--ink)}
+.peca--escura .faixa em{color:var(--green)}
+.peca--escura .apoio{color:#C9CDC6}
+.peca--escura .apoio b{color:var(--paper)}
+.peca--escura .assinatura{color:var(--paper)}
+.peca--escura .assinatura::before{background:var(--green-live)}
+
+/* ============================================================
+   G — A FOLHA DE ORÇAMENTO
+
+   A única peça do lote que mostra o preço, e ela existe por um motivo de
+   campanha, não de desenho: numa campanha otimizada por lead, quem não
+   tem o orçamento custa caro. O número na arte filtra antes do clique.
+
+   Não é a tabela da página reduzida: aqui são três linhas e um filete,
+   sem descrição de escopo. Descrição de escopo em anúncio é texto que
+   ninguém lê no feed.
+   ============================================================ */
+.tabela{flex:1;display:flex;flex-direction:column;justify-content:center}
+.tabela__titulo{
+  font-family:var(--font-display);font-weight:800;font-stretch:82%;
+  font-size:96px;line-height:.94;letter-spacing:-.035em;text-transform:uppercase;
+  margin-bottom:52px;
+}
+.linhas{list-style:none;border-top:2px solid var(--ink)}
+.linhas li{
+  display:flex;align-items:baseline;justify-content:space-between;gap:24px;
+  padding:26px 0;border-bottom:2px solid var(--ink);
+}
+.linhas span{font-family:var(--font-mono);font-weight:700;font-size:26px;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)}
+.linhas b{font-family:var(--font-display);font-weight:800;font-stretch:100%;
+  font-size:82px;line-height:1;letter-spacing:-.03em;
+  font-variant-numeric:tabular-nums;color:var(--ink)}
+
+/* ============================================================
+   STORY — 9:16
+
+   1080x1920 com as zonas de segurança do stories: o topo do aplicativo
+   come ~250px (foto de perfil, nome, botão de fechar) e o rodapé ~340px
+   (o "saiba mais" e a barra de mensagem). Tudo o que precisa ser lido
+   mora no meio.
+   ============================================================ */
+.peca--story{height:1920px;padding-top:260px;padding-bottom:340px}
+</style>
+</head>
+<body>
+
+<!-- ============ MOLDE PADRÃO: só a manchete muda ============ -->
+
+<!-- A · a oferta -->
+<section class="peca" id="peca-a">
+  <ul class="dados">
+    <li><b>3 DIAS</b> até a prévia</li>
+    <li><b>R$0</b> até você gostar</li>
+  </ul>
+  <div class="manchete">
+    <span class="linha">EU DESENHO</span>
+    <span class="linha">A SUA PÁGINA<span class="ponto">.</span></span>
+    <span class="faixa"><span class="linha">GOSTOU? <em>AÍ PAGA<span class="ponto">.</span></em></span></span>
+  </div>
+  <div class="rodape">
+    <p class="apoio"><b>Landing pages para quem já anuncia.</b> Eu monto a sua inteira e te mando o link para navegar.</p>
+    <p class="assinatura">Rafael Razeira Estúdio</p>
+  </div>
+</section>
+
+<!-- B · o risco -->
+<section class="peca" id="peca-b">
+  <ul class="dados">
+    <li><b>3 DIAS</b> até a prévia</li>
+    <li><b>R$0</b> até você gostar</li>
+  </ul>
+  <div class="manchete">
+    <!-- As três linhas têm 13, 13 e 15 caracteres de propósito: no lockup
+         a linha curta demais precisa de um corpo enorme para encostar nas
+         duas margens, e aí esmaga as outras duas. "VOCÊ VÊ", com 7, era
+         exatamente esse caso. -->
+    <span class="linha">VOCÊ VÊ A SUA</span>
+    <span class="linha">PÁGINA PRONTA</span>
+    <span class="faixa"><span class="linha">ANTES <em>DE PAGAR<span class="ponto">.</span></em></span></span>
+  </div>
+  <div class="rodape">
+    <p class="apoio"><b>Landing pages para quem já anuncia.</b> Eu monto a sua inteira e te mando o link para navegar.</p>
+    <p class="assinatura">Rafael Razeira Estúdio</p>
+  </div>
+</section>
+
+<!-- C · o diagnóstico -->
+<section class="peca" id="peca-c">
+  <ul class="dados">
+    <li><b>3 DIAS</b> até a prévia</li>
+    <li><b>R$0</b> até você gostar</li>
+  </ul>
+  <div class="manchete">
+    <span class="linha">VOCÊ JÁ PAGOU</span>
+    <span class="linha">PELO CLIQUE<span class="ponto">.</span></span>
+    <span class="faixa"><span class="linha">A VENDA <em>É AQUI<span class="ponto">.</span></em></span></span>
+  </div>
+  <div class="rodape">
+    <p class="apoio"><b>Landing pages para quem já anuncia.</b> Eu monto a sua inteira e te mando o link para navegar.</p>
+    <p class="assinatura">Rafael Razeira Estúdio</p>
+  </div>
+</section>
+
+<!-- D · o destino do clique. É o único gancho que nomeia o hábito da
+     pessoa (mandar o anúncio para o link da bio) em vez de falar do
+     estúdio. Quem faz isso se reconhece na hora. -->
+<section class="peca" id="peca-d">
+  <ul class="dados">
+    <li><b>3 DIAS</b> até a prévia</li>
+    <li><b>R$0</b> até você gostar</li>
+  </ul>
+  <div class="manchete">
+    <span class="linha">O LINK DA BIO</span>
+    <span class="linha">NÃO É DESTINO</span>
+    <span class="faixa"><span class="linha">DE <em>ANÚNCIO PAGO<span class="ponto">.</span></em></span></span>
+  </div>
+  <div class="rodape">
+    <p class="apoio"><b>Landing pages para quem já anuncia.</b> Eu monto a sua inteira e te mando o link para navegar.</p>
+    <p class="assinatura">Rafael Razeira Estúdio</p>
+  </div>
+</section>
+
+<!-- E · quem faz. O "um homem só" da página vira gancho: não é charme de
+     estúdio, é a resposta de quem já foi atendido por agência. -->
+<section class="peca" id="peca-e">
+  <ul class="dados">
+    <li><b>3 DIAS</b> até a prévia</li>
+    <li><b>R$0</b> até você gostar</li>
+  </ul>
+  <div class="manchete">
+    <span class="linha">SEM AGÊNCIA</span>
+    <span class="linha">SEM ATENDIMENTO</span>
+    <span class="faixa"><span class="linha">VOCÊ <em>FALA COMIGO<span class="ponto">.</span></em></span></span>
+  </div>
+  <div class="rodape">
+    <p class="apoio"><b>Landing pages para quem já anuncia.</b> Eu monto a sua inteira e te mando o link para navegar.</p>
+    <p class="assinatura">Rafael Razeira Estúdio</p>
+  </div>
+</section>
+
+<!-- F · risco zero. É primo da B, mas não é a mesma coisa: a B promete
+     VER antes, a F promete NÃO PAGAR. Uma fala com quem desconfia da
+     entrega, a outra com quem desconfia do bolso. -->
+<section class="peca" id="peca-f">
+  <ul class="dados">
+    <li><b>3 DIAS</b> até a prévia</li>
+    <li><b>R$0</b> até você gostar</li>
+  </ul>
+  <div class="manchete">
+    <span class="linha">SE NÃO GOSTAR</span>
+    <span class="linha">VOCÊ NÃO PAGA</span>
+    <span class="faixa"><span class="linha">NEM <em>UM REAL<span class="ponto">.</span></em></span></span>
+  </div>
+  <div class="rodape">
+    <p class="apoio"><b>Landing pages para quem já anuncia.</b> Eu monto a sua inteira e te mando o link para navegar.</p>
+    <p class="assinatura">Rafael Razeira Estúdio</p>
+  </div>
+</section>
+
+<!-- ============ G: outra estrutura ============ -->
+<section class="peca" id="peca-g">
+  <div class="tabela">
+    <h2 class="tabela__titulo">Preço fechado<span class="ponto">.</span></h2>
+    <ul class="linhas">
+      <li><span>Landing page</span><b>R$497</b></li>
+      <li><span>Site institucional</span><b>R$797</b></li>
+      <li><span>Loja virtual</span><b>R$997</b></li>
+    </ul>
+  </div>
+  <span class="faixa"><span class="linha">GOSTOU? <em>AÍ PAGA<span class="ponto">.</span></em></span></span>
+  <div class="rodape" style="margin-top:56px">
+    <p class="apoio"><b>Eu monto a sua página inteira e te mando o link.</b> Você só paga se gostar do que viu.</p>
+    <p class="assinatura">Rafael Razeira Estúdio</p>
+  </div>
+</section>
+
+<!-- ============ H: mesma peça A, outra cor ============ -->
+<section class="peca peca--escura" id="peca-h">
+  <ul class="dados">
+    <li><b>3 DIAS</b> até a prévia</li>
+    <li><b>R$0</b> até você gostar</li>
+  </ul>
+  <div class="manchete">
+    <span class="linha">EU DESENHO</span>
+    <span class="linha">A SUA PÁGINA<span class="ponto">.</span></span>
+    <span class="faixa"><span class="linha">GOSTOU? <em>AÍ PAGA<span class="ponto">.</span></em></span></span>
+  </div>
+  <div class="rodape">
+    <p class="apoio"><b>Landing pages para quem já anuncia.</b> Eu monto a sua inteira e te mando o link para navegar.</p>
+    <p class="assinatura">Rafael Razeira Estúdio</p>
+  </div>
+</section>
+
+<!-- ============ STORY: a A em 9:16 ============ -->
+<section class="peca peca--story" id="peca-story-a">
+  <ul class="dados">
+    <li><b>3 DIAS</b> até a prévia</li>
+    <li><b>R$0</b> até você gostar</li>
+  </ul>
+  <div class="manchete">
+    <span class="linha">EU DESENHO</span>
+    <span class="linha">A SUA PÁGINA<span class="ponto">.</span></span>
+    <span class="faixa"><span class="linha">GOSTOU? <em>AÍ PAGA<span class="ponto">.</span></em></span></span>
+  </div>
+  <div class="rodape">
+    <p class="apoio"><b>Landing pages para quem já anuncia.</b> Eu monto a sua inteira e te mando o link para navegar.</p>
+    <p class="assinatura">Rafael Razeira Estúdio</p>
+  </div>
+</section>
+
+<!-- ============================================================
+     LOTE 2 (10/09/2026) · TRÊS PEÇAS DIRETAS PARA O CONJUNTO DA LANDING
+
+     O lote 1 (A a H) argumenta: risco, diagnóstico, quem faz. Estas três
+     não argumentam, afirmam. Cada uma cabe numa leitura de um segundo e
+     responde a UMA pergunta de quem passa o dedo:
+
+       I  quanto custa?         o preço da landing na manchete, e a
+                                condição (vê pronta, depois paga) na faixa.
+                                Filtra pelo bolso antes do clique.
+       J  isso é pra mim?       nomeia o hábito (anúncio caindo no link da
+                                bio) e o custo dele. Quem faz isso se
+                                reconhece; quem não anuncia passa reto,
+                                que é o que se quer numa campanha por lead.
+       K  o que eu ganho?       só os três números da oferta, em corpo de
+                                manchete, sem frase. É a régua de dados da
+                                página virando a arte inteira.
+
+     Mesmo molde, mesma fonte, mesma assinatura: o anúncio e a primeira
+     tela da /landing-page continuam sendo a mesma peça.
+     ============================================================ -->
+
+<!-- I · o preço -->
+<section class="peca" id="peca-i">
+  <ul class="dados">
+    <li><b>3 DIAS</b> até a prévia</li>
+    <li><b>R$0</b> até você gostar</li>
+  </ul>
+  <div class="manchete">
+    <span class="linha">LANDING PAGE</span>
+    <span class="linha">POR <em>R$497<span class="ponto">.</span></em></span>
+    <span class="faixa"><span class="linha">VÊ PRONTA<span class="ponto">.</span> <em>DEPOIS PAGA<span class="ponto">.</span></em></span></span>
+  </div>
+  <div class="rodape">
+    <p class="apoio"><b>Preço fechado, pago uma vez.</b> Eu monto a sua página, te mando o link, você navega. Gostou? Aí paga.</p>
+    <p class="assinatura">Rafael Razeira Estúdio</p>
+  </div>
+</section>
+
+<!-- J · o hábito -->
+<section class="peca" id="peca-j">
+  <ul class="dados">
+    <li><b>3 DIAS</b> até a prévia</li>
+    <li><b>R$0</b> até você gostar</li>
+  </ul>
+  <div class="manchete">
+    <span class="linha">SEU ANÚNCIO</span>
+    <span class="linha">CAI NA BIO?</span>
+    <span class="faixa"><span class="linha">ESTÁ <em>PAGANDO À TOA<span class="ponto">.</span></em></span></span>
+  </div>
+  <div class="rodape">
+    <p class="apoio"><b>Landing page feita para receber o seu tráfego.</b> Eu monto a sua e te mando o link. Só paga se gostar.</p>
+    <p class="assinatura">Rafael Razeira Estúdio</p>
+  </div>
+</section>
+
+<!-- K · os três números. Sem a régua de dados no topo: aqui os dados SÃO a
+     manchete, e repetir em cima seria dizer duas vezes. -->
+<section class="peca" id="peca-k">
+  <div class="manchete">
+    <span class="linha"><em>3 DIAS</em> ATÉ VER<span class="ponto">.</span></span>
+    <span class="linha"><em>R$0</em> ATÉ GOSTAR<span class="ponto">.</span></span>
+    <span class="faixa"><span class="linha"><em>R$497</em> SE GOSTAR<span class="ponto">.</span></span></span>
+  </div>
+  <div class="rodape">
+    <p class="apoio"><b>Landing pages para quem já anuncia.</b> Você vê a sua pronta, no celular, antes de pagar qualquer coisa.</p>
+    <p class="assinatura">Rafael Razeira Estúdio</p>
+  </div>
+</section>
+
+<script>
+/* ---------- o lockup de cartaz ----------
+   Duas passadas por linha. A primeira estima a largura pelo eixo `wdth`,
+   que é quase linear; a segunda fecha o resto no corpo, que é linear de
+   verdade. O eixo tem curso de 62 a 100 e nada além disso existe na
+   fonte, então quando a linha ainda não coube em 62 quem cede é o corpo.
+
+   A linha da faixa mira uma largura MENOR: a faixa precisa morrer antes
+   da margem direita, senão vira tarja de ponta a ponta e o objeto
+   pousado some. */
+const COLUNA = 1080 - 90 * 2;
+
+function ajustar(linha, alvo){
+  linha.style.fontStretch = "100%";
+  const base = parseFloat(getComputedStyle(linha).fontSize);
+  linha.style.fontSize = base + "px";
+  let w = linha.getBoundingClientRect().width;
+
+  const wdth = Math.max(62, Math.min(100, 100 * alvo / w));
+  linha.style.fontStretch = wdth.toFixed(1) + "%";
+
+  w = linha.getBoundingClientRect().width;
+  linha.style.fontSize = (base * alvo / w).toFixed(2) + "px";
+}
+
+async function montar(){
+  await document.fonts.ready;
+  document.querySelectorAll(".peca").forEach(peca => {
+    peca.querySelectorAll(".linha").forEach(linha => {
+      const naFaixa = !!linha.closest(".faixa");
+      ajustar(linha, naFaixa ? COLUNA - 96 : COLUNA);
+    });
+  });
+  window.__pronto = true;
+}
+montar();
+</script>
+</body>
+</html>
