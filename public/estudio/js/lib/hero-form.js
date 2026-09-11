@@ -32,10 +32,13 @@
    3. A CONFIRMAÇÃO OCUPA O PRÓPRIO CARTÃO, por estado, sem navegação:
       assim ela aparece igual dentro do navegador do Instagram.
    ============================================================ */
-import { CONFIG, WHATSAPP_NUMBER } from "../config.js";
+import { CONFIG, T, WHATSAPP_NUMBER } from "../config.js";
 import { trackLead } from "./tracking.js";
 
 const whatsValido = (v) => { const d = v.replace(/\D/g, ""); return d.length === 10 || d.length === 11; };
+/* a régua do e-mail é a mesma da rota (components/telefone-intl.ts): um @,
+   um ponto no domínio, nada de espaço */
+const emailValido = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
 
 function marcar(input, err, invalido){
   input.classList.toggle("is-invalid", invalido);
@@ -49,6 +52,9 @@ export function initHeroForm(){
 
   const errNome  = document.getElementById("h-err-nome");
   const errWhats = document.getElementById("h-err-whats");
+  /* A /en/landing-page pede e-mail no lugar do WhatsApp (11/09/2026): o
+     campo que existe no DOM é o que decide a validação, e o outro é nulo. */
+  const errEmail = document.getElementById("h-err-email");
   /* Só existe onde a página pede a prévia (ver `instagramReq`, no
      config): é o campo de onde eu tiro o que montar. Nulo na /estudio,
      e aí a checagem inteira fica de fora. */
@@ -63,9 +69,9 @@ export function initHeroForm(){
   const faixas = document.getElementById("h-faixas");
   if (errInvest && faixas) faixas.addEventListener("change", () => marcar(faixas, errInvest, false));
 
-  // máscara (44) 99999-9999 enquanto digita
-  const tel = form.whatsapp;
-  tel.addEventListener("input", () => {
+  // máscara (44) 99999-9999 enquanto digita (só onde o campo é o WhatsApp)
+  const tel = form.whatsapp || null;
+  if (tel) tel.addEventListener("input", () => {
     const d = tel.value.replace(/\D/g, "").slice(0, 11);
     if      (d.length > 7) tel.value = `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`;
     else if (d.length > 2) tel.value = `(${d.slice(0,2)}) ${d.slice(2)}`;
@@ -76,7 +82,8 @@ export function initHeroForm(){
   /* `form.nome` só existe onde o config pede o nome (a /landing-page
      parou de pedir em 11/09) */
   if (form.nome) form.nome.addEventListener("input", () => marcar(form.nome, errNome, false));
-  tel.addEventListener("input", () => marcar(tel, errWhats, false));
+  if (tel) tel.addEventListener("input", () => marcar(tel, errWhats, false));
+  if (form.email) form.email.addEventListener("input", () => marcar(form.email, errEmail, false));
   if (errInsta) form.instagram.addEventListener("input", () => marcar(form.instagram, errInsta, false));
 
   form.addEventListener("submit", async (e) => {
@@ -84,9 +91,11 @@ export function initHeroForm(){
     if (form._gotcha.value) return;                    // honeypot preenchido = robô
 
     const nomeOk  = !form.nome || marcar(form.nome, errNome, !form.nome.value.trim());
-    const whatsOk = marcar(tel, errWhats, !whatsValido(tel.value));
+    const whatsOk = !tel || marcar(tel, errWhats, !whatsValido(tel.value));
+    const emailOk = !form.email || marcar(form.email, errEmail, !emailValido(form.email.value));
     if (!nomeOk){ form.nome.focus(); return; }
     if (!whatsOk){ tel.focus(); return; }
+    if (!emailOk){ form.email.focus(); return; }
     if (errInsta && !marcar(form.instagram, errInsta, !form.instagram.value.trim())){
       form.instagram.focus(); return;
     }
@@ -105,13 +114,21 @@ export function initHeroForm(){
        `briefings`: ele tem campos que a `leads` não tem. */
     const utm = {};
     for (const [k, v] of new URLSearchParams(location.search)) if (k.startsWith("utm_")) utm[k] = v;
-    const pagina = location.pathname.replace(/^\/|\/$/g, "").split("/")[0] || "estudio";
+    /* `pagina` vem do config, nunca mais do path: em /en/landing-page o
+       primeiro segmento é "en", e o lead chegaria na rota sem tipo, sem
+       nota e com o dedupe errado, em silêncio. */
+    const marcada = form.investimento ? form.querySelector("input[name=investimento]:checked") : null;
     const payload = {
-      pagina,
+      pagina: CONFIG.pagina,
+      lang: CONFIG.lang,
       nome: form.nome ? form.nome.value.trim() : "",
-      whatsapp: tel.value.trim(),
+      whatsapp: tel ? tel.value.trim() : "",
+      email: form.email ? form.email.value.trim() : "",
       canal: form.instagram.value.trim(),
-      investimento: form.investimento ? form.investimento.value : "",
+      investimento: marcada ? marcada.value : "",
+      /* a chave canônica da faixa: é por ela que a rota decide a nota do
+         CRM, porque o texto muda com o idioma */
+      investimento_faixa: marcada ? marcada.dataset.faixa || "" : "",
       utm,
       url: location.href,
       referrer: document.referrer || "",
@@ -133,7 +150,7 @@ export function initHeroForm(){
          um envio que já foi gravado. */
       const eventId = (crypto.randomUUID && crypto.randomUUID()) ||
                       `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-      trackLead(eventId, { phone: payload.whatsapp });
+      trackLead(eventId, { phone: payload.whatsapp, email: payload.email });
 
       document.getElementById("hero-card").classList.add("is-enviado");
     }catch(err){
@@ -146,12 +163,12 @@ export function initHeroForm(){
   });
 
   // o botão da confirmação abre a conversa já com o nome preenchido
+  // (WhatsApp no pt; no en o href já é o mailto: do config e fica como está)
   const okCta = document.getElementById("hero-ok-cta");
-  if (okCta){
+  if (okCta && !form.email){
     okCta.addEventListener("click", () => {
       const nome = form.nome ? form.nome.value.trim() : "";
-      const msg = `Olá, Rafael! Acabei de deixar meu contato no site${nome ? `, sou ${nome}` : ""}. Quero falar sobre o meu projeto.`;
-      okCta.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+      okCta.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(T.msgHero(nome))}`;
     });
   }
 }

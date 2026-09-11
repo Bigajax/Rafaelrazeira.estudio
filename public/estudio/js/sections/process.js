@@ -1,5 +1,5 @@
 /* COMO FUNCIONA — o processo em 3 passos numerados (briefing → design → publicação) */
-import { CONFIG } from "../config.js";
+import { CONFIG, T } from "../config.js";
 
 export function process(){
   const p = CONFIG.process;
@@ -17,7 +17,7 @@ export function process(){
      vira três colunas no desktop. Ver `.proc__list--trilho` no CSS. */
   const steps = p.trilho ? p.steps.map(s => `
     <li class="proc__step proc__step--trilho reveal">
-      <span class="proc__passo">PASSO ${s.num}</span>
+      <span class="proc__passo">${T.passo} ${s.num}</span>
       <span class="proc__num"><b>${s.prazo}</b>${s.legenda ? `<i>${s.legenda}</i>` : ""}</span>
       <h3 class="proc__title">${s.title}</h3>
       <p class="proc__text">${s.text}</p>

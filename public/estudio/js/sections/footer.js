@@ -1,6 +1,6 @@
 /* FOOTER — escuro: redes no topo, localização, barra legal
    e o nome da marca gigante cortado na base (como a referência) */
-import { CONFIG } from "../config.js";
+import { CONFIG, T } from "../config.js";
 
 export function footer(){
   const f = CONFIG.footer;
@@ -10,14 +10,14 @@ export function footer(){
   return `
   <footer class="site-footer">
     <div class="wrap">
-      <nav class="footer__social" aria-label="Redes e contato">
-        <a href="${f.instagram.url}" target="_blank" rel="noopener"><span class="footer__k">INSTAGRAM</span><span class="footer__v">${f.instagram.handle}</span></a>
-        <a href="mailto:${f.email}"><span class="footer__k">E-MAIL</span><span class="footer__v">${f.email}</span></a>
-        <a href="${f.whatsapp.url}" target="_blank" rel="noopener" data-cta="footer" data-cta-dest="whatsapp"><span class="footer__k">WHATSAPP</span><span class="footer__v">${f.whatsapp.display}</span></a>
+      <nav class="footer__social" aria-label="${T.redesAria}">
+        <a href="${f.instagram.url}" target="_blank" rel="noopener"><span class="footer__k">${T.instagram}</span><span class="footer__v">${f.instagram.handle}</span></a>
+        <a href="mailto:${f.email}"><span class="footer__k">${T.email}</span><span class="footer__v">${f.email}</span></a>
+        ${f.whatsapp ? `<a href="${f.whatsapp.url}" target="_blank" rel="noopener" data-cta="footer" data-cta-dest="whatsapp"><span class="footer__k">${T.whatsapp}</span><span class="footer__v">${f.whatsapp.display}</span></a>` : ""}
       </nav>
       <p class="footer__location">${f.location}</p>
       <div class="footer__bar">
-        <span>© ${ano} — ${f.name} — TODOS OS DIREITOS RESERVADOS</span>
+        <span>© ${ano} — ${f.name} — ${T.direitos}</span>
         <div class="footer__legal">${legal}</div>
       </div>
     </div>

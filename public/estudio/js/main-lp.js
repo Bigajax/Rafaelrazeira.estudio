@@ -42,13 +42,14 @@ import { initPill }       from "./lib/pill.js";
 import { initCaseVideos } from "./lib/videos.js";
 import { initPrecos }     from "./lib/precos.js";
 import { initTracking }   from "./lib/tracking.js";
+import { CONFIG }         from "./config.js";
 
 const page = [hero, marquee, audience, process, cases, precos, about, contact, marquee];
 
 /* A raiz ganha a classe `lp`: é o único gancho de CSS que separa as duas
    páginas, e serve para o que o config não alcança (o botão do cabeçalho
    no celular, ver header.css). Tudo o mais continua vindo do CONFIG_LP. */
-document.documentElement.classList.add("lp");
+document.documentElement.classList.add("lp", CONFIG.lang);
 const app = document.getElementById("app");
 app.innerHTML =
   header() +

@@ -396,7 +396,16 @@ const CONFIG_LP = {
            o que também mostra a quem não anuncia que a pergunta é séria.
            A primeira opção continua começando com "Ainda não anuncio":
            é a string que a rota testa para NÃO abrir produção. */
-        opcoes: ["Ainda não anuncio", "Até R$500", "R$500 a 2 mil", "R$2 mil a 5 mil", "Mais de R$5 mil"],
+        /* `faixa` é a chave canônica que viaja no payload (investimento_faixa):
+           a rota decide a nota do CRM por ela, e não pelo texto, que muda
+           com o idioma. "nao_anuncia" é a que fecha a produção. */
+        opcoes: [
+          { rotulo: "Ainda não anuncio", faixa: "nao_anuncia" },
+          { rotulo: "Até R$500",         faixa: "ate_500" },
+          { rotulo: "R$500 a 2 mil",     faixa: "500_2k" },
+          { rotulo: "R$2 mil a 5 mil",   faixa: "2k_5k" },
+          { rotulo: "Mais de R$5 mil",   faixa: "mais_5k" },
+        ],
         err: "Me diz a faixa: é assim que eu sei que a página vai ter tráfego.",
       },
       enviar: "QUERO VER A MINHA PRONTA",
@@ -650,6 +659,232 @@ const CONFIG_LP = {
 /* Qual das duas o navegador está lendo. É a única linha que decide, e ela
    olha o caminho porque as duas páginas compartilham TODO o resto dos
    arquivos: mesmo CSS, mesmos módulos de seção, mesmo js/lib. */
+/* ============================================================
+   A /en/landing-page (11/09/2026)
+
+   O mesmo CONFIG_LP em inglês, montado por spread: o merge da escolha é
+   raso, então cada bloco de primeiro nível que o inglês toca vem inteiro,
+   e o spread mantém imagens, URLs e as flags de layout (trilho, ficha,
+   passoUnico, formClaro, selo:false) sem duplicar.
+
+   O que muda de conteúdo, além da língua: o formulário pede E-MAIL (não
+   há WhatsApp na versão gringa desta primeira fase), o telefone é
+   opcional e internacional, o CTA pós-envio é um mailto:, o pagamento é
+   combinado por e-mail (sem Stripe/Calendly ainda), e os preços em US$
+   são PLACEHOLDER A CONFIRMAR (os mesmos de lib/oferta.ts: ao mudar lá,
+   mudar aqui).
+   ============================================================ */
+const EMAIL_ESTUDIO = "rafael.rbarbon@gmail.com";
+const CONFIG_LP_EN = {
+  brand: { name: "RAFAEL RAZEIRA", suffix: "STUDIO", navCta: "I WANT TO SEE MINE" },
+
+  hero: {
+    ...CONFIG_LP.hero,
+    headline: ["I BUILD YOUR", "LANDING PAGE.", "LIKE IT? <em>THEN PAY.</em>"],
+    subheadline: "<em>For businesses already running ads.</em> The whole offer, in three lines:",
+    passos: [
+      "You send your <b>email</b> and your <b>Instagram</b>.",
+      "In <b>3 days</b> I send you the page, finished, on your phone.",
+      "Like it? <b>US$99</b> and it goes live. Don't like it, don't pay.",
+    ],
+    cta: "I WANT TO SEE MINE",
+    form: {
+      email:     { label: "YOUR EMAIL",           ph: "you@yourbusiness.com" },
+      instagram: { label: "WEBSITE OR INSTAGRAM", ph: "That's where your preview comes from" },
+      instagramReq: true,
+      investimento: {
+        label: "HOW MUCH YOU SPEND ON ADS PER MONTH",
+        opcoes: [
+          { rotulo: "Not running ads yet", faixa: "nao_anuncia" },
+          { rotulo: "Up to US$100",        faixa: "ate_100" },
+          { rotulo: "US$100 to 500",       faixa: "100_500" },
+          { rotulo: "US$500 to 1,000",     faixa: "500_1k" },
+          { rotulo: "Over US$1,000",       faixa: "mais_1k" },
+        ],
+        err: "Tell me the range: that's how I know the page will get traffic.",
+      },
+      enviar: "I WANT TO SEE MINE",
+      enviando: "SENDING…",
+      errEmail: "Check the email: that's where your preview goes.",
+      errInsta: "Tell me where I can see your business: that's where the preview comes from.",
+      okTitulo: "GOT IT.",
+      okTexto:  "I'll reply by email within 24 business hours and send your page link within 3 days.",
+      okCta:    "EMAIL ME TO SPEED IT UP",
+      erro:     "Couldn't send right now. Try again or email me.",
+    },
+    proof: "REPLY WITHIN 24H",
+    proofLink: { label: "SEE ONE LIVE: LANCELLOTTI", url: "https://lancellotti-tattoo-clinic.vercel.app" },
+    whatsMsg: "Hi Rafael. I already run ads and want to see the preview of my landing page.",
+  },
+
+  marquee: [
+    "YOUR AD DESERVES A BETTER DESTINATION THAN A LINK IN BIO.",
+    "YOU SEE THE PAGE FINISHED BEFORE YOU PAY.",
+  ],
+  cue: "SEE WHERE THE MONEY LEAKS",
+
+  audience: {
+    ...CONFIG_LP.audience,
+    label: "WHERE THE MONEY LEAKS.",
+    headline: "YOU PAY FOR THE CLICK. THE&nbsp;PAGE LOSES THE SALE.",
+    marcador: "LEAK",
+    conta: {
+      linhas: [
+        { num:"US$1,000", texto:"per month on ads" },
+        { num:"1,000",    texto:"clicks, at US$1 each" },
+        { num:"4 in 10",  texto:"leave without scrolling" },
+      ],
+      total: { num:"US$400", texto:"paid for people who never saw your offer" },
+      nota: "Sample math. Swap the US$1,000 for what you spend: the ratio holds.",
+    },
+    blocks: [
+      { title:"THE CLICK LANDS ON A LINK IN BIO" },
+      { title:"THE PAGE DOESN'T REPEAT THE AD" },
+      { title:"ON MOBILE, IT BREAKS" },
+    ],
+  },
+
+  process: {
+    ...CONFIG_LP.process,
+    label: "HOW IT WORKS.",
+    steps: [
+      { num:"01", prazo:"24H",    legenda:"FOR ME TO REPLY", title:"YOU ASK",           text:"Three taps on the form. I reply within 24 business hours." },
+      { num:"02", prazo:"3 DAYS", legenda:"TO THE PREVIEW",  title:"I BUILD THE PAGE",  text:"Copy, design, everything. You get the link and browse it on your phone." },
+      { num:"03", prazo:"US$19",  legenda:"DEPOSIT",         title:"LIKE IT? THEN PAY", text:"The balance only when the page is live. Don't like it, don't pay." },
+    ],
+  },
+
+  cases: {
+    ...CONFIG_LP.cases,
+    label: "STUDIO PROJECTS",
+    headline: "PAGES BUILT FOR ONE JOB ONLY.",
+    cta: "I WANT TO SEE MINE",
+    items: [
+      { ...CONFIG_LP.cases.items[0], category:"LANDING PAGE · LEADS", tarefa:"REQUEST A TATTOO QUOTE",  result:"Whoever arrives interested leaves with the request already written." },
+      { ...CONFIG_LP.cases.items[1], category:"LANDING PAGE · EVENT", tarefa:"SELL THE EVENT TICKET",  result:"One date, one promise and the path to the ticket with no detour." },
+    ],
+  },
+
+  precos: {
+    ...CONFIG_LP.precos,
+    label: "PRICING",
+    headline: "WHAT IT COSTS, AFTER YOU LIKE IT.",
+    intro: "Fixed price, paid once. By the time you decide, you've already seen your page finished.",
+    item: {
+      ...CONFIG_LP.precos.item,
+      tipo: "LANDING PAGE",
+      escopo: "One page, one job: capture leads or sell directly. It's the one that receives your paid traffic.",
+      valor: "US$99",   /* PLACEHOLDER A CONFIRMAR (lib/oferta.ts) */
+      tipoProjeto: "Landing page (single sales or lead-capture page)",
+      incluso: [
+        "Copy, design and development",
+        "Form delivering leads to your inbox",
+        "Pixel set up: you see the cost per lead",
+        "Domain connected and page live",
+        "You see it finished before you pay",
+      ],
+      acao: "GET MINE",
+    },
+    entrada: "Starts with <b>US$19</b>. The balance only when the page is live.",
+    nota: "No monthly fee: you pay once. Your own domain is optional, paid directly to the registrar.",
+  },
+
+  about: {
+    ...CONFIG_LP.about,
+    label: "WHO MAKES IT.",
+    papel: "I write, design and publish your page myself. You talk to me, from brief to launch.",
+    dados: [
+      { num:"1",   texto:"PERSON, BRIEF TO LAUNCH" },
+      { num:"10",  texto:"PAGES LIVE" },
+      { num:"24H", texto:"TO REPLY" },
+    ],
+    fecho: "Ad and page coming from the same hands is what keeps the promise intact.",
+    cta: "I WANT TO SEE MINE",
+  },
+
+  contact: {
+    ...CONFIG_LP.contact,
+    status: "OPEN FOR NEW PROJECTS",
+    headline: "START WITH THE PREVIEW.",
+    intro: "Tell me what you sell and where your traffic goes today. I build your page and send you the link.",
+    scarcity: "Every preview is built by me, one at a time. That's why I take on a few per week.",
+    guarantee: {
+      label: "THE PREVIEW",
+      title: "WHAT YOU GET.",
+      text:  "A link with your page built: copy, design and a working form, for you to browse on your phone like any visitor would. <b>Before paying anything.</b> Like it? It starts with <b>US$19</b> and I publish it. Don't like it, you pay nothing.",
+    },
+    pricingNote: "Landing page US$99, starting with US$19. Fixed price, paid once.",
+    /* o formulário do fim posta na /api/lead (card no CRM, e-mail e push),
+       não na `briefings` (tabela sem leitor) */
+    viaApiLead: true,
+    form: {
+      nome:      { label:"Your name",            placeholder:"Your name", err:"Type your name." },
+      email:     { label:"Your email",           placeholder:"you@yourbusiness.com", err:"Type a valid email." },
+      whatsapp:  { label:"Phone (optional)",     placeholder:"+1 555 123 4567", err:"Check the number: digits only, with the country code." },
+      instagram: { label:"Website or Instagram", placeholder:"That's where your preview comes from", err:"Tell me where I can see your business." },
+      vende:     { label:"What do you sell?",    placeholder:"E.g.: aesthetics, coaching, a course, a local service…", err:"Tell me what you sell." },
+      submit:  "I WANT TO SEE MINE",
+      note:    "No commitment. Your data is only used to reply about your project.",
+      successTitle: "PREVIEW REQUESTED!",
+      successText:  "I'll reply by email within 24 business hours and send your page link within 3 days. Want to speed it up?",
+    },
+    schedule: { url: `mailto:${EMAIL_ESTUDIO}?subject=${encodeURIComponent("Landing page preview")}`, cta: "EMAIL ME NOW", dest: "email" },
+  },
+
+  footer: {
+    ...CONFIG_LP.footer,
+    name: "RAFAEL RAZEIRA STUDIO",
+    whatsapp: null,   /* sem WhatsApp na versão gringa: e-mail e Instagram */
+    location: "MARINGÁ · BRAZIL · WORKING WORLDWIDE",
+    legal: [
+      { label:"TERMS",   url:"/termos" },
+      { label:"PRIVACY", url:"/privacidade" },
+    ],
+  },
+
+  pillText: "I WANT TO SEE MINE",
+};
+
+/* ---------- os rótulos fixos dos módulos, por idioma ----------
+   O que não vive no config porque não é conteúdo da página, é gramática
+   dos módulos: "PASSO", "A TAREFA", "VER NO AR", alts, arias, a mensagem
+   de "Enviando…". Funções são permitidas aqui (é JS de navegador, não
+   atravessa fronteira nenhuma). */
+const ROTULOS = {
+  pt: {
+    passo: "PASSO", tarefa: "A TAREFA", verNoAr: "VER NO AR",
+    altCase: (n) => `Página de ${n} aberta no celular`,
+    altVideo: (n) => `Demonstração em vídeo: ${n}`,
+    altFoto: (n) => `${n}, do Rafael Razeira Estúdio`,
+    contaAria: "A conta do clique perdido",
+    seloAria: "Carimbo: agenda aberta",
+    navAria: "Navegação principal", redesAria: "Redes e contato",
+    instagram: "INSTAGRAM", email: "E-MAIL", whatsapp: "WHATSAPP",
+    direitos: "TODOS OS DIREITOS RESERVADOS",
+    enviando: "Enviando…",
+    erroEnvio: (email) => `Não foi possível enviar agora. Tente novamente ou escreva para ${email}`,
+    msgHero: (nome) => `Olá, Rafael! Acabei de deixar meu contato no site${nome ? `, sou ${nome}` : ""}. Quero falar sobre o meu projeto.`,
+    msgContato: "Olá, Rafael! Acabei de enviar meu projeto pelo site e quero adiantar a conversa.",
+    assuntoEmail: "Prévia da minha landing page",
+  },
+  en: {
+    passo: "STEP", tarefa: "THE JOB", verNoAr: "SEE IT LIVE",
+    altCase: (n) => `${n} page open on a phone`,
+    altVideo: (n) => `Video demo: ${n}`,
+    altFoto: (n) => `${n}, from Rafael Razeira Studio`,
+    contaAria: "The lost-click math",
+    seloAria: "Stamp: open for new projects",
+    navAria: "Main navigation", redesAria: "Social and contact",
+    instagram: "INSTAGRAM", email: "EMAIL", whatsapp: "WHATSAPP",
+    direitos: "ALL RIGHTS RESERVED",
+    enviando: "Sending…",
+    erroEnvio: (email) => `Couldn't send right now. Try again or write to ${email}`,
+    msgHero: (nome) => `Hi Rafael! I just left my contact on the site${nome ? `, I'm ${nome}` : ""}. I'd like to talk about my project.`,
+    msgContato: "Hi Rafael! I just sent my project through the site and want to speed things up.",
+    assuntoEmail: "Landing page preview",
+  },
+};
+
 /* ---------- idioma e URL irmã (11/09/2026) ----------
    Português mora nas URLs de sempre; inglês em /en. O mapa das irmãs é o
    mesmo de lib/idiomas.ts (o Next não é importável daqui): entrar uma
@@ -663,7 +898,13 @@ const IDIOMA = {
   irma: PARES_IDIOMA[caminho] || Object.keys(PARES_IDIOMA).find(pt => PARES_IDIOMA[pt] === caminho) || null,
 };
 const naLP = /^\/(en\/)?landing-page/.test(caminho);
-const CONFIG = naLP ? { ...CONFIG_ESTUDIO, ...CONFIG_LP } : CONFIG_ESTUDIO;
+const CONFIG = naLP ? { ...CONFIG_ESTUDIO, ...CONFIG_LP, ...(LANG === "en" ? CONFIG_LP_EN : {}) } : CONFIG_ESTUDIO;
+/* O que a /api/lead recebe em `pagina` (tipo de projeto, nota do CRM, dedupe)
+   e o que a Mixpanel recebe em `page`. Era o primeiro segmento do path e
+   em /en/landing-page viraria "en": agora é decidido aqui, uma vez. */
+CONFIG.lang = LANG;
+CONFIG.pagina = naLP ? (LANG === "en" ? "landing-page-en" : "landing-page") : "estudio";
+const T = ROTULOS[LANG];
 
 /* ============================================================
    ENDPOINT DE ENVIO DO FORMULÁRIO
@@ -695,4 +936,4 @@ const FORM_HEADERS  = {
 };
 
 /* ⚠️ Não precisa mexer daqui para baixo — apenas disponibiliza o conteúdo p/ a página. */
-export { CONFIG, IDIOMA, FORM_ENDPOINT, FORM_HEADERS, WHATSAPP_NUMBER, MIXPANEL_TOKEN };
+export { CONFIG, IDIOMA, T, FORM_ENDPOINT, FORM_HEADERS, WHATSAPP_NUMBER, MIXPANEL_TOKEN };

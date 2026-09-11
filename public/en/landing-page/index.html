@@ -1,26 +1,28 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Rafael Razeira Estúdio: eu desenho a sua landing page antes de você pagar</title>
-<meta name="description" content="Landing pages para quem já anuncia. Eu monto a sua página inteira e te mando o link para navegar: você só paga se gostar. A partir de R$497, começando com R$97." />
+<title>Rafael Razeira Studio: I build your landing page before you pay</title>
+<meta name="description" content="Landing pages for businesses already running ads. I build your whole page and send you the link to browse it: you only pay if you like it. US$99, starting with US$19." />
 
 <!-- Open Graph -->
-<meta property="og:title" content="Eu desenho a sua página. Só paga se gostar." />
-<meta property="og:description" content="Landing pages para quem já anuncia. Eu monto a sua inteira e te mando o link para navegar antes de qualquer pagamento." />
+<meta property="og:title" content="I build your page. Pay only if you like it." />
+<meta property="og:description" content="Landing pages for businesses already running ads. I build yours in full and send you the link to browse before any payment." />
 <meta property="og:type" content="website" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:locale:alternate" content="pt_BR" />
 <!-- URL absoluta de propósito: o robô de preview do WhatsApp não resolve caminho relativo -->
 <meta property="og:image" content="https://rafaelrazeira-estudio.vercel.app/assets/og-rr.png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
-<meta property="og:image:alt" content="Monograma RR do Rafael Razeira Estúdio" />
+<meta property="og:image:alt" content="RR monogram of Rafael Razeira Studio" />
 <meta name="theme-color" content="#14181A" />
 
 <!-- A página tem irmã em inglês (/en/landing-page, 11/09/2026): canonical
      e os dois hreflang dizem ao Google que são a mesma página em dois
      idiomas, e o x-default é o português, que é a URL das campanhas. -->
-<link rel="canonical" href="https://rafaelrazeira-estudio.vercel.app/landing-page" />
+<link rel="canonical" href="https://rafaelrazeira-estudio.vercel.app/en/landing-page" />
 <link rel="alternate" hreflang="pt-BR" href="https://rafaelrazeira-estudio.vercel.app/landing-page" />
 <link rel="alternate" hreflang="en" href="https://rafaelrazeira-estudio.vercel.app/en/landing-page" />
 <link rel="alternate" hreflang="x-default" href="https://rafaelrazeira-estudio.vercel.app/landing-page" />
@@ -29,16 +31,13 @@
 <link rel="apple-touch-icon" href="/assets/favicon.png" />
 
 <!-- ============================================================
-     Esta página compartilha TODO o CSS e todos os módulos de seção
-     com a /estudio. Os caminhos absolutos (/css, /js, /assets) caem
-     em public/estudio/* pelos rewrites do next.config.ts, e é por
-     isso que eles não são relativos aqui: a /estudio é servida sem
-     barra no fim e a /landing-page também, então caminho relativo
-     resolveria na raiz nas duas e quebraria numa.
-
-     O que separa as duas páginas: o conteúdo (CONFIG_LP em
-     js/config.js, escolhido pelo caminho da URL) e a ordem de seções
-     (js/main-lp.js). Nada de layout é duplicado.
+     A /en/landing-page (11/09/2026) é a IRMÃ em inglês da /landing-page:
+     mesmo CSS, mesmos módulos, mesmo main-lp.js. O que muda é o que
+     js/config.js escolhe pelo caminho da URL (CONFIG_LP_EN por cima do
+     CONFIG_LP, e o dicionário T dos rótulos fixos) e o <head> daqui.
+     Os caminhos absolutos (/css, /js, /assets) caem em public/estudio/*
+     pelos rewrites do next.config.ts, como na pt. Tudo o que é decisão
+     de layout está comentado na public/landing-page/index.html.
      ============================================================ -->
 
 <!-- ============================================================

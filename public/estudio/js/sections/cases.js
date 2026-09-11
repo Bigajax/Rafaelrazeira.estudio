@@ -1,5 +1,5 @@
 /* CASES — headline + grid de projetos (vídeo ou captura em mockup de iPhone, ou placeholder) */
-import { CONFIG } from "../config.js";
+import { CONFIG, T } from "../config.js";
 
 function phone(inner){
   return `
@@ -27,9 +27,17 @@ function phone(inner){
         </div>`;
 }
 
+/* ---------- caminho absoluto (11/09/2026) ----------
+   O config escreve "assets/case-x.jpg" e isso funcionava porque as três
+   páginas moravam na raiz (/estudio, /landing-page). A /en/landing-page
+   mora um nível abaixo, e o caminho relativo resolvia em /en/assets/, que
+   não existe. A barra na frente é a mesma decisão dos /css e /js do
+   index.html: absoluto, sempre. */
+const abs = (p) => (p && !/^(\/|https?:|data:)/.test(p) ? `/${p}` : p);
+
 function media(it){
-  if (it.video) return phone(`<video src="${it.video}" muted loop playsinline preload="auto"
-                     aria-label="Demonstração em vídeo — ${it.name}"></video>`);
+  if (it.video) return phone(`<video src="${abs(it.video)}" muted loop playsinline preload="auto"
+                     aria-label="${T.altVideo(it.name)}"></video>`);
   /* ---------- AVIF e WebP, com o JPEG de reserva ----------
      Cada captura de página inteira tem ~760KB em JPEG, e são duas ou três
      por página: a /landing-page fechava em 1,68MB, quase tudo aqui. Numa
@@ -43,11 +51,11 @@ function media(it){
 
      A ordem importa: o navegador pega a PRIMEIRA source que entende. */
   if (it.img) {
-    const base = it.img.replace(/\.jpe?g$/i, "");
+    const base = abs(it.img).replace(/\.jpe?g$/i, "");
     return phone(`<div class="phone__feed"><picture>
                 <source type="image/avif" srcset="${base}.avif" />
                 <source type="image/webp" srcset="${base}.webp" />
-                <img src="${it.img}" alt="Página de ${it.name} aberta no celular" loading="lazy" decoding="async" fetchpriority="low" />
+                <img src="${abs(it.img)}" alt="${T.altCase(it.name)}" loading="lazy" decoding="async" fetchpriority="low" />
               </picture></div>`);
   }
   return `<div class="case__placeholder"><span>${it.name}</span></div>`;
@@ -66,9 +74,9 @@ export function cases(){
       <div class="case__ficha">
         <div class="case__cat">${it.category}</div>
         <h3 class="case__name">${it.name}</h3>
-        ${it.tarefa ? `<span class="case__rotulo">A TAREFA</span><p class="case__tarefa">${it.tarefa}</p>` : ""}
+        ${it.tarefa ? `<span class="case__rotulo">${T.tarefa}</span><p class="case__tarefa">${it.tarefa}</p>` : ""}
         <p class="case__result">${it.result}</p>
-        ${it.url ? `<a class="case__link" href="${it.url}" target="_blank" rel="noopener" data-cta="case_ver" data-cta-dest="projeto">VER NO AR <span class="arrow" aria-hidden="true">→</span></a>` : ""}
+        ${it.url ? `<a class="case__link" href="${it.url}" target="_blank" rel="noopener" data-cta="case_ver" data-cta-dest="projeto">${T.verNoAr} <span class="arrow" aria-hidden="true">→</span></a>` : ""}
       </div>
     </article>`).join("") : c.items.map(it => `
     <article class="case reveal">

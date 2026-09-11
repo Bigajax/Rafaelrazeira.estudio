@@ -5,7 +5,7 @@
    - Validação inline por campo (sem alert) — mensagens em CONFIG.contact.form.*.err
    - Avançar de passo dispara InitiateCheckout (com consentimento); Lead só no envio.
    - Sem FORM_ENDPOINT: modo demo. Com FORM_ENDPOINT: POST JSON com os campos. */
-import { CONFIG, FORM_ENDPOINT, FORM_HEADERS } from "../config.js";
+import { CONFIG, T, FORM_ENDPOINT, FORM_HEADERS } from "../config.js";
 import { trackLead, trackInitiateCheckout } from "./tracking.js";
 
 /* —— Dropdowns customizados (efeito vidro ao abrir as opções) —— */
@@ -66,6 +66,11 @@ function initWhatsMask(form){
 
 /* —— Validação inline —— */
 const whatsValido = (v) => { const d = v.replace(/\D/g, ""); return d.length === 10 || d.length === 11; };
+/* as réguas da versão em inglês (11/09/2026), as mesmas da rota
+   (components/telefone-intl.ts): e-mail com @ e domínio; telefone
+   internacional opcional com 7 a 15 dígitos quando vier */
+const emailValido = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
+const telIntlValido = (v) => { const d = v.replace(/\D/g, ""); return !d || (d.length >= 7 && d.length <= 15); };
 
 function marcarErro(input, errEl, invalido){
   input.classList.toggle("is-invalid", invalido);
@@ -96,6 +101,17 @@ function validarUmPasso(form){
   for (const [campo, errId] of [["nome","err-nome"],["instagram","err-insta"],["vende","err-vende"]]){
     if (!checa(campo, errId)){ form[campo].focus(); return false; }
   }
+  /* com o campo de e-mail no DOM (a /en), ele é o contato obrigatório e o
+     telefone só é conferido se a pessoa preencheu */
+  if (form.email){
+    if (!marcarErro(form.email, document.getElementById("err-email"), !emailValido(form.email.value))){
+      form.email.focus(); return false;
+    }
+    if (!marcarErro(form.whatsapp, document.getElementById("err-whats"), !telIntlValido(form.whatsapp.value))){
+      form.whatsapp.focus(); return false;
+    }
+    return true;
+  }
   if (!marcarErro(form.whatsapp, document.getElementById("err-whats"), !whatsValido(form.whatsapp.value))){
     form.whatsapp.focus(); return false;
   }
@@ -120,7 +136,8 @@ export function initForm(){
   if (!form) return;
 
   initDropdowns();
-  initWhatsMask(form);
+  /* a máscara é brasileira: no en o telefone é internacional e fica livre */
+  if (!form.email) initWhatsMask(form);
 
   const passo1 = form.querySelector('[data-fstep="1"]');
   const passo2 = form.querySelector('[data-fstep="2"]');
@@ -147,7 +164,7 @@ export function initForm(){
 
   // limpa o erro do campo enquanto digita (o "instagram" só tem erro na
   // versão de um passo, então a lista é montada conforme o que existe)
-  [["nome","err-nome"],["whatsapp","err-whats"],["vende","err-vende"],["instagram","err-insta"]].forEach(([campo, errId]) => {
+  [["nome","err-nome"],["whatsapp","err-whats"],["email","err-email"],["vende","err-vende"],["instagram","err-insta"]].forEach(([campo, errId]) => {
     const el = form[campo], err = document.getElementById(errId);
     if (!el || !err) return;
     el.addEventListener("input", () => {
@@ -200,17 +217,45 @@ export function initForm(){
       objetivo: opc("objetivo"),
       identidade: opc("identidade"),
       detalhes: opc("detalhes"),
-      email: "",                       // coluna legada (not null) no Supabase
+      email: form.email ? form.email.value.trim() : "",   // coluna legada (not null) no Supabase; preenchida na /en
       origem: umPasso ? "landing-rafael-razeira-lp" : "landing-rafael-razeira",
+    };
+
+    /* ---------- a /en posta na /api/lead (11/09/2026) ----------
+       A `briefings` não tem leitor (nenhum card, e-mail ou push), e o lead
+       gringo precisa chegar com "responder por e-mail" na nota do CRM. O
+       pt continua na `briefings` por enquanto: o hero dele já cai na rota,
+       e este formulário do fim é o briefing completo, com campos que a
+       `leads` não tem. */
+    const viaApiLead = !!CONFIG.contact.viaApiLead;
+    const utm = {};
+    for (const [k, v] of new URLSearchParams(location.search)) if (k.startsWith("utm_")) utm[k] = v;
+    const payloadLead = {
+      pagina: CONFIG.pagina,
+      lang: CONFIG.lang,
+      nome: payload.nome,
+      whatsapp: payload.whatsapp,
+      email: payload.email,
+      canal: payload.instagram,
+      vende: payload.vende,
+      necessidade: payload.detalhes,
+      utm,
+      url: location.href,
+      referrer: document.referrer || "",
     };
 
     const btn = form.querySelector(".btn-submit[type=submit]") || passo2.querySelector(".btn-submit");
     const original = btn.innerHTML;
     btn.disabled = true;
-    btn.textContent = "Enviando…";
+    btn.textContent = T.enviando;
 
     try{
-      if (FORM_ENDPOINT){
+      if (viaApiLead){
+        const res = await fetch("/api/lead", {
+          method:"POST", headers:{ "Content-Type": "application/json" }, body:JSON.stringify(payloadLead),
+        });
+        if (!res.ok) throw new Error("Falha no envio");
+      } else if (FORM_ENDPOINT){
         const res = await fetch(FORM_ENDPOINT, {
           method:"POST", headers:FORM_HEADERS, body:JSON.stringify(payload),
         });
@@ -224,7 +269,7 @@ export function initForm(){
       // fire-and-forget: falha de tracking nunca afeta o envio.
       const eventId = (crypto.randomUUID && crypto.randomUUID()) ||
                       `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-      trackLead(eventId, { phone: payload.whatsapp, tipo_projeto: payload.tipo_projeto });
+      trackLead(eventId, { phone: payload.whatsapp, email: payload.email, tipo_projeto: payload.tipo_projeto });
 
       form.classList.add("hide");
       const stepper = document.querySelector(".form-card .stepper");
@@ -234,7 +279,7 @@ export function initForm(){
       btn.disabled = false;
       btn.innerHTML = original;
       const nota = form.querySelector(".form-note");
-      nota.textContent = "Não foi possível enviar agora. Tente novamente ou escreva para " + CONFIG.contact.email;
+      nota.textContent = T.erroEnvio(CONFIG.contact.email);
       nota.classList.add("form-note--erro");
     }
   });

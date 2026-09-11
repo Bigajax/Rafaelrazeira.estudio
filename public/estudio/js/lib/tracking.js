@@ -20,7 +20,7 @@
             · Lead (submit do formulário, browser + servidor, mesmo event_id)
    ============================================================ */
 import { getConsent } from "./consent.js";
-import { MIXPANEL_TOKEN } from "../config.js";
+import { CONFIG, MIXPANEL_TOKEN } from "../config.js";
 
 const PIXEL_ID      = "2445872572575348";   // ⬅ Pixel/Dataset ID
 const CAPI_ENDPOINT = "/api/meta-capi";     // função serverless (Vercel)
@@ -207,7 +207,10 @@ function mpTrack(evento, props){
       /* Esta página era a única sem `page`, e sem ele não dava para separar o
          funil dela do da vitrine nem do e-commerce: virava um resto anônimo
          que só se identificava pela AUSÊNCIA da propriedade. */
-      page: "estudio",
+      /* O pt continua "estudio" (a /landing-page entrou na mesma série em
+         14/08 e separar agora partiria o funil no meio); a versão em inglês
+         é outra página, com outro público, e ganha o próprio nome. */
+      page: CONFIG.pagina === "landing-page-en" ? "landing-page-en" : "estudio",
       ...MP_DISPOSITIVO,
       ...utm,
       ...props,
@@ -323,5 +326,7 @@ export function trackLead(eventId, dados){
   const props = dados.tipo_projeto ? { tipo_projeto: dados.tipo_projeto } : {};
   window.fbq && window.fbq("track", "Lead", props, { eventID: eventId });
   mpTrack("Lead", { $insert_id: eventId, ...props });   // mesmo id do Meta p/ cruzar os números
-  enviarCapi("Lead", eventId, { email: dados.email || "", phone: dados.phone || "" });
+  /* `lang` é o que diz à rota da CAPI para não prefixar 55 no telefone:
+     o formulário em inglês manda o número já com o DDI (11/09/2026) */
+  enviarCapi("Lead", eventId, { email: dados.email || "", phone: dados.phone || "", lang: CONFIG.lang });
 }

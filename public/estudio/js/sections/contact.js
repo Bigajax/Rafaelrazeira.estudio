@@ -1,6 +1,6 @@
 /* CONTATO / CTA FINAL — headline, escassez, e-mail e formulário de briefing.
    Comportamento de envio e dropdowns: js/lib/form.js */
-import { CONFIG } from "../config.js";
+import { CONFIG, T } from "../config.js";
 import { ponto } from "../lib/ponto.js";
 
 /* Dropdown customizado (o <select> nativo não aceita glassmorphism).
@@ -47,9 +47,14 @@ function passoUnico(f){
               <input id="f-nome" name="nome" type="text" placeholder="${f.nome.placeholder}" required autocomplete="name" aria-describedby="err-nome" />
               <p class="field__err" id="err-nome" hidden>${f.nome.err}</p>
             </div>
+            ${f.email ? /* a /en pede e-mail (obrigatório) e o telefone vira opcional, internacional, sem máscara (11/09) */ `<div class="field">
+              <label for="f-email">${f.email.label}</label>
+              <input id="f-email" name="email" type="email" inputmode="email" placeholder="${f.email.placeholder}" required autocomplete="email" aria-describedby="err-email" />
+              <p class="field__err" id="err-email" hidden>${f.email.err}</p>
+            </div>` : ""}
             <div class="field">
               <label for="f-whats">${f.whatsapp.label}</label>
-              <input id="f-whats" name="whatsapp" type="tel" inputmode="tel" placeholder="${f.whatsapp.placeholder}" required autocomplete="tel" aria-describedby="err-whats" />
+              <input id="f-whats" name="whatsapp" type="tel" inputmode="tel" placeholder="${f.whatsapp.placeholder}"${f.email ? "" : " required"} autocomplete="tel" aria-describedby="err-whats" />
               <p class="field__err" id="err-whats" hidden>${f.whatsapp.err}</p>
             </div>
             <div class="field">
@@ -165,8 +170,8 @@ export function contact(){
           <h3>${f.successTitle}</h3>
           <p>${f.successText}</p>
           <a class="btn-submit form-success__cta" id="schedule-cta"
-             href="${c.schedule.url || `${CONFIG.footer.whatsapp.url}?text=${encodeURIComponent("Olá, Rafael! Acabei de enviar meu projeto pelo site e quero adiantar a conversa.")}`}"
-             target="_blank" rel="noopener" data-cta="final" data-cta-dest="whatsapp">${c.schedule.cta} <span class="arrow">→</span></a>
+             href="${c.schedule.url || `${CONFIG.footer.whatsapp.url}?text=${encodeURIComponent(T.msgContato)}`}"
+             ${c.schedule.dest === "email" ? "" : `target="_blank" rel="noopener" `}data-cta="final" data-cta-dest="${c.schedule.dest || "whatsapp"}">${c.schedule.cta} <span class="arrow">→</span></a>
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 /* HEADER fixo — logo + CTA no topo */
-import { CONFIG, IDIOMA } from "../config.js";
+import { CONFIG, IDIOMA, T } from "../config.js";
 
 /* ---------- o seletor PT | EN (11/09/2026) ----------
    Só nas páginas que têm irmã em inglês (IDIOMA.irma existe). Bandeiras
@@ -27,7 +27,7 @@ export function header(){
   <header class="site-header">
     <div class="wrap">
       <a href="#top" class="logo"><b>${b.name}</b> <span class="suffix">${b.suffix}</span></a>
-      <nav class="header-actions" aria-label="Navegação principal">
+      <nav class="header-actions" aria-label="${T.navAria}">
         ${seletorIdioma()}
         <a href="/servicos" class="nav-product">SERVIÇOS</a>
         <a href="/vitrine-digital/" class="nav-product">VITRINE DIGITAL</a>

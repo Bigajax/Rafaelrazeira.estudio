@@ -1,5 +1,5 @@
 /* PARA QUEM É — blocos numerados 01 / 02 / 03 */
-import { CONFIG } from "../config.js";
+import { CONFIG, T } from "../config.js";
 import { ponto } from "../lib/ponto.js";
 
 export function audience(){
@@ -26,7 +26,7 @@ export function audience(){
      esquerda e os três vazamentos, só título, à direita. */
   const c = a.conta;
   const conta = c ? `
-    <div class="conta reveal" role="figure" aria-label="A conta do clique perdido">
+    <div class="conta reveal" role="figure" aria-label="${T.contaAria}">
       ${c.linhas.map(l => `<div class="conta__linha"><b>${l.num}</b><span>${l.texto}</span></div>`).join("")}
       <div class="conta__linha conta__total"><b>${c.total.num}</b><span>${c.total.texto}</span></div>
       ${c.nota ? `<p class="conta__nota">${c.nota}</p>` : ""}

@@ -1,6 +1,6 @@
 /* HERO — status, tagline, headline gigante em lockup de cartaz,
    sub + CTA duplo (formulário primário / WhatsApp discreto) */
-import { CONFIG, WHATSAPP_NUMBER } from "../config.js";
+import { CONFIG, T, WHATSAPP_NUMBER } from "../config.js";
 import { ponto } from "../lib/ponto.js";
 
 export function hero(){
@@ -66,7 +66,7 @@ export function hero(){
       </div>` : ""}
       <h1 class="hero__headline reveal">${lines}</h1>
       <div class="hero__bottom${semSelo ? " hero__bottom--sem-selo" : ""}" id="hero-card">
-        ${semSelo ? "" : `<svg class="hero__selo" viewBox="0 0 100 100" role="img" aria-label="Carimbo: agenda aberta">
+        ${semSelo ? "" : `<svg class="hero__selo" viewBox="0 0 100 100" role="img" aria-label="${T.seloAria}">
           <defs>
             <path id="seloArcoTopoEstudio" d="M50 50 m-34.5 0 a34.5 34.5 0 0 1 69 0" fill="none" />
           </defs>
@@ -92,13 +92,19 @@ export function hero(){
                 </label>
                 <p class="hero-form__err" id="h-err-nome" hidden>${f.errNome}</p>
               </div>` : ""}
-              <div class="hero-form__linha">
+              ${f.email ? /* a versão em inglês pede e-mail no lugar do WhatsApp (11/09) */ `<div class="hero-form__linha">
+                <label class="hero-form__campo">
+                  <span>${f.email.label}</span>
+                  <input name="email" type="email" inputmode="email" autocomplete="email" placeholder="${f.email.ph}" />
+                </label>
+                <p class="hero-form__err" id="h-err-email" hidden>${f.errEmail}</p>
+              </div>` : `<div class="hero-form__linha">
                 <label class="hero-form__campo">
                   <span>${f.whatsapp.label}</span>
                   <input name="whatsapp" type="tel" inputmode="numeric" autocomplete="tel" placeholder="${f.whatsapp.ph}" />
                 </label>
                 <p class="hero-form__err" id="h-err-whats" hidden>${f.errWhats}</p>
-              </div>
+              </div>`}
             </div>
 
             <div class="hero-form__linha">
@@ -113,7 +119,7 @@ export function hero(){
             <fieldset class="hero-form__linha hero-form__faixas" id="h-faixas">
               <legend class="hero-form__rotulo">${f.investimento.label}</legend>
               <div class="hero-form__opcoes">
-                ${f.investimento.opcoes.map(o => `<label class="hero-form__opcao"><input type="radio" name="investimento" value="${o}" aria-describedby="h-err-invest" /><span>${o}</span></label>`).join("")}
+                ${f.investimento.opcoes.map(o => `<label class="hero-form__opcao"><input type="radio" name="investimento" value="${o.rotulo}" data-faixa="${o.faixa}" aria-describedby="h-err-invest" /><span>${o.rotulo}</span></label>`).join("")}
               </div>
               <p class="hero-form__err" id="h-err-invest" hidden>${f.investimento.err}</p>
             </fieldset>` : ""}
@@ -130,8 +136,8 @@ export function hero(){
         <div class="hero-ok" role="status">
           <h2 class="hero-ok__titulo">${f.okTitulo}</h2>
           <p class="hero-ok__texto">${f.okTexto}</p>
-          <a id="hero-ok-cta" class="hero-form__btn" href="${waLink}" target="_blank" rel="noopener"
-             data-cta="hero_pos_envio" data-cta-dest="whatsapp">${f.okCta}</a>
+          <a id="hero-ok-cta" class="hero-form__btn" href="${f.email ? CONFIG.contact.schedule.url : waLink}"${f.email ? "" : ` target="_blank" rel="noopener"`}
+             data-cta="hero_pos_envio" data-cta-dest="${f.email ? "email" : "whatsapp"}">${f.okCta}</a>
         </div>
       </div>
       <div class="cue hero__cue reveal">

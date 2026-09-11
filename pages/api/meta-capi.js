@@ -61,7 +61,8 @@ export default async function handler(req, res) {
   };
   const em = normEmail(b.email);
   if (em) user_data.em = [sha256(em)];
-  const ph = normPhone(b.phone);
+  /* as páginas em inglês mandam o telefone com o DDI e `lang: "en"` */
+  const ph = normPhone(b.phone, b.lang === "en");
   if (ph) user_data.ph = [sha256(ph)];
   const fn = normNome(b.first_name);
   if (fn) user_data.fn = [sha256(fn)];

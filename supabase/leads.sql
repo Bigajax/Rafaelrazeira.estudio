@@ -84,3 +84,15 @@ alter table public.leads enable row level security;
 -- isso chega nula naqueles leads.
 -- ============================================================
 alter table public.leads add column if not exists plano text;
+
+-- ============================================================
+-- MIGRAÇÃO 11/09/2026: o e-mail das páginas em inglês
+-- Rodar à mão no SQL Editor. Idempotente.
+--
+-- A /en/landing-page (e a /en/vitrine-digital, na fase seguinte) pede
+-- e-mail como contato obrigatório e o telefone vira opcional: não há
+-- WhatsApp na versão gringa desta primeira fase. A rota grava o e-mail
+-- aqui e o usa no dedupe de 24h junto com o telefone. O pt continua sem
+-- e-mail, e a coluna fica nula para ele.
+-- ============================================================
+alter table public.leads add column if not exists email text;

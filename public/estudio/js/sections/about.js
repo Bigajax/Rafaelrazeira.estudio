@@ -1,6 +1,10 @@
 /* QUEM SOMOS — label + texto editorial grande + link de conversa */
-import { CONFIG } from "../config.js";
+import { CONFIG, T } from "../config.js";
 import { ponto } from "../lib/ponto.js";
+
+/* o mesmo `abs` do cases.js: a /en/landing-page mora um nível abaixo e o
+   "assets/rafael-quemfaz.jpg" do config resolvia em /en/assets/ */
+const abs = (p) => (p && !/^(\/|https?:|data:)/.test(p) ? `/${p}` : p);
 
 export function about(){
   const a = CONFIG.about;
@@ -14,7 +18,7 @@ export function about(){
     <div class="wrap">
       <div class="section-label reveal">${a.label}</div>
       <div class="about__ficha reveal">
-        <figure class="about__foto"><img src="${a.foto}" alt="${a.nome.replace(/.$/, "")}, do Rafael Razeira Estúdio" loading="lazy" decoding="async" /></figure>
+        <figure class="about__foto"><img src="${abs(a.foto)}" alt="${T.altFoto(a.nome.replace(/.$/, ""))}" loading="lazy" decoding="async" /></figure>
         <div class="about__corpo">
           <h2 class="about__nome">${ponto(a.nome)}</h2>
           <p class="about__papel">${a.papel}</p>

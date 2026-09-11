@@ -36,6 +36,7 @@
    ============================================================ */
 
 import { whatsappValido } from "../../components/telefone";
+import { emailValido, telefoneInternacionalValido } from "../../components/telefone-intl";
 import { avisarNoCelular } from "../../lib/push";
 import { conferirArroba } from "../../lib/arroba";
 
@@ -109,6 +110,8 @@ async function avisar(lead) {
       <table style="border-collapse:collapse;font-size:14px">
         ${linha("Nome", lead.nome)}
         ${linha("WhatsApp", lead.whatsapp)}
+        ${linha("E-mail", lead.email)}
+        ${linha("Idioma", lead.pagina.endsWith("-en") ? "EN (responder em inglês, por e-mail)" : "")}
         ${linha("Empresa", lead.empresa)}
         ${linha("Instagram/site", lead.canal)}
         ${linha("Vende", lead.vende)}
@@ -119,7 +122,8 @@ async function avisar(lead) {
         ${linha("Dificuldade", lead.necessidade)}
         ${linha("Campanha", campanha)}
       </table>
-      ${zap ? `<p style="margin:18px 0 0"><a href="https://wa.me/${zap.length > 11 ? zap : `55${zap}`}" style="background:#10b981;color:#052e21;padding:12px 18px;text-decoration:none;font-weight:700">Chamar no WhatsApp</a></p>` : ""}
+      ${zap ? `<p style="margin:18px 0 0"><a href="https://wa.me/${zap.length > 11 || lead.pagina.endsWith("-en") ? zap : `55${zap}`}" style="background:#10b981;color:#052e21;padding:12px 18px;text-decoration:none;font-weight:700">Chamar no WhatsApp</a></p>` : ""}
+      ${!zap && lead.email ? `<p style="margin:18px 0 0"><a href="mailto:${lead.email}" style="background:#111;color:#fff;padding:12px 18px;text-decoration:none;font-weight:700">Responder por e-mail</a></p>` : ""}
       <p style="margin:18px 0 0;font-size:12px;color:#889">A pessoa viu uma tela dizendo que você chama ainda hoje.</p>
     </div>`;
 
@@ -180,6 +184,9 @@ const TIPO_POR_PAGINA = {
   "e-commerce": "ecommerce",
   "vitrine-digital": "vitrine",
   "landing-page": "landing",
+  /* as irmãs em inglês (11/09/2026): mesmo tipo de projeto, outro idioma */
+  "vitrine-digital-en": "vitrine",
+  "landing-page-en": "landing",
 };
 
 /* Tráfego pago ou orgânico. A régua é a UTM: quem chega por campanha traz
@@ -212,8 +219,14 @@ async function crmREST(url, chave, caminho, opcoes = {}) {
   });
 }
 
-async function sincronizarCRM(linha, utm) {
+async function sincronizarCRM(linha, utm, { emIngles = false, faixa = "" } = {}) {
   const url = process.env.SUPABASE_URL;
+  /* A faixa canônica decide (é ela que o formulário manda desde 11/09, nos
+     dois idiomas); a regex no texto fica só para o envio que ainda vier
+     sem a chave, da página pt em cache durante o deploy. */
+  const naoAnuncia = faixa
+    ? faixa === "nao_anuncia"
+    : /^ainda n[aã]o anuncio/i.test(linha.investimento || "");
   const chave = process.env.SUPABASE_SERVICE_ROLE_KEY;
   /* A service role key não tem usuário, então `auth.uid()` é nulo e o
      `default` do owner_id não resolve: o dono precisa vir explícito. Ver a
@@ -303,8 +316,11 @@ async function sincronizarCRM(linha, utm) {
          Biblioteca de Anúncios da Meta se o anúncio existe mesmo). A regra
          mora no card porque é lá que a decisão de produzir é tomada. */
       notas: [
-        linha.pagina === "landing-page"
-          ? (/^ainda n[aã]o anuncio/i.test(linha.investimento || "")
+        /* o lead gringo pede outra conversa: responder por e-mail, em
+           inglês, e combinar o pagamento por lá (sem Stripe nesta fase) */
+        emIngles ? "LEAD EM INGLÊS: responder por e-mail, em inglês. Pagamento combinado por e-mail." : "",
+        linha.pagina.startsWith("landing-page")
+          ? (naoAnuncia
               ? "NÃO ANUNCIA AINDA: não abrir prévia. Conversar primeiro, prévia só depois de rodar tráfego."
               : "PRÉVIA SÓ DEPOIS DE CONFERIR: abrir a Biblioteca de Anúncios da Meta e confirmar que a pessoa anuncia. Sem anúncio ativo, não produzir.")
           : "",
@@ -374,14 +390,30 @@ export default async function handler(req, res) {
      fallback para o card e o e-mail é o próprio canal, mais abaixo. */
   let nome = texto(b.nome);
   const whatsapp = texto(b.whatsapp, 40);
-  if (!whatsapp) return erro(res, 400, "whatsapp é obrigatório");
+  const pagina = texto(b.pagina) || "e-commerce";
+  /* ---------- as páginas em inglês (11/09/2026) ----------
+     O `pagina` com sufixo "-en" é o que diz que o lead veio da versão em
+     inglês, e com ele muda o contato obrigatório: e-mail em vez de
+     WhatsApp (não há WhatsApp na versão gringa desta primeira fase), e
+     o telefone, se vier, é internacional e passa por outra régua
+     (components/telefone-intl.ts). O pt não muda nada: a régua brasileira
+     continua exatamente como era. */
+  const emIngles = pagina.endsWith("-en");
+  const email = emIngles ? (texto(b.email, 120) || "").toLowerCase() : "";
+  if (emIngles) {
+    if (!email) return erro(res, 400, "email é obrigatório");
+    if (!emailValido(email)) return erro(res, 400, "email inválido");
+    if (whatsapp && !telefoneInternacionalValido(whatsapp)) return erro(res, 400, "telefone inválido");
+  } else {
+    if (!whatsapp) return erro(res, 400, "whatsapp é obrigatório");
+  }
   if (!nome && !texto(b.canal)) return erro(res, 400, "nome ou site/instagram é obrigatório");
   /* a MESMA régua do formulário (components/telefone.ts): DDD válido, 10-11
      dígitos, celular começando com 9, sem repetição nem escada. Validar só no
      cliente seria decorativo, esta rota é pública e qualquer POST chega aqui.
      Quem manda número lixo recebe 400 e o site cai no fallback do WhatsApp,
      onde a pessoa se verifica sozinha ao mandar a mensagem. */
-  if (!whatsappValido(whatsapp)) return erro(res, 400, "whatsapp inválido");
+  if (!emIngles && !whatsappValido(whatsapp)) return erro(res, 400, "whatsapp inválido");
 
   /* ---------- o envio que a guarda anti-bot acusou (01/09/2026) ----------
      A /vitrine-digital parou de descartar o envio suspeito e passou a
@@ -395,7 +427,6 @@ export default async function handler(req, res) {
      coluna. */
   let suspeito = b.suspeito === "isca" || b.suspeito === "relogio" ? b.suspeito : null;
 
-  const pagina = texto(b.pagina) || "e-commerce";
   let canal = texto(b.canal);
 
   /* ---------- o @ é conferido na porta (10/09/2026) ----------
@@ -413,7 +444,7 @@ export default async function handler(req, res) {
      "desconhecido" segue como ok: token vencido ou Meta fora do ar é
      problema nosso, e ninguém perde a prévia por isso. */
   let arroba = "nao_conferido";
-  if (pagina === "vitrine-digital" && !suspeito) {
+  if (pagina.startsWith("vitrine-digital") && !suspeito) {
     const c = await conferirArroba(canal || "");
     arroba = c.estado;
     if (c.estado === "invalido") suspeito = "arroba";
@@ -430,6 +461,9 @@ export default async function handler(req, res) {
     pagina,
     nome,
     whatsapp,
+    /* só as páginas em inglês mandam; exige a migração de 11/09 no fim de
+       supabase/leads.sql */
+    email: email || undefined,
     canal,
     empresa: texto(b.empresa),
     vende: texto(b.vende),
@@ -478,7 +512,9 @@ export default async function handler(req, res) {
       if (linha.distinct_id) iguais.push(`distinct_id.eq.${linha.distinct_id}`);
       /* aspas porque o número vai mascarado, com parênteses e espaço, e o
          PostgREST lê parêntese solto como sintaxe do próprio `or` */
-      iguais.push(`whatsapp.eq."${whatsapp.replace(/"/g, "")}"`);
+      if (whatsapp) iguais.push(`whatsapp.eq."${whatsapp.replace(/"/g, "")}"`);
+      if (email) iguais.push(`email.eq."${email.replace(/"/g, "")}"`);
+      if (!iguais.length) throw new Error("sem chave para procurar");
       const filtro = [
         `select=id,plano,canal`,
         `pagina=eq.${encodeURIComponent(linha.pagina)}`,
@@ -550,7 +586,7 @@ export default async function handler(req, res) {
     ? [{ enviado: false, motivo: suspeito ? "suspeito" : "repetido" }, { ok: false, motivo: suspeito ? "suspeito" : "repetido" }, { enviado: false, motivo: suspeito ? "suspeito" : "repetido" }]
     : await Promise.all([
       avisar(linha),
-      sincronizarCRM(linha, utm),
+      sincronizarCRM(linha, utm, { emIngles, faixa: texto(b.investimento_faixa, 32) }),
       avisarNoCelular(linha),
     ]);
 
