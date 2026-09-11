@@ -184,8 +184,13 @@ function mpTrack(evento, props){
   const utm = {};
   try{
     const q = new URLSearchParams(location.search);
+    /* O ÚLTIMO valor vence, não o primeiro: a Meta cola o campo "URL parameters"
+       depois do Website URL, e um anúncio copiado pode carregar um utm fixo
+       dentro da própria URL (aconteceu em 10/09 com os 11 da /landing-page,
+       todos com utm_content=lp-a herdado). O que vem por último é o que a
+       Meta resolveu por anúncio ({{ad.name}}), e é esse que interessa. */
     ["utm_source","utm_medium","utm_campaign","utm_content","utm_term"]
-      .forEach(k => { const v = q.get(k); if (v) utm[k] = v; });
+      .forEach(k => { const v = q.getAll(k).pop(); if (v) utm[k] = v; });
   }catch(e){}
   const corpo = [{
     event: NOME_MP[evento] || evento,
