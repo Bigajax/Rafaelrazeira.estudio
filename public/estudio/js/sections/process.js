@@ -11,7 +11,17 @@ export function process(){
      frases já estavam dentro dos parágrafos, enterradas no meio do texto,
      e é justamente esse o compromisso que o cliente de tráfego pago está
      tentando descobrir enquanto lê. */
-  const steps = p.steps.map(s => `
+  /* ---------- o trilho (só a /landing-page, desde 11/09) ----------
+     Com `trilho: true` o passo muda de anatomia: o PRAZO é o número
+     grande (com legenda), o ordinal vira "PASSO 01" miúdo, e a lista
+     vira três colunas no desktop. Ver `.proc__list--trilho` no CSS. */
+  const steps = p.trilho ? p.steps.map(s => `
+    <li class="proc__step proc__step--trilho reveal">
+      <span class="proc__passo">PASSO ${s.num}</span>
+      <span class="proc__num"><b>${s.prazo}</b>${s.legenda ? `<i>${s.legenda}</i>` : ""}</span>
+      <h3 class="proc__title">${s.title}</h3>
+      <p class="proc__text">${s.text}</p>
+    </li>`).join("") : p.steps.map(s => `
     <li class="proc__step reveal">
       <span class="proc__num">
         <b>${s.num}</b>
@@ -26,7 +36,7 @@ export function process(){
   <section class="process" id="como-funciona">
     <div class="wrap">
       <div class="section-label process__label reveal">${p.label}</div>
-      <ol class="proc__list">${steps}</ol>
+      <ol class="proc__list${p.trilho ? " proc__list--trilho" : ""}">${steps}</ol>
       ${p.note ? `<a href="#contato" class="proc__note reveal" data-cta="process" data-cta-dest="form"><span class="arrow" aria-hidden="true">→</span> ${p.note}</a>` : ""}
     </div>
   </section>`;

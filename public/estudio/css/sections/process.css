@@ -73,3 +73,53 @@
 .proc__note .arrow{transition:transform .2s}
 .proc__note:hover{color:var(--black)}
 .proc__note:hover .arrow{transform:translateX(4px)}
+
+/* ============================================================
+   O TRILHO (só a /landing-page, desde 11/09/2026)
+
+   A lista tinha três parágrafos e o ordinal em corpo de manchete, e o
+   ordinal não responde nada. O que a pessoa quer saber é QUANDO e
+   QUANTO, então o prazo é que sobe para o corpo grande, com uma legenda
+   embaixo: é a régua do hero (24H, 3 DIAS, R$0) contada de novo, agora
+   como sequência. O ordinal fica em mono miúdo, "PASSO 01", só para
+   dizer que a ordem existe.
+
+   No desktop os três ficam lado a lado sobre um filete de tinta, cada um
+   com um quadrado no início: um trilho que se lê da esquerda para a
+   direita. No celular o filete vira vertical, à esquerda, e os passos
+   descem por ele. O quadrado é de tinta, não de cor de marca: o verde
+   aqui está na legenda, e um marcador verde brigaria com ela.
+   Tudo vem DEPOIS do componente de propósito.
+   ============================================================ */
+.proc__list--trilho{display:grid;grid-template-columns:1fr;gap:0}
+.proc__step--trilho{
+  display:block;position:relative;
+  padding:clamp(22px,3vw,32px) 0 0;border-top:2px solid var(--ink);
+}
+.proc__step--trilho::before{
+  content:"";position:absolute;top:-6px;left:0;width:10px;height:10px;background:var(--ink);
+}
+.proc__step--trilho:last-child{border-bottom:0}
+.proc__passo{
+  display:block;
+  font-family:var(--font-mono);font-weight:700;font-size:9.5px;
+  letter-spacing:.18em;color:var(--ink-40);
+}
+.proc__step--trilho .proc__num{margin-top:12px}
+.proc__step--trilho .proc__title{margin-top:16px;font-size:clamp(1.35rem,5vw,1.8rem)}
+.proc__step--trilho .proc__text{margin-top:8px;font-size:clamp(.95rem,3.6vw,1.05rem);max-width:30ch}
+@media(min-width:820px){
+  /* o filete é da LISTA, não de cada passo: um trilho só, sem cortes
+     nos vãos entre as colunas; o quadrado de cada passo pousa sobre ele */
+  .proc__list--trilho{grid-template-columns:repeat(3,minmax(0,1fr));column-gap:clamp(24px,4vw,56px);border-top:2px solid var(--ink)}
+  .proc__step--trilho{border-top:0;padding-bottom:0}
+  .proc__step--trilho::before{top:-6px}
+}
+/* Celular: o trilho é vertical, à esquerda, e cada passo pendura nele */
+@media(max-width:819px){
+  .proc__list--trilho{border-left:2px solid var(--ink);padding-left:22px}
+  .proc__step--trilho{border-top:0;padding:0 0 clamp(26px,6vw,36px)}
+  .proc__step--trilho::before{top:2px;left:-28px}
+  .proc__step--trilho:last-child{padding-bottom:4px}
+  .proc__step--trilho .proc__num{margin-top:8px}
+}

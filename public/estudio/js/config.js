@@ -451,12 +451,23 @@ const CONFIG_LP = {
      a oferta inteira, e por isso é o único com duas frases de peso. */
   process: {
     label: "COMO FUNCIONA.",
+    /* ---------- o trilho (11/09/2026) ----------
+       Os três passos tinham três parágrafos de três linhas, e o número
+       grande era o ORDINAL (01, 02, 03), que não diz nada, enquanto o
+       prazo, que é o que a pessoa quer saber, ficava em mono de 9px
+       embaixo. Inverteu: o prazo é o número grande (24H, 3 DIAS, R$97)
+       com uma legenda, exatamente a régua do hero repetida em três
+       batidas, e o ordinal vira "PASSO 01" miúdo. O texto cai para uma
+       frase. `trilho: true` liga a versão em linha (três colunas no
+       desktop, trilho vertical no celular); a /estudio segue com a
+       lista. A nota de rodapé saiu: o passo 03 já diz a entrada. */
+    trilho: true,
     steps: [
-      { num:"01", prazo:"RESPOSTA EM 24H ÚTEIS", title:"VOCÊ PEDE A SUA PRÉVIA",    text:"Três toques: o seu WhatsApp, o site ou Instagram para onde os seus anúncios vão hoje e quanto você investe por mês. Não custa nada e não tem compromisso nenhum." },
-      { num:"02", prazo:"PRÉVIA EM ATÉ 3 DIAS",  title:"EU MONTO A PÁGINA INTEIRA", text:"Estratégia, texto, design e desenvolvimento. Você não escreve nada e não manda nada pronto. Quando terminar, eu te mando um link: a sua página, no seu celular, para navegar antes de qualquer pagamento." },
-      { num:"03", prazo:"ENTRADA DE R$97",       title:"GOSTOU? AÍ A GENTE COMEÇA",  text:"Domínio conectado, formulário caindo no seu WhatsApp e o pixel configurado, para você ver quanto custa cada contato. O saldo só é quitado quando a página for ao ar. Se não gostar, você não paga e a gente se despede bem." },
+      { num:"01", prazo:"24H",    legenda:"PARA EU RESPONDER", title:"VOCÊ PEDE",         text:"Três toques no formulário. Eu respondo em até 24h úteis." },
+      { num:"02", prazo:"3 DIAS", legenda:"ATÉ A PRÉVIA",      title:"EU MONTO A PÁGINA", text:"Texto, design e tudo. Você recebe o link e navega no celular." },
+      { num:"03", prazo:"R$97",   legenda:"DE ENTRADA",        title:"GOSTOU? AÍ PAGA",   text:"O saldo só quando a página for ao ar. Não gostou, não paga." },
     ],
-    note: "ENTRADA DE R$97 · SALDO SÓ QUANDO A PÁGINA FOR AO AR",
+    note: "",
   },
 
   cases: {
