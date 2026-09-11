@@ -50,10 +50,16 @@
 
 import { useEffect, useRef } from "react";
 
-/* o name "email" é a isca inteira: atraente para robô, inexistente para
-   gente. NÃO transformar em campo real de e-mail um dia; se o formulário
-   passar a pedir e-mail de verdade, renomear a isca antes. */
-export const NOME_DA_ISCA = "email";
+/* A isca se chamava "email" (atraente para robô, inexistente para gente)
+   até 11/09/2026, quando a /en/vitrine-digital passou a pedir e-mail DE
+   VERDADE, e o campo real e a isca ficaram com o mesmo name: o primeiro
+   envio em inglês foi gravado como suspeito por causa do próprio e-mail
+   da pessoa. Renomeada para "website", que continua sendo o campo que
+   todo robô de formulário preenche e que nenhum formulário do site pede
+   com esse nome (o da loja se chama "instagram"). NÃO transformar em
+   campo real um dia; se o formulário passar a pedir site com esse name,
+   renomear a isca antes. */
+export const NOME_DA_ISCA = "website";
 
 export function CampoIsca() {
   return (

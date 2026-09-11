@@ -6,13 +6,26 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 import s from "@/app/(pt)/vitrine-digital/vitrine.module.css";
 import { CampoIsca, useGuardaDeFormulario } from "@/components/form-guarda";
 import { mascararWhatsapp, whatsappValido } from "@/components/telefone";
+import { emailValido, telefoneInternacionalValido } from "@/components/telefone-intl";
 import { ligarAncoras } from "@/components/vitrine/ancora";
 import { enviarLeadVitrine, registrarSuspeito } from "@/components/vitrine/lead-flow";
 import { focarSemContar, initTracking } from "@/components/vitrine/tracking";
 import { projetos } from "@/data/portfolio";
 import { SeletorIdioma } from "@/components/idioma/SeletorIdioma";
-import { useLang } from "@/components/i18n";
-import { PARES } from "@/lib/idiomas";
+import { useLang, useT } from "@/components/i18n";
+import { PARES, preencher } from "@/lib/idiomas";
+import { OFERTA } from "@/lib/oferta";
+import type { VitrineMessages } from "@/messages/vitrine.pt";
+
+/* ---------- os dois idiomas (11/09/2026) ----------
+   Todo texto desta página saiu daqui para messages/vitrine.pt.tsx e
+   vitrine.en.tsx, e os componentes leem pelo provider (components/i18n).
+   As notas de decisão de cada frase ficaram onde estavam, ao lado do
+   lugar em que a frase é usada; o que mudou é só de onde ela vem. O que
+   muda de comportamento com o idioma está marcado nos formulários: no en
+   o contato obrigatório é o e-mail, o telefone é opcional e internacional,
+   e o botão pós-envio é um mailto: em vez do wa.me. */
+const useVit = () => useT<VitrineMessages>();
 
 /* a URL pt desta página, chave do mapa de irmãs (lib/idiomas.ts) */
 const PAGINA_PT = "/vitrine-digital";
@@ -70,7 +83,15 @@ const NO_AR = projetos.filter(p => p.url).length;
    desta página, e inventar um segundo componente vazio só para pendurar um
    `useEffect` custaria mais do que este comentário. `ligarAncoras` cuida da
    velocidade e do foco dos dez `href="#..."`; o porquê está em ancora.ts. */
-export function Analytics() { useEffect(() => { initTracking(); ligarAncoras(); }, []); return null; }
+export function Analytics() {
+  const lang = useLang();
+  useEffect(() => {
+    /* a página, o valor e a moeda do funil vêm do idioma (ver tracking.ts) */
+    initTracking({ page: lang === "en" ? "vitrine-digital-en" : "vitrine-digital", valor: OFERTA[lang].vitrine.total, currency: OFERTA[lang].moeda, lang });
+    ligarAncoras();
+  }, [lang]);
+  return null;
+}
 
 const Eyebrow = ({ children }: { children: React.ReactNode }) => <p className={s.eyebrow}>{children}</p>;
 const Button = ({ href, children, outline = false, onClick, cta, dest }: { href?: string; children: React.ReactNode; outline?: boolean; onClick?: () => void; cta?: string; dest?: string }) =>
@@ -112,6 +133,31 @@ function Bubble({ out = false, time, tick, delay = 0, children }: { out?: boolea
   </div>;
 }
 
+/* ---------- o botão da confirmação, por idioma ----------
+   No pt reabre o WhatsApp com a mensagem pronta (`reabrir_whats`, fora da
+   regra de Lead: quem clica já disparou o Lead do formulário). No en é o
+   mailto: pré-preenchido, com destino "email", que o ouvinte de cliques
+   não intercepta: vira ClickCTA e navega. */
+function ReabrirCta({ href, rotulo }: { href: string; rotulo: string }) {
+  const en = useLang() === "en";
+  return <a className={`${s.button} ${s.primary}`} href={href} data-cta={en ? "reabrir_email" : "reabrir_whats"} data-cta-dest={en ? "email" : "whatsapp"}>{rotulo}</a>;
+}
+
+/* Antes daqui saía "Tudo certo. Abrindo o WhatsApp…", que dizia à pessoa
+   que estava feito quando não estava: a mensagem abre pronta mas não
+   enviada, e sem tocar em enviar nada chega. Agora o passo que falta é
+   dito com todas as letras, e o botão cobre o caso de a abertura falhar,
+   e o de quem voltou do WhatsApp sem enviar. No en o mesmo bloco cobre a
+   gravação que falhou: sem WhatsApp para abrir, ele oferece o e-mail. */
+function Pendente({ href }: { href: string }) {
+  const t = useVit();
+  return <div className={s.pendente} role="status">
+    <b>{t.form.pendenteTitulo}</b>
+    <p>{t.form.pendenteTexto}</p>
+    <ReabrirCta href={href} rotulo={t.form.pendenteCta} />
+  </div>;
+}
+
 const ChatStrip = ({ label, note, children }: { label: string; note?: string; children: React.ReactNode }) =>
   <div className={s.chatStrip}>
     <small className={s.stripLabel}>{label}</small>
@@ -132,14 +178,15 @@ const ChatStrip = ({ label, note, children }: { label: string; note?: string; ch
    qual a campanha otimiza; o WhatsApp continua nos CTAs de quem já rolou
    (porta 02, oferta, final). */
 export function Header() {
+  const t = useVit();
   return <header className={s.header}>
     {/* a logo volta ao hero desta página, não para /estudio: quem chega do
         anúncio e toca no topo quer recomeçar a leitura, não trocar de site */}
-    <a className={s.brand} href="#topo"><b>RAFAEL RAZEIRA</b><span>ESTÚDIO</span></a>
+    <a className={s.brand} href="#topo"><b>{t.marca.nome}</b><span>{t.marca.sufixo}</span></a>
     {/* a mesma frase que o Quem Faz lista como fato, antecipada para o
         topo: é a pergunta que tráfego frio faz antes de qualquer outra.
         Ver a nota em `.headStatus`, no CSS. */}
-    <span className={s.headStatus}><i aria-hidden /> RESPOSTA NO MESMO DIA</span>
+    <span className={s.headStatus}><i aria-hidden /> {t.header.status}</span>
     {/* O seletor de idioma e o CTA andam juntos (11/09/2026): à esquerda
         do botão, onde todo site põe, e visível também no celular, senão
         quem não fala português nunca acha. Ver components/idioma. */}
@@ -148,7 +195,7 @@ export function Header() {
       {/* encurtado em 13/08: "QUERO MINHA PRÉVIA ↓" e a logo somavam mais
           que os 350px úteis de uma tela de 390, e os dois quebravam em duas
           linhas cada um, deixando o cabeçalho com o dobro da altura */}
-      <a className={s.headCta} href="#hero-form" data-cta="header" data-cta-dest="form">VER A MINHA LOJA ↓</a>
+      <a className={s.headCta} href="#hero-form" data-cta="header" data-cta-dest="form">{t.header.cta}</a>
     </div>
   </header>;
 }
@@ -211,10 +258,14 @@ function VitrineDemo() {
    WhatsApp só como fallback. O botão de submit NÃO tem data-cta: o Lead
    deste caminho sai do submit, senão o mesmo envio contaria duas vezes. */
 function HeroForm() {
+  const t = useVit();
+  const lang = useLang();
   const [linkWa, setLinkWa] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [enviado, setEnviado] = useState(false);
   const [telInvalido, setTelInvalido] = useState(false);
+  /* o e-mail é o contato obrigatório da versão em inglês (11/09/2026) */
+  const [emailInvalido, setEmailInvalido] = useState(false);
   /* o @ que a rota não achou na Meta (10/09): guarda o texto para a
      mensagem dizer QUAL @ não existe, que é o que faz a pessoa conferir */
   const [instaInvalido, setInstaInvalido] = useState("");
@@ -234,24 +285,31 @@ function HeroForm() {
       registrarSuspeito({
         nome: String(f.get("nome") || ""),
         whatsapp: String(f.get("whatsapp") || ""),
+        email: String(f.get("email") || ""),
         instagram: String(f.get("instagram") || ""),
         motivo: suspeito,
+        lang,
       });
       setEnviado(true);
       return;
     }
     /* telefone inválido nem vira evento: o Contact é o que a campanha
-       otimiza, e número lixo aqui seria falso positivo ensinando a Meta */
-    if (!whatsappValido(String(f.get("whatsapp") || ""))) { setTelInvalido(true); return; }
+       otimiza, e número lixo aqui seria falso positivo ensinando a Meta.
+       No en a mesma régua vale para o e-mail, que é o contato de lá. */
+    if (lang === "en") {
+      if (!emailValido(String(f.get("email") || ""))) { setEmailInvalido(true); return; }
+    } else if (!whatsappValido(String(f.get("whatsapp") || ""))) { setTelInvalido(true); return; }
     setEnviando(true);
     const { salvo, linkWa: link, arrobaInvalido } = await enviarLeadVitrine({
       nome: String(f.get("nome") || ""),
       whatsapp: String(f.get("whatsapp") || ""),
+      email: String(f.get("email") || ""),
       /* o lead-flow já sabia receber `instagram` desde 07/08 (o formulário
          da oferta manda), e é ele que vira a linha "Loja:" da mensagem do
          WhatsApp e a coluna `canal` no banco. Só o hero não mandava. */
       instagram: String(f.get("instagram") || ""),
       ctaPosition: "hero_form",
+      lang,
     });
     setEnviando(false);
     /* o @ não existe na Meta: o campo volta para a pessoa, sem WhatsApp e
@@ -341,10 +399,10 @@ function HeroForm() {
       <path d="M8 6.4h9.6" stroke="#ffffffcc" strokeWidth="1.6" strokeLinecap="round" />
       <path d="M9.6 24.4c.4-2.6 1.8-4.4 3-5.4" stroke="#ffffff9e" strokeWidth="1.3" strokeLinecap="round" />
     </svg>
-    <p className={s.formTitle}>RECEBI SEUS DADOS<br /><span>Te chamo no WhatsApp ainda hoje.</span></p>
+    <p className={s.formTitle}>{t.form.okTitulo}<br /><span>{t.form.okSub}</span></p>
     {/* o único WhatsApp que sobrou no hero, e só depois do envio: aqui o
         Contact já disparou, então a saída não custa mais conversão nenhuma */}
-    <a className={`${s.button} ${s.primary}`} href={linkWa} data-cta="reabrir_whats" data-cta-dest="whatsapp">QUER AGILIZAR? ME CHAMA AGORA ↗</a>
+    <ReabrirCta href={linkWa} rotulo={t.form.okCta} />
   </div>;
   return <form id="hero-form" className={s.tag} onSubmit={submit}>
     {/* ---------- o alfinete ----------
@@ -440,7 +498,7 @@ function HeroForm() {
         já promete, e "MARINGÁ · PR" é o que o Quem Faz já diz.
         `role="img"` + `aria-label`: o leitor de tela anuncia o selo como
         uma coisa só, em vez de soletrar as quatro linhas soltas. */}
-    <svg className={s.tagStamp} viewBox="0 0 100 100" role="img" aria-label="Carimbo: agenda aberta">
+    <svg className={s.tagStamp} viewBox="0 0 100 100" role="img" aria-label={t.etiqueta.selo.aria}>
       <defs>
         {/* semicírculo da esquerda para a direita passando POR CIMA
             (varredura 1 = horário): é o que mantém as letras do arco em
@@ -450,12 +508,12 @@ function HeroForm() {
       <circle cx="50" cy="50" r="47" fill="none" stroke="currentColor" strokeWidth="2.6" />
       <circle cx="50" cy="50" r="40.5" fill="none" stroke="currentColor" strokeWidth="1" />
       <text fontSize="6.6" letterSpacing=".45">
-        <textPath href="#seloArcoDoTopo" startOffset="50%" textAnchor="middle">RAFAEL RAZEIRA ESTÚDIO</textPath>
+        <textPath href="#seloArcoDoTopo" startOffset="50%" textAnchor="middle">{t.etiqueta.selo.arco}</textPath>
       </text>
-      <text x="50" y="48.5" fontSize="14" letterSpacing=".4" textAnchor="middle">AGENDA</text>
-      <text x="50" y="62.5" fontSize="14" letterSpacing=".4" textAnchor="middle">ABERTA</text>
+      <text x="50" y="48.5" fontSize="14" letterSpacing=".4" textAnchor="middle">{t.etiqueta.selo.l1}</text>
+      <text x="50" y="62.5" fontSize="14" letterSpacing=".4" textAnchor="middle">{t.etiqueta.selo.l2}</text>
       <line x1="31" y1="69.5" x2="69" y2="69.5" stroke="currentColor" strokeWidth="1" />
-      <text x="50" y="79.5" fontSize="7.2" letterSpacing=".5" textAnchor="middle">MARINGÁ · PR</text>
+      <text x="50" y="79.5" fontSize="7.2" letterSpacing=".5" textAnchor="middle">{t.etiqueta.selo.rodape}</text>
     </svg>
     {/* ---------- a etiqueta parou de ser fatura (23/08) ----------
         O corpo do cartão era a CONTA: R$199 em corpo 48, "+ 4 parcelas de
@@ -500,7 +558,7 @@ function HeroForm() {
         Duas frases de onze caracteres: a 34px, com os 66px reservados
         para o selo, é o que cabe em duas linhas num celular de 390px
         sem virar três. */}
-    <p className={s.tagLead}>Eu desenho.<br />Você decide.</p>
+    <p className={s.tagLead}>{t.etiqueta.lead}</p>
     {/* ---------- o aparte (28/08) ----------
         A frase é do Rafael e FICA: ele gosta dela, e ela diz o preço e a
         saída na mesma respiração. O que mudou foi o lugar e o corpo, não o
@@ -524,8 +582,8 @@ function HeroForm() {
         as duas palavras que ela procura nesse momento são exatamente essas
         duas. O trabalho fino de desarmar o dedo continua sendo do
         `.tagMicro`, a uma tela de distância, perto do botão. */}
-    <p className={s.tagSub}>Manda o seu @ e eu te mostro a sua loja pronta em 24h.</p>
-    <p className={s.tagAparte}>De graça, sem compromisso.</p>
+    <p className={s.tagSub}>{t.etiqueta.sub}</p>
+    <p className={s.tagAparte}>{t.etiqueta.aparte}</p>
     <hr className={s.tagRule} />
     <div className={s.tagCampos}>
       {/* rótulo visível E placeholder, que não é contradição: o rótulo é
@@ -542,9 +600,21 @@ function HeroForm() {
           O formulário do fim da página continua pedindo. */}
       {/* a máscara reescreve o valor a cada tecla; digitar limpa o erro para a
           mensagem não continuar acusando um número que já foi corrigido */}
-      <label><span>WHATSAPP</span><input name="whatsapp" type="tel" autoComplete="tel" placeholder="(44) 99999-0000" required maxLength={16}
-             onInput={e => { e.currentTarget.value = mascararWhatsapp(e.currentTarget.value); if (telInvalido) setTelInvalido(false); }} /></label>
-      {telInvalido && <small className={s.tagErro} role="alert">Confere o número: é por ele que eu te chamo. Ex.: (44) 99999-0000.</small>}
+      {/* ---------- o contato, por idioma (11/09/2026) ----------
+          No pt é o WhatsApp com a máscara brasileira; no en é o e-mail, que é
+          por onde a prévia volta (não há WhatsApp na versão gringa). O campo
+          que existe no DOM é o que o submit valida. */}
+      {lang === "en"
+        ? <>
+          <label><span>{t.form.email}</span><input name="email" type="email" inputMode="email" autoComplete="email" placeholder={t.form.emailPh} required
+                 onInput={() => { if (emailInvalido) setEmailInvalido(false); }} /></label>
+          {emailInvalido && <small className={s.tagErro} role="alert">{t.form.errEmail}</small>}
+        </>
+        : <>
+          <label><span>{t.form.whatsapp}</span><input name="whatsapp" type="tel" autoComplete="tel" placeholder={t.form.whatsappPh} required maxLength={16}
+                 onInput={e => { e.currentTarget.value = mascararWhatsapp(e.currentTarget.value); if (telInvalido) setTelInvalido(false); }} /></label>
+          {telInvalido && <small className={s.tagErro} role="alert">{t.form.errTel}</small>}
+        </>}
     {/* ---------- o terceiro campo (13/08) ----------
         Entrou a pedido do Rafael e OBRIGATÓRIO, e deixou de ser em
         23/08, igualando-se ao mesmo campo no formulário da oferta. Ele
@@ -585,7 +655,7 @@ function HeroForm() {
           para o leitor de tela não anunciar o símbolo duas vezes. */}
       <label>
         <span aria-hidden>@</span>
-        <input name="instagram" aria-label="Sua loja no Instagram" autoCapitalize="off" autoCorrect="off" spellCheck={false} required placeholder="sualoja"
+        <input name="instagram" aria-label={t.etiqueta.instaAria} autoCapitalize="off" autoCorrect="off" spellCheck={false} required placeholder={t.etiqueta.instaPh}
                onInput={e => { e.currentTarget.value = e.currentTarget.value.replace(/^\s*(?:https?:\/\/)?(?:www\.)?instagram\.com\//i, "").replace(/[@\s]/g, "").replace(/\/.*$/, ""); if (instaInvalido) setInstaInvalido(""); }} />
         {/* o "opcional" saiu em 26/08: o cartão logo acima passou a
             prometer DESENHO, e sem o @ não existe o que desenhar. O campo
@@ -596,7 +666,7 @@ function HeroForm() {
           que precisa ser, porque os dois erros mais comuns da primeira
           semana foram digitar o e-mail neste campo e dar o @ pessoal em
           vez do da loja. O mesmo vermelho do erro de telefone. */}
-      {instaInvalido && <small role="alert" style={{ color: "#b3261e" }}>Não achei <b>@{instaInvalido}</b> no Instagram. Confere o @ da loja: precisa ser a conta profissional, é dela que eu tiro as fotos.</small>}
+      {instaInvalido && <small role="alert" style={{ color: "#b3261e" }}>{t.form.errInsta1}<b>@{instaInvalido}</b>{t.form.errInsta2}</small>}
       <CampoIsca />
     </div>
     {/* O rótulo era "ME CHAMA HOJE", e ele passou a brigar com a linha
@@ -609,13 +679,9 @@ function HeroForm() {
         diz quem faz, em que ordem e quando.
         A manchete virou pergunta e perdeu o imperativo; o botão é onde
         ele volta, agora na voz de quem clica. */}
-    <button className={`${s.button} ${s.acao}`} disabled={enviando}>{enviando ? "ENVIANDO…" : "QUERO VER A MINHA LOJA"}</button>
+    <button className={`${s.button} ${s.acao}`} disabled={enviando}>{enviando ? t.form.enviando : t.form.enviar}</button>
     {linkWa
-      ? <div className={s.pendente} role="status">
-          <b>Falta um toque.</b>
-          <p>Abri o WhatsApp com sua mensagem pronta. Toque em <b>enviar</b> lá para eu receber, senão ela não chega.</p>
-          <a className={`${s.button} ${s.primary}`} href={linkWa} data-cta="reabrir_whats" data-cta-dest="whatsapp">ABRIR O WHATSAPP ↗</a>
-        </div>
+      ? <Pendente href={linkWa} />
       : <small className={s.tagMicro}>
           {/* aqui aterrissa a conta que saiu do topo. A ordem é a da
               decisão de quem já vai agir: primeiro o total (para a linha
@@ -639,13 +705,13 @@ function HeroForm() {
               O "resto só depois de você aprovar" saiu: virou a quarta
               condição de uma linha que já tinha três, e ela continua
               dita no passo 04 e no selo do processo. */}
-          <b>A prévia é por minha conta.</b> Se gostar: <b>R$999</b> no total, começando com <b>R$199</b>. Se não gostar, me diz sem dó.
+          {t.etiqueta.micro}
         </small>}
     {/* o canhoto: o picote separa o que você dá do que eu já provei, que são
         as duas metades da decisão. Fatos verificáveis, não adjetivos: os 9
         são o catálogo inteiro do /portfolio, e "PROJETOS" e não "LOJAS"
         porque dois dos nove não são loja. */}
-    <p className={s.tagStub}><span><b>{NO_AR}</b> PROJETOS NO AR</span><span><b>7</b> DIAS ÚTEIS</span><span><b>R$0</b> DE MENSALIDADE</span></p>
+    <p className={s.tagStub}><span><b>{NO_AR}</b> {t.etiqueta.stub.projetos}</span><span><b>{t.etiqueta.stub.prazo}</b> {t.etiqueta.stub.prazoRotulo}</span><span><b>{t.etiqueta.stub.mensal}</b> {t.etiqueta.stub.mensalRotulo}</span></p>
   </form>;
 }
 
@@ -675,14 +741,16 @@ function HeroForm() {
    da tela da loja.) Decorativo para leitor de tela: a frase já está no
    lead. */
 function Pedido({ className }: { className?: string }) {
+  const t = useVit();
   return <div className={`${s.pedido} ${className ?? ""}`} aria-hidden>
-    <span className={s.pedidoK}>PEDIDO NO SEU WHATSAPP</span>
-    <p>Oi, Sölo! Quero o <b>New Balance 9060</b>, tam <b>41</b>. Pode separar?</p>
-    <i>14:07 ✓✓</i>
+    <span className={s.pedidoK}>{t.hero.pedido.k}</span>
+    <p>{t.hero.pedido.texto}</p>
+    <i>{t.hero.pedido.hora}</i>
   </div>;
 }
 
 export function Hero() {
+  const t = useVit();
   return <section className={s.hero} id="topo">
     <div className={s.heroGrid}>
       <div className={s.heroCopy}>
@@ -694,7 +762,7 @@ export function Hero() {
             úteis de uma tela de 390px. O rabo "· SEUS PRODUTOS EM UM
             LINK SÓ" saiu por estourar exatamente esse limite, então aqui
             não entra mais nada sem sair outra coisa. */}
-        <Eyebrow>PARA LOJAS DO INSTAGRAM E WHATSAPP</Eyebrow>
+        <Eyebrow>{t.hero.eyebrow}</Eyebrow>
         {/* ---------- a manchete virou a OFERTA (26/08) ----------
             Aqui morava a pergunta do direct ("quantas vendas você perdeu
             essa semana"), que era o hook H01 do lote 01 palavra por
@@ -727,7 +795,7 @@ export function Hero() {
             página como o lugar em que ela clicou. E anotar a data no doc
             do lote (docs/matriz-anuncios-vitrine.md), senão o CPL de
             antes e o de depois viram a mesma média. */}
-        <h1>SUA LOJA PRONTA ANTES DE <em>VOCÊ PAGAR.</em></h1>
+        <h1>{t.hero.h1}</h1>
         {/* encurtado em 13/08: a versão anterior tinha 27 palavras e ocupava
             cinco linhas num celular de 390px, empurrando a etiqueta para
             fora da dobra. Depois caiu de três linhas para DUAS, para
@@ -748,7 +816,7 @@ export function Hero() {
             palavras, e a página repete essa tríade no anúncio, no corpo e
             no canhoto da etiqueta. Aqui ela fica em tinta cheia e o resto
             da frase recua para o cinza. Ver `.heroCopy .lead b` no CSS. */}
-        <p className={s.lead}><b>Foto, preço e tamanho</b> de cada peça num link só. O cliente escolhe e o pedido chega montado no WhatsApp, sem você responder um por um.</p>
+        <p className={s.lead}>{t.hero.lead}</p>
         {/* ---------- a faixa, ACIMA da etiqueta ----------
             Ela nasceu embaixo e foi medida a 800px numa dobra de 740, ou
             seja, fora da primeira tela, que era o único lugar onde ela
@@ -764,7 +832,7 @@ export function Hero() {
             conter o conteúdo DUAS vezes para o laço fechar sem emenda. */}
         <div className={s.heroBand} aria-hidden>
           <div className={s.heroBandTrack}>
-            {Array.from({ length: 8 }, (_, i) => <span key={i}>Pronta em 7 dias úteis · Sem mensalidade · Você mesmo atualiza ·</span>)}
+            {Array.from({ length: 8 }, (_, i) => <span key={i}>{t.hero.faixa}</span>)}
           </div>
         </div>
         {/* ---------- uma porta só (13/08) ----------
@@ -777,7 +845,7 @@ export function Hero() {
       </div>
       <div className={s.heroVisual}>
         <div className={s.phoneWrap}>
-          <div className={s.phone} role="img" aria-label="A loja completa da Sölo Urb rolando do topo ao rodapé dentro de um celular: catálogo, páginas de produto e pedido pelo WhatsApp">
+          <div className={s.phone} role="img" aria-label={t.hero.phoneAria}>
             <VitrineDemo />
           </div>
           {/* o chip colado na base do aparelho: a bolinha marca que a loja
@@ -785,7 +853,7 @@ export function Hero() {
               com os projetos de clientes */}
           <Pedido />
           <a className={s.liveTag} href="#projetos" data-cta="hero_projetos" data-cta-dest="projetos">
-            <i aria-hidden /> NO AR: SÖLO URB · VER LOJAS QUE JÁ USAM ↓
+            <i aria-hidden /> {t.hero.liveTag}
           </a>
         </div>
       </div>
@@ -807,6 +875,7 @@ export function Hero() {
    funcionam AQUI (autoridade, personagem), não funcionariam no hero, onde o
    trabalho da dobra é confiança imediata no produto. */
 export function QuemFaz() {
+  const t = useVit();
   return <section className={s.quem}>
     <div className={s.quemPhoto}>
       {/* Foto trocada em 13/08 a pedido do Rafael. O arquivo continua P&B
@@ -823,15 +892,15 @@ export function QuemFaz() {
           e o `mix-blend-mode: screen` do duotone estouraria ali em branco.
           Ver a nota longa em `.quem`, no CSS. */}
       <div className={s.quemShot}>
-        <Image src="/assets/rafael-quemfaz.jpg" fill sizes="(max-width: 900px) 92vw, 34vw" alt="Rafael Razeira de óculos escuros esportivos, em preto e branco, com montanhas nevadas ao fundo" />
+        <Image src="/assets/rafael-quemfaz.jpg" fill sizes="(max-width: 900px) 92vw, 34vw" alt={t.quem.alt} />
       </div>
       {/* fora da janela e dentro da margem do impresso: era uma linha
           vertical branca por cima da imagem, e com a foto de neve virou
           branco sobre branco. Margem de foto revelada é onde legenda vive. */}
-      <span className={s.quemLegenda} aria-hidden>MARINGÁ · PR · EST. 2026</span>
+      <span className={s.quemLegenda} aria-hidden>{t.quem.legenda}</span>
     </div>
     <div className={s.quemTxt}>
-      <Eyebrow>QUEM FAZ</Eyebrow>
+      <Eyebrow>{t.quem.eyebrow}</Eyebrow>
       {/* ---------- a manchete parou de se definir pela negativa ----------
           Era "Uma pessoa. Não uma agência.". Duas coisas erradas com
           ela: "uma pessoa" é uma CATEGORIA, e o leitor não compra
@@ -847,10 +916,10 @@ export function QuemFaz() {
           exatamente a frase que subiu.
           Os dois pontos, e não o ponto final, são o que faz "SOU EU"
           cair como resposta em vez de virar uma terceira frase solta. */}
-      <h2>Do primeiro oi<br />até a loja no ar:<br /><em>sou eu.</em></h2>
+      <h2>{t.quem.h2}</h2>
       {/* "Rafael Razeira" e não "Eu sou o Rafael": o "sou eu" já está
           dito, em corpo de manchete, dois centímetros acima. */}
-      <p>Rafael Razeira. Desenho, desenvolvo e publico cada vitrine, e é comigo que você fala no WhatsApp. Sem fila de atendimento, sem gerente de conta, sem telefone que ninguém atende.</p>
+      <p>{t.quem.p1}</p>
       {/* ---------- a conta tem que fechar ----------
           Dizia "as duas lojas desta página (...) os outros sete projetos
           do portfólio", e a conta parou de fechar em 07/08, quando a
@@ -879,7 +948,7 @@ export function QuemFaz() {
           Ela também é o corpo C1 dos anúncios ("a vitrine da Sölo Urb
           rolando do topo ao rodapé"), então quem chega por um C1 precisa
           reencontrar o nome dentro da página. */}
-      <p>A Sölo Urb, que rola no celular aí em cima, e as duas lojas de clientes logo abaixo? Saíram desta mesa, junto com os outros {NO_AR - 3} projetos do portfólio.</p>
+      <p>{preencher(t.quem.p2, { n: NO_AR - 3 })}</p>
       {/* AQUI NÃO ENTRA UMA LINHA DE DEFESA. Existiu por meia hora um
           terceiro parágrafo respondendo "uma pessoa só dá conta?" com o
           prazo e a condição de pagamento, e o Rafael cortou.
@@ -891,7 +960,7 @@ export function QuemFaz() {
           microcopy da etiqueta, ditos como oferta e não como desculpa,
           que é o lugar certo deles. */}
       <ul className={s.quemFacts}>
-        {["MARINGÁ · PR", `${NO_AR} PROJETOS NO AR`, "RESPOSTA NO MESMO DIA"].map(x => <li key={x}>{x}</li>)}
+        {[t.quem.fatos.cidade, preencher(t.quem.fatos.projetos, { n: NO_AR }), t.quem.fatos.resposta].map(x => <li key={x}>{x}</li>)}
       </ul>
       {/* volta para a etiqueta, que está a uma tela acima: esta seção é a
           segunda pergunta de quem chegou pelo anúncio ("quem me vende
@@ -905,7 +974,7 @@ export function QuemFaz() {
           o rótulo não pode reiniciar a série histórica. O do header
           continua "DEIXAR CONTATO ↓" por largura, e não por vocabulário:
           lá o texto divide os 350px úteis com a logo. */}
-      <a className={`${s.button} ${s.acao}`} href="#hero-form" data-cta="quem_faz" data-cta-dest="form">QUERO VER A MINHA LOJA ↑</a>
+      <a className={`${s.button} ${s.acao}`} href="#hero-form" data-cta="quem_faz" data-cta-dest="form">{t.quem.cta}</a>
       {/* AQUI FICAVA `RAFAEL RAZEIRA · ESTÚDIO` em mono. Saiu em 13/08: o
           letreiro logo abaixo diz o mesmo nome em corpo de 3,4rem, então
           a assinatura era a segunda vez em menos de cem pixels. Assinar
@@ -922,6 +991,7 @@ export function QuemFaz() {
    minúsculas, formato de handle, com o ponto em verde: é o mesmo nome do
    Instagram, e a faixa assina a página logo depois do rosto. */
 export function BrandBand() {
+  const t = useVit();
   return <div className={s.brandband} aria-hidden>
     {/* `.brandband` é um chão RETO em grafite e `.brandTira` é a tira rosa
         girada dentro dele. Os dois níveis existem porque uma diagonal
@@ -931,7 +1001,7 @@ export function BrandBand() {
         reto. O porquê está por extenso em `.brandband`, no CSS. */}
     <div className={s.brandTira}>
       <div className={s.brandTrack}>
-        {Array.from({ length: 6 }, (_, i) => <span key={i}>rafaelrazeira<em>.</em>estudio</span>)}
+        {Array.from({ length: 6 }, (_, i) => <span key={i}>{t.marca_faixa}</span>)}
       </div>
     </div>
   </div>;
@@ -939,13 +1009,11 @@ export function BrandBand() {
 
 /* As quatro perguntas de sempre viram os próprios balões: o argumento é
    ver quatro mensagens verdes seguidas com o confere cinza, sem resposta. */
-const questions: [string, string, number][] = [
-  ["oi! quanto custa a camisa do story?", "19:02", 0],
-  ["tem em outro modelo?", "19:03", 500],
-  ["quais tamanhos vocês têm?", "19:05", 1000],
-  ["consegue mandar as fotos de novo? não achei no feed", "19:07", 1500],
-];
 export function PainSolution() {
+  const t = useVit();
+  /* as perguntas vêm do dicionário; o atraso de cada balão é meio segundo
+     a mais que o anterior, como sempre foi */
+  const questions = t.dor.perguntas;
   return <section className={s.section}>
     <div className={s.wrap}>
       <div className={s.split}>
@@ -957,7 +1025,7 @@ export function PainSolution() {
               confiança de quem confere, e esta página inteira é feita
               para ser conferida. Agora ele diz a função real do bloco:
               explicar a causa da pergunta que o hero fez. */}
-          <Eyebrow>POR QUE ISSO ACONTECE</Eyebrow>
+          <Eyebrow>{t.dor.eyebrow}</Eyebrow>
           {/* ---------- a manchete parou de repetir o hero ----------
               Era "Quantas vendas sua loja perde porque o cliente não
               encontrou o produto?", escrita quando o hero vendia o
@@ -976,7 +1044,7 @@ export function PainSolution() {
           {/* "do zero." em linha própria pelo mesmo motivo do hero e do
               Quem Faz: ele é a batida final da frase, e inline ele chegava
               com o peso do preparo. Ver `.split h2 em` no CSS. */}
-          <h2>Cada cliente<br />começa<br /><em>do zero.</em></h2>
+          <h2>{t.dor.h2}</h2>
           {/* o parágrafo perdeu a frase que virou manchete e ganhou a
               ordem certa: primeiro a causa (produto espalhado), depois o
               efeito (o interrogatório), por último o custo (some antes de
@@ -986,7 +1054,7 @@ export function PainSolution() {
               diz "espalhados" e agora a linha faz isso, em vez de só
               informar. Ver `.split .espalhado` no CSS, inclusive a razão de
               o desalinho ser mínimo. */}
-          <p className={s.lead}>Seus produtos ficam espalhados entre <span className={s.espalhado}>stories</span>, <span className={s.espalhado}>destaques</span> e <span className={s.espalhado}>publicações antigas</span>. Aí o cliente pergunta foto, preço e tamanho, um por um, e muitas vezes desiste antes mesmo de chamar.</p>
+          <p className={s.lead}>{t.dor.lead.antes}<span className={s.espalhado}>{t.dor.lead.lugares[0]}</span>{t.dor.lead.sep}<span className={s.espalhado}>{t.dor.lead.lugares[1]}</span>{t.dor.lead.e}<span className={s.espalhado}>{t.dor.lead.lugares[2]}</span>{t.dor.lead.depois}</p>
           {/* ---------- a conta da dor (13/08) ----------
               O número que prova a seção estava enterrado em 11px na legenda
               do chat ("Quatro perguntas antes de escolher qualquer coisa"),
@@ -1007,7 +1075,7 @@ export function PainSolution() {
               calado numa página que se propõe a ser conferida. */}
           <p className={s.contaDaDor}>
             <b>{questions.length}</b>
-            <span>perguntas antes de escolher uma peça, e o atendimento recomeça no cliente seguinte</span>
+            <span>{t.dor.conta}</span>
           </p>
           {/* Aqui morava o box escuro "COM A VITRINE: o cliente encontra os
               produtos, escolhe o que quer e chama sua loja pelo WhatsApp com
@@ -1019,8 +1087,8 @@ export function PainSolution() {
               resposta ao lado, e o manifesto logo abaixo. */}
         </div>
         <div className={s.shift}>
-          <ChatStrip label="HOJE · O CLIENTE ESPERANDO NO DIRECT" note="Visualizado só às 21:40, e a vontade de comprar não espera duas horas.">
-            {questions.map(([text, time, delay]) => <Bubble key={time} out time={time} tick="sent" delay={delay}>{text}</Bubble>)}
+          <ChatStrip label={t.dor.tira.label} note={t.dor.tira.nota}>
+            {questions.map(([text, time], i) => <Bubble key={time} out time={time} tick="sent" delay={i * 500}>{text}</Bubble>)}
           </ChatStrip>
         </div>
       </div>
@@ -1042,15 +1110,13 @@ export function PainSolution() {
           As três batidas são três LINHAS em qualquer largura: a regra
           do span em bloco saiu do ≤900px e virou geral, junto com o
           `text-wrap: balance`, que quebrava onde bem entendesse. */}
-      <p className={s.manifesto}><span>O INSTAGRAM APRESENTA.</span> <span>A VITRINE <em>RESPONDE.</em></span> <span>VOCÊ SÓ FECHA.</span></p>
+      <p className={s.manifesto}><span>{t.dor.manifesto[0]}</span> <span>{t.dor.manifesto[1]}</span> <span>{t.dor.manifesto[2]}</span></p>
     </div>
   </section>;
 }
 
-const steps = [
-  ["O cliente acessa o link da bio", "Um endereço fixo, sempre atualizado, no lugar mais visto do seu perfil."],
-  ["Navega pelas categorias", "Produtos agrupados do jeito que a sua loja vende."],
-  /* O título era "Visualiza o produto", que é o verbo mais fraco dos quatro
+/* Os quatro passos moram no dicionário (t.como.passos). A nota do terceiro:
+   O título era "Visualiza o produto", que é o verbo mais fraco dos quatro
      e não diz nada: visualizar o quê? Agora ele carrega a tríade que a
      página inteira repete ("foto, preço e tamanho"), nas MESMAS palavras
      do lead do hero e do canhoto da etiqueta. Repetir de propósito é o que
@@ -1060,13 +1126,12 @@ const steps = [
      o passo em que isso acontece de fato. "Antes de ele digitar" é o que
      transforma a informação em economia de trabalho SEU, que é a única
      coisa que a lojista compra nesta lista. */
-  ["Vê foto, preço e tamanho", "As mesmas perguntas que hoje chegam no seu direct, respondidas antes de ele digitar."],
-  ["Chama a loja pelo WhatsApp", "A mensagem já chega com o produto escolhido."],
-];
 export function HowItWorks() {
+  const t = useVit();
+  const steps = t.como.passos;
   return <section className={s.section} id="como">
     <div className={s.wrap}>
-      <Eyebrow>COMO FUNCIONA</Eyebrow>
+      <Eyebrow>{t.como.eyebrow}</Eyebrow>
       {/* A manchete contava os passos e parava aí. Contar passo serve para
           uma coisa só, que é fazer parecer simples, e isso ela já fazia.
           O que faltava é de quem são os passos: os quatro da lista são do
@@ -1076,7 +1141,7 @@ export function HowItWorks() {
           "nenhum deles é seu" transforma quatro tarefas em quatro tarefas
           que saíram do seu dia. E é verdade conferível na própria lista
           logo abaixo, onde o sujeito de todos os quatro é o cliente. */}
-      <h2 className={s.h2Duplo}>Do Instagram ao pedido em quatro passos.<br /><em>Nenhum deles é seu.</em></h2>
+      <h2 className={s.h2Duplo}>{t.como.h2}</h2>
       <div className={s.split}>
         <div>
           {/* ---------- a marca da chegada, só no último passo ----------
@@ -1091,7 +1156,7 @@ export function HowItWorks() {
           <ol className={s.steps}>{steps.map((x, i) => <li key={x[0]}>
             <b>0{i + 1}</b>
             <div>
-              <h3>{x[0]}{i === steps.length - 1 && <i className={s.chegada}>você entra aqui</i>}</h3>
+              <h3>{x[0]}{i === steps.length - 1 && <i className={s.chegada}>{t.como.chegada}</i>}</h3>
               <p>{x[1]}</p>
             </div>
           </li>)}</ol>
@@ -1110,7 +1175,7 @@ export function HowItWorks() {
               delas aterrissava num botão escrito igual.
               O `data-cta` NÃO muda: como_funciona é a posição no funil, e
               trocar o rótulo não pode reiniciar a série histórica. */}
-          <div className={`${s.actions} ${s.hideMobile}`}><a className={`${s.button} ${s.acao}`} href="#contratar" data-cta="como_funciona" data-cta-dest="form">QUERO MINHA PRÉVIA ↓</a></div>
+          <div className={`${s.actions} ${s.hideMobile}`}><a className={`${s.button} ${s.acao}`} href="#contratar" data-cta="como_funciona" data-cta-dest="form">{t.como.cta}</a></div>
         </div>
         <div className={s.howVisual}>
           {/* Captura do catálogo da vérít.lab (verit-lab.vercel.app/pecas),
@@ -1125,7 +1190,7 @@ export function HowItWorks() {
               tentativas descartadas estão em
               scripts/capture-veritlab-catalogo.mjs. */}
           <div className={s.phoneSmall}>
-            <Image src="/assets/demo/veritlab-catalogo.jpg" fill sizes="300px" alt="Catálogo da vérít.lab: seis peças em grade, cada uma com nome, medida, preço e selo de peça única" />
+            <Image src="/assets/demo/veritlab-catalogo.jpg" fill sizes="300px" alt={t.como.alt} />
           </div>
           {/* O BALÃO MUDOU JUNTO COM A CAPTURA, e não é detalhe: ele citava
               "polo piquet branca, tamanho M", que era uma peça visível na
@@ -1139,8 +1204,8 @@ export function HowItWorks() {
               única. "Ainda tem?" deixa de ser pergunta de estoque e vira a
               pergunta certa para uma loja onde vendeu, não volta. */}
           <div className={s.howChat}>
-            <ChatStrip label="COM A VITRINE · O PEDIDO CHEGA PRONTO" note="A mesma noite, sem uma foto sequer no direct: o cliente escolheu sozinho.">
-              <Bubble time="19:11">escolhi pela vitrine: o Mickey Mapa, 95 × 65. ainda tem?</Bubble>
+            <ChatStrip label={t.como.tira.label} note={t.como.tira.nota}>
+              <Bubble time="19:11">{t.como.balao1}</Bubble>
               {/* ---------- o intervalo dito em voz alta ----------
                   O argumento desta tira é a VELOCIDADE, e ela estava
                   escondida em dois carimbos de hora de 9px que ninguém
@@ -1152,11 +1217,11 @@ export function HowItWorks() {
                   a tira inteira é feita do material real dele.
                   Fica ENTRE os dois balões porque é onde o tempo passa;
                   na legenda, viraria mais uma frase para ler. */}
-              <span className={s.intervalo}>1 minuto depois</span>
-              <Bubble out time="19:12" tick="read" delay={700}>tem sim! é peça única, separei a sua. te mando o Pix</Bubble>
+              <span className={s.intervalo}>{t.como.intervalo}</span>
+              <Bubble out time="19:12" tick="read" delay={700}>{t.como.balao2}</Bubble>
             </ChatStrip>
           </div>
-          <div className={`${s.actions} ${s.mobileOnly}`}><a className={`${s.button} ${s.acao}`} href="#contratar" data-cta="como_funciona" data-cta-dest="form">QUERO MINHA PRÉVIA ↓</a></div>
+          <div className={`${s.actions} ${s.mobileOnly}`}><a className={`${s.button} ${s.acao}`} href="#contratar" data-cta="como_funciona" data-cta-dest="form">{t.como.cta}</a></div>
         </div>
       </div>
     </div>
@@ -1170,28 +1235,17 @@ export function HowItWorks() {
    As duas são lojas de clientes no ar. O que separa uma da outra é o
    segmento e a lista de fatos, não uma etiqueta de demonstração:
    prova vaga não convence ninguém. */
+/* o que não traduz (capturas, endereços, nomes, ids de CTA) fica aqui; o
+   texto de cada card está em t.projetos.itens, na mesma ordem */
 const projects = [
-  {
-    img: "/assets/case-xavier-desk.jpg", w: 1440, h: 8965, dur: "36s",
-    url: "https://xavier-s-sports.vercel.app/", dom: "xavier-s-sports.vercel.app",
-    name: "XAVIER'S SPORTS", tag: "CAMISAS ESPORTIVAS",
-    copy: "Vitrine no ar, navegável agora. Abra pelo celular e faça o caminho que o cliente faz.",
-    facts: ["Catálogo por clubes e seleções", "Página para cada produto", "Controle de pronta entrega", "Pedido direto no WhatsApp"],
-    cta: "ABRIR A VITRINE DA XAVIER'S ↗", ctaId: "case_xavier",
-  },
-  {
-    img: "/assets/case-prgrife-desk.jpg", w: 1440, h: 5559, dur: "22s",
-    url: "https://pr-grife.vercel.app/", dom: "pr-grife.vercel.app",
-    name: "PR GRIFE", tag: "MULTIMARCAS DE ALTO PADRÃO",
-    copy: "Loja com ponto físico em Maringá. Entreguei a vitrine e o painel: o dono publica peça e ajusta o estoque sozinho.",
-    facts: ["Catálogo por marca e categoria", "Página para cada produto", "Painel de estoque para o dono", "Pedido com forma de pagamento escolhida"],
-    cta: "ABRIR A VITRINE DA PR GRIFE ↗", ctaId: "case_prgrife",
-  },
+  { img: "/assets/case-xavier-desk.jpg", w: 1440, h: 8965, dur: "36s", url: "https://xavier-s-sports.vercel.app/", dom: "xavier-s-sports.vercel.app", name: "XAVIER'S SPORTS", ctaId: "case_xavier" },
+  { img: "/assets/case-prgrife-desk.jpg", w: 1440, h: 5559, dur: "22s", url: "https://pr-grife.vercel.app/", dom: "pr-grife.vercel.app", name: "PR GRIFE", ctaId: "case_prgrife" },
 ];
 export function Projects() {
+  const t = useVit();
   return <section className={`${s.section} ${s.dark}`} id="projetos">
     <div className={s.wrap}>
-      <Eyebrow>PROJETOS NO AR</Eyebrow>
+      <Eyebrow>{t.projetos.eyebrow}</Eyebrow>
       {/* ---------- a única seção que se pode CONFERIR ----------
           Era "Duas vitrines de clientes, no ar agora.", que é legenda:
           descreve o que tem dentro da seção e não pede nada. Só que esta
@@ -1206,10 +1260,10 @@ export function Projects() {
           A linha do test-drive ("você pode navegar por elas inteiras
           antes de decidir") não sumiu: ela virou a manchete. Estava
           enterrada no fim do parágrafo, que é onde ninguém a lia. */}
-      <h2 className={s.h2Duplo}>Não acredite em mim.<br /><em>Abra as duas.</em></h2>
-      <p className={`${s.lead} ${s.leadDark}`}>A Xavier&apos;s Sports vende camisas esportivas. A PR Grife é multimarcas e tem loja física em Maringá. As duas estão no ar, com produto e preço reais, e abrem no seu celular agora.</p>
+      <h2 className={s.h2Duplo}>{t.projetos.h2}</h2>
+      <p className={`${s.lead} ${s.leadDark}`}>{t.projetos.lead}</p>
       <div className={s.projects}>
-        {projects.map(x => <article key={x.name}>
+        {projects.map((x, i) => { const tx = t.projetos.itens[i]; return <article key={x.name}>
           <div className={s.laptop}>
             <div className={s.lapScreen}>
               <div className={s.browserBar}>
@@ -1222,9 +1276,9 @@ export function Projects() {
                     chip do aparelho no hero, com o mesmo keyframe: a
                     página já tinha o vocabulário, esta seção é que não
                     estava usando. */}
-                <span className={s.live}><i aria-hidden /> NO AR</span>
+                <span className={s.live}><i aria-hidden /> {t.projetos.live}</span>
               </div>
-              <a className={s.cover} href={x.url} target="_blank" rel="noopener" aria-label={`Abrir o site do projeto ${x.name} em nova aba`}>
+              <a className={s.cover} href={x.url} target="_blank" rel="noopener" aria-label={preencher(t.projetos.abrir, { nome: x.name })}>
                 {/* O mesmo <picture> da /e-commerce (07/08): os derivados AVIF e
                     WebP já existem versionados (scripts/webp-assets.mjs), e o
                     JPEG cru de ~1MB por captura ficava só aqui. O otimizador do
@@ -1239,7 +1293,7 @@ export function Projects() {
                   <source type="image/avif" srcSet={x.img.replace(/\.jpg$/, ".avif")} />
                   <source type="image/webp" srcSet={x.img.replace(/\.jpg$/, ".webp")} />
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img className={s.pageShot} src={x.img} width={x.w} height={x.h} style={{ "--dur": x.dur } as React.CSSProperties} alt={`Página completa da vitrine da ${x.name}`} loading="lazy" decoding="async" fetchPriority="low" />
+                  <img className={s.pageShot} src={x.img} width={x.w} height={x.h} style={{ "--dur": x.dur } as React.CSSProperties} alt={preencher(t.projetos.alt, { nome: x.name })} loading="lazy" decoding="async" fetchPriority="low" />
                 </picture>
               </a>
             </div>
@@ -1249,23 +1303,23 @@ export function Projects() {
                 desta seção é o ENDEREÇO, não o aparelho. */}
           </div>
           <div className={s.projMeta}>
-            <small>{x.tag}</small>
-            <span className={s.kind}>LOJA DE CLIENTE</span>
+            <small>{tx.tag}</small>
+            <span className={s.kind}>{t.projetos.tipo}</span>
           </div>
           <h3>{x.name}</h3>
-          <p>{x.copy}</p>
-          <ul className={s.facts}>{x.facts.map(f => <li key={f}>{f}</li>)}</ul>
+          <p>{tx.copy}</p>
+          <ul className={s.facts}>{tx.fatos.map(f => <li key={f}>{f}</li>)}</ul>
           <a className={`${s.button} ${s.acao}`} href={x.url} target="_blank" rel="noopener" data-cta={x.ctaId} data-cta-dest="case">
-            {x.cta}
+            {tx.cta}
           </a>
-        </article>)}
+        </article>; })}
       </div>
       {/* a ponte para o catálogo inteiro: os dois cards acima são a prova
           detalhada, o portfólio é o volume. Link discreto de propósito, para
           não competir com os CTAs verdes dos cards; `data-cta-dest`
           "portfolio" nunca dispara Lead, só ClickCTA. */}
-      <Link className={`${s.ghost} ${s.projMore}`} href="/portfolio" data-cta="projetos_portfolio" data-cta-dest="portfolio">
-        VER OS {NO_AR} PROJETOS NO PORTFÓLIO ↗
+      <Link className={`${s.ghost} ${s.projMore}`} href={t.projetos.portfolioHref} data-cta="projetos_portfolio" data-cta-dest="portfolio">
+        {preencher(t.projetos.portfolio, { n: NO_AR })}
       </Link>
     </div>
   </section>;
@@ -1273,24 +1327,13 @@ export function Projects() {
 
 /* Quatro cards resumem a entrega; o detalhe fino (que antes eram nove
    blocos altos, quase três telas no celular) fica a um toque, no acordeão. */
-const included = [
-  ["Design personalizado", "Visual alinhado à identidade da sua loja, não um modelo pronto."],
-  ["Catálogo e produtos", "Página inicial, categorias e até 20 produtos cadastrados por mim."],
-  ["WhatsApp integrado", "O pedido chega com o produto já identificado."],
-  ["Publicação completa", "Vitrine no ar, endereço configurado e uma rodada de ajustes."],
-];
-const includedDetails = [
-  ["Até 20 produtos", "Eu cadastro todos no lançamento. Acima disso, combinamos à parte."],
-  ["Domínio e endereço", "Coloco a vitrine no ar. O domínio próprio é opcional, anual e pago direto no registrador."],
-  ["Páginas de produto", "Fotos, descrição, preço, tamanhos e variações em uma página só."],
-  ["Uma rodada de ajustes", "Você revisa e aponta as correções antes de a página entrar no ar."],
-  ["Entrega em até 7 dias úteis", "Contados a partir do envio de todos os materiais da loja."],
-  /* os dois itens de pós-entrega ficam juntos: o painel é o que você faz
-     sozinho, a linha seguinte é o que continua passando por mim */
-  ["Painel de gestão", "Na identidade da sua loja: produtos, preços, fotos, estoque e disponibilidade."],
-  ["Atualizações quando precisar", "Você pede alterações pontuais depois e eu orço na hora. Nada é obrigatório."],
-];
+/* as listas moram no dicionário (t.inclui.cards e t.inclui.lista); na
+   lista longa, os dois itens de pós-entrega ficam juntos: o painel é o
+   que você faz sozinho, a linha seguinte é o que continua passando por mim */
 export function Included() {
+  const t = useVit();
+  const included = t.inclui.cards;
+  const includedDetails = t.inclui.lista;
   return <section className={s.section} id="inclui">
     <div className={s.wrap}>
       {/* ---------- a palavra "incluso" era dita três vezes ----------
@@ -1315,16 +1358,16 @@ export function Included() {
           que acima de 20 produtos se combina à parte e que atualização
           posterior é orçada. Essa honestidade é ativo da página, e
           manchete que a atropela quebra na primeira leitura do acordeão. */}
-      <Eyebrow>O QUE ENTRA NOS R$999</Eyebrow>
-      <h2 className={s.h2Duplo}>Você manda o material.<br /><em>O resto é comigo.</em></h2>
+      <Eyebrow>{t.inclui.eyebrow}</Eyebrow>
+      <h2 className={s.h2Duplo}>{t.inclui.h2}</h2>
       <div className={s.grid}>{included.map(x => <article key={x[0]}><h3>{x[0]}</h3><p>{x[1]}</p></article>)}</div>
       <details className={s.accordion}>
-        <summary>Ver a lista completa, item por item</summary>
+        <summary>{t.inclui.listaTitulo}</summary>
         <ul className={s.moreList}>{includedDetails.map(([t, d]) => <li key={t}><b>{t}</b>{d}</li>)}</ul>
       </details>
       <details className={s.accordion}>
-        <summary>O que preciso enviar?</summary>
-        <ul className={s.check}>{["Logo", "Fotos", "Produtos", "Preços", "Categorias", "Informações da loja"].map(x => <li key={x}>{x}</li>)}</ul>
+        <summary>{t.inclui.enviarTitulo}</summary>
+        <ul className={s.check}>{t.inclui.enviar.map(x => <li key={x}>{x}</li>)}</ul>
       </details>
     </div>
   </section>;
@@ -1348,12 +1391,9 @@ export function Included() {
    incluso" e a oferta, empurrando o olho para o card de preço.
 
    Sem CTA de propósito: nenhum data-cta novo, o funil não muda. */
-const panelProof = [
-  "Troca preço, foto e descrição na hora",
-  "Marca esgotado, últimas unidades ou pronta entrega",
-  "Cadastra produto novo e ele entra na vitrine na mesma hora",
-];
 export function Panel() {
+  const t = useVit();
+  const panelProof = t.painel.provas;
   return <section className={`${s.section} ${s.dark} ${s.panelSec}`} id="painel">
     <div className={s.wrap}>
       {/* ---------- duas colunas em vez de empilhado (13/08) ----------
@@ -1373,9 +1413,9 @@ export function Panel() {
               o rótulo, que ainda por cima repetia o "quando" que ela já diz.
               "O PAINEL DA LOJA" é o mesmo texto do chip na barra do navegador
               ao lado, então o rótulo e o print passam a se confirmar. */}
-          <Eyebrow>O PAINEL DA LOJA</Eyebrow>
-          <h2 className={s.h2Duplo}>Depois de publicada,<br /><em>a vitrine é sua.</em></h2>
-          <p className={`${s.lead} ${s.leadDark}`}>Junto com a vitrine, você recebe um painel de gestão na identidade da sua loja. Atualizar não depende de programador, nem de mim.</p>
+          <Eyebrow>{t.painel.eyebrow}</Eyebrow>
+          <h2 className={s.h2Duplo}>{t.painel.h2}</h2>
+          <p className={`${s.lead} ${s.leadDark}`}>{t.painel.lead}</p>
           <ul className={s.check}>{panelProof.map(x => <li key={x}>{x}</li>)}</ul>
           {/* ---------- "OBRIGATÓRIA" ERA UMA CONTRADIÇÃO ----------
               A frase dizia "Sem mensalidade obrigatória: a estrutura é sua", e
@@ -1398,28 +1438,30 @@ export function Panel() {
               O ROSA vai só em "Sem mensalidade", que é o fato que fecha a
               objeção mais cara desta dobra. Ele é a única cor de acento da
               seção, e marca uma coisa só. */}
-          <p className={s.panelClaim}><b>Sem mensalidade:</b> o painel faz parte da entrega.</p>
+          <p className={s.panelClaim}>{t.painel.claim}</p>
         </div>
         <figure className={s.panelShot}>
         <div className={s.panelScreen}>
           <div className={s.browserBar}>
             <span className={s.dots} aria-hidden><i /><i /><i /></span>
             <span className={s.urlChip}>xavier-s-sports.vercel.app/admin</span>
-            <span className={s.live}>● PAINEL DA LOJA</span>
+            <span className={s.live}>{t.painel.chip}</span>
           </div>
           <div className={s.panelFrame}>
-            <Image src="/assets/demo/xavier-painel.jpg" fill sizes="(max-width: 900px) 100vw, 960px" alt="Tela de produtos e estoque do painel da Xavier's Sports: cada camisa com foto, preço, estoque por tamanho e status de pronta entrega" />
+            <Image src="/assets/demo/xavier-painel.jpg" fill sizes="(max-width: 900px) 100vw, 960px" alt={t.painel.alt} />
           </div>
         </div>
-          <figcaption className={s.panelNote}>Painel real da Xavier&apos;s Sports. Cada loja recebe o seu, na própria identidade.</figcaption>
+          <figcaption className={s.panelNote}>{t.painel.legenda}</figcaption>
         </figure>
       </div>
     </div>
   </section>;
 }
 
-const offerItems = ["Design personalizado", "Página inicial e catálogo", "Páginas de produto", "WhatsApp integrado", "Até 20 produtos cadastrados", "Painel de gestão da loja", "Publicação e endereço configurado", "Uma rodada de ajustes", "Entrega em até 7 dias úteis"];
 export function Offer() {
+  const t = useVit();
+  const lang = useLang();
+  const offerItems = t.oferta.itens;
   /* Inversão de 04/08, decidida com dados: na primeira campanha 23 pessoas
      leram a página inteira, 4 tocaram no formulário, ZERO enviaram e zero
      conversas chegaram. O primeiro pedido da página a um desconhecido era um
@@ -1437,6 +1479,7 @@ export function Offer() {
   const [enviando, setEnviando] = useState(false);
   const [enviado, setEnviado] = useState(false);
   const [telInvalido, setTelInvalido] = useState(false);
+  const [emailInvalido, setEmailInvalido] = useState(false);
   const envioSuspeito = useGuardaDeFormulario();
   const formRef = useRef<HTMLFormElement>(null);
   /* ---------- a entrada caiu de R$500 para R$199 (20/08) ----------
@@ -1458,7 +1501,7 @@ export function Offer() {
      Este texto vai inteiro para a coluna `plano` do Supabase e para a
      mensagem do WhatsApp (ver pages/api/lead.js). É texto livre, nada
      ramifica nele, mas é o que eu leio para saber o que combinar. */
-  const plan = avista ? "À vista no Pix R$899" : "Entrada de R$199 + R$800 em até 4x";
+  const plan = avista && t.oferta.plano.avista ? t.oferta.plano.avista : t.oferta.plano.parcelado;
   /* O foco continua: depois de um salto dentro da página, deixar o foco no
      botão que ficou para trás quebra a navegação por teclado e por leitor de
      tela. O que mudou é ele passar pelo `focarSemContar`, senão este clique
@@ -1487,21 +1530,31 @@ export function Offer() {
       registrarSuspeito({
         nome: String(f.get("nome") || ""),
         whatsapp: String(f.get("whatsapp") || ""),
+        email: String(f.get("email") || ""),
         instagram: String(f.get("instagram") || ""),
         plano: plan,
         motivo: suspeito,
+        lang,
       });
       setEnviado(true);
       return;
     }
-    if (!whatsappValido(String(f.get("whatsapp") || ""))) { setTelInvalido(true); return; }
+    /* no en o e-mail é obrigatório e o telefone, se vier, é internacional
+       (components/telefone-intl.ts); no pt a régua brasileira de sempre */
+    if (lang === "en") {
+      if (!emailValido(String(f.get("email") || ""))) { setEmailInvalido(true); return; }
+      const tel = String(f.get("whatsapp") || "");
+      if (tel.trim() && !telefoneInternacionalValido(tel)) { setTelInvalido(true); return; }
+    } else if (!whatsappValido(String(f.get("whatsapp") || ""))) { setTelInvalido(true); return; }
     setEnviando(true);
     const { salvo, linkWa: link, arrobaInvalido } = await enviarLeadVitrine({
       nome: String(f.get("nome") || ""),
       whatsapp: String(f.get("whatsapp") || ""),
+      email: String(f.get("email") || ""),
       instagram: String(f.get("instagram") || ""),
       plano: plan,
       ctaPosition: "form",
+      lang,
     });
     setEnviando(false);
     /* o @ não existe na Meta: o campo volta para a pessoa (mesma regra do
@@ -1513,8 +1566,8 @@ export function Offer() {
   }
   return <section className={`${s.section} ${s.offer}`} id="oferta">
     <div className={s.wrap}>
-      <Eyebrow>OFERTA E CONTRATAÇÃO</Eyebrow>
-      <h2>Vitrine digital completa por <em>R$999.</em></h2>
+      <Eyebrow>{t.oferta.eyebrow}</Eyebrow>
+      <h2>{t.oferta.h2}</h2>
       {/* Abria com "Estrutura pronta para transformar visita do Instagram
           em pedido no WhatsApp": "estrutura" é palavra de quem constrói, e
           "transformar visita em pedido" é jargão de marketing, os dois
@@ -1525,10 +1578,10 @@ export function Offer() {
           e é o jeito mais curto de responder "o que exatamente eu compro":
           aquilo que você acabou de abrir. A segunda frase não mudou, é
           onde as condições de pagamento moram. */}
-      <p className={s.lead}>É a mesma vitrine das duas lojas que você abriu aí em cima, com o painel junto. Você começa com R$199, acompanha o desenvolvimento e só paga o saldo depois de aprovar.</p>
+      <p className={s.lead}>{t.oferta.lead}</p>
       {/* prova antes do preço: fato verificável, sem citação inventada. Quando
           existir depoimento de cliente, ele entra aqui no lugar desta linha. */}
-      <p className={s.proof}><b>PROVA NO AR</b> A PR Grife, multimarcas com loja física em Maringá, publica peça e ajusta o estoque sozinha no painel. <a href="#projetos" data-cta="oferta_projetos" data-cta-dest="projetos">Veja a loja dela acima.</a></p>
+      <p className={s.proof}><b>{t.oferta.prova.rotulo}</b> {t.oferta.prova.texto}<a href="#projetos" data-cta="oferta_projetos" data-cta-dest="projetos">{t.oferta.prova.link}</a></p>
       <div className={s.offerGrid}>
         <article className={s.pricecard}>
           {/* ---------- o "sem mensalidade" subiu para o topo ----------
@@ -1539,12 +1592,12 @@ export function Offer() {
               pelo argumento também: ele é uma qualidade do PREÇO, então
               pertence à linha do preço, não ao meio da lista de escopo. */}
           <div className={s.priceHead}>
-            <small>VITRINE DIGITAL</small>
+            <small>{t.oferta.produto}</small>
             {/* o mesmo "obrigatória" que saiu do fecho da seção do painel:
                 a faixa do hero, o canhoto da etiqueta e a FAQ ("Existe
                 mensalidade?" → "Não") afirmam sem adjetivo, e o hedge só
                 fazia o leitor procurar a pegadinha. */}
-            <p className={s.nomensal}>SEM MENSALIDADE</p>
+            <p className={s.nomensal}>{t.oferta.semMensal}</p>
           </div>
           {/* mesma anatomia da etiqueta do hero: moeda e centavos pequenos e
               alçados à altura de maiúscula, inteiro enorme no meio. Os dois
@@ -1571,23 +1624,24 @@ export function Offer() {
               do 199 gigante gastaria a porta com um eco. O "+" que abre a
               coluna agora soma contra o número grande, que é exatamente o
               que ele sempre quis dizer. */}
-          <div className={s.price}><i>R$</i><strong>199</strong><i>,00</i><b>PARA<br />COMEÇAR</b></div>
-          <p className={s.priceTotal}><strong>R$999,00</strong> no total</p>
+          <div className={s.price}><i>{t.oferta.preco.moeda}</i><strong>{t.oferta.preco.inteiro}</strong><i>{t.oferta.preco.centavos}</i><b>{t.oferta.preco.rotulo}</b></div>
+          <p className={s.priceTotal}><strong>{t.oferta.total.valor}</strong>{t.oferta.total.sufixo}</p>
           {/* AS DUAS PORTAS DO BALCÃO: eram três linhas de mono do mesmo
               corpo e da mesma tinta, uma embaixo da outra, e a terceira (o
               Pix) lia como rodapé das duas primeiras quando é a ALTERNATIVA
               a elas. Ver o bloco de mesmo nome no CSS. */}
           <div className={s.pagamento}>
             <div>
-              <small>PARCELADO</small>
-              <p><em>+</em> 4 parcelas de <strong>R$200,00</strong></p>
-              <i>o saldo só depois de você aprovar</i>
+              <small>{t.oferta.parcelado.rotulo}</small>
+              <p><em>+</em>{t.oferta.parcelado.antes}<strong>{t.oferta.parcelado.valor}</strong>{t.oferta.parcelado.depois}</p>
+              <i>{t.oferta.parcelado.nota}</i>
             </div>
-            <div>
-              <small>À VISTA NO PIX <b>10% OFF</b></small>
-              <p><strong>R$899,00</strong> de uma vez</p>
-              <i>economiza R$100 e é a forma que eu prefiro receber</i>
-            </div>
+            {/* a segunda porta: o Pix no pt; no en, como se paga (por e-mail) */}
+            {t.oferta.avista && <div>
+              <small>{t.oferta.avista.rotulo}<b>{t.oferta.avista.selo}</b></small>
+              <p><strong>{t.oferta.avista.valor}</strong>{t.oferta.avista.depois}</p>
+              <i>{t.oferta.avista.nota}</i>
+            </div>}
           </div>
           {/* nove itens em DUAS COLUNAS: em uma só eles somavam ~330px e
               faziam do card a peça mais alta da página, com o botão saindo
@@ -1615,19 +1669,19 @@ export function Offer() {
               não pode prometer um ato que o formulário não pratica. Este
               não promete, ele nomeia o que a pessoa GANHA, e a garantia
               logo abaixo continua respondendo a mesma pergunta. */}
-          <Button onClick={goToForm} cta="oferta_entrada">QUERO VER A MINHA LOJA ↓</Button>
-          <p className={s.guarantee}>O saldo de R$800 é pago somente depois que você visualizar e aprovar o projeto.</p>
+          <Button onClick={goToForm} cta="oferta_entrada">{t.oferta.cta}</Button>
+          <p className={s.guarantee}>{t.oferta.garantia}</p>
         </article>
         <div className={s.formCol}>
-          <ChatStrip label="SUA PRÓXIMA MENSAGEM">
-            <Bubble out time="19:15" tick="read">Rafael, quero uma vitrine dessas pra minha loja</Bubble>
+          <ChatStrip label={t.oferta.tira.label}>
+            <Bubble out time={t.oferta.tira.hora} tick="read">{t.oferta.tira.balao}</Bubble>
           </ChatStrip>
           {/* ---------- a confirmação, quando o lead está gravado ----------
               Ocupa o lugar do formulário. Estado do React, sem navegação e sem
               pop-up, então aparece igual no navegador interno do Instagram,
               que é onde o fluxo antigo quebrava calado. */}
           {enviado ? <div className={`${s.form} ${s.confirmado}`} role="status">
-            <p className={s.formTitle}>RECEBI SEUS DADOS<br /><span>Te chamo no WhatsApp ainda hoje.</span></p>
+            <p className={s.formTitle}>{t.form.okTitulo}<br /><span>{t.form.okSub}</span></p>
             {/* A segunda frase era "Sua reserva não foi cobrada: nada é
                 pago antes de a gente combinar os detalhes", e ela existia
                 para consertar o susto que o botão "QUERO RESERVAR" dava.
@@ -1635,10 +1689,8 @@ export function Offer() {
                 "nada é cobrado agora" ANTES do envio, ela virou a negação
                 de uma coisa que ninguém prometeu, e negação assim planta
                 a dúvida em quem não tinha. */}
-            <p>Vou olhar sua loja antes de falar com você, para a conversa já começar com uma direção.</p>
-            <a className={`${s.button} ${s.primary}`} href={linkWa} data-cta="reabrir_whats" data-cta-dest="whatsapp">
-              QUER AGILIZAR? ME CHAMA AGORA ↗
-            </a>
+            <p>{t.oferta.okTexto}</p>
+            <ReabrirCta href={linkWa} rotulo={t.form.okCta} />
           </div> : <form ref={formRef} onSubmit={submit} className={s.form} id="contratar">
             {/* mesma correção do botão do card: o título dizia "RESERVAR
                 MINHA VITRINE" e a linha abaixo dele anunciava uma entrada,
@@ -1647,25 +1699,40 @@ export function Offer() {
                 condição continua dita, mas com o momento dela junto, e a
                 segunda frase fecha a porta da dúvida antes de o dedo
                 chegar no primeiro campo. */}
-            <p className={s.formTitle}>COMEÇAR PELA PRÉVIA<br /><span>O desenho é sem custo. A entrada de R$199 só existe se você gostar.</span></p>
-            <label>NOME<input name="nome" autoComplete="name" required /></label>
+            <p className={s.formTitle}>{t.oferta.formTitulo}<br /><span>{t.oferta.formSub}</span></p>
+            <label>{t.form.nome}<input name="nome" autoComplete="name" required /></label>
             {/* O campo que esta página nunca teve. Ver a nota longa no submit:
                 sem número não dá para cumprir a promessa da tela de
                 confirmação, e era o handoff que carregava essa informação. */}
-            <label>WHATSAPP<input name="whatsapp" type="tel" autoComplete="tel" placeholder="(44) 99999-0000" required maxLength={16}
-                   onInput={e => { e.currentTarget.value = mascararWhatsapp(e.currentTarget.value); if (telInvalido) setTelInvalido(false); }} /></label>
-            {telInvalido && <small role="alert" style={{ color: "#b3261e" }}>Confere o número: é por ele que eu te chamo. Ex.: (44) 99999-0000.</small>}
+            {/* ---------- o contato, por idioma (11/09/2026) ----------
+                pt: o WhatsApp com a máscara brasileira. en: o e-mail obrigatório
+                e o telefone opcional, internacional, sem máscara. */}
+            {lang === "en"
+              ? <>
+                <label>{t.form.email}<input name="email" type="email" inputMode="email" autoComplete="email" placeholder={t.form.emailPh} required
+                       onInput={() => { if (emailInvalido) setEmailInvalido(false); }} /></label>
+                {emailInvalido && <small role="alert" style={{ color: "#b3261e" }}>{t.form.errEmail}</small>}
+                <label>{t.form.telefone}<input name="whatsapp" type="tel" autoComplete="tel" placeholder={t.form.telefonePh} maxLength={24}
+                       onInput={() => { if (telInvalido) setTelInvalido(false); }} /></label>
+                {telInvalido && <small role="alert" style={{ color: "#b3261e" }}>{t.form.errTel}</small>}
+              </>
+              : <>
+                <label>{t.form.whatsapp}<input name="whatsapp" type="tel" autoComplete="tel" placeholder={t.form.whatsappPh} required maxLength={16}
+                       onInput={e => { e.currentTarget.value = mascararWhatsapp(e.currentTarget.value); if (telInvalido) setTelInvalido(false); }} /></label>
+                {telInvalido && <small role="alert" style={{ color: "#b3261e" }}>{t.form.errTel}</small>}
+              </>}
             <CampoIsca />
             {/* "NOME DA LOJA" saiu: o @ do instagram já entrega o nome, e eram
                 dois campos obrigatórios para uma informação só. O que sobrou
                 virou opcional, porque nome e telefone bastam para eu chamar. */}
-            <label>INSTAGRAM OU SITE DA LOJA<input name="instagram" placeholder="@sualoja" required autoCapitalize="off" autoCorrect="off" spellCheck={false}
+            <label>{t.oferta.insta}<input name="instagram" placeholder={t.oferta.instaPh} required autoCapitalize="off" autoCorrect="off" spellCheck={false}
                    onInput={() => { if (instaInvalido) setInstaInvalido(""); }} /></label>
-            {instaInvalido && <small role="alert" style={{ color: "#b3261e" }}>Não achei <b>@{instaInvalido.replace(/^@+/, "")}</b> no Instagram. Confere o @ da loja: precisa ser a conta profissional, é dela que eu tiro as fotos.</small>}
-            <label className={s.avista}>
+            {instaInvalido && <small role="alert" style={{ color: "#b3261e" }}>{t.form.errInsta1}<b>@{instaInvalido.replace(/^@+/, "")}</b>{t.form.errInsta2}</small>}
+            {/* a caixa do Pix existe só onde há Pix (pt) */}
+            {t.oferta.avistaCheck && <label className={s.avista}>
               <input type="checkbox" name="avista" checked={avista} onChange={e => setAvista(e.target.checked)} />
-              Prefiro pagar à vista no Pix por R$899 (10% de desconto)
-            </label>
+              {t.oferta.avistaCheck}
+            </label>}
             {/* sem a seta ↗: o envio agora acontece na própria tela. Rosa
                 porque é um dos três lugares da página que a cor dos 10%
                 ocupa, e os três são a mesma ação. */}
@@ -1675,7 +1742,7 @@ export function Offer() {
                 "reservar" e o outro de "quero minha vitrine" era inventar
                 uma diferença que não existe. Uma ação, um nome. */}
             <button className={`${s.button} ${s.acao}`} disabled={enviando}>
-              {enviando ? "ENVIANDO…" : "QUERO VER A MINHA LOJA"}
+              {enviando ? t.form.enviando : t.form.enviar}
             </button>
             {/* Antes daqui saía "Tudo certo. Abrindo o WhatsApp…", que dizia à
                 pessoa que estava feito quando não estava: a mensagem abre
@@ -1687,14 +1754,8 @@ export function Offer() {
                 está na lista de exceção do Lead: quem chega aqui já disparou
                 o Lead do formulário segundos antes. */}
             {linkWa
-              ? <div className={s.pendente} role="status">
-                  <b>Falta um toque.</b>
-                  <p>Abri o WhatsApp com sua mensagem pronta. Toque em <b>enviar</b> lá para eu receber, senão ela não chega.</p>
-                  <a className={`${s.button} ${s.primary}`} href={linkWa} data-cta="reabrir_whats" data-cta-dest="whatsapp">
-                    ABRIR O WHATSAPP ↗
-                  </a>
-                </div>
-              : <p className={s.micro} role="status">Ao enviar, recebo seu pedido e te chamo no WhatsApp. Não peço dados de cartão nesta etapa.</p>}
+              ? <Pendente href={linkWa} />
+              : <p className={s.micro} role="status">{t.oferta.micro}</p>}
           </form>}
         </div>
       </div>
@@ -1723,13 +1784,9 @@ export function Offer() {
    quatro: o percurso do CSS tem quatro marcos ligados pelo fio, e cinco
    quebram o desenho. Não se perdeu conteúdo, as duas frases estão
    inteiras dentro do mesmo passo. */
-const process = [
-  ["Prévia", "Você me manda o seu @. Eu desenho a sua vitrine e te mostro pronta, sem custo nenhum."],
-  ["Reserva", "Gostou? Aí sim: R$199 e o material da loja."],
-  ["Criação", "Eu desenho, desenvolvo e monto o catálogo inteiro."],
-  ["Aprovação e publicação", "Você revisa, pede a rodada de ajustes e, depois do saldo, a vitrine entra no ar."],
-];
 export function Process() {
+  const t = useVit();
+  const process = t.processo.passos;
   return <section className={`${s.section} ${s.dark}`}>
     <div className={s.wrap}>
       {/* "PROCESSO E SEGURANÇA" prometia uma metade que a seção não
@@ -1737,7 +1794,7 @@ export function Process() {
           processador de pagamento, que fala do meio e não do risco dela.
           O rótulo novo diz o que os quatro passos abaixo realmente são,
           que é o percurso do sim até a loja funcionando. */}
-      <Eyebrow>DO SIM À LOJA NO AR</Eyebrow>
+      <Eyebrow>{t.processo.eyebrow}</Eyebrow>
       {/* ---------- a garantia dita como gente ----------
           Era "Você acompanha o projeto antes de concluir o pagamento".
           "Concluir o pagamento" é frase de tela de checkout, e "acompanha
@@ -1750,7 +1807,7 @@ export function Process() {
           Cuidado ao mexer nisto: NÃO existe política de reembolso escrita,
           então a frase pode dizer o que fica retido, e não pode prometer
           devolução do que já foi pago. */}
-      <h2>Você vê a loja pronta<br /><em>antes de pagar nada.</em></h2>
+      <h2>{t.processo.h2}</h2>
       {/* ---------- o processo também é percurso (13/08) ----------
           Eram quatro células de uma tabela com filete em volta, e o
           conteúdo é uma SEQUÊNCIA no tempo: reserva, criação, aprovação,
@@ -1769,8 +1826,8 @@ export function Process() {
         <div><h3>{x[0]}</h3><p>{x[1]}</p></div>
       </li>)}</ol>
       <div className={s.trust}>
-        <span className={s.badge}>✓ PAGAMENTO PROCESSADO EM AMBIENTE SEGURO</span>
-        <Link className={s.ghost} href="/termos">VER ESCOPO E TERMOS</Link>
+        <span className={s.badge}>{t.processo.selo}</span>
+        <Link className={s.ghost} href={t.processo.termosHref}>{t.processo.termos}</Link>
       </div>
     </div>
   </section>;
@@ -1796,36 +1853,39 @@ export function Process() {
    porque as peças moram em quatro lugares diferentes; esta não
    precisa, porque a lista está aqui do lado.
    ============================================================ */
-const faq = [
-  ["A vitrine recebe pagamentos dos meus clientes?", "Não. A vitrine organiza o catálogo e leva o pedido pronto para o WhatsApp da loja, onde você combina pagamento e entrega."],
-  /* a resposta dizia "Novos cadastros podem ser combinados depois", e
+/* As perguntas moram no dicionário (t.faq.itens), com `nao: true` nas que
+   começam com "Não.": é essa marca que a manchete conta, nos dois idiomas.
+   Duas notas de copy que ficam com a lista:
+   • "Quantos produtos": a resposta dizia "Novos cadastros podem ser combinados depois", e
      "combinados" quer dizer contratados de novo: ela transformava o limite
      de 20 num teto pago, que é a leitura mais cara possível para uma loja
      de semijoia com 200 SKUs. O que acontece de verdade é o contrário, e
      já está provado duas seções à frente, na `Panel`: o cadastro é do
      painel e não é serviço. O limite dos 20 é do MEU trabalho de cadastrar,
-     não da vitrine. */
-  ["Quantos produtos estão incluídos?", "A vitrine não tem limite de produtos. Os 20 primeiros eu cadastro para você, com foto, preço e tamanhos; os outros você mesmo cadastra no painel, em minutos e sem me chamar."],
-  ["Existe mensalidade?", "Não. O projeto custa R$999 uma única vez. Um domínio próprio é opcional e tem custo anual pago direto no registrador."],
-  ["Quem atualiza a vitrine depois?", "Você mesmo, pelo painel que acompanha a vitrine: troca preço e foto, marca esgotado ou pronta entrega e cadastra produtos novos."],
-  ["Quanto tempo demora?", "Até 7 dias úteis depois do envio de todos os materiais da loja."],
-  /* quem pediu orçamento de agência ouviu R$4 mil ou R$8 mil, e preço
+     não da vitrine.
+   • "Por que R$999": quem pediu orçamento de agência ouviu R$4 mil ou R$8 mil, e preço
      muito abaixo do mercado não tranquiliza, assusta: a pergunta que fica
      é "o que vem faltando aí?". A resposta não defende o preço com
      adjetivo, ela mostra a conta de onde ele sai. */
-  ["Por que R$999 e não R$5 mil?", "Porque não tem agência no meio. Você fala comigo do primeiro oi até a loja no ar, sem atendimento, sem gerente de projeto e sem repasse. O processo é o mesmo em todos os projetos, então o que sobra de custo é o meu tempo."],
-  ["Preciso pagar tudo antes?", "Não. São R$199 para começar e R$800 somente depois da apresentação e da sua aprovação, em até 4x no cartão. Quem prefere pagar à vista no Pix fecha por R$899."],
-];
-/* por extenso porque é manchete: numeral em algarismo no meio de uma frase
-   em caixa alta lê como preço, não como quantidade.
-   A lista precisa ter uma posição a mais que o número de itens da `faq`,
-   porque o índice 0 existe e nunca é usado. Ao acrescentar pergunta,
-   conferir se ainda sobra posição: uma FAQ em que TODAS as respostas
-   começassem com "Não." estouraria o fim do array e a manchete sairia
-   como "undefined desta". */
-const PORTEXTENSO = ["nenhuma", "Uma", "Duas", "Três", "Quatro", "Cinco", "Seis", "Sete", "Oito"];
-const NAOS_DA_FAQ = faq.filter(([, resposta]) => resposta.startsWith("Não.")).length;
+/* ---------- a manchete que conta, por idioma ----------
+   Por extenso porque é manchete: numeral em algarismo no meio de uma frase
+   em caixa alta lê como preço, não como quantidade. A lista `numeros` do
+   dicionário precisa ter uma posição a mais que o número de itens da FAQ,
+   porque o índice 0 existe e nunca é usado.
+   O singular e o plural são duas frases inteiras no dicionário (a
+   concordância muda de jeito diferente em cada língua), e a quebra de
+   linha fica entre as duas metades, como sempre ficou. */
+function FaqManchete({ n }: { n: number }) {
+  const t = useVit();
+  const m = t.faq.manchete;
+  const l1 = n > 1 ? preencher(m.variosL1, { n: t.faq.numeros[n] ?? String(n) }) : m.umL1;
+  const l2 = n > 1 ? m.variosL2 : m.umL2;
+  return <h2 className={s.h2Duplo}>{l1}<br />{l2} <em>{m.fim}</em></h2>;
+}
 export function FAQ() {
+  const t = useVit();
+  const faq = t.faq.itens;
+  const NAOS_DA_FAQ = faq.filter(i => i.nao).length;
   return <section className={s.section} id="faq">
     <div className={s.wrap}>
       {/* eram dois rótulos empilhados ("DÚVIDAS FREQUENTES" e "Antes de
@@ -1839,8 +1899,8 @@ export function FAQ() {
           verdade. De quebra, número que dá para conferir faz abrir os
           acordeões, que é exatamente o que uma FAQ fechada precisa.
           A contagem tem manutenção: ver a nota grande junto da lista. */}
-      <Eyebrow>ANTES DE CONTRATAR</Eyebrow>
-      <h2 className={s.h2Duplo}>{PORTEXTENSO[NAOS_DA_FAQ]} desta{NAOS_DA_FAQ > 1 ? "s" : ""} resposta{NAOS_DA_FAQ > 1 ? "s" : ""}<br />começa{NAOS_DA_FAQ > 1 ? "m" : ""} com <em>não.</em></h2>
+      <Eyebrow>{t.faq.eyebrow}</Eyebrow>
+      <FaqManchete n={NAOS_DA_FAQ} />
       {/* ---------- a manchete passou a ser conferível na hora ----------
           Ela promete que três respostas começam com "não", e até 13/08 a
           única forma de verificar isso era abrir os seis acordeões. Numa
@@ -1858,11 +1918,11 @@ export function FAQ() {
           E o argumento não se perde por ser revelado: quem lê já sabia
           que existem três, a etiqueta só diz ONDE. O que ela ganha é
           quem passa batido pela dobra sem abrir nada, que é a maioria. */}
-      <div className={s.faq}>{faq.map(([pergunta, resposta]) => <details key={pergunta}>
+      <div className={s.faq}>{faq.map(({ p: pergunta, r: resposta, nao }) => <details key={pergunta}>
         <summary>
           <span className={s.faqPergunta}>
             {pergunta}
-            {resposta.startsWith("Não.") && <i className={s.faqNao}>não</i>}
+            {nao && <i className={s.faqNao}>{t.faq.etiqueta}</i>}
           </span>
         </summary>
         <p>{resposta}</p>
@@ -1879,30 +1939,31 @@ export function FAQ() {
    WhatsApp, e o hook foi junto. A barra fixa do celular tem observador
    próprio, dentro do MobileBar. */
 export function FinalCTA() {
+  const t = useVit();
   return <>
     <section id="fim" className={`${s.section} ${s.dark} ${s.final}`}>
-      <Eyebrow>AGENDA ABERTA</Eyebrow>
+      <Eyebrow>{t.fim.eyebrow}</Eyebrow>
       {/* nona e última manchete a entrar na régua de duas larguras, e a
           quebra é o que faltava para ela funcionar: "vender melhor." vinha
           colada no fim da terceira linha, com o mesmo corpo do preparo, e
           a frase inteira chegava como um bloco só. É a promessa que a
           página inteira sustenta, e ela merecia a batida. */}
-      <h2 className={s.h2Duplo}>Sua loja já tem produtos.<br />Agora precisa de uma estrutura para<br /><em>vender melhor.</em></h2>
+      <h2 className={s.h2Duplo}>{t.fim.h2}</h2>
       {/* quem chega aqui leu a página inteira: o pedido pode ser o cheio,
           sem rodeio, e o caminho é o mesmo formulário de sempre */}
-      <p className={s.lead}>Deixa o seu @ que eu desenho a sua vitrine e te mostro pronta, de graça. Se você já decidiu, começa com R$199.</p>
+      <p className={s.lead}>{t.fim.lead}</p>
       <div className={s.actions}>
         {/* "DEIXAR MEU CONTATO ↑" em 23/08: último dos quatro a entrar no
             vocabulário único. Quem leu a página inteira chega aqui e o
             botão diz a mesma coisa que o do topo e que o de envio. */}
-        <a className={`${s.button} ${s.acao}`} href="#contratar" data-cta="final" data-cta-dest="form">QUERO VER A MINHA LOJA ↑</a>
-        <a className={s.ghost} href="#oferta" data-cta="final_reserva" data-cta-dest="oferta">VER O QUE ESTÁ INCLUSO</a>
+        <a className={`${s.button} ${s.acao}`} href="#contratar" data-cta="final" data-cta-dest="form">{t.fim.cta}</a>
+        <a className={s.ghost} href="#oferta" data-cta="final_reserva" data-cta-dest="oferta">{t.fim.ghost}</a>
       </div>
     </section>
     <footer className={s.footer}>
-      <div className={s.brand}><b>RAFAEL RAZEIRA</b><span>ESTÚDIO</span></div>
-      <nav><Link href="/estudio/">INÍCIO</Link><Link href="/portfolio">PORTFÓLIO</Link><Link href="/servicos">SERVIÇOS</Link><Link href="/e-commerce">E-COMMERCE</Link><Link href="/termos">TERMOS</Link><Link href="/privacidade">PRIVACIDADE</Link></nav>
-      <small>© 2026 RAFAEL RAZEIRA ESTÚDIO</small>
+      <div className={s.brand}><b>{t.marca.nome}</b><span>{t.marca.sufixo}</span></div>
+      <nav>{t.rodape.links.map(l => <Link key={l.href} href={l.href}>{l.label}</Link>)}</nav>
+      <small>{t.rodape.copyright}</small>
     </footer>
   </>;
 }
@@ -1935,6 +1996,7 @@ export function FinalCTA() {
    que apareceu ao testar a primeira versão desta função. */
 const ROLAGEM_PARA_BARRA = 0.85;   // frações de uma tela
 export function MobileBar() {
+  const t = useVit();
   const [hidden, setHidden] = useState(true);
   useEffect(() => {
     const offer = document.getElementById("oferta");
@@ -1977,7 +2039,7 @@ export function MobileBar() {
         a pessoa a página inteira, e o que decide passou a ser o RISCO, não
         o valor. "GRÁTIS" cabe exatamente onde "R$999" cabia; frase maior
         estoura a barra ao lado do botão em 390px. */}
-    <span className={s.barCopy}><b>GRÁTIS</b><span>Sua vitrine desenhada</span></span>
-    <a className={`${s.button} ${s.acao}`} href="#contratar" data-cta="sticky_mobile" data-cta-dest="form">QUERO VER A MINHA LOJA</a>
+    <span className={s.barCopy}><b>{t.barra.destaque}</b><span>{t.barra.sub}</span></span>
+    <a className={`${s.button} ${s.acao}`} href="#contratar" data-cta="sticky_mobile" data-cta-dest="form">{t.barra.cta}</a>
   </div>;
 }

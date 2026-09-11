@@ -26,7 +26,18 @@ const MIXPANEL_TOKEN = "56f4afa648bf59c45e417b084fdb4aa4";
 const MP_URL = "https://api.mixpanel.com/track?ip=1";
 const PIXEL_ID = "2445872572575348";
 const CAPI_ENDPOINT = "/api/meta-capi";
-const VALOR_OFERTA = 999;
+
+/* ---------- a página, o valor e a moeda (11/09/2026) ----------
+   Eram constantes: `page: "vitrine-digital"`, `VALOR_OFERTA = 999` e
+   `currency: "BRL"` em cinco lugares. A /en/vitrine-digital usa este
+   mesmo módulo com outra página ("vitrine-digital-en"), outro valor e
+   outra moeda (US$, ver lib/oferta.ts), e `lang` avisa a rota da CAPI
+   para não prefixar 55 num telefone que já vem com DDI. O componente
+   <Analytics /> preenche no mount; sem ele, valem os valores do pt, que
+   são os de sempre. O `content_name` continua "vitrine-digital" nos dois
+   idiomas: é nome de catálogo da Meta, não da página. */
+export interface ConfigTracking { page: string; valor: number; currency: "BRL" | "USD"; lang: "pt" | "en" }
+const CFG: ConfigTracking = { page: "vitrine-digital", valor: 999, currency: "BRL", lang: "pt" };
 
 type Fbq = (...args: unknown[]) => void;
 interface FbqStub extends Fbq { callMethod?: Fbq; queue: unknown[][]; push: unknown; loaded: boolean; version: string }
@@ -344,7 +355,7 @@ export function mpTrack(evento: string, props?: Record<string, unknown>) {
       $insert_id: (props && (props.$insert_id as string)) || idAleatorio(),
       $current_url: location.href,
       $referrer: document.referrer || "",
-      page: "vitrine-digital",
+      page: CFG.page,
       ...mpDispositivo(),
       ...utm,
       ...props,
@@ -599,7 +610,9 @@ function medirLeitura() {
 let iniciado = false;
 
 /* Chamado no mount da página (componente <Analytics />). */
-export function initTracking() {
+export function initTracking(cfg?: Partial<ConfigTracking>) {
+  /* antes da guarda: a página, o valor e a moeda valem mesmo sem consentimento */
+  if (cfg) Object.assign(CFG, cfg);
   if (iniciado || !podeRastrear()) return;   // guarda contra StrictMode/remontagem
   iniciado = true;
 
@@ -630,8 +643,8 @@ export function initTracking() {
         obs.disconnect();
         umaVezPorSessao("mp_vc_oferta", () => {
           conversao("ViewContent",
-            { content_name: "oferta-vitrine", content_category: "vitrine-digital", value: VALOR_OFERTA, currency: "BRL" },
-            { content_name: "oferta-vitrine", content_category: "vitrine-digital", value: VALOR_OFERTA, currency: "BRL" },
+            { content_name: "oferta-vitrine", content_category: "vitrine-digital", value: CFG.valor, currency: CFG.currency },
+            { content_name: "oferta-vitrine", content_category: "vitrine-digital", value: CFG.valor, currency: CFG.currency },
             { content_name: "oferta-vitrine" });
         });
       });
@@ -682,8 +695,8 @@ export function initTracking() {
     if (!(e.target as HTMLElement)?.closest?.("#contratar, #hero-form")) return;
     umaVezPorSessao("mp_ic_vitrine", () => {
       conversao("InitiateCheckout",
-        { content_name: "vitrine-digital", value: VALOR_OFERTA, currency: "BRL" },
-        { content_name: "vitrine-digital", value: VALOR_OFERTA, currency: "BRL" });
+        { content_name: "vitrine-digital", value: CFG.valor, currency: CFG.currency },
+        { content_name: "vitrine-digital", value: CFG.valor, currency: CFG.currency });
     });
   });
 }
@@ -705,10 +718,10 @@ export function initTracking() {
    espera dos 300ms antes do redirect é do `irParaWhatsapp`, não daqui, e é
    por conta do Pixel: Mixpanel e CAPI já sobrevivem à navegação pelo
    keepalive do fetch. */
-export function trackLead({ ctaPosition, plano, nome, whatsapp, abriuWhats = true }: { ctaPosition: string; plano?: string; nome?: string; whatsapp?: string; abriuWhats?: boolean }) {
+export function trackLead({ ctaPosition, plano, nome, whatsapp, email, abriuWhats = true }: { ctaPosition: string; plano?: string; nome?: string; whatsapp?: string; email?: string; abriuWhats?: boolean }) {
   if (!podeRastrear()) return;
   const eventId = idAleatorio();
-  const dados: Record<string, unknown> = { content_name: "vitrine-digital", cta_position: ctaPosition, value: VALOR_OFERTA, currency: "BRL" };
+  const dados: Record<string, unknown> = { content_name: "vitrine-digital", cta_position: ctaPosition, value: CFG.valor, currency: CFG.currency };
   if (plano) dados.plano = plano;
   fbq("track", "Lead", dados, { eventID: eventId });
   /* "Abriu WhatsApp" é o espelho exato do Lead na Mixpanel: mesmo gatilho,
@@ -745,15 +758,21 @@ export function trackLead({ ctaPosition, plano, nome, whatsapp, abriuWhats = tru
     enviarCapi("Contact", contactId, {
       first_name: nome || "",
       phone: whatsapp || "",
+      /* o e-mail existe só na versão em inglês (11/09): é a chave de
+         casamento mais forte que a Meta aceita, e lá é o único contato */
+      email: email || "",
+      lang: CFG.lang,
       content_name: "vitrine-digital",
       cta_position: ctaPosition,
-      value: VALOR_OFERTA,
-      currency: "BRL",
+      value: CFG.valor,
+      currency: CFG.currency,
       plano,
     });
   }
   enviarCapi("Lead", eventId, {
     first_name: nome || "",
+    email: email || "",
+    lang: CFG.lang,
     /* O telefone passou a existir nesta página em 06/08, quando o formulário
        começou a pedi-lo, e é a chave de casamento mais forte que a Meta aceita
        depois do e-mail. Antes daqui só saíam nome, fbp e fbc. O servidor
@@ -761,8 +780,8 @@ export function trackLead({ ctaPosition, plano, nome, whatsapp, abriuWhats = tru
     phone: whatsapp || "",
     content_name: "vitrine-digital",
     cta_position: ctaPosition,
-    value: VALOR_OFERTA,
-    currency: "BRL",
+    value: CFG.valor,
+    currency: CFG.currency,
     plano,
   });
 }

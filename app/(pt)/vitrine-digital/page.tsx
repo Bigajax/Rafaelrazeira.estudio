@@ -1,15 +1,21 @@
 import type { Metadata } from "next";
 import { Archivo, Inter, JetBrains_Mono } from "next/font/google";
 import { Analytics, BrandBand, FAQ, FinalCTA, Header, Hero, HowItWorks, Included, MobileBar, Offer, PainSolution, Panel, Process, Projects, QuemFaz } from "@/components/vitrine/sections";
+import { LangProvider } from "@/components/i18n";
+import { alternatesPara } from "@/lib/idiomas";
+import { pt } from "@/messages/vitrine.pt";
 import styles from "./vitrine.module.css";
 
 const display = Archivo({ subsets: ["latin"], axes: ["wdth"], variable: "--font-display" });
 const body = Inter({ subsets: ["latin"], variable: "--font-body" });
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
 
+/* o título e a descrição moram no dicionário desde 11/09/2026, junto com o
+   resto do texto da página; `alternates` aponta a irmã em inglês */
 export const metadata: Metadata = {
-  title: "Vitrine Digital para lojas",
-  description: "Eu desenho a sua vitrine antes de você pagar. Catálogo com foto, preço e tamanho, pedido pronto no WhatsApp, projeto completo por R$999.",
+  title: pt.meta.title,
+  description: pt.meta.description,
+  alternates: alternatesPara("/vitrine-digital"),
 };
 
 /* ---------- esta página não tem tela de carregamento ----------
@@ -33,7 +39,9 @@ export const metadata: Metadata = {
    marca ou chegou por vontade própria. Aqui é tráfego pago frio, e ninguém
    clicou no anúncio para ver uma abertura. */
 export default function VitrineDigitalPage() {
-  return <div className={`${styles.site} ${display.variable} ${body.variable} ${mono.variable}`}>
+  /* o provider entrega o dicionário pt aos componentes (useT); a
+     /en/vitrine-digital faz o mesmo com o en */
+  return <LangProvider lang="pt" messages={pt}><div className={`${styles.site} ${display.variable} ${body.variable} ${mono.variable}`}>
     <Header />
     <main>
       <Hero />
@@ -78,5 +86,5 @@ export default function VitrineDigitalPage() {
     </main>
     <MobileBar />
     <Analytics />
-  </div>;
+  </div></LangProvider>;
 }

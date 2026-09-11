@@ -12,18 +12,63 @@
    Quem chama fica dono só do estado de tela (enviando/enviado/pendente). O
    contrato de components/lead.ts e da rota /api/lead não muda: o hero manda
    `plano` ausente e a rota o aceita como nulo.
+
+   ---------- os dois idiomas (11/09/2026) ----------
+   A /en/vitrine-digital passa por aqui com `lang: "en"`, e três coisas
+   mudam: o `pagina` ganha o sufixo "-en" (é o que diz à rota que o contato
+   obrigatório é o e-mail e que a nota do CRM é "responder por e-mail"), o
+   link de contato é um mailto: pré-preenchido em vez do wa.me, e o
+   fallback NÃO navega: sem WhatsApp para abrir, a tela mostra o bloco
+   "One more step" com o mailto, e a pessoa escreve. O Lead sai do mesmo
+   jeito nos dois caminhos.
    ============================================================ */
 
 import type { MotivoSuspeito } from "@/components/form-guarda";
 import { salvarLead, salvarLeadDetalhado } from "@/components/lead";
 import { contextoDaSessao, irParaWhatsapp, mpTrack, refDaVisita, trackLead } from "@/components/vitrine/tracking";
+import { linkEmail, linkWhatsApp } from "@/lib/contato";
+import type { Lang } from "@/lib/idiomas";
+
+/* o vocabulário da mensagem/assunto, por idioma; é o mesmo objeto
+   `contato` do dicionário da página, repetido aqui porque este módulo não
+   tem acesso ao provider e as duas cópias precisam dizer o mesmo */
+const TEXTO: Record<Lang, { abertura: string; nome: string; loja: string; plano: string; ref: string }> = {
+  pt: { abertura: "Oi Rafael! Quero uma vitrine para minha loja.", nome: "Nome", loja: "Loja", plano: "Plano", ref: "Ref" },
+  en: { abertura: "Digital storefront preview for my store", nome: "Name", loja: "Store", plano: "Plan", ref: "Ref" },
+};
+
+export const paginaDaVitrine = (lang: Lang) => (lang === "en" ? "vitrine-digital-en" : "vitrine-digital");
+
+/* ---------- o link de contato, por idioma ----------
+   pt: o wa.me com a mensagem pronta. A primeira linha é a mesma dos CTAs da
+   página: a conversa começa do mesmo jeito, venha de onde vier. O telefone
+   não entra na mensagem de propósito (ela sai do WhatsApp da própria
+   pessoa) e o código da visita fecha a última linha, para a venda
+   registrada depois amarrar na visita.
+   en: o mailto: com o mesmo conteúdo, assunto na primeira linha e o resto
+   no corpo. */
+export function linkContato(lang: Lang, d: { nome?: string; instagram?: string; plano?: string }): string {
+  const t = TEXTO[lang];
+  const ref = refDaVisita();
+  const linhas = [
+    d.nome ? `${t.nome}: ${d.nome}` : "",
+    d.instagram ? `${t.loja}: ${d.instagram}` : "",
+    d.plano ? `${t.plano}: ${d.plano}` : "",
+    ref ? `${t.ref}: ${ref}` : "",
+  ].filter(Boolean);
+  return lang === "en"
+    ? linkEmail(t.abertura, linhas.join("\n"))
+    : linkWhatsApp([t.abertura, ...linhas].join("\n"));
+}
 
 export async function enviarLeadVitrine(d: {
   nome: string;
   whatsapp: string;
+  email?: string;
   instagram?: string;
   plano?: string;
   ctaPosition: "form" | "hero_form";
+  lang: Lang;
 }): Promise<{ salvo: boolean; linkWa: string; arrobaInvalido: boolean }> {
   /* ---------- o Lead saiu de antes para DEPOIS da gravação (10/09) ----------
      Ele era disparado aqui em cima, antes de qualquer coisa, e o motivo era
@@ -38,25 +83,14 @@ export async function enviarLeadVitrine(d: {
      quando ela diz que a loja existe. No fallback (gravação falhou, a
      pessoa vai para o WhatsApp) ele sai como antes, ANTES de navegar, que
      é onde a regra antiga continua valendo. */
-
-  /* A primeira linha é a mesma dos CTAs da página: a conversa começa do
-     mesmo jeito, venha de onde vier. O telefone não entra na mensagem de
-     propósito (ela sai do WhatsApp da própria pessoa) e o código da visita
-     fecha a última linha, para a venda registrada depois amarrar na visita. */
-  const ref = refDaVisita();
-  const text = encodeURIComponent([
-    "Oi Rafael! Quero uma vitrine para minha loja.",
-    d.nome ? `Nome: ${d.nome}` : "",
-    d.instagram ? `Loja: ${d.instagram}` : "",
-    d.plano ? `Plano: ${d.plano}` : "",
-    ref ? `Ref: ${ref}` : "",
-  ].filter(Boolean).join("\n"));
-  const linkWa = `https://wa.me/5544999997219?text=${text}`;
+  const linkWa = linkContato(d.lang, d);
 
   const resposta = await salvarLeadDetalhado({
-    pagina: "vitrine-digital",
+    pagina: paginaDaVitrine(d.lang),
+    lang: d.lang,
     nome: d.nome,
     whatsapp: d.whatsapp,
+    ...(d.email ? { email: d.email } : {}),
     canal: d.instagram || "",
     ...(d.plano ? { plano: d.plano } : {}),
     ...contextoDaSessao(),
@@ -76,7 +110,7 @@ export async function enviarLeadVitrine(d: {
        aqui: a mesma pessoa preenchendo o segundo formulário da página já
        contou no primeiro. */
     if (!resposta.repetido) {
-      trackLead({ ctaPosition: d.ctaPosition, plano: d.plano, nome: d.nome, whatsapp: d.whatsapp, abriuWhats: false });
+      trackLead({ ctaPosition: d.ctaPosition, plano: d.plano, nome: d.nome, whatsapp: d.whatsapp, email: d.email, abriuWhats: false });
     }
     mpTrack("LeadSalvo", { cta_position: d.ctaPosition, plano: d.plano, repetido: !!resposta.repetido });
     return { salvo: true, linkWa, arrobaInvalido: false };
@@ -86,8 +120,13 @@ export async function enviarLeadVitrine(d: {
      sai aqui, antes de navegar, e com o @ sem conferir: rota fora do ar não
      pode custar o contato, e a pessoa se verifica sozinha ao mandar a
      mensagem. location.href na mesma aba, 300ms depois do Lead sair, porque
-     window.open o navegador do Instagram bloqueia ou abre em aba fantasma. */
-  trackLead({ ctaPosition: d.ctaPosition, plano: d.plano, nome: d.nome, whatsapp: d.whatsapp, abriuWhats: false });
+     window.open o navegador do Instagram bloqueia ou abre em aba fantasma.
+     No en não há para onde navegar: quem chama mostra o mailto na tela. */
+  trackLead({ ctaPosition: d.ctaPosition, plano: d.plano, nome: d.nome, whatsapp: d.whatsapp, email: d.email, abriuWhats: false });
+  if (d.lang === "en") {
+    mpTrack("LeadNaoSalvo", { cta_position: d.ctaPosition, plano: d.plano, origem: "fallback-email" });
+    return { salvo: false, linkWa, arrobaInvalido: false };
+  }
   mpTrack("AbriuWhatsApp", { cta_position: d.ctaPosition, plano: d.plano, origem: "fallback" });
   irParaWhatsapp(linkWa);
   return { salvo: false, linkWa, arrobaInvalido: false };
@@ -113,14 +152,18 @@ export async function enviarLeadVitrine(d: {
 export function registrarSuspeito(d: {
   nome: string;
   whatsapp: string;
+  email?: string;
   instagram?: string;
   plano?: string;
   motivo: MotivoSuspeito;
+  lang: Lang;
 }) {
   void salvarLead({
-    pagina: "vitrine-digital",
+    pagina: paginaDaVitrine(d.lang),
+    lang: d.lang,
     nome: d.nome,
     whatsapp: d.whatsapp,
+    ...(d.email ? { email: d.email } : {}),
     canal: d.instagram || "",
     ...(d.plano ? { plano: d.plano } : {}),
     ...contextoDaSessao(),
