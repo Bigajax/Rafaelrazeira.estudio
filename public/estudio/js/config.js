@@ -412,14 +412,36 @@ const CONFIG_LP = {
      a página enquanto não houver número para mostrar. */
   audience: {
     label: "ONDE O DINHEIRO VAZA.",
-    headline: "O PROBLEMA QUASE NUNCA É O ANÚNCIO.",
-    intro: "Você paga por cada clique. Se o que vem depois do clique não estiver à altura, o dinheiro sai do mesmo jeito e a venda não acontece. Os três vazamentos mais caros:",
+    /* ---------- a seção trocou o argumento pela CONTA (11/09/2026) ----------
+       Ela tinha uma intro de três linhas e três parágrafos explicando por
+       que o clique se perde. O Rafael leu e não se convenceu, e a razão é
+       a de sempre: parágrafo pede que a pessoa acredite, número pede que
+       ela confira. Esta marca é "o designer que mostra o número", e a
+       vitrine já faz a conta da dor no hero dela.
+
+       Agora o argumento é um RECIBO com quatro linhas, e os três vazamentos
+       ficam só com o título, que é o que sobrava depois de cortar cada
+       parágrafo à metade duas vezes. A conta é um EXEMPLO declarado (a nota
+       diz com que número ela foi feita), não uma estatística: o que
+       convence é a mecânica, e ela vale para qualquer valor que a pessoa
+       ponha no lugar do R$1.000. */
+    headline: "VOCÊ PAGA O CLIQUE. A&nbsp;PÁGINA PERDE A VENDA.",
+    intro: "",
     marcador: "VAZAMENTO",
     escura: true,
+    conta: {
+      linhas: [
+        { num:"R$1.000", texto:"por mês em anúncios" },
+        { num:"1.000",   texto:"cliques, a R$1 cada" },
+        { num:"4 em 10", texto:"vão embora sem rolar a tela" },
+      ],
+      total: { num:"R$400", texto:"pagos por quem nunca viu a sua oferta" },
+      nota: "Conta de exemplo. Troque o R$1.000 pelo que você investe: a proporção é a mesma.",
+    },
     blocks: [
-      { title:"O CLIQUE CAI NO LUGAR ERRADO", text:"Link da bio, home do site, direct do Instagram. Três destinos que obrigam a pessoa a procurar sozinha o que ela veio buscar. Boa parte desiste no caminho." },
-      { title:"A PÁGINA NÃO REPETE A PROMESSA DO ANÚNCIO", text:"Ela clicou por causa de uma frase. Se essa frase não estiver na primeira tela, ela acha que errou de lugar e volta." },
-      { title:"NO CELULAR, NADA DISSO SE SUSTENTA", text:"É de onde vem quase todo o seu tráfego pago, e é onde as páginas feitas no computador quebram primeiro." },
+      { title:"O CLIQUE CAI NO LINK DA BIO" },
+      { title:"A PÁGINA NÃO REPETE O ANÚNCIO" },
+      { title:"NO CELULAR, QUEBRA" },
     ],
   },
 

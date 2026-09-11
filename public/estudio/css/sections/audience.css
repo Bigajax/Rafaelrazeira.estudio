@@ -116,3 +116,64 @@
 .aud__item--marcado .aud__num::before{content:none}
 .aud__title{font-family:var(--font-display);font-stretch:78%;font-weight:900;text-transform:uppercase;font-size:clamp(1.5rem,6.5vw,2.6rem);line-height:1;letter-spacing:-.025em}
 .aud__text{margin-top:14px;font-size:clamp(1rem,4vw,1.15rem);color:var(--ink-soft);line-height:1.5;max-width:46ch}
+
+/* ============================================================
+   A CONTA DO CLIQUE PERDIDO (só a /landing-page, desde 11/09/2026)
+
+   A seção tinha uma intro e três parágrafos, e parágrafo pede que a
+   pessoa acredite. Esta marca mostra o número. O argumento agora é um
+   RECIBO: quatro linhas, numeral em corpo de manchete à esquerda,
+   legenda em mono à direita, filete picotado entre elas como o picote
+   da régua do hero. O total é a única linha em rosa vivo: nesta página o
+   rosa marca a ação em toda parte, e nesta seção, a única que descreve
+   um problema, ele inverte e marca o que está errado (mesma regra do
+   marcador "VAZAMENTO").
+
+   Com a conta presente a seção vira duas colunas no desktop: recibo à
+   esquerda, os três vazamentos só com o título à direita. No celular
+   empilha, o recibo primeiro. Tudo vem DEPOIS do componente de propósito.
+   ============================================================ */
+.audience__grade{
+  display:grid;grid-template-columns:1fr;
+  gap:clamp(28px,5vw,44px) clamp(40px,6vw,96px);
+  margin-top:clamp(30px,5vw,48px);
+}
+@media(min-width:1024px){
+  .audience__grade{grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);align-items:start}
+}
+.conta{max-width:520px;border-top:1.5px dashed rgba(255,255,255,.28)}
+.conta__linha{
+  display:grid;grid-template-columns:minmax(118px,auto) 1fr;
+  align-items:baseline;column-gap:clamp(14px,2vw,22px);
+  padding:clamp(12px,1.6vw,16px) 0;
+  border-bottom:1.5px dashed rgba(255,255,255,.28);
+}
+.conta__linha b{
+  font-family:var(--font-display);font-stretch:78%;font-weight:900;
+  font-variant-numeric:tabular-nums;
+  font-size:clamp(1.7rem,6vw,2.4rem);line-height:1;letter-spacing:-.025em;
+  color:var(--paper);white-space:nowrap;
+}
+.conta__linha span{
+  font-family:var(--font-mono);font-size:clamp(10px,2.8vw,11.5px);
+  letter-spacing:.08em;text-transform:uppercase;line-height:1.5;color:#B6BCB6;
+}
+/* o total fecha o recibo com filete cheio, e é a linha que dói */
+.conta__total{border-bottom:2px solid var(--paper);padding-top:clamp(16px,2vw,20px)}
+.conta__total b{color:var(--rosa-live);font-size:clamp(2.1rem,7.4vw,3rem)}
+.conta__total span{color:var(--paper)}
+.conta__nota{
+  margin-top:12px;max-width:46ch;
+  font-family:var(--font-mono);font-size:9.5px;letter-spacing:.06em;
+  line-height:1.6;color:#9BA6A0;
+}
+
+/* ---------- os vazamentos sem parágrafo ----------
+   Só o título por linha: o respiro encolhe e o corpo cai um degrau, senão
+   três manchetes soltas pesariam mais que a conta ao lado. A primeira
+   linha da lista abre com o mesmo filete das outras. */
+.audience__lista .aud__item{padding-block:clamp(18px,3vw,26px)}
+.audience__lista .aud__item:first-child{border-top-color:rgba(255,255,255,.16)}
+.audience__lista .aud__item:last-child{border-bottom:1px solid rgba(255,255,255,.16)}
+.audience__lista .aud__title{font-size:clamp(1.3rem,5.4vw,1.9rem)}
+@media(min-width:820px){.audience__lista .aud__item--marcado{grid-template-columns:132px 1fr}}

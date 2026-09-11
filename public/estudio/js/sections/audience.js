@@ -15,9 +15,22 @@ export function audience(){
       <div class="aud__num">${a.marcador ? `${a.marcador} ` : ""}${String(i + 1).padStart(2, "0")}</div>
       <div>
         <h3 class="aud__title">${b.title}</h3>
-        <p class="aud__text">${b.text}</p>
+        ${b.text ? `<p class="aud__text">${b.text}</p>` : ""}
       </div>
     </div>`).join("");
+  /* ---------- a conta (só a /landing-page, desde 11/09) ----------
+     Um recibo de quatro linhas no lugar dos parágrafos: número em corpo de
+     manchete, legenda em mono, filete picotado entre as linhas, e o total
+     em rosa vivo, que é a cor do que está errado nesta página. Com a
+     conta presente, a seção vira duas colunas no desktop: o recibo à
+     esquerda e os três vazamentos, só título, à direita. */
+  const c = a.conta;
+  const conta = c ? `
+    <div class="conta reveal" role="figure" aria-label="A conta do clique perdido">
+      ${c.linhas.map(l => `<div class="conta__linha"><b>${l.num}</b><span>${l.texto}</span></div>`).join("")}
+      <div class="conta__linha conta__total"><b>${c.total.num}</b><span>${c.total.texto}</span></div>
+      ${c.nota ? `<p class="conta__nota">${c.nota}</p>` : ""}
+    </div>` : "";
   /* Manchete e intro são OPCIONAIS. Na /estudio esta seção é a lista
      "para quem é este trabalho" e o rótulo basta. Na /landing-page ela
      vira "onde o dinheiro vaza", que precisa apresentar o problema antes
@@ -31,7 +44,7 @@ export function audience(){
       <div class="section-label audience__label reveal">${a.label}</div>
       ${a.headline ? `<h2 class="audience__head reveal">${ponto(a.headline)}</h2>` : ""}
       ${a.intro ? `<p class="audience__intro reveal">${a.intro}</p>` : ""}
-      <div>${items}</div>
+      ${conta ? `<div class="audience__grade">${conta}<div class="audience__lista">${items}</div></div>` : `<div>${items}</div>`}
     </div>
   </section>`;
 }
