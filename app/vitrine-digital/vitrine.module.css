@@ -2262,6 +2262,21 @@ html:has(.site) { scroll-behavior: smooth }
    de baixo à esquerda da tela dele, por cima da borda, oposto ao chip
    "NO AR" que fica à direita. */
 .site .pedido { left: -150px; bottom: 132px; max-width: 250px }
+/* No celular o aparelho ocupa quase a largura toda e não sobra vão ao
+   lado: pendurado na tela ele tapava a loja (visto em 11/09). Então ele
+   sai do fluxo absoluto e pousa ABAIXO do aparelho, deslocado para a
+   esquerda, logo depois do chip "NO AR", que continua na borda de baixo à
+   direita. É o pedido caindo do celular, não um adesivo colado nele. */
 @media (max-width: 900px) {
-  .site .pedido { left: -6px; bottom: 150px; max-width: 224px; font-size: 12.5px; padding: 8px 11px 6px }
+  /* o chip "NO AR" era absoluto contra a caixa do aparelho; com o balão
+     dentro dela a caixa cresce e o chip descia para cima do balão. No
+     celular ele entra no fluxo: colado na borda de baixo do aparelho, à
+     direita, e o balão vem depois. */
+  .site .liveTag { position: relative; bottom: auto; right: -14px; width: fit-content; margin: -24px 0 0 auto }
+  .site .pedido {
+    position: static; display: block;
+    margin: 18px 0 4px -22px; max-width: 250px;
+    font-size: 12.5px; padding: 8px 11px 6px;
+    border-radius: 2px 12px 12px 12px;
+  }
 }

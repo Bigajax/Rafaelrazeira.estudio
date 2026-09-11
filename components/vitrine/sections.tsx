@@ -170,7 +170,7 @@ function VitrineDemo() {
       <source type="image/avif" srcSet="/assets/demo/solourb-vitrine.avif" />
       <source type="image/webp" srcSet="/assets/demo/solourb-vitrine.webp" />
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img className={s.phoneShot} src="/assets/demo/solourb-vitrine.jpg" width={500} height={16188} style={{ "--dur": "36s" } as React.CSSProperties} alt="" />
+      <img className={s.phoneShot} src="/assets/demo/solourb-vitrine.jpg" width={500} height={16188} style={{ "--dur": "96s" } as React.CSSProperties} alt="" />
     </picture>}
   </div>;
 }
