@@ -125,7 +125,9 @@ const consentido = () => {
    AO TROCAR DE DOMÍNIO, acrescente aqui: senão o tracking some em produção,
    em silêncio. O aviso no console é a única pista. */
 const HOSTS_PRODUCAO = [
-  "rafaelrazeira-estudio.vercel.app",
+  "rafaelrazeira.com.br",    // o domínio do estúdio desde 11/09/2026
+  "www.rafaelrazeira.com.br",
+  "rafaelrazeira-estudio.vercel.app",   // o endereço antigo continua servindo (e redirecionando)
   "rafaelrazeira.com",       // ainda sem DNS, já deixado pronto
   "www.rafaelrazeira.com",
 ];

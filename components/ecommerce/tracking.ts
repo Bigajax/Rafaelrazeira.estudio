@@ -83,6 +83,8 @@ const consentido = () => {
    Ver o comentário longo em components/vitrine/tracking.ts, inclusive o
    motivo de a lista ser de hosts e não de variável de ambiente. */
 const HOSTS_PRODUCAO = [
+  "rafaelrazeira.com.br",
+  "www.rafaelrazeira.com.br",
   "rafaelrazeira-estudio.vercel.app",
   "rafaelrazeira.com",
   "www.rafaelrazeira.com",

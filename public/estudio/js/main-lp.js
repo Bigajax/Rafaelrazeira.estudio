@@ -49,6 +49,17 @@ const page = [hero, marquee, audience, process, cases, precos, about, contact, m
 /* A raiz ganha a classe `lp`: é o único gancho de CSS que separa as duas
    páginas, e serve para o que o config não alcança (o botão do cabeçalho
    no celular, ver header.css). Tudo o mais continua vindo do CONFIG_LP. */
+/* ---------- o anúncio chega com #contato (11/09/2026) ----------
+   A URL dos anúncios apontava para o formulário do fim, e o navegador
+   pulava a primeira dobra inteira; com o scroll-behavior:smooth do
+   base.css o salto virava uma rolagem de sete telas que o Rafael viu
+   "travando" no navegador do Instagram. O fragmento é apagado AQUI,
+   antes de o DOM ser montado: sem elemento e sem fragmento, a página
+   abre no topo. Só os fragmentos de formulário; um link para #precos
+   compartilhado de propósito continua funcionando. O mesmo vale para a
+   vitrine em components/vitrine/SemAncoraDoAnuncio.tsx. */
+if (/^#(contato|hero-card|hero-form|form)$/.test(location.hash)) history.replaceState(null, "", location.pathname + location.search);
+
 document.documentElement.classList.add("lp", CONFIG.lang);
 const app = document.getElementById("app");
 app.innerHTML =

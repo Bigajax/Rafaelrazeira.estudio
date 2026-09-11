@@ -6,7 +6,7 @@ import "@/app/globals.css";
    caminhos relativos em URL absoluta, que é o que os robôs de preview
    exigem. */
 export const metadata: Metadata = {
-  metadataBase: new URL("https://rafaelrazeira-estudio.vercel.app"),
+  metadataBase: new URL("https://rafaelrazeira.com.br"),
   title: { default: "Rafael Razeira Estúdio", template: "%s — Rafael Razeira Estúdio" },
   description: "Design, estratégia e desenvolvimento para marcas que querem vender melhor.",
   icons: { icon: "/assets/favicon.png" },

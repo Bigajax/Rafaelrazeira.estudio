@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Archivo, Inter, JetBrains_Mono } from "next/font/google";
 import { Analytics, BrandBand, FAQ, FinalCTA, Header, Hero, HowItWorks, Included, MobileBar, Offer, PainSolution, Panel, Process, Projects, QuemFaz } from "@/components/vitrine/sections";
+import { SemAncoraDoAnuncio } from "@/components/vitrine/SemAncoraDoAnuncio";
 import { LangProvider } from "@/components/i18n";
 import { alternatesPara, SITE } from "@/lib/idiomas";
 import { OFERTA } from "@/lib/oferta";
@@ -55,6 +56,7 @@ export default function VitrineDigitalEnPage() {
   return <LangProvider lang="en" messages={en}>
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
     <div className={`${styles.site} ${display.variable} ${body.variable} ${mono.variable}`}>
+      <SemAncoraDoAnuncio />
       <Header />
       <main>
         <Hero />

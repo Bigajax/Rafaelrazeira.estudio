@@ -22,7 +22,7 @@
      risco de ficar esquecido ligado depois.
 
    COMO USAR (exemplo):
-     curl -X POST https://rafaelrazeira-estudio.vercel.app/api/venda-fechada \
+     curl -X POST https://rafaelrazeira.com.br/api/venda-fechada \
        -H "Content-Type: application/json" \
        -H "x-venda-token: SEU_SEGREDO" \
        -d '{"telefone":"44 99999-7219","valor":999,"nome":"Ana","ref":"A3F9C2"}'

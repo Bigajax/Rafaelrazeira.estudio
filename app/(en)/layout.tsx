@@ -10,7 +10,7 @@ import "@/app/globals.css";
    O openGraph é repetido inteiro porque o do filho substitui o do pai
    (nota da /e-commerce): aqui só muda o locale. */
 export const metadata: Metadata = {
-  metadataBase: new URL("https://rafaelrazeira-estudio.vercel.app"),
+  metadataBase: new URL("https://rafaelrazeira.com.br"),
   title: { default: "Rafael Razeira Studio", template: "%s — Rafael Razeira Studio" },
   description: "Design, strategy and development for brands that want to sell better.",
   icons: { icon: "/assets/favicon.png" },

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Archivo, Inter, JetBrains_Mono } from "next/font/google";
 import { Analytics, BrandBand, FAQ, FinalCTA, Header, Hero, HowItWorks, Included, MobileBar, Offer, PainSolution, Panel, Process, Projects, QuemFaz } from "@/components/vitrine/sections";
+import { SemAncoraDoAnuncio } from "@/components/vitrine/SemAncoraDoAnuncio";
 import { LangProvider } from "@/components/i18n";
 import { alternatesPara } from "@/lib/idiomas";
 import { pt } from "@/messages/vitrine.pt";
@@ -42,6 +43,8 @@ export default function VitrineDigitalPage() {
   /* o provider entrega o dicionário pt aos componentes (useT); a
      /en/vitrine-digital faz o mesmo com o en */
   return <LangProvider lang="pt" messages={pt}><div className={`${styles.site} ${display.variable} ${body.variable} ${mono.variable}`}>
+    {/* apaga o #hero-form/#contratar que vem do anúncio antes de o navegador pular (ver o componente) */}
+    <SemAncoraDoAnuncio />
     <Header />
     <main>
       <Hero />

@@ -121,7 +121,7 @@ export default async function handler(req, res) {
      anexa a dele). Ela precisa estar cadastrada TAMBÉM no painel do MP →
      Suas integrações → Webhooks, porque é de lá que sai o segredo que
      assina a notificação: sem o cadastro não há o que conferir. */
-  const notification_url = `${(process.env.SITE_URL || "https://rafaelrazeira-estudio.vercel.app").replace(/\/$/, "")}/api/mp-webhook`;
+  const notification_url = `${(process.env.SITE_URL || "https://rafaelrazeira.com.br").replace(/\/$/, "")}/api/mp-webhook`;
 
   const headers = {
     Authorization: `Bearer ${token}`,

@@ -31,7 +31,7 @@ const PARES_INVERSO: Readonly<Record<string, string>> = Object.fromEntries(
   Object.entries(PARES).map(([pt, en]) => [en, pt]),
 );
 
-export const SITE = "https://rafaelrazeira-estudio.vercel.app";
+export const SITE = "https://rafaelrazeira.com.br";
 
 export function ehEn(caminho: string): boolean {
   return caminho === "/en" || caminho.startsWith("/en/");
