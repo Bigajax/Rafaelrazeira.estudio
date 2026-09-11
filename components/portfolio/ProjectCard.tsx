@@ -1,5 +1,7 @@
 import Image from "next/image";
 import type { Projeto } from "@/data/portfolio";
+import { preencher, type Lang } from "@/lib/idiomas";
+import type { PortfolioMessages } from "@/messages/portfolio.pt";
 import s from "@/app/(pt)/portfolio/portfolio.module.css";
 
 /* ---------- o card inteiro é o link ----------
@@ -24,9 +26,15 @@ import s from "@/app/(pt)/portfolio/portfolio.module.css";
 
    Projeto sem endereço público mantém a janela, mas com o campo dizendo
    que não há endereço e sem o chip "NO AR": ele não vira link, e a grade
-   não quebra. Capa ausente vira o nome da loja sobre papel. */
-export function ProjectCard({ projeto, temCapa, prioridade = false }: { projeto: Projeto; temCapa: boolean; prioridade?: boolean }) {
-  const { nome, slug, tipo, ramo, destaque, url } = projeto;
+   não quebra. Capa ausente vira o nome da loja sobre papel.
+
+   Em 11/09/2026 os textos (chip, alt, aria-label, tipo) passaram a vir
+   do dicionário da página, e o ramo vem de `ramo`/`ramoEn` conforme o
+   idioma. Nome e endereço não traduzem. */
+export function ProjectCard({ projeto, lang, t, temCapa, prioridade = false }: { projeto: Projeto; lang: Lang; t: PortfolioMessages; temCapa: boolean; prioridade?: boolean }) {
+  const { nome, slug, tipo, destaque, url } = projeto;
+  const ramo = lang === "en" ? projeto.ramoEn : projeto.ramo;
+  const rotuloTipo = t.tipos[tipo].toUpperCase();
   const dominio = url ? new URL(url).host : "";
   const classe = destaque ? `${s.card} ${s.destaque}` : s.card;
 
@@ -34,8 +42,8 @@ export function ProjectCard({ projeto, temCapa, prioridade = false }: { projeto:
     <div className={s.janela}>
       <div className={s.barra}>
         <span className={s.dots} aria-hidden><i /><i /><i /></span>
-        <span className={s.urlChip}>{dominio || "sem endereço público"}</span>
-        {url && <span className={s.live}><i aria-hidden /> NO AR</span>}
+        <span className={s.urlChip}>{dominio || t.card.semEndereco}</span>
+        {url && <span className={s.live}><i aria-hidden /> {t.card.live}</span>}
       </div>
       <div className={s.tela}>
         {temCapa
@@ -48,12 +56,12 @@ export function ProjectCard({ projeto, temCapa, prioridade = false }: { projeto:
                 ? "(max-width: 700px) 100vw, (max-width: 1080px) 100vw, 66vw"
                 : "(max-width: 700px) 100vw, (max-width: 1080px) 50vw, 33vw"}
               priority={prioridade}
-              alt={`Primeira dobra do site da ${nome}`}
+              alt={preencher(t.card.alt, { nome })}
             />
-          : <span className={s.placeholder}><b>{nome}</b><small>{tipo.toUpperCase()}</small></span>}
+          : <span className={s.placeholder}><b>{nome}</b><small>{rotuloTipo}</small></span>}
       </div>
     </div>
-    <span className={s.kind}>{tipo.toUpperCase()}</span>
+    <span className={s.kind}>{rotuloTipo}</span>
     <h3>{nome}</h3>
     <p className={s.ramo}>{ramo}</p>
   </>;
@@ -62,7 +70,7 @@ export function ProjectCard({ projeto, temCapa, prioridade = false }: { projeto:
 
   return <a
     className={classe} href={url} target="_blank" rel="noopener"
-    aria-label={`Abrir o site da ${nome} em nova aba`}
+    aria-label={preencher(t.card.abrir, { nome })}
     data-cta="portfolio_projeto" data-cta-dest={slug}
   >{miolo}</a>;
 }

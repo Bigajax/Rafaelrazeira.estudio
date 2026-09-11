@@ -22,6 +22,9 @@ export type Projeto = {
      fica, o que a loja oferece), nunca adjetivo. Se não dá para ver
      abrindo o site, não entra. */
   ramo: string;
+  /* A mesma linha em inglês, para o /en/portfolio (11/09/2026). Nome e
+     endereço não traduzem; só o que o negócio vende. */
+  ramoEn: string;
   /* Ocupa duas colunas na grade do /portfolio, em vez de uma. É o único
      lugar onde a página tem OPINIÃO sobre o próprio trabalho: dez cards
      do mesmo tamanho leem como catálogo, e catálogo não escolhe nada.
@@ -47,20 +50,20 @@ export type Projeto = {
    a grade, a tira rosa rolante e a linha de inventário (que conta os
    tipos na ordem de primeira aparição). */
 export const projetos: Projeto[] = [
-  { nome: "Xavier's Sports", slug: "xaviers-sports", tipo: "Vitrine Digital", ramo: "Camisas de clubes e seleções, atuais e retrô.", destaque: true, url: "https://xavier-s-sports.vercel.app" },
-  { nome: "Star Point", slug: "star-point", tipo: "Vitrine Digital", ramo: "Sneakers e streetwear, com retirada na loja.", url: "https://star-point-wheat.vercel.app" },
-  { nome: "Sölo Urb", slug: "solo-urb", tipo: "E-commerce", ramo: "Sneakers, roupas e relógios de várias marcas.", url: "https://s-lo-urb.vercel.app" },
+  { nome: "Xavier's Sports", slug: "xaviers-sports", tipo: "Vitrine Digital", ramo: "Camisas de clubes e seleções, atuais e retrô.", ramoEn: "Club and national team jerseys, current and retro.", destaque: true, url: "https://xavier-s-sports.vercel.app" },
+  { nome: "Star Point", slug: "star-point", tipo: "Vitrine Digital", ramo: "Sneakers e streetwear, com retirada na loja.", ramoEn: "Sneakers and streetwear, with in-store pickup.", url: "https://star-point-wheat.vercel.app" },
+  { nome: "Sölo Urb", slug: "solo-urb", tipo: "E-commerce", ramo: "Sneakers, roupas e relógios de várias marcas.", ramoEn: "Multi-brand sneakers, apparel and watches.", url: "https://s-lo-urb.vercel.app" },
   /* vérít.lab (14/08): veritlab.com.br NÃO resolve DNS, então vale só o
      deploy da Vercel. É vitrine e não e-commerce: o próprio README do
      projeto registra que não existe carrinho nem checkout, e o WhatsApp é
      o único mecanismo de conversão. Repositório em
      C:\Users\Rafael\Desktop\Vérit.lab (Next 16 + Supabase, com painel
      admin próprio para a dona cadastrar peça e marcar vendida). */
-  { nome: "vérít.lab", slug: "verit-lab", tipo: "Vitrine Digital", ramo: "Espelhos, quadros e objetos feitos à mão.", destaque: true, url: "https://verit-lab.vercel.app" },
-  { nome: "PR Grife", slug: "pr-grife", tipo: "Vitrine Digital", ramo: "Multimarcas com loja física em Maringá.", url: "https://pr-grife.vercel.app" },
-  { nome: "Bella Black", slug: "bella-black", tipo: "Vitrine Digital", ramo: "Streetwear e lançamentos, loja física em Maringá.", url: "https://bella-black-three.vercel.app" },
-  { nome: "PR Gold", slug: "pr-gold", tipo: "Vitrine Digital", ramo: "Joias em ouro 18K, com confecção própria.", url: "https://prgold.vercel.app" },
-  { nome: "Filato Bene", slug: "filato-bene", tipo: "Vitrine Digital", ramo: "Alfaiataria masculina e moda para noivos.", url: "https://filato-bene.vercel.app" },
-  { nome: "Lancellotti Tattoo Clinic", slug: "lancellotti", tipo: "Site profissional", ramo: "Tatuagem autoral e piercing, com orçamento online.", url: "https://lancellotti-tattoo-clinic.vercel.app" },
-  { nome: "Baixudos.PR", slug: "baixudos", tipo: "Site de evento", ramo: "Encontro de cultura automotiva, com ingresso e inscrição.", url: "https://baixudos.vercel.app" },
+  { nome: "vérít.lab", slug: "verit-lab", tipo: "Vitrine Digital", ramo: "Espelhos, quadros e objetos feitos à mão.", ramoEn: "Handmade mirrors, frames and objects.", destaque: true, url: "https://verit-lab.vercel.app" },
+  { nome: "PR Grife", slug: "pr-grife", tipo: "Vitrine Digital", ramo: "Multimarcas com loja física em Maringá.", ramoEn: "Multi-brand store with a physical shop in Maringá.", url: "https://pr-grife.vercel.app" },
+  { nome: "Bella Black", slug: "bella-black", tipo: "Vitrine Digital", ramo: "Streetwear e lançamentos, loja física em Maringá.", ramoEn: "Streetwear and new drops, physical shop in Maringá.", url: "https://bella-black-three.vercel.app" },
+  { nome: "PR Gold", slug: "pr-gold", tipo: "Vitrine Digital", ramo: "Joias em ouro 18K, com confecção própria.", ramoEn: "18K gold jewelry, made in-house.", url: "https://prgold.vercel.app" },
+  { nome: "Filato Bene", slug: "filato-bene", tipo: "Vitrine Digital", ramo: "Alfaiataria masculina e moda para noivos.", ramoEn: "Men's tailoring and groom's fashion.", url: "https://filato-bene.vercel.app" },
+  { nome: "Lancellotti Tattoo Clinic", slug: "lancellotti", tipo: "Site profissional", ramo: "Tatuagem autoral e piercing, com orçamento online.", ramoEn: "Custom tattoos and piercing, with online quotes.", url: "https://lancellotti-tattoo-clinic.vercel.app" },
+  { nome: "Baixudos.PR", slug: "baixudos", tipo: "Site de evento", ramo: "Encontro de cultura automotiva, com ingresso e inscrição.", ramoEn: "Car culture meetup, with tickets and sign-up.", url: "https://baixudos.vercel.app" },
 ];

@@ -52,6 +52,13 @@ export function caminhoEm(caminho: string, lang: Lang): string | null {
   return irma(caminho);
 }
 
+/* {n}, {m}, {nome}... nas strings dos dicionários. Vive aqui (e não no
+   components/i18n.tsx, que é "use client") para os componentes de servidor
+   poderem chamar. */
+export function preencher(texto: string, vars: Record<string, string | number>): string {
+  return texto.replace(/\{(\w+)\}/g, (_, k: string) => String(vars[k] ?? ""));
+}
+
 /* `alternates` do metadata do Next para uma página (pt ou en). O x-default
    é sempre o português: é a versão original e a que o Google deve mostrar
    para quem não bate com nenhum dos dois idiomas. */
