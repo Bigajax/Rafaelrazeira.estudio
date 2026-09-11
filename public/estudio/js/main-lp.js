@@ -13,11 +13,12 @@
    já anuncia, e página de tráfego pago paga cada seção em atenção.
 
    A ordem tem uma lógica de leitura:
-     hero      pega quem clicou e já pede a análise
+     hero      pega quem clicou e já pede a prévia
      tira      corta e muda de assunto
      vazamento cria o problema e prova que eu entendo dele
      processo  mostra que o começo é o que ela já podia ter feito
      projetos  a prova
+     preços    o número, e só depois de ela já querer
      quem faz  quem responde do outro lado
      contato   o formulário completo, para quem não preencheu lá em cima
    ============================================================ */
@@ -27,6 +28,7 @@ import { marquee }  from "./sections/marquee.js";
 import { audience } from "./sections/audience.js";
 import { process }  from "./sections/process.js";
 import { cases }    from "./sections/cases.js";
+import { precos }   from "./sections/precos.js";
 import { about }    from "./sections/about.js";
 import { contact }  from "./sections/contact.js";
 import { footer }   from "./sections/footer.js";
@@ -38,9 +40,10 @@ import { initForm }       from "./lib/form.js";
 import { initHeroForm }   from "./lib/hero-form.js";
 import { initPill }       from "./lib/pill.js";
 import { initCaseVideos } from "./lib/videos.js";
+import { initPrecos }     from "./lib/precos.js";
 import { initTracking }   from "./lib/tracking.js";
 
-const page = [hero, marquee, audience, process, cases, about, contact, marquee];
+const page = [hero, marquee, audience, process, cases, precos, about, contact, marquee];
 
 const app = document.getElementById("app");
 app.innerHTML =
@@ -55,4 +58,5 @@ initForm();
 initHeroForm();
 initPill();
 initCaseVideos();
+initPrecos();
 initTracking();

@@ -280,41 +280,95 @@ const CONFIG_LP = {
   brand: {
     name: "RAFAEL RAZEIRA",
     suffix: "ESTÚDIO",
-    navCta: "ANÁLISE GRATUITA",
+    navCta: "QUERO A MINHA PRÉVIA",
   },
 
+  /* ---------- a oferta mudou de natureza (02/09) ----------
+     Esta página inteira era construída em cima de "peça a análise
+     gratuita": o cue, o passo 01, a caixa da garantia, o pill e a
+     mensagem de sucesso, todos apontavam para uma conversa. Análise é
+     uma promessa de OPINIÃO, e opinião não se compara com nada: quem
+     recebe não sabe dizer se foi boa antes de gastar meia hora lendo.
+
+     Agora a promessa é uma PEÇA: eu monto a página inteira, mando o
+     link, a pessoa navega no celular e só então decide. É o mesmo molde
+     que a /vitrine-digital roda desde 26/08, e ele funciona pelo motivo
+     óbvio: ninguém precisa acreditar em nada.
+
+     O que isso obriga: o site ou Instagram deixa de ser opcional no
+     formulário do hero (ver `instagramReq` abaixo). Sem ele não existe
+     prévia para montar, e o lead vira uma conversa de novo. */
   hero: {
     status: "AGENDA ABERTA",
-    tagline: "CAPTAÇÃO · VENDA · LANÇAMENTO",
-    /* Lida em voz alta: "Você já pagou pelo clique. A venda é aqui."
-       Ela nomeia o dinheiro que já saiu do bolso e aponta o lugar. Nenhuma
-       promessa de número, que é o que todo concorrente escreve.
-       O <em> da última linha ganha a largura 100% e a faixa grafite (ver
-       css/sections/hero.css); os pontos finais saem em rosa. */
-    headline: ["VOCÊ JÁ PAGOU", "PELO CLIQUE.", "A VENDA <em>É AQUI.</em>"],
-    subheadline: "<em>Landing pages para quem já anuncia.</em> Estratégia, texto e design da página que recebe o seu tráfego, no ar em 7 dias úteis.",
-    cta: "QUERO MINHA ANÁLISE GRATUITA",
+    /* ---------- a régua deixou de listar categorias ----------
+       Ela era "CAPTAÇÃO · VENDA · LANÇAMENTO": três rótulos de taxonomia
+       em mono espacejada, que é a etiqueta que toda página de serviço
+       tem. Ninguém que veio de um anúncio precisa saber os nomes dos
+       trabalhos do estúdio antes de saber o que ganha aqui.
+
+       Agora são três NÚMEROS, que é como esta marca fala (o 'designer que
+       mostra o número'), e cada um responde a uma pergunta que a pessoa
+       faz na primeira tela: quando você me responde, quando eu vejo a
+       coisa, e quanto custa até lá. O `<b>` é o numeral, e o CSS dá a
+       ele o corpo de manchete que a casa usa quando o número é o
+       argumento. `taglineDados` liga esse tratamento só aqui. */
+    tagline: "<b>24H</b> PARA RESPONDER · <b>3 DIAS</b> ATÉ A PRÉVIA · <b>R$0</b> ATÉ VOCÊ GOSTAR",
+    taglineDados: true,
+    /* Lida em voz alta: "Eu desenho a sua página. Só paga se gostar."
+       A frase anterior ("Você já pagou pelo clique. A venda é aqui.")
+       era diagnóstico, e diagnóstico é o que todo concorrente escreve na
+       primeira tela. Esta é a oferta, dita no verbo, e é a mesma frase
+       que o anúncio promete: a própria seção do vazamento, mais abaixo,
+       avisa que se a frase do anúncio não estiver na primeira tela a
+       pessoa acha que errou de lugar e volta.
+
+       "Só paga se gostar" e não "você paga depois": pagar depois soa a
+       parcelamento, que é outra conversa.
+
+       O <em> da última linha ganha a faixa grafite (ver hero.css). */
+    headline: ["EU DESENHO", "A SUA PÁGINA.", "GOSTOU? <em>AÍ PAGA.</em>"],
+    subheadline: "<em>Landing pages para quem já anuncia.</em> Eu monto a sua inteira e te mando o link para navegar. Se não gostar, você não pagou nada.",
+    cta: "QUERO VER A MINHA PRONTA",
     form: {
       nome:      { label: "SEU NOME",          ph: "Como devo te chamar" },
       whatsapp:  { label: "WHATSAPP COM DDD",  ph: "(44) 99999-9999" },
-      instagram: { label: "SITE OU INSTAGRAM", ph: "Para onde seus anúncios vão hoje" },
-      enviar: "QUERO MINHA ANÁLISE GRATUITA",
+      instagram: { label: "SITE OU INSTAGRAM", ph: "É daqui que eu tiro a sua prévia" },
+      /* Obrigatório só aqui. Na /estudio o mesmo campo continua opcional,
+         porque lá o formulário pede uma conversa e este pede uma peça:
+         sem saber o que a pessoa vende, não há o que montar. */
+      instagramReq: true,
+      /* ---------- a pergunta que filtra (10/09/2026) ----------
+         O anúncio diz "para quem já anuncia" e a página cobra isso aqui,
+         antes de eu desenhar uma página inteira de graça. Na primeira
+         semana da vitrine, 12 de 14 leads não tinham o que a oferta pedia;
+         a prévia da landing custa mais caro de produzir do que a da
+         vitrine (é escrita do zero), então o filtro entra na porta.
+         "Ainda não anuncio" existe de propósito: é a resposta honesta que
+         o CRM usa para NÃO abrir produção. */
+      investimento: {
+        label: "QUANTO VOCÊ INVESTE EM ANÚNCIOS POR MÊS",
+        ph: "Escolha uma faixa",
+        opcoes: ["Ainda não anuncio", "Até R$ 500", "R$ 500 a R$ 2.000", "R$ 2.000 a R$ 5.000", "Mais de R$ 5.000"],
+        err: "Me diz a faixa: é assim que eu sei que a página vai ter tráfego.",
+      },
+      enviar: "QUERO VER A MINHA PRONTA",
       enviando: "ENVIANDO…",
       errNome:  "Escreva seu nome.",
       errWhats: "Confira o número: faltou dígito.",
-      okTitulo: "RECEBI SEU CONTATO.",
-      okTexto:  "Vou olhar para onde o seu tráfego cai hoje e te respondo pelo WhatsApp em até 24 horas úteis.",
+      errInsta: "Me diz onde eu vejo o seu negócio: é de lá que sai a prévia.",
+      okTitulo: "PEDIDO RECEBIDO.",
+      okTexto:  "Te respondo pelo WhatsApp em até 24 horas úteis e mando o link da sua página em até 3 dias.",
       okCta:    "ADIANTAR PELO WHATSAPP",
       erro:     "Não consegui enviar agora. Tente de novo ou me chame no WhatsApp.",
     },
-    proof: "RESPOSTA EM ATÉ 24H · SEM COMPROMISSO",
+    proof: "A PRÉVIA É POR MINHA CONTA · RESPOSTA EM ATÉ 24H",
     ctaWhats: "PREFIRO CONVERSAR PELO WHATSAPP",
-    whatsMsg: "Olá, Rafael. Eu já anuncio e quero uma landing page para receber o meu tráfego.",
+    whatsMsg: "Olá, Rafael. Eu já anuncio e quero ver a prévia da minha landing page.",
   },
 
   marquee: [
     "SEU ANÚNCIO MERECE UM DESTINO MELHOR QUE O LINK DA BIO.",
-    "FEITO PARA CONVERTER.",
+    "VOCÊ VÊ A PÁGINA PRONTA ANTES DE PAGAR.",
   ],
 
   cue: "VEJA ONDE O DINHEIRO VAZA",
@@ -328,15 +382,7 @@ const CONFIG_LP = {
     label: "ONDE O DINHEIRO VAZA.",
     headline: "O PROBLEMA QUASE NUNCA É O ANÚNCIO.",
     intro: "Você paga por cada clique. Se o que vem depois do clique não estiver à altura, o dinheiro sai do mesmo jeito e a venda não acontece. Os três vazamentos mais caros:",
-    /* Liga o marcador numerado em rosa no lugar do traço esmeralda (ver
-       .aud__item--marcado, no CSS). Só esta página usa: é a única das
-       duas que descreve um problema, e o rosa da casa marca a ação em
-       todo lugar menos aqui, onde ele inverte e marca o que está errado. */
     marcador: "VAZAMENTO",
-    /* Fundo grafite. O miolo da página eram SEIS seções de papel
-       seguidas, sem uma quebra: cada uma bem resolvida sozinha e todas
-       iguais em peso, o que faz a leitura virar rolagem. Esta é a única
-       que dá uma má notícia, então é ela que apaga a luz. */
     escura: true,
     blocks: [
       { title:"O CLIQUE CAI NO LUGAR ERRADO", text:"Link da bio, home do site, direct do Instagram. Três destinos que obrigam a pessoa a procurar sozinha o que ela veio buscar. Boa parte desiste no caminho." },
@@ -345,43 +391,62 @@ const CONFIG_LP = {
     ],
   },
 
-  /* O passo 01 é o próprio botão da página: a pessoa lê o processo e
-     descobre que o começo é exatamente o que ela já podia ter feito. E o
-     pixel no passo 03 é entrega real, que este cliente valoriza e o dono
-     de loja da /vitrine-digital nem entenderia. */
+  /* O passo 01 continua sendo o próprio botão da página. O que mudou é o
+     02: ele deixou de descrever um serviço contratado e passou a
+     descrever o que a pessoa recebe ANTES de pagar. É o passo que carrega
+     a oferta inteira, e por isso é o único com duas frases de peso. */
   process: {
     label: "COMO FUNCIONA.",
     steps: [
-      /* O `prazo` não acrescenta promessa: as três frases já estavam
-         dentro dos parágrafos. Ele só tira do meio do texto o dado que
-         este cliente está tentando descobrir enquanto lê, e põe no
-         trilho da esquerda, embaixo do número. */
-      { num:"01", prazo:"RESPOSTA EM 24H ÚTEIS", title:"VOCÊ PEDE A ANÁLISE",     text:"Você me manda o seu site ou Instagram em dois campos. Eu olho para onde o seu tráfego cai hoje e te respondo em até 24 horas úteis, sem compromisso." },
-      { num:"02", prazo:"7 DIAS ÚTEIS",          title:"EU FAÇO A PÁGINA INTEIRA", text:"Estratégia, texto, design e desenvolvimento. Você não escreve nada e não manda nada pronto. Fica em até 7 dias úteis, com a sua campanha em mente." },
-      { num:"03", prazo:"SALDO APÓS O SEU OK",   title:"VOCÊ APROVA E VAI AO AR",  text:"Domínio conectado, formulário caindo no seu WhatsApp e o pixel configurado, para você ver quanto custa cada contato. O saldo só é quitado depois do seu OK." },
+      { num:"01", prazo:"RESPOSTA EM 24H ÚTEIS", title:"VOCÊ PEDE A SUA PRÉVIA",    text:"Dois campos: o seu WhatsApp e o site ou Instagram para onde os seus anúncios vão hoje. Não custa nada e não tem compromisso nenhum." },
+      { num:"02", prazo:"PRÉVIA EM ATÉ 3 DIAS",  title:"EU MONTO A PÁGINA INTEIRA", text:"Estratégia, texto, design e desenvolvimento. Você não escreve nada e não manda nada pronto. Quando terminar, eu te mando um link: a sua página, no seu celular, para navegar antes de qualquer pagamento." },
+      { num:"03", prazo:"ENTRADA DE R$97",       title:"GOSTOU? AÍ A GENTE COMEÇA",  text:"Domínio conectado, formulário caindo no seu WhatsApp e o pixel configurado, para você ver quanto custa cada contato. O saldo só é quitado quando a página for ao ar. Se não gostar, você não paga e a gente se despede bem." },
     ],
-    note: "ENTRADA DE 50% · SALDO SÓ APÓS APROVAR O DESIGN",
+    note: "ENTRADA DE R$97 · SALDO SÓ QUANDO A PÁGINA FOR AO AR",
   },
 
-  /* A Xavier's Sports saiu e a Baixudos.PR entrou. Não é gosto: a
-     manchete diz "páginas feitas para uma tarefa só", e a Xavier's é uma
-     vitrine de catálogo, ou seja, o contrário disso. Manter os três
-     antigos faria a própria seção de prova desmentir o título. */
   cases: {
     label: "PROJETOS DO ESTÚDIO",
     headline: "PÁGINAS FEITAS PARA UMA TAREFA SÓ.",
     intro: "Cada uma nasceu de um objetivo específico, não de um layout bonito escolhido antes.",
-    cta: "QUERO UMA PÁGINA PARA A MINHA CAMPANHA",
+    cta: "QUERO A PRÉVIA DA MINHA PÁGINA",
     items: [
-      { video:"", img:"assets/case-lancellotti.jpg", tag:"", category:"LANDING PAGE · CAPTAÇÃO",   name:"Lancellotti Tattoo", result:"Hero cinematográfico, acervo em galeria e orçamento guiado por etapas: quem chega interessado sai com o pedido já descrito." },
-      { video:"", img:"assets/case-baixudos.jpg",    tag:"", category:"LANDING PAGE · EVENTO",     name:"Baixudos.PR",        result:"Página de campanha com data marcada: uma promessa, uma ação e o caminho até o ingresso sem desvio." },
-      /* A Sölo Urb saiu em 14/08, pelo mesmo motivo que a Xavier's já
-         tinha saído: a manchete promete "páginas feitas para uma tarefa
-         só" e um e-commerce de catálogo é exatamente a exceção disso.
-         Sobraram DUAS, e duas é o número certo aqui: com três, a terceira
-         era a que desmentia o título. A grade se ajusta sozinha ao número
-         de itens (ver .cases__grid, no CSS). */
+      { video:"", img:"assets/case-lancellotti.jpg", tag:"", category:"LANDING PAGE · CAPTAÇÃO", name:"Lancellotti Tattoo", result:"Hero cinematográfico, acervo em galeria e orçamento guiado por etapas: quem chega interessado sai com o pedido já descrito." },
+      { video:"", img:"assets/case-baixudos.jpg",    tag:"", category:"LANDING PAGE · EVENTO",   name:"Baixudos.PR",        result:"Página de campanha com data marcada: uma promessa, uma ação e o caminho até o ingresso sem desvio." },
     ],
+  },
+
+  /* ---------- A FOLHA DE ORÇAMENTO ----------
+     O preço nunca tinha entrado nesta página, e o comentário que morava
+     aqui dizia por quê: "cada campanha pede um escopo diferente, e um
+     'a partir de' filtraria pelo número antes de a pessoa entender o que
+     recebe". O argumento era bom enquanto a oferta era uma análise.
+
+     Com a prévia pronta na mão ele se inverte. A pessoa vê a página
+     ANTES de decidir, então o número não filtra nada: ele responde a
+     única pergunta que sobra depois de gostar do que viu. Calar o preço,
+     aí, vira isca.
+
+     Os valores vivem embaixo do teto da /vitrine-digital de propósito.
+     Lá uma loja completa sai por R$999, e as duas páginas são do mesmo
+     estúdio: se uma landing custasse mais que uma loja, quem visse as
+     duas veria o estúdio se contradizer. Uma página só custa menos que
+     uma loja, e é isso que a tabela mostra.
+
+     O `tipoProjeto` de cada linha é o texto que vai para o CRM e para o
+     Meta como propriedade do Lead. Ele é IGUAL às opções do briefing da
+     /estudio, senão a mesma coisa chegaria com dois nomes na tabela. */
+  precos: {
+    label: "PREÇOS",
+    headline: "O QUE CUSTA, DEPOIS QUE VOCÊ GOSTAR.",
+    intro: "Preço fechado, pago uma vez. Quando você decide, já viu a sua página pronta.",
+    items: [
+      { tipo:"LANDING PAGE",       escopo:"Uma página, uma tarefa: captar contato ou vender direto. É a que recebe o seu tráfego pago.", valor:"R$497", tipoProjeto:"Landing page (página única de vendas ou captação)" },
+      { tipo:"SITE INSTITUCIONAL", escopo:"De 3 a 5 páginas, para quem precisa existir por inteiro: quem somos, serviços, contato.",    valor:"R$797", tipoProjeto:"Site institucional (3 a 5 páginas)" },
+      { tipo:"LOJA VIRTUAL",       escopo:"Catálogo com foto, preço e tamanho, e o pedido saindo pronto no seu WhatsApp.",              valor:"R$997", tipoProjeto:"Loja virtual (catálogo + checkout)" },
+    ],
+    entrada: "Começa com <b>R$97</b>. O saldo só quando a página for ao ar.",
+    nota: "Sem mensalidade: você paga uma vez. Domínio próprio é opcional e pago direto no registrador.",
   },
 
   /* ---------- QUEM FAZ ----------
@@ -396,49 +461,45 @@ const CONFIG_LP = {
       "Um estúdio de um homem só. Você não fala com atendimento nem com estagiário: <b>fala comigo</b>, do briefing ao ar.",
       "<span class='muted'>Estratégia, texto e design saindo do mesmo par de mãos é o que faz o <b>anúncio e a página falarem igual</b>. Quando são pessoas diferentes, é no meio do caminho que a promessa se perde.</span>",
     ],
-    cta: "QUERO MINHA ANÁLISE GRATUITA",
+    cta: "QUERO A MINHA PRÉVIA",
   },
 
   contact: {
     status: "AGENDA ABERTA",
-    headline: "COMECE PELA ANÁLISE.",
-    intro: "Me conte o que você vende e para onde o seu tráfego vai hoje. Eu analiso e retorno pelo WhatsApp em até 24 horas úteis.",
-    scarcity: "Pego poucos projetos por mês, e todos passam por análise antes de aceitar.",
+    headline: "COMECE PELA PRÉVIA.",
+    intro: "Me conte o que você vende e para onde o seu tráfego vai hoje. Eu monto a sua página e te mando o link.",
+    /* A escassez deixou de falar de agenda e passou a falar do trabalho:
+       a prévia é feita à mão, uma de cada vez, e é verdade que isso
+       limita quantas cabem na semana. Escassez que se explica sozinha não
+       precisa de "vagas limitadas". */
+    scarcity: "Cada prévia é montada por mim, uma de cada vez. Por isso eu pego poucas por semana.",
     email: "rafael.rbarbon@gmail.com",
-    /* O bloco que na /estudio é a GARANTIA aqui descreve a entrega da
-       análise. É a mesma caixa no mesmo lugar, com outro trabalho: lá ela
-       tira o risco de pagar, aqui ela diz o que a pessoa ganha de graça,
-       que é o que faz o formulário valer o preenchimento. */
+    /* A mesma caixa que na /estudio é a GARANTIA aqui descreve a prévia.
+       Ela é o que faz o formulário valer o preenchimento, então diz as
+       três coisas na ordem: o que chega, quando, e o que acontece nos
+       dois desfechos possíveis. */
     guarantee: {
-      label: "A ANÁLISE",
+      label: "A PRÉVIA",
       title: "O QUE VOCÊ RECEBE.",
-      text:  "Eu abro o seu Instagram e o destino que os seus anúncios usam hoje, e te mando <b>em vídeo</b>: onde o clique se perde, o que a página precisa ter para segurar quem chega e <b>que tipo de projeto o seu caso pede</b>. Se eu achar que não consigo ajudar, eu falo.",
+      text:  "Um link com a sua página montada: texto, design e formulário funcionando, para você navegar no celular como qualquer visitante navegaria. <b>Antes de pagar qualquer coisa.</b> Se gostar, começa com <b>R$97</b> e eu publico. Se não gostar, você não paga nada.",
     },
-    /* Sem preço na página: cada campanha pede um escopo diferente, e um
-       "a partir de" aqui filtraria pelo número antes de a pessoa entender
-       o que recebe. O valor fechado sai depois da análise. */
+    /* O `pricing` grande continua vazio: quem diz o preço nesta página é
+       a folha de orçamento, onde o número tem corpo de manchete. A nota
+       miúda repete os três valores porque este é o último lugar onde
+       alguém pergunta "quanto mesmo?", com o dedo já no formulário. */
     pricing: "",
-    pricingNote: "Cada campanha pede um escopo diferente. Depois da análise eu te mando o valor fechado, sem surpresa no meio do caminho.",
-    /* ---------- um passo só, quatro campos ----------
-       A /estudio pergunta em dois passos porque lá o formulário É o
-       briefing. Aqui ele é o pedido de uma ANÁLISE: objetivo, identidade
-       visual e detalhes eu pergunto no WhatsApp, depois que a conversa
-       existir. Cada campo a mais numa página de tráfego pago é gente que
-       desiste no meio. */
+    pricingNote: "Landing page R$497, site institucional R$797, loja virtual R$997. Preço fechado, pago uma vez.",
     passoUnico: true,
-    /* Inverte quem brilha na seção escura: o bloco da análise vira
-       contorno e o formulário vira a etiqueta de papel. Ver o comentário
-       em js/sections/contact.js. */
     formClaro: true,
     form: {
-      nome:      { label:"Qual seu nome?",  placeholder:"Seu nome", err:"Digite seu nome." },
-      whatsapp:  { label:"WhatsApp com DDD", placeholder:"(44) 99999-9999", err:"Digite o WhatsApp com DDD (10 a 11 dígitos)." },
-      instagram: { label:"Site ou Instagram", placeholder:"Para onde seus anúncios vão hoje", err:"Diga para onde seus anúncios vão hoje." },
-      vende:     { label:"O que você vende?", placeholder:"Ex.: estética, mentoria, curso, serviço local…", err:"Conte o que você vende." },
-      submit:  "RECEBER MINHA ANÁLISE GRATUITA",
+      nome:      { label:"Qual seu nome?",     placeholder:"Seu nome", err:"Digite seu nome." },
+      whatsapp:  { label:"WhatsApp com DDD",   placeholder:"(44) 99999-9999", err:"Digite o WhatsApp com DDD (10 a 11 dígitos)." },
+      instagram: { label:"Site ou Instagram",  placeholder:"É daqui que eu tiro a sua prévia", err:"Me diz onde eu vejo o seu negócio." },
+      vende:     { label:"O que você vende?",  placeholder:"Ex.: estética, mentoria, curso, serviço local…", err:"Conte o que você vende." },
+      submit:  "QUERO A MINHA PRÉVIA",
       note:    "Sem compromisso. Seus dados serão usados apenas para responder sobre o seu projeto.",
-      successTitle: "ANÁLISE SOLICITADA!",
-      successText:  "Vou olhar para onde o seu tráfego cai hoje e te respondo pelo WhatsApp em até 24 horas úteis. Quer adiantar a conversa?",
+      successTitle: "PRÉVIA SOLICITADA!",
+      successText:  "Te respondo pelo WhatsApp em até 24 horas úteis e mando o link da sua página em até 3 dias. Quer adiantar a conversa?",
     },
     schedule: { url: "", cta: "CHAMAR NO WHATSAPP" },
   },
@@ -455,7 +516,7 @@ const CONFIG_LP = {
     ],
   },
 
-  pillText: "QUERO MINHA ANÁLISE",
+  pillText: "QUERO A MINHA PRÉVIA",
 };
 
 /* Qual das duas o navegador está lendo. É a única linha que decide, e ela

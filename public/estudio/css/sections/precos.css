@@ -1,0 +1,123 @@
+/* ============================================================
+   PREÇOS — a folha de orçamento (só a /landing-page usa)
+
+   Seção grafite, e a escolha tem uma razão de ritmo: o miolo da página é
+   papel do começo ao fim depois do vazamento, e esta entra entre os
+   projetos e o "quem faz", que eram duas seções claras coladas. Ela
+   também é a segunda e última seção escura, nunca encostada na primeira.
+
+   Os números são tratados como MANCHETE, não como dado: Archivo no corpo
+   dos títulos, com `tabular-nums`, que é o que faz R$497, R$797 e R$997
+   ocuparem a mesma largura e a coluna da direita existir como coluna.
+   ============================================================ */
+.precos.dark{background:var(--ink);color:var(--paper)}
+.precos.dark .section-label{color:#9BA6A0}
+.precos.dark .section-label::before{background:var(--green-live)}
+
+.pr__label{margin-bottom:clamp(20px,3vw,28px)}
+
+.pr__head{
+  font-family:var(--font-display);font-weight:800;text-transform:uppercase;
+  font-size:clamp(2rem,6.2vw,3.5rem);line-height:.98;letter-spacing:-.03em;
+  color:var(--paper);max-width:20ch;
+}
+.pr__intro{
+  margin-top:16px;max-width:52ch;
+  font-size:clamp(1rem,3.8vw,1.15rem);line-height:1.55;color:#C9CDC6;
+}
+
+/* ---------- a folha ----------
+   O filete de cima fecha a lista por fora; cada linha fecha a si mesma
+   por baixo. É a única estrutura da seção, e ela é informação: separa
+   três coisas que não se somam. */
+.pr__lista{
+  list-style:none;margin-top:clamp(32px,4.6vw,52px);
+  border-top:1px solid var(--linha-dark);
+}
+.pr__linha{border-bottom:1px solid var(--linha-dark)}
+
+/* O realce do hover sangra 14px para os lados e volta pela margem
+   negativa, para o retângulo não começar exatamente na primeira letra. */
+.pr__item{
+  display:grid;
+  /* A coluna do tipo é MEDIDA, não fração: em 1fr ela crescia com a tela
+     e abria um vão de deserto entre o rótulo e a descrição, como se as
+     duas não fossem da mesma linha. */
+  grid-template-columns:clamp(170px,17vw,250px) minmax(0,1fr) auto;
+  grid-template-areas:
+    "tipo   escopo valor"
+    "acao   escopo valor";
+  column-gap:clamp(20px,3vw,48px);row-gap:12px;
+  align-items:start;
+  padding:clamp(22px,3.2vw,32px) 14px;
+  margin-inline:-14px;
+  transition:background .35s cubic-bezier(.2,.7,.2,1);
+}
+
+.pr__tipo{
+  grid-area:tipo;padding-top:.45em;
+  font-family:var(--font-mono);font-weight:700;
+  font-size:11px;letter-spacing:.18em;color:var(--green-live);
+}
+.pr__escopo{
+  grid-area:escopo;max-width:46ch;
+  font-size:clamp(.95rem,3.6vw,1.05rem);line-height:1.5;color:#C9CDC6;
+}
+.pr__valor{
+  grid-area:valor;justify-self:end;align-self:center;
+  font-family:var(--font-display);font-weight:700;
+  font-variant-numeric:tabular-nums;
+  font-size:clamp(2.1rem,5.2vw,3rem);line-height:.9;letter-spacing:-.03em;
+  color:var(--paper);
+}
+
+/* A ação mora embaixo do tipo e só aparece quando a linha é apontada.
+   No toque não existe hover, então lá ela nasce visível: sem isso, a
+   linha inteira ser clicável viraria segredo justamente onde vem quase
+   todo o tráfego. */
+.pr__acao{
+  grid-area:acao;
+  font-family:var(--font-mono);font-size:10px;letter-spacing:.16em;
+  color:var(--paper);opacity:0;transform:translateY(-4px);
+  transition:opacity .3s ease,transform .3s cubic-bezier(.2,.7,.2,1);
+}
+.pr__acao .arrow{margin-left:2px}
+
+@media(hover:hover){
+  .pr__item:hover{background:rgba(242,239,230,.05)}
+  .pr__item:hover .pr__acao{opacity:1;transform:none}
+}
+.pr__item:focus-visible .pr__acao{opacity:1;transform:none}
+
+@media(prefers-reduced-motion:reduce){
+  .pr__item,.pr__acao{transition:none}
+}
+
+.pr__entrada{
+  margin-top:clamp(26px,3.6vw,36px);
+  font-size:clamp(1rem,3.8vw,1.15rem);line-height:1.5;color:var(--paper);
+}
+.pr__entrada b{color:var(--green-live);font-weight:700}
+.pr__nota{
+  margin-top:10px;max-width:54ch;
+  font-size:.875rem;line-height:1.5;color:#9BA6A0;
+}
+
+/* ---------- celular ----------
+   O tipo e o valor sobem para a mesma linha, que é como se lê uma conta
+   no papel: o nome à esquerda, o número à direita. O escopo desce
+   inteiro, sem coluna, e a ação fecha o bloco. */
+@media(max-width:819px){
+  .pr__item{
+    grid-template-columns:1fr auto;
+    grid-template-areas:
+      "tipo   valor"
+      "escopo escopo"
+      "acao   acao";
+    row-gap:10px;align-items:center;
+  }
+  .pr__tipo{padding-top:0}
+  .pr__valor{font-size:clamp(1.9rem,8.4vw,2.4rem)}
+  .pr__escopo{max-width:none}
+  .pr__acao{opacity:1;transform:none}
+}

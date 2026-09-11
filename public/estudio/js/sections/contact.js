@@ -33,6 +33,10 @@ function dropdown(id, name, cfg){
    meio, e um stepper de dois passos anuncia esforço antes do primeiro
    campo.
 
+   O `tipo_projeto` escondido é o único campo que a versão curta ganhou:
+   ele não é perguntado, é preenchido pelo clique na folha de orçamento
+   (ver js/lib/precos.js) e segue no mesmo payload de sempre.
+
    Quem manda é `passoUnico` no config. Os dois caminhos gravam na mesma
    tabela e disparam o mesmo Lead (ver js/lib/form.js). */
 function passoUnico(f){
@@ -58,6 +62,7 @@ function passoUnico(f){
               <input id="f-vende" name="vende" type="text" placeholder="${f.vende.placeholder}" aria-describedby="err-vende" />
               <p class="field__err" id="err-vende" hidden>${f.vende.err}</p>
             </div>
+            <input type="hidden" name="tipo_projeto" value="" />
             <button type="submit" class="btn-submit" data-cta="form" data-cta-dest="form">${f.submit} <span class="arrow">→</span></button>
           </fieldset>`;
 }

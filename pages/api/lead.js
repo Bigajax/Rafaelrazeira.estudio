@@ -294,7 +294,22 @@ async function sincronizarCRM(linha, utm) {
          "sem próximo passo" do painel Hoje, que é exatamente onde ele
          precisa ser visto e decidido. Inventar um retorno automático aqui
          esconderia o lead novo no meio dos agendados. */
-      notas: [linha.vende, linha.produtos, linha.site, linha.necessidade]
+      /* ---------- a regra da prévia da landing (10/09/2026) ----------
+         O anúncio da /landing-page diz "para quem já anuncia" e a prévia
+         de lá é uma página inteira escrita do zero, de graça. A pergunta de
+         investimento do formulário existe para esta nota: quem respondeu
+         "Ainda não anuncio" chega no card com a produção FECHADA, e os
+         outros chegam com o passo que vem antes de desenhar (conferir na
+         Biblioteca de Anúncios da Meta se o anúncio existe mesmo). A regra
+         mora no card porque é lá que a decisão de produzir é tomada. */
+      notas: [
+        linha.pagina === "landing-page"
+          ? (/^ainda n[aã]o anuncio/i.test(linha.investimento || "")
+              ? "NÃO ANUNCIA AINDA: não abrir prévia. Conversar primeiro, prévia só depois de rodar tráfego."
+              : "PRÉVIA SÓ DEPOIS DE CONFERIR: abrir a Biblioteca de Anúncios da Meta e confirmar que a pessoa anuncia. Sem anúncio ativo, não produzir.")
+          : "",
+        linha.vende, linha.produtos, linha.site, linha.necessidade,
+      ]
         .filter(Boolean)
         .join("\n")
         .slice(0, 2000) || null,

@@ -30,7 +30,18 @@ export function hero(){
      Continua vindo de uma string só no config, então a copy não muda de
      formato para quem edita. */
   const tags = h.tagline.split("·").map(t => `<li>${t.trim()}</li>`).join("");
+  /* `taglineDados` (só a /landing-page): os itens deixam de ser rótulos e
+     viram numeral + legenda. O `<b>` já vem escrito no config, e a classe
+     é o que dá a ele o corpo de manchete. Ver `.eyebrow__tagline--dados`,
+     em base.css. */
+  const taglineClasse = `eyebrow__tagline${h.taglineDados ? " eyebrow__tagline--dados" : ""}`;
   const waLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(h.whatsMsg)}`;
+  /* ---------- o site ou Instagram muda de peso conforme a página ----------
+     Na /estudio ele é opcional: lá o formulário pede uma conversa, e a
+     pessoa pode contar o resto depois. Na /landing-page ele é a
+     matéria-prima da prévia, e sem ele não existe o que montar. O
+     `instagramReq` no config liga a obrigatoriedade e, junto com ela, a
+     linha de erro que o js/lib/hero-form.js procura por id. */
   /* No eyebrow a ordem virou tagline → status, e não o contrário, porque
      agora os dois vão para pontas OPOSTAS da linha: o que o estúdio faz
      abre à esquerda, se ele pode começar fecha à direita. A régua de duas
@@ -40,7 +51,7 @@ export function hero(){
   <section class="hero" id="hero">
     <div class="wrap">
       <div class="eyebrow reveal">
-        <ul class="eyebrow__tagline">${tags}</ul>
+        <ul class="${taglineClasse}">${tags}</ul>
       </div>
       <h1 class="hero__headline reveal">${lines}</h1>
       <div class="hero__bottom" id="hero-card">
@@ -81,9 +92,22 @@ export function hero(){
             <div class="hero-form__linha">
               <label class="hero-form__campo">
                 <span>${f.instagram.label}</span>
-                <input name="instagram" type="text" placeholder="${f.instagram.ph}" />
+                <input name="instagram" type="text" placeholder="${f.instagram.ph}"${f.instagramReq ? ` aria-describedby="h-err-insta"` : ""} />
               </label>
+              ${f.instagramReq ? `<p class="hero-form__err" id="h-err-insta" hidden>${f.errInsta}</p>` : ""}
             </div>
+
+            ${f.investimento ? `
+            <div class="hero-form__linha">
+              <label class="hero-form__campo">
+                <span>${f.investimento.label}</span>
+                <select name="investimento" aria-describedby="h-err-invest">
+                  <option value="" disabled selected>${f.investimento.ph}</option>
+                  ${f.investimento.opcoes.map(o => `<option value="${o}">${o}</option>`).join("")}
+                </select>
+              </label>
+              <p class="hero-form__err" id="h-err-invest" hidden>${f.investimento.err}</p>
+            </div>` : ""}
 
             <input name="_gotcha" class="hero-form__pote" tabindex="-1" autocomplete="off" aria-hidden="true" />
 

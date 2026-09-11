@@ -289,6 +289,25 @@
 .hero-form__campo input::placeholder{color:#a8ada6}
 .hero-form__campo input:focus{outline:none;border-bottom-color:var(--rosa);border-bottom-width:2.5px;padding-bottom:6px}
 .hero-form__campo input.is-invalid{border-bottom-color:var(--rosa)}
+/* O select da pergunta de investimento veste a mesma linha dos inputs:
+   sem caixa, sem seta do sistema, 16px para o Safari não dar zoom. A seta
+   é desenhada em CSS para o campo não parecer um controle de outro site. */
+.hero-form__campo select{
+  width:100%;background:transparent;border:0;border-bottom:1.5px solid var(--linha);
+  border-radius:0;padding:6px 22px 7px 0;
+  font-family:var(--font-body);font-size:16px;font-weight:500;color:var(--ink);
+  -webkit-appearance:none;appearance:none;cursor:pointer;
+  background-image:linear-gradient(45deg,transparent 50%,var(--green-dark) 50%),linear-gradient(135deg,var(--green-dark) 50%,transparent 50%);
+  background-position:calc(100% - 10px) 55%,calc(100% - 5px) 55%;
+  background-size:5px 5px,5px 5px;background-repeat:no-repeat;
+  transition:border-color .18s,border-width .18s;
+}
+/* enquanto a faixa não foi escolhida, o texto do select tem a cor do
+   placeholder dos inputs ao lado; escolhida, volta ao ink como os outros */
+.hero-form__campo select:has(option[value=""]:checked){color:#a8ada6}
+.hero-form__campo select option{color:var(--ink)}
+.hero-form__campo select:focus{outline:none;border-bottom-color:var(--rosa);border-bottom-width:2.5px;padding-bottom:6px}
+.hero-form__campo select.is-invalid{border-bottom-color:var(--rosa)}
 .hero-form__err{
   margin-top:5px;font-family:var(--font-mono);font-size:9.5px;letter-spacing:.06em;color:var(--rosa-dark);
 }

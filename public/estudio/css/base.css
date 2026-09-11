@@ -191,6 +191,40 @@ section{padding-block:clamp(52px,6.6vw,92px)}
    `b` dentro do canhoto da vitrine. */
 .eyebrow__tagline li:first-child{color:var(--green-dark);font-weight:700}
 
+/* ============================================================
+   A RÉGUA DE DADOS (`--dados`, só a /landing-page por enquanto)
+
+   A régua de cima listava três categorias de trabalho em mono
+   espacejada. É a etiqueta mais previsível que uma página de serviço
+   pode ter, e ela não responde nada: quem chegou de um anúncio não
+   precisa dos nomes internos dos trabalhos do estúdio.
+
+   Aqui ela vira NÚMERO + legenda, que é a anatomia que a casa já usa
+   quando o número é o argumento (a conta da dor da /vitrine-digital, o
+   trilho do tempo do "como funciona"). O numeral entra no Archivo com
+   corpo de manchete pequena e a legenda fica na mono miúda ao lado: o
+   contraste de família e de corpo é o que dá voz à faixa, sem nenhum
+   enfeite novo e sem uma segunda cor.
+
+   Nada de acento colorido aqui: o único verde da faixa continua sendo o
+   picote de cima. Três numerais em cor de marca virariam três lugares
+   para onde olhar, e o de olhar mesmo é a manchete, logo abaixo.
+
+   VEM DEPOIS do componente de propósito (mesma nota do
+   `.form-card--claro`, em contact.css): mesma especificidade, vence
+   quem vem por último no arquivo.
+   ============================================================ */
+.eyebrow__tagline--dados{align-items:baseline;gap:10px clamp(22px,4vw,64px)}
+.eyebrow__tagline--dados li{display:flex;align-items:baseline;gap:7px;color:var(--ink-soft)}
+/* desfaz o grifo verde do primeiro item: aqui os três itens pesam igual */
+.eyebrow__tagline--dados li:first-child{color:var(--ink-soft);font-weight:400}
+.eyebrow__tagline--dados b{
+  font-family:var(--font-display);font-weight:800;
+  font-size:clamp(17px,4.6vw,23px);line-height:1;
+  letter-spacing:-.02em;font-variant-numeric:tabular-nums;
+  color:var(--ink);
+}
+
 /* ---------- o chip de agenda, na forma da /vitrine-digital ----------
    "AGENDA ABERTA" era texto miúdo com um ponto ao lado, e é a informação
    mais perecível da página: ela diz se dá para começar AGORA. Texto solto
