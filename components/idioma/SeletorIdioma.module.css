@@ -1,0 +1,33 @@
+/* O pill de idioma na gramática papel e tinta: filete de tinta, mono
+   miúda espacejada, a escolha ativa em tinta cheia com texto papel. Os
+   tokens vêm da página que o hospeda (a vitrine, o portfólio e a estática
+   definem --ink, --paper e --mono com os mesmos valores).
+
+   Todas as regras de link são `.pill .item` (duas classes) de propósito:
+   as páginas têm `.site a { color: ... }`, que vence uma classe simples e
+   deixava a sigla ativa tinta sobre tinta. Ver a nota "`.site a` vence
+   classe simples" na memória da vitrine. */
+.pill {
+  display: inline-flex; align-items: stretch;
+  height: 28px; border: 1px solid var(--ink, #14181A);
+  background: var(--paper, #F2EFE6); color: var(--ink, #14181A);
+  white-space: nowrap; flex: none;
+}
+.pill .item {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 0 8px;
+  font: 700 9.5px var(--mono, ui-monospace, monospace); letter-spacing: .12em;
+  color: var(--ink, #14181A); text-decoration: none;
+  transition: background .15s ease, color .15s ease;
+}
+.pill .item + .item { border-left: 1px solid var(--ink, #14181A) }
+.pill .item svg { display: block; flex: none; outline: 1px solid rgba(20, 24, 26, .18); outline-offset: -1px }
+.pill .item.ativo { background: var(--ink, #14181A); color: #fff }
+@media (hover: hover) and (pointer: fine) {
+  .pill .item:not(.ativo):hover { background: rgba(20, 24, 26, .08) }
+}
+.pill .item:focus-visible { outline: 2px solid var(--rosa, #E31B62); outline-offset: 2px }
+/* celular estreito: o pill aperta um pouco para dividir a linha com a logo */
+@media (max-width: 400px) {
+  .pill .item { padding: 0 7px; gap: 4px }
+}

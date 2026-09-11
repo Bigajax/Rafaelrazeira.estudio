@@ -2280,3 +2280,21 @@ html:has(.site) { scroll-behavior: smooth }
     border-radius: 2px 12px 12px 12px;
   }
 }
+
+/* ---------- seletor de idioma no cabeçalho (11/09/2026) ----------
+   O pill e o CTA viram um grupo à direita, para o space-between do
+   header não abrir vão entre os dois. No celular os 350px úteis têm que
+   comportar logo, pill e CTA: abaixo de 400px o botão perde um pouco de
+   respiro lateral, medido em 360 e 390. */
+.headRight { display: flex; align-items: center; gap: 10px; flex: none }
+@media (max-width: 400px) {
+  .site .headCta { padding: 11px 10px; font-size: 10.5px }
+  .headRight { gap: 8px }
+}
+/* Abaixo de 380px (iPhone SE, Android pequeno) logo, pill e CTA não cabem
+   numa linha de 320px úteis. O CTA do topo sai: a barra fixa do rodapé já
+   carrega a mesma ação nesses aparelhos, e o pill fica visível, que é o
+   que o gringo precisa achar. */
+@media (max-width: 380px) {
+  .site .headCta { display: none }
+}

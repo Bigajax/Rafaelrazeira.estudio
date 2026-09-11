@@ -71,3 +71,15 @@
    uma oferta diferente da que o anúncio prometeu. Fica a logo (âncora
    para o topo) e, no desktop, o botão da própria ação. */
 .lp .nav-product{display:none}
+
+/* ---------- seletor de idioma PT | EN (11/09/2026) ----------
+   O mesmo pill do components/idioma/SeletorIdioma da vitrine, em CSS
+   plano: filete de tinta, mono miúda, a escolha ativa em tinta cheia.
+   Só aparece nas páginas que têm irmã em inglês (header.js decide). */
+.lang{display:inline-flex;align-items:stretch;height:28px;border:1px solid var(--ink);background:var(--paper);color:var(--ink);white-space:nowrap;flex:none}
+.lang a{display:inline-flex;align-items:center;gap:5px;padding:0 8px;text-decoration:none;font-family:var(--font-mono);font-weight:700;font-size:9.5px;letter-spacing:.12em;color:inherit;transition:background .15s,color .15s}
+.lang a+a{border-left:1px solid var(--ink)}
+.lang svg{display:block;flex:none;outline:1px solid rgba(20,24,26,.18);outline-offset:-1px}
+.lang a[aria-current]{background:var(--ink);color:#fff}
+@media(hover:hover) and (pointer:fine){.lang a:not([aria-current]):hover{background:rgba(20,24,26,.08)}}
+.lang a:focus-visible{outline:2px solid var(--rosa);outline-offset:2px}

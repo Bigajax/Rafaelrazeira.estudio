@@ -650,7 +650,19 @@ const CONFIG_LP = {
 /* Qual das duas o navegador está lendo. É a única linha que decide, e ela
    olha o caminho porque as duas páginas compartilham TODO o resto dos
    arquivos: mesmo CSS, mesmos módulos de seção, mesmo js/lib. */
-const naLP = typeof location !== "undefined" && location.pathname.startsWith("/landing-page");
+/* ---------- idioma e URL irmã (11/09/2026) ----------
+   Português mora nas URLs de sempre; inglês em /en. O mapa das irmãs é o
+   mesmo de lib/idiomas.ts (o Next não é importável daqui): entrar uma
+   página nova em inglês é acrescentar a linha nos dois. O header só mostra
+   o seletor PT | EN quando `irma` existe. */
+const caminho = typeof location !== "undefined" ? location.pathname.replace(/\/$/, "") || "/" : "/";
+const PARES_IDIOMA = { "/landing-page": "/en/landing-page", "/vitrine-digital": "/en/vitrine-digital", "/portfolio": "/en/portfolio" };
+const LANG = caminho.startsWith("/en/") ? "en" : "pt";
+const IDIOMA = {
+  atual: LANG,
+  irma: PARES_IDIOMA[caminho] || Object.keys(PARES_IDIOMA).find(pt => PARES_IDIOMA[pt] === caminho) || null,
+};
+const naLP = /^\/(en\/)?landing-page/.test(caminho);
 const CONFIG = naLP ? { ...CONFIG_ESTUDIO, ...CONFIG_LP } : CONFIG_ESTUDIO;
 
 /* ============================================================
@@ -683,4 +695,4 @@ const FORM_HEADERS  = {
 };
 
 /* ⚠️ Não precisa mexer daqui para baixo — apenas disponibiliza o conteúdo p/ a página. */
-export { CONFIG, FORM_ENDPOINT, FORM_HEADERS, WHATSAPP_NUMBER, MIXPANEL_TOKEN };
+export { CONFIG, IDIOMA, FORM_ENDPOINT, FORM_HEADERS, WHATSAPP_NUMBER, MIXPANEL_TOKEN };

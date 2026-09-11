@@ -39,6 +39,9 @@ const nextConfig: NextConfig = {
          o CSS e os módulos da /estudio pelos dois mapas abaixo, então a
          página nova não duplica uma linha de layout. */
       { source: "/landing-page", destination: "/landing-page/index.html" },
+      /* A versão em inglês da mesma página (11/09/2026): outro index.html
+         em public/en/landing-page, os mesmos /css e /js dos mapas abaixo. */
+      { source: "/en/landing-page", destination: "/en/landing-page/index.html" },
       { source: "/css/:path*", destination: "/estudio/css/:path*" },
       { source: "/js/:path*", destination: "/estudio/js/:path*" },
       { source: "/briefing", destination: "/briefing.html" },

@@ -10,6 +10,12 @@ import { ligarAncoras } from "@/components/vitrine/ancora";
 import { enviarLeadVitrine, registrarSuspeito } from "@/components/vitrine/lead-flow";
 import { focarSemContar, initTracking } from "@/components/vitrine/tracking";
 import { projetos } from "@/data/portfolio";
+import { SeletorIdioma } from "@/components/idioma/SeletorIdioma";
+import { useLang } from "@/components/i18n";
+import { PARES } from "@/lib/idiomas";
+
+/* a URL pt desta página, chave do mapa de irmãs (lib/idiomas.ts) */
+const PAGINA_PT = "/vitrine-digital";
 
 /* ---------- o placar de projetos parou de ser digitado (28/08) ----------
    A página dizia NOVE em três lugares (o canhoto da etiqueta, o Quem Faz e
@@ -134,10 +140,16 @@ export function Header() {
         topo: é a pergunta que tráfego frio faz antes de qualquer outra.
         Ver a nota em `.headStatus`, no CSS. */}
     <span className={s.headStatus}><i aria-hidden /> RESPOSTA NO MESMO DIA</span>
-    {/* encurtado em 13/08: "QUERO MINHA PRÉVIA ↓" e a logo somavam mais
-        que os 350px úteis de uma tela de 390, e os dois quebravam em duas
-        linhas cada um, deixando o cabeçalho com o dobro da altura */}
-    <a className={s.headCta} href="#hero-form" data-cta="header" data-cta-dest="form">VER A MINHA LOJA ↓</a>
+    {/* O seletor de idioma e o CTA andam juntos (11/09/2026): à esquerda
+        do botão, onde todo site põe, e visível também no celular, senão
+        quem não fala português nunca acha. Ver components/idioma. */}
+    <div className={s.headRight}>
+      <SeletorIdioma atual={useLang()} ptHref={PAGINA_PT} enHref={PARES[PAGINA_PT]} />
+      {/* encurtado em 13/08: "QUERO MINHA PRÉVIA ↓" e a logo somavam mais
+          que os 350px úteis de uma tela de 390, e os dois quebravam em duas
+          linhas cada um, deixando o cabeçalho com o dobro da altura */}
+      <a className={s.headCta} href="#hero-form" data-cta="header" data-cta-dest="form">VER A MINHA LOJA ↓</a>
+    </div>
   </header>;
 }
 

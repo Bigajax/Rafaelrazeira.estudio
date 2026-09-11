@@ -598,3 +598,17 @@ html:has(.site) { scroll-behavior: smooth }
 @media (prefers-reduced-motion: reduce) {
   .site *, .site .acao, .site .headCta, .frame, .confere { transition: none !important; animation: none !important }
 }
+
+/* seletor de idioma no cabeçalho (11/09/2026): mesmo grupo da vitrine */
+.headRight { display: flex; align-items: center; gap: 10px; flex: none }
+@media (max-width: 400px) {
+  .site .headCta { padding: 11px 10px; font-size: 10.5px }
+  .headRight { gap: 8px }
+}
+/* Abaixo de 380px (iPhone SE, Android pequeno) logo, pill e CTA não cabem
+   numa linha de 320px úteis. O CTA do topo sai: a barra fixa do rodapé já
+   carrega a mesma ação nesses aparelhos, e o pill fica visível, que é o
+   que o gringo precisa achar. */
+@media (max-width: 380px) {
+  .site .headCta { display: none }
+}

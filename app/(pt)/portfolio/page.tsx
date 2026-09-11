@@ -5,6 +5,8 @@ import Link from "next/link";
 import { Archivo, Inter, JetBrains_Mono } from "next/font/google";
 import { projetos } from "@/data/portfolio";
 import { ProjectCard } from "@/components/portfolio/ProjectCard";
+import { SeletorIdioma } from "@/components/idioma/SeletorIdioma";
+import { PARES } from "@/lib/idiomas";
 import s from "./portfolio.module.css";
 
 /* As mesmas três vozes da /vitrine-digital, e é essa a razão de estarem
@@ -76,7 +78,10 @@ export default function PortfolioPage() {
     <header className={s.header}>
       <Link className={s.brand} href="/estudio/"><b>RAFAEL RAZEIRA</b><span>ESTÚDIO</span></Link>
       <span className={s.headStatus}><i aria-hidden /> RESPOSTA NO MESMO DIA</span>
-      <a className={s.headCta} href="#contato" data-cta="portfolio_header" data-cta-dest="contato">QUERO A MINHA ↓</a>
+      <div className={s.headRight}>
+        <SeletorIdioma atual="pt" ptHref="/portfolio" enHref={PARES["/portfolio"]} />
+        <a className={s.headCta} href="#contato" data-cta="portfolio_header" data-cta-dest="contato">QUERO A MINHA ↓</a>
+      </div>
     </header>
     <main>
       {/* Hero curto de propósito: a prova desta página são as capas, e no
