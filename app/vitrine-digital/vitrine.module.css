@@ -2228,3 +2228,30 @@ html:has(.site) { scroll-behavior: smooth }
    o componente em 05/08: o motivo está escrito por extenso no topo de
    app/vitrine-digital/page.tsx. Em resumo, ela cobria a tela por ~2s em
    conexão boa e ~3,5s no 4G, numa página cuja sessão mediana tem 8,6s. */
+
+/* ---------- o pedido chegando no WhatsApp, pendurado no aparelho (11/09/2026) ----------
+   Balão de mensagem enviada (o verde claro do WhatsApp), com filete de
+   tinta e sombra dura, como todo objeto que dá para apertar nesta casa.
+   Fica na quina de baixo à esquerda do aparelho, oposto ao chip "NO AR",
+   e sai para fora do celular de propósito: o pedido é o que acontece do
+   lado de cá, na mão da lojista. */
+.site .pedido {
+  position: absolute; left: -12px; bottom: 96px; z-index: 2;
+  max-width: 236px; padding: 10px 12px 8px;
+  background: #E7FFDB; color: var(--ink);
+  border: 1.5px solid var(--ink); border-radius: 12px 12px 12px 2px;
+  box-shadow: 6px 6px 0 var(--ink);
+  font: 400 13px/1.35 var(--body);
+}
+.site .pedido b { font-weight: 700 }
+.site .pedidoK {
+  display: block; margin-bottom: 4px;
+  font: 700 8.5px var(--mono); letter-spacing: .16em; color: var(--green-dark);
+}
+.site .pedido i {
+  display: block; margin-top: 4px; text-align: right;
+  font: 400 10px var(--mono); font-style: normal; color: #5b6b62;
+}
+@media (max-width: 900px) {
+  .site .pedido { left: 6px; bottom: 84px; max-width: 220px; font-size: 12.5px }
+}

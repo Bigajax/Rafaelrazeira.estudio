@@ -137,7 +137,7 @@ export function Header() {
     {/* encurtado em 13/08: "QUERO MINHA PRÉVIA ↓" e a logo somavam mais
         que os 350px úteis de uma tela de 390, e os dois quebravam em duas
         linhas cada um, deixando o cabeçalho com o dobro da altura */}
-    <a className={s.headCta} href="#hero-form" data-cta="header" data-cta-dest="form">DEIXAR CONTATO ↓</a>
+    <a className={s.headCta} href="#hero-form" data-cta="header" data-cta-dest="form">VER A MINHA LOJA ↓</a>
   </header>;
 }
 
@@ -512,8 +512,8 @@ function HeroForm() {
         as duas palavras que ela procura nesse momento são exatamente essas
         duas. O trabalho fino de desarmar o dedo continua sendo do
         `.tagMicro`, a uma tela de distância, perto do botão. */}
-    <p className={s.tagSub}>Deixa o seu @ que eu monto a sua loja com algumas peças suas e a cara da sua marca.</p>
-    <p className={s.tagAparte}>De graça mesmo, sem compromisso nenhum.</p>
+    <p className={s.tagSub}>Manda o seu @ que eu monto a sua loja com peças suas e a cara da sua marca, e te mostro em 24h.</p>
+    <p className={s.tagAparte}>De graça, sem compromisso nenhum.</p>
     <hr className={s.tagRule} />
     <div className={s.tagCampos}>
       {/* rótulo visível E placeholder, que não é contradição: o rótulo é
@@ -592,7 +592,7 @@ function HeroForm() {
         diz quem faz, em que ordem e quando.
         A manchete virou pergunta e perdeu o imperativo; o botão é onde
         ele volta, agora na voz de quem clica. */}
-    <button className={`${s.button} ${s.acao}`} disabled={enviando}>{enviando ? "ENVIANDO…" : "QUERO MINHA PRÉVIA"}</button>
+    <button className={`${s.button} ${s.acao}`} disabled={enviando}>{enviando ? "ENVIANDO…" : "QUERO VER A MINHA LOJA"}</button>
     {linkWa
       ? <div className={s.pendente} role="status">
           <b>Falta um toque.</b>
@@ -622,7 +622,7 @@ function HeroForm() {
               O "resto só depois de você aprovar" saiu: virou a quarta
               condição de uma linha que já tinha três, e ela continua
               dita no passo 04 e no selo do processo. */}
-          <b>A prévia é por minha conta.</b> Se você gostar: <b>R$999</b> no total, começando com <b>R$199</b>. Se não gostar, me diz sem dó, que eu não fico chateado.
+          <b>A prévia é por minha conta</b> e chega em 24h. Se você gostar: <b>R$999</b> no total, começando com <b>R$199</b>. Se não gostar, me diz sem dó, que eu não fico chateado.
         </small>}
     {/* o canhoto: o picote separa o que você dá do que eu já provei, que são
         as duas metades da decisão. Fatos verificáveis, não adjetivos: os 9
@@ -659,7 +659,7 @@ export function Hero() {
             úteis de uma tela de 390px. O rabo "· SEUS PRODUTOS EM UM
             LINK SÓ" saiu por estourar exatamente esse limite, então aqui
             não entra mais nada sem sair outra coisa. */}
-        <Eyebrow>VITRINE PARA QUEM VENDE NO INSTAGRAM</Eyebrow>
+        <Eyebrow>PARA LOJAS DO INSTAGRAM E WHATSAPP</Eyebrow>
         {/* ---------- a manchete virou a OFERTA (26/08) ----------
             Aqui morava a pergunta do direct ("quantas vendas você perdeu
             essa semana"), que era o hook H01 do lote 01 palavra por
@@ -713,7 +713,7 @@ export function Hero() {
             palavras, e a página repete essa tríade no anúncio, no corpo e
             no canhoto da etiqueta. Aqui ela fica em tinta cheia e o resto
             da frase recua para o cinza. Ver `.heroCopy .lead b` no CSS. */}
-        <p className={s.lead}><b>Foto, preço e tamanho</b> de cada peça em um link só. O pedido chega pronto no WhatsApp.</p>
+        <p className={s.lead}><b>Foto, preço e tamanho</b> de cada peça num link só. O cliente escolhe e o pedido chega montado no WhatsApp, sem você responder um por um.</p>
         {/* ---------- a faixa, ACIMA da etiqueta ----------
             Ela nasceu embaixo e foi medida a 800px numa dobra de 740, ou
             seja, fora da primeira tela, que era o único lugar onde ela
@@ -729,7 +729,7 @@ export function Hero() {
             conter o conteúdo DUAS vezes para o laço fechar sem emenda. */}
         <div className={s.heroBand} aria-hidden>
           <div className={s.heroBandTrack}>
-            {Array.from({ length: 8 }, (_, i) => <span key={i}>Pronta em 7 dias úteis · Sem mensalidade ·</span>)}
+            {Array.from({ length: 8 }, (_, i) => <span key={i}>Pronta em 7 dias úteis · Sem mensalidade · Você mesmo atualiza ·</span>)}
           </div>
         </div>
         {/* ---------- uma porta só (13/08) ----------
@@ -748,8 +748,20 @@ export function Hero() {
           {/* o chip colado na base do aparelho: a bolinha marca que a loja
               está no ar, o nome diz de quem é, e o rótulo leva para a seção
               com os projetos de clientes */}
+          {/* ---------- o pedido chegando (11/09/2026) ----------
+              O aparelho mostrava a loja rolando, e o lead promete "o pedido
+              chega montado no WhatsApp". Faltava a prova dessa segunda
+              metade: um balão de WhatsApp com um pedido de verdade, no
+              formato que a vitrine manda (peça, tamanho), pendurado na
+              quina do aparelho. Decorativo para leitor de tela: a frase
+              já está no lead. Sem preço de propósito: o da Sölo Urb muda. */}
+          <div className={s.pedido} aria-hidden>
+            <span className={s.pedidoK}>PEDIDO NO SEU WHATSAPP</span>
+            <p>Oi, Sölo! Quero o <b>New Balance 9060</b>, tam <b>41</b>. Pode separar?</p>
+            <i>14:07 ✓✓</i>
+          </div>
           <a className={s.liveTag} href="#projetos" data-cta="hero_projetos" data-cta-dest="projetos">
-            <i aria-hidden /> NO AR: SÖLO URB · VER MAIS PROJETOS ↓
+            <i aria-hidden /> NO AR: SÖLO URB · VER LOJAS QUE JÁ USAM ↓
           </a>
         </div>
       </div>
@@ -869,7 +881,7 @@ export function QuemFaz() {
           o rótulo não pode reiniciar a série histórica. O do header
           continua "DEIXAR CONTATO ↓" por largura, e não por vocabulário:
           lá o texto divide os 350px úteis com a logo. */}
-      <a className={`${s.button} ${s.acao}`} href="#hero-form" data-cta="quem_faz" data-cta-dest="form">QUERO MINHA PRÉVIA ↑</a>
+      <a className={`${s.button} ${s.acao}`} href="#hero-form" data-cta="quem_faz" data-cta-dest="form">QUERO VER A MINHA LOJA ↑</a>
       {/* AQUI FICAVA `RAFAEL RAZEIRA · ESTÚDIO` em mono. Saiu em 13/08: o
           letreiro logo abaixo diz o mesmo nome em corpo de 3,4rem, então
           a assinatura era a segunda vez em menos de cem pixels. Assinar
@@ -1579,7 +1591,7 @@ export function Offer() {
               não pode prometer um ato que o formulário não pratica. Este
               não promete, ele nomeia o que a pessoa GANHA, e a garantia
               logo abaixo continua respondendo a mesma pergunta. */}
-          <Button onClick={goToForm} cta="oferta_entrada">QUERO MINHA PRÉVIA ↓</Button>
+          <Button onClick={goToForm} cta="oferta_entrada">QUERO VER A MINHA LOJA ↓</Button>
           <p className={s.guarantee}>O saldo de R$800 é pago somente depois que você visualizar e aprovar o projeto.</p>
         </article>
         <div className={s.formCol}>
@@ -1639,7 +1651,7 @@ export function Offer() {
                 "reservar" e o outro de "quero minha vitrine" era inventar
                 uma diferença que não existe. Uma ação, um nome. */}
             <button className={`${s.button} ${s.acao}`} disabled={enviando}>
-              {enviando ? "ENVIANDO…" : "QUERO MINHA PRÉVIA"}
+              {enviando ? "ENVIANDO…" : "QUERO VER A MINHA LOJA"}
             </button>
             {/* Antes daqui saía "Tudo certo. Abrindo o WhatsApp…", que dizia à
                 pessoa que estava feito quando não estava: a mensagem abre
@@ -1859,7 +1871,7 @@ export function FinalCTA() {
         {/* "DEIXAR MEU CONTATO ↑" em 23/08: último dos quatro a entrar no
             vocabulário único. Quem leu a página inteira chega aqui e o
             botão diz a mesma coisa que o do topo e que o de envio. */}
-        <a className={`${s.button} ${s.acao}`} href="#contratar" data-cta="final" data-cta-dest="form">QUERO MINHA PRÉVIA ↑</a>
+        <a className={`${s.button} ${s.acao}`} href="#contratar" data-cta="final" data-cta-dest="form">QUERO VER A MINHA LOJA ↑</a>
         <a className={s.ghost} href="#oferta" data-cta="final_reserva" data-cta-dest="oferta">VER O QUE ESTÁ INCLUSO</a>
       </div>
     </section>
@@ -1942,6 +1954,6 @@ export function MobileBar() {
         o valor. "GRÁTIS" cabe exatamente onde "R$999" cabia; frase maior
         estoura a barra ao lado do botão em 390px. */}
     <span className={s.barCopy}><b>GRÁTIS</b><span>Sua vitrine desenhada</span></span>
-    <a className={`${s.button} ${s.acao}`} href="#contratar" data-cta="sticky_mobile" data-cta-dest="form">QUERO A PRÉVIA</a>
+    <a className={`${s.button} ${s.acao}`} href="#contratar" data-cta="sticky_mobile" data-cta-dest="form">QUERO VER A MINHA LOJA</a>
   </div>;
 }
