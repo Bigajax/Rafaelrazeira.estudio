@@ -512,8 +512,8 @@ function HeroForm() {
         as duas palavras que ela procura nesse momento são exatamente essas
         duas. O trabalho fino de desarmar o dedo continua sendo do
         `.tagMicro`, a uma tela de distância, perto do botão. */}
-    <p className={s.tagSub}>Manda o seu @ que eu monto a sua loja com peças suas e a cara da sua marca, e te mostro em 24h.</p>
-    <p className={s.tagAparte}>De graça, sem compromisso nenhum.</p>
+    <p className={s.tagSub}>Manda o seu @ e eu te mostro a sua loja pronta em 24h.</p>
+    <p className={s.tagAparte}>De graça, sem compromisso.</p>
     <hr className={s.tagRule} />
     <div className={s.tagCampos}>
       {/* rótulo visível E placeholder, que não é contradição: o rótulo é
@@ -522,7 +522,12 @@ function HeroForm() {
           único dos três sem exemplo, e era o primeiro da fila: o rótulo
           ficava sozinho sobre um vão vazio enquanto os dois de baixo
           mostravam texto, e o vão lia como campo quebrado. */}
-      <label><span>NOME</span><input name="nome" autoComplete="name" required placeholder="Maria Silva" /></label>
+      {/* O NOME saiu do cartão do hero (11/09/2026): não é matéria-prima da
+          prévia (o @ é), e custava 55px que devolvem o botão de envio à
+          primeira tela do celular depois de o balão do pedido entrar acima
+          do cartão. A /api/lead usa o @ como nome de exibição quando ele
+          falta, e o nome de gente chega na primeira resposta do WhatsApp.
+          O formulário do fim da página continua pedindo. */}
       {/* a máscara reescreve o valor a cada tecla; digitar limpa o erro para a
           mensagem não continuar acusando um número que já foi corrigido */}
       <label><span>WHATSAPP</span><input name="whatsapp" type="tel" autoComplete="tel" placeholder="(44) 99999-0000" required maxLength={16}
@@ -622,7 +627,7 @@ function HeroForm() {
               O "resto só depois de você aprovar" saiu: virou a quarta
               condição de uma linha que já tinha três, e ela continua
               dita no passo 04 e no selo do processo. */}
-          <b>A prévia é por minha conta</b> e chega em 24h. Se você gostar: <b>R$999</b> no total, começando com <b>R$199</b>. Se não gostar, me diz sem dó, que eu não fico chateado.
+          <b>A prévia é por minha conta.</b> Se gostar: <b>R$999</b> no total, começando com <b>R$199</b>. Se não gostar, me diz sem dó.
         </small>}
     {/* o canhoto: o picote separa o que você dá do que eu já provei, que são
         as duas metades da decisão. Fatos verificáveis, não adjetivos: os 9
@@ -647,6 +652,22 @@ function HeroForm() {
    coorte do c1 ver uma manchete que continuasse o anúncio, e a manchete
    nova já é essa continuação para todo mundo. Manter as duas faria 15% do
    tráfego (justamente o que motivou a mudança) nunca ver a versão nova. */
+/* ---------- o pedido chegando (11/09/2026) ----------
+   Um balão de WhatsApp com um pedido de verdade, no formato que a vitrine
+   manda (peça e tamanho, sem preço porque o da Sölo Urb muda). É a prova
+   da segunda metade do lead ("o pedido chega montado no WhatsApp"). No
+   desktop fica pendurado entre o cartão e o aparelho; no celular sobe
+   para logo abaixo do lead, porque ali o aparelho só aparece depois do
+   cartão inteiro e a primeira tela ficava sem nenhuma prova do produto.
+   Decorativo para leitor de tela: a frase já está no lead. */
+function Pedido({ className }: { className?: string }) {
+  return <div className={`${s.pedido} ${className ?? ""}`} aria-hidden>
+    <span className={s.pedidoK}>PEDIDO NO SEU WHATSAPP</span>
+    <p>Oi, Sölo! Quero o <b>New Balance 9060</b>, tam <b>41</b>. Pode separar?</p>
+    <i>14:07 ✓✓</i>
+  </div>;
+}
+
 export function Hero() {
   return <section className={s.hero} id="topo">
     <div className={s.heroGrid}>
@@ -714,6 +735,7 @@ export function Hero() {
             no canhoto da etiqueta. Aqui ela fica em tinta cheia e o resto
             da frase recua para o cinza. Ver `.heroCopy .lead b` no CSS. */}
         <p className={s.lead}><b>Foto, preço e tamanho</b> de cada peça num link só. O cliente escolhe e o pedido chega montado no WhatsApp, sem você responder um por um.</p>
+        <Pedido className={s.pedidoInline} />
         {/* ---------- a faixa, ACIMA da etiqueta ----------
             Ela nasceu embaixo e foi medida a 800px numa dobra de 740, ou
             seja, fora da primeira tela, que era o único lugar onde ela
@@ -748,18 +770,7 @@ export function Hero() {
           {/* o chip colado na base do aparelho: a bolinha marca que a loja
               está no ar, o nome diz de quem é, e o rótulo leva para a seção
               com os projetos de clientes */}
-          {/* ---------- o pedido chegando (11/09/2026) ----------
-              O aparelho mostrava a loja rolando, e o lead promete "o pedido
-              chega montado no WhatsApp". Faltava a prova dessa segunda
-              metade: um balão de WhatsApp com um pedido de verdade, no
-              formato que a vitrine manda (peça, tamanho), pendurado na
-              quina do aparelho. Decorativo para leitor de tela: a frase
-              já está no lead. Sem preço de propósito: o da Sölo Urb muda. */}
-          <div className={s.pedido} aria-hidden>
-            <span className={s.pedidoK}>PEDIDO NO SEU WHATSAPP</span>
-            <p>Oi, Sölo! Quero o <b>New Balance 9060</b>, tam <b>41</b>. Pode separar?</p>
-            <i>14:07 ✓✓</i>
-          </div>
+          <Pedido className={s.hideMobile} />
           <a className={s.liveTag} href="#projetos" data-cta="hero_projetos" data-cta-dest="projetos">
             <i aria-hidden /> NO AR: SÖLO URB · VER LOJAS QUE JÁ USAM ↓
           </a>

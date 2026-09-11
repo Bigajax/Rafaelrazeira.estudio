@@ -46,7 +46,7 @@ export async function enviarLeadVitrine(d: {
   const ref = refDaVisita();
   const text = encodeURIComponent([
     "Oi Rafael! Quero uma vitrine para minha loja.",
-    `Nome: ${d.nome}`,
+    d.nome ? `Nome: ${d.nome}` : "",
     d.instagram ? `Loja: ${d.instagram}` : "",
     d.plano ? `Plano: ${d.plano}` : "",
     ref ? `Ref: ${ref}` : "",

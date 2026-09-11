@@ -2255,3 +2255,23 @@ html:has(.site) { scroll-behavior: smooth }
 @media (max-width: 900px) {
   .site .pedido { left: 6px; bottom: 84px; max-width: 220px; font-size: 12.5px }
 }
+/* ---------- o balão em dois lugares (11/09, segunda passada) ----------
+   No desktop ele flutua no vão entre o cartão e o aparelho (o pedido sai
+   da tela do celular e vem para o lado da lojista). No celular o balão
+   absoluto some (.hideMobile) e o `.pedidoInline`, que no desktop não
+   existe, entra como bloco logo abaixo do lead: é a única prova do
+   produto que cabe na primeira tela antes do cartão. */
+.site .pedido { left: -150px; bottom: 132px; max-width: 250px }
+.site .pedidoInline { display: none }
+@media (max-width: 900px) {
+  .site .pedidoInline {
+    display: block; position: static; margin: 18px 0 0 6px;
+    max-width: 260px; font-size: 12.5px;
+  }
+}
+/* o balão inline mais justo: cada pixel aqui é pixel do botão de envio na dobra */
+@media (max-width: 900px) {
+  .site .pedidoInline { margin-top: 12px; padding: 8px 11px 6px; font-size: 12px; line-height: 1.3 }
+  .site .pedidoInline .pedidoK { margin-bottom: 2px }
+  .site .pedidoInline i { margin-top: 2px }
+}
