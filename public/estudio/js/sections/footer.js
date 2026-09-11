@@ -11,9 +11,9 @@ export function footer(){
   <footer class="site-footer">
     <div class="wrap">
       <nav class="footer__social" aria-label="Redes e contato">
-        <a href="${f.instagram.url}" target="_blank" rel="noopener">INSTAGRAM</a>
-        <a href="mailto:${f.email}">E-MAIL</a>
-        <a href="${f.whatsapp.url}" target="_blank" rel="noopener" data-cta="footer" data-cta-dest="whatsapp">WHATSAPP</a>
+        <a href="${f.instagram.url}" target="_blank" rel="noopener"><span class="footer__k">INSTAGRAM</span><span class="footer__v">${f.instagram.handle}</span></a>
+        <a href="mailto:${f.email}"><span class="footer__k">E-MAIL</span><span class="footer__v">${f.email}</span></a>
+        <a href="${f.whatsapp.url}" target="_blank" rel="noopener" data-cta="footer" data-cta-dest="whatsapp"><span class="footer__k">WHATSAPP</span><span class="footer__v">${f.whatsapp.display}</span></a>
       </nav>
       <p class="footer__location">${f.location}</p>
       <div class="footer__bar">

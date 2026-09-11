@@ -570,11 +570,25 @@ const CONFIG_LP = {
      caminho que a promessa se perde. */
   about: {
     label: "QUEM FAZ.",
-    paragraphs: [
-      "Sou eu que desenho, escrevo e publico a sua página.",
-      "Um estúdio de um homem só. Você não fala com atendimento nem com estagiário: <b>fala comigo</b>, do briefing ao ar.",
-      "<span class='muted'>Estratégia, texto e design saindo do mesmo par de mãos é o que faz o <b>anúncio e a página falarem igual</b>. Quando são pessoas diferentes, é no meio do caminho que a promessa se perde.</span>",
+    /* ---------- de três parágrafos a FICHA (11/09/2026) ----------
+       A seção era um bloco de tese em três parágrafos. O trabalho dela
+       é mostrar quem responde do outro lado, e isso se faz com rosto,
+       nome e três dados, não com argumento. `ficha: true` liga a versão
+       com foto; os `paragraphs` ficam de fora nesta página (a /estudio
+       continua com o texto dela). O "10 páginas no ar" vem do
+       /portfolio (data/portfolio.ts, todas no ar): se entrar projeto lá,
+       atualizar aqui. */
+    ficha: true,
+    foto: "assets/rafael-quemfaz.jpg",
+    nome: "RAFAEL RAZEIRA.",
+    papel: "Sou eu que escrevo, desenho e publico a sua página. Você fala comigo, do briefing ao ar.",
+    dados: [
+      { num:"1",   texto:"PESSOA, DO BRIEFING AO AR" },
+      { num:"10",  texto:"PÁGINAS NO AR" },
+      { num:"24H", texto:"PARA RESPONDER" },
     ],
+    fecho: "Anúncio e página saindo da mesma mão é o que faz a promessa chegar inteira.",
+    paragraphs: [],
     cta: "QUERO VER A MINHA PRONTA",
   },
 

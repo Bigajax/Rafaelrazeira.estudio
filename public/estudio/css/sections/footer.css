@@ -59,3 +59,34 @@
   .footer__legal{gap:8px 28px}
   .footer__brand{margin-top:32px}
 }
+
+/* ---------- o contato virou par rótulo + valor (11/09/2026) ----------
+   "INSTAGRAM · E-MAIL · WHATSAPP" eram três rótulos sem o dado: quem
+   chegou ao pé da página querendo falar tinha que clicar para descobrir
+   o número. Agora cada um mostra o valor por baixo do rótulo, com o
+   filete de link, e os vãos de meia tela entre as linhas encolheram para
+   o rodapé caber numa dobra. Vale nas duas páginas. */
+.footer__social{gap:clamp(20px,3vw,48px) clamp(28px,5vw,72px)}
+.footer__social a{display:grid;gap:7px;color:#fff}
+.footer__k{
+  font-family:var(--font-mono);font-weight:700;font-size:9.5px;
+  letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.5);
+}
+.footer__v{
+  font-family:var(--font-body);font-weight:600;font-size:clamp(15px,1.3vw,18px);
+  letter-spacing:0;text-transform:none;color:#fff;
+  width:fit-content;border-bottom:1.5px solid rgba(255,255,255,.28);padding-bottom:3px;
+  transition:border-color .25s,color .25s;
+}
+@media(hover:hover) and (pointer:fine){
+  .footer__social a:hover .footer__v{border-color:var(--green-live);color:var(--green-live)}
+}
+.footer__location{margin-top:clamp(28px,4vw,48px);color:rgba(255,255,255,.55)}
+.footer__bar{margin-top:clamp(28px,4vw,48px)}
+.footer__brand{margin-top:clamp(28px,4vw,56px)}
+@media(max-width:640px){
+  .footer__social{gap:22px 28px}
+  .footer__location{margin-top:30px}
+  .footer__bar{margin-top:30px}
+  .footer__brand{margin-top:26px}
+}
