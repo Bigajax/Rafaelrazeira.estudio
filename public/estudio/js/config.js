@@ -320,7 +320,12 @@ const CONFIG_LP = {
        coisa, e quanto custa até lá. O `<b>` é o numeral, e o CSS dá a
        ele o corpo de manchete que a casa usa quando o número é o
        argumento. `taglineDados` liga esse tratamento só aqui. */
-    tagline: "<b>24H</b> PARA RESPONDER · <b>3 DIAS</b> ATÉ A PRÉVIA · <b>R$0</b> ATÉ VOCÊ GOSTAR",
+    /* ---------- a régua saiu do topo (11/09, segunda passada) ----------
+       Os três números continuam na página, mas agora dentro do cartão,
+       como os três passos da oferta, que é onde a pessoa lê com o dedo no
+       campo. Em cima da manchete eles eram uma linha a mais entre o
+       anúncio e a promessa. `tagline` vazia esconde o eyebrow inteiro. */
+    tagline: "",
     taglineDados: true,
     /* Lida em voz alta: "Eu desenho a sua página. Só paga se gostar."
        A frase anterior ("Você já pagou pelo clique. A venda é aqui.")
@@ -334,7 +339,12 @@ const CONFIG_LP = {
        parcelamento, que é outra conversa.
 
        O <em> da última linha ganha a faixa grafite (ver hero.css). */
-    headline: ["EU DESENHO", "A SUA PÁGINA.", "GOSTOU? <em>AÍ PAGA.</em>"],
+    /* "EU FAÇO A SUA LANDING PAGE" e não "EU DESENHO A SUA PÁGINA"
+       (11/09, segunda passada): "desenho" lê como rascunho e "página" é
+       vago para quem chega de um anúncio. O nome do produto entra na
+       manchete, e o verbo é o de entregar. A última linha segue com uma
+       palavra branca só (regra do lockup, ver a nota de 02/09). */
+    headline: ["EU FAÇO A SUA", "LANDING PAGE.", "GOSTOU? <em>AÍ PAGA.</em>"],
     /* ---------- o subtítulo parou de repetir a manchete (11/09) ----------
        Ele terminava em "se não gostar, você não pagou nada", que é a
        manchete dita de novo, e a linha sob o botão dizia pela terceira
@@ -342,7 +352,18 @@ const CONFIG_LP = {
        ele diz o que é "inteira" (texto, design, formulário) e os dois
        prazos que a régua de cima carrega, porque é aqui que a pessoa lê
        com o dedo no campo. */
-    subheadline: "<em>Landing pages para quem já anuncia.</em> Texto, design e formulário caindo no seu WhatsApp. Em 3 dias, no seu celular, para navegar antes de pagar.",
+    subheadline: "<em>Para quem já anuncia.</em> A oferta inteira, em três linhas:",
+    /* ---------- a oferta em três linhas (11/09, segunda passada) ----------
+       O subtítulo em parágrafo pedia interpretação. Agora o cartão diz a
+       mecânica em três batidas numeradas, cada uma com o número que
+       importa: o que você manda, quando recebe, quanto paga se gostar.
+       O preço entra aqui de propósito: "gostou, aí paga" sem o quanto
+       deixa a pergunta mais óbvia da primeira tela sem resposta. */
+    passos: [
+      "Você manda o <b>WhatsApp</b> e o <b>Instagram</b>.",
+      "Em <b>3 dias</b> eu te mando a página pronta, no seu celular.",
+      "Gostou? <b>R$497</b> e ela vai ao ar. Não gostou, não paga.",
+    ],
     cta: "QUERO VER A MINHA PRONTA",
     /* O carimbo "agenda aberta" saiu desta página: sem um número de
        verdade dentro ele é decoração, e no celular invadia a quina do
@@ -473,11 +494,21 @@ const CONFIG_LP = {
   cases: {
     label: "PROJETOS DO ESTÚDIO",
     headline: "PÁGINAS FEITAS PARA UMA TAREFA SÓ.",
-    intro: "Cada uma nasceu de um objetivo específico, não de um layout bonito escolhido antes.",
+    /* ---------- de grade a FICHA (11/09/2026) ----------
+       Eram dois celulares numa grade de duas colunas com meia tela de
+       vazio entre eles e um parágrafo descritivo embaixo de cada um. A
+       manchete promete "uma tarefa só", então cada projeto agora DIZ a
+       sua tarefa, em corpo de manchete, ao lado do aparelho: é a
+       estrutura que carrega a informação, não a legenda. `ficha: true`
+       liga a versão em linha (celular à esquerda, ficha à direita, filete
+       entre os projetos) e a intro saiu. `url` é o projeto no ar: a prova
+       fica a um toque, como no hero. A /estudio segue com a grade. */
+    intro: "",
+    ficha: true,
     cta: "QUERO VER A MINHA PRONTA",
     items: [
-      { video:"", img:"assets/case-lancellotti.jpg", tag:"", category:"LANDING PAGE · CAPTAÇÃO", name:"Lancellotti Tattoo", result:"Hero cinematográfico, acervo em galeria e orçamento guiado por etapas: quem chega interessado sai com o pedido já descrito." },
-      { video:"", img:"assets/case-baixudos.jpg",    tag:"", category:"LANDING PAGE · EVENTO",   name:"Baixudos.PR",        result:"Página de campanha com data marcada: uma promessa, uma ação e o caminho até o ingresso sem desvio." },
+      { video:"", img:"assets/case-lancellotti.jpg", tag:"", category:"LANDING PAGE · CAPTAÇÃO", name:"Lancellotti Tattoo", tarefa:"PEDIR ORÇAMENTO DE TATUAGEM", result:"Quem chega interessado sai com o pedido já descrito.", url:"https://lancellotti-tattoo-clinic.vercel.app" },
+      { video:"", img:"assets/case-baixudos.jpg",    tag:"", category:"LANDING PAGE · EVENTO",   name:"Baixudos.PR",        tarefa:"VENDER O INGRESSO DO EVENTO", result:"Uma data, uma promessa e o caminho até o ingresso sem desvio.", url:"https://baixudos.vercel.app" },
     ],
   },
 

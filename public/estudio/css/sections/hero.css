@@ -448,3 +448,31 @@
   transition:color .2s,border-color .2s;
 }
 @media(hover:hover) and (pointer:fine){.hero__proof a:hover{color:var(--ink);border-color:var(--ink)}}
+
+/* ---------- a oferta em três linhas dentro do cartão (11/09, 2ª passada) ----------
+   O subtítulo virou um lead de uma frase e a mecânica desceu para uma
+   lista numerada: o número em mono esmeralda na margem, como o ✓ da
+   etiqueta de preço, e o dado que importa em cada linha com peso. É a
+   régua do hero (que saiu do topo) lida como sequência, no lugar onde a
+   pessoa decide. Some junto com o subtítulo quando o cartão confirma. */
+.hero__passos{
+  list-style:none;margin:2px 0 0;padding:0;
+  counter-reset:passo;
+}
+.hero__passos li{
+  counter-increment:passo;
+  position:relative;padding:9px 0 9px 30px;
+  border-top:1px solid var(--linha);
+  font-size:clamp(14.5px,1.15vw,16px);line-height:1.4;color:var(--ink-soft);
+}
+.hero__passos li:first-child{border-top:0;padding-top:4px}
+.hero__passos li::before{
+  content:"0" counter(passo);position:absolute;left:0;top:11px;
+  font-family:var(--font-mono);font-weight:700;font-size:9.5px;letter-spacing:.14em;
+  color:var(--green-dark);
+}
+.hero__passos li:first-child::before{top:6px}
+.hero__passos b{color:var(--ink);font-weight:600}
+#hero-card.is-enviado .hero__passos{display:none}
+/* sem a régua em cima, a manchete não precisa do respiro que a separava dela */
+.lp .hero__headline{margin-top:0}

@@ -171,3 +171,60 @@
 .cases__cta .arrow{transition:transform .2s}
 @media(hover:hover) and (pointer:fine){.cases__cta:hover{color:var(--ink)}}
 .cases__cta:hover .arrow{transform:translateX(4px)}
+
+/* ============================================================
+   A FICHA DO PROJETO (só a /landing-page, desde 11/09/2026)
+
+   A grade de duas colunas deixava dois aparelhos soltos com meia tela de
+   vazio no meio, e a legenda embaixo DESCREVIA a página. A manchete da
+   seção promete "uma tarefa só", então cada projeto agora diz a sua, em
+   corpo de manchete, ao lado do aparelho: aparelho à esquerda, ficha à
+   direita, filete de tinta entre os projetos, como uma linha de
+   inventário do /portfolio. O aparelho encolhe para o tamanho de uma
+   ilustração de ficha, e não de um outdoor.
+
+   O "A TAREFA" é rótulo de estrutura, não enfeite: ele nomeia o campo
+   que a manchete da seção prometeu. Tudo vem DEPOIS do componente.
+   ============================================================ */
+.cases__grid--ficha{display:block;max-width:none;margin-inline:0}
+.cases__grid--ficha .case--ficha{
+  display:grid;grid-template-columns:1fr;gap:clamp(18px,3vw,28px);
+  padding-block:clamp(28px,4.4vw,52px);border-top:1.5px solid var(--ink);
+}
+.cases__grid--ficha .case--ficha:last-child{border-bottom:1.5px solid var(--ink)}
+.case--ficha .case__media{max-width:min(100%,250px)}
+.case__ficha{align-self:center;max-width:52ch}
+.case--ficha .case__cat{margin-top:0}
+.case--ficha .case__name{margin-top:10px;font-size:clamp(1.25rem,1.6vw,1.5rem)}
+.case__rotulo{
+  display:block;margin-top:clamp(18px,2.4vw,26px);
+  font-family:var(--font-mono);font-weight:700;font-size:9.5px;
+  letter-spacing:.18em;color:var(--green-dark);
+}
+.case__tarefa{
+  margin-top:6px;
+  font-family:var(--font-display);font-stretch:62%;font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.9rem,4.6vw,3.2rem);line-height:.94;letter-spacing:-.03em;color:var(--ink);
+  max-width:16ch;
+}
+.case--ficha .case__result{margin-top:12px;max-width:40ch}
+.case__link{
+  display:inline-flex;align-items:center;gap:10px;margin-top:16px;padding:6px 0;
+  font-family:var(--font-mono);font-weight:700;font-size:11px;letter-spacing:.14em;
+  color:var(--green-dark);border-bottom:1.5px solid var(--green);
+  transition:color .2s,border-color .2s;
+}
+.case__link .arrow{transition:transform .2s}
+@media(hover:hover) and (pointer:fine){
+  .case__link:hover{color:var(--ink);border-color:var(--ink)}
+  .case__link:hover .arrow{transform:translateX(3px)}
+}
+@media(min-width:760px){
+  .cases__grid--ficha .case--ficha{
+    grid-template-columns:minmax(220px,300px) minmax(0,1fr);
+    column-gap:clamp(32px,5vw,80px);align-items:center;
+  }
+  .case--ficha .case__media{max-width:300px}
+}
+/* a manchete da seção fecha mais perto da primeira ficha sem a intro */
+.cases__grid--ficha{margin-top:clamp(28px,4.4vw,48px)}

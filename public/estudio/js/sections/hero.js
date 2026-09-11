@@ -61,9 +61,9 @@ export function hero(){
   return `
   <section class="hero" id="hero">
     <div class="wrap">
-      <div class="eyebrow reveal">
+      ${h.tagline ? `<div class="eyebrow reveal">
         <ul class="${taglineClasse}">${tags}</ul>
-      </div>
+      </div>` : ""}
       <h1 class="hero__headline reveal">${lines}</h1>
       <div class="hero__bottom${semSelo ? " hero__bottom--sem-selo" : ""}" id="hero-card">
         ${semSelo ? "" : `<svg class="hero__selo" viewBox="0 0 100 100" role="img" aria-label="Carimbo: agenda aberta">
@@ -81,6 +81,7 @@ export function hero(){
           <text x="50" y="79.5" font-size="7.2" letter-spacing=".5" text-anchor="middle">MARINGÁ · PR</text>
         </svg>`}
         <p class="hero__sub reveal">${h.subheadline}</p>
+        ${h.passos ? `<ol class="hero__passos reveal">${h.passos.map(t => `<li>${t}</li>`).join("")}</ol>` : ""}
         <div class="hero__ctas reveal">
           <form id="hero-form" class="hero-form" novalidate>
             <div class="hero-form__par${f.nome ? "" : " hero-form__par--um"}">
