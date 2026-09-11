@@ -472,11 +472,29 @@ const CONFIG_LP = {
     label: "PREÇOS",
     headline: "O QUE CUSTA, DEPOIS QUE VOCÊ GOSTAR.",
     intro: "Preço fechado, pago uma vez. Quando você decide, já viu a sua página pronta.",
-    items: [
-      { tipo:"LANDING PAGE",       escopo:"Uma página, uma tarefa: captar contato ou vender direto. É a que recebe o seu tráfego pago.", valor:"R$497", tipoProjeto:"Landing page (página única de vendas ou captação)" },
-      { tipo:"SITE INSTITUCIONAL", escopo:"De 3 a 5 páginas, para quem precisa existir por inteiro: quem somos, serviços, contato.",    valor:"R$797", tipoProjeto:"Site institucional (3 a 5 páginas)" },
-      { tipo:"LOJA VIRTUAL",       escopo:"Catálogo com foto, preço e tamanho, e o pedido saindo pronto no seu WhatsApp.",              valor:"R$997", tipoProjeto:"Loja virtual (catálogo + checkout)" },
-    ],
+    /* ---------- um preço só (11/09/2026) ----------
+       A folha tinha três linhas (landing R$497, site R$797, loja R$997).
+       Saíram as duas de baixo: a página inteira vende UMA coisa, e um
+       cardápio abre uma decisão que quem veio do anúncio não veio tomar.
+       A loja ainda contradizia a /vitrine-digital, que vende a mesma coisa
+       por outro preço e com outra oferta. Quem quiser um site inteiro
+       resolve no WhatsApp. `incluso` é o que a etiqueta lista com o ✓ na
+       margem: cada item já é promessa de outra seção (passo 03, garantia),
+       aqui só reunidos ao lado do número. */
+    item: {
+      tipo:"LANDING PAGE",
+      escopo:"Uma página, uma tarefa: captar contato ou vender direto. É a que recebe o seu tráfego pago.",
+      valor:"R$497",
+      incluso:[
+        "Texto, design e desenvolvimento",
+        "Formulário caindo no seu WhatsApp",
+        "Pixel configurado: você vê o custo por contato",
+        "Domínio conectado e página no ar",
+        "Você vê pronta antes de pagar",
+      ],
+      acao:"PEDIR A MINHA",
+      tipoProjeto:"Landing page (página única de vendas ou captação)",
+    },
     entrada: "Começa com <b>R$97</b>. O saldo só quando a página for ao ar.",
     nota: "Sem mensalidade: você paga uma vez. Domínio próprio é opcional e pago direto no registrador.",
   },
@@ -520,7 +538,7 @@ const CONFIG_LP = {
        miúda repete os três valores porque este é o último lugar onde
        alguém pergunta "quanto mesmo?", com o dedo já no formulário. */
     pricing: "",
-    pricingNote: "Landing page R$497, site institucional R$797, loja virtual R$997. Preço fechado, pago uma vez.",
+    pricingNote: "Landing page R$497, começando com R$97. Preço fechado, pago uma vez.",
     passoUnico: true,
     formClaro: true,
     form: {

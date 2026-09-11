@@ -23,7 +23,12 @@ export function initPrecos(){
   const campo = form.querySelector('input[type="hidden"][name="tipo_projeto"]');
   if (!campo) return;
 
-  document.querySelectorAll(".pr__item[data-tipo]").forEach(link => {
+  const links = document.querySelectorAll(".pr__item[data-tipo], .pr__etiqueta[data-tipo]");
+  links.forEach(link => {
     link.addEventListener("click", () => { campo.value = link.dataset.tipo || ""; });
   });
+  /* Com uma etiqueta só (desde 11/09) não existe escolha a registrar: o
+     tipo já nasce preenchido, e todo lead da página sai como landing page
+     mesmo que a pessoa nunca tenha passado pela seção de preço. */
+  if (links.length === 1 && !campo.value) campo.value = links[0].dataset.tipo || "";
 }

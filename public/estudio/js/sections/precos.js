@@ -42,15 +42,16 @@ export function precos(){
   const p = CONFIG.precos;
   if (!p) return "";
 
-  const linhas = p.items.map(i => `
-    <li class="pr__linha reveal">
-      <a class="pr__item" href="#contato" data-tipo="${i.tipoProjeto}" data-cta="precos" data-cta-dest="form">
-        <span class="pr__tipo">${i.tipo}</span>
-        <span class="pr__escopo">${i.escopo}</span>
-        <span class="pr__valor">${i.valor}</span>
-        <span class="pr__acao">PEDIR A MINHA <span class="arrow" aria-hidden="true">→</span></span>
-      </a>
-    </li>`).join("");
+  /* ---------- a folha virou ETIQUETA (11/09/2026) ----------
+     As três linhas viraram uma. Com um preço só, a lista de conta não faz
+     mais sentido (não há o que comparar), e o objeto certo é a etiqueta
+     de preço da /vitrine-digital: papel com filete de tinta sobre o
+     grafite, o número em corpo de manchete e o que está incluso com o ✓
+     na margem. É o único objeto de papel desta seção, e a etiqueta inteira
+     é o link para o formulário, com o `data-tipo` que o js/lib/precos.js
+     grava no campo escondido. */
+  const i = p.item;
+  const incluso = (i.incluso || []).map(t => `<li>${t}</li>`).join("");
 
   return `
   <section class="precos dark" id="precos">
@@ -58,8 +59,14 @@ export function precos(){
       <div class="section-label pr__label reveal">${p.label}</div>
       <h2 class="pr__head reveal">${ponto(p.headline)}</h2>
       <p class="pr__intro reveal">${p.intro}</p>
-      <ul class="pr__lista">${linhas}</ul>
-      <p class="pr__entrada reveal">${p.entrada}</p>
+      <a class="pr__etiqueta reveal" href="#contato" data-tipo="${i.tipoProjeto}" data-cta="precos" data-cta-dest="form">
+        <span class="et__tipo">${i.tipo}</span>
+        <span class="et__valor">${i.valor}</span>
+        <span class="et__escopo">${i.escopo}</span>
+        <ul class="et__incluso">${incluso}</ul>
+        <span class="et__entrada">${p.entrada}</span>
+        <span class="et__acao">${i.acao} <span class="arrow" aria-hidden="true">→</span></span>
+      </a>
       <p class="pr__nota reveal">${p.nota}</p>
     </div>
   </section>`;
