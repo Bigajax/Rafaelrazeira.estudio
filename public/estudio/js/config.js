@@ -280,7 +280,15 @@ const CONFIG_LP = {
   brand: {
     name: "RAFAEL RAZEIRA",
     suffix: "ESTÚDIO",
-    navCta: "QUERO A MINHA PRÉVIA",
+    /* ---------- uma ação, um nome (11/09/2026) ----------
+       O mesmo botão tinha quatro nomes na página: "quero a minha prévia"
+       no topo e no pill, "quero ver a minha pronta" no cartão, "quero a
+       prévia da minha página" nos projetos. Quem lê aprende o caminho
+       pelo nome do botão, e quatro nomes são quatro caminhos. Ficou o do
+       cartão: é concreto e repete o título dos anúncios ("Você vê pronta
+       antes de pagar"). Vale para o topo, o pill, os projetos, o quem faz
+       e o formulário do fim. */
+    navCta: "QUERO VER A MINHA PRONTA",
   },
 
   /* ---------- a oferta mudou de natureza (02/09) ----------
@@ -327,10 +335,25 @@ const CONFIG_LP = {
 
        O <em> da última linha ganha a faixa grafite (ver hero.css). */
     headline: ["EU DESENHO", "A SUA PÁGINA.", "GOSTOU? <em>AÍ PAGA.</em>"],
-    subheadline: "<em>Landing pages para quem já anuncia.</em> Eu monto a sua inteira e te mando o link para navegar. Se não gostar, você não pagou nada.",
+    /* ---------- o subtítulo parou de repetir a manchete (11/09) ----------
+       Ele terminava em "se não gostar, você não pagou nada", que é a
+       manchete dita de novo, e a linha sob o botão dizia pela terceira
+       vez. Garantia repetida três vezes na mesma tela soa insegura. Agora
+       ele diz o que é "inteira" (texto, design, formulário) e os dois
+       prazos que a régua de cima carrega, porque é aqui que a pessoa lê
+       com o dedo no campo. */
+    subheadline: "<em>Landing pages para quem já anuncia.</em> Texto, design e formulário caindo no seu WhatsApp. Em 3 dias, no seu celular, para navegar antes de pagar.",
     cta: "QUERO VER A MINHA PRONTA",
+    /* O carimbo "agenda aberta" saiu desta página: sem um número de
+       verdade dentro ele é decoração, e no celular invadia a quina do
+       cartão. Volta no dia em que houver "N prévias por semana" para
+       escrever nele. A /estudio continua com o dela. */
+    selo: false,
     form: {
-      nome:      { label: "SEU NOME",          ph: "Como devo te chamar" },
+      /* Sem `nome`: o passo 01 já prometia "o seu WhatsApp e o site ou
+         Instagram", e o cartão pedia quatro coisas. O nome não é
+         matéria-prima da prévia e chega na resposta do WhatsApp. A rota
+         /api/lead usa o @ como nome de exibição quando ele falta. */
       whatsapp:  { label: "WHATSAPP COM DDD",  ph: "(44) 99999-9999" },
       instagram: { label: "SITE OU INSTAGRAM", ph: "É daqui que eu tiro a sua prévia" },
       /* Obrigatório só aqui. Na /estudio o mesmo campo continua opcional,
@@ -347,13 +370,16 @@ const CONFIG_LP = {
          o CRM usa para NÃO abrir produção. */
       investimento: {
         label: "QUANTO VOCÊ INVESTE EM ANÚNCIOS POR MÊS",
-        ph: "Escolha uma faixa",
-        opcoes: ["Ainda não anuncio", "Até R$ 500", "R$ 500 a R$ 2.000", "R$ 2.000 a R$ 5.000", "Mais de R$ 5.000"],
+        /* Pílulas, e não um select (11/09): um toque em vez de dois mais o
+           seletor nativo, e as cinco respostas ficam visíveis de uma vez,
+           o que também mostra a quem não anuncia que a pergunta é séria.
+           A primeira opção continua começando com "Ainda não anuncio":
+           é a string que a rota testa para NÃO abrir produção. */
+        opcoes: ["Ainda não anuncio", "Até R$500", "R$500 a 2 mil", "R$2 mil a 5 mil", "Mais de R$5 mil"],
         err: "Me diz a faixa: é assim que eu sei que a página vai ter tráfego.",
       },
       enviar: "QUERO VER A MINHA PRONTA",
       enviando: "ENVIANDO…",
-      errNome:  "Escreva seu nome.",
       errWhats: "Confira o número: faltou dígito.",
       errInsta: "Me diz onde eu vejo o seu negócio: é de lá que sai a prévia.",
       okTitulo: "PEDIDO RECEBIDO.",
@@ -361,7 +387,13 @@ const CONFIG_LP = {
       okCta:    "ADIANTAR PELO WHATSAPP",
       erro:     "Não consegui enviar agora. Tente de novo ou me chame no WhatsApp.",
     },
-    proof: "A PRÉVIA É POR MINHA CONTA · RESPOSTA EM ATÉ 24H",
+    /* A linha sob o botão parou de repetir a garantia e passou a mostrar
+       a peça: a promessa é "uma página pronta", e até aqui a primeira
+       página feita só aparecia quatro seções abaixo. O link abre um
+       projeto real do estúdio, no ar, para a pessoa tocar antes de
+       preencher. */
+    proof: "RESPOSTA EM ATÉ 24H",
+    proofLink: { label: "VEJA UMA PRONTA: LANCELLOTTI", url: "https://lancellotti-tattoo-clinic.vercel.app" },
     ctaWhats: "PREFIRO CONVERSAR PELO WHATSAPP",
     whatsMsg: "Olá, Rafael. Eu já anuncio e quero ver a prévia da minha landing page.",
   },
@@ -398,7 +430,7 @@ const CONFIG_LP = {
   process: {
     label: "COMO FUNCIONA.",
     steps: [
-      { num:"01", prazo:"RESPOSTA EM 24H ÚTEIS", title:"VOCÊ PEDE A SUA PRÉVIA",    text:"Dois campos: o seu WhatsApp e o site ou Instagram para onde os seus anúncios vão hoje. Não custa nada e não tem compromisso nenhum." },
+      { num:"01", prazo:"RESPOSTA EM 24H ÚTEIS", title:"VOCÊ PEDE A SUA PRÉVIA",    text:"Três toques: o seu WhatsApp, o site ou Instagram para onde os seus anúncios vão hoje e quanto você investe por mês. Não custa nada e não tem compromisso nenhum." },
       { num:"02", prazo:"PRÉVIA EM ATÉ 3 DIAS",  title:"EU MONTO A PÁGINA INTEIRA", text:"Estratégia, texto, design e desenvolvimento. Você não escreve nada e não manda nada pronto. Quando terminar, eu te mando um link: a sua página, no seu celular, para navegar antes de qualquer pagamento." },
       { num:"03", prazo:"ENTRADA DE R$97",       title:"GOSTOU? AÍ A GENTE COMEÇA",  text:"Domínio conectado, formulário caindo no seu WhatsApp e o pixel configurado, para você ver quanto custa cada contato. O saldo só é quitado quando a página for ao ar. Se não gostar, você não paga e a gente se despede bem." },
     ],
@@ -409,7 +441,7 @@ const CONFIG_LP = {
     label: "PROJETOS DO ESTÚDIO",
     headline: "PÁGINAS FEITAS PARA UMA TAREFA SÓ.",
     intro: "Cada uma nasceu de um objetivo específico, não de um layout bonito escolhido antes.",
-    cta: "QUERO A PRÉVIA DA MINHA PÁGINA",
+    cta: "QUERO VER A MINHA PRONTA",
     items: [
       { video:"", img:"assets/case-lancellotti.jpg", tag:"", category:"LANDING PAGE · CAPTAÇÃO", name:"Lancellotti Tattoo", result:"Hero cinematográfico, acervo em galeria e orçamento guiado por etapas: quem chega interessado sai com o pedido já descrito." },
       { video:"", img:"assets/case-baixudos.jpg",    tag:"", category:"LANDING PAGE · EVENTO",   name:"Baixudos.PR",        result:"Página de campanha com data marcada: uma promessa, uma ação e o caminho até o ingresso sem desvio." },
@@ -461,7 +493,7 @@ const CONFIG_LP = {
       "Um estúdio de um homem só. Você não fala com atendimento nem com estagiário: <b>fala comigo</b>, do briefing ao ar.",
       "<span class='muted'>Estratégia, texto e design saindo do mesmo par de mãos é o que faz o <b>anúncio e a página falarem igual</b>. Quando são pessoas diferentes, é no meio do caminho que a promessa se perde.</span>",
     ],
-    cta: "QUERO A MINHA PRÉVIA",
+    cta: "QUERO VER A MINHA PRONTA",
   },
 
   contact: {
@@ -496,7 +528,7 @@ const CONFIG_LP = {
       whatsapp:  { label:"WhatsApp com DDD",   placeholder:"(44) 99999-9999", err:"Digite o WhatsApp com DDD (10 a 11 dígitos)." },
       instagram: { label:"Site ou Instagram",  placeholder:"É daqui que eu tiro a sua prévia", err:"Me diz onde eu vejo o seu negócio." },
       vende:     { label:"O que você vende?",  placeholder:"Ex.: estética, mentoria, curso, serviço local…", err:"Conte o que você vende." },
-      submit:  "QUERO A MINHA PRÉVIA",
+      submit:  "QUERO VER A MINHA PRONTA",
       note:    "Sem compromisso. Seus dados serão usados apenas para responder sobre o seu projeto.",
       successTitle: "PRÉVIA SOLICITADA!",
       successText:  "Te respondo pelo WhatsApp em até 24 horas úteis e mando o link da sua página em até 3 dias. Quer adiantar a conversa?",
@@ -516,7 +548,7 @@ const CONFIG_LP = {
     ],
   },
 
-  pillText: "QUERO A MINHA PRÉVIA",
+  pillText: "QUERO VER A MINHA PRONTA",
 };
 
 /* Qual das duas o navegador está lendo. É a única linha que decide, e ela

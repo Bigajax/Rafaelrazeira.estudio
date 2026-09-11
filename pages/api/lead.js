@@ -365,9 +365,17 @@ export default async function handler(req, res) {
   /* Só nome e WhatsApp são obrigatórios, os mesmos dois que o formulário
      marca como required. O resto da linha pode vir vazio: um lead com dado
      faltando continua sendo um lead, e recusar seria voltar a perder gente. */
-  const nome = texto(b.nome);
+  /* ---------- o nome deixou de ser obrigatório na porta (11/09/2026) ----------
+     O hero da /landing-page parou de perguntar o nome: ele não é
+     matéria-prima da prévia (o @ ou o site já dizem qual é o negócio) e
+     era um campo a mais entre o anúncio e o envio. Sem nome, o lead
+     precisa vir com o canal, senão não há o que montar nem como chamar a
+     pessoa; o nome de gente chega na primeira resposta do WhatsApp. O
+     fallback para o card e o e-mail é o próprio canal, mais abaixo. */
+  let nome = texto(b.nome);
   const whatsapp = texto(b.whatsapp, 40);
-  if (!nome || !whatsapp) return erro(res, 400, "nome e whatsapp são obrigatórios");
+  if (!whatsapp) return erro(res, 400, "whatsapp é obrigatório");
+  if (!nome && !texto(b.canal)) return erro(res, 400, "nome ou site/instagram é obrigatório");
   /* a MESMA régua do formulário (components/telefone.ts): DDD válido, 10-11
      dígitos, celular começando com 9, sem repetição nem escada. Validar só no
      cliente seria decorativo, esta rota é pública e qualquer POST chega aqui.
@@ -413,6 +421,9 @@ export default async function handler(req, res) {
        que é como a oficina e o CRM o procuram depois */
     if (c.estado === "ok") canal = c.arroba;
   }
+  /* sem nome, o canal vira o nome de exibição: "@loja" no card, no push e
+     no assunto do e-mail já diz de quem é a prévia */
+  if (!nome) nome = /^https?:\/\/|\./.test(canal) ? canal : `@${canal.replace(/^@/, "")}`;
 
   const utm = b.utm || {};
   const linha = {

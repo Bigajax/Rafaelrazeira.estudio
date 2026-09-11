@@ -45,6 +45,10 @@ import { initTracking }   from "./lib/tracking.js";
 
 const page = [hero, marquee, audience, process, cases, precos, about, contact, marquee];
 
+/* A raiz ganha a classe `lp`: é o único gancho de CSS que separa as duas
+   páginas, e serve para o que o config não alcança (o botão do cabeçalho
+   no celular, ver header.css). Tudo o mais continua vindo do CONFIG_LP. */
+document.documentElement.classList.add("lp");
 const app = document.getElementById("app");
 app.innerHTML =
   header() +

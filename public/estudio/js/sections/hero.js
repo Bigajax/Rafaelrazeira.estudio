@@ -19,7 +19,18 @@ export function hero(){
     return i === ultima ? `<span class="hero__faixa">${linha}</span>` : linha;
   }).join("");
   // Cada item da prova é inquebrável — a linha só dobra nos separadores "·"
-  const proof = h.proof.split("·").map(p => `<span>${p.trim()}</span>`).join(" · ");
+  const proofItens = h.proof.split("·").map(p => `<span>${p.trim()}</span>`);
+  /* `proofLink` (só a /landing-page): a linha de prova ganha um link para
+     uma página feita, no ar. A promessa desta página é uma peça, e até
+     aqui a primeira peça só aparecia quatro seções abaixo. */
+  if (h.proofLink) proofItens.push(
+    `<a href="${h.proofLink.url}" target="_blank" rel="noopener" data-cta="hero_prova" data-cta-dest="projeto">${h.proofLink.label}</a>`
+  );
+  const proof = proofItens.join(" · ");
+  /* `selo: false` tira o carimbo do cartão (a /landing-page, desde 11/09:
+     sem um número dentro ele é decoração). A classe libera a quina que o
+     subtítulo reservava para ele, ver hero.css. */
+  const semSelo = h.selo === false;
   /* ---------- a tagline virou LISTA, e não frase ----------
      Ela era uma string única com pontos no meio ("POSICIONAMENTO ·
      CONVERSÃO · NOVOS NEGÓCIOS"), ou seja, três categorias disfarçadas de
@@ -54,8 +65,8 @@ export function hero(){
         <ul class="${taglineClasse}">${tags}</ul>
       </div>
       <h1 class="hero__headline reveal">${lines}</h1>
-      <div class="hero__bottom" id="hero-card">
-        <svg class="hero__selo" viewBox="0 0 100 100" role="img" aria-label="Carimbo: agenda aberta">
+      <div class="hero__bottom${semSelo ? " hero__bottom--sem-selo" : ""}" id="hero-card">
+        ${semSelo ? "" : `<svg class="hero__selo" viewBox="0 0 100 100" role="img" aria-label="Carimbo: agenda aberta">
           <defs>
             <path id="seloArcoTopoEstudio" d="M50 50 m-34.5 0 a34.5 34.5 0 0 1 69 0" fill="none" />
           </defs>
@@ -68,18 +79,18 @@ export function hero(){
           <text x="50" y="62.5" font-size="14" letter-spacing=".4" text-anchor="middle">ABERTA</text>
           <line x1="31" y1="69.5" x2="69" y2="69.5" stroke="currentColor" stroke-width="1" />
           <text x="50" y="79.5" font-size="7.2" letter-spacing=".5" text-anchor="middle">MARINGÁ · PR</text>
-        </svg>
+        </svg>`}
         <p class="hero__sub reveal">${h.subheadline}</p>
         <div class="hero__ctas reveal">
           <form id="hero-form" class="hero-form" novalidate>
-            <div class="hero-form__par">
-              <div class="hero-form__linha">
+            <div class="hero-form__par${f.nome ? "" : " hero-form__par--um"}">
+              ${f.nome ? `<div class="hero-form__linha">
                 <label class="hero-form__campo">
                   <span>${f.nome.label}</span>
                   <input name="nome" type="text" autocomplete="name" placeholder="${f.nome.ph}" />
                 </label>
                 <p class="hero-form__err" id="h-err-nome" hidden>${f.errNome}</p>
-              </div>
+              </div>` : ""}
               <div class="hero-form__linha">
                 <label class="hero-form__campo">
                   <span>${f.whatsapp.label}</span>
@@ -98,16 +109,13 @@ export function hero(){
             </div>
 
             ${f.investimento ? `
-            <div class="hero-form__linha">
-              <label class="hero-form__campo">
-                <span>${f.investimento.label}</span>
-                <select name="investimento" aria-describedby="h-err-invest">
-                  <option value="" disabled selected>${f.investimento.ph}</option>
-                  ${f.investimento.opcoes.map(o => `<option value="${o}">${o}</option>`).join("")}
-                </select>
-              </label>
+            <fieldset class="hero-form__linha hero-form__faixas" id="h-faixas">
+              <legend class="hero-form__rotulo">${f.investimento.label}</legend>
+              <div class="hero-form__opcoes">
+                ${f.investimento.opcoes.map(o => `<label class="hero-form__opcao"><input type="radio" name="investimento" value="${o}" aria-describedby="h-err-invest" /><span>${o}</span></label>`).join("")}
+              </div>
               <p class="hero-form__err" id="h-err-invest" hidden>${f.investimento.err}</p>
-            </div>` : ""}
+            </fieldset>` : ""}
 
             <input name="_gotcha" class="hero-form__pote" tabindex="-1" autocomplete="off" aria-hidden="true" />
 

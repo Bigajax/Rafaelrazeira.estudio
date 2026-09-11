@@ -393,3 +393,58 @@
   .hero__whats{align-self:center}
   .hero__cue{grid-column:1/-1;margin-top:clamp(32px,5vw,56px)}
 }
+
+/* ============================================================
+   O CARTÃO DA /landing-page (11/09/2026)
+
+   Três coisas saíram dele no mesmo dia: o carimbo, o campo de nome e o
+   select. O que sobrou é um cartão de três perguntas, e as regras abaixo
+   são as que a versão sem enfeite pede. Todas vêm DEPOIS do componente
+   de propósito (mesma especificidade, vence quem vem por último).
+   ============================================================ */
+/* Sem selo, o subtítulo não precisa reservar a quina */
+.hero__bottom--sem-selo .hero__sub{padding-right:0}
+/* Sem nome, o WhatsApp ocupa a fileira inteira também no desktop */
+@media(min-width:560px){.hero-form__par--um{grid-template-columns:1fr}}
+
+/* ---------- as faixas de investimento são PÍLULAS, não um select ----------
+   Um toque em vez de dois mais o seletor do sistema, e as cinco respostas
+   visíveis de uma vez. A pílula é a da casa: fio de tinta, mono miúda em
+   caixa alta, e a escolhida vira tinta cheia com o texto em papel. Nada
+   de rosa aqui: o rosa é do botão de envio, e uma pílula rosa marcada
+   viraria um segundo botão dentro do cartão. O foco de teclado é o único
+   lugar onde o rosa aparece, e some no toque. */
+.hero-form__faixas{border:0;padding:0;margin:14px 0 0;min-width:0}
+.hero-form__rotulo{
+  display:block;padding:0;
+  font-family:var(--font-mono);font-weight:700;font-size:8.5px;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--green-dark);
+}
+.hero-form__opcoes{display:flex;flex-wrap:wrap;gap:8px;margin-top:9px}
+/* cada pílula estica para fechar a fileira: no celular são duas por linha
+   e a última sozinha, sem rebarba na margem direita */
+.hero-form__opcao{position:relative;display:block;cursor:pointer;flex:1 1 auto}
+.hero-form__opcao input{position:absolute;inset:0;opacity:0;pointer-events:none}
+.hero-form__opcao span{
+  display:inline-flex;align-items:center;min-height:36px;padding:0 13px;
+  border:1.5px solid var(--ink);
+  font-family:var(--font-mono);font-weight:700;font-size:10px;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--ink);
+  background:transparent;white-space:nowrap;width:100%;justify-content:center;
+  transition:background .15s,color .15s,border-color .15s;
+}
+@media(hover:hover) and (pointer:fine){.hero-form__opcao:hover span{background:var(--paper-2)}}
+.hero-form__opcao input:checked + span{background:var(--ink);color:var(--paper)}
+.hero-form__opcao input:focus-visible + span{outline:2px solid var(--rosa);outline-offset:2px}
+.hero-form__faixas.is-invalid .hero-form__opcao span{border-color:var(--rosa)}
+
+/* ---------- a prova virou link para uma página feita ----------
+   Sobe um ponto de corpo porque agora ela pede um toque, e o link leva o
+   esmeralda de texto (5,7:1 no papel) com o filete da casa embaixo. */
+.hero__proof{font-size:clamp(9px,2.4vw,10px)}
+.hero__proof a{
+  white-space:nowrap;
+  color:var(--green-dark);border-bottom:1px solid var(--green);padding-bottom:1px;
+  transition:color .2s,border-color .2s;
+}
+@media(hover:hover) and (pointer:fine){.hero__proof a:hover{color:var(--ink);border-color:var(--ink)}}

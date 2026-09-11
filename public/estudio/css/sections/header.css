@@ -59,3 +59,9 @@
   .nav-product:hover{color:var(--ink);border-bottom-color:var(--ink)}
 }
 @media(max-width:820px){.nav-product{display:none}}
+
+/* ---------- na /landing-page o botão do topo some no celular (11/09) ----------
+   Ali o formulário está a uma tela de distância e o pill flutuante cobre
+   o resto da página. Um botão que rola até o próprio pé só rouba a
+   primeira tela da manchete. A classe `lp` vem do js/main-lp.js. */
+@media(max-width:820px){.lp .nav-cta{display:none}}

@@ -57,7 +57,11 @@ export function initHeroForm(){
      página que promete uma prévia inteira de graça e precisa saber antes
      se a pessoa anuncia. Ver `investimento` no CONFIG_LP. */
   const errInvest = document.getElementById("h-err-invest");
-  if (errInvest) form.investimento.addEventListener("change", () => marcar(form.investimento, errInvest, false));
+  /* As faixas são rádios dentro de um fieldset (11/09): `form.investimento`
+     vira um RadioNodeList, cujo `.value` é a opção marcada ou "". Quem
+     recebe a marca de inválido é o fieldset, que é o que tem borda. */
+  const faixas = document.getElementById("h-faixas");
+  if (errInvest && faixas) faixas.addEventListener("change", () => marcar(faixas, errInvest, false));
 
   // máscara (44) 99999-9999 enquanto digita
   const tel = form.whatsapp;
@@ -69,7 +73,9 @@ export function initHeroForm(){
   });
 
   // o erro some enquanto a pessoa corrige, não só no próximo envio
-  form.nome.addEventListener("input", () => marcar(form.nome, errNome, false));
+  /* `form.nome` só existe onde o config pede o nome (a /landing-page
+     parou de pedir em 11/09) */
+  if (form.nome) form.nome.addEventListener("input", () => marcar(form.nome, errNome, false));
   tel.addEventListener("input", () => marcar(tel, errWhats, false));
   if (errInsta) form.instagram.addEventListener("input", () => marcar(form.instagram, errInsta, false));
 
@@ -77,15 +83,15 @@ export function initHeroForm(){
     e.preventDefault();
     if (form._gotcha.value) return;                    // honeypot preenchido = robô
 
-    const nomeOk  = marcar(form.nome, errNome, !form.nome.value.trim());
+    const nomeOk  = !form.nome || marcar(form.nome, errNome, !form.nome.value.trim());
     const whatsOk = marcar(tel, errWhats, !whatsValido(tel.value));
     if (!nomeOk){ form.nome.focus(); return; }
     if (!whatsOk){ tel.focus(); return; }
     if (errInsta && !marcar(form.instagram, errInsta, !form.instagram.value.trim())){
       form.instagram.focus(); return;
     }
-    if (errInvest && !marcar(form.investimento, errInvest, !form.investimento.value)){
-      form.investimento.focus(); return;
+    if (errInvest && faixas && !marcar(faixas, errInvest, !form.investimento.value)){
+      faixas.querySelector("input").focus(); return;
     }
 
     /* ---------- o hero passou a gravar em `leads`, pela /api/lead (10/09/2026) ----------
@@ -102,7 +108,7 @@ export function initHeroForm(){
     const pagina = location.pathname.replace(/^\/|\/$/g, "").split("/")[0] || "estudio";
     const payload = {
       pagina,
-      nome: form.nome.value.trim(),
+      nome: form.nome ? form.nome.value.trim() : "",
       whatsapp: tel.value.trim(),
       canal: form.instagram.value.trim(),
       investimento: form.investimento ? form.investimento.value : "",
@@ -143,7 +149,7 @@ export function initHeroForm(){
   const okCta = document.getElementById("hero-ok-cta");
   if (okCta){
     okCta.addEventListener("click", () => {
-      const nome = form.nome.value.trim();
+      const nome = form.nome ? form.nome.value.trim() : "";
       const msg = `Olá, Rafael! Acabei de deixar meu contato no site${nome ? `, sou ${nome}` : ""}. Quero falar sobre o meu projeto.`;
       okCta.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
     });
