@@ -655,11 +655,13 @@ function HeroForm() {
 /* ---------- o pedido chegando (11/09/2026) ----------
    Um balão de WhatsApp com um pedido de verdade, no formato que a vitrine
    manda (peça e tamanho, sem preço porque o da Sölo Urb muda). É a prova
-   da segunda metade do lead ("o pedido chega montado no WhatsApp"). No
-   desktop fica pendurado entre o cartão e o aparelho; no celular sobe
-   para logo abaixo do lead, porque ali o aparelho só aparece depois do
-   cartão inteiro e a primeira tela ficava sem nenhuma prova do produto.
-   Decorativo para leitor de tela: a frase já está no lead. */
+   da segunda metade do lead ("o pedido chega montado no WhatsApp"),
+   pendurado no aparelho nas duas larguras: no desktop no vão entre o
+   cartão e o celular, no celular na quina de baixo à esquerda da tela.
+   (Chegou a ficar logo abaixo do lead no celular, em 11/09, e o Rafael
+   pediu de volta para perto do aparelho: o balão só faz sentido saindo
+   da tela da loja.) Decorativo para leitor de tela: a frase já está no
+   lead. */
 function Pedido({ className }: { className?: string }) {
   return <div className={`${s.pedido} ${className ?? ""}`} aria-hidden>
     <span className={s.pedidoK}>PEDIDO NO SEU WHATSAPP</span>
@@ -735,7 +737,6 @@ export function Hero() {
             no canhoto da etiqueta. Aqui ela fica em tinta cheia e o resto
             da frase recua para o cinza. Ver `.heroCopy .lead b` no CSS. */}
         <p className={s.lead}><b>Foto, preço e tamanho</b> de cada peça num link só. O cliente escolhe e o pedido chega montado no WhatsApp, sem você responder um por um.</p>
-        <Pedido className={s.pedidoInline} />
         {/* ---------- a faixa, ACIMA da etiqueta ----------
             Ela nasceu embaixo e foi medida a 800px numa dobra de 740, ou
             seja, fora da primeira tela, que era o único lugar onde ela
@@ -770,7 +771,7 @@ export function Hero() {
           {/* o chip colado na base do aparelho: a bolinha marca que a loja
               está no ar, o nome diz de quem é, e o rótulo leva para a seção
               com os projetos de clientes */}
-          <Pedido className={s.hideMobile} />
+          <Pedido />
           <a className={s.liveTag} href="#projetos" data-cta="hero_projetos" data-cta-dest="projetos">
             <i aria-hidden /> NO AR: SÖLO URB · VER LOJAS QUE JÁ USAM ↓
           </a>
