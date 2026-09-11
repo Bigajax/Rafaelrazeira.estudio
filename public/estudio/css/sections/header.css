@@ -65,3 +65,9 @@
    o resto da página. Um botão que rola até o próprio pé só rouba a
    primeira tela da manchete. A classe `lp` vem do js/main-lp.js. */
 @media(max-width:820px){.lp .nav-cta{display:none}}
+/* ---------- e os links de navegação somem em qualquer largura ----------
+   Página de tráfego pago tem uma saída só, o formulário. "Serviços",
+   "Vitrine digital" e "Portfólio" são três portas para fora, cada uma com
+   uma oferta diferente da que o anúncio prometeu. Fica a logo (âncora
+   para o topo) e, no desktop, o botão da própria ação. */
+.lp .nav-product{display:none}
