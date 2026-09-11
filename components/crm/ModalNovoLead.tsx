@@ -16,7 +16,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { criarLead } from "@/app/crm/acoes";
+import { criarLead } from "@/app/(pt)/crm/acoes";
 import { mascararWhatsapp } from "@/components/telefone";
 import {
   NOME_ORIGEM,
@@ -26,7 +26,7 @@ import {
   type Origem,
   type TipoProjeto,
 } from "@/lib/crm/tipos";
-import s from "@/app/crm/crm.module.css";
+import s from "@/app/(pt)/crm/crm.module.css";
 
 export function ModalNovoLead({ aoFechar }: { aoFechar: () => void }) {
   const router = useRouter();

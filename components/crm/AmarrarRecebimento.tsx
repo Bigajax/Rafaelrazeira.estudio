@@ -19,11 +19,11 @@
    ============================================================ */
 
 import { useState, useTransition } from "react";
-import { amarrarRecebimento, apagarRecebimento } from "@/app/crm/acoes";
+import { amarrarRecebimento, apagarRecebimento } from "@/app/(pt)/crm/acoes";
 import { dinheiroExato } from "@/lib/crm/financeiro";
 import { NOME_METODO, type Metodo } from "@/lib/crm/tipos";
 import { dataCurta } from "@/lib/crm/regras";
-import s from "@/app/crm/crm.module.css";
+import s from "@/app/(pt)/crm/crm.module.css";
 
 export function AmarrarRecebimento({
   recebimento,

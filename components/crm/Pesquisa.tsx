@@ -23,10 +23,10 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { salvarLead } from "@/app/crm/acoes";
+import { salvarLead } from "@/app/(pt)/crm/acoes";
 import { aplicarSaudacao, dinheiro } from "@/lib/crm/regras";
 import type { LeadPainel } from "@/lib/crm/tipos";
-import s from "@/app/crm/crm.module.css";
+import s from "@/app/(pt)/crm/crm.module.css";
 
 /* O custo vem em dólar do OpenRouter; centavos de dólar com quatro casas
    seriam ruído, duas bastam para acompanhar o gasto. */

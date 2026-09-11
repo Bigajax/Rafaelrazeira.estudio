@@ -10,7 +10,8 @@ import s from "./portfolio.module.css";
 /* As mesmas três vozes da /vitrine-digital, e é essa a razão de estarem
    aqui: o portfólio é a seção "Projetos no ar" daquela página em tamanho
    real, e chegar nele com outro alfabeto quebrava a continuidade justo
-   no clique que a vitrine promete ("VER OS 9 PROJETOS NO PORTFÓLIO"). */
+   no clique que a vitrine promete ("VER OS N PROJETOS NO PORTFÓLIO", com o
+   N contado do mesmo dado desde 28/08, dos dois lados). */
 const display = Archivo({ subsets: ["latin"], axes: ["wdth"], variable: "--font-display" });
 const body = Inter({ subsets: ["latin"], variable: "--font-body" });
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });

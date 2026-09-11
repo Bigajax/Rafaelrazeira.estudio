@@ -35,7 +35,7 @@ import {
   type CampoExigido,
   type Passagem,
 } from "@/lib/crm/regras";
-import s from "@/app/crm/crm.module.css";
+import s from "@/app/(pt)/crm/crm.module.css";
 
 /* A frase de abertura é diferente por destino porque o motivo de a tela ter
    parado é diferente. Genérico ("preencha os campos obrigatórios") faria o

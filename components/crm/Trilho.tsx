@@ -59,7 +59,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { Contagens } from "@/lib/crm/dados";
-import s from "@/app/crm/crm.module.css";
+import s from "@/app/(pt)/crm/crm.module.css";
 
 /* A ordem é a do dia de trabalho, não a alfabética: abre em Hoje, arrasta
    no Pipeline, escreve nos Templates, confere nas Métricas. */

@@ -20,8 +20,8 @@
    ============================================================ */
 
 import { useEffect, useState, useTransition } from "react";
-import { salvarLead, type CampoEditavel } from "@/app/crm/acoes";
-import s from "@/app/crm/crm.module.css";
+import { salvarLead, type CampoEditavel } from "@/app/(pt)/crm/acoes";
+import s from "@/app/(pt)/crm/crm.module.css";
 
 type Props = {
   leadId: string;

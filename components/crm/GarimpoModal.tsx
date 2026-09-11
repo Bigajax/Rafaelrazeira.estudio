@@ -15,7 +15,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import s from "@/app/crm/crm.module.css";
+import s from "@/app/(pt)/crm/crm.module.css";
 
 export function GarimpoModal({ aoFechar }: { aoFechar: () => void }) {
   const router = useRouter();

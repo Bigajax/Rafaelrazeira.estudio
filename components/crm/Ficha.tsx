@@ -35,7 +35,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { apagarLead, moverLead, registrarToque } from "@/app/crm/acoes";
+import { apagarLead, moverLead, registrarToque } from "@/app/(pt)/crm/acoes";
 import { mascararWhatsapp } from "@/components/telefone";
 import {
   dataCurta,
@@ -87,7 +87,7 @@ import { SugerirResposta } from "./SugerirResposta";
 import { AvisoDoisRetornos } from "./pecas";
 import { BlocoContrato } from "./BlocoContrato";
 import type { ContratoPainel } from "@/lib/crm/dados";
-import s from "@/app/crm/crm.module.css";
+import s from "@/app/(pt)/crm/crm.module.css";
 
 type Vizinho = Pick<Lead, "id" | "nome" | "empresa" | "estagio">;
 

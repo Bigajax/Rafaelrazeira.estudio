@@ -22,7 +22,7 @@ import {
   cancelarParcela,
   estornarRecebimento,
   reativarParcela,
-} from "@/app/crm/acoes";
+} from "@/app/(pt)/crm/acoes";
 import { BaixaRapida } from "./BaixaRapida";
 import { ModalContrato } from "./ModalContrato";
 import {
@@ -34,7 +34,7 @@ import {
 import { dataCurta } from "@/lib/crm/regras";
 import { NOME_METODO, type LeadPainel, type Metodo, type Recebimento } from "@/lib/crm/tipos";
 import type { ContratoPainel } from "@/lib/crm/dados";
-import s from "@/app/crm/crm.module.css";
+import s from "@/app/(pt)/crm/crm.module.css";
 
 export function BlocoContrato({
   lead,

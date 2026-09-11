@@ -33,7 +33,7 @@
    ============================================================ */
 
 import { useEffect, useState, useTransition } from "react";
-import { registrarToque } from "@/app/crm/acoes";
+import { registrarToque } from "@/app/(pt)/crm/acoes";
 import { destinoDoToque, hojeSP, linkWhatsapp, PADRAO_DO_DESTINO, somarDias } from "@/lib/crm/regras";
 import {
   CANAIS,
@@ -50,7 +50,7 @@ import {
   type MotivoPerda,
   type Resposta,
 } from "@/lib/crm/tipos";
-import s from "@/app/crm/crm.module.css";
+import s from "@/app/(pt)/crm/crm.module.css";
 
 /* Os prazos que cobrem quase todo "me chama mais pra frente". O padrão da
    geladeira (60 dias) vive em PADRAO_DO_DESTINO, junto com o do servidor:

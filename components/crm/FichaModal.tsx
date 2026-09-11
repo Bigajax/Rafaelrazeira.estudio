@@ -27,7 +27,7 @@
 import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Ficha, type DadosFicha } from "./Ficha";
-import s from "@/app/crm/crm.module.css";
+import s from "@/app/(pt)/crm/crm.module.css";
 
 export function FichaModal(dados: DadosFicha) {
   const router = useRouter();

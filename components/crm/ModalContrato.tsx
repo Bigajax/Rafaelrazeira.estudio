@@ -24,12 +24,12 @@
    ============================================================ */
 
 import { useEffect, useMemo, useState, useTransition } from "react";
-import { fecharContrato } from "@/app/crm/acoes";
+import { fecharContrato } from "@/app/(pt)/crm/acoes";
 import { PROPOSTAS } from "@/lib/propostas";
 import { centavos, dinheiroExato, gerarParcelas } from "@/lib/crm/financeiro";
 import { somarDias } from "@/lib/crm/regras";
 import type { LeadPainel } from "@/lib/crm/tipos";
-import s from "@/app/crm/crm.module.css";
+import s from "@/app/(pt)/crm/crm.module.css";
 
 type Modo = "proposta" | "manual";
 

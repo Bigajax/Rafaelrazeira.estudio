@@ -24,7 +24,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { LeadPainel } from "@/lib/crm/tipos";
 import { GarimpoModal } from "./GarimpoModal";
-import s from "@/app/crm/crm.module.css";
+import s from "@/app/(pt)/crm/crm.module.css";
 
 const pausa = (ms: number) => new Promise((r) => setTimeout(r, ms));
 

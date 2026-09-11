@@ -25,7 +25,7 @@
    ============================================================ */
 
 import { useState, useTransition } from "react";
-import { apagarTemplate, salvarTemplate } from "@/app/crm/acoes";
+import { apagarTemplate, salvarTemplate } from "@/app/(pt)/crm/acoes";
 import { renderTemplate } from "@/lib/crm/regras";
 import {
   CATEGORIAS_TEMPLATE,
@@ -33,7 +33,7 @@ import {
   type CategoriaTemplate,
   type Template,
 } from "@/lib/crm/tipos";
-import s from "@/app/crm/crm.module.css";
+import s from "@/app/(pt)/crm/crm.module.css";
 
 /* Um lead de mentira para a prévia. Os valores são reais o bastante para o
    texto ler como texto: "Oi, {nome}" com um nome de exemplo mostra o ritmo

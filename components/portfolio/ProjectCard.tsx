@@ -1,6 +1,6 @@
 import Image from "next/image";
 import type { Projeto } from "@/data/portfolio";
-import s from "@/app/portfolio/portfolio.module.css";
+import s from "@/app/(pt)/portfolio/portfolio.module.css";
 
 /* ---------- o card inteiro é o link ----------
    Ele tinha um botão "Abrir o site ↗" embaixo, e dez botões cheios numa

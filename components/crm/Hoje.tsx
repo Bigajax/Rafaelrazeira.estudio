@@ -53,7 +53,7 @@ import { CartaDaVez } from "./CartaDaVez";
 import { ModalMensagem } from "./ModalMensagem";
 import { ModalNovoLead } from "./ModalNovoLead";
 import { ModalToque } from "./ModalToque";
-import s from "@/app/crm/crm.module.css";
+import s from "@/app/(pt)/crm/crm.module.css";
 
 type Dia = { data: string; n: number };
 

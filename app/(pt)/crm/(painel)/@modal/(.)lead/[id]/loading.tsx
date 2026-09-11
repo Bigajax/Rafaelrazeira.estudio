@@ -16,7 +16,7 @@
    dura o tempo de uma consulta, e o Escape do modal de verdade assume assim
    que ele monta. O que este casco faz é dizer que a caixa está vindo. */
 import { Carregando } from "@/components/crm/Carregando";
-import s from "@/app/crm/crm.module.css";
+import s from "@/app/(pt)/crm/crm.module.css";
 
 export default function CarregandoFicha() {
   return (

@@ -6,8 +6,8 @@
    para ir e um número a mais para esquecer que existe. */
 
 import { useState, useTransition } from "react";
-import { salvarMeta } from "@/app/crm/acoes";
-import s from "@/app/crm/crm.module.css";
+import { salvarMeta } from "@/app/(pt)/crm/acoes";
+import s from "@/app/(pt)/crm/crm.module.css";
 
 export function MetaSemana({ valor }: { valor: number }) {
   const [meta, setMeta] = useState(String(valor));

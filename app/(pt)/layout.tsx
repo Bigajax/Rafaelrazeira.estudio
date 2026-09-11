@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import "./globals.css";
+import "@/app/globals.css";
 
 /* O cartão do link: quando uma URL do site é colada no WhatsApp ou no
    Instagram, o preview monta com a og:image. metadataBase transforma os

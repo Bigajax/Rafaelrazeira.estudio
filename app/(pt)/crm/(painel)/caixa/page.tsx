@@ -51,7 +51,7 @@ import { hojeSP } from "@/lib/crm/regras";
 import type { Contrato, ParcelaPainel } from "@/lib/crm/tipos";
 import { BaixaRapida } from "@/components/crm/BaixaRapida";
 import { AmarrarRecebimento } from "@/components/crm/AmarrarRecebimento";
-import s from "@/app/crm/crm.module.css";
+import s from "@/app/(pt)/crm/crm.module.css";
 
 export const metadata: Metadata = { title: "Caixa" };
 

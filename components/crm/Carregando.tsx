@@ -27,7 +27,7 @@
    e não no movimento.
    ============================================================ */
 
-import s from "@/app/crm/crm.module.css";
+import s from "@/app/(pt)/crm/crm.module.css";
 
 export function Carregando({
   palavra,

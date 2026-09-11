@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import s from "@/app/servicos/servicos.module.css";
+import s from "@/app/(pt)/servicos/servicos.module.css";
 
 /* Todos os links de WhatsApp saem daqui: um número, uma função. */
 const NUMERO = "5544999997219";

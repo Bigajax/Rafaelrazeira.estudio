@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { FormEvent, useEffect, useRef, useState } from "react";
-import s from "@/app/vitrine-digital/vitrine.module.css";
+import s from "@/app/(pt)/vitrine-digital/vitrine.module.css";
 import { CampoIsca, useGuardaDeFormulario } from "@/components/form-guarda";
 import { mascararWhatsapp, whatsappValido } from "@/components/telefone";
 import { ligarAncoras } from "@/components/vitrine/ancora";

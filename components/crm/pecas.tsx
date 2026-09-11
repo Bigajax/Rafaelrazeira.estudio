@@ -35,7 +35,7 @@ import {
   urgencia,
 } from "@/lib/crm/regras";
 import { NOME_TIPO, type LeadPainel } from "@/lib/crm/tipos";
-import s from "@/app/crm/crm.module.css";
+import s from "@/app/(pt)/crm/crm.module.css";
 
 /* ---------- as duas classes de estado ----------
    Uma para a urgência (o filete de margem) e uma para a temperatura (o chão

@@ -43,7 +43,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { moverLead } from "@/app/crm/acoes";
+import { moverLead } from "@/app/(pt)/crm/acoes";
 import {
   dinheiroCurto,
   exigenciaDeTodas,
@@ -73,7 +73,7 @@ import { CardLead, CardVoando } from "./CardLead";
 import { ModalNovoLead } from "./ModalNovoLead";
 import { ModalPassagem } from "./ModalPassagem";
 import { PesquisaLote } from "./PesquisaLote";
-import s from "@/app/crm/crm.module.css";
+import s from "@/app/(pt)/crm/crm.module.css";
 
 const idDaColuna = (e: Estagio) => `col:${e}`;
 

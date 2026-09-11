@@ -23,7 +23,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { ESTAGIOS, NOME_ESTAGIO, type Estagio, type LeadPainel } from "@/lib/crm/tipos";
 import { classesDaFicha, ContextoDaFicha, PassoDaFicha, SinalDaFicha, TopoDaFicha } from "./pecas";
-import s from "@/app/crm/crm.module.css";
+import s from "@/app/(pt)/crm/crm.module.css";
 
 export function CardLead({
   lead,

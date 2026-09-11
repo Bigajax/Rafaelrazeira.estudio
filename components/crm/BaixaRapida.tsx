@@ -26,10 +26,10 @@
    ============================================================ */
 
 import { useState, useTransition } from "react";
-import { lancarRecebimento } from "@/app/crm/acoes";
+import { lancarRecebimento } from "@/app/(pt)/crm/acoes";
 import { dinheiroExato } from "@/lib/crm/financeiro";
 import { METODOS, NOME_METODO, type Metodo } from "@/lib/crm/tipos";
-import s from "@/app/crm/crm.module.css";
+import s from "@/app/(pt)/crm/crm.module.css";
 
 export function BaixaRapida({
   parcelaId,

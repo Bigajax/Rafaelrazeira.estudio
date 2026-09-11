@@ -21,10 +21,10 @@
    ============================================================ */
 
 import { useState } from "react";
-import { registrarToque } from "@/app/crm/acoes";
+import { registrarToque } from "@/app/(pt)/crm/acoes";
 import { aplicarSaudacao, linkDirectInstagram, linkWhatsapp } from "@/lib/crm/regras";
 import type { Canal, Interacao, LeadPainel } from "@/lib/crm/tipos";
-import s from "@/app/crm/crm.module.css";
+import s from "@/app/(pt)/crm/crm.module.css";
 
 export function SugerirResposta({
   lead,

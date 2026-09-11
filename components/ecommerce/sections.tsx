@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import s from "@/app/e-commerce/ecommerce.module.css";
+import s from "@/app/(pt)/e-commerce/ecommerce.module.css";
 import { CampoIsca, useGuardaDeFormulario } from "@/components/form-guarda";
 import { salvarLead } from "@/components/lead";
 import { mascararWhatsapp, whatsappValido } from "@/components/telefone";

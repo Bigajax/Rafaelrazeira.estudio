@@ -42,7 +42,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import { adiar, apagarLead, definirPasso, salvarLead } from "@/app/crm/acoes";
+import { adiar, apagarLead, definirPasso, salvarLead } from "@/app/(pt)/crm/acoes";
 import {
   diasDesde,
   dinheiro,
@@ -54,7 +54,7 @@ import {
 } from "@/lib/crm/regras";
 import { NOME_ESTAGIO, NOME_TIPO, type LeadPainel } from "@/lib/crm/tipos";
 import { BaixaRapida } from "./BaixaRapida";
-import s from "@/app/crm/crm.module.css";
+import s from "@/app/(pt)/crm/crm.module.css";
 
 type Gaveta = "passo" | "zap" | "apagar" | null;
 
