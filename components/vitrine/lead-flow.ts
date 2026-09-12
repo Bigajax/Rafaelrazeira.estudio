@@ -24,7 +24,7 @@
    ============================================================ */
 
 import type { MotivoSuspeito } from "@/components/form-guarda";
-import { salvarLead, salvarLeadDetalhado } from "@/components/lead";
+import { salvarLead, salvarLeadDetalhado, type LojaEncontrada } from "@/components/lead";
 import { contextoDaSessao, irParaWhatsapp, mpTrack, refDaVisita, trackLead } from "@/components/vitrine/tracking";
 import { linkEmail, linkWhatsApp } from "@/lib/contato";
 import type { Lang } from "@/lib/idiomas";
@@ -38,6 +38,26 @@ const TEXTO: Record<Lang, { abertura: string; nome: string; loja: string; plano:
 };
 
 export const paginaDaVitrine = (lang: Lang) => (lang === "en" ? "vitrine-digital-en" : "vitrine-digital");
+
+/* ---------- o que a pessoa digitou no campo do @ (12/09/2026) ----------
+   Nos 14 dias antes desta função, três pessoas ficaram presas num loop de
+   até doze envios: telefone, e-mail e o @ pessoal no campo do @, cada
+   tentativa recusada pela Meta e gravada como suspeita. Telefone e
+   e-mail não precisam de rede para serem reconhecidos, e a mensagem
+   certa ("isso é um telefone, eu preciso do @") sai antes de qualquer
+   envio. O que parece site (loja.com.br) passa: o formulário da oferta
+   aceita site, e a rota já trata isso como "desconhecido". */
+export type DiagnosticoArroba = "telefone" | "email";
+export function diagnosticoDoArroba(v: string): DiagnosticoArroba | null {
+  const s = String(v || "").trim().replace(/^@+/, "");
+  if (!s) return null;
+  const digitos = s.replace(/\D/g, "");
+  if (digitos.length >= 8 && digitos.length / s.length > 0.7) return "telefone";
+  /* o @ do e-mail some na limpeza do campo do hero ("souzafaima23gmail.com"),
+     então o provedor conta tanto quanto o arroba */
+  if (/@[^\s@]+\.[a-z]{2,}$/i.test(s) || /(gmail|hotmail|outlook|yahoo|icloud|live|uol|bol|terra)\.com/i.test(s)) return "email";
+  return null;
+}
 
 /* ---------- o link de contato, por idioma ----------
    pt: o wa.me com a mensagem pronta. A primeira linha é a mesma dos CTAs da
@@ -69,7 +89,7 @@ export async function enviarLeadVitrine(d: {
   plano?: string;
   ctaPosition: "form" | "hero_form";
   lang: Lang;
-}): Promise<{ salvo: boolean; linkWa: string; arrobaInvalido: boolean }> {
+}): Promise<{ salvo: boolean; linkWa: string; arrobaInvalido: boolean; loja: LojaEncontrada | null }> {
   /* ---------- o Lead saiu de antes para DEPOIS da gravação (10/09) ----------
      Ele era disparado aqui em cima, antes de qualquer coisa, e o motivo era
      bom: não perder o evento numa navegação. Mas a navegação só acontece no
@@ -102,7 +122,7 @@ export async function enviarLeadVitrine(d: {
        envio corrigido volta aqui e aí conta. */
     if (resposta.arroba === "invalido") {
       mpTrack("ArrobaInvalido", { cta_position: d.ctaPosition, arroba: d.instagram || "" });
-      return { salvo: false, linkWa, arrobaInvalido: true };
+      return { salvo: false, linkWa, arrobaInvalido: true, loja: null };
     }
     /* `ctaPosition` não é rótulo qualquer: "form" e "hero_form" são os
        valores que o tracking reconhece como contratação (POSICOES_FORMULARIO),
@@ -113,7 +133,7 @@ export async function enviarLeadVitrine(d: {
       trackLead({ ctaPosition: d.ctaPosition, plano: d.plano, nome: d.nome, whatsapp: d.whatsapp, email: d.email, abriuWhats: false });
     }
     mpTrack("LeadSalvo", { cta_position: d.ctaPosition, plano: d.plano, repetido: !!resposta.repetido });
-    return { salvo: true, linkWa, arrobaInvalido: false };
+    return { salvo: true, linkWa, arrobaInvalido: false, loja: resposta.loja ?? null };
   }
 
   /* Fallback: o comportamento inteiro de antes da inversão de 06/08. O Lead
@@ -125,11 +145,11 @@ export async function enviarLeadVitrine(d: {
   trackLead({ ctaPosition: d.ctaPosition, plano: d.plano, nome: d.nome, whatsapp: d.whatsapp, email: d.email, abriuWhats: false });
   if (d.lang === "en") {
     mpTrack("LeadNaoSalvo", { cta_position: d.ctaPosition, plano: d.plano, origem: "fallback-email" });
-    return { salvo: false, linkWa, arrobaInvalido: false };
+    return { salvo: false, linkWa, arrobaInvalido: false, loja: null };
   }
   mpTrack("AbriuWhatsApp", { cta_position: d.ctaPosition, plano: d.plano, origem: "fallback" });
   irParaWhatsapp(linkWa);
-  return { salvo: false, linkWa, arrobaInvalido: false };
+  return { salvo: false, linkWa, arrobaInvalido: false, loja: null };
 }
 
 /* ---------- o envio que a guarda acusou (01/09/2026) ----------

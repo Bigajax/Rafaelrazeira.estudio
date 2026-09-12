@@ -58,7 +58,28 @@ const page = [hero, marquee, audience, process, cases, precos, about, contact, m
    abre no topo. Só os fragmentos de formulário; um link para #precos
    compartilhado de propósito continua funcionando. O mesmo vale para a
    vitrine em components/vitrine/SemAncoraDoAnuncio.tsx. */
-if (/^#(contato|hero-card|hero-form|form)$/.test(location.hash)) history.replaceState(null, "", location.pathname + location.search);
+const ANCORA_DE_FORMULARIO = /^#(contato|hero-card|hero-form|form)$/;
+if (ANCORA_DE_FORMULARIO.test(location.hash)) {
+  history.replaceState(null, "", location.pathname + location.search);
+  /* A segunda defesa (12/09): o navegador embutido do Instagram faz o
+     salto DEPOIS, na carga, ignorando a troca de URL. Se a página nasceu
+     com fragmento de formulário, na carga ela volta ao topo (três vezes,
+     para o salto tardio), com a rolagem suave desligada e só se a pessoa
+     ainda não tocou na tela. Ver components/vitrine/SemAncoraDoAnuncio.tsx. */
+  try { history.scrollRestoration = "manual"; } catch {}
+  let tocou = false;
+  const marcar = () => { tocou = true; };
+  addEventListener("touchstart", marcar, { passive: true, once: true });
+  addEventListener("wheel", marcar, { passive: true, once: true });
+  const topo = () => {
+    if (tocou) return;
+    if (ANCORA_DE_FORMULARIO.test(location.hash)) history.replaceState(null, "", location.pathname + location.search);
+    document.documentElement.style.scrollBehavior = "auto";
+    scrollTo(0, 0);
+    setTimeout(() => { document.documentElement.style.scrollBehavior = ""; }, 50);
+  };
+  addEventListener("load", () => { topo(); setTimeout(topo, 250); setTimeout(topo, 900); });
+}
 
 document.documentElement.classList.add("lp", CONFIG.lang);
 const app = document.getElementById("app");

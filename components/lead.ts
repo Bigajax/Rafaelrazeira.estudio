@@ -25,10 +25,15 @@ export type LeadPayload = Record<string, unknown> & { pagina: string; nome: stri
 /* O que a rota responde além do 200. Desde 10/09 a vitrine precisa dos dois:
    `arroba` para devolver o campo à pessoa quando o @ não existe, e
    `repetido` para não contar o mesmo contato duas vezes na Meta. */
+/* a loja que a Meta encontrou (12/09/2026): a confirmação mostra o @ e os
+   seguidores, para a pessoa conferir que o formulário entendeu a loja certa */
+export type LojaEncontrada = { arroba: string; seguidores?: number; posts?: number };
+
 export type RespostaLead = {
   ok: boolean;
   arroba?: "ok" | "invalido" | "desconhecido" | "nao_conferido";
   repetido?: boolean;
+  loja?: LojaEncontrada | null;
 };
 
 export async function salvarLeadDetalhado(dados: LeadPayload): Promise<RespostaLead> {
@@ -43,7 +48,7 @@ export async function salvarLeadDetalhado(dados: LeadPayload): Promise<RespostaL
     });
     if (!r.ok) return { ok: false };
     const corpo = (await r.json().catch(() => null)) as Partial<RespostaLead> | null;
-    return { ok: true, arroba: corpo?.arroba, repetido: !!corpo?.repetido };
+    return { ok: true, arroba: corpo?.arroba, repetido: !!corpo?.repetido, loja: corpo?.loja ?? null };
   } catch {
     /* rede caída, aba fechando, timeout: tudo cai no mesmo lugar */
     return { ok: false };

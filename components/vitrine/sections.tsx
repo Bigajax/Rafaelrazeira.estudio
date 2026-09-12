@@ -8,7 +8,9 @@ import { CampoIsca, useGuardaDeFormulario } from "@/components/form-guarda";
 import { mascararWhatsapp, whatsappValido } from "@/components/telefone";
 import { emailValido, telefoneInternacionalValido } from "@/components/telefone-intl";
 import { ligarAncoras } from "@/components/vitrine/ancora";
-import { enviarLeadVitrine, registrarSuspeito } from "@/components/vitrine/lead-flow";
+import { diagnosticoDoArroba, enviarLeadVitrine, registrarSuspeito, type DiagnosticoArroba } from "@/components/vitrine/lead-flow";
+import type { LojaEncontrada } from "@/components/lead";
+import { linkEmail, linkWhatsApp } from "@/lib/contato";
 import { focarSemContar, initTracking } from "@/components/vitrine/tracking";
 import { projetos } from "@/data/portfolio";
 import { SeletorIdioma } from "@/components/idioma/SeletorIdioma";
@@ -158,6 +160,39 @@ function Pendente({ href }: { href: string }) {
   </div>;
 }
 
+/* ---------- a mensagem do campo do @ (12/09/2026) ----------
+   Três situações, em ordem de custo: o que a pessoa digitou tem cara de
+   telefone ou de e-mail (dito antes de qualquer envio); a Meta recusou o
+   @ uma vez (a mensagem de sempre, mais o "onde achar"); a Meta recusou
+   duas vezes (quase sempre conta pessoal: a mensagem explica como mudar
+   e oferece a saída pela conversa, que é socorro e não Lead, ver
+   `arroba_ajuda` no tracking). Sem isso, três pessoas ficaram presas num
+   loop de até doze envios nos 14 dias anteriores. */
+function ErroArroba({ arroba, diag, recusas }: { arroba: string; diag: DiagnosticoArroba | null; recusas: number }) {
+  const t = useVit();
+  const lang = useLang();
+  if (!arroba && !diag) return null;
+  const a = arroba.replace(/^@+/, "");
+  const ajuda = lang === "en" ? linkEmail(t.form.ajudaMsg) : linkWhatsApp(t.form.ajudaMsg);
+  return <small role="alert" style={{ color: "#b3261e" }}>
+    {diag === "telefone" ? t.form.errInstaTel
+      : diag === "email" ? t.form.errInstaEmail
+      : recusas >= 2 ? <>{t.form.errInstaPessoal1}<b>@{a}</b>{t.form.errInstaPessoal2}</>
+      : <>{t.form.errInsta1}<b>@{a}</b>{t.form.errInsta2}</>}
+    {recusas < 2 && <> {t.form.errInstaOnde}</>}
+    {recusas >= 2 && <> <a href={ajuda} target={lang === "en" ? undefined : "_blank"} rel="noopener" data-cta="arroba_ajuda" data-cta-dest={lang === "en" ? "email" : "whatsapp"} style={{ color: "inherit", textDecoration: "underline" }}>{t.form.ajudaCta}</a></>}
+  </small>;
+}
+
+/* a loja que a Meta encontrou, dita na confirmação: quem digitou o @ errado
+   percebe na hora, e quem tem loja de verdade vê que o formulário entendeu */
+function LojaAchada({ loja }: { loja: LojaEncontrada | null }) {
+  const t = useVit();
+  const lang = useLang();
+  if (!loja) return null;
+  return <p className={s.lojaAchada}>{t.form.lojaAchada1}<b>@{loja.arroba}</b>{preencher(t.form.lojaAchada2, { n: (loja.seguidores ?? 0).toLocaleString(lang === "en" ? "en-US" : "pt-BR") })}</p>;
+}
+
 const ChatStrip = ({ label, note, children }: { label: string; note?: string; children: React.ReactNode }) =>
   <div className={s.chatStrip}>
     <small className={s.stripLabel}>{label}</small>
@@ -269,6 +304,12 @@ function HeroForm() {
   /* o @ que a rota não achou na Meta (10/09): guarda o texto para a
      mensagem dizer QUAL @ não existe, que é o que faz a pessoa conferir */
   const [instaInvalido, setInstaInvalido] = useState("");
+  /* o campo do @ recebeu telefone ou e-mail (12/09): dito na hora, sem ir à rota */
+  const [instaDiag, setInstaDiag] = useState<DiagnosticoArroba | null>(null);
+  /* quantas vezes a Meta recusou o @ nesta sessão: na segunda, a mensagem muda */
+  const [recusas, setRecusas] = useState(0);
+  /* a loja que a Meta encontrou, mostrada na confirmação */
+  const [loja, setLoja] = useState<LojaEncontrada | null>(null);
   const envioSuspeito = useGuardaDeFormulario();
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -299,8 +340,11 @@ function HeroForm() {
     if (lang === "en") {
       if (!emailValido(String(f.get("email") || ""))) { setEmailInvalido(true); return; }
     } else if (!whatsappValido(String(f.get("whatsapp") || ""))) { setTelInvalido(true); return; }
+    /* telefone ou e-mail no campo do @ nem vai à rota (ver ErroArroba) */
+    const diag = diagnosticoDoArroba(String(f.get("instagram") || ""));
+    if (diag) { setInstaDiag(diag); return; }
     setEnviando(true);
-    const { salvo, linkWa: link, arrobaInvalido } = await enviarLeadVitrine({
+    const { salvo, linkWa: link, arrobaInvalido, loja: lojaAchada } = await enviarLeadVitrine({
       nome: String(f.get("nome") || ""),
       whatsapp: String(f.get("whatsapp") || ""),
       email: String(f.get("email") || ""),
@@ -314,7 +358,8 @@ function HeroForm() {
     setEnviando(false);
     /* o @ não existe na Meta: o campo volta para a pessoa, sem WhatsApp e
        sem confirmação, porque não há prévia possível a partir dele */
-    if (arrobaInvalido) { setInstaInvalido(String(f.get("instagram") || "")); return; }
+    if (arrobaInvalido) { setInstaInvalido(String(f.get("instagram") || "")); setRecusas(n => n + 1); return; }
+    setLoja(lojaAchada);
     setLinkWa(link);
     if (salvo) setEnviado(true);
   }
@@ -400,6 +445,7 @@ function HeroForm() {
       <path d="M9.6 24.4c.4-2.6 1.8-4.4 3-5.4" stroke="#ffffff9e" strokeWidth="1.3" strokeLinecap="round" />
     </svg>
     <p className={s.formTitle}>{t.form.okTitulo}<br /><span>{t.form.okSub}</span></p>
+    <LojaAchada loja={loja} />
     {/* o único WhatsApp que sobrou no hero, e só depois do envio: aqui o
         Contact já disparou, então a saída não custa mais conversão nenhuma */}
     <ReabrirCta href={linkWa} rotulo={t.form.okCta} />
@@ -656,7 +702,7 @@ function HeroForm() {
       <label>
         <span aria-hidden>@</span>
         <input name="instagram" aria-label={t.etiqueta.instaAria} autoCapitalize="off" autoCorrect="off" spellCheck={false} required placeholder={t.etiqueta.instaPh}
-               onInput={e => { e.currentTarget.value = e.currentTarget.value.replace(/^\s*(?:https?:\/\/)?(?:www\.)?instagram\.com\//i, "").replace(/[@\s]/g, "").replace(/\/.*$/, ""); if (instaInvalido) setInstaInvalido(""); }} />
+               onInput={e => { e.currentTarget.value = e.currentTarget.value.replace(/^\s*(?:https?:\/\/)?(?:www\.)?instagram\.com\//i, "").replace(/[@\s]/g, "").replace(/\/.*$/, ""); if (instaInvalido) setInstaInvalido(""); if (instaDiag) setInstaDiag(null); }} />
         {/* o "opcional" saiu em 26/08: o cartão logo acima passou a
             prometer DESENHO, e sem o @ não existe o que desenhar. O campo
             mais caro da dobra (68px medidos) virou o insumo do produto, e
@@ -666,7 +712,7 @@ function HeroForm() {
           que precisa ser, porque os dois erros mais comuns da primeira
           semana foram digitar o e-mail neste campo e dar o @ pessoal em
           vez do da loja. O mesmo vermelho do erro de telefone. */}
-      {instaInvalido && <small role="alert" style={{ color: "#b3261e" }}>{t.form.errInsta1}<b>@{instaInvalido}</b>{t.form.errInsta2}</small>}
+      <ErroArroba arroba={instaInvalido} diag={instaDiag} recusas={recusas} />
       <CampoIsca />
     </div>
     {/* O rótulo era "ME CHAMA HOJE", e ele passou a brigar com a linha
@@ -1475,6 +1521,12 @@ export function Offer() {
   const [avista, setAvista] = useState(false);
   /* o @ que a rota não achou na Meta (10/09), igual ao mini-formulário do hero */
   const [instaInvalido, setInstaInvalido] = useState("");
+  /* o campo do @ recebeu telefone ou e-mail (12/09): dito na hora, sem ir à rota */
+  const [instaDiag, setInstaDiag] = useState<DiagnosticoArroba | null>(null);
+  /* quantas vezes a Meta recusou o @ nesta sessão: na segunda, a mensagem muda */
+  const [recusas, setRecusas] = useState(0);
+  /* a loja que a Meta encontrou, mostrada na confirmação */
+  const [loja, setLoja] = useState<LojaEncontrada | null>(null);
   const [linkWa, setLinkWa] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [enviado, setEnviado] = useState(false);
@@ -1546,8 +1598,11 @@ export function Offer() {
       const tel = String(f.get("whatsapp") || "");
       if (tel.trim() && !telefoneInternacionalValido(tel)) { setTelInvalido(true); return; }
     } else if (!whatsappValido(String(f.get("whatsapp") || ""))) { setTelInvalido(true); return; }
+    /* telefone ou e-mail no campo do @ nem vai à rota (ver ErroArroba) */
+    const diag = diagnosticoDoArroba(String(f.get("instagram") || ""));
+    if (diag) { setInstaDiag(diag); return; }
     setEnviando(true);
-    const { salvo, linkWa: link, arrobaInvalido } = await enviarLeadVitrine({
+    const { salvo, linkWa: link, arrobaInvalido, loja: lojaAchada } = await enviarLeadVitrine({
       nome: String(f.get("nome") || ""),
       whatsapp: String(f.get("whatsapp") || ""),
       email: String(f.get("email") || ""),
@@ -1559,7 +1614,8 @@ export function Offer() {
     setEnviando(false);
     /* o @ não existe na Meta: o campo volta para a pessoa (mesma regra do
        mini-formulário do hero) */
-    if (arrobaInvalido) { setInstaInvalido(String(f.get("instagram") || "")); return; }
+    if (arrobaInvalido) { setInstaInvalido(String(f.get("instagram") || "")); setRecusas(n => n + 1); return; }
+    setLoja(lojaAchada);
     /* guardado nos dois caminhos: serve à confirmação e ao "Falta um toque" */
     setLinkWa(link);
     if (salvo) setEnviado(true);
@@ -1682,6 +1738,7 @@ export function Offer() {
               que é onde o fluxo antigo quebrava calado. */}
           {enviado ? <div className={`${s.form} ${s.confirmado}`} role="status">
             <p className={s.formTitle}>{t.form.okTitulo}<br /><span>{t.form.okSub}</span></p>
+            <LojaAchada loja={loja} />
             {/* A segunda frase era "Sua reserva não foi cobrada: nada é
                 pago antes de a gente combinar os detalhes", e ela existia
                 para consertar o susto que o botão "QUERO RESERVAR" dava.
@@ -1726,8 +1783,8 @@ export function Offer() {
                 dois campos obrigatórios para uma informação só. O que sobrou
                 virou opcional, porque nome e telefone bastam para eu chamar. */}
             <label>{t.oferta.insta}<input name="instagram" placeholder={t.oferta.instaPh} required autoCapitalize="off" autoCorrect="off" spellCheck={false}
-                   onInput={() => { if (instaInvalido) setInstaInvalido(""); }} /></label>
-            {instaInvalido && <small role="alert" style={{ color: "#b3261e" }}>{t.form.errInsta1}<b>@{instaInvalido.replace(/^@+/, "")}</b>{t.form.errInsta2}</small>}
+                   onInput={() => { if (instaInvalido) setInstaInvalido(""); if (instaDiag) setInstaDiag(null); }} /></label>
+            <ErroArroba arroba={instaInvalido} diag={instaDiag} recusas={recusas} />
             {/* a caixa do Pix existe só onde há Pix (pt) */}
             {t.oferta.avistaCheck && <label className={s.avista}>
               <input type="checkbox" name="avista" checked={avista} onChange={e => setAvista(e.target.checked)} />

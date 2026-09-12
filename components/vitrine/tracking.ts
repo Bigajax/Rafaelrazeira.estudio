@@ -442,7 +442,10 @@ function conversao(evento: string, dadosPixel: Record<string, unknown>, extraCap
    pessoa duas vezes. Ele existe só como ClickCTA, para dar para medir quantas
    pessoas precisam do socorro quando o handoff falha. */
 const DESTINO_WHATSAPP = "whatsapp";
-const FORA_DO_LEAD = new Set(["reabrir_whats"]);
+/* `arroba_ajuda` (12/09) é o "me chama que eu te ajudo a achar o @" de quem
+   teve o @ recusado duas vezes: é socorro, não intenção de compra, e a
+   campanha não pode aprender com ele. */
+const FORA_DO_LEAD = new Set(["reabrir_whats", "arroba_ajuda"]);
 
 /* os únicos caminhos que são contratação de verdade, e não intenção: o
    formulário da oferta e, desde 07/08, o mini-formulário do hero */

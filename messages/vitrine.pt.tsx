@@ -74,6 +74,18 @@ export const pt = {
     /* o @ que a rota não achou na Meta; {arroba} é o que a pessoa digitou */
     errInsta1: "Não achei ",
     errInsta2: " no Instagram. Confere o @ da loja: precisa ser a conta profissional, é dela que eu tiro as fotos.",
+    /* o campo do @ recebeu outra coisa (12/09): dito na hora, sem ir à rota */
+    errInstaTel: "Isso é um telefone. Aqui eu preciso do @ da loja no Instagram, o nome que aparece logo abaixo da foto do perfil.",
+    errInstaEmail: "Isso é um e-mail. Aqui eu preciso do @ da loja no Instagram, o nome que aparece logo abaixo da foto do perfil.",
+    /* a segunda recusa da Meta: quase sempre é conta pessoal */
+    errInstaPessoal1: "A Meta não reconhece ",
+    errInstaPessoal2: " como conta profissional, e a prévia sai das fotos do perfil. Mudar leva um minuto: no Instagram, Configurações, Tipo de conta e ferramentas, Mudar para conta profissional. Depois manda o @ de novo.",
+    errInstaOnde: "Onde achar: abra o Instagram da loja; o @ está logo abaixo da foto do perfil.",
+    ajudaCta: "Não achou? Me chama que eu te ajudo ↗",
+    ajudaMsg: "Oi Rafael! Tentei mandar o @ da minha loja pelo site e não deu certo. Pode me ajudar?",
+    /* a loja que a Meta encontrou, na confirmação; {n} são os seguidores */
+    lojaAchada1: "Encontrei ",
+    lojaAchada2: " no Instagram, com {n} seguidores. É essa a sua loja? Se não for, me avisa.",
   },
 
   etiqueta: {

@@ -444,13 +444,19 @@ export default async function handler(req, res) {
      "desconhecido" segue como ok: token vencido ou Meta fora do ar é
      problema nosso, e ninguém perde a prévia por isso. */
   let arroba = "nao_conferido";
+  /* a loja encontrada volta para o navegador (12/09): a confirmação mostra o
+     @ e os seguidores, para a pessoa conferir que era essa mesmo */
+  let lojaAchada = null;
   if (pagina.startsWith("vitrine-digital") && !suspeito) {
     const c = await conferirArroba(canal || "");
     arroba = c.estado;
     if (c.estado === "invalido") suspeito = "arroba";
     /* o @ entra limpo no banco: "@Loja" e "instagram.com/loja/" viram "loja",
        que é como a oficina e o CRM o procuram depois */
-    if (c.estado === "ok") canal = c.arroba;
+    if (c.estado === "ok") {
+      canal = c.arroba;
+      lojaAchada = { arroba: c.arroba, seguidores: c.seguidores ?? null, posts: c.posts ?? null };
+    }
   }
   /* sem nome, o canal vira o nome de exibição: "@loja" no card, no push e
      no assunto do e-mail já diz de quem é a prévia */
@@ -505,6 +511,38 @@ export default async function handler(req, res) {
      achei": no pior caso nasce a linha dupla de antes, nunca um lead
      perdido. */
   let repetido = null;
+  /* ---------- o @ recusado de novo, da mesma pessoa (12/09/2026) ----------
+     A busca acima exclui linhas suspeitas de propósito, e o preço apareceu
+     em 14 dias: uma pessoa com o @ recusado tentou doze vezes (telefone,
+     e-mail, @ pessoal) e cada tentativa virou uma linha. Agora a recusa
+     procura a linha suspeita:arroba da mesma pessoa nas 24h e a ATUALIZA,
+     guardando o que foi tentado em `necessidade`: uma linha por pessoa, e
+     dá para ler o que ela digitou. Continua sem card, aviso ou Meta. */
+  let repetidoSuspeito = null;
+  if (suspeito === "arroba") {
+    try {
+      const desde = new Date(Date.now() - JANELA_REPETIDO_MS).toISOString();
+      const iguais = [];
+      if (whatsapp) iguais.push(`whatsapp.eq."${whatsapp.replace(/"/g, "")}"`);
+      if (email) iguais.push(`email.eq."${email.replace(/"/g, "")}"`);
+      if (iguais.length) {
+        const filtro = [
+          `select=id,canal,necessidade`,
+          `pagina=eq.${encodeURIComponent(linha.pagina)}`,
+          `created_at=gte.${encodeURIComponent(desde)}`,
+          `status=eq.suspeito:arroba`,
+          `or=(${encodeURIComponent(iguais.join(","))})`,
+          `order=created_at.desc`,
+          `limit=1`,
+        ].join("&");
+        const r = await comTimeout(`${base}?${filtro}`, { headers: cabecalhos });
+        const corpo = r.ok ? await r.json().catch(() => []) : [];
+        if (Array.isArray(corpo) && corpo[0]) repetidoSuspeito = corpo[0];
+      }
+    } catch (e) {
+      console.warn("[lead] não deu para procurar a recusa repetida:", e?.message || e);
+    }
+  }
   if (!suspeito) {
     try {
       const desde = new Date(Date.now() - JANELA_REPETIDO_MS).toISOString();
@@ -546,6 +584,18 @@ export default async function handler(req, res) {
         method: "PATCH",
         headers: cabecalhos,
         body: JSON.stringify(novidade),
+      });
+    } else if (repetidoSuspeito) {
+      /* o @ novo vira o `canal`; os anteriores ficam listados em `necessidade` */
+      const tentados = String(repetidoSuspeito.necessidade || "")
+        .replace(/^@ tentados: /, "")
+        .split(", ")
+        .filter(Boolean);
+      if (repetidoSuspeito.canal && !tentados.includes(repetidoSuspeito.canal)) tentados.push(repetidoSuspeito.canal);
+      r = await comTimeout(`${base}?id=eq.${repetidoSuspeito.id}`, {
+        method: "PATCH",
+        headers: cabecalhos,
+        body: JSON.stringify({ canal: linha.canal, necessidade: `@ tentados: ${tentados.join(", ")}`.slice(0, LIMITE) }),
       });
     } else {
       r = await comTimeout(base, { method: "POST", headers: cabecalhos, body: JSON.stringify(linha) });
@@ -600,6 +650,8 @@ export default async function handler(req, res) {
          age sobre "invalido": devolve o campo do @ para a pessoa e não
          dispara Lead nem Contact, que é o ponto inteiro da conferência. */
       arroba,
+      /* a loja que a Meta encontrou (null quando não conferiu ou recusou) */
+      loja: lojaAchada,
       /* true quando a linha existente foi atualizada em vez de nascer outra:
          o navegador não conta o Contact de novo */
       repetido: !!repetido,

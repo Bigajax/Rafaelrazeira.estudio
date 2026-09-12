@@ -2298,3 +2298,10 @@ html:has(.site) { scroll-behavior: smooth }
 @media (max-width: 380px) {
   .site .headCta { display: none }
 }
+
+/* ---------- a loja encontrada, na confirmação (12/09/2026) ----------
+   Uma linha em mono entre o título e o botão: o @ que a Meta reconheceu e
+   os seguidores. `.site p.lojaAchada` tem a mesma especificidade de
+   `.form.confirmado p` e vem depois, então vence nos dois formulários. */
+.site p.lojaAchada { font: 12px/1.55 var(--mono); letter-spacing: .02em; color: var(--ink-soft); margin: 0 0 12px }
+.site p.lojaAchada b { color: var(--ink); font-weight: 700 }

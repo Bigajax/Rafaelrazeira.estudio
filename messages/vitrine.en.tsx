@@ -64,6 +64,15 @@ export const en: VitrineMessages = {
     errEmail: "Check the email: that's where your preview goes.",
     errInsta1: "I couldn't find ",
     errInsta2: " on Instagram. Check your store's handle: it needs to be the business account, that's where I take the photos from.",
+    errInstaTel: "That's a phone number. Here I need your store's Instagram handle, the name right under the profile photo.",
+    errInstaEmail: "That's an email. Here I need your store's Instagram handle, the name right under the profile photo.",
+    errInstaPessoal1: "Meta doesn't recognize ",
+    errInstaPessoal2: " as a professional account, and the preview is built from the profile photos. Switching takes a minute: on Instagram, Settings, Account type and tools, Switch to professional account. Then send the handle again.",
+    errInstaOnde: "Where to find it: open your store's Instagram; the handle is right under the profile photo.",
+    ajudaCta: "Can't find it? Email me and I'll help ↗",
+    ajudaMsg: "I tried to send my store's Instagram handle through the site and it didn't work. Can you help?",
+    lojaAchada1: "I found ",
+    lojaAchada2: " on Instagram, with {n} followers. Is that your store? If not, let me know.",
   },
 
   etiqueta: {
