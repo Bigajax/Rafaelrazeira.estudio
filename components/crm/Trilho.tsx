@@ -66,6 +66,12 @@ import s from "@/app/(pt)/crm/crm.module.css";
 const ROTAS = [
   { href: "/crm", rotulo: "Hoje", nota: "a fila", conta: "fila" },
   { href: "/crm/pipeline", rotulo: "Pipeline", nota: "o quadro", conta: "ativos" },
+  /* A oficina fica entre o quadro e o caixa porque é isso que ela é no
+     dia: o card sai do Pipeline, passa por aqui para virar prévia, e só
+     depois vira dinheiro. Sem contagem: o número que importaria (lojas
+     esperando revisão) só existe depois de você olhar, e um contador que
+     pede atenção sem ter cobrança é ruído no trilho. */
+  { href: "/crm/producao", rotulo: "Produção", nota: "a oficina", conta: null },
   /* "Caixa" e não "Financeiro" por duas razões que apontam para o mesmo
      lado: é a palavra exata do que a tela responde (quanto entrou, quem me
      deve), e cinco letras cabem na barra do celular, onde cada rota tem

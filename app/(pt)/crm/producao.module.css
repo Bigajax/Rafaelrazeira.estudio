@@ -1,0 +1,1961 @@
+/* ============================================================
+   PRODUÇÃO — a bancada
+
+   NENHUM TOKEN NOVO. As variáveis (--paper, --ink, --line, --rosa, --green,
+   --display, --mono) são declaradas em `.app`, no crm.module.css, e este
+   arquivo vive inteiro dentro daquele wrapper: elas chegam por herança.
+
+   ------------------------------------------------------------
+   O QUE ESTA TELA É, E POR QUE ELA NÃO PODE PARECER O CRM
+
+   O CRM é escritório: fila, quadro, caixa. Ele responde "com quem eu falo".
+   A oficina é BANCADA: ela responde "o que está em cima da mesa e em que pé
+   está". São dois verbos diferentes, e a primeira versão desta tela errou
+   justamente aí, empilhando formulários cinzentos sem dizer, em momento
+   nenhum, onde o trabalho estava.
+
+   Três dispositivos carregam a diferença, e nenhum deles é enfeite:
+
+   1. A RÉGUA DE PRODUÇÃO (a assinatura desta tela). Quatro marcos ligados
+      por um fio: colhida, catálogo, conferida, pronta. O vencido é tinta
+      cheia, o da vez é o único com anel rosa, os que faltam são contorno.
+      A régua não decora: ela é a coluna `status` desenhada, e é a primeira
+      coisa que o olho encontra tanto na lista quanto na ficha. O
+      dispositivo já é da casa (o "percurso com marcos ligados" da
+      /vitrine-digital); usá-lo aqui é SISTEMA, não repetição.
+
+   2. O CARIMBO. Quando a loja fica pronta, a ficha ganha um carimbo
+      inclinado, como ordem de serviço concluída ganha na oficina de
+      verdade. É o único gesto solto da tela, e aparece uma vez por loja.
+
+   3. O NÚMERO GRANDE EM MONO. Oficina se mede em quantidade: 57 imagens,
+      31 peças, 12 conferidas. Onde o CRM escreveria uma frase, aqui vem o
+      número em corpo grande com a palavra pequena embaixo.
+
+   O resto é disciplina: filete, papel, tinta, e nada mais.
+   ============================================================ */
+
+/* ---------- a régua, e os dois lugares onde ela aparece ----------
+   O fio atravessa por trás dos marcos, e os marcos ficam por cima com o
+   fundo do papel: é isso que abre a janela em volta de cada um sem
+   precisar desenhar duas linhas. */
+.regua {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.regua::before {
+  content: "";
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  top: 5px;
+  height: 1px;
+  background: var(--line);
+}
+.marco {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  min-width: 0;
+  flex: 1;
+}
+.marco i {
+  display: block;
+  width: 11px;
+  height: 11px;
+  border: 1.5px solid var(--line);
+  background: var(--paper);
+  border-radius: 50%;
+}
+.marco span {
+  font: 500 8.5px var(--mono);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink-fraco);
+  white-space: nowrap;
+}
+/* Vencido: tinta cheia, sem anel. O que passou não pede atenção. */
+.marcoFeito i { background: var(--ink); border-color: var(--ink) }
+.marcoFeito span { color: var(--ink-soft) }
+/* O da vez é o ÚNICO rosa da tela, e é assim que ele fala mais alto que
+   qualquer outra coisa sem crescer de tamanho. */
+.marcoAtual i { background: var(--paper-alto); border-color: var(--rosa); box-shadow: 0 0 0 3px #E31B6222 }
+.marcoAtual span { color: var(--ink); font-weight: 700 }
+
+/* ============================================================
+   A LISTA: fichas em cima da bancada
+   ============================================================ */
+
+.novaLoja {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: end;
+  padding: 16px;
+  margin: 18px 0 26px;
+  background: var(--paper-alto);
+  border: 1px solid var(--line);
+  /* Filete duplo no topo: é a marca de "começo de documento" que o
+     cabeçalho do CRM já usa. Aqui ela diz onde a bancada começa. */
+  border-top: 3px double var(--ink);
+}
+.novaLoja .campo { margin-bottom: 0 }
+@media (max-width: 760px) {
+  .novaLoja { grid-template-columns: 1fr }
+}
+
+.bancada {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+/* A ficha é um cartão de papel alto sobre a bancada. A borda esquerda
+   grossa é a mesma marca de margem do CRM, e ela carrega o estado: sem
+   ela, doze fichas iguais viram uma parede. */
+.ficha {
+  display: grid;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--paper-alto);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--line);
+  text-decoration: none;
+  color: inherit;
+}
+.ficha:hover { border-color: var(--ink); border-left-color: var(--ink) }
+.fichaTopo { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 12px; align-items: center }
+
+.avatar, .avatarGrande {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+}
+.avatar { width: 40px; height: 40px }
+.avatarGrande { width: 68px; height: 68px }
+.avatar img, .avatarGrande img { width: 100%; height: 100%; object-fit: cover }
+.avatar i, .avatarGrande i {
+  font: 700 12px var(--mono);
+  font-style: normal;
+  color: var(--ink-fraco);
+}
+
+.fichaNome { display: grid; gap: 1px; min-width: 0 }
+.fichaNome b {
+  font-family: var(--display);
+  font-stretch: 88%;
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: 15px;
+  letter-spacing: .01em;
+  line-height: 1.05;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fichaNome small { font: 500 10.5px var(--mono); color: var(--ink-fraco) }
+
+/* ---------- os números da bancada ----------
+   Oficina se mede em quantidade. O número vem em corpo grande e a palavra
+   embaixo, pequena: é a leitura de relance que a lista precisa dar. */
+.numeros { display: flex; gap: 22px; padding-top: 10px; border-top: 1px solid var(--line) }
+.num { display: grid; gap: 0 }
+.num b {
+  font-family: var(--display);
+  font-stretch: 78%;
+  font-weight: 900;
+  font-size: 21px;
+  line-height: 1.05;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.num span {
+  font: 500 9px var(--mono);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-fraco);
+}
+/* Zero não merece tinta cheia: ele é ausência, e ausência em cinza conta a
+   mesma coisa sem chamar. */
+.numVazio b { color: var(--ink-fraco) }
+
+/* ---------- o estado, em duas alturas de voz ---------- */
+.estado { display: grid; gap: 2px; min-width: 0 }
+.estado b {
+  font: 700 10px var(--mono);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.estado small {
+  font-size: 11.5px;
+  line-height: 1.35;
+  color: var(--ink-soft);
+  /* A nota vem do banco e pode ser texto de erro de terceiro, ou seja: sem
+     tamanho previsível. Quebra em qualquer lugar e para na quarta linha. */
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+}
+
+/* A cor mora só na marca de margem da ficha, nunca no texto: são seis
+   estados, e seis cores de texto seriam um semáforo. */
+.borda_nova { border-left-style: dashed }
+.borda_colhendo { border-left-color: var(--ink-fraco) }
+.borda_colhida { border-left-color: var(--ink) }
+.borda_catalogo { border-left-color: var(--ink) }
+.borda_pronta { border-left-color: var(--green) }
+.borda_erro { border-left-color: var(--rosa) }
+
+/* ============================================================
+   A FICHA DA LOJA
+   ============================================================ */
+
+.volta { margin: 0 0 12px }
+.volta a { font: 500 11px var(--mono); letter-spacing: .06em; color: var(--ink-soft); text-decoration: none }
+.volta a:hover { color: var(--ink) }
+
+.cabecalho {
+  position: relative;
+  display: grid;
+  grid-template-columns: 68px minmax(0, 1fr) minmax(0, 240px);
+  gap: 18px;
+  align-items: start;
+  padding-bottom: 18px;
+  /* Filete duplo: a ficha é um documento, e documento da casa abre com
+     linha dupla. */
+  border-bottom: 3px double var(--line);
+}
+@media (max-width: 860px) {
+  .cabecalho { grid-template-columns: 68px 1fr }
+  .cabecalho > :last-child { grid-column: 1 / -1 }
+}
+.cabecalhoTxt h1 { margin: 0; line-height: .95 }
+.arroba { display: flex; flex-wrap: wrap; gap: 14px; margin: 6px 0 0 }
+.arroba, .arroba a { font: 500 11px var(--mono); letter-spacing: .04em; color: var(--ink-soft); text-decoration: none }
+.arroba a:hover { color: var(--ink) }
+.bio { margin: 10px 0 0; font-size: 13px; line-height: 1.5; color: var(--ink-soft); max-width: 62ch }
+.site { margin: 5px 0 0; font-size: 12.5px }
+.site a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--line) }
+
+/* A régua da ficha fica logo abaixo do cabeçalho: é onde o olho cai depois
+   do nome da loja, e é a resposta para "em que pé isso está". */
+.reguaFicha { margin: 18px 0 22px; max-width: 620px }
+
+/* ---------- o carimbo ----------
+   O único gesto solto da tela, e ele aparece UMA vez por loja: quando o
+   trabalho termina. Inclinado e com borda dupla porque é assim que carimbo
+   de ordem de serviço é, e translúcido porque carimbo de verdade deixa ver
+   o papel por baixo. */
+.carimbo {
+  position: absolute;
+  top: -4px;
+  right: 0;
+  transform: rotate(-8deg);
+  padding: 5px 14px 4px;
+  border: 2px double var(--green);
+  color: var(--green);
+  font-family: var(--display);
+  font-stretch: 78%;
+  font-weight: 900;
+  font-size: 13px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  opacity: .82;
+  pointer-events: none;
+}
+@media (max-width: 860px) {
+  .carimbo { position: static; transform: rotate(-3deg); justify-self: start; margin-top: 10px }
+}
+
+.acoes { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 18px }
+.acaoIsolada { margin-left: auto; display: flex; gap: 8px }
+
+.erro, .aviso {
+  margin: 12px 0;
+  padding: 10px 14px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  background: var(--paper-2);
+  border-left: 3px solid var(--rosa);
+}
+.aviso { border-left-color: var(--ink-fraco) }
+
+/* ---------- o vazio como convite ----------
+   Moldura tracejada porque o que falta ali é trabalho que ainda cabe, e
+   não um erro. */
+.vazio {
+  padding: 24px 22px;
+  border: 1px dashed var(--line);
+  background: var(--paper-alto);
+  text-align: center;
+}
+.vazio b {
+  display: block;
+  font-family: var(--display);
+  font-stretch: 88%;
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: 15px;
+  letter-spacing: .012em;
+  margin-bottom: 6px;
+}
+.vazio p { margin: 0 auto; font-size: 12.5px; line-height: 1.55; color: var(--ink-soft); max-width: 56ch }
+
+/* ============================================================
+   OS BLOCOS DA FICHA
+   ============================================================ */
+
+/* O rótulo em mono ao lado do título é o que dá ritmo à ficha: seis blocos
+   com o mesmo peso viram uma lista; com a etiqueta ao lado, cada um
+   anuncia o próprio papel antes do conteúdo. */
+.bloco {
+  margin-top: 34px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.blocoCab { display: flex; align-items: baseline; gap: 14px; margin-bottom: 16px; flex-wrap: wrap }
+.blocoCab h2 {
+  margin: 0;
+  font-family: var(--display);
+  font-stretch: 78%;
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: 22px;
+  line-height: 1;
+  letter-spacing: .008em;
+}
+.blocoRot {
+  font: 700 9.5px var(--mono);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--ink-fraco);
+}
+.blocoCab button { margin-left: auto }
+.contador { margin: 0; font: 500 11px var(--mono); color: var(--ink-soft) }
+.contador b { color: var(--ink); font-variant-numeric: tabular-nums }
+
+/* ---------- a loja física ---------- */
+.lugar { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 20px; align-items: start; margin-bottom: 20px }
+@media (max-width: 760px) { .lugar { grid-template-columns: 1fr } }
+
+/* A nota do Google é o único número desta tela que vai APARECER na vitrine
+   do cliente. Por isso é o único que ganha corpo de manchete aqui dentro. */
+.nota {
+  margin: 0;
+  display: grid;
+  gap: 2px;
+  padding: 12px 18px;
+  background: var(--paper-alto);
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--green);
+  text-align: center;
+}
+.nota b {
+  font-family: var(--display);
+  font-stretch: 78%;
+  font-weight: 900;
+  font-size: 30px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.nota span { font: 500 9.5px var(--mono); letter-spacing: .08em; color: var(--ink-soft) }
+.lugarTxt p { margin: 0 0 5px; font-size: 13px; color: var(--ink-soft) }
+.lugarTxt a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--line) }
+.horario { list-style: none; padding: 0; margin: 8px 0 0; columns: 2; column-gap: 24px }
+@media (max-width: 760px) { .horario { columns: 1 } }
+.horario li { font: 500 10.5px var(--mono); color: var(--ink-fraco); break-inside: avoid; padding: 1px 0 }
+
+.condicoes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 18px; margin-bottom: 6px }
+@media (max-width: 760px) { .condicoes { grid-template-columns: 1fr } }
+
+/* ---------- a cartela de cores ----------
+   Amostras em fita, do jeito que uma cartela de tecido é: o que se faz com
+   elas é COMPARAR, e comparar exige que estejam lado a lado. */
+.amostras { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 20px }
+.amostra {
+  position: relative;
+  width: 68px;
+  height: 58px;
+  border: 1px solid var(--line);
+  cursor: pointer;
+  padding: 0;
+}
+.amostra span {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 2px 0;
+  font: 500 8.5px var(--mono);
+  text-align: center;
+  color: var(--ink);
+  background: #ffffffd9;
+}
+.amostraEscolhida { outline: 2px solid var(--ink); outline-offset: 2px }
+
+.fichaMarca { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-bottom: 6px }
+@media (max-width: 860px) { .fichaMarca { grid-template-columns: 1fr } }
+.paletaEditavel { display: flex; flex-wrap: wrap; gap: 6px; align-items: center }
+.paletaEditavel input[type="color"] {
+  width: 44px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid var(--line);
+  background: none;
+  cursor: pointer;
+}
+
+/* ---------- o material do cliente ---------- */
+.materiais { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 10px }
+.materiais li { position: relative }
+.materiais img {
+  display: block;
+  width: 92px;
+  height: 92px;
+  object-fit: cover;
+  border: 1px solid var(--line);
+  background: var(--paper-2);
+}
+.materiais .apagarLinha {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: var(--paper-alto);
+  border: 1px solid var(--line);
+  line-height: .9;
+}
+
+/* ============================================================
+   O CATÁLOGO: a planilha da bancada
+   ============================================================ */
+
+.rolagem { overflow-x: auto; margin-bottom: 14px }
+.tabela { width: 100%; border-collapse: collapse; min-width: 880px }
+.tabela th {
+  text-align: left;
+  padding: 0 8px 8px;
+  font: 700 9px var(--mono);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--ink-fraco);
+  border-bottom: 1px solid var(--ink);
+}
+.tabela td {
+  padding: 7px 8px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+
+/* ---------- conferido é marca de margem, não fundo cinza ----------
+   Pintar a linha inteira de cinza escondia a foto e o preço, que é
+   exatamente o par que se veio conferir. O filete verde na primeira célula
+   diz a mesma coisa e não tira contraste de nada. */
+.linhaOk td:first-child { box-shadow: inset 3px 0 0 var(--green) }
+.linhaOk .campoLargo, .linhaOk .campoCurto { color: var(--ink-soft) }
+
+.celFoto { width: 62px; padding-left: 12px }
+.celFoto img, .semFoto {
+  display: block;
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border: 1px solid var(--line);
+  background: var(--paper-2);
+}
+.celOk { width: 58px; text-align: center }
+.celApagar { width: 34px }
+.celCurtidas {
+  width: 54px;
+  text-align: right;
+  font: 500 11px var(--mono);
+  color: var(--ink-fraco);
+  font-variant-numeric: tabular-nums;
+}
+
+.apagarLinha {
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-size: 17px;
+  line-height: 1;
+  color: var(--ink-fraco);
+  padding: 2px 6px;
+}
+.apagarLinha:hover { color: var(--rosa) }
+
+.campoLargo, .campoCurto {
+  width: 100%;
+  border: 1px solid transparent;
+  background: none;
+  padding: 6px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--ink);
+}
+/* Preço em mono tabular: numa coluna de quarenta valores, o que se faz é
+   varrer a vertical procurando o que destoa, e para isso os dígitos
+   precisam ter a mesma largura. */
+.campoCurto {
+  max-width: 116px;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+/* A borda só aparece no foco e no hover: quarenta caixas desenhadas ao
+   mesmo tempo viram um formulário, e isto é uma tabela para ler. */
+.campoLargo:hover, .campoCurto:hover { border-color: var(--line) }
+.campoLargo:focus, .campoCurto:focus { border-color: var(--ink); outline: none; background: var(--paper-alto) }
+
+/* ---------- a tabela de preços colada ----------
+   Fechada por padrão: ela só entra em cena depois que o cliente responde, e
+   uma caixa de texto grande aberta o tempo todo pede para ser usada antes
+   da hora. */
+.precos {
+  margin: 16px 0;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--ink);
+  background: var(--paper-alto);
+  padding: 12px 16px;
+}
+.precos summary {
+  cursor: pointer;
+  font: 700 10px var(--mono);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.precos textarea { width: 100%; margin: 12px 0; font-size: 13px; font-family: var(--mono) }
+.precosAjuda { margin: 8px 0; font-size: 12px; line-height: 1.55; color: var(--ink-soft); max-width: 70ch }
+.orfas { margin-top: 14px; padding-left: 12px; border-left: 3px solid var(--rosa) }
+.orfas ul { list-style: none; padding: 0; margin: 6px 0 }
+.orfas li { font: 500 12px var(--mono); color: var(--ink); padding: 2px 0 }
+
+/* ============================================================
+   A SAÍDA
+   ============================================================ */
+
+.saidas { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px }
+.saidas li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 14px;
+  background: var(--paper-alto);
+  border: 1px solid var(--line);
+}
+/* O prompt é a saída que fecha o dia, e a única que não vai para dentro de
+   um projeto que já existe: ela ganha a marca de margem em tinta cheia. */
+.saidas li:last-child { border-left: 3px solid var(--ink) }
+.saidaNome {
+  flex: 1;
+  font: 700 10.5px var(--mono);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+/* ============================================================
+   AJUSTES DE LEITURA, DEPOIS DE VER A TELA MONTADA
+   ============================================================ */
+
+/* O estado, no cabeçalho da ficha, estava solto no canto: sem nada que o
+   prendesse, ele lia como texto perdido em vez de carimbo de situação. O
+   filete o amarra à coluna, e é o mesmo filete de margem que a lista usa. */
+.cabecalho .estado { padding-left: 12px; border-left: 3px solid var(--line) }
+
+/* Campo de 1300px é campo que ninguém consegue ler de ponta a ponta: as
+   quatro respostas são frases curtas, e a caixa não pode prometer um
+   parágrafo. */
+.condicoes { max-width: 900px; margin-top: 14px }
+.fichaMarca { max-width: 1000px }
+
+/* A cartela de amostras e a paleta ficam mais perto do que descrevem. */
+.amostras + p { margin-top: 0 }
+
+/* Cartão um pouco mais largo: o nome da loja e a régua de quatro marcos são
+   o piso real desta ficha, e em 280px os rótulos da régua começavam a
+   brigar por espaço. */
+.bancada { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)) }
+
+/* ============================================================
+   A ENTRADA DA BANCADA
+
+   O bloco em que uma loja sobe na mesa. Ele é UM GESTO (escrever o arroba e
+   mandar buscar), e a primeira versão o desenhava como formulário de
+   cadastro: dois campos em caixa, rótulo em cima de cada um, tudo do mesmo
+   peso. Lia como burocracia de entrada, não como o começo do trabalho.
+
+   Três decisões o resolvem:
+
+   1. O @ EM CORPO DE MANCHETE. Ele é o rótulo, a marca do domínio (arroba é
+      do Instagram, não de banco de dados) e o começo da linha ao mesmo
+      tempo. Um placeholder cinza não faz nenhuma das três.
+   2. LINHA NO LUGAR DE CAIXA. Caixa é campo de sistema; linha é ficha de
+      papel, que é o que esta tela inteira é. A caixa volta no foco, porque
+      aí ela vira a informação de "é aqui que você está escrevendo".
+   3. O BOTÃO EM TINTA CHEIA. É a única ação da faixa e a mais frequente da
+      tela; deixá-lo em contorno, igual a "apagar", era esconder o verbo
+      principal da bancada.
+   ============================================================ */
+
+.entrada {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, .9fr) auto;
+  gap: 16px 22px;
+  align-items: end;
+  padding: 18px 20px 20px;
+  margin: 20px 0 28px;
+  background: var(--paper-alto);
+  border: 1px solid var(--line);
+  border-top: 3px double var(--ink);
+}
+@media (max-width: 820px) {
+  .entrada { grid-template-columns: 1fr }
+}
+
+/* O rótulo atravessa as três colunas: ele nomeia a faixa inteira, não um
+   campo. */
+.entradaRot {
+  grid-column: 1 / -1;
+  margin: 0;
+  font: 700 9.5px var(--mono);
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--ink-fraco);
+}
+
+.campoArroba {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: baseline;
+  gap: 6px;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 2px;
+}
+.campoArroba i {
+  font-family: var(--display);
+  font-stretch: 78%;
+  font-weight: 900;
+  font-style: normal;
+  font-size: 30px;
+  line-height: 1;
+  color: var(--ink);
+}
+/* `.entrada .campoArroba input` e não `.campoArroba input`: o CRM estiliza
+   `input` com classe mais elemento em vários lugares, e sem o peso a mais
+   a caixa cinza padrão voltava por cima da linha. É o mesmo atropelo de
+   especificidade que a vitrine documenta em `.site a`. */
+.entrada .campoArroba input {
+  border: 0;
+  background: none;
+  padding: 0 0 2px;
+  width: 100%;
+  font-family: var(--display);
+  font-stretch: 88%;
+  font-weight: 900;
+  font-size: 26px;
+  line-height: 1.05;
+  letter-spacing: -.01em;
+  color: var(--ink);
+}
+.entrada .campoArroba input::placeholder { color: var(--line); font-weight: 900 }
+.entrada .campoArroba input:focus { outline: none }
+/* O foco marca a LINHA, não a caixa: é a linha que está sendo escrita. */
+.campoArroba:focus-within { border-bottom-color: var(--rosa) }
+
+.campoLead { display: grid; gap: 5px; align-content: end }
+.campoLead span {
+  font: 700 9.5px var(--mono);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--ink-fraco);
+}
+.entrada .campoLead select {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: none;
+  padding: 4px 0;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+.entrada .campoLead select:focus { outline: none; border-bottom-color: var(--ink) }
+
+/* ---------- tinta cheia, e a briga de especificidade ----------
+   O CRM declara o botão como `.app .btn` (duas classes), e `.entrada
+   button` (uma classe mais um elemento) PERDE dessa conta: o botão saía
+   em contorno, igual ao "apagar" da ficha. Repetir a classe da faixa
+   (`.entrada.entrada`) empata o peso e ganha por vir depois. É a mesma
+   armadilha que a vitrine documenta em `.site a`. */
+.entrada.entrada button {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+  align-self: end;
+}
+.entrada.entrada button:hover:not(:disabled) { background: var(--ink-soft); border-color: var(--ink-soft) }
+.entrada.entrada button:disabled { opacity: .5 }
+
+/* ---------- a idade do material, colada no arroba ----------
+   Duas informações que respondem a mesma pergunta ("o que eu tenho em
+   mãos"): de quem é, e de quando é. O ponto entre elas é o mesmo separador
+   que o cabeçalho da ficha usa. */
+.fichaNome small { display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline }
+.fichaNome small em {
+  font-style: normal;
+  color: var(--ink-fraco);
+  opacity: .85;
+}
+.fichaNome small em::before { content: "· " }
+
+/* ---------- o recado do rodapé ----------
+   A nota da última operação, e ela é RODAPÉ: duas linhas no máximo, tinta
+   fraca, sem rótulo (a régua já disse a etapa). A frase de erro de um
+   terceiro não pode ser a maior coisa do cartão, que foi exatamente o que
+   acontecia quando ela vinha no meio e com título em caixa alta. */
+.recado {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  padding-left: 10px;
+  border-left: 2px solid var(--line);
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--ink-soft);
+  overflow-wrap: anywhere;
+}
+/* Erro é a única nota que muda de cor, e muda só na margem: o texto continua
+   legível em tinta de leitura, não em rosa sobre papel. */
+.recadoErro { border-left-color: var(--rosa) }
+
+/* ---------- a bio como citação ----------
+   Ela é a VOZ DA LOJA dentro da ficha, e não texto do sistema: é dela que
+   sai o tom que o prompt vai pedir ao gerador. Filete na margem e itálico
+   ausente de propósito (a bio já tem emoji demais para carregar itálico). */
+.cabecalhoTxt blockquote.bio {
+  margin: 12px 0 0;
+  padding-left: 12px;
+  border-left: 2px solid var(--line);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+  max-width: 62ch;
+}
+
+/* A nota da última operação, no canto do cabeçalho. Sem rótulo (a régua diz
+   a etapa) e em mono: ela é registro de máquina, não frase de leitura. */
+.recadoFicha {
+  margin: 0;
+  padding-left: 12px;
+  border-left: 3px solid var(--line);
+  font: 500 11px var(--mono);
+  line-height: 1.5;
+  color: var(--ink-soft);
+  overflow-wrap: anywhere;
+}
+
+/* ---------- a ação da vez ----------
+   A régua calcula qual etapa falta; o botão dessa etapa vem em tinta cheia.
+   Os outros continuam à mão, em contorno, porque refazer um passo é comum
+   na bancada. Especificidade dupla pelo mesmo motivo da entrada: `.app .btn`
+   tem duas classes e venceria uma classe simples. */
+.acoes .aVez.aVez {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+.acoes .aVez.aVez:hover:not(:disabled) { background: var(--ink-soft); border-color: var(--ink-soft) }
+
+/* ---------- os dados da conta ----------
+   O dígito em tinta cheia e a palavra em cinza: é o número que se compara
+   entre uma loja e outra, e a palavra só diz de que ele é. */
+.arroba b { color: var(--ink); font-weight: 700; font-variant-numeric: tabular-nums }
+
+/* ---------- o WhatsApp da loja ----------
+   O dado mais importante desta tela: é o destino de TODO botão de pedido da
+   vitrine que vai ser construída. Ele estava no rodapé, em cinza, escrito
+   "wa.me/5532991169200".
+
+   Agora tem rótulo próprio e o número em corpo de leitura, formatado. A
+   formatação não é enfeite: um DDD errado salta aos olhos em "(32)
+   99116-9200" e passa despercebido em treze dígitos colados. */
+.whats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px;
+  margin: 12px 0 0;
+  padding: 8px 12px;
+  background: var(--paper-alto);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--green);
+  width: fit-content;
+}
+.whats span {
+  font: 700 9px var(--mono);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--ink-fraco);
+}
+.cabecalhoTxt .whats a {
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  color: var(--ink);
+  text-decoration: none;
+  border: 0;
+}
+.cabecalhoTxt .whats a:hover { color: var(--green) }
+
+/* O avatar acompanha a manchete, não o topo da caixa: alinhado ao alto ele
+   flutuava acima do nome da loja, como se pertencesse a outra linha. */
+.cabecalho .avatarGrande { margin-top: 6px }
+
+/* ============================================================
+   AS QUATRO PERGUNTAS
+
+   Elas não são campos de cadastro: são perguntas que você faz ao cliente,
+   quase sempre no WhatsApp, com essas palavras. O desenho segue isso: a
+   pergunta em corpo de leitura, a resposta escrita numa linha (não numa
+   caixa), e um ✓ na margem quando ela existe.
+
+   O ✓ na margem é a gramática da casa para "isto está feito" (a mesma do
+   portfólio), e aqui ele carrega uma consequência real: resposta que existe
+   viaja no prompt; o que falta vira instrução de NÃO inventar.
+   ============================================================ */
+
+.perguntasRot {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 18px 0 14px;
+  font: 700 9.5px var(--mono);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--ink-fraco);
+}
+.perguntasRot b { color: var(--ink); font-variant-numeric: tabular-nums; letter-spacing: .06em }
+
+.pergunta {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 18px;
+  padding-left: 14px;
+  /* A margem começa vazia: o filete só ganha o ✓ quando a resposta chega. */
+  border-left: 2px solid var(--line);
+  position: relative;
+}
+.pergunta > span {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.condicoes .pergunta input {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: none;
+  padding: 5px 0;
+  font-size: 13px;
+  color: var(--ink);
+}
+.condicoes .pergunta input:focus { outline: none; border-bottom-color: var(--ink) }
+.condicoes .pergunta input::placeholder { color: var(--ink-fraco); opacity: .55 }
+
+.perguntaOk { border-left-color: var(--green) }
+.perguntaOk::before {
+  content: "✓";
+  position: absolute;
+  left: -8px;
+  top: 0;
+  width: 13px;
+  text-align: center;
+  font: 700 11px var(--mono);
+  color: var(--green);
+  background: var(--paper);
+}
+
+/* Sem ponto físico é o caso normal de quem vende no direct, e não uma
+   falha: nota de rodapé em mono, não bloco de alerta. */
+.semLugar {
+  margin: 0 0 6px;
+  font: 500 11px var(--mono);
+  letter-spacing: .04em;
+  color: var(--ink-fraco);
+}
+
+/* ============================================================
+   A CARTELA DA MARCA
+
+   As amostras vêm em duas metades por motivos diferentes, e a tela agora
+   diz quais: DOMINANTES são o que mais ocupa pixel (o clima da marca, que
+   num feed de moda quase sempre é parede e pele) e VIVAS são o que tem cor
+   de verdade. Sem a separação, oito quadradinhos em fila pedem para você
+   escolher "a mais bonita", que é a pergunta errada.
+   ============================================================ */
+
+.cartela { display: grid; gap: 16px; margin: 4px 0 22px }
+.cartelaRot {
+  margin: 0 0 6px;
+  font: 700 9.5px var(--mono);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.cartelaRot em {
+  font-style: normal;
+  font-weight: 500;
+  letter-spacing: .06em;
+  color: var(--ink-fraco);
+  text-transform: none;
+  margin-left: 8px;
+}
+
+/* ---------- a paleta: a primeira casa é a tinta ----------
+   A ordem é informação (a primeira vira os 10% de ação da vitrine), e isso
+   estava dito num parêntese no rótulo, que é onde instrução some. A casa
+   maior com o nome embaixo ensina a regra sem precisar escrevê-la. */
+.paletaEditavel { align-items: start }
+.tinta, .apoio { display: grid; gap: 4px; justify-items: center }
+.tinta em, .apoio em {
+  font: 700 8px var(--mono);
+  font-style: normal;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink-fraco);
+}
+.tinta em { color: var(--ink) }
+.tinta input[type="color"] { width: 62px; height: 46px; border-width: 1.5px; border-color: var(--ink) }
+.apoio input[type="color"] { width: 42px; height: 34px }
+
+/* ---------- o fundo é uma superfície, não uma palavra ---------- */
+.fundos { display: flex; gap: 8px }
+.fundo {
+  flex: 1;
+  padding: 16px 10px;
+  border: 1px solid var(--line);
+  cursor: pointer;
+  font: 700 9.5px var(--mono);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.fundo_claro { background: var(--paper-alto); color: var(--ink) }
+.fundo_escuro { background: var(--line-dark); color: var(--sobre-ink) }
+.fundoEscolhido { outline: 2px solid var(--ink); outline-offset: 2px }
+
+/* ---------- o material ganha o nome do arquivo ---------- */
+.materiais a { position: relative; display: block; text-decoration: none }
+.materiais a span {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 3px 4px;
+  font: 500 8.5px var(--mono);
+  color: var(--ink);
+  background: #ffffffdb;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---------- os ângulos extras da peça ----------
+   O carrossel virou uma peça só e os outros ângulos ficaram pendurados
+   nela. Sem este número na quina, agrupar quatro fotos numa linha parece
+   perda de material, e é o contrário. */
+.celFoto a { position: relative; display: block }
+.extras {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  min-width: 17px;
+  padding: 1px 3px;
+  font: 700 9px var(--mono);
+  font-style: normal;
+  text-align: center;
+  color: var(--paper);
+  background: var(--ink);
+}
+
+/* ---------- a saída diz para onde vai ----------
+   Quatro siglas idênticas em peso não ajudam a escolher: o que decide entre
+   CSV e SQL é o DESTINO, e ele estava escrito só no comentário do código. */
+.saidaNome { display: grid; gap: 2px }
+.saidaNome em {
+  font: 500 11px var(--body);
+  font-style: normal;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink-soft);
+}
+
+/* ============================================================
+   OS PARES DE TIPOGRAFIA
+
+   Um campo vazio com o placeholder "Archivo + Inter" exige que você já
+   saiba o nome da fonte que a marca pede. Quem escolhe tipografia para uma
+   loja não parte do nome, parte da cara: "isso aqui é esportivo", "isso
+   aqui é clássico". Então cada atalho leva o que o par COMUNICA, e o nome
+   fica em segundo plano.
+
+   A regra da casa viaja junto: são sempre duas famílias, nunca três, e por
+   isso a lista é de PARES. Escolher uma fonte de cada vez é como se
+   acumulam quatro numa página.
+   ============================================================ */
+
+/* A tipografia ocupa a linha inteira embaixo da paleta e do fundo. */
+.fichaMarca > div:last-child { grid-column: 1 / -1 }
+@media (max-width: 860px) { .fichaMarca > div:last-child { grid-column: auto } }
+
+.condicoes .campoTipo, .fichaMarca .campoTipo {
+  width: 100%;
+  max-width: 420px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: none;
+  padding: 5px 0;
+  font-size: 13px;
+  color: var(--ink);
+}
+.fichaMarca .campoTipo:focus { outline: none; border-bottom-color: var(--ink) }
+
+.tipos {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(232px, 1fr));
+  gap: 8px;
+}
+.tipo {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  text-align: left;
+  padding: 9px 12px;
+  cursor: pointer;
+  background: var(--paper-alto);
+  border: 1px solid var(--line);
+}
+.tipo:hover { border-color: var(--ink) }
+.tipo b {
+  font-family: var(--display);
+  font-stretch: 88%;
+  font-weight: 900;
+  font-size: 13px;
+  letter-spacing: .01em;
+  color: var(--ink);
+}
+.tipo span { font-size: 11.5px; line-height: 1.4; color: var(--ink-soft) }
+/* Escolhido é marca de margem, como todo estado desta tela. */
+.tipoEscolhido { border-left: 3px solid var(--ink); background: var(--paper-2) }
+
+/* ---------- a casa vazia da paleta ----------
+   `<input type="color">` sem valor mostra branco, e branco é uma cor
+   legítima: não havia diferença nenhuma entre "a tinta desta marca é
+   branca" e "ninguém escolheu ainda". A hachura resolve, e é a mesma
+   convenção de "sem valor" que planta baixa usa. */
+.casaVazia input[type="color"] {
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--line) 0 1px,
+    transparent 1px 6px
+  );
+  border-style: dashed;
+  border-color: var(--line);
+}
+.casaVazia em { color: var(--ink-fraco); opacity: .7 }
+
+/* ---------- a prova ----------
+   Paleta, fundo e tipografia são decididas em três controles separados, e
+   nenhuma se julga sozinha: o que importa é como a tinta se comporta SOBRE
+   o fundo, no tamanho em que vai aparecer. Este cartão é a vitrine em
+   miniatura, e é onde uma tinta clara demais se denuncia antes de virar
+   página. */
+.prova {
+  display: grid;
+  gap: 6px;
+  justify-items: start;
+  max-width: 320px;
+  margin: 22px 0 20px;
+  padding: 18px 20px 20px;
+  background: var(--paper-alto);
+  border: 1px solid var(--line);
+}
+.provaEscura { background: var(--line-dark); border-color: var(--line-dark) }
+.provaRot {
+  font: 700 8.5px var(--mono);
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--ink-fraco);
+  margin-bottom: 4px;
+}
+.provaEscura .provaRot { color: var(--sobre-ink-fraco) }
+.prova b {
+  font-family: var(--display);
+  font-stretch: 78%;
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: 21px;
+  line-height: 1;
+  letter-spacing: .01em;
+  color: var(--ink);
+}
+.provaEscura b { color: var(--sobre-ink) }
+.provaPeca { font-size: 12.5px; color: var(--ink-soft) }
+.provaEscura .provaPeca { color: var(--sobre-ink-fraco) }
+.provaPreco {
+  font-family: var(--display);
+  font-stretch: 88%;
+  font-weight: 900;
+  font-size: 19px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.provaBotao {
+  margin-top: 6px;
+  padding: 9px 14px;
+  font: 700 10px var(--mono);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+/* O texto de leitura ganha largura de leitura: 1600px de textarea promete
+   um parágrafo que ninguém escreve e que ninguém releria. */
+.fichaMarca + label textarea, .bloco > label textarea { max-width: 78ch }
+
+/* ============================================================
+   O CONCEITO
+
+   A voz é escolha múltipla porque marca real não fala de um jeito só (a
+   Kanton é direta E jovem), mas duas ou três é o teto: quatro vozes marcadas
+   é uma marca que não escolheu nada.
+
+   As provas de autoridade são derivadas do que a oficina colheu, e por isso
+   ficam em chips de uma linha: cada uma é um FATO conferível, não um
+   adjetivo, e fato se lê inteiro ou não se usa.
+   ============================================================ */
+
+.vozes {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 22px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(236px, 1fr));
+  gap: 8px;
+}
+.voz {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  cursor: pointer;
+  background: var(--paper-alto);
+  border: 1px solid var(--line);
+}
+.voz:hover { border-color: var(--ink) }
+.voz b { font-size: 13px; font-weight: 600; color: var(--ink) }
+.voz span { font-size: 11.5px; line-height: 1.4; color: var(--ink-soft) }
+.vozEscolhida { border-left: 3px solid var(--ink); background: var(--paper-2) }
+
+.provas { list-style: none; padding: 0; margin: 0 0 24px; display: flex; flex-wrap: wrap; gap: 8px }
+.prova2 {
+  cursor: pointer;
+  padding: 8px 12px;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  background: var(--paper-alto);
+  border: 1px solid var(--line);
+}
+.prova2:hover { border-color: var(--ink); color: var(--ink) }
+/* Escolhida ganha o ✓ e a tinta: ela vai virar frase na página do cliente,
+   e o que vai para a página não pode estar em cinza aqui. */
+.prova2Escolhida {
+  color: var(--ink);
+  border-color: var(--green);
+  border-left-width: 3px;
+  background: var(--paper-2);
+}
+.prova2Escolhida::before { content: "✓ "; color: var(--green); font-weight: 700 }
+
+.conceitoCampos { display: grid; grid-template-columns: 1fr; gap: 0; max-width: 900px }
+
+/* ---------- ajustes de leitura do conceito, vendo a tela montada ---------- */
+
+/* Seis cartões em cinco colunas deixavam um órfão embaixo, e a faixa
+   atravessava 1500px: escolher entre seis coisas exige vê-las juntas, e
+   três por linha é o que fecha duas fileiras iguais. */
+.vozes { grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 1000px }
+@media (max-width: 1100px) { .vozes { grid-template-columns: repeat(2, minmax(0, 1fr)) } }
+@media (max-width: 700px) { .vozes { grid-template-columns: 1fr } }
+
+/* Os campos do conceito são PERGUNTAS, como as da loja, e estavam caindo em
+   caixa porque o estilo de linha morava só dentro de `.condicoes`. */
+.conceitoCampos .pergunta input {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: none;
+  padding: 5px 0;
+  font-size: 13px;
+  color: var(--ink);
+}
+.conceitoCampos .pergunta input:focus { outline: none; border-bottom-color: var(--ink) }
+.conceitoCampos .pergunta input::placeholder { color: var(--ink-fraco); opacity: .55 }
+
+/* A nota ao lado do contador, quando a lista de provas ainda é curta. */
+.perguntasRot em {
+  font-style: normal;
+  font-weight: 500;
+  letter-spacing: .04em;
+  text-transform: none;
+  color: var(--ink-fraco);
+}
+
+/* O campo de fato à mão: linha, não caixa, e a dica do gesto à direita. */
+.fatoNovo {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  max-width: 720px;
+  margin: -8px 0 26px;
+  border-bottom: 1px solid var(--line);
+}
+.fatoNovo input {
+  flex: 1;
+  border: 0;
+  background: none;
+  padding: 6px 0;
+  font-size: 12.5px;
+  color: var(--ink);
+}
+.fatoNovo input:focus { outline: none }
+.fatoNovo:focus-within { border-bottom-color: var(--ink) }
+.fatoNovo span {
+  font: 500 9px var(--mono);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-fraco);
+  white-space: nowrap;
+}
+
+/* ---------- as escolhas de cada campo ----------
+   Chips pequenos embaixo da linha: eles são atalho, não a resposta. Quem
+   manda é o campo, e por isso eles vivem em tinta fraca até serem marcados.
+   Marcado ganha o ✓ e a tinta cheia, porque aquele texto agora ESTÁ na
+   resposta que vai para a página do cliente. */
+.sugestoes { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 0 }
+.sugestao {
+  cursor: pointer;
+  padding: 5px 9px;
+  font-size: 11.5px;
+  line-height: 1.2;
+  color: var(--ink-fraco);
+  background: none;
+  border: 1px dashed var(--line);
+}
+.sugestao:hover { color: var(--ink); border-color: var(--ink); border-style: solid }
+.sugestaoMarcada {
+  color: var(--ink);
+  background: var(--paper-2);
+  border-style: solid;
+  border-color: var(--green);
+}
+.sugestaoMarcada::before { content: "✓ "; color: var(--green); font-weight: 700 }
+
+/* A pergunta virou div (por causa das escolhas embaixo), e o label interno
+   mantém o par pergunta + linha grudado. */
+.pergunta > label { display: grid; gap: 4px }
+
+/* ---------- o cartão de tipografia agora MOSTRA a fonte ----------
+   Ler "Bebas Neue" numa lista não é escolher tipografia. O nome da loja
+   desenhado na fonte do par é a decisão inteira em uma linha; o nome do par
+   e a descrição descem para o rodapé do cartão, onde viram referência e não
+   a informação principal. */
+.tipo { gap: 0; padding: 12px 14px 10px }
+.tipo em {
+  display: block;
+  font-style: normal;
+  font-size: 21px;
+  line-height: 1.1;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tipo i {
+  display: block;
+  font-style: normal;
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--ink-soft);
+  margin: 4px 0 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tipo b {
+  display: block;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-fraco);
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+.tipo span { font-size: 11px; margin-top: 2px }
+.tipoEscolhido b { color: var(--ink) }
+
+/* ---------- os quatro grupos de tipografia ----------
+   Quinze cartões soltos numa fita viram parede. Quem escolhe tipografia
+   para uma loja decide primeiro o PESO DA VOZ (grito, elegância, neutro) e
+   só depois olha o desenho da letra: os grupos são essa primeira etapa, e
+   por isso o rótulo é o que a fonte faz, não a classificação técnica. */
+.grupoTipo { margin-top: 16px }
+.grupoRot {
+  margin: 0 0 8px;
+  font: 700 9px var(--mono);
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--ink-fraco);
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--line);
+}
+
+/* ---------- a cartela de superfícies ----------
+   A amostra é a textura de verdade, no mesmo CSS que vai para o briefing:
+   escolher fundo lendo "papel com grão" é o mesmo erro de escolher fonte
+   lendo o nome dela. */
+.superficies {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(124px, 1fr));
+  gap: 8px;
+  max-width: 560px;
+}
+.superficie {
+  display: grid;
+  gap: 3px;
+  padding: 0 0 8px;
+  cursor: pointer;
+  text-align: left;
+  background: var(--paper-alto);
+  border: 1px solid var(--line);
+}
+.superficie:hover { border-color: var(--ink) }
+.superficie i {
+  display: block;
+  height: 52px;
+  border-bottom: 1px solid var(--line);
+}
+.superficie b {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ink);
+  padding: 4px 8px 0;
+}
+.superficie span { font-size: 10.5px; line-height: 1.3; color: var(--ink-fraco); padding: 0 8px }
+.superficieEscolhida { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink) }
+
+/* ---------- o cartão de voz, agora com a consequência ----------
+   Um adjetivo descreve o clima e não decide nada: duas pessoas leem
+   "acolhedora" e escrevem páginas opostas. A manchete de exemplo é a parte
+   que decide, e por isso ela é a única linha com peso de leitura dentro do
+   cartão. O rótulo do botão vem logo abaixo porque é onde o tom mais
+   aparece numa vitrine, e a linha de desenho fecha dizendo o que muda no
+   espaço. */
+.voz { gap: 0; padding: 12px 14px }
+.voz b { font-size: 13px }
+.voz span { margin-bottom: 8px }
+.voz q {
+  display: block;
+  font-size: 13.5px;
+  line-height: 1.35;
+  color: var(--ink);
+  padding: 8px 0 0;
+  border-top: 1px solid var(--line);
+  quotes: "“" "”";
+}
+.voz i {
+  display: inline-block;
+  font-style: normal;
+  margin: 8px 0 6px;
+  padding: 4px 8px;
+  font: 700 9px var(--mono);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+.voz small { display: block; font-size: 10.5px; line-height: 1.4; color: var(--ink-fraco) }
+.vozEscolhida i { background: var(--ink); color: var(--paper); border-color: var(--ink) }
+
+/* ============================================================
+   O FECHO
+
+   Os sete blocos da ficha tinham o mesmo peso: filete, título, conteúdo,
+   sete vezes. Ritmo uniforme em documento longo é o que faz ele não ter
+   fim, e esta ficha TEM um fim: a entrega.
+
+   O grafite aqui é a única superfície escura da tela, e significa "acabou,
+   é isto que sai". Ele sangra além da margem do conteúdo porque fecho de
+   documento não é mais uma seção: é a borda de baixo.
+   ============================================================ */
+
+.fecho {
+  margin-top: 44px;
+  padding: 26px var(--pad) 30px;
+  background: var(--line-dark);
+  border-top: 0;
+  /* Sangra até as bordas da coluna de conteúdo, como a faixa de status do
+     CRM faz no topo. */
+  margin-left: calc(var(--pad) * -1);
+  margin-right: calc(var(--pad) * -1);
+}
+.fecho h2 { color: var(--paper) }
+.fecho .blocoRot { color: var(--sobre-ink-fraco) }
+
+.fecho .saidas li {
+  background: #ffffff0a;
+  border-color: #ffffff1f;
+}
+.fecho .saidas li:last-child { border-left: 3px solid var(--green-live) }
+.fecho .saidaNome { color: var(--sobre-ink) }
+.fecho .saidaNome em { color: var(--sobre-ink-fraco) }
+/* ---------- os botões sobre grafite ----------
+   Contorno claro, porque contorno de tinta sobre grafite é um botão que
+   não está lá. A classe é aplicada NO BOTÃO e não herdada do `.fecho`:
+   `.btnMini` mora no crm.module.css e `.fecho` aqui, e cada módulo
+   embaralha o nome das suas próprias classes, então um seletor que
+   misturasse os dois não casaria com elemento nenhum. Peso dobrado para
+   vencer o `.app .btnMini` da casa. */
+.btnGrafite.btnGrafite {
+  color: var(--sobre-ink);
+  border-color: #ffffff33;
+  background: transparent;
+}
+.btnGrafite.btnGrafite:hover:not(:disabled) {
+  color: var(--line-dark);
+  background: var(--sobre-ink);
+  border-color: var(--sobre-ink);
+}
+/* Desabilitado sobre grafite: a opacidade .4 da casa deixava a frase
+   ilegível justamente quando ela é a única explicação na tela. */
+.btnGrafite.btnGrafite:disabled { opacity: 1; color: var(--sobre-ink-fraco); border-color: #ffffff1f }
+
+/* ---------- as ressalvas ----------
+   Não são erro nem alerta: são o que o briefing vai deixar de prometer. Por
+   isso ficam em lista discreta antes das saídas, e não num bloco vermelho
+   que sugira impedimento. */
+.pendencias { margin: 0 0 20px; padding-left: 14px; border-left: 2px solid #ffffff26 }
+.pendencias p {
+  margin: 0 0 6px;
+  font: 700 9.5px var(--mono);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--sobre-ink-fraco);
+}
+.pendencias ul { list-style: none; padding: 0; margin: 0 }
+.pendencias li { font-size: 12.5px; line-height: 1.5; color: var(--sobre-ink) }
+
+/* ============================================================
+   A FORMA — o que o catálogo exige da página
+
+   Este é o único bloco da ficha que já chega com resposta: o catálogo lido
+   sabe quantas peças existem, se há preço, se há variação. Isso criou um
+   estado que nenhum outro bloco tinha: RESPONDIDO, MAS NÃO POR VOCÊ.
+
+   A convenção é uma só, e vale do chip ao arquétipo: TRACEJADO É INFERIDO,
+   SÓLIDO É SEU. No primeiro load nada é sólido. Um toque troca a linha, e
+   é isso que separa "a máquina achou" de "eu decidi" na hora de revisar a
+   ficha um mês depois.
+   ============================================================ */
+
+/* Marca de inferência, aplicada por cima do estado marcado. Ela não muda
+   cor nem peso: muda só a linha, porque a escolha já É a escolha; o que
+   falta é o seu aval. */
+.inferido { border-style: dashed !important }
+
+/* ---------- volume ----------
+   O número, a faixa que ele produz e a consequência, na mesma linha. A
+   faixa não é enfeite: é ela que decide se existe filtro na página, e ver
+   "15" virar "média" enquanto se digita é o que torna isso óbvio. */
+.volume { display: flex; align-items: baseline; flex-wrap: wrap; gap: 12px; margin-bottom: 4px }
+.volume.volume input[type="number"] {
+  width: 5.5ch;
+  padding: 4px 0;
+  font: 700 20px/1 var(--mono);
+  color: var(--ink);
+  text-align: center;
+  background: none;
+  border: 0;
+  border-bottom: 2px solid var(--ink);
+}
+.volume.volume input[type="number"]:focus { outline: none; border-bottom-color: var(--rosa) }
+.faixa {
+  padding: 3px 9px;
+  font: 700 9.5px var(--mono);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+}
+.volume small { font-size: 11.5px; line-height: 1.4; color: var(--ink-fraco) }
+
+/* ---------- uma pergunta ----------
+   Filete na margem, como toda pergunta desta tela. O rótulo carrega o
+   "inferido" em itálico discreto: quem varre a coluna vê de longe quais
+   respostas ainda são da máquina. */
+.formaCampo { padding-left: 14px; border-left: 2px solid var(--line); margin-bottom: 4px }
+.formaCampo .perguntasRot { margin: 16px 0 8px }
+.formaNota { display: block; margin-top: 7px; font-size: 11.5px; line-height: 1.45; color: var(--ink-fraco) }
+
+/* Categorias e esgotado andam juntas: as duas são consequência do volume,
+   e as duas cabem em três palavras. Lado a lado, param de ocupar duas
+   alturas de tela para dizer "não" e "não". */
+.formaDupla { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 4px 26px }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px }
+.chipForma {
+  display: grid;
+  gap: 1px;
+  text-align: left;
+  cursor: pointer;
+  padding: 6px 11px;
+  background: var(--paper-alto);
+  border: 1px solid var(--line);
+}
+.chipForma:hover { border-color: var(--ink) }
+.chipForma b { font-size: 12.5px; font-weight: 600; color: var(--ink-soft) }
+.chipForma span { font-size: 11px; line-height: 1.35; color: var(--ink-fraco) }
+/* Marcado é marca de margem e tinta cheia, igual ao resto da bancada. */
+.chipMarcado { background: var(--paper-2); border-left: 3px solid var(--ink) }
+.chipMarcado b { color: var(--ink); font-weight: 700 }
+
+/* Quantas categorias: aparece só depois do "sim", e no lugar onde a
+   pergunta seguinte apareceria. É um número, não um campo de texto. */
+.nCategorias.nCategorias[type="number"] {
+  width: 4.5ch;
+  padding: 5px 0;
+  font: 700 13px var(--mono);
+  color: var(--ink);
+  text-align: center;
+  background: var(--paper-alto);
+  border: 1px solid var(--line);
+}
+.nCategorias.nCategorias[type="number"]:focus { outline: none; border-color: var(--ink) }
+
+/* ---------- os arquétipos ----------
+   Wireframe e não miniatura: o cartão precisa responder "como a página se
+   organiza", e qualquer texto de mentira ali viraria a coisa mais lida do
+   cartão. O desenho em currentColor herda a tinta do cartão, então o
+   escolhido escurece o wireframe junto, sem uma segunda regra. */
+.arquetipos {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(216px, 1fr));
+  gap: 8px;
+}
+.arquetipo {
+  display: grid;
+  gap: 3px;
+  width: 100%;
+  height: 100%;
+  text-align: left;
+  cursor: pointer;
+  padding: 12px 14px 13px;
+  color: var(--ink-fraco);
+  background: var(--paper-alto);
+  border: 1px solid var(--line);
+}
+.arquetipo:hover { border-color: var(--ink); color: var(--ink-soft) }
+.wireframe { width: 100%; height: auto; margin-bottom: 7px; display: block }
+.arquetipo b {
+  font-family: var(--display);
+  font-stretch: 88%;
+  font-weight: 900;
+  font-size: 13px;
+  letter-spacing: .01em;
+  color: var(--ink);
+}
+.arquetipo span { font-size: 11.5px; line-height: 1.4; color: var(--ink-soft) }
+/* O "quando usar" é a única linha que decide de verdade entre dois
+   arquétipos parecidos, e por isso ela fica, em tinta fraca, no pé. */
+.arquetipo small {
+  margin-top: 4px;
+  padding-top: 6px;
+  font-size: 10.5px;
+  line-height: 1.4;
+  color: var(--ink-fraco);
+  border-top: 1px solid var(--line);
+}
+.arquetipoEscolhido {
+  color: var(--ink-soft);
+  background: var(--paper-2);
+  border-left: 3px solid var(--ink);
+}
+
+/* ============================================================
+   O PROMPT — o fecho do fecho
+
+   Ele continua a faixa grafite da entrega em vez de abrir uma segunda:
+   exportar os dados e compilar a ordem de construção são o MESMO momento
+   do dia, e duas faixas escuras separadas por uma tira de papel diriam que
+   são dois. A regra de irmão adjacente resolve isso sozinha, e o bloco
+   continua inteiro quando a entrega não aparece (catálogo vazio).
+   ============================================================ */
+.fecho + .fecho { margin-top: 0; padding-top: 26px; border-top: 1px solid #ffffff1f }
+
+/* Sobre grafite, o botão da vez inverte: papel cheio, porque tinta sobre
+   tinta não existe. Especificidade dobrada pelo mesmo motivo do resto. */
+.btnGrafite.aVez.aVez {
+  color: var(--line-dark);
+  background: var(--paper);
+  border-color: var(--paper);
+}
+.btnGrafite.aVez.aVez:hover:not(:disabled) { background: var(--paper-alto); border-color: var(--paper-alto) }
+.fecho.fecho .aviso {
+  color: var(--sobre-ink);
+  background: #ffffff0a;
+  border-left-color: var(--sobre-ink-fraco);
+}
+.fecho .campoRot { color: var(--sobre-ink-fraco) }
+
+/* ---------- os dois modos ----------
+   Prévia é o padrão e não uma opção secundária: é o que se faz em nove de
+   cada dez fichas. A frase embaixo de cada um existe para a escolha não
+   parecer detalhe técnico: a diferença entre os dois é uma página e um
+   catálogo inteiro de graça. */
+.modos { display: grid; grid-template-columns: repeat(auto-fit, minmax(238px, 1fr)); gap: 8px; margin-bottom: 18px }
+.modo {
+  display: grid;
+  gap: 3px;
+  text-align: left;
+  cursor: pointer;
+  padding: 11px 14px;
+  background: #ffffff0a;
+  border: 1px solid #ffffff1f;
+}
+.modo:hover { border-color: var(--sobre-ink-fraco) }
+.modo b {
+  font-family: var(--display);
+  font-stretch: 88%;
+  font-weight: 900;
+  font-size: 14px;
+  color: var(--sobre-ink);
+}
+.modo span { font-size: 11.5px; line-height: 1.4; color: var(--sobre-ink-fraco) }
+.modoEscolhido { background: #ffffff14; border-left: 3px solid var(--green-live) }
+.modoEscolhido b { color: var(--paper) }
+
+/* ---------- o compilado ----------
+   Altura travada e rolagem própria: o texto passa de vinte mil caracteres,
+   e deixá-lo esticar transformaria o fim da ficha numa página de manual.
+   Ele fica visível porque conferir a primeira seção antes de copiar é o
+   único jeito de perceber que a marca ainda está sem tipografia. */
+.markdown {
+  max-height: 380px;
+  overflow: auto;
+  margin: 0 0 20px;
+  padding: 16px 18px;
+  font: 400 11.5px/1.65 var(--mono);
+  color: var(--sobre-ink);
+  background: #00000033;
+  border: 1px solid #ffffff1f;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- as gerações anteriores ----------
+   Data, modo e um botão. Não há prévia do texto aqui de propósito: a ficha
+   carregou cinco datas, não cinco prompts, e mostrar as duas primeiras
+   linhas de cada um só criaria a chance de copiar o errado. */
+.versoes ul { list-style: none; padding: 0; margin: 0 }
+.versoes li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 0;
+  border-top: 1px solid #ffffff14;
+}
+.versoes li span { font: 400 11.5px var(--mono); color: var(--sobre-ink); font-variant-numeric: tabular-nums }
+.versoes li i {
+  font-style: normal;
+  font-size: 10.5px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--sobre-ink-fraco);
+}
+.versoes li button { margin-left: auto }
+
+/* ============================================================
+   O DIVISOR — dois cardápios dentro do mesmo bloco
+
+   O FORMA passou a ter duas escolhas de arquétipo, e elas não são a mesma
+   pergunta: o hero decide a primeira tela, o layout decide o resto da
+   página. Sem uma marca entre os dois cardápios, oito cartões seguidos
+   viram um cardápio só de oito, e a pessoa escolhe um de cada oito em vez de
+   um de cada quatro.
+
+   Filete que atravessa a coluna, com o nome em display e a consequência em
+   mono ao lado. É a mesma gramática do cabeçalho de bloco, uma oitava
+   abaixo: sub-bloco, não seção.
+   ============================================================ */
+.divisor {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 30px 0 14px;
+}
+.divisor span {
+  font-family: var(--display);
+  font-stretch: 88%;
+  font-weight: 900;
+  font-size: 15px;
+  letter-spacing: .01em;
+  text-transform: uppercase;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.divisor i {
+  font-style: normal;
+  font: 700 9.5px var(--mono);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--ink-fraco);
+  white-space: nowrap;
+}
+/* A régua toma o espaço que sobra, e é ela que faz o par de rótulos parecer
+   um cabeçalho de seção em vez de duas palavras soltas. */
+.divisor::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+.divisor em {
+  order: 3;
+  font-style: normal;
+  font-size: 11px;
+  color: var(--ink-fraco);
+  white-space: nowrap;
+}
+
+/* ============================================================
+   AS ESCOLHIDAS — a estrela, o contador e a tira
+
+   "Use as de melhor foto" não é instrução, é adjetivo: quem lê pega as
+   primeiras da lista. Esta parte da tela é você respondendo a pergunta com
+   o olho, que é o único jeito de respondê-la.
+   ============================================================ */
+.escolhas { margin: 4px 0 20px }
+.escolhasRot {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 0 0 10px;
+  font: 700 9.5px var(--mono);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--ink-fraco);
+}
+.escolhasRot b { font-size: 13px; letter-spacing: .06em; color: var(--ink); font-variant-numeric: tabular-nums }
+.escolhasRot em {
+  font-style: normal;
+  font-weight: 500;
+  letter-spacing: .04em;
+  text-transform: none;
+  font-size: 11px;
+}
+.escolhasRot button { margin-left: auto }
+
+/* ---------- a estrela ----------
+   Na miniatura, e não numa coluna própria: é olhando a foto que a decisão
+   se toma, e uma caixa a doze colunas de distância pediria que o olho fosse
+   e voltasse sessenta vezes. */
+.celFoto { position: relative }
+.estrela {
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  z-index: 2;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 18px;
+  text-align: center;
+  color: var(--ink-fraco);
+  background: var(--paper-alto);
+  border: 1px solid var(--line);
+}
+.estrela:hover { color: var(--ink); border-color: var(--ink) }
+.estrelaCheia { color: var(--ink); background: var(--paper); border-color: var(--ink) }
+/* Sugerida pela medição e ainda não confirmada: mesma convenção do resto da
+   ficha, tracejado é palpite. */
+.estrelaInferida { border-style: dashed }
+
+/* ---------- a tira ----------
+   Só as escolhidas, no tamanho em que a decisão é visual. Arrastar linha
+   numa tabela de sessenta para posicionar doze é pescar; aqui o gesto cabe
+   na mão. */
+.tira {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px;
+  margin: 0;
+  background: var(--paper-alto);
+  border: 1px solid var(--line);
+}
+.tiraItem {
+  position: relative;
+  cursor: grab;
+  width: 62px;
+}
+.tiraItem:active { cursor: grabbing }
+.tiraItem img, .tiraItem .semFoto {
+  display: block;
+  width: 62px;
+  height: 78px;
+  object-fit: cover;
+  border: 1px solid var(--line);
+  background: var(--paper-2);
+}
+.tiraItem b {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  min-width: 17px;
+  padding: 1px 3px;
+  font: 700 10px var(--mono);
+  text-align: center;
+  color: var(--paper);
+  background: var(--ink);
+}
+.tiraInferida { border-style: dashed !important }
+
+/* ---------- o corte no doze ----------
+   Estrelar vinte é permitido: as oito que sobram entram no catálogo da
+   prévia. O que não pode acontecer é você arrastar a décima quinta achando
+   que mexeu no hero. A régua vertical e a tinta fraca dizem isso antes do
+   gesto, que é o único momento em que dizer serve para alguma coisa. */
+.tiraCorte { margin-left: 14px; border-left: 2px solid var(--ink); padding-left: 12px }
+.tiraFora { opacity: .45 }
+.tiraFora b { background: var(--ink-fraco) }
+.tiraNota {
+  flex: 1 1 140px;
+  align-self: center;
+  min-width: 140px;
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--ink-fraco);
+}
+
+/* ============================================================
+   AS FAMÍLIAS DE VOZ
+
+   Doze cartões em fila são doze decisões de mesmo peso, e não é assim que a
+   escolha acontece: primeiro se decide se a loja é contida ou falante,
+   depois qual das três. O rótulo mono é o mesmo da TIPOGRAFIA, e ele faz o
+   trabalho inteiro: sem uma linha entre os grupos, as quatro famílias
+   voltam a ser uma lista.
+   ============================================================ */
+/* O rótulo da família e o rótulo da seção estavam na mesma altura de voz:
+   duas linhas mono, cinza, em caixa alta, a quinze pixels uma da outra,
+   liam-se como um rótulo de duas linhas. A família desce um tom de tinta e
+   ganha ar em cima, e a hierarquia volta a existir. */
+.familia { margin-bottom: 22px }
+.perguntasRot + .familia { margin-top: 12px }
+.familiaRot {
+  margin: 0 0 8px;
+  padding-bottom: 5px;
+  font: 700 9.5px var(--mono);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  border-bottom: 1px solid var(--line);
+}
+
+/* ---------- o conflito com a forma ----------
+   Não é erro, e por isso não é vermelho: é a estrutura e o tom discordando,
+   o que às vezes é a decisão certa. Fica dentro do cartão escolhido, em
+   filete na margem, com a mesma tinta de toda nota desta ficha. O `<u>` não
+   é sublinhado aqui: ele foi escolhido por ser o elemento certo (marca de
+   anotação) e a regra abaixo desliga a decoração. */
+.conflito {
+  display: block;
+  margin-top: 8px;
+  padding-left: 9px;
+  font-size: 11px;
+  line-height: 1.4;
+  text-decoration: none;
+  color: var(--ink-fraco);
+  border-left: 2px solid var(--rosa);
+}
+
+/* ---------- a palavra do botão ----------
+   Campo curto e contador: dezoito caracteres é o que cabe num botão de
+   390px sem quebrar linha, e ver o número subindo é mais rápido que
+   descobrir o corte depois. */
+.cta { display: flex; align-items: center; gap: 10px; margin-bottom: 4px }
+.cta.cta input[type="text"], .cta.cta input:not([type]) {
+  width: 26ch;
+  max-width: 100%;
+  font: 700 13px var(--mono);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: none;
+  border: 0;
+  border-bottom: 2px solid var(--ink);
+  padding: 5px 0;
+}
+.cta.cta input:focus { outline: none; border-bottom-color: var(--rosa) }
+.cta span {
+  font: 700 10px var(--mono);
+  letter-spacing: .1em;
+  color: var(--ink-fraco);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- a palavra proibida ----------
+   Mesmo chip da lista de fatos, sinal invertido. Lá o ✓ verde quer dizer
+   "esta loja pode reivindicar isto"; aqui a mesma marca em "imperdível"
+   dizia o contrário do que a lista significa. Riscada é a única forma que
+   não precisa de legenda. */
+.prova2Proibida.prova2Proibida {
+  color: var(--ink);
+  border-color: var(--rosa);
+  border-left-width: 3px;
+  background: var(--paper-2);
+  text-decoration: line-through;
+  text-decoration-color: var(--rosa);
+}
+.prova2Proibida.prova2Proibida::before { content: "× "; color: var(--rosa); font-weight: 700; text-decoration: none }

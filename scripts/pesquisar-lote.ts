@@ -23,8 +23,16 @@
    caminho: pesquisa repetida é dinheiro gasto duas vezes pelo mesmo
    texto. Rodar de novo depois de uma queda continua de onde parou.
 
+   ---------- um lead só, pelo id ----------
+   `--id` mira uma ficha específica e é o caminho do lead que acabou de
+   chegar pelo formulário: a fila corre do mais antigo para o mais novo,
+   então `--limite 1` pegaria justamente o lead errado. Com `--id` a trava
+   do dossiê pronto cai, porque quem digita um id está mandando pesquisar
+   aquele lead de novo, de propósito.
+
    USO:
      npx tsx scripts/pesquisar-lote.ts --seco
+     npx tsx scripts/pesquisar-lote.ts --id 2ee527a3-...
      npx tsx scripts/pesquisar-lote.ts --limite 20 --nicho semijoias
      npx tsx scripts/pesquisar-lote.ts --tudo --concorrencia 4
    ============================================================ */
@@ -59,6 +67,7 @@ const opcao = (nome: string) => {
 const tem = (nome: string) => argv.includes(`--${nome}`);
 
 const SECO = tem("seco");
+const ID = opcao("id");
 const LIMITE = Number(opcao("limite") ?? 0) || null;
 const NICHO = opcao("nicho");
 const CIDADE = opcao("cidade");
@@ -76,11 +85,16 @@ const supabase = createClient(url, chave, { auth: { persistSession: false } });
 /* ---------- a fila ---------- */
 async function filaDePesquisa(): Promise<Lead[]> {
   let q = supabase.from("crm_leads").select("*").eq("owner_id", dono);
+  if (ID) q = q.eq("id", ID);
   if (NICHO) q = q.eq("nicho", NICHO);
   if (CIDADE) q = q.eq("cidade", CIDADE);
 
   const { data, error } = await q.order("created_at", { ascending: true }).returns<Lead[]>();
   if (error) throw new Error(error.message);
+
+  /* Id na mão é ordem direta: pesquisa esta ficha, tenha ela dossiê ou
+     não, esteja ela em qualquer estágio. */
+  if (ID) return data ?? [];
 
   /* O filtro do dossiê fica aqui e não no SQL porque `dossie` é jsonb e a
      condição é "vazio OU status erro OU pesquisando há mais de cinco

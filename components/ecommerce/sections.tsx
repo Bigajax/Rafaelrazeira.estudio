@@ -8,6 +8,12 @@ import { CampoIsca, useGuardaDeFormulario } from "@/components/form-guarda";
 import { salvarLead } from "@/components/lead";
 import { mascararWhatsapp, whatsappValido } from "@/components/telefone";
 import { contextoDaSessao, initTracking, irParaWhatsapp, track, trackContact, trackLead } from "@/components/ecommerce/tracking";
+import { projetos } from "@/data/portfolio";
+
+/* mesma correção da /vitrine-digital em 28/08: o placar era digitado e ficou
+   preso no nove enquanto o /portfolio já contava dez. Aqui vale a mesma
+   régua, projeto com endereço público é projeto no ar. */
+const NO_AR = projetos.filter(p => p.url).length;
 
 /* Um número, uma função — todos os links de WhatsApp saem daqui. */
 const NUMERO = "5544999997219";
@@ -352,7 +358,7 @@ export function Hero() {
         {/* fatos verificáveis no lugar da âncora de preço e dos heroPoints:
             o valor continua na primeira dobra, agora como célula da faixa */}
         <ul className={s.proofStrip}>
-          <li><b>9</b>PROJETOS NO AR</li>
+          <li><b>{NO_AR}</b>PROJETOS NO AR</li>
           <li><b>{VALOR_BASE}</b>PONTO DE PARTIDA</li>
           <li><b>7</b>DIAS ATÉ A 1ª DIREÇÃO</li>
         </ul>
@@ -414,7 +420,7 @@ export function QuemFaz() {
       <p>Eu sou o Rafael. Desenho, desenvolvo e publico cada loja, e é comigo que você fala no WhatsApp, do primeiro oi até o e-commerce no ar. Sem fila de atendimento, sem gerente de conta, sem telefone que ninguém atende.</p>
       <p>As duas lojas desta página? Feitas nesta mesa, junto com os outros sete projetos do portfólio.</p>
       <ul className={s.quemFacts}>
-        {["MARINGÁ · PR", "9 PROJETOS NO AR", "RESPOSTA NO MESMO DIA"].map(x => <li key={x}>{x}</li>)}
+        {["MARINGÁ · PR", `${NO_AR} PROJETOS NO AR`, "RESPOSTA NO MESMO DIA"].map(x => <li key={x}>{x}</li>)}
       </ul>
       <a className={`${s.botao} ${s.cheio}`} href={zap(MSG_HERO)} data-cta="quem_faz" data-cta-dest="whatsapp">FALAR COM O RAFAEL NO WHATSAPP ↗</a>
       <p className={s.assinatura}>RAFAEL RAZEIRA · <b>ESTÚDIO</b></p>

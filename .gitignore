@@ -33,3 +33,10 @@ mixpanel-*.json
 anuncios/
 
 .vercel
+
+# Insumos da oficina de produção: legendas exportadas para leitura à mão
+# (scripts/catalogo-a-mao.ts). São matéria-prima de trabalho, não código.
+catalogo-*.txt
+catalogo-*.json
+
+catalogo-*/

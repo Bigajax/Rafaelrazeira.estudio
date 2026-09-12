@@ -602,7 +602,11 @@ type RespostaOpenRouter = {
    Pesquisar um lead e sugerir uma resposta são o mesmo transporte com
    cargas diferentes: mesmo endpoint, mesma chave, mesmo modelo, mesmo
    tratamento de erro. O que muda é o pedido e se a busca vai junto. */
-async function chamarModelo(opcoes: {
+/* EXPORTADA desde 26/08 para a oficina de produção: ler as legendas de
+   um catálogo é o mesmo transporte com outra carga, e duplicar a chamada
+   duplicaria também o tratamento de erro, o cabeçalho de etiqueta e a
+   leitura do custo. Ver lib/producao/catalogo.ts. */
+export async function chamarModelo(opcoes: {
   pedido: string;
   comBusca: boolean;
   max_tokens: number;
