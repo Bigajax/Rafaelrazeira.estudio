@@ -49,36 +49,40 @@ const page = [hero, marquee, audience, process, cases, precos, about, contact, m
 /* A raiz ganha a classe `lp`: é o único gancho de CSS que separa as duas
    páginas, e serve para o que o config não alcança (o botão do cabeçalho
    no celular, ver header.css). Tudo o mais continua vindo do CONFIG_LP. */
-/* ---------- o anúncio chega com #contato (11/09/2026) ----------
-   A URL dos anúncios apontava para o formulário do fim, e o navegador
-   pulava a primeira dobra inteira; com o scroll-behavior:smooth do
-   base.css o salto virava uma rolagem de sete telas que o Rafael viu
-   "travando" no navegador do Instagram. O fragmento é apagado AQUI,
-   antes de o DOM ser montado: sem elemento e sem fragmento, a página
-   abre no topo. Só os fragmentos de formulário; um link para #precos
-   compartilhado de propósito continua funcionando. O mesmo vale para a
-   vitrine em components/vitrine/SemAncoraDoAnuncio.tsx. */
+/* ---------- a página do anúncio abre no topo (11 e 12/09/2026) ----------
+   O navegador embutido da Meta rola a página até o formulário do fim
+   depois da carga (muito provavelmente o preenchimento automático dele,
+   que procura nome e telefone), e o scroll-behavior:smooth do base.css
+   transforma isso numa rolagem de sete telas que parece travar. A URL dos
+   anúncios NÃO tem #contato (conferido em 12/09); o fragmento que aparece
+   na URL dos leads é do clique da própria pessoa nos botões da página.
+   A regra: até 3,5s depois do load, rolagem de mais de meia tela sem
+   touchstart/wheel/teclado antes não é da pessoa, e a página volta ao
+   topo com a rolagem suave desligada. Fragmento de formulário na URL é
+   apagado antes de o DOM ser montado e força o topo na carga. Mesma
+   lógica em components/vitrine/SemAncoraDoAnuncio.tsx. */
 const ANCORA_DE_FORMULARIO = /^#(contato|hero-card|hero-form|form)$/;
-if (ANCORA_DE_FORMULARIO.test(location.hash)) {
-  history.replaceState(null, "", location.pathname + location.search);
-  /* A segunda defesa (12/09): o navegador embutido do Instagram faz o
-     salto DEPOIS, na carga, ignorando a troca de URL. Se a página nasceu
-     com fragmento de formulário, na carga ela volta ao topo (três vezes,
-     para o salto tardio), com a rolagem suave desligada e só se a pessoa
-     ainda não tocou na tela. Ver components/vitrine/SemAncoraDoAnuncio.tsx. */
-  try { history.scrollRestoration = "manual"; } catch {}
+const temHash = ANCORA_DE_FORMULARIO.test(location.hash);
+const limparHash = () => { if (ANCORA_DE_FORMULARIO.test(location.hash)) history.replaceState(null, "", location.pathname + location.search); };
+if (temHash) limparHash();
+try { history.scrollRestoration = "manual"; } catch {}
+/* com outro fragmento na URL (#precos compartilhado), a guarda nem liga: o salto é o pedido */
+if (!location.hash || temHash) {
   let tocou = false;
   const marcar = () => { tocou = true; };
   addEventListener("touchstart", marcar, { passive: true, once: true });
   addEventListener("wheel", marcar, { passive: true, once: true });
+  addEventListener("keydown", marcar, { once: true });
   const topo = () => {
     if (tocou) return;
-    if (ANCORA_DE_FORMULARIO.test(location.hash)) history.replaceState(null, "", location.pathname + location.search);
+    limparHash();
     document.documentElement.style.scrollBehavior = "auto";
     scrollTo(0, 0);
     setTimeout(() => { document.documentElement.style.scrollBehavior = ""; }, 50);
   };
-  addEventListener("load", () => { topo(); setTimeout(topo, 250); setTimeout(topo, 900); });
+  let ate = Date.now() + 8000;
+  addEventListener("load", () => { ate = Date.now() + 3500; if (temHash) { topo(); setTimeout(topo, 250); setTimeout(topo, 900); } });
+  addEventListener("scroll", () => { if (tocou || Date.now() > ate) return; if (scrollY > innerHeight * 0.5) topo(); }, { passive: true });
 }
 
 document.documentElement.classList.add("lp", CONFIG.lang);

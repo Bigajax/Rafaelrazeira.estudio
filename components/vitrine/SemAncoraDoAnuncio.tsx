@@ -1,40 +1,44 @@
 /* ============================================================
-   O ANÚNCIO CHEGA COM #ÂNCORA, E A PÁGINA ABRE NO TOPO (11/09/2026)
+   A PÁGINA DO ANÚNCIO ABRE NO TOPO (11 e 12/09/2026)
 
-   As URLs dos anúncios da Meta apontam para o formulário (#contratar no
-   lote pip-h17u-base, #hero-form nos anteriores): a ideia era pousar a
-   pessoa no Contact pelo qual a campanha otimiza. Na prática, no celular,
-   o navegador pulava a manchete e a oferta (a promessa inteira da primeira
-   dobra) e, com `scroll-behavior: smooth` no <html>, o salto de sete telas
-   virava uma rolagem animada que o Rafael viu "travando" no navegador do
-   Instagram.
+   O Rafael abriu o próprio anúncio pelo Instagram e a página rolou
+   sozinha até o formulário do fim, "travando" no caminho. A primeira
+   suspeita foi o #contratar na URL dos anúncios, e não era: a URL dos
+   anúncios não tem fragmento (conferido no Gerenciador em 12/09); o
+   `#contratar` que aparece na URL dos leads é do clique da própria pessoa
+   num botão da página. O que rola a página é o navegador embutido da Meta
+   depois da carga, muito provavelmente o preenchimento automático dele,
+   que procura o formulário com nome e telefone e leva a tela até ele. Com
+   `scroll-behavior: smooth` no <html>, esse salto vira a rolagem animada
+   de sete telas que parecia travar.
 
-   ---------- duas defesas, porque a primeira não bastou (12/09) ----------
-   1. O fragmento é apagado ANTES de o navegador chegar ao elemento: o
-      script é inline e está no começo do corpo, então roda durante o
-      parse. No Chrome isso resolve sozinho (testado).
-   2. O navegador embutido do Instagram (e o WebKit do iPhone) faz o salto
-      DEPOIS, na carga, e ignora a troca de URL: os leads de 12/09 às 11:05
-      chegaram com o `#contratar` ainda na URL. Por isso, se a página
-      nasceu com fragmento de formulário, no evento `load` (e duas vezes
-      depois, para o salto tardio) ela volta ao topo, com a rolagem suave
-      desligada para não animar a volta. Só se a pessoa ainda não tocou na
-      tela: quem já começou a rolar não é puxado de volta.
+   ---------- a regra ----------
+   Nos primeiros segundos de vida da página, rolagem que não vem do dedo
+   não é da pessoa. No celular toda rolagem humana começa com touchstart;
+   no desktop, com wheel ou teclado. Então: até 3,5s depois do `load`, se
+   a página rolar mais de meia tela sem nenhum desses sinais antes, ela
+   volta ao topo, com a rolagem suave desligada para a volta ser seca.
+   Quem já tocou na tela nunca é puxado de volta.
 
-   Só os fragmentos de formulário. Um link compartilhado para #projetos ou
-   #faq continua funcionando: quem manda esse link quer mostrar aquela
-   seção, e o anúncio nunca aponta para ela.
+   As defesas de antes continuam, porque são baratas: fragmento de
+   formulário na URL é apagado no parse (Chrome resolve aí) e força o topo
+   na carga; `scrollRestoration = "manual"` sempre, para o navegador não
+   devolver a página à posição de uma visita anterior. Um link
+   compartilhado para #faq ou #projetos continua funcionando: só os
+   fragmentos de formulário entram na regra, e com qualquer outro
+   fragmento na URL a guarda nem liga: o salto até #faq é o pedido.
 
-   Componente de servidor, sem hook: é um <script> com o texto pronto,
-   igual ao JSON-LD. A landing estática faz o mesmo no topo de
-   public/estudio/js/main-lp.js.
+   Componente de servidor, sem hook: é um <script> inline no começo do
+   corpo, então roda durante o parse, antes de qualquer elemento existir.
+   A landing estática faz o mesmo no topo de public/estudio/js/main-lp.js.
    ============================================================ */
-const CODIGO = `(function(){var F=/^#(hero-form|contratar|oferta|contato|form)$/;if(!F.test(location.hash))return;
-var limpar=function(){if(F.test(location.hash))history.replaceState(null,"",location.pathname+location.search)};limpar();
+const CODIGO = `(function(){var F=/^#(hero-form|contratar|oferta|contato|form)$/,h=location.hash,temHash=F.test(h);if(h&&!temHash)return;
+var limpar=function(){if(F.test(location.hash))history.replaceState(null,"",location.pathname+location.search)};if(temHash)limpar();
 try{history.scrollRestoration="manual"}catch(e){}
-var tocou=false,marcar=function(){tocou=true};addEventListener("touchstart",marcar,{passive:true,once:true});addEventListener("wheel",marcar,{passive:true,once:true});
+var tocou=false,marcar=function(){tocou=true};addEventListener("touchstart",marcar,{passive:true,once:true});addEventListener("wheel",marcar,{passive:true,once:true});addEventListener("keydown",marcar,{once:true});
 var raiz=document.documentElement,topo=function(){if(tocou)return;limpar();raiz.style.scrollBehavior="auto";scrollTo(0,0);setTimeout(function(){raiz.style.scrollBehavior=""},50)};
-addEventListener("load",function(){topo();setTimeout(topo,250);setTimeout(topo,900)});})();`;
+var ate=Date.now()+8000;addEventListener("load",function(){ate=Date.now()+3500;if(temHash){topo();setTimeout(topo,250);setTimeout(topo,900)}});
+addEventListener("scroll",function(){if(tocou||Date.now()>ate)return;if(scrollY>innerHeight*0.5)topo()},{passive:true});})();`;
 
 export function SemAncoraDoAnuncio() {
   return <script dangerouslySetInnerHTML={{ __html: CODIGO }} />;
