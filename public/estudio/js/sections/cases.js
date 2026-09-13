@@ -90,7 +90,11 @@ export function cases(){
   <section class="cases" id="cases">
     <div class="wrap">
       <p class="cases__eyebrow reveal">${c.label}</p>
-      <h2 class="cases__head reveal">${c.headline}</h2>
+      ${/* as capas da tira carregam sem lazy: são 8 arquivos de ~8KB, e dentro do letreiro em movimento o lazy deixava buraco */""}${c.manchete && c.tira ? `<h2 class="cases__head cases__head--tira reveal">
+        <span>${c.manchete.antes}</span>
+        <span class="cases__tira" aria-hidden="true"><span class="cases__tiraTrack">${[...c.tira, ...c.tira].map(t => `<img src="${abs(t.img)}" alt="" width="320" height="200" decoding="async" />`).join("")}</span></span>
+        <span>${c.manchete.depois}</span>
+      </h2>` : `<h2 class="cases__head reveal">${c.headline}</h2>`}
       ${c.intro ? `<p class="cases__intro reveal">${c.intro}</p>` : ""}
       <div class="cases__grid${c.ficha ? " cases__grid--ficha" : ""}">${items}</div>
       <div class="cases__ctawrap reveal">

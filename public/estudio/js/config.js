@@ -503,6 +503,24 @@ const CONFIG_LP = {
   cases: {
     label: "PROJETOS DO ESTÚDIO",
     headline: "PÁGINAS FEITAS PARA UMA TAREFA SÓ.",
+    /* ---------- as capas dentro da manchete (12/09/2026) ----------
+       Empréstimo do visonstudios.com ("TAKE YOUR PROJECT [fotos] TO THE
+       NEXT LEVEL"): a manchete se parte em duas linhas e uma tira de
+       capas reais do portfólio rola entre elas. É prova dentro do
+       argumento. `manchete` tem as duas metades; sem ela, cases.js usa
+       `headline` inteira, como antes. As capas são derivadas de 320px
+       (public/assets/tira, ~8KB cada) das capturas do /portfolio. */
+    manchete: { antes: "PÁGINAS FEITAS PARA", depois: "UMA TAREFA SÓ." },
+    tira: [
+      { img: "assets/tira/lancellotti.webp",    alt: "Lancellotti Tattoo" },
+      { img: "assets/tira/baixudos.webp",       alt: "Baixudos.PR" },
+      { img: "assets/tira/solo-urb.webp",       alt: "Sölo Urb" },
+      { img: "assets/tira/xaviers-sports.webp", alt: "Xavier's Sports" },
+      { img: "assets/tira/verit-lab.webp",      alt: "vérít.lab" },
+      { img: "assets/tira/pr-grife.webp",       alt: "PR Grife" },
+      { img: "assets/tira/star-point.webp",     alt: "Star Point" },
+      { img: "assets/tira/filato-bene.webp",    alt: "Filato Bene" },
+    ],
     /* ---------- de grade a FICHA (11/09/2026) ----------
        Eram dois celulares numa grade de duas colunas com meia tela de
        vazio entre eles e um parágrafo descritivo embaixo de cada um. A
@@ -653,6 +671,23 @@ const CONFIG_LP = {
     ],
   },
 
+  /* ---------- a FAQ de quem já anuncia (12/09/2026) ----------
+     Entra depois do "quem faz" e antes do formulário. As cinco perguntas
+     são as que travam o clique na prévia, e a saída no fim ("ficou outra
+     dúvida?") leva ao formulário, com o mesmo destino de sempre. */
+  faq: {
+    label: "ANTES DE PEDIR A PRÉVIA",
+    headline: "O QUE TRAVA QUEM JÁ ANUNCIA.",
+    itens: [
+      { p: "Preciso já estar anunciando?", r: "Sim. A prévia é uma página inteira, escrita do zero, e ela só prova alguma coisa recebendo tráfego. Se você ainda não anuncia, manda o formulário do mesmo jeito: a gente conversa primeiro, e a página entra quando o anúncio estiver pronto." },
+      { p: "E se eu não gostar da prévia?", r: "Não paga nada, e não precisa explicar. A prévia é por minha conta: é o meu jeito de mostrar o trabalho em vez de descrever." },
+      { p: "Quanto tempo leva?", r: "Respondo em até 24 horas úteis, e a prévia chega em 3 dias úteis, no seu celular. Depois do seu sim, a publicação é a mesma página ganhando o seu endereço." },
+      { p: "Preciso ter domínio?", r: "Não. Ela vai ao ar num endereço meu e, se você tiver domínio, eu aponto. O domínio próprio é opcional, anual e pago direto no registrador." },
+      { p: "Tem mensalidade?", r: "Não. São R$497 uma vez, começando com R$97. O saldo só quando ela estiver no ar." },
+    ],
+    saida: { texto: "Ficou outra dúvida?", cta: "Pergunta no formulário, respondo em 24h" },
+  },
+
   pillText: "QUERO VER A MINHA PRONTA",
 };
 
@@ -758,6 +793,7 @@ const CONFIG_LP_EN = {
     ...CONFIG_LP.cases,
     label: "STUDIO PROJECTS",
     headline: "PAGES BUILT FOR ONE JOB ONLY.",
+    manchete: { antes: "PAGES BUILT FOR", depois: "ONE JOB ONLY." },
     cta: "I WANT TO SEE MINE",
     items: [
       { ...CONFIG_LP.cases.items[0], category:"LANDING PAGE · LEADS", tarefa:"REQUEST A TATTOO QUOTE",  result:"Whoever arrives interested leaves with the request already written." },
@@ -840,6 +876,19 @@ const CONFIG_LP_EN = {
       { label:"TERMS",   url:"/termos" },
       { label:"PRIVACY", url:"/privacidade" },
     ],
+  },
+
+  faq: {
+    label: "BEFORE YOU ASK FOR THE PREVIEW",
+    headline: "WHAT HOLDS BACK PEOPLE WHO ALREADY RUN ADS.",
+    itens: [
+      { p: "Do I need to be running ads already?", r: "Yes. The preview is a whole page, written from scratch, and it only proves anything when it gets traffic. If you're not running ads yet, send the form anyway: we talk first, and the page comes in when the ad is ready." },
+      { p: "What if I don't like the preview?", r: "You pay nothing, and you don't have to explain. The preview is on me: it's how I show the work instead of describing it." },
+      { p: "How long does it take?", r: "I reply within 24 business hours, and the preview reaches your phone within 3 business days. After your yes, publishing is the same page getting your address." },
+      { p: "Do I need a domain?", r: "No. It goes live on an address of mine and, if you have a domain, I point it. Your own domain is optional, yearly, and paid directly to the registrar." },
+      { p: "Is there a monthly fee?", r: "No. It's US$99 once, starting with US$19. The balance only when it's live." },
+    ],
+    saida: { texto: "Another question?", cta: "Ask in the form, I reply within 24h" },
   },
 
   pillText: "I WANT TO SEE MINE",

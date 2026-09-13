@@ -228,3 +228,40 @@
 }
 /* a manchete da seção fecha mais perto da primeira ficha sem a intro */
 .cases__grid--ficha{margin-top:clamp(28px,4.4vw,48px)}
+
+/* ============================================================
+   AS CAPAS DENTRO DA MANCHETE (12/09/2026)
+
+   Empréstimo do visonstudios.com: a manchete se parte em duas linhas e
+   uma tira de capas reais rola entre elas, na altura de uma linha. Os
+   `<span>` são blocos, então a tira é a linha do meio; a max-width de
+   20ch da manchete deixa de valer aqui, porque a tira quer a largura da
+   coluna. Cada capa tem a altura da linha (1em da manchete), proporção
+   16:10 da captura, fio de tinta e uma inclinação alternada de um grau,
+   que é o que faz ler como impressos soltos e não como galeria.
+
+   Oito capas duplicadas e percurso de -50%: a trilha precisa conter o
+   conteúdo DUAS vezes para o laço fechar sem emenda (a mesma conta do
+   letreiro). Devagar de propósito (48s): é prova, não anúncio. Com
+   "reduzir movimento" a tira fica parada, e continua sendo prova.
+   ============================================================ */
+.cases__head--tira{max-width:none}
+.cases__head--tira > span{display:block}
+.cases__tira{
+  display:block;overflow:hidden;
+  height:1.06em;margin:.12em 0;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);
+}
+.cases__tiraTrack{
+  display:flex;gap:.28em;width:max-content;
+  animation:casesTira 48s linear infinite;
+}
+.cases__tiraTrack img{
+  display:block;height:1.06em;width:auto;aspect-ratio:16/10;object-fit:cover;
+  border:1px solid var(--ink);background:var(--paper);
+}
+.cases__tiraTrack img:nth-child(odd){transform:rotate(-1deg)}
+.cases__tiraTrack img:nth-child(even){transform:rotate(1deg)}
+@keyframes casesTira{to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.cases__tiraTrack{animation:none}}

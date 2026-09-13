@@ -30,6 +30,7 @@ import { process }  from "./sections/process.js";
 import { cases }    from "./sections/cases.js";
 import { precos }   from "./sections/precos.js";
 import { about }    from "./sections/about.js";
+import { faq }      from "./sections/faq.js";
 import { contact }  from "./sections/contact.js";
 import { footer }   from "./sections/footer.js";
 import { pill }     from "./sections/pill.js";
@@ -44,7 +45,8 @@ import { initPrecos }     from "./lib/precos.js";
 import { initTracking }   from "./lib/tracking.js";
 import { CONFIG }         from "./config.js";
 
-const page = [hero, marquee, audience, process, cases, precos, about, contact, marquee];
+/* a FAQ (12/09) entra depois do "quem faz" e antes do formulário: é onde a objeção aparece */
+const page = [hero, marquee, audience, process, cases, precos, about, faq, contact, marquee];
 
 /* A raiz ganha a classe `lp`: é o único gancho de CSS que separa as duas
    páginas, e serve para o que o config não alcança (o botão do cabeçalho
@@ -73,6 +75,8 @@ if (!location.hash || temHash) {
   addEventListener("touchstart", marcar, { passive: true, once: true });
   addEventListener("wheel", marcar, { passive: true, once: true });
   addEventListener("keydown", marcar, { once: true });
+  /* o clique também é da pessoa: o CTA do topo rola até o formulário nos primeiros segundos */
+  addEventListener("pointerdown", marcar, { passive: true, once: true, capture: true });
   const topo = () => {
     if (tocou) return;
     limparHash();

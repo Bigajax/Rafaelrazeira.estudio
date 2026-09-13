@@ -1,0 +1,47 @@
+/* ============================================================
+   FAQ — papel, filete de tinta, "+" que vira "×" (12/09/2026)
+
+   A mesma gramática das outras seções claras: rótulo mono com o traço
+   verde, manchete na condensada preta, e a lista com um fio de tinta
+   entre as perguntas, sem cartão e sem sombra. O "+" é o mesmo sinal da
+   FAQ da /vitrine-digital, para as duas páginas falarem a mesma língua.
+   ============================================================ */
+.faq{padding:clamp(56px,9vw,120px) 0;background:var(--paper);color:var(--ink)}
+.faq__head{
+  font-family:var(--font-display);font-stretch:78%;font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.9rem,6vw,3.4rem);letter-spacing:-.03em;line-height:1;
+  max-width:18ch;margin:0 0 clamp(28px,4vw,44px);
+}
+.faq__lista{max-width:820px;border-top:1px solid var(--ink)}
+.faq__item{border-bottom:1px solid var(--linha)}
+.faq__pergunta{
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+  padding:18px 0;cursor:pointer;list-style:none;
+  font-family:var(--font-display);font-stretch:100%;font-weight:800;
+  font-size:clamp(1.05rem,3.6vw,1.3rem);letter-spacing:-.01em;line-height:1.25;
+}
+.faq__pergunta::-webkit-details-marker{display:none}
+.faq__pergunta:focus-visible{outline:2px solid var(--green);outline-offset:4px}
+/* o sinal: duas hastes; a vertical gira e some quando abre */
+.faq__mais{position:relative;flex:none;width:22px;height:22px;border:1px solid var(--ink)}
+.faq__mais::before,.faq__mais::after{
+  content:"";position:absolute;left:50%;top:50%;background:var(--ink);
+  transform:translate(-50%,-50%);transition:transform .25s ease;
+}
+.faq__mais::before{width:10px;height:1.5px}
+.faq__mais::after{width:1.5px;height:10px}
+.faq__item[open] .faq__mais::after{transform:translate(-50%,-50%) rotate(90deg)}
+.faq__item[open] .faq__mais{background:var(--ink)}
+.faq__item[open] .faq__mais::before,.faq__item[open] .faq__mais::after{background:var(--paper)}
+.faq__resposta{
+  max-width:60ch;margin:0 0 22px;
+  font-size:clamp(.95rem,3.4vw,1.05rem);line-height:1.6;color:var(--ink-soft);
+}
+/* a saída: quem não achou a pergunta tem para onde ir */
+.faq__saida{
+  margin:clamp(24px,4vw,36px) 0 0;
+  font-family:var(--font-mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);
+}
+.faq__saida a{color:var(--ink);font-weight:700;text-decoration:none;border-bottom:2px solid var(--green);padding-bottom:2px}
+.faq__saida a:hover{border-color:var(--ink)}
+@media(prefers-reduced-motion:reduce){.faq__mais::before,.faq__mais::after{transition:none}}

@@ -15,7 +15,8 @@
    ---------- a regra ----------
    Nos primeiros segundos de vida da página, rolagem que não vem do dedo
    não é da pessoa. No celular toda rolagem humana começa com touchstart;
-   no desktop, com wheel ou teclado. Então: até 3,5s depois do `load`, se
+   no desktop, com wheel, teclado ou um clique (pointerdown: o clique no
+   CTA do topo nos primeiros segundos rola até o formulário, e é da pessoa). Então: até 3,5s depois do `load`, se
    a página rolar mais de meia tela sem nenhum desses sinais antes, ela
    volta ao topo, com a rolagem suave desligada para a volta ser seca.
    Quem já tocou na tela nunca é puxado de volta.
@@ -35,7 +36,7 @@
 const CODIGO = `(function(){var F=/^#(hero-form|contratar|oferta|contato|form)$/,h=location.hash,temHash=F.test(h);if(h&&!temHash)return;
 var limpar=function(){if(F.test(location.hash))history.replaceState(null,"",location.pathname+location.search)};if(temHash)limpar();
 try{history.scrollRestoration="manual"}catch(e){}
-var tocou=false,marcar=function(){tocou=true};addEventListener("touchstart",marcar,{passive:true,once:true});addEventListener("wheel",marcar,{passive:true,once:true});addEventListener("keydown",marcar,{once:true});
+var tocou=false,marcar=function(){tocou=true};addEventListener("touchstart",marcar,{passive:true,once:true});addEventListener("wheel",marcar,{passive:true,once:true});addEventListener("keydown",marcar,{once:true});addEventListener("pointerdown",marcar,{passive:true,once:true,capture:true});
 var raiz=document.documentElement,topo=function(){if(tocou)return;limpar();raiz.style.scrollBehavior="auto";scrollTo(0,0);setTimeout(function(){raiz.style.scrollBehavior=""},50)};
 var ate=Date.now()+8000;addEventListener("load",function(){ate=Date.now()+3500;if(temHash){topo();setTimeout(topo,250);setTimeout(topo,900)}});
 addEventListener("scroll",function(){if(tocou||Date.now()>ate)return;if(scrollY>innerHeight*0.5)topo()},{passive:true});})();`;
