@@ -4,9 +4,10 @@
    1. /crm e tudo abaixo: a porta do CRM (lib/middleware/crm.ts), que
       confere a sessão do Supabase antes de qualquer render.
    2. As três URLs pt que têm irmã em inglês (/vitrine-digital,
-      /landing-page, /portfolio): a negociação de idioma
-      (lib/middleware/idioma.ts), que só redireciona quem nunca escolheu
-      e não fala português.
+      /landing-page, /portfolio): o `?lang=` do pill
+      (lib/middleware/idioma.ts). Desde 12/09/2026 a URL decide o idioma:
+      sem cookie e sem Accept-Language, para o anúncio pt nunca abrir em
+      inglês.
 
    A bifurcação vem antes de qualquer coisa: o cliente do Supabase e a
    consulta de sessão nunca acontecem numa página pública. O import do

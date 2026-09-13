@@ -17,6 +17,8 @@ export const IDIOMA_PADRAO: Lang = "pt";
 
 /* Cookie da escolha. Um ano, lido pelo middleware nas URLs pt e escrito
    pelo seletor (document.cookie) ou pelo middleware (?lang= e redirect). */
+/* o cookie deixou de decidir idioma em 12/09/2026 (ver lib/middleware/idioma.ts);
+   o nome fica só para o pill apagar o que sobrou nos navegadores */
 export const COOKIE_LANG = "lang";
 export const COOKIE_LANG_MAX_AGE = 60 * 60 * 24 * 365;
 

@@ -9,15 +9,18 @@
    dobraria a sigla. São dois SVGs de 14x10, simplificados, no mesmo peso
    de tinta da página.
 
-   É link, não botão: a URL irmã existe e é ela que o Google indexa. No
-   clique, grava o cookie da escolha (o middleware só redireciona quem
-   não escolheu) e leva a query junto, para os utm atravessarem a troca.
+   É link, não botão: a URL irmã existe e é ela que o Google indexa, e
+   leva a query junto, para os utm atravessarem a troca. Desde 12/09/2026
+   o clique NÃO grava cookie: a URL decide o idioma (ver
+   lib/middleware/idioma.ts), e o cookie `lang=en` de uma visita antiga
+   era o que prendia o anúncio pt na página em inglês. O clique apaga o
+   cookie que sobrou de antes, para ninguém ficar preso.
    Sem dropdown para dois idiomas: seria dois toques para uma ação de um.
 
    Grafite, nunca rosa: rosa é a ação da página, e trocar idioma não é.
    ============================================================ */
 import { useEffect, useState } from "react";
-import { COOKIE_LANG, COOKIE_LANG_MAX_AGE, type Lang } from "@/lib/idiomas";
+import { COOKIE_LANG, type Lang } from "@/lib/idiomas";
 import s from "./SeletorIdioma.module.css";
 
 const ROTULO: Record<Lang, { sigla: string; nome: string; lang: string }> = {
@@ -47,8 +50,8 @@ export function SeletorIdioma({ atual, ptHref, enHref, className }: { atual: Lan
   const [busca, setBusca] = useState("");
   useEffect(() => { setBusca(window.location.search); }, []);
 
-  const escolher = (lang: Lang) => {
-    document.cookie = `${COOKIE_LANG}=${lang}; Max-Age=${COOKIE_LANG_MAX_AGE}; Path=/; SameSite=Lax`;
+  const escolher = () => {
+    document.cookie = `${COOKIE_LANG}=; Max-Age=0; Path=/; SameSite=Lax`;
   };
 
   const item = (lang: Lang, href: string) => {
@@ -61,7 +64,7 @@ export function SeletorIdioma({ atual, ptHref, enHref, className }: { atual: Lan
       aria-label={r.nome}
       aria-current={ativo ? "page" : undefined}
       className={ativo ? `${s.item} ${s.ativo}` : s.item}
-      onClick={() => escolher(lang)}
+      onClick={escolher}
       data-cta="idioma"
       data-cta-dest={lang}
     ><Bandeira lang={lang} />{r.sigla}</a>;
