@@ -572,9 +572,23 @@ export function compilar(
   /* A trava das condições comerciais. Ela é literal e é o item mais
      importante do compilado numa prévia: a loja ainda não respondeu, e a
      tentação do gerador é preencher com o que "toda loja tem". */
+  /* A trava nomeia SÓ o que falta. Quando a loja já respondeu entrega e
+     retirada, dizer "entrega não foi respondida" três linhas antes de
+     imprimir a entrega confirmada deixa o documento se contradizendo, e
+     quem lê escolhe no escuro qual das duas obedecer. */
   if (respondidas.length < 4) {
+    const rotuloDe: Record<string, string> = {
+      frete: "entrega",
+      pagamento: "pagamento",
+      retirada: "retirada",
+      troca: "troca",
+    };
+    const faltam = (["frete", "pagamento", "retirada", "troca"] as const)
+      .filter((k) => !respondidas.includes(k))
+      .map((k) => rotuloDe[k]);
+    const lista = faltam.length > 1 ? `${faltam.slice(0, -1).join(", ")} e ${faltam[faltam.length - 1]}` : faltam[0];
     fronteiras.push(
-      "- Entrega, pagamento, retirada e troca não foram respondidos pela loja. Não crie seção de frete, forma de pagamento, prazo ou política de troca. Não escreva \"frete grátis\", \"3x sem juros\", \"troca em 7 dias\" nem equivalente. Inventar uma condição comercial que a loja não pratica invalida a peça inteira.",
+      `- ${lista[0].toUpperCase()}${lista.slice(1)} ${faltam.length > 1 ? "não foram respondidos" : "não foi respondido"} pela loja. Não crie seção nem frase sobre ${lista}. Não escreva "frete grátis", "3x sem juros", "troca em 7 dias" nem equivalente. Inventar uma condição comercial que a loja não pratica invalida a peça inteira.`,
     );
   }
   if (!identidade.paleta?.length) {

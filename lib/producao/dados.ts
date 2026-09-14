@@ -6,16 +6,13 @@
    por dono em toda linha.
    ============================================================ */
 
-import { clienteServidor, SUPABASE_URL } from "@/lib/crm/supabase";
+import { clienteServidor } from "@/lib/crm/supabase";
 import type { Ativo, Loja, Produto, VersaoPrompt } from "./tipos";
 
-/* O bucket é público para leitura (ver a nota no producao.sql), então a URL
-   é montada, não assinada. Uma URL assinada venceria no meio da revisão e
-   deixaria a tabela cheia de imagem quebrada, que é exatamente o problema
-   que baixar do Instagram veio resolver. */
-export function urlDoAtivo(caminho: string): string {
-  return `${SUPABASE_URL}/storage/v1/object/public/producao/${caminho}`;
-}
+/* A URL pública do ativo mora em oficina.ts (a linha de comando também
+   precisa dela e não tem `next/headers`); fica reexportada aqui para as
+   telas continuarem importando de um lugar só. */
+export { urlDoAtivo } from "./oficina";
 
 /* `revisados` entra na lista porque a régua de produção precisa dele: a
    etapa "conferida" é a única que o banco não sabe sozinho (ela é todo
