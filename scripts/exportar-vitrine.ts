@@ -19,6 +19,10 @@
 
    USO:
      npx tsx scripts/exportar-vitrine.ts sacrazen ~/Desktop/sacrazen
+     npx tsx scripts/exportar-vitrine.ts velas.mogi ~/Desktop/velas-mogi --ordem "Velas de 7 dias,Velas palito,..."
+
+   Sem --ordem, a lista CATEGORIAS abaixo (a da SacraZen) manda, e o que
+   não estiver nela vai para o fim em ordem alfabética.
    ============================================================ */
 
 import fs from "node:fs";
@@ -27,6 +31,10 @@ import { acharLoja, arrobaDe, prepararOficina } from "./oficina-cli";
 import type { Ativo, Produto } from "@/lib/producao/tipos";
 
 const arroba = arrobaDe(process.argv[2] || "");
+const ordemPedida = (() => {
+  const i = process.argv.indexOf("--ordem");
+  return i >= 0 && process.argv[i + 1] ? process.argv[i + 1].split(",").map((s) => s.trim()).filter(Boolean) : null;
+})();
 const destino = process.argv[3] ? path.resolve(process.argv[3].replace(/^~/, process.env.USERPROFILE || process.env.HOME || "")) : "";
 if (!arroba || !destino) {
   console.error("Uso: npx tsx scripts/exportar-vitrine.ts <arroba> <pasta da vitrine>");
@@ -179,9 +187,10 @@ async function principal() {
   }
 
   const nomesCategorias = [...new Set(produtos.map((p) => p.categoria).filter(Boolean) as string[])];
+  const preferidas = ordemPedida ?? CATEGORIAS;
   const ordenadas = [
-    ...CATEGORIAS.filter((c) => nomesCategorias.includes(c)),
-    ...nomesCategorias.filter((c) => !CATEGORIAS.includes(c)).sort((a, b) => a.localeCompare(b, "pt")),
+    ...preferidas.filter((c) => nomesCategorias.includes(c)),
+    ...nomesCategorias.filter((c) => !preferidas.includes(c)).sort((a, b) => a.localeCompare(b, "pt")),
   ];
   const categorias = ordenadas.map((nome, i) => {
     const slug = slugDe(nome);
