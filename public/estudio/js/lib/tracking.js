@@ -178,6 +178,9 @@ const NOME_MP = {
   ViewContent:      "Viu a garantia",
   ClickCTA:         "Clicou em CTA",
   InitiateCheckout: "Passou da etapa 1",
+  /* só Mixpanel (ver trackTocouFormulario); o nome é o mesmo da vitrine
+     de propósito, para o painel somar as duas páginas na mesma linha */
+  TocouFormulario:  "Tocou no formulário",
   Lead:             "Enviou o formulário",
 };
 
@@ -318,6 +321,18 @@ export function trackInitiateCheckout(){
   if (!podeRastrear()) return;
   window.fbq && window.fbq("track", "InitiateCheckout");
   mpTrack("InitiateCheckout");
+}
+
+/* Tocou no formulário: o primeiro foco em qualquer campo, uma vez por
+   formulário e por visita (`formulario` = "hero" | "fim"). SÓ MIXPANEL, nunca
+   Meta: é diagnóstico, não sinal de otimização. Existe desde 15/09/2026
+   porque a /landing-page era cega entre "chegou no formulário" (29% dos
+   visitantes, medido pela garantia) e "enviou" (1,4%): sem este evento não
+   dá para separar "não quis preencher" de "começou e desistiu", e as duas
+   pedem consertos diferentes. A vitrine já tinha o equivalente. */
+export function trackTocouFormulario(formulario){
+  if (!podeRastrear()) return;
+  mpTrack("TocouFormulario", { formulario });
 }
 
 /* Lead deduplicado: mesmo event_id no Pixel (browser) e no CAPI (servidor).

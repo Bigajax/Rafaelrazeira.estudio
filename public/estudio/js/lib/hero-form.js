@@ -33,7 +33,7 @@
       assim ela aparece igual dentro do navegador do Instagram.
    ============================================================ */
 import { CONFIG, T, WHATSAPP_NUMBER } from "../config.js";
-import { trackLead } from "./tracking.js";
+import { trackLead, trackTocouFormulario } from "./tracking.js";
 
 const whatsValido = (v) => { const d = v.replace(/\D/g, ""); return d.length === 10 || d.length === 11; };
 /* a régua do e-mail é a mesma da rota (components/telefone-intl.ts): um @,
@@ -85,6 +85,14 @@ export function initHeroForm(){
   if (tel) tel.addEventListener("input", () => marcar(tel, errWhats, false));
   if (form.email) form.email.addEventListener("input", () => marcar(form.email, errEmail, false));
   if (errInsta) form.instagram.addEventListener("input", () => marcar(form.instagram, errInsta, false));
+
+  /* o primeiro toque em qualquer campo, uma vez só (`focusin` borbulha, o
+     `focus` não; `change` cobre as pílulas de faixa, que não recebem foco
+     no toque em alguns navegadores embutidos) */
+  let tocou = false;
+  const aoTocar = () => { if (!tocou){ tocou = true; trackTocouFormulario("hero"); } };
+  form.addEventListener("focusin", aoTocar);
+  form.addEventListener("change", aoTocar);
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -144,13 +152,21 @@ export function initHeroForm(){
         method:"POST", headers:{ "Content-Type": "application/json" }, body:JSON.stringify(payload),
       });
       if (!res.ok) throw new Error("Falha no envio");
+      /* `repetido`: a rota achou o envio desta pessoa nas últimas 24h e
+         atualizou a linha em vez de criar outra. Sem Lead de novo: em 12 e
+         15/09 dois leads que preencheram os dois formulários viraram quatro
+         resultados na Meta. Corpo ilegível conta como envio novo, nunca
+         como perda. */
+      const resposta = await res.json().catch(() => ({}));
 
       /* Lead deduplicado (Pixel + CAPI, mesmo event_id), igual ao do
          briefing. Fire-and-forget: falha de medição nunca pode derrubar
          um envio que já foi gravado. */
-      const eventId = (crypto.randomUUID && crypto.randomUUID()) ||
-                      `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-      trackLead(eventId, { phone: payload.whatsapp, email: payload.email });
+      if (!resposta.repetido){
+        const eventId = (crypto.randomUUID && crypto.randomUUID()) ||
+                        `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+        trackLead(eventId, { phone: payload.whatsapp, email: payload.email });
+      }
 
       document.getElementById("hero-card").classList.add("is-enviado");
     }catch(err){

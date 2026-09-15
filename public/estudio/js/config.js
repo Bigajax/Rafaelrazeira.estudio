@@ -646,6 +646,14 @@ const CONFIG_LP = {
     pricingNote: "Landing page R$497, começando com R$97. Preço fechado, pago uma vez.",
     passoUnico: true,
     formClaro: true,
+    /* O formulário do fim posta na /api/lead, como o do hero e como a /en
+       (15/09/2026). Até aqui ele gravava na `briefings`, tabela sem leitor:
+       quem preenchia só o de baixo não virava card, e quem preenchia os
+       dois (aconteceu com os dois leads do lp-n em 12 e 15/09) disparava
+       DOIS Leads na Meta, porque a `briefings` não sabe que a pessoa já
+       tinha enviado. A rota funde o envio repetido em 24h e devolve
+       `repetido`, e aí o form.js não conta o Lead de novo. */
+    viaApiLead: true,
     form: {
       nome:      { label:"Qual seu nome?",     placeholder:"Seu nome", err:"Digite seu nome." },
       whatsapp:  { label:"WhatsApp com DDD",   placeholder:"(44) 99999-9999", err:"Digite o WhatsApp com DDD (10 a 11 dígitos)." },

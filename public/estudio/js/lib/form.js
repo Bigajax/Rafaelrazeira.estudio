@@ -6,7 +6,7 @@
    - Avançar de passo dispara InitiateCheckout (com consentimento); Lead só no envio.
    - Sem FORM_ENDPOINT: modo demo. Com FORM_ENDPOINT: POST JSON com os campos. */
 import { CONFIG, T, FORM_ENDPOINT, FORM_HEADERS } from "../config.js";
-import { trackLead, trackInitiateCheckout } from "./tracking.js";
+import { trackLead, trackInitiateCheckout, trackTocouFormulario } from "./tracking.js";
 
 /* —— Dropdowns customizados (efeito vidro ao abrir as opções) —— */
 function initDropdowns(){
@@ -150,6 +150,13 @@ export function initForm(){
      na página nova. */
   const umPasso = !passo2;
   let icDisparado = false;   // InitiateCheckout: uma vez por visita
+  /* No formulário de um passo não existe "avançar", então o primeiro foco
+     em qualquer campo é o toque (só Mixpanel; ver trackTocouFormulario).
+     O de dois passos segue medindo pelo InitiateCheckout do avanço. */
+  if (umPasso){
+    let tocou = false;
+    form.addEventListener("focusin", () => { if (!tocou){ tocou = true; trackTocouFormulario("fim"); } });
+  }
 
   function irParaPasso(n){
     passo1.classList.toggle("is-active", n === 1);
@@ -249,12 +256,16 @@ export function initForm(){
     btn.disabled = true;
     btn.textContent = T.enviando;
 
+    let repetido = false;
     try{
       if (viaApiLead){
         const res = await fetch("/api/lead", {
           method:"POST", headers:{ "Content-Type": "application/json" }, body:JSON.stringify(payloadLead),
         });
         if (!res.ok) throw new Error("Falha no envio");
+        /* a rota fundiu com o envio do hero desta mesma pessoa (24h): o
+           Lead já foi contado lá em cima, não conta de novo aqui */
+        repetido = !!(await res.json().catch(() => ({}))).repetido;
       } else if (FORM_ENDPOINT){
         const res = await fetch(FORM_ENDPOINT, {
           method:"POST", headers:FORM_HEADERS, body:JSON.stringify(payload),
@@ -267,9 +278,11 @@ export function initForm(){
 
       // Lead deduplicado (Pixel + CAPI, mesmo event_id) — só com consentimento;
       // fire-and-forget: falha de tracking nunca afeta o envio.
-      const eventId = (crypto.randomUUID && crypto.randomUUID()) ||
-                      `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-      trackLead(eventId, { phone: payload.whatsapp, email: payload.email, tipo_projeto: payload.tipo_projeto });
+      if (!repetido){
+        const eventId = (crypto.randomUUID && crypto.randomUUID()) ||
+                        `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+        trackLead(eventId, { phone: payload.whatsapp, email: payload.email, tipo_projeto: payload.tipo_projeto });
+      }
 
       form.classList.add("hide");
       const stepper = document.querySelector(".form-card .stepper");
