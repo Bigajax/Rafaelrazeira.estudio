@@ -28,13 +28,13 @@ grafite, peças únicas ("nothing repeats"). A vitrine está no ar em
 `verit-lab.vercel.app`: home com as peças em destaque, catálogo em
 `/pecas` com filtro por categoria e status, página de cada peça com
 galeria, ficha técnica (medida, preço) e botão de WhatsApp, e painel
-`/admin` onde a dona cadastra peça e marca "vendida" com um toque.
+`/admin` onde o dono cadastra peça e marca "vendida" com um toque.
 Projeto em `C:\Users\Rafael\Desktop\Vérit.lab`.
 
-É o case certo por três motivos: (1) foi montada antes de ela pagar, que é
+É o case certo por três motivos: (1) foi montada antes de ele pagar, que é
 a oferta inteira dita como fato consumado (o ângulo do H18U, o mais forte
 do lote 1, que saiu do ar por mostrar a vitrine ERRADA na tela; agora a
-tela é a dela); (2) a dor dela é a de peça única, "ainda tá disponível?"
+tela é a dele); (2) a dor dele é a de peça única, "ainda tá disponível?"
 no direct, e a vitrine responde isso sozinha com o status; (3) é uma loja
 com cara própria, não um catálogo genérico, e quem tem loja com
 identidade se vê nela.
@@ -60,8 +60,8 @@ vérít.lab entra no segundo 3 e fica até o preço.
 | Tempo | Fala (você) | Texto na tela | Imagem |
 |---|---|---|---|
 | 0 a 3s | "Eu monto a loja que você já tem no Instagram e te mostro ela pronta. Você só paga se gostar." | VOCÊ VÊ PRONTA ANTES DE PAGAR | Você, close, olhando na câmera |
-| 3 a 9s | "Essa aqui é a vérít.lab, de Maringá. Ela me mandou o @, eu montei a loja com as peças dela, e ela navegou nisso aqui antes de me pagar um real." | VÉRÍT.LAB · MONTADA ANTES DE PAGAR | Celular: home da vérít.lab → catálogo `/pecas` rolando (espelhos e quadros com preço) |
-| 9 a 15s | "Peça, medida e preço na tela. Vendeu, ela marca vendida com um toque e ninguém mais pergunta 'ainda tem?'. O pedido chega decidido no WhatsApp." | VENDEU? MARCA VENDIDA. O PEDIDO CHEGA DECIDIDO. | Tela: página de uma peça (galeria + ficha) → toque no botão de WhatsApp → balão do pedido montado |
+| 3 a 9s | "Essa aqui é a vérít.lab, de Maringá. Ele me mandou o @, eu montei a loja com as peças dele, e ele navegou nisso aqui antes de me pagar um real." | VÉRÍT.LAB · MONTADA ANTES DE PAGAR | Celular: home da vérít.lab → catálogo `/pecas` rolando (espelhos e quadros com preço) |
+| 9 a 15s | "Peça, medida e preço na tela. Vendeu, ele marca vendida com um toque e ninguém mais pergunta 'ainda tem?'. O pedido chega decidido no WhatsApp." | VENDEU? MARCA VENDIDA. O PEDIDO CHEGA DECIDIDO. | Tela: página de uma peça (galeria + ficha) → toque no botão de WhatsApp → balão do pedido montado |
 | 15 a 20s | "É do seu Instagram que eu tiro as fotos. Então manda o @ da loja no formulário e em 24 horas eu te mando o link da sua." | MANDA O @ · PRÉVIA EM 24H | Você na câmera, celular na mão |
 | 20 a 26s | "Gostou? Começa com 199 e fecha em 999, sem mensalidade. Não gostou, não paga nada. Uma pessoa, não uma agência." | R$199 PARA COMEÇAR · R$999 NO TOTAL · SEM MENSALIDADE | Você na câmera |
 | 26 a 30s | "Quero ver a minha loja. É esse o botão." | QUERO VER A MINHA LOJA ↓ | Tela do formulário do hero com o campo do @ |
@@ -73,7 +73,7 @@ não como exigência; e o preço vem inteiro com a saída honrosa, igual ao
 h17u.
 
 **Variante para gravar na mesma sessão (mesmo corpo, outro gancho):**
-"Fiz a loja da vérít.lab antes de ela me pagar. E faço a sua do mesmo
+"Fiz a loja da vérít.lab antes de ele me pagar. E faço a sua do mesmo
 jeito: você vê pronta, e só paga se gostar."
 (Nome sugerido: `h25u-fiz-antes-de-receber`. É o gancho do H18U
 recuperado com a tela certa; vale testar contra o gancho do h17u com o
@@ -88,9 +88,9 @@ mesmo corpo.)
   tocar no botão de WhatsApp e mostrar o balão com o pedido montado (2s).
   Evitar a peça RESERVADA em destaque: ela aparece sem preço, e a tela
   precisa mostrar preço. Se quiser mostrar o "marca vendida", gravar o
-  `/admin` com uma peça de teste, um toque só, sem expor dado da dona.
+  `/admin` com uma peça de teste, um toque só, sem expor dado do dono.
 - **Pedir o ok da vérít.lab para aparecer no anúncio.** Uma mensagem no
-  WhatsApp resolve, e o "sim" fica guardado. Ela tem permuta na proposta
+  WhatsApp resolve, e o "sim" fica guardado. Ele tem permuta na proposta
   (ver `public/proposta/verit-lab.html`); aparecer no anúncio pode entrar
   na conversa como parte disso.
 - **Sem travessão e sem emoji** nos textos de tela.
@@ -108,7 +108,7 @@ mesmo corpo.)
   só paga se gostar.
 
   Essa é a vérít.lab, de Maringá: mandou o @, viu a loja montada com as
-  peças dela e navegou antes de pagar. Manda o @ da sua no formulário,
+  peças dele e navegou antes de pagar. Manda o @ da sua no formulário,
   eu tiro as fotos do seu perfil e te mando o link em 24 horas.
 
   Gostou? R$ 199 para começar, R$ 999 no total, sem mensalidade. Não
