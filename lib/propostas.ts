@@ -118,6 +118,7 @@ export const PROPOSTAS: Record<string, Proposta> = {
     titulo: "Rafael Razeira Estúdio — Portal SacraZen",
     whatsapp: "5544999997219",
     itens: {
+      avista_pix: { label: "À vista no Pix, com 10% de desconto (até 18/09)", valor: 899.1, metodo: "pix" },
       entrada_pix: { label: "Entrada de 50% para início do projeto", valor: 499.5, metodo: "pix" },
       saldo_pix: { label: "Saldo de 50% na entrega, no Pix", valor: 499.5, metodo: "pix" },
       saldo_card: { label: "Saldo de 50% na entrega, no cartão em até 3x", valor: 499.5, metodo: "card", maxParcelas: 3 },
