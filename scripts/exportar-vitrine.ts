@@ -35,6 +35,14 @@ const ordemPedida = (() => {
   const i = process.argv.indexOf("--ordem");
   return i >= 0 && process.argv[i + 1] ? process.argv[i + 1].split(",").map((s) => s.trim()).filter(Boolean) : null;
 })();
+/* O prefixo do código da peça ("SZ-0001"). Sem --codigo, as iniciais do
+   arroba: "velas.mogi" vira VM, "aurum_sagrado" vira AS. */
+const prefixoCodigo = (() => {
+  const i = process.argv.indexOf("--codigo");
+  if (i >= 0 && process.argv[i + 1]) return process.argv[i + 1].toUpperCase();
+  const iniciais = arroba.split(/[._-]+/).map((p) => p[0] ?? "").join("").toUpperCase();
+  return iniciais.slice(0, 3) || "VT";
+})();
 const destino = process.argv[3] ? path.resolve(process.argv[3].replace(/^~/, process.env.USERPROFILE || process.env.HOME || "")) : "";
 if (!arroba || !destino) {
   console.error("Uso: npx tsx scripts/exportar-vitrine.ts <arroba> <pasta da vitrine>");
@@ -97,7 +105,9 @@ function coresDe(nome: string, categoria: string | null): string[] {
   const m = nome.match(/vela (?:palito|7 dias|de|em)?\s*(.+)$/i);
   if (!m) return [];
   const cor = m[1].replace(/\s+c\s+/i, " com ").trim();
-  return /caveira|chave|cruz|espada|santo|cores|caveiras/i.test(cor) ? [] : [cor];
+  /* só vira cor o que É cor: "Vela palito roxa" sim, "Vela da Paixão" não */
+  const CORES = /^(branca?|preta?|vermelha?|roxa?|azul|verde|amarela?|rosa|laranja|lilás|lilas|dourada?|prateada?|marrom|bege|cinza|violeta|vinho|salmão|salmao)(\s+(e|com)\s+\S+)?$/i;
+  return CORES.test(cor) ? [cor] : [];
 }
 
 async function principal() {
@@ -168,13 +178,15 @@ async function principal() {
 
     saidaProdutos.push({
       id: `p-${String(saidaProdutos.length + 1).padStart(3, "0")}`,
-      codigo: `SZ-${String(saidaProdutos.length + 1).padStart(4, "0")}`,
+      codigo: `${prefixoCodigo}-${String(saidaProdutos.length + 1).padStart(4, "0")}`,
       nome: p.nome,
       slug,
       descricao: p.descricao,
       marca: p.marca ?? marcaDe(p.nome),
-      preco: p.preco,
-      preco_promocional: null,
+      /* a oficina guarda "de/por" como preco_de + preco; a vitrine lê
+         preco (cheio) + preco_promocional (vigente) */
+      preco: p.preco_de ?? p.preco,
+      preco_promocional: p.preco_de ? p.preco : null,
       categoria_slug: p.categoria ? slugDe(p.categoria) : null,
       tamanhos: p.tamanhos ? p.tamanhos.split(/\s*[,/]\s*/).filter(Boolean) : [],
       cores: p.cor ? [p.cor] : coresDe(p.nome, p.categoria),
