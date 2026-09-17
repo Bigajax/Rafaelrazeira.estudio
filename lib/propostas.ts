@@ -133,6 +133,15 @@ export const PROPOSTAS: Record<string, Proposta> = {
       saldo_card: { label: "Saldo de 50% na entrega, no cartão em até 3x", valor: 499.5, metodo: "card", maxParcelas: 3 },
     },
   },
+  "minas-decor": {
+    titulo: "Rafael Razeira Estúdio — Vitrine Digital Minas Brasil Decor",
+    whatsapp: "5544999997219",
+    itens: {
+      entrada_pix: { label: "Entrada de 50% para início do projeto", valor: 499.5, metodo: "pix" },
+      saldo_pix: { label: "Saldo de 50% na entrega, no Pix", valor: 499.5, metodo: "pix" },
+      saldo_card: { label: "Saldo de 50% na entrega, no cartão em até 3x", valor: 499.5, metodo: "card", maxParcelas: 3 },
+    },
+  },
   "ortobom-aracaju": {
     titulo: "Rafael Razeira Estúdio — Vitrine Digital Ortobom Aracaju",
     whatsapp: "5544999997219",

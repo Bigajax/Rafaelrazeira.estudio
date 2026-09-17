@@ -157,7 +157,7 @@ async function principal() {
   type Foto = { url: string; largura: number; altura: number; blur: string; alt: string; ordem: number };
   type Saida = {
     id: string; codigo: string; nome: string; slug: string; descricao: string | null; marca: string | null;
-    preco: number | null; preco_promocional: null; categoria_slug: string | null; tamanhos: string[]; cores: string[];
+    preco: number | null; preco_promocional: number | null; categoria_slug: string | null; tamanhos: string[]; cores: string[];
     destaque: boolean; ativo: boolean; ordem: number; imagens: Foto[];
   };
   const usados = new Set<string>();
