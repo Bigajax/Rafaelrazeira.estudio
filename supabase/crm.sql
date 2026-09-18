@@ -1271,3 +1271,56 @@ select column_name, data_type
   from information_schema.columns
  where table_schema = 'public' and table_name = 'crm_leads'
    and column_name in ('campanha', 'anuncio');
+
+
+-- ============================================================
+-- ⚠️ MIGRAÇÃO (18/09/2026, a segunda do dia) — OS TOQUES DA PRÉVIA
+--    SEM O PREÇO NA FRENTE.
+--
+-- O caso Maison Priscila: a prévia foi entregue com o link e "para
+-- ficar sua: R$ 999... fica no ar até quarta" na MESMA mensagem, e a
+-- resposta foi "você falou que faria de graça, por isso eu coloquei
+-- que eu queria, não por esse valor". O grátis virou isca aos olhos
+-- dela. Daqui em diante:
+--   1. a abertura de quem chegou pelo anúncio NÃO tem preço nem prazo:
+--      só o que eu vi no perfil, "te mando hoje, é sua", e a pergunta
+--      que só o dono responde;
+--   2. a entrega da prévia é em DUAS mensagens: a primeira é só o
+--      presente (link numa bolha só dele, o que tem dentro, "é sua,
+--      sem custo", pergunta de dono); a segunda, o preço, só sai
+--      depois que a pessoa reagiu, e diz "colocar no seu domínio",
+--      nunca "para ficar sua";
+--   3. a prévia sem resposta volta com NOVIDADE (peças a mais, troca do
+--      topo), nunca com "e aí, o que achou?".
+-- Já aplicado no banco em 18/09 por script; este bloco é o registro e
+-- serve para quem rodar o arquivo do zero.
+-- ============================================================
+update public.crm_templates
+   set titulo = 'Chegou pelo anúncio: sem preço, com pergunta de dono',
+       conteudo = E'Fala, {nome}! Chegou aqui. Dei uma olhada no {empresa}: [UMA coisa que você viu no perfil: um produto, a loja nova, o catálogo da bio].\nVou montar a prévia da sua vitrine com o que tá no seu Instagram e te mando ainda hoje. É de graça e é sua, sem compromisso.\nAntes de eu começar, me conta: hoje quando o cliente pergunta "tem esse no meu tamanho? quanto tá?", você responde um por um no direct?'
+ where categoria = 'abertura_morna'
+   and titulo like 'Chegou pelo anúncio%';
+
+update public.crm_templates
+   set titulo = 'Prévia pronta, mensagem 1: só o presente',
+       conteudo = E'{nome}, ficou pronta a sua vitrine:\n[link, numa bolha só dele]\n[o que tem dentro, em uma linha: "as 32 peças do seu Instagram, seu selo e o pedido caindo no WhatsApp"]. Abre no celular. É sua, sem custo.\nDas 6 peças do topo, qual você trocaria?',
+       ordem = 9
+ where categoria = 'previa'
+   and titulo in ('Mandando a prévia', 'Prévia pronta, mensagem 1: só o presente');
+
+update public.crm_templates
+   set titulo = 'Prévia sem resposta: volta com novidade',
+       conteudo = '{nome}, {saudacao}! coloquei mais [N] peças que vi no seu feed e troquei a do topo pela [peça]. dá uma olhada de novo: [link]. ficou alguma de fora?',
+       ordem = 11
+ where categoria = 'previa'
+   and titulo in ('Prévia mandada, sem resposta', 'Prévia sem resposta: volta com novidade');
+
+insert into public.crm_templates (owner_id, titulo, canal, categoria, conteudo, ordem)
+select t.owner_id, 'Prévia, mensagem 2: o preço (só depois que responder)', 'whatsapp', 'previa',
+       'Hoje o botão "Pedir" ainda cai comigo, porque é a amostra. Pra colocar no seu domínio, com o pedido caindo no SEU WhatsApp e o painel pra você trocar preço e foto sozinha, é R$ 999 uma vez, sem mensalidade: R$ 199 pra começar e o resto na entrega, no cartão em até 4x ou no Pix. Fica pronta em 5 dias úteis.',
+       10
+  from (select distinct owner_id from public.crm_templates) t
+ where not exists (
+   select 1 from public.crm_templates x
+    where x.owner_id = t.owner_id and x.categoria = 'previa'
+      and x.titulo = 'Prévia, mensagem 2: o preço (só depois que responder)');
