@@ -56,7 +56,7 @@ const NA_PREVIA = 12;
 
    Apontando para cá, o mesmo botão vira o CTA do funil: quem clica é a
    dona da loja, e a mensagem já diz o que ela quer. */
-const WHATS_ESTUDIO = "5544999997219";
+const WHATS_ESTUDIO = "5544991246187";
 
 function melhores(produtos: Produto[], quantas: number): Produto[] {
   return [...produtos]

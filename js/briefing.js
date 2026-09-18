@@ -7,7 +7,7 @@
 (function () {
   "use strict";
 
-  var WHATSAPP = "5544999997219";
+  var WHATSAPP = "5544991246187";
   var EMAIL = "rafael.rbarbon@gmail.com";
   var STORE_KEY = "briefing-razeira-v1";
   var FILES_KEY = STORE_KEY + "-arquivos";

@@ -6,8 +6,8 @@
    inglês, o CTA gringo vai para e-mail (não há Stripe nem Calendly nesta
    primeira versão), então os dois precisam de um endereço único.
    ============================================================ */
-export const WHATSAPP = "5544999997219";
-export const WHATSAPP_EXIBIDO = "(44) 99999-7219";
+export const WHATSAPP = "5544991246187";
+export const WHATSAPP_EXIBIDO = "(44) 99124-6187";
 export const EMAIL = "rafael.rbarbon@gmail.com";
 
 export function linkWhatsApp(mensagem: string): string {

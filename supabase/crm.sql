@@ -46,9 +46,9 @@ create table if not exists public.crm_leads (
   nome text not null,
   empresa text,
   instagram text,
-  -- Guardado SÓ EM DÍGITOS ("44999997219"), nunca com máscara. É o que
+  -- Guardado SÓ EM DÍGITOS ("44991246187"), nunca com máscara. É o que
   -- permite o índice único lá embaixo funcionar como trava de duplicata: o
-  -- mesmo número digitado como "(44) 99999-7219" e como "44 99999 7219" tem
+  -- mesmo número digitado como "(44) 99124-6187" e como "44 99124 6187" tem
   -- que colidir, e só colide se a forma armazenada for uma só.
   whatsapp text,
   -- Guardado em minúsculas, pelo mesmo motivo.

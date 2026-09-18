@@ -5,7 +5,7 @@ import { useState } from "react";
 import s from "@/app/(pt)/servicos/servicos.module.css";
 
 /* Todos os links de WhatsApp saem daqui: um número, uma função. */
-const NUMERO = "5544999997219";
+const NUMERO = "5544991246187";
 const zap = (msg: string) => `https://wa.me/${NUMERO}?text=${encodeURIComponent(msg)}`;
 
 const semMovimento = () =>

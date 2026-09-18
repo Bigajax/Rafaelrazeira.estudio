@@ -16,7 +16,7 @@ import { projetos } from "@/data/portfolio";
 const NO_AR = projetos.filter(p => p.url).length;
 
 /* Um número, uma função — todos os links de WhatsApp saem daqui. */
-const NUMERO = "5544999997219";
+const NUMERO = "5544991246187";
 const zap = (msg: string) => `https://wa.me/${NUMERO}?text=${encodeURIComponent(msg)}`;
 
 /* ---------- a âncora de investimento voltou (06/08) ----------

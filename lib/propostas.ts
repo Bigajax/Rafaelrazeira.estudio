@@ -65,7 +65,7 @@ export const PROPOSTAS: Record<string, Proposta> = {
   },
   "xavier-sports": {
     titulo: "Rafael Razeira Estúdio — Vitrine Digital Xavier's Sports",
-    whatsapp: "5544999997219",
+    whatsapp: "5544991246187",
     itens: {
       entrada_pix: { label: "Entrada para início do projeto", valor: 200, metodo: "pix" },
       saldo_card: { label: "Saldo do projeto no cartão, em 4x", valor: 800, metodo: "card", maxParcelas: 4 },
@@ -78,7 +78,7 @@ export const PROPOSTAS: Record<string, Proposta> = {
      gatilho de "aprovou, agora paga". */
   "carina-melo": {
     titulo: "Rafael Razeira Estúdio — Vitrine Digital Carina Melo Shop",
-    whatsapp: "5544999997219",
+    whatsapp: "5544991246187",
     itens: {
       entrada_pix: { label: "1ª parcela: design do projeto", valor: 500, metodo: "pix" },
       saldo_pix: { label: "2ª parcela: na entrega", valor: 499, metodo: "pix" },
@@ -86,7 +86,7 @@ export const PROPOSTAS: Record<string, Proposta> = {
   },
   arrazou: {
     titulo: "Rafael Razeira Estúdio — Vitrine Digital ArraZou Semijoias",
-    whatsapp: "5544999997219",
+    whatsapp: "5544991246187",
     /* Duas parcelas iguais, e cada uma paga uma etapa: a primeira o
        desenho, a segunda a entrega. Diferente do modelo de entrada
        simbólica das propostas antigas (199 + 800), aqui a metade da
@@ -98,7 +98,7 @@ export const PROPOSTAS: Record<string, Proposta> = {
   },
   "verit-lab": {
     titulo: "Rafael Razeira Estúdio — Vitrine Digital vérít.lab",
-    whatsapp: "5544999997219",
+    whatsapp: "5544991246187",
     itens: {
       avista_pix: { label: "À vista no Pix", valor: 999, metodo: "pix" },
       entrada_pix: { label: "Entrada para início do projeto", valor: 199, metodo: "pix" },
@@ -107,7 +107,7 @@ export const PROPOSTAS: Record<string, Proposta> = {
   },
   "picorelli-premium": {
     titulo: "Rafael Razeira Estúdio — Vitrine Digital Picorelli Premium",
-    whatsapp: "5544999997219",
+    whatsapp: "5544991246187",
     itens: {
       entrada_pix: { label: "Entrada de 50% para início do projeto", valor: 499.5, metodo: "pix" },
       saldo_pix: { label: "Saldo de 50% na entrega, no Pix", valor: 499.5, metodo: "pix" },
@@ -116,7 +116,7 @@ export const PROPOSTAS: Record<string, Proposta> = {
   },
   sacrazen: {
     titulo: "Rafael Razeira Estúdio — Portal SacraZen",
-    whatsapp: "5544999997219",
+    whatsapp: "5544991246187",
     itens: {
       avista_pix: { label: "À vista no Pix, com 10% de desconto (até 18/09)", valor: 899.1, metodo: "pix" },
       entrada_pix: { label: "Entrada de 50% para início do projeto", valor: 499.5, metodo: "pix" },
@@ -126,7 +126,7 @@ export const PROPOSTAS: Record<string, Proposta> = {
   },
   fantoche: {
     titulo: "Rafael Razeira Estúdio — Vitrine Digital Fantoche",
-    whatsapp: "5544999997219",
+    whatsapp: "5544991246187",
     itens: {
       entrada_pix: { label: "Entrada de 50% para início do projeto", valor: 499.5, metodo: "pix" },
       saldo_pix: { label: "Saldo de 50% na entrega, no Pix", valor: 499.5, metodo: "pix" },
@@ -135,7 +135,7 @@ export const PROPOSTAS: Record<string, Proposta> = {
   },
   "minas-decor": {
     titulo: "Rafael Razeira Estúdio — Vitrine Digital Minas Brasil Decor",
-    whatsapp: "5544999997219",
+    whatsapp: "5544991246187",
     itens: {
       entrada_pix: { label: "Entrada de 50% para início do projeto", valor: 499.5, metodo: "pix" },
       saldo_pix: { label: "Saldo de 50% na entrega, no Pix", valor: 499.5, metodo: "pix" },
@@ -144,7 +144,7 @@ export const PROPOSTAS: Record<string, Proposta> = {
   },
   "ortobom-aracaju": {
     titulo: "Rafael Razeira Estúdio — Vitrine Digital Ortobom Aracaju",
-    whatsapp: "5544999997219",
+    whatsapp: "5544991246187",
     itens: {
       entrada_pix: { label: "Entrada de 50% para início do projeto", valor: 499.5, metodo: "pix" },
       saldo_pix: { label: "Saldo de 50% na entrega, no Pix", valor: 499.5, metodo: "pix" },
@@ -153,7 +153,7 @@ export const PROPOSTAS: Record<string, Proposta> = {
   },
   "ws-style-mens": {
     titulo: "Rafael Razeira Estúdio — Vitrine Digital WS Style Mens",
-    whatsapp: "5544999997219",
+    whatsapp: "5544991246187",
     itens: {
       avista_pix: { label: "À vista no Pix, com 10% de desconto", valor: 899.1, metodo: "pix" },
       entrada_pix: { label: "Entrada no Pix (mais R$ 499,50 na entrega)", valor: 499.5, metodo: "pix" },
@@ -162,7 +162,7 @@ export const PROPOSTAS: Record<string, Proposta> = {
   },
   "pisada-de-ouro": {
     titulo: "Rafael Razeira Estúdio — E-commerce Pisada de Ouro",
-    whatsapp: "5544999997219",
+    whatsapp: "5544991246187",
     itens: {
       avista_pix: { label: "À vista no Pix, com 10% de desconto", valor: 2691, metodo: "pix" },
       entrada_pix: { label: "Entrada no Pix (mais R$ 1.495 na entrega)", valor: 1495, metodo: "pix" },
@@ -174,7 +174,7 @@ export const PROPOSTAS: Record<string, Proposta> = {
      com os valores dela. */
   "baixudos-pr": {
     titulo: "Rafael Razeira Estúdio — Campanha Gol Vermelho Baixudos.PR",
-    whatsapp: "5544999997219",
+    whatsapp: "5544991246187",
     itens: {
       avista_pix: { label: "À vista no Pix, com 10% de desconto", valor: 5850, metodo: "pix" },
       entrada_pix: { label: "Entrada no Pix (mais 2x R$ 1.950 na entrega)", valor: 2600, metodo: "pix" },

@@ -40,7 +40,7 @@ export function whatsappValido(v: string): boolean {
 }
 
 /* Máscara progressiva: o valor do campo é reescrito a cada tecla e a pessoa
-   vê (44) 99999-7219 se formando. Metade do lixo é erro honesto de digitação,
+   vê (44) 99124-6187 se formando. Metade do lixo é erro honesto de digitação,
    e formato visível é o que faz a pessoa conferir o próprio número. */
 export function mascararWhatsapp(v: string): string {
   const d = semPais(apenasDigitos(String(v ?? ""))).slice(0, 11);

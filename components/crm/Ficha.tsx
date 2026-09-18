@@ -360,7 +360,7 @@ export function Ficha({
                 valor={lead.whatsapp ? mascararWhatsapp(lead.whatsapp) : ""}
                 tipo="tel"
                 mascara={mascararWhatsapp}
-                placeholder="(44) 99999-7219"
+                placeholder="(44) 99124-6187"
               />
               <CampoInline
                 leadId={lead.id}

@@ -767,8 +767,8 @@ export function ordenarColuna<T extends { posicao: number; created_at: string }>
    NORMALIZAÇÃO NA GRAVAÇÃO
 
    O índice único de duplicata (ver supabase/crm.sql) compara strings. Se o
-   mesmo telefone entrar como "(44) 99999-7219" pela tela e como
-   "44999997219" pela rota de inbound, o banco vê dois leads diferentes e a
+   mesmo telefone entrar como "(44) 99124-6187" pela tela e como
+   "44991246187" pela rota de inbound, o banco vê dois leads diferentes e a
    regra 7 não vale nada. Toda escrita passa por aqui.
    ============================================================ */
 export const soDigitos = (v: string | null | undefined) => {

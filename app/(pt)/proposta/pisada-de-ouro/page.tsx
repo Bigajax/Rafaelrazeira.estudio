@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-const WA = "https://wa.me/5544999997219?text=";
+const WA = "https://wa.me/5544991246187?text=";
 const WA_TALK = WA + encodeURIComponent(
   "Olá Rafael, tenho uma dúvida sobre a proposta da Pisada de Ouro antes de aprovar."
 );
@@ -359,7 +359,7 @@ export default function PropostaPisadaDeOuro() {
         <footer className={s.footer}>
           <span>RAFAEL RAZEIRA ESTÚDIO</span>
           <span>rafael.rbarbon@gmail.com</span>
-          <span>(44) 99999-7219</span>
+          <span>(44) 99124-6187</span>
           <span>@rafaelrazeira.estudio</span>
         </footer>
       </div>

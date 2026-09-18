@@ -109,7 +109,7 @@ export function ModalNovoLead({ aoFechar }: { aoFechar: () => void }) {
                 inputMode="numeric"
                 value={whatsapp}
                 onChange={(e) => setWhatsapp(mascararWhatsapp(e.target.value))}
-                placeholder="(44) 99999-7219"
+                placeholder="(44) 99124-6187"
               />
             </label>
             <label className={s.campo}>

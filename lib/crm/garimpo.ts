@@ -51,7 +51,7 @@ export type Garimpado = {
   avaliacoes: number | null;
 };
 
-/* Telefone do Maps vem formatado ("(44) 99999-7219"). Celular brasileiro
+/* Telefone do Maps vem formatado ("(44) 99124-6187"). Celular brasileiro
    é DDD + 9 + oito dígitos; qualquer outra coisa é fixo e vira nota, não
    WhatsApp. */
 function celularOuNull(telefone: string | null): string | null {

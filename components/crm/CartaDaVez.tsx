@@ -405,7 +405,7 @@ export function CartaDaVez({
               className={s.gavetaCampo}
               value={zap}
               onChange={(e) => setZap(e.target.value)}
-              placeholder="44 99999-7219"
+              placeholder="44 99124-6187"
               aria-label={`WhatsApp de ${lead.nome}`}
               autoFocus
             />

@@ -13,7 +13,7 @@
 
 /* ⬇ Número do WhatsApp usado em TODOS os botões do site
    (hero, footer e pós-envio). Formato: DDI + DDD + número, só dígitos. */
-const WHATSAPP_NUMBER = "5544999997219";
+const WHATSAPP_NUMBER = "5544991246187";
 
 /* ⬇ Mixpanel — funil próprio, espelha os mesmos eventos do Meta Pixel
    (PageView → ClickCTA → InitiateCheckout → Lead + ViewContent).
@@ -238,7 +238,7 @@ const CONFIG_ESTUDIO = {
     name: "RAFAEL RAZEIRA ESTÚDIO",
     email: "rafael.rbarbon@gmail.com",
     instagram: { handle:"@rafaelrazeira", url:"https://instagram.com/rafaelrazeira" },
-    whatsapp: { display:"(44) 99999-7219", url:`https://wa.me/${WHATSAPP_NUMBER}` },
+    whatsapp: { display:"(44) 99124-6187", url:`https://wa.me/${WHATSAPP_NUMBER}` },
     location: "ESTAMOS NO BRASIL",   // ⬅ troque pela sua cidade (ex.: "ESTAMOS EM CAMPINAS, SP")
     legal: [
       { label:"TERMOS DE USO",            url:"/termos" },
@@ -671,7 +671,7 @@ const CONFIG_LP = {
     name: "RAFAEL RAZEIRA ESTÚDIO",
     email: "rafael.rbarbon@gmail.com",
     instagram: { handle:"@rafaelrazeira", url:"https://instagram.com/rafaelrazeira" },
-    whatsapp: { display:"(44) 99999-7219", url:`https://wa.me/${WHATSAPP_NUMBER}` },
+    whatsapp: { display:"(44) 99124-6187", url:`https://wa.me/${WHATSAPP_NUMBER}` },
     location: "MARINGÁ · PR · ATENDO O BRASIL INTEIRO",
     legal: [
       { label:"TERMOS DE USO",            url:"/termos" },

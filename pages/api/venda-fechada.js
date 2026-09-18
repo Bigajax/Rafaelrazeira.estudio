@@ -25,7 +25,7 @@
      curl -X POST https://rafaelrazeira.com.br/api/venda-fechada \
        -H "Content-Type: application/json" \
        -H "x-venda-token: SEU_SEGREDO" \
-       -d '{"telefone":"44 99999-7219","valor":999,"nome":"Ana","ref":"A3F9C2"}'
+       -d '{"telefone":"44 99124-6187","valor":999,"nome":"Ana","ref":"A3F9C2"}'
 
    PRAZO: a Meta só usa o evento para otimizar se ele chegar em até 7 dias
    depois de a venda acontecer. Registrar de mês em mês serve para relatório
@@ -69,7 +69,7 @@ export default async function handler(req, res) {
      como saber de quem foi a compra, e o evento vira ruído. */
   const ph = normPhone(b.telefone);
   if (ph.length < 12 || ph.length > 13) {
-    return erro(res, 400, "telefone inválido", { normalizado: ph, esperado: "55 + DDD + número, ex: 5544999997219" });
+    return erro(res, 400, "telefone inválido", { normalizado: ph, esperado: "55 + DDD + número, ex: 5544991246187" });
   }
 
   const valor = Number(b.valor);
