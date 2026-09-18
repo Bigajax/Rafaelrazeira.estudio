@@ -133,6 +133,15 @@ export const PROPOSTAS: Record<string, Proposta> = {
       saldo_card: { label: "Saldo na entrega, no cartão em até 4x", valor: 800, metodo: "card", maxParcelas: 4 },
     },
   },
+  tshoes: {
+    titulo: "Rafael Razeira Estúdio — Vitrine Digital T-Shoes",
+    whatsapp: "5544991246187",
+    itens: {
+      entrada_pix: { label: "Entrada para início do projeto", valor: 199, metodo: "pix" },
+      saldo_pix: { label: "Saldo na entrega, no Pix", valor: 800, metodo: "pix" },
+      saldo_card: { label: "Saldo na entrega, no cartão em até 4x", valor: 800, metodo: "card", maxParcelas: 4 },
+    },
+  },
   "minas-decor": {
     titulo: "Rafael Razeira Estúdio — Vitrine Digital Minas Brasil Decor",
     whatsapp: "5544991246187",
