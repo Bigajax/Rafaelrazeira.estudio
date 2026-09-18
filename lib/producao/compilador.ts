@@ -39,7 +39,22 @@ import { VOZ_DE, comAPeca, conflitoDe } from "./vozes";
 import { SUPERFICIES } from "./exportar";
 import type { Loja, Produto } from "./tipos";
 
-export type Modo = "previa" | "completa";
+export type Modo = "previa" | "completa" | "ajuste";
+
+/* ---------- o AJUSTE ----------
+   O terceiro modo não constrói nada: ele muda uma vitrine que já existe.
+   Por isso ele NÃO leva a ficha inteira. Mandar os tokens, a forma e o
+   catálogo de novo para trocar um link é convidar o agente a reconstruir a
+   página em volta do link, e é exatamente isso que o modo proíbe.
+
+   `base` diz o que está no ar, porque a regra comercial da prévia (botão
+   apontando para o estúdio, doze peças, sem painel) continua valendo num
+   ajuste de prévia, e cai num ajuste de vitrine contratada. */
+export type Ajuste = {
+  /* O que muda, uma alteração por linha, do jeito que você escreveu. */
+  pedidos: string;
+  base: "previa" | "completa";
+};
 
 /* Doze peças na prévia. Quem escolhe são as ESTRELAS da tabela: a escolha
    é sua, feita olhando as miniaturas. O ranking abaixo é só o preenchimento
@@ -378,6 +393,26 @@ function secaoHero(
   return linhas.join("\n");
 }
 
+/* O número, quando a bio ou o site trazem um wa.me. */
+function whatsDa(loja: Loja): string | null {
+  const doWhats = `${loja.site ?? ""} ${loja.bio ?? ""}`;
+  return doWhats.match(/(?:wa\.me\/|whatsapp\.com\/send\?phone=)?(\d{12,13})/)?.[1] ?? null;
+}
+
+/* O pedaço do endereço que termina em UF, e não uma posição fixa: o
+   Google devolve "Rua X, 100 - Bairro, Juiz de Fora - MG, 36000-000" e
+   também endereços sem número e sem CEP, então contar da direita para a
+   esquerda já entregou "Cidade: 100" numa ficha. */
+function cidadeDe(loja: Loja): string | null {
+  return (
+    loja.lugar?.endereco
+      ?.split(",")
+      .map((x) => x.trim())
+      .find((x) => / - [A-Z]{2}$/.test(x))
+      ?.split(" - ")[0] ?? null
+  );
+}
+
 export function compilar(
   loja: Loja,
   produtos: Produto[],
@@ -387,26 +422,18 @@ export function compilar(
      a esta lista, e ela decide o hero inteiro: existe arquivo de logo em
      alta, ou o único que existe é a foto de perfil do Instagram? */
   material: string[] = [],
+  ajuste?: Ajuste,
 ): string {
+  if (modo === "ajuste") return compilarAjuste(loja, produtos, urlDaImagem, ajuste ?? { pedidos: "", base: "previa" });
+
   const identidade = loja.identidade ?? {};
   const conceito = loja.conceito ?? {};
   const condicoes = loja.condicoes ?? {};
   const forma = loja.forma ?? null;
-  const lugar = loja.lugar ?? null;
   const previa = modo === "previa";
 
-  const doWhats = `${loja.site ?? ""} ${loja.bio ?? ""}`;
-  const whats = doWhats.match(/(?:wa\.me\/|whatsapp\.com\/send\?phone=)?(\d{12,13})/)?.[1] ?? null;
-  /* O pedaço do endereço que termina em UF, e não uma posição fixa: o
-     Google devolve "Rua X, 100 - Bairro, Juiz de Fora - MG, 36000-000" e
-     também endereços sem número e sem CEP, então contar da direita para a
-     esquerda já entregou "Cidade: 100" numa ficha. */
-  const cidade =
-    lugar?.endereco
-      ?.split(",")
-      .map((x) => x.trim())
-      .find((x) => / - [A-Z]{2}$/.test(x))
-      ?.split(" - ")[0] ?? null;
+  const whats = whatsDa(loja);
+  const cidade = cidadeDe(loja);
 
   /* As estreladas primeiro, na ordem que você deu na tira; o resto entra
      só para completar as doze, e entra identificado. */
@@ -725,6 +752,168 @@ export function compilar(
       : [
           "Esta é a vitrine contratada. Vale o catálogo inteiro do JSON, filtro e busca conforme a seção 4, e as páginas ou modais que o arquétipo pedir.",
         ].join("\n"),
+  );
+
+  return partes.join("\n");
+}
+
+/* ============================================================
+   O AJUSTE — uma lista curta, e a ordem de não mexer no resto
+
+   Três regras separam este documento do compilado de construção:
+
+   1. ELE NÃO LEVA A FICHA. Sem tokens, sem forma, sem catálogo. O que não
+      está aqui o agente lê no código que já existe, e não tem o que
+      "melhorar".
+   2. AS ESTRELAS DA OFICINA SÃO A VERDADE DO HERO. A tira de escolhidas
+      vai com nome e foto, na ordem. Se a página bate com a tira, o hero não
+      se mexe; se você reestrelou na oficina, é aqui que a mudança viaja.
+   3. A PRÉVIA CONTINUA PRÉVIA. Trocar um link não abre a porta para o
+      WhatsApp da loja entrar: as travas comerciais são repetidas, porque
+      um ajuste é o momento mais provável de elas caírem sem ninguém pedir.
+   ============================================================ */
+export function compilarAjuste(
+  loja: Loja,
+  produtos: Produto[],
+  urlDaImagem: (p: Produto) => string,
+  ajuste: Ajuste,
+): string {
+  const conceito = loja.conceito ?? {};
+  const condicoes = loja.condicoes ?? {};
+  const previa = ajuste.base === "previa";
+  const nome = loja.nome || `@${loja.arroba}`;
+  const whats = whatsDa(loja);
+  const cidade = cidadeDe(loja);
+
+  /* Uma alteração por linha. Linha vazia some; marcador de lista que você
+     já digitou ("- ", "1. ") sai, porque a numeração é daqui. */
+  const pedidos = ajuste.pedidos
+    .split(/\r?\n/)
+    .map((x) => x.trim().replace(/^(?:[-*•]|\d+[.)])\s+/, ""))
+    .filter(Boolean);
+
+  const estreladas = produtos
+    .filter((x) => x.destaque)
+    .sort((a, b) => (a.ordem_destaque ?? 1e9) - (b.ordem_destaque ?? 1e9) || a.ordem - b.ordem)
+    .slice(0, NA_PREVIA);
+
+  const respondidas = (["frete", "pagamento", "retirada", "troca"] as const).filter((k) =>
+    (condicoes[k] ?? "").trim(),
+  );
+  const cta = (conceito.cta ?? "").trim();
+
+  const partes: string[] = [];
+
+  partes.push(`# AJUSTE — ${nome}`);
+  partes.push("");
+  partes.push(
+    `Esta vitrine JÁ EXISTE${previa ? ` na rota \`/previa/${loja.arroba}\`` : ", e é a vitrine contratada"}. Este documento não é uma ordem de construção: é uma lista curta de alterações. **Tudo que não está na seção 2 fica exatamente como está**: estrutura, cores, tipografia, textos, catálogo, rotas e comportamento. Não reconstrua a página em volta de uma alteração, e não aproveite a passagem para melhorar nada que não foi pedido.`,
+  );
+
+  /* ---------- 1. a loja ---------- */
+  partes.push("");
+  partes.push("## 1. A loja");
+  partes.push("");
+  partes.push(
+    [
+      `- Nome: ${nome}`,
+      `- Instagram: @${loja.arroba} (https://instagram.com/${loja.arroba})`,
+      cidade ? `- Cidade: ${cidade}` : null,
+      whats && !previa ? `- WhatsApp: https://wa.me/${whats}` : null,
+      whats && previa
+        ? "- A loja tem WhatsApp, e ele foi omitido de propósito deste documento: ver a seção 4."
+        : null,
+    ]
+      .filter(Boolean)
+      .join("\n"),
+  );
+
+  /* ---------- 2. o que muda ---------- */
+  partes.push("");
+  partes.push(`## 2. O que muda (${pedidos.length} ${pedidos.length === 1 ? "alteração" : "alterações"})`);
+  partes.push("");
+  partes.push(
+    pedidos.length
+      ? pedidos.map((x, i) => `${i + 1}. ${x}`).join("\n")
+      : "Nenhuma alteração foi escrita. Não faça nada além de conferir o hero contra a seção 3.",
+  );
+
+  /* ---------- 3. as escolhidas ----------
+     A tira da oficina vai inteira, na ordem, porque é ela que decide se o
+     hero se mexe ou não. Sem ela, "ajuste o hero" seria um adjetivo. */
+  partes.push("");
+  partes.push(`## 3. As peças marcadas como destaque na oficina (${estreladas.length})`);
+  partes.push("");
+  if (estreladas.length) {
+    partes.push(
+      "Esta lista é a fonte da verdade do hero, nesta ordem. Confira a página contra ela: se o hero já mostra estas peças nesta ordem, **não mexa**. Se a página mostra outra peça, outra ordem ou uma a mais, ajuste o hero para bater com a lista, e só o hero. As imagens já estão hospedadas: use as URLs como estão.",
+    );
+    partes.push("");
+    partes.push(
+      [
+        "```json",
+        JSON.stringify(
+          estreladas.map((x) => ({ nome: x.nome, marca: x.marca, preco: x.preco, imagem: urlDaImagem(x) })),
+          null,
+          2,
+        ),
+        "```",
+      ].join("\n"),
+    );
+  } else {
+    partes.push("Nenhuma peça está marcada como destaque na oficina. Não mexa no hero.");
+  }
+
+  /* ---------- 4. o que não muda ----------
+     As travas do compilado de construção, repetidas. Um ajuste é o momento
+     em que elas mais caem: o agente abre o código, vê o número do estúdio
+     no botão e "corrige" para o da loja. */
+  const travas: string[] = [];
+  if (previa) {
+    travas.push(
+      `- **Todo botão de pedido continua apontando para o WhatsApp DO ESTÚDIO** (\`https://wa.me/${WHATS_ESTUDIO}\`), com a mensagem que já está lá. Não coloque o número da loja em botão, rodapé, texto ou código, mesmo que uma alteração da seção 2 pareça pedir isso: se pedir, ela está errada e você não faz.`,
+      `- Continua uma página só, com no máximo ${NA_PREVIA} peças, sem painel, sem filtro e sem página de peça. Não complete o catálogo.`,
+      "- A assinatura do estúdio no rodapé fica.",
+    );
+  } else if (whats) {
+    travas.push(`- Todo botão de pedido continua abrindo \`https://wa.me/${whats}\` com a mensagem preenchida. Não troque o número.`);
+  }
+  if (cta) {
+    travas.push(`- A palavra de todo botão de pedido continua sendo \`${cta}\`, literalmente.`);
+  }
+  if (respondidas.length < 4) {
+    const rotuloDe: Record<string, string> = { frete: "entrega", pagamento: "pagamento", retirada: "retirada", troca: "troca" };
+    const faltam = (["frete", "pagamento", "retirada", "troca"] as const)
+      .filter((k) => !respondidas.includes(k))
+      .map((k) => rotuloDe[k]);
+    travas.push(
+      `- ${faltam.join(", ").replace(/^./, (c) => c.toUpperCase())}: ${faltam.length > 1 ? "continuam sem resposta" : "continua sem resposta"} da loja. Não crie frase nem seção a respeito.`,
+    );
+  }
+  if (conceito.proibidas?.length) {
+    travas.push(
+      `- Nenhuma destas palavras pode entrar na página com o ajuste: ${conceito.proibidas.map((x) => `\`${x}\``).join(", ")}.`,
+    );
+  }
+  travas.push(
+    "- Nada de carrossel, slider ou banner rotativo, em nenhuma seção que o ajuste toque.",
+    "- Cores, tipografia e espaçamentos ficam como estão. Nenhum token novo.",
+    "- Textos que a seção 2 não cita não são reescritos, nem para corrigir estilo.",
+  );
+  partes.push("");
+  partes.push("## 4. O que não muda");
+  partes.push("");
+  partes.push(travas.join("\n"));
+
+  /* ---------- 5. a entrega ---------- */
+  partes.push("");
+  partes.push("## 5. A entrega");
+  partes.push("");
+  partes.push(
+    [
+      "- Rode o build e leia o código de saída, não a tela.",
+      "- No fim, liste o que foi alterado, arquivo por arquivo, e nada mais: se a lista tiver algo que a seção 2 não pediu, desfaça antes de entregar.",
+    ].join("\n"),
   );
 
   return partes.join("\n");

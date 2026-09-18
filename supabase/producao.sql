@@ -350,9 +350,9 @@ create table if not exists public.prod_prompts (
   -- mês depois, por que aquele prompt dizia o que dizia: a ficha mudou, o
   -- prompt antigo não.
   snapshot jsonb,
-  -- 'previa' ou 'completa': o mesmo catálogo gera dois artefatos diferentes,
+  -- 'previa', 'completa' ou 'ajuste' (ver o bloco 10): o mesmo catálogo gera artefatos diferentes,
   -- e confundir os dois é entregar site pronto de graça.
-  modo text not null default 'previa' check (modo in ('previa','completa')),
+  modo text not null default 'previa' check (modo in ('previa','completa','ajuste')),
 
   criado_em timestamptz not null default now()
 );
@@ -392,3 +392,16 @@ alter table public.prod_produtos add column if not exists ordem_destaque int;
 create index if not exists prod_produtos_destaque_idx
   on public.prod_produtos (loja_id, ordem_destaque)
   where destaque;
+
+
+-- ============================================================
+-- 10. O AJUSTE (18/09)
+-- ============================================================
+-- Terceiro modo do prompt. Ele não constrói: muda uma vitrine que já está
+-- no ar (o link do Instagram, um texto, o hero conforme as estrelas da
+-- oficina) e repete as travas comerciais da prévia para elas não caírem
+-- na passagem. A versão guarda o modo para a lista da ficha dizer o que
+-- cada geração foi.
+alter table public.prod_prompts drop constraint if exists prod_prompts_modo_check;
+alter table public.prod_prompts
+  add constraint prod_prompts_modo_check check (modo in ('previa','completa','ajuste'));

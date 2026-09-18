@@ -122,7 +122,7 @@ import type { Forma } from "./forma";
 export type VersaoPrompt = {
   id: string;
   criado_em: string;
-  modo: "previa" | "completa";
+  modo: "previa" | "completa" | "ajuste";
 };
 
 /* ---------- o conceito da marca ----------

@@ -423,7 +423,7 @@ export async function salvarForma(loja_id: string, forma: Forma): Promise<Feito>
 export async function guardarPrompt(
   loja_id: string,
   markdown: string,
-  modo: "previa" | "completa",
+  modo: "previa" | "completa" | "ajuste",
 ): Promise<Feito> {
   const s = await sessao();
   if (!s) return { ok: false, erro: "Sessão expirada. Entre de novo." };
