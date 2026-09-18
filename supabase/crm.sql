@@ -1300,7 +1300,7 @@ select column_name, data_type
 -- ============================================================
 update public.crm_templates
    set titulo = 'Chegou pelo anúncio: sem preço, com pergunta de dono',
-       conteudo = E'Fala, {nome}! Chegou aqui, já abri o {instagram}.\nVou montar a prévia da sua vitrine com o que tá no seu Instagram e te mando ainda hoje. É de graça e é sua, sem compromisso.\nAntes de eu começar, me conta: hoje quando o cliente pergunta "tem esse no meu tamanho? quanto tá?", você responde um por um no direct?'
+       conteudo = E'Fala, {nome}! Chegou aqui, já abri o {instagram}.\nVou montar a prévia da sua vitrine hoje mesmo, com as fotos do seu Instagram. De graça e sem compromisso.\nSó me diz uma coisa pra eu começar certo: qual peça mais vende aí? Começo por ela.'
  where categoria = 'abertura_morna'
    and titulo like 'Chegou pelo anúncio%';
 
