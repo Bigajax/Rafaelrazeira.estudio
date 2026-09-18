@@ -285,14 +285,38 @@ async function sincronizarCRM(linha, utm, { emIngles = false, faixa = "" } = {})
       }),
     });
 
+  /* ---------- de qual anúncio veio (18/09/2026) ----------
+     `utm_campaign` e `utm_content` viajam para o card, nas colunas
+     `campanha` e `anuncio` (migração de 18/09 em supabase/crm.sql). É o
+     que deixa o quadro responder "qual anúncio traz lead que fecha": até
+     aqui os dois só existiam em `leads`, e no CRM todo lead de campanha
+     era um "Tráfego pago" igual ao outro. */
+  const atribuicao = {
+    campanha: texto(utm.utm_campaign, 120),
+    anuncio: texto(utm.utm_content, 120),
+  };
+
+  /* Lead que já existe e chegou de novo por um anúncio: a atribuição só
+     entra se estava VAZIA. É primeiro toque: quem veio do link da bio em
+     agosto e clicou num anúncio em setembro continua sendo lead da bio,
+     senão o anúncio leva o crédito de todo lead antigo que ele reacende. */
+  const completarAtribuicao = async (leadId) => {
+    if (!atribuicao.campanha && !atribuicao.anuncio) return;
+    await crmREST(url, chave, `crm_leads?id=eq.${leadId}&campanha=is.null&anuncio=is.null`, {
+      method: "PATCH",
+      body: JSON.stringify(atribuicao),
+    }).catch(() => {});
+  };
+
   try {
     const existente = await procurar();
     if (existente) {
-      await registrarInteracao(existente);
+      await Promise.all([registrarInteracao(existente), completarAtribuicao(existente)]);
       return { ok: true, novo: false, id: existente };
     }
 
     const novo = {
+      ...atribuicao,
       owner_id: dono,
       nome: linha.nome,
       empresa: linha.empresa,
@@ -331,14 +355,28 @@ async function sincronizarCRM(linha, utm, { emIngles = false, faixa = "" } = {})
         .slice(0, 2000) || null,
     };
 
-    const r = await crmREST(url, chave, "crm_leads", {
-      method: "POST",
-      headers: { Prefer: "return=representation" },
-      body: JSON.stringify(novo),
-    });
+    const inserir = (linhaNova) =>
+      crmREST(url, chave, "crm_leads", {
+        method: "POST",
+        headers: { Prefer: "return=representation" },
+        body: JSON.stringify(linhaNova),
+      });
+
+    let r = await inserir(novo);
+    let corpo = r.ok ? null : await r.json().catch(() => null);
+
+    /* PGRST204 (e 42703) é "coluna não existe": o deploy chegou antes de a migração
+       de 18/09 rodar no banco. O card nasce sem o anúncio, mas nasce. Lead
+       de campanha sumindo do pipeline por causa de uma etiqueta seria o
+       pior dos dois erros. */
+    if (!r.ok && (corpo?.code === "PGRST204" || corpo?.code === "42703")) {
+      console.warn("[lead] crm_leads sem campanha/anuncio: rode a migração de 18/09 em supabase/crm.sql");
+      const { campanha: _c, anuncio: _a, ...semAtribuicao } = novo;
+      r = await inserir(semAtribuicao);
+      corpo = r.ok ? null : await r.json().catch(() => null);
+    }
 
     if (!r.ok) {
-      const corpo = await r.json().catch(() => null);
       /* 23505 é o índice único de duplicata: outro envio ganhou a corrida
          no meio do caminho. Não é erro, é o caso da regra 7 chegando por
          outro lado. */
@@ -353,8 +391,8 @@ async function sincronizarCRM(linha, utm, { emIngles = false, faixa = "" } = {})
       return { ok: false, motivo: `crm ${r.status}` };
     }
 
-    const corpo = await r.json().catch(() => null);
-    const criado = Array.isArray(corpo) ? corpo[0] : corpo;
+    const devolvido = await r.json().catch(() => null);
+    const criado = Array.isArray(devolvido) ? devolvido[0] : devolvido;
     if (criado?.id) await registrarInteracao(criado.id);
     return { ok: true, novo: true, id: criado?.id || null };
   } catch (e) {

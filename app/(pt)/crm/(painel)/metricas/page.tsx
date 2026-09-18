@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { MetaSemana } from "@/components/crm/MetaSemana";
 import { metricas } from "@/lib/crm/dados";
-import { dataCurta, dinheiro, rotuloSemana } from "@/lib/crm/regras";
+import { dataCurta, dinheiro, dinheiroCurto, rotuloSemana } from "@/lib/crm/regras";
 import { NOME_CANAL, NOME_MOTIVO, type Canal, type MotivoPerda } from "@/lib/crm/tipos";
 import s from "../../crm.module.css";
 
@@ -46,6 +46,11 @@ const EXEMPLO: Metricas = {
     { etapa: "ganho", nome: "Ganho", n: 3 },
   ],
   baseFunil: 34,
+  anuncios: [
+    { anuncio: "pip-h17u-base", campanha: "previa-gratis-2026-08", leads: 21, previa: 9, proposta: 4, ganho: 2, valor: 1998 },
+    { anuncio: "pip-h27u-loja-fisica", campanha: "previa-gratis-2026-08", leads: 15, previa: 3, proposta: 1, ganho: 0, valor: 0 },
+    { anuncio: "punch-h17u-base", campanha: "previa-gratis-2026-08", leads: 4, previa: 0, proposta: 0, ganho: 0, valor: 0 },
+  ],
   respostas: { responderam: 18, contatados: 29 },
   cicloMedio: 19,
   pipelineAberto: 27400,
@@ -313,6 +318,70 @@ export default async function PaginaMetricas({
           })}
         </div>
       </section>
+
+      {/* ---------- 3. por anúncio (18/09) ----------
+          A pergunta desta tabela é a que decide o Gerenciador: qual
+          anúncio traz lead que ANDA. O Gerenciador já conta leads e
+          custo; o que só o CRM sabe é quantos daqueles viraram prévia,
+          proposta e Pix. Cada linha é um anúncio, a régua é a fatia de
+          leads do período que ele trouxe, e os três números depois dela
+          são o funil dele. A ordem é por quem mais avançou, não por quem
+          mais trouxe, e isso é proposital: é a leitura que o Gerenciador
+          não dá. */}
+      {m.anuncios.length ? (
+        <>
+          <h2 className={s.rotulo}>
+            Leads por anúncio
+            <span className={s.rotuloCont}>
+              {m.anuncios.reduce((t, a) => t + a.leads, 0)} vieram de anúncio no período
+            </span>
+          </h2>
+
+          <section className={s.bloco}>
+            <div className={s.anuncios}>
+              <div className={`${s.anuncioLinha} ${s.anuncioCab}`} aria-hidden>
+                <span />
+                <span />
+                <b>leads</b>
+                <b>prévia</b>
+                <b>proposta</b>
+                <b>ganho</b>
+              </div>
+              {m.anuncios.map((a) => {
+                const maior = Math.max(1, ...m.anuncios.map((x) => x.leads));
+                /* Prévia sobre leads: é a taxa que diz se o anúncio traz
+                   gente com quem dá para trabalhar. Abaixo de 1 em 4,
+                   rosa, a mesma régua da queda do funil. */
+                const pctPrevia = a.leads ? Math.round((a.previa / a.leads) * 100) : 0;
+                return (
+                  <div key={a.anuncio} className={s.anuncioLinha}>
+                    <code className={s.anuncioNome} title={a.campanha ? `Campanha ${a.campanha}` : undefined}>
+                      {a.anuncio}
+                    </code>
+                    <span className={s.barraTrilho}>
+                      <i className={s.barraFill} style={{ width: `${(a.leads / maior) * 100}%` }} />
+                    </span>
+                    <b className={s.anuncioNum}>{a.leads}</b>
+                    <b className={`${s.anuncioNum} ${a.leads && pctPrevia < 25 ? s.funilQueda : ""}`}>
+                      {a.previa}
+                      <small>{a.leads ? `${pctPrevia}%` : ""}</small>
+                    </b>
+                    <b className={s.anuncioNum}>{a.proposta}</b>
+                    <b className={`${s.anuncioNum} ${a.ganho ? s.anuncioGanho : ""}`}>
+                      {a.ganho}
+                      <small>{a.valor ? dinheiroCurto(a.valor) : ""}</small>
+                    </b>
+                  </div>
+                );
+              })}
+            </div>
+            <p className={s.blocoNota} style={{ marginTop: 12 }}>
+              Só leads criados no período que trouxeram o nome do anúncio no clique. Os de antes de 18/09
+              entram depois do acerto (scripts/acertar-anuncios-crm.mjs).
+            </p>
+          </section>
+        </>
+      ) : null}
 
       {/* ---------- 4. motivos de perda ---------- */}
       <h2 className={s.rotulo}>

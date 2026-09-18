@@ -465,6 +465,13 @@ export type Lead = {
   tipo_projeto: TipoProjeto | null;
   ticket_estimado: number | null;
   origem: Origem;
+  /* De qual anúncio veio (18/09/2026): `utm_campaign` e `utm_content` do
+     clique, copiados pela /api/lead. Só o lead de tráfego pago os tem; na
+     prospecção ficam nulos. É o dado que responde "qual anúncio traz
+     lead que fecha", e ele mora no lead, e não numa tabela ao lado, pelo
+     mesmo motivo que `origem` mora aqui: é de onde a pessoa veio. */
+  campanha: string | null;
+  anuncio: string | null;
   indicado_por: string | null;
   estagio: Estagio;
   posicao: number;

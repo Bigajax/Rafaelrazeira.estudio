@@ -331,7 +331,14 @@ export async function quadro() {
     (a, b) => a.localeCompare(b, "pt-BR"),
   );
 
-  return { leads, nichos, hoje: hojeSP() };
+  /* Os anúncios pela mesma regra dos nichos: os nomes são os do Gerenciador
+     e mudam a cada lote de criativos. Quem mais trouxe lead vem primeiro,
+     porque é dele que se quer ver o funil. */
+  const porAnuncio = new Map<string, number>();
+  for (const l of leads) if (l.anuncio?.trim()) porAnuncio.set(l.anuncio, (porAnuncio.get(l.anuncio) ?? 0) + 1);
+  const anuncios = [...porAnuncio.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([a]) => a);
+
+  return { leads, nichos, anuncios, hoje: hojeSP() };
 }
 
 /* ============================================================
@@ -567,6 +574,38 @@ export async function metricas(dias: 7 | 30 | 90) {
     { etapa: "ganho", nome: "Ganho", n: chegaramA("ganho") },
   ];
 
+  /* ---------- por anúncio (18/09/2026) ----------
+     O mesmo funil, fatiado pelo `anuncio` que trouxe o lead. A pergunta
+     desta tabela é a que decide qual criativo continua ligado: não "qual
+     traz mais lead" (isso o Gerenciador já diz), e sim "qual traz lead que
+     vira prévia, proposta e Pix". Um anúncio de 12 leads e zero prévias
+     perde para um de 4 leads e 2 propostas.
+
+     A base é o lead CRIADO no período com anúncio preenchido, com a mesma
+     leitura de "chegou a" do funil geral (estágio atual ou à frente), e a
+     mesma imprecisão declarada lá. Ordem: quem mais avançou primeiro,
+     desempate por volume. */
+  const porAnuncio = new Map<string, Lead[]>();
+  for (const l of criadosNoPeriodo) {
+    if (!l.anuncio?.trim()) continue;
+    porAnuncio.set(l.anuncio, [...(porAnuncio.get(l.anuncio) ?? []), l]);
+  }
+  const chegaram = (grupo: Lead[], estagio: string) => {
+    const alvo = ordem.indexOf(estagio);
+    return grupo.filter((l) => indice(l.estagio) >= alvo).length;
+  };
+  const anuncios = [...porAnuncio.entries()]
+    .map(([anuncio, grupo]) => ({
+      anuncio,
+      campanha: grupo.find((l) => l.campanha)?.campanha ?? null,
+      leads: grupo.length,
+      previa: chegaram(grupo, "previa"),
+      proposta: chegaram(grupo, "proposta"),
+      ganho: chegaram(grupo, "ganho"),
+      valor: grupo.filter((l) => l.estagio === "ganho").reduce((s, l) => s + (l.valor_fechado ?? 0), 0),
+    }))
+    .sort((a, b) => b.ganho - a.ganho || b.proposta - a.proposta || b.previa - a.previa || b.leads - a.leads);
+
   /* ---------- taxa de resposta ----------
      Leads com ao menos uma interação de entrada, sobre o total de leads que
      receberam ao menos uma de saída. O denominador é "contatado de verdade"
@@ -600,6 +639,7 @@ export async function metricas(dias: 7 | 30 | 90) {
     canais: [...porCanal.entries()].sort((a, b) => b[1] - a[1]),
     funil,
     baseFunil: criadosNoPeriodo.length,
+    anuncios,
     respostas: { responderam, contatados: comSaida.size },
     cicloMedio,
     /* NO_PIPELINE e não ATIVOS: a geladeira é ativa (o painel Hoje devolve

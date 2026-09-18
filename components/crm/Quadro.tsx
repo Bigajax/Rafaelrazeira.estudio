@@ -87,10 +87,14 @@ type Pendente = {
 export function Quadro({
   leads: doServidor,
   nichos,
+  anuncios,
   hoje,
 }: {
   leads: LeadPainel[];
   nichos: string[];
+  /* Os anúncios que já trouxeram lead, para o filtro (18/09). Vazio
+     enquanto a campanha não trouxe ninguém, e aí o filtro nem aparece. */
+  anuncios: string[];
   hoje: string;
 }) {
   /* Cópia local, porque o arrasto precisa mexer na tela antes de o servidor
@@ -103,6 +107,7 @@ export function Quadro({
   const [tipo, setTipo] = useState("");
   const [origem, setOrigem] = useState("");
   const [nicho, setNicho] = useState("");
+  const [anuncio, setAnuncio] = useState("");
   const [busca, setBusca] = useState("");
 
   /* Qual das três placas do fim está aberta embaixo do quadro, se alguma. */
@@ -133,6 +138,7 @@ export function Quadro({
       if (tipo && l.tipo_projeto !== tipo) return false;
       if (origem && l.origem !== origem) return false;
       if (nicho && l.nicho !== nicho) return false;
+      if (anuncio && l.anuncio !== anuncio) return false;
       if (!termo) return true;
       /* A busca varre o que a pessoa lembra na hora: nome, empresa, perfil,
          nicho e o próprio próximo passo, que costuma ser onde está a frase
@@ -141,7 +147,7 @@ export function Quadro({
         .filter(Boolean)
         .some((campo) => String(campo).toLowerCase().includes(termo));
     });
-  }, [leads, tipo, origem, nicho, busca]);
+  }, [leads, tipo, origem, nicho, anuncio, busca]);
 
   const porColuna = useMemo(() => {
     const mapa = {} as Record<Estagio, LeadPainel[]>;
@@ -333,9 +339,10 @@ export function Quadro({
     setTipo("");
     setOrigem("");
     setNicho("");
+    setAnuncio("");
     setBusca("");
   };
-  const filtrando = Boolean(tipo || origem || nicho || busca.trim());
+  const filtrando = Boolean(tipo || origem || nicho || anuncio || busca.trim());
 
   return (
     <div className={s.wrapLargo}>
@@ -444,6 +451,18 @@ export function Quadro({
               </option>
             ))}
           </Filtro>
+
+          {/* Só existe quando algum lead veio de anúncio: um filtro com
+              a lista vazia seria uma pergunta sem resposta possível. */}
+          {anuncios.length ? (
+            <Filtro rotulo="Anúncio" valor={anuncio} aoMudar={setAnuncio} vazio="todos">
+              {anuncios.map((a) => (
+                <option key={a} value={a}>
+                  {a}
+                </option>
+              ))}
+            </Filtro>
+          ) : null}
 
           {/* ---------- O PLACAR, COM O PONTO PULSANTE ----------
               O ponto verde que pulsa é a assinatura registrada do estúdio:

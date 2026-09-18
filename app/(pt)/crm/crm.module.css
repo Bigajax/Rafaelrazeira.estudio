@@ -760,6 +760,11 @@
   margin-top: 3px; overflow-wrap: anywhere;
 }
 .pontoVerde { font-style: normal; color: var(--green); padding: 0 5px; font-weight: 700 }
+/* O anúncio de onde o lead veio (18/09): código em mono na mesma linha do
+   contexto, sem caixa alta porque é o nome literal do Gerenciador
+   ("pip-h27u-loja-fisica") e a busca lá é sensível a isso. 11px é o piso
+   da mono da casa, e a cor é a mesma voz miúda das outras partes. */
+.fichaAnuncio { font: 500 11px var(--mono); letter-spacing: .02em; color: var(--ink-soft); white-space: nowrap }
 
 /* O nome é o alvo de "abrir o lead". `display: block` para a área de toque
    cobrir a linha inteira do topo, e não só as letras. */
@@ -3138,3 +3143,29 @@
   .app .arquivoPuxador:hover .arquivoAbre { color: var(--ink) }
 }
 .arquivo[open] .arquivoAbre { visibility: hidden }
+
+/* ---------- métricas: leads por anúncio (18/09) ----------
+   Uma linha por anúncio: nome em mono (é o texto literal do Gerenciador),
+   a régua da fatia de leads e os três degraus do funil daquele anúncio.
+   A grade é fixa para os números formarem COLUNAS: é lendo de cima para
+   baixo, e não linha a linha, que se vê qual anúncio anda. O `small`
+   embaixo do número é a segunda leitura (taxa de prévia, dinheiro do
+   ganho), na voz fraca. */
+.anuncios { display: grid; gap: 10px; margin-top: 14px }
+.anuncioLinha {
+  display: grid; grid-template-columns: minmax(120px, 200px) minmax(0, 1fr) 44px 52px 60px 76px;
+  gap: 10px; align-items: center;
+}
+.anuncioCab { margin-bottom: -4px }
+.anuncioCab b { font: 700 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-fraco); text-align: right }
+.anuncioNome { font: 500 11.5px var(--mono); letter-spacing: .02em; color: var(--ink); overflow-wrap: anywhere }
+.anuncioNum { font: 700 12px var(--mono); color: var(--ink); text-align: right; display: grid; line-height: 1.2 }
+.anuncioNum small { font: 500 10px var(--mono); color: var(--ink-fraco); letter-spacing: .02em; white-space: nowrap }
+.anuncioGanho { color: var(--green-dark) }
+@media (max-width: 560px) {
+  /* No celular a régua sai: as quatro colunas de número são a
+     informação, e a barra virava um traço de 40px sem leitura. */
+  .anuncioLinha { grid-template-columns: minmax(0, 1fr) 36px 44px 52px 68px }
+  .anuncioLinha > .barraTrilho { display: none }
+  .anuncioCab > span:nth-child(2) { display: none }
+}

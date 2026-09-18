@@ -1215,3 +1215,59 @@ select
 from public.crm_contratos c
 join public.crm_leads l on l.id = c.lead_id
 order by c.created_at;
+
+
+-- ============================================================
+-- ⚠️ MIGRAÇÃO (18/09/2026) — DE QUAL ANÚNCIO O LEAD VEIO.
+--
+-- Rode este bloco no SQL Editor se você já executou este arquivo antes.
+--
+-- O QUE ELA É: `campanha` e `anuncio` são o `utm_campaign` e o
+-- `utm_content` que a pessoa trouxe no clique, copiados pela /api/lead
+-- quando o card nasce (pages/api/lead.js, seção INBOUND). Até aqui os
+-- dois ficavam só na tabela `leads`, e no /crm um lead da campanha era
+-- igual a qualquer prospecção: "Tráfego pago" sem dizer de qual anúncio.
+-- Com 46 cards de anúncio no quadro e três criativos rodando, a pergunta
+-- "qual anúncio traz lead que fecha" não tinha onde ser respondida.
+--
+-- POR QUE SÃO COLUNAS EM `crm_leads`, APESAR DA NOTA DE 20/08: aquela nota
+-- vale para o que aponta PARA o lead (contrato, parcela). A atribuição não
+-- aponta para o lead, ela É do lead, como `origem` já é. Uma tabela ao
+-- lado obrigaria um join em memória em três telas (Hoje, quadro, ficha)
+-- para desenhar uma etiqueta de dez letras. O preço é o mesmo de 16/08:
+-- a view é derrubada e recriada com o MESMO corpo da seção 8, porque o
+-- Postgres congela a lista de colunas dela no create.
+--
+-- E O ACERTO DO QUE JÁ EXISTE: os 46 cards de antes desta migração nascem
+-- com as duas colunas vazias. Quem preenche é `scripts/acertar-anuncios-crm.mjs`,
+-- que lê a tabela `leads`, casa pelo WhatsApp e também cria o card dos
+-- leads anteriores a 01/09 (quando o CRM_OWNER_ID ainda não existia em
+-- produção e o formulário não virava card).
+-- ============================================================
+alter table public.crm_leads add column if not exists campanha text;
+alter table public.crm_leads add column if not exists anuncio  text;
+
+drop view if exists public.crm_leads_painel;
+
+create view public.crm_leads_painel
+with (security_invoker = on) as
+select
+  l.*,
+  (select count(*) from public.crm_interacoes i where i.lead_id = l.id) as toques,
+  (select count(*) from public.crm_interacoes i where i.lead_id = l.id and i.direcao = 'entrada') as toques_entrada,
+  (select count(*)
+     from public.crm_interacoes i
+    where i.lead_id = l.id
+      and i.direcao = 'saida'
+      and i.created_at > coalesce(
+            (select max(e.created_at) from public.crm_interacoes e
+              where e.lead_id = l.id and e.direcao = 'entrada'),
+            '-infinity'::timestamptz)
+  ) as saidas_seguidas
+from public.crm_leads l;
+
+-- A conferência: tem que sair UMA linha com as duas colunas novas.
+select column_name, data_type
+  from information_schema.columns
+ where table_schema = 'public' and table_name = 'crm_leads'
+   and column_name in ('campanha', 'anuncio');

@@ -110,7 +110,13 @@ export function ContextoDaFicha({ lead }: { lead: LeadPainel }) {
     lead.nicho || (lead.tipo_projeto ? NOME_TIPO[lead.tipo_projeto] : null),
     lead.cidade,
   ].filter((p): p is string => Boolean(p));
-  if (!partes.length) return null;
+  /* O anúncio é a última parte, em mono, porque é a única desta linha que
+     é um CÓDIGO e não um nome: "pip-h27u-loja-fisica" é o mesmo texto que
+     está no Gerenciador de Anúncios, e é assim que o Rafael vai procurá-lo
+     lá. Pela mesma regra de "só o que varia": num quadro em que 9 de 10
+     cards são prospecção, o anúncio é o que diferencia o lead da campanha
+     do vizinho, e a campanha inteira fica para a ficha. */
+  if (!partes.length && !lead.anuncio) return null;
 
   return (
     <span className={s.fichaContexto}>
@@ -120,6 +126,14 @@ export function ContextoDaFicha({ lead }: { lead: LeadPainel }) {
           {p}
         </Fragment>
       ))}
+      {lead.anuncio ? (
+        <>
+          {partes.length ? <i className={s.pontoVerde}>·</i> : null}
+          <code className={s.fichaAnuncio} title={lead.campanha ? `Campanha ${lead.campanha}` : undefined}>
+            {lead.anuncio}
+          </code>
+        </>
+      ) : null}
     </span>
   );
 }

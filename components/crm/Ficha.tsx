@@ -180,6 +180,11 @@ export function Ficha({
           ) : null}
           <span className={s.fichaCabOrigem}>
             {NOME_ORIGEM[lead.origem]}
+            {/* Campanha e anúncio inteiros aqui (o card mostra só o
+                anúncio): é nesta tela que se confere no Gerenciador de
+                onde a pessoa veio, então os dois nomes saem literais. */}
+            {lead.campanha ? ` · ${lead.campanha}` : ""}
+            {lead.anuncio ? ` · ${lead.anuncio}` : ""}
             {lead.ultimo_toque_em ? ` · último toque há ${diasDesde(lead.ultimo_toque_em, hoje)}d` : ""}
           </span>
         </div>

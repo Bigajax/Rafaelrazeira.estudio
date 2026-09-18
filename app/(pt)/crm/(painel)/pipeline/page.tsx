@@ -5,6 +5,6 @@ import { quadro } from "@/lib/crm/dados";
 export const metadata: Metadata = { title: "Pipeline" };
 
 export default async function PaginaPipeline() {
-  const { leads, nichos, hoje } = await quadro();
-  return <Quadro leads={leads} nichos={nichos} hoje={hoje} />;
+  const { leads, nichos, anuncios, hoje } = await quadro();
+  return <Quadro leads={leads} nichos={nichos} anuncios={anuncios} hoje={hoje} />;
 }
