@@ -764,7 +764,7 @@
    contexto, sem caixa alta porque é o nome literal do Gerenciador
    ("pip-h27u-loja-fisica") e a busca lá é sensível a isso. 11px é o piso
    da mono da casa, e a cor é a mesma voz miúda das outras partes. */
-.fichaAnuncio { font: 500 11px var(--mono); letter-spacing: .02em; color: var(--ink-soft); white-space: nowrap }
+.fichaAnuncio { display: inline-block; font: 500 11px var(--mono); letter-spacing: .02em; color: var(--ink-soft); white-space: nowrap }
 
 /* O nome é o alvo de "abrir o lead". `display: block` para a área de toque
    cobrir a linha inteira do topo, e não só as letras. */

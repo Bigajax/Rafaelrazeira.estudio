@@ -51,6 +51,7 @@ import {
   oQuePede,
   ordenarColuna,
   posicaoEntre,
+  procurouOEstudio,
   urgencia,
   type CampoExigido,
   type Passagem,
@@ -108,6 +109,10 @@ export function Quadro({
   const [origem, setOrigem] = useState("");
   const [nicho, setNicho] = useState("");
   const [anuncio, setAnuncio] = useState("");
+  /* O botão de um toque "Anúncio e site" (18/09): o mesmo monte do Hoje,
+     aqui como filtro. Liga por cima dos selects, e é o que responde "cadê
+     os de anúncio" numa coluna com 300 cards. */
+  const [soPediram, setSoPediram] = useState(false);
   const [busca, setBusca] = useState("");
 
   /* Qual das três placas do fim está aberta embaixo do quadro, se alguma. */
@@ -139,6 +144,7 @@ export function Quadro({
       if (origem && l.origem !== origem) return false;
       if (nicho && l.nicho !== nicho) return false;
       if (anuncio && l.anuncio !== anuncio) return false;
+      if (soPediram && !procurouOEstudio(l)) return false;
       if (!termo) return true;
       /* A busca varre o que a pessoa lembra na hora: nome, empresa, perfil,
          nicho e o próprio próximo passo, que costuma ser onde está a frase
@@ -147,7 +153,7 @@ export function Quadro({
         .filter(Boolean)
         .some((campo) => String(campo).toLowerCase().includes(termo));
     });
-  }, [leads, tipo, origem, nicho, anuncio, busca]);
+  }, [leads, tipo, origem, nicho, anuncio, soPediram, busca]);
 
   const porColuna = useMemo(() => {
     const mapa = {} as Record<Estagio, LeadPainel[]>;
@@ -340,9 +346,11 @@ export function Quadro({
     setOrigem("");
     setNicho("");
     setAnuncio("");
+    setSoPediram(false);
     setBusca("");
   };
-  const filtrando = Boolean(tipo || origem || nicho || anuncio || busca.trim());
+  const filtrando = Boolean(tipo || origem || nicho || anuncio || soPediram || busca.trim());
+  const pediram = useMemo(() => leads.filter(procurouOEstudio).length, [leads]);
 
   return (
     <div className={s.wrapLargo}>
@@ -428,6 +436,18 @@ export function Quadro({
         </label>
 
         <div className={s.filtros}>
+          {pediram ? (
+            <button
+              type="button"
+              className={`${s.vezMonte} ${s.vezMontePediram} ${soPediram ? s.vezMonteAtivo : ""}`}
+              onClick={() => setSoPediram((v) => !v)}
+              aria-pressed={soPediram}
+              aria-label={`Só quem chegou por anúncio ou pelo site, ${pediram}`}
+            >
+              Anúncio e site<b className={s.vezMonteNum}>{pediram}</b>
+            </button>
+          ) : null}
+
           <Filtro rotulo="Tipo" valor={tipo} aoMudar={setTipo} vazio="todos">
             {TIPOS_PROJETO.map((t) => (
               <option key={t} value={t}>

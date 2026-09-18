@@ -769,8 +769,25 @@ export function posicaoEntre(anterior: number | null, seguinte: number | null): 
 }
 
 /** A ordem que o kanban usa: posição, e `created_at` para desempatar. */
-export function ordenarColuna<T extends { posicao: number; created_at: string }>(leads: T[]): T[] {
-  return [...leads].sort((a, b) => a.posicao - b.posicao || a.created_at.localeCompare(b.created_at));
+/* ---------- quem pediu vem no topo da coluna (18/09) ----------
+   A ordem manual (`posicao`) continua mandando entre iguais, mas a coluna
+   se parte em duas metades como a fila do Hoje: quem chegou por anúncio ou
+   pelo site em cima, do mais novo para o mais antigo; o garimpo embaixo,
+   na ordem de sempre. Sem isso, com 300 cards em Lista, o lead que
+   preencheu o formulário de madrugada nascia na posição 300 e o quadro
+   inteiro parecia garimpo. */
+export function ordenarColuna<T extends { posicao: number; created_at: string; origem?: string }>(leads: T[]): T[] {
+  const pediu = (l: T) => (l.origem ? procurouOEstudio({ origem: l.origem as Lead["origem"] }) : false);
+  return [...leads].sort((a, b) => {
+    const pa = pediu(a) ? 0 : 1;
+    const pb = pediu(b) ? 0 : 1;
+    if (pa !== pb) return pa - pb;
+    /* A ordem manual continua valendo dentro de cada metade (arrastar um
+       card de anúncio para cima do outro precisa pegar); o desempate é o
+       que muda: mais novo primeiro entre quem pediu. */
+    if (pa === 0) return a.posicao - b.posicao || b.created_at.localeCompare(a.created_at);
+    return a.posicao - b.posicao || a.created_at.localeCompare(b.created_at);
+  });
 }
 
 /* ============================================================
