@@ -693,11 +693,28 @@ function listar(nomes: string[]): string | null {
   return `${lista.slice(0, -1).join(", ")} e ${lista[lista.length - 1]}`;
 }
 
+/* O card que nasce do formulário do anúncio sem nome de pessoa recebe o
+   @ da loja como nome, e "Fala, @houseskateboarding! já abri o
+   @houseskateboarding" foi mandado assim em 18/09. Um @ não é nome de
+   gente: nesse caso a saudação sai sem nome ("Fala! Chegou aqui..."), e
+   o @ continua entrando por {instagram}. */
+function nomeDeGente(nome: string | null, arroba: string): string | null {
+  const n = (nome ?? "").trim();
+  if (!n || n.startsWith("@")) return null;
+  if (arroba && n.replace(/^@+/, "").toLowerCase() === arroba.toLowerCase()) return null;
+  return n;
+}
+
+/* ", {nome}" antes de pontuação sai inteiro quando não há nome de gente:
+   "Fala, {nome}!" vira "Fala!" em vez de "Fala, [nome]!". */
+const SEM_NOME_RE = /,\s*\{nome\}(?=\s*[!?.,])/g;
+
 function valoresDe(lead: DadosTemplate, paraRender: boolean): Record<string, string | null> {
   const arroba = (lead.instagram ?? "").trim().replace(/^@+/, "").replace(/^https?:\/\/(www\.)?instagram\.com\//i, "").replace(/\/.*$/, "");
   const o = lead.oficina ?? null;
+  const nome = nomeDeGente(lead.nome, arroba);
   return {
-    nome: paraRender ? primeiroNome(lead.nome) : lead.nome,
+    nome: nome ? (paraRender ? primeiroNome(nome) : nome) : null,
     empresa: lead.empresa,
     nicho: lead.nicho,
     cidade: lead.cidade,
@@ -721,7 +738,8 @@ export function aplicarSaudacao(texto: string, base: Date = new Date()): string 
 
 export function renderTemplate(conteudo: string, lead: DadosTemplate, agora?: Date): string {
   const mapa = valoresDe(lead, true);
-  const comDados = conteudo.replace(VARIAVEIS_RE, (_, chave: string) => {
+  const texto = mapa.nome ? conteudo : conteudo.replace(SEM_NOME_RE, "");
+  const comDados = texto.replace(VARIAVEIS_RE, (_, chave: string) => {
     const v = mapa[chave];
     return v && v.trim() ? v.trim() : `[${chave}]`;
   });
@@ -730,8 +748,9 @@ export function renderTemplate(conteudo: string, lead: DadosTemplate, agora?: Da
 
 /** Quais variáveis do texto ficariam sem valor para este lead. */
 export function lacunas(conteudo: string, lead: DadosTemplate): string[] {
-  const achadas = [...conteudo.matchAll(VARIAVEIS_RE)].map((m) => m[1]);
   const mapa = valoresDe(lead, false);
+  const texto = mapa.nome ? conteudo : conteudo.replace(SEM_NOME_RE, "");
+  const achadas = [...texto.matchAll(VARIAVEIS_RE)].map((m) => m[1]);
   return [...new Set(achadas)].filter((c) => !mapa[c] || !String(mapa[c]).trim());
 }
 
