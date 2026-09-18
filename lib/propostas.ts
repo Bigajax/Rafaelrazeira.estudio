@@ -142,19 +142,17 @@ export const PROPOSTAS: Record<string, Proposta> = {
       saldo_card: { label: "Saldo na entrega, no cartão em até 4x", valor: 800, metodo: "card", maxParcelas: 4 },
     },
   },
-  /* A Arena disse que fecha no cartão, e o Rafael absorve a taxa: o
-     cartão custa o mesmo que o Pix (R$ 799 em 4x de R$ 199,75), nada é
-     somado por cima. Para o cliente ver 4 parcelas iguais, a conta do
-     MP precisa estar com parcelamento sem juros até 4x; senão o
-     checkout soma o juro do comprador. Entrada 200 e saldo 799 fecham
-     os mesmos R$ 999 das outras propostas. */
+  /* A Arena disse que fecha no cartão. O valor é o mesmo do Pix (nada
+     somado) e as parcelas são COM juros: o Brick do Mercado Pago
+     calcula na hora, no padrão da conta, sem mexer em nada. Entrada 200
+     e saldo 799 fecham os mesmos R$ 999 das outras propostas. */
   "arena-imports": {
     titulo: "Rafael Razeira Estúdio — Vitrine Digital Arena Imports Floripa",
     whatsapp: "5544991246187",
     itens: {
       entrada_pix: { label: "Entrada para início do projeto", valor: 200, metodo: "pix" },
       saldo_pix: { label: "Saldo na entrega, no Pix", valor: 799, metodo: "pix" },
-      saldo_card: { label: "Saldo na entrega, no cartão em 4x (taxa já inclusa)", valor: 799, metodo: "card", maxParcelas: 4 },
+      saldo_card: { label: "Saldo na entrega, no cartão em até 4x", valor: 799, metodo: "card", maxParcelas: 4 },
     },
   },
   "ortobom-aracaju": {
