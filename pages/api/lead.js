@@ -219,7 +219,7 @@ async function crmREST(url, chave, caminho, opcoes = {}) {
   });
 }
 
-async function sincronizarCRM(linha, utm, { emIngles = false, faixa = "" } = {}) {
+async function sincronizarCRM(linha, utm, { emIngles = false, faixa = "", naoConferido = false } = {}) {
   const url = process.env.SUPABASE_URL;
   /* A faixa canônica decide (é ela que o formulário manda desde 11/09, nos
      dois idiomas); a regex no texto fica só para o envio que ainda vier
@@ -343,6 +343,8 @@ async function sincronizarCRM(linha, utm, { emIngles = false, faixa = "" } = {})
         /* o lead gringo pede outra conversa: responder por e-mail, em
            inglês, e combinar o pagamento por lá (sem Stripe nesta fase) */
         emIngles ? "LEAD EM INGLÊS: responder por e-mail, em inglês. Pagamento combinado por e-mail." : "",
+        /* o @ que a Meta não achou (ver a exceção do @ no handler) */
+        naoConferido ? "@ NÃO CONFERIDO NA META (conta pessoal ou @ errado): confirmar o perfil antes de desenhar a prévia." : "",
         linha.pagina.startsWith("landing-page")
           ? (naoAnuncia
               ? "NÃO ANUNCIA AINDA: não abrir prévia. Conversar primeiro, prévia só depois de rodar tráfego."
@@ -664,13 +666,28 @@ export default async function handler(req, res) {
      e-mail é o registro com o formulário inteiro, o push é o toque que faz
      você pegar o telefone. Um pode existir sem o outro. */
   /* O suspeito para aqui. Ele já está gravado, que é o ponto inteiro da
-     mudança de 01/09, e nada além disso acontece: card no CRM envenenaria a
-     fila do dia, que é feita para ser trabalhada uma por uma, e aviso faria
-     o telefone vibrar por robô. Se ele for gente, o lead está no banco
-     esperando, e é isso que antes não acontecia. */
+     mudança de 01/09, e nada além disso acontece: aviso faria o telefone
+     vibrar por robô, e Lead na Meta ensinaria a campanha a procurar quem
+     preenche formulário sem ter loja. */
   /* O repetido também para aqui, por outro motivo: a pessoa já tem card, já
      vibrou o telefone, já contou na Meta. O que mudou está na linha. */
-  const [aviso, crm, push] = suspeito || repetido
+  /* ---------- a exceção do @ (18/09/2026) ----------
+     O `suspeito:arroba` ganha CARD, e só card: sem e-mail, sem push, sem
+     Lead na Meta. A conferência de 18/09 achou 34 envios assim em 91, e
+     pelo menos sete eram clientes de prévia (Fantoche, Mimos da Mah, Olé,
+     Picorelli, Encanto Íntimo...) com conta PESSOAL no Instagram, que a
+     Business Discovery não enxerga. A regra de 10/09 acertava o alvo
+     (robô e @ inventado não vibram o telefone nem ensinam a campanha) e
+     errava o preço: a pessoa real sumia do pipeline. O card nasce com a
+     nota "@ não conferido"; a isca e o relógio continuam fora. */
+  const soCard = suspeito === "arroba" && !repetido;
+  const [aviso, crm, push] = soCard
+    ? [
+        { enviado: false, motivo: "suspeito" },
+        await sincronizarCRM(linha, utm, { emIngles, faixa: texto(b.investimento_faixa, 32), naoConferido: true }),
+        { enviado: false, motivo: "suspeito" },
+      ]
+    : suspeito || repetido
     ? [{ enviado: false, motivo: suspeito ? "suspeito" : "repetido" }, { ok: false, motivo: suspeito ? "suspeito" : "repetido" }, { enviado: false, motivo: suspeito ? "suspeito" : "repetido" }]
     : await Promise.all([
       avisar(linha),

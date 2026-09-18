@@ -16,9 +16,13 @@
       do envio. Como a ordem é do mais antigo para o mais novo, vale o
       PRIMEIRO toque, a mesma regra da rota.
    3. Não achou: cria o card, do mesmo jeito que a /api/lead cria, com uma
-      interação de entrada datada do envio original. É o caso dos leads de
-      antes de 01/09, quando o CRM_OWNER_ID não existia em produção e o
-      formulário só gravava em `leads`.
+      interação de entrada datada do envio original. São dois grupos:
+      os leads de antes de 01/09 (o CRM_OWNER_ID não existia em produção)
+      e os `suspeito:arroba`, que a regra de 10/09 deixava fora do
+      pipeline. Na conferência de 18/09, 34 dos 91 envios estavam assim, e
+      pelo menos sete eram clientes de prévia com conta PESSOAL no
+      Instagram (a Business Discovery só enxerga conta profissional).
+      Esses entram com a nota "@ não conferido" no card.
 
    Ele NÃO mexe em estágio, passo, notas ou qualquer coisa que o Rafael já
    tenha escrito no card: só preenche o que está vazio e cria o que falta.
@@ -100,21 +104,31 @@ try {
 
 /* ---------- 1. ler tudo ---------- */
 const envios = await rest(
-  "leads?select=id,created_at,pagina,nome,empresa,whatsapp,email,canal,utm_source,utm_medium,utm_campaign,utm_content,investimento,plano,vende,produtos,site,necessidade&order=created_at.asc&limit=5000",
+  "leads?select=id,created_at,pagina,nome,empresa,whatsapp,email,canal,status,utm_source,utm_medium,utm_campaign,utm_content,investimento,plano,vende,produtos,site,necessidade&order=created_at.asc&limit=5000",
 );
 const cards = await rest(`crm_leads?owner_id=eq.${DONO}&select=id,nome,whatsapp,email,campanha,anuncio,created_at&limit=5000`);
 
 const porZap = new Map();
 const porEmail = new Map();
+/* Os cards mais antigos guardam o WhatsApp formatado, "(32) 99116-9200";
+   a rota grava só dígitos. O índice normaliza os dois lados. */
 for (const c of cards) {
-  if (c.whatsapp) porZap.set(c.whatsapp, c);
+  const zap = soDigitos(c.whatsapp);
+  if (zap) porZap.set(zap, c);
   if (c.email) porEmail.set(c.email.toLowerCase(), c);
 }
 
-const plano = { completar: [], criar: [], jaTinham: 0, semAtribuicao: 0, semChave: 0 };
+/* Os números do próprio estúdio: envio de teste do Rafael não vira card. */
+const DO_ESTUDIO = new Set(["44991246187", "44999997219", "14999997219"]);
+
+const plano = { completar: [], criar: [], jaTinham: 0, semAtribuicao: 0, semChave: 0, doEstudio: 0 };
 
 for (const e of envios) {
   const zap = soDigitos(e.whatsapp);
+  if (zap && DO_ESTUDIO.has(zap)) {
+    plano.doEstudio++;
+    continue;
+  }
   const email = e.email ? String(e.email).trim().toLowerCase() : null;
   const atrib = { campanha: texto(e.utm_campaign), anuncio: texto(e.utm_content) };
   const card = (zap && porZap.get(zap)) || (email && porEmail.get(email)) || null;
@@ -152,7 +166,12 @@ for (const e of envios) {
     estagio: "lista",
     ...atrib,
     notas:
-      [e.vende, e.produtos, e.site, e.necessidade]
+      [
+        e.status === "suspeito:arroba"
+          ? "@ NÃO CONFERIDO NA META (conta pessoal ou @ errado): confirmar o perfil antes de desenhar a prévia."
+          : "",
+        e.vende, e.produtos, e.site, e.necessidade,
+      ]
         .map((v) => texto(v, 500))
         .filter(Boolean)
         .join("\n")
@@ -180,8 +199,8 @@ console.log(`\n${envios.length} envios em leads · ${cards.length} cards no CRM\
 console.log(`completar atribuição em cards existentes: ${plano.completar.length}`);
 for (const { card, atrib } of plano.completar) console.log(`  ${(card.nome || "").padEnd(28).slice(0, 28)} ← ${atrib.campanha || "-"} · ${atrib.anuncio || "-"}`);
 console.log(`\ncriar cards que nunca nasceram: ${plano.criar.length}`);
-for (const { novo, envio } of plano.criar) console.log(`  ${envio.created_at.slice(0, 10)}  ${novo.nome.padEnd(28).slice(0, 28)} ${novo.origem.padEnd(13)} ${novo.anuncio || "-"}`);
-console.log(`\njá tinham atribuição: ${plano.jaTinham} · envios sem UTM: ${plano.semAtribuicao} · sem WhatsApp nem e-mail: ${plano.semChave}`);
+for (const { novo, envio } of plano.criar) console.log(`  ${envio.created_at.slice(0, 10)}  ${novo.nome.padEnd(28).slice(0, 28)} ${novo.origem.padEnd(13)} ${(novo.anuncio || "-").padEnd(24)} ${envio.status === "suspeito:arroba" ? "@ não conferido" : ""}`);
+console.log(`\njá tinham atribuição: ${plano.jaTinham} · envios sem UTM: ${plano.semAtribuicao} · sem WhatsApp nem e-mail: ${plano.semChave} · do estúdio: ${plano.doEstudio}`);
 
 if (DRY) {
   console.log("\n--dry: nada foi escrito.");
