@@ -38,8 +38,10 @@
 
 import { useEffect, useState } from "react";
 import { registrarToque } from "@/app/(pt)/crm/acoes";
+import { dadosDaOficina } from "@/app/(pt)/crm/acoes-producao";
 import {
   aplicarSaudacao,
+  type DadosOficina,
   degrauDoSilencio,
   lacunas,
   linkDirectInstagram,
@@ -114,6 +116,21 @@ export function ModalMensagem({
   const [escolhido, setEscolhido] = useState(partida);
   const [copiado, setCopiado] = useState(false);
 
+  /* O QUE A OFICINA SABE. Os toques da prévia levam o link, a contagem e
+     as estreladas da loja vinculada a este card ({link}, {pecas},
+     {destaques}, {topo}); isso mora na oficina, não no cadastro, e vem
+     numa chamada só quando o modal abre. Enquanto não chega, o texto
+     mostra as lacunas, que é o mesmo que mostraria sem oficina. */
+  const [oficina, setOficina] = useState<DadosOficina | null>(null);
+  useEffect(() => {
+    let vivo = true;
+    void dadosDaOficina(lead.id).then((d) => vivo && setOficina(d));
+    return () => {
+      vivo = false;
+    };
+  }, [lead.id]);
+  const dados = { ...lead, oficina };
+
   const doDossie = escolhido === ID_ABERTURA || escolhido === ID_PESQUISA;
   const template = doDossie ? null : (templates.find((t) => t.id === escolhido) ?? null);
   const texto =
@@ -122,9 +139,9 @@ export function ModalMensagem({
       : escolhido === ID_PESQUISA && daPesquisa
         ? aplicarSaudacao(daPesquisa)
         : template
-          ? renderTemplate(template.conteudo, lead)
+          ? renderTemplate(template.conteudo, dados)
           : "";
-  const faltando = template ? lacunas(template.conteudo, lead) : [];
+  const faltando = template ? lacunas(template.conteudo, dados) : [];
 
   /* O aviso da ordem: a mensagem 2 leva oferta e link, e antes de uma
      resposta é justamente ela que faz a pessoa não abrir. `toques_entrada`
@@ -245,7 +262,10 @@ export function ModalMensagem({
 
             {faltando.length ? (
               <p className={s.erro}>
-                Sem {faltando.join(", ")} no cadastro: o texto vai sair com o colchete.
+                Sem {faltando.join(", ")}
+                {faltando.some((f) => ["link", "pecas", "destaques", "topo"].includes(f))
+                  ? ": vem da oficina (o link da prévia fica na ficha da loja, as peças e as estrelas do catálogo). O texto vai sair com o colchete."
+                  : " no cadastro: o texto vai sair com o colchete."}
               </p>
             ) : null}
           </>

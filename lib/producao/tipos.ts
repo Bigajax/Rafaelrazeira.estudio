@@ -81,6 +81,9 @@ export type Loja = {
   /* O texto colhido do link da bio (linktree, site antigo). É a única
      fonte de preço que não depende de perguntar ao cliente. */
   link_bio: string | null;
+  /* O endereço da prévia no ar (Vercel), colado à mão na ficha: é o
+     {link} dos toques da prévia no CRM. */
+  previa_url: string | null;
   status: Status;
   nota: string | null;
   colhido_em: string | null;

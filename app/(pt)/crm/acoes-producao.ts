@@ -18,6 +18,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { clienteServidor, usuarioAtual } from "@/lib/crm/supabase";
+import type { DadosOficina } from "@/lib/crm/regras";
 import { casarPrecos } from "@/lib/producao/precos";
 import { FORMA_VAZIA, type Forma } from "@/lib/producao/forma";
 import {
@@ -567,4 +568,61 @@ async function marcarDestaques(
   const forma: Forma = { ...FORMA_VAZIA, ...(data?.forma ?? {}) };
   forma.origem = { ...forma.origem, destaques: origem };
   await s.supabase.from("prod_lojas").update({ forma }).eq("id", loja_id);
+}
+
+/* ---------- o link da prévia no ar ----------
+   A vitrine sai da oficina e vai para a Vercel à mão; o endereço que
+   nasce lá é o que o toque da prévia manda para o cliente ({link} nos
+   templates). Mora na loja, e não no card, porque é a loja que tem
+   prévia; o card só a lê. Vazio apaga. */
+export async function salvarPreviaUrl(loja_id: string, url: string): Promise<Feito> {
+  const s = await sessao();
+  if (!s) return { ok: false, erro: "Sessão expirada. Entre de novo." };
+
+  const limpa = url.trim();
+  if (limpa && !/^https?:\/\/\S+$/i.test(limpa)) return { ok: false, erro: "Cole o endereço inteiro, com https://." };
+
+  const { error } = await s.supabase.from("prod_lojas").update({ previa_url: limpa || null }).eq("id", loja_id);
+  if (error) return { ok: false, erro: error.message };
+
+  atualizar();
+  return { ok: true };
+}
+
+/* ---------- o que a oficina sabe deste lead ----------
+   Alimenta as variáveis {link}, {pecas}, {destaques} e {topo} dos
+   templates (ver lib/crm/regras.ts): a loja vinculada ao card, quantas
+   peças o catálogo tem e as estreladas na ordem da tira. Lead sem loja
+   devolve null, e o modal mostra as lacunas como sempre. */
+export async function dadosDaOficina(lead_id: string): Promise<DadosOficina | null> {
+  const s = await sessao();
+  if (!s) return null;
+
+  const { data: loja } = await s.supabase
+    .from("prod_lojas")
+    .select("id, previa_url")
+    .eq("lead_id", lead_id)
+    .order("criado_em", { ascending: false })
+    .limit(1)
+    .maybeSingle<{ id: string; previa_url: string | null }>();
+  if (!loja) return null;
+
+  const [{ count }, { data: estrelas }] = await Promise.all([
+    s.supabase.from("prod_produtos").select("id", { count: "exact", head: true }).eq("loja_id", loja.id),
+    s.supabase
+      .from("prod_produtos")
+      .select("nome, ordem_destaque, ordem")
+      .eq("loja_id", loja.id)
+      .eq("destaque", true)
+      .order("ordem_destaque", { ascending: true, nullsFirst: false })
+      .order("ordem", { ascending: true })
+      .limit(3)
+      .returns<{ nome: string }[]>(),
+  ]);
+
+  return {
+    link: loja.previa_url,
+    pecas: count ?? null,
+    destaques: (estrelas ?? []).map((e) => e.nome),
+  };
 }

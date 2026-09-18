@@ -22,7 +22,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { salvarCondicoes } from "@/app/(pt)/crm/acoes-producao";
+import { salvarCondicoes, salvarPreviaUrl } from "@/app/(pt)/crm/acoes-producao";
 import s from "@/app/(pt)/crm/crm.module.css";
 import p from "@/app/(pt)/crm/producao.module.css";
 import type { Condicoes, Loja as TipoLoja } from "@/lib/producao/tipos";
@@ -100,6 +100,9 @@ export function Loja({ loja }: { loja: TipoLoja }) {
   const [condicoes, setCondicoes] = useState<Condicoes>(loja.condicoes ?? {});
   const [recado, setRecado] = useState("");
   const [salvando, comSalvamento] = useTransition();
+  const [previaUrl, setPreviaUrl] = useState(loja.previa_url ?? "");
+  const [recadoPrevia, setRecadoPrevia] = useState("");
+  const [salvandoPrevia, comPrevia] = useTransition();
 
   const lugar = loja.lugar;
   const respondidas = PERGUNTAS.filter(({ campo }) => (condicoes[campo] ?? "").trim()).length;
@@ -154,6 +157,32 @@ export function Loja({ loja }: { loja: TipoLoja }) {
            nada aconteceu. Vira nota de rodapé, em mono. */
         <p className={p.semLugar}>Sem ponto físico no Google. A vitrine não ganha a seção de endereço.</p>
       )}
+
+      {/* O endereço da prévia no ar. A vitrine vai para a Vercel à mão e o
+          link nasce lá; colado aqui, ele vira o {link} dos toques da prévia
+          no CRM, e a mensagem sai pronta para enviar em vez de sair com
+          "[link]" para preencher. */}
+      <p className={p.perguntasRot}>A prévia no ar</p>
+      <div className={p.pergunta + (previaUrl.trim() ? " " + p.perguntaOk : "")}>
+        <label>
+          <span>Link da prévia publicada (é o {"{link}"} dos toques no CRM)</span>
+          <input
+            value={previaUrl}
+            placeholder="https://nome-da-loja.vercel.app"
+            inputMode="url"
+            onChange={(e) => setPreviaUrl(e.target.value)}
+            onBlur={() => {
+              if ((loja.previa_url ?? "") === previaUrl.trim()) return;
+              comPrevia(async () => {
+                const r = await salvarPreviaUrl(loja.id, previaUrl);
+                setRecadoPrevia(r.ok ? (previaUrl.trim() ? "Link guardado." : "Link apagado.") : r.erro);
+                router.refresh();
+              });
+            }}
+          />
+        </label>
+        {salvandoPrevia ? <p className={p.aviso}>Guardando…</p> : recadoPrevia ? <p className={p.aviso}>{recadoPrevia}</p> : null}
+      </div>
 
       <p className={p.perguntasRot}>
         As quatro que só o cliente responde

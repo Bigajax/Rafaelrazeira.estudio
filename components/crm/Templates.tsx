@@ -43,9 +43,16 @@ const EXEMPLO = {
   empresa: "Joalheria Alves",
   nicho: "joalheria",
   cidade: "Maringá",
+  instagram: "joalheriaalves",
+  /* o que a oficina devolve quando a loja está pronta: é o exemplo dos
+     toques da prévia, que levam o link, a contagem e as estreladas */
+  oficina: { link: "https://joalheriaalves.vercel.app", pecas: 32, destaques: ["Colar Riviera", "Brinco Gota", "Anel Solitário"] },
 };
 
-const VARIAVEIS = ["{nome}", "{empresa}", "{nicho}", "{cidade}", "{saudacao}"];
+/* As cinco do cadastro e do relógio, e as quatro que a oficina preenche
+   (o link da prévia vem da ficha da loja; peças, destaques e topo, do
+   catálogo estrelado). */
+const VARIAVEIS = ["{nome}", "{empresa}", "{nicho}", "{cidade}", "{instagram}", "{saudacao}", "{link}", "{pecas}", "{destaques}", "{topo}"];
 
 export function Templates({ templates }: { templates: Template[] }) {
   const [editando, setEditando] = useState<Template | "novo" | null>(null);

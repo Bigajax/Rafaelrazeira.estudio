@@ -660,8 +660,54 @@ export function exigenciaDeTodas(estagios: readonly Estagio[], lead: Lead): Camp
    E uma quinta que não vem do cadastro nem pode faltar: `{saudacao}`, que
    o relógio resolve no instante do envio. `{Saudacao}` é a mesma coisa
    com inicial maiúscula, para quem abre a frase com ela.
+
+   ---------- as variáveis da oficina (18/09/2026) ----------
+   Os toques da prévia saíam com colchetes para preencher à mão ("[link]",
+   "[o que tem dentro]"), e o Rafael pediu que a mensagem já saísse pronta
+   para enviar. O que preenche isso não é o cadastro do lead, é a loja da
+   oficina vinculada a ele: `{link}` é o endereço da prévia no ar,
+   `{pecas}` é quantas peças o catálogo tem, `{destaques}` são as três
+   primeiras estreladas ("Samba, Air Force 1 Black Camel e Dunk Low
+   Reverse") e `{topo}` é a primeira delas. `{instagram}` vem do cadastro
+   mesmo, com o @ garantido. Sem oficina rodada, viram lacuna visível como
+   as outras, e o aviso do modal diz o que falta.
    ============================================================ */
-export type DadosTemplate = Pick<Lead, "nome" | "empresa" | "nicho" | "cidade">;
+export type DadosOficina = {
+  link: string | null;
+  pecas: number | null;
+  destaques: string[];
+};
+
+export type DadosTemplate = Pick<Lead, "nome" | "empresa" | "nicho" | "cidade"> & {
+  instagram?: string | null;
+  oficina?: DadosOficina | null;
+};
+
+const VARIAVEIS_RE = /\{(nome|empresa|nicho|cidade|instagram|link|pecas|destaques|topo)\}/g;
+
+/* "A, B e C": a lista lida como se fala, sem vírgula antes do "e". */
+function listar(nomes: string[]): string | null {
+  const lista = nomes.map((n) => n.trim()).filter(Boolean).slice(0, 3);
+  if (!lista.length) return null;
+  if (lista.length === 1) return lista[0];
+  return `${lista.slice(0, -1).join(", ")} e ${lista[lista.length - 1]}`;
+}
+
+function valoresDe(lead: DadosTemplate, paraRender: boolean): Record<string, string | null> {
+  const arroba = (lead.instagram ?? "").trim().replace(/^@+/, "").replace(/^https?:\/\/(www\.)?instagram\.com\//i, "").replace(/\/.*$/, "");
+  const o = lead.oficina ?? null;
+  return {
+    nome: paraRender ? primeiroNome(lead.nome) : lead.nome,
+    empresa: lead.empresa,
+    nicho: lead.nicho,
+    cidade: lead.cidade,
+    instagram: arroba ? `@${arroba}` : null,
+    link: o?.link ?? null,
+    pecas: o?.pecas ? String(o.pecas) : null,
+    destaques: o ? listar(o.destaques) : null,
+    topo: o?.destaques[0]?.trim() || null,
+  };
+}
 
 /* Aplicada separada do resto porque a mensagem da pesquisa NÃO passa pelo
    render de variáveis (ela já nasce escrita para este lead), mas passa
@@ -674,13 +720,8 @@ export function aplicarSaudacao(texto: string, base: Date = new Date()): string 
 }
 
 export function renderTemplate(conteudo: string, lead: DadosTemplate, agora?: Date): string {
-  const mapa: Record<string, string | null> = {
-    nome: primeiroNome(lead.nome),
-    empresa: lead.empresa,
-    nicho: lead.nicho,
-    cidade: lead.cidade,
-  };
-  const comDados = conteudo.replace(/\{(nome|empresa|nicho|cidade)\}/g, (_, chave: string) => {
+  const mapa = valoresDe(lead, true);
+  const comDados = conteudo.replace(VARIAVEIS_RE, (_, chave: string) => {
     const v = mapa[chave];
     return v && v.trim() ? v.trim() : `[${chave}]`;
   });
@@ -689,13 +730,8 @@ export function renderTemplate(conteudo: string, lead: DadosTemplate, agora?: Da
 
 /** Quais variáveis do texto ficariam sem valor para este lead. */
 export function lacunas(conteudo: string, lead: DadosTemplate): string[] {
-  const achadas = [...conteudo.matchAll(/\{(nome|empresa|nicho|cidade)\}/g)].map((m) => m[1]);
-  const mapa: Record<string, string | null> = {
-    nome: lead.nome,
-    empresa: lead.empresa,
-    nicho: lead.nicho,
-    cidade: lead.cidade,
-  };
+  const achadas = [...conteudo.matchAll(VARIAVEIS_RE)].map((m) => m[1]);
+  const mapa = valoresDe(lead, false);
   return [...new Set(achadas)].filter((c) => !mapa[c] || !String(mapa[c]).trim());
 }
 

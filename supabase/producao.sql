@@ -405,3 +405,14 @@ create index if not exists prod_produtos_destaque_idx
 alter table public.prod_prompts drop constraint if exists prod_prompts_modo_check;
 alter table public.prod_prompts
   add constraint prod_prompts_modo_check check (modo in ('previa','completa','ajuste'));
+
+
+-- ============================================================
+-- 11. O LINK DA PRÉVIA NO AR (18/09)
+-- ============================================================
+-- A vitrine sai da oficina e vai para a Vercel à mão; o endereço que
+-- nasce lá é o que o toque da prévia manda para o cliente. Colado na
+-- ficha da loja, ele vira a variável {link} dos templates do CRM (junto
+-- com {pecas}, {destaques} e {topo}, que saem do catálogo), e a mensagem
+-- sai pronta para enviar em vez de sair com "[link]" para preencher.
+alter table public.prod_lojas add column if not exists previa_url text;

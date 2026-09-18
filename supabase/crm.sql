@@ -1291,26 +1291,29 @@ select column_name, data_type
 --      depois que a pessoa reagiu, e diz "colocar no seu domínio",
 --      nunca "para ficar sua";
 --   3. a prévia sem resposta volta com NOVIDADE (peças a mais, troca do
---      topo), nunca com "e aí, o que achou?".
+--      topo), nunca com "e aí, o que achou?";
+--   4. sem colchete para preencher à mão: {instagram} vem do cadastro e
+--      {link}, {pecas}, {destaques} e {topo} vêm da oficina (o bloco 11 de
+--      producao.sql cria a coluna previa_url). Ver lib/crm/regras.ts.
 -- Já aplicado no banco em 18/09 por script; este bloco é o registro e
 -- serve para quem rodar o arquivo do zero.
 -- ============================================================
 update public.crm_templates
    set titulo = 'Chegou pelo anúncio: sem preço, com pergunta de dono',
-       conteudo = E'Fala, {nome}! Chegou aqui. Dei uma olhada no {empresa}: [UMA coisa que você viu no perfil: um produto, a loja nova, o catálogo da bio].\nVou montar a prévia da sua vitrine com o que tá no seu Instagram e te mando ainda hoje. É de graça e é sua, sem compromisso.\nAntes de eu começar, me conta: hoje quando o cliente pergunta "tem esse no meu tamanho? quanto tá?", você responde um por um no direct?'
+       conteudo = E'Fala, {nome}! Chegou aqui, já abri o {instagram}.\nVou montar a prévia da sua vitrine com o que tá no seu Instagram e te mando ainda hoje. É de graça e é sua, sem compromisso.\nAntes de eu começar, me conta: hoje quando o cliente pergunta "tem esse no meu tamanho? quanto tá?", você responde um por um no direct?'
  where categoria = 'abertura_morna'
    and titulo like 'Chegou pelo anúncio%';
 
 update public.crm_templates
    set titulo = 'Prévia pronta, mensagem 1: só o presente',
-       conteudo = E'{nome}, ficou pronta a sua vitrine:\n[link, numa bolha só dele]\n[o que tem dentro, em uma linha: "as 32 peças do seu Instagram, seu selo e o pedido caindo no WhatsApp"]. Abre no celular. É sua, sem custo.\nDas 6 peças do topo, qual você trocaria?',
+       conteudo = E'{nome}, ficou pronta a sua vitrine: {link}\nSão {pecas} peças do seu Instagram, com {destaques} no topo, e o pedido já cai pronto no WhatsApp. Abre no celular. É sua, sem custo.\nDas 6 peças do topo, qual você trocaria?',
        ordem = 9
  where categoria = 'previa'
    and titulo in ('Mandando a prévia', 'Prévia pronta, mensagem 1: só o presente');
 
 update public.crm_templates
    set titulo = 'Prévia sem resposta: volta com novidade',
-       conteudo = '{nome}, {saudacao}! coloquei mais [N] peças que vi no seu feed e troquei a do topo pela [peça]. dá uma olhada de novo: [link]. ficou alguma de fora?',
+       conteudo = E'{nome}, {saudacao}! atualizei a sua vitrine com o que apareceu de novo no seu feed e deixei {topo} no topo: {link}\nficou alguma peça de fora?',
        ordem = 11
  where categoria = 'previa'
    and titulo in ('Prévia mandada, sem resposta', 'Prévia sem resposta: volta com novidade');
