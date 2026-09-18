@@ -47,6 +47,7 @@ import {
   diasDesde,
   dinheiro,
   linkWhatsapp,
+  procurouOEstudio,
   sinalDaFicha,
   somarDias,
   temperatura,
@@ -170,6 +171,23 @@ export function CartaDaVez({
             da carta já tem dono); morno e frio ficam na voz fraca. */}
         <p className={s.vezLinhaSinal}>
           <span className={`${s.vezSinal} ${TOM[sinal.tom]}`}>{sinal.texto}</span>
+          {/* ---------- DE ONDE VEIO (18/09) ----------
+              Quem preencheu o formulário é outra conversa de quem foi
+              garimpado: a pessoa já sabe quem eu sou e está esperando.
+              A carta diz isso na primeira linha, com o anúncio em mono
+              (o nome literal do Gerenciador), na voz rosa do "tem gente
+              esperando". Sem anúncio no clique, diz só que veio do site. */}
+          {procurouOEstudio(lead) ? (
+            <span className={s.vezVeioDe}>
+              {lead.anuncio ? (
+                <>
+                  Veio do anúncio <code>{lead.anuncio}</code>
+                </>
+              ) : (
+                "Veio pelo site"
+              )}
+            </span>
+          ) : null}
           {lead.dossie?.status === "ok" && lead.dossie.veredito === "quente" ? (
             /* A CHAMA do quente: desenhada, nunca emoji (pedido do
                Rafael). Estêncil da casa: o corpo em esmeralda e o miolo

@@ -3169,3 +3169,15 @@
   .anuncioLinha > .barraTrilho { display: none }
   .anuncioCab > span:nth-child(2) { display: none }
 }
+
+/* ---------- Hoje: quem pediu (18/09) ----------
+   O monte "Anúncio e site" fala em rosa em repouso, o mesmo rosa do
+   contador do Hoje no trilho: tem gente esperando. Ligado, vira tinta
+   como os outros (a regra do filete não muda). Na carta, "Veio do
+   anúncio" divide a linha do sinal com o mesmo peso, e o nome do anúncio
+   sai em mono minúscula, porque é o texto literal do Gerenciador. */
+.app button.vezMontePediram { color: var(--rosa) }
+.app button.vezMontePediram:hover { color: var(--rosa) }
+.app button.vezMontePediram .vezMonteNum { font-size: 15px }
+.vezVeioDe { font: 700 11.5px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--rosa-live) }
+.vezVeioDe code { font: 600 11.5px var(--mono); letter-spacing: .02em; text-transform: none; color: var(--paper) }

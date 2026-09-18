@@ -47,7 +47,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { diasEntre, dinheiroCurto, JANELA_HORIZONTE, urgencia } from "@/lib/crm/regras";
+import { diasEntre, dinheiroCurto, JANELA_HORIZONTE, procurouOEstudio, urgencia } from "@/lib/crm/regras";
 import { NOME_ESTAGIO, type LeadPainel, type Template } from "@/lib/crm/tipos";
 import { CartaDaVez } from "./CartaDaVez";
 import { ModalMensagem } from "./ModalMensagem";
@@ -97,6 +97,10 @@ const aoMeioDia = (iso: string) => {
    uma linha de mono em caixa alta. */
 const dataCurta = (iso: string) => DATA_CURTA.format(aoMeioDia(iso)).replace(".", "");
 
+/* A chave do monte de quem pediu. Nicho é texto livre do cadastro, então
+   a sentinela leva um caractere que nenhum nicho digitado teria. */
+const PEDIRAM = "\u0000pediram";
+
 const plural = (n: number, um: string, muitos: string) => `${n} ${n === 1 ? um : muitos}`;
 
 /* A urgência do lead da vez, pintada na banda do topo da folha. É a mesma
@@ -134,9 +138,19 @@ export function Hoje({ painel, templates }: { painel: Painel; templates: Templat
      decorações na outra. O nicho vem livre do cadastro, então o segmento
      É o texto do campo; quem não tem entra em "sem segmento", porque
      sumir com lead por falta de rótulo seria um buraco na regra da fila. */
+  /* ---------- O MONTE DE QUEM PEDIU (18/09) ----------
+     Antes dos nichos, um monte só: quem chegou por anúncio ou pelo
+     formulário do site. Ele não é um nicho (lead de anúncio quase nunca
+     tem nicho, e caía em "sem segmento" junto com o garimpo sem rótulo),
+     é a outra metade da fila. Com 366 nomes e 61 de anúncio, era o monte
+     que faltava: "cadê os de anúncio" não tinha resposta na tela. A
+     chave é um sentinela que nenhum nicho pode ser. */
+  const pediram = useMemo(() => filaDia.filter(procurouOEstudio).length, [filaDia]);
+
   const segmentos = useMemo(() => {
     const conta = new Map<string, number>();
     for (const l of filaDia) {
+      if (procurouOEstudio(l)) continue;
       const chave = l.nicho?.trim() || "";
       conta.set(chave, (conta.get(chave) ?? 0) + 1);
     }
@@ -145,19 +159,26 @@ export function Hoje({ painel, templates }: { painel: Painel; templates: Templat
       .sort((a, b) => b.n - a.n || a.chave.localeCompare(b.chave, "pt-BR"));
   }, [filaDia]);
 
-  const fila = useMemo(
-    () => (segmento === null ? filaDia : filaDia.filter((l) => (l.nicho?.trim() || "") === segmento)),
-    [filaDia, segmento],
+  const pertence = useCallback(
+    (l: LeadPainel, chave: string | null) =>
+      chave === null
+        ? true
+        : chave === PEDIRAM
+          ? procurouOEstudio(l)
+          : !procurouOEstudio(l) && (l.nicho?.trim() || "") === chave,
+    [],
   );
+
+  const fila = useMemo(() => filaDia.filter((l) => pertence(l, segmento)), [filaDia, segmento, pertence]);
 
   /* Riscou o último do segmento, o baralho volta sozinho para o monte
      inteiro: um filtro apontando para uma fila vazia seria a tela dizendo
      "acabou" com trabalho ainda na mesa. */
   useEffect(() => {
-    if (segmento !== null && !filaDia.some((l) => (l.nicho?.trim() || "") === segmento)) {
+    if (segmento !== null && !filaDia.some((l) => pertence(l, segmento))) {
       setSegmento(null);
     }
-  }, [filaDia, segmento]);
+  }, [filaDia, segmento, pertence]);
 
   const escolherSegmento = (chave: string | null) => {
     setSegmento(chave);
@@ -259,7 +280,7 @@ export function Hoje({ painel, templates }: { painel: Painel; templates: Templat
           são cinco decisões), de dez para cima vira número, porque aí é
           volume. O monte some quando zera: é a fileira dizendo "este
           acabou". */}
-      {segmentos.length > 1 ? (
+      {segmentos.length + (pediram ? 1 : 0) > 1 ? (
         <div className={s.vezSegmentos} role="group" aria-label="Varrer a fila por segmento">
           <button
             type="button"
@@ -270,6 +291,21 @@ export function Hoje({ painel, templates }: { painel: Painel; templates: Templat
           >
             Todos<b className={s.vezMonteNum}>{filaDia.length}</b>
           </button>
+          {/* O monte de quem pediu vem primeiro e fala em ROSA: é a mesma
+              cor do contador do Hoje no trilho, e diz a mesma coisa, tem
+              gente esperando. Os nichos são trabalho que eu escolho; este
+              é trabalho que me escolheu. */}
+          {pediram ? (
+            <button
+              type="button"
+              className={`${s.vezMonte} ${s.vezMontePediram} ${segmento === PEDIRAM ? s.vezMonteAtivo : ""}`}
+              onClick={() => escolherSegmento(segmento === PEDIRAM ? null : PEDIRAM)}
+              aria-pressed={segmento === PEDIRAM}
+              aria-label={`Anúncio e site, ${pediram} na fila`}
+            >
+              Anúncio e site<b className={s.vezMonteNum}>{pediram}</b>
+            </button>
+          ) : null}
           {segmentos.map(({ chave, n }) => (
             <button
               key={chave || "__sem"}
@@ -372,7 +408,7 @@ export function Hoje({ painel, templates }: { painel: Painel; templates: Templat
           <span className={s.vezMeio}>
             <span className={s.vezPosicao}>
               <b>{indice + 1}</b> de {fila.length}{" "}
-              {segmento === null ? "na fila" : `em ${segmento || "sem segmento"}`}
+              {segmento === null ? "na fila" : segmento === PEDIRAM ? "de anúncio e site" : `em ${segmento || "sem segmento"}`}
             </span>
             {riscados.length ? <RiscadosDoPe riscados={riscados} /> : null}
           </span>

@@ -174,6 +174,16 @@ export function dinheiroCurto(v: number | null | undefined): string {
    ============================================================ */
 export type Urgencia = "atrasado" | "hoje" | "agendado" | "sem_passo";
 
+/* ---------- QUEM PROCUROU O ESTÚDIO (18/09/2026) ----------
+   Tráfego pago e formulário do site são a mesma coisa para a fila: a
+   pessoa preencheu, está esperando, e cada hora que passa esfria. O
+   garimpo é o contrário: ninguém está esperando. É a linha que separa a
+   fila em duas metades (quem pediu primeiro, quem foi garimpado depois)
+   e que dá ao Hoje o monte "Anúncio e site". Indicação fica de fora: é
+   morna, mas ninguém preencheu nada. */
+export const procurouOEstudio = (lead: Pick<Lead, "origem">): boolean =>
+  lead.origem === "trafego_pago" || lead.origem === "inbound";
+
 export function urgencia(lead: Pick<Lead, "estagio" | "proxima_acao_em">, hoje = hojeSP()): Urgencia {
   if (!ehAtivo(lead.estagio)) return "agendado";
   if (!lead.proxima_acao_em) return "sem_passo";

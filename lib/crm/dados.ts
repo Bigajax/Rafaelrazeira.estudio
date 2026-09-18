@@ -18,6 +18,7 @@ import {
   inicioDaSemana,
   JANELA_HORIZONTE,
   ordenarColuna,
+  procurouOEstudio,
   somarDias,
 } from "./regras";
 import {
@@ -200,11 +201,28 @@ export async function painelHoje() {
        tempo é o que corre mais risco de virar "sumiu, sem resposta". */
     atrasados: quentePrimeiro(atrasados),
     paraHoje: quentePrimeiro(paraHoje),
-    /* Sem próximo passo não tem data para ordenar, então ordena pelo que
-       está parado há mais tempo, que é a mesma pergunta por outro caminho. */
-    semPasso: quentePrimeiro(
-      [...semPasso].sort((a, b) => a.entrou_no_estagio_em.localeCompare(b.entrou_no_estagio_em)),
-    ),
+    /* ---------- QUEM PEDIU VEM ANTES DE QUEM FOI GARIMPADO (18/09) ----------
+       Até aqui o grupo inteiro ordenava do mais parado para o mais novo, e
+       o veredito da pesquisa furava a fila. O resultado, com 366 na fila:
+       a primeira carta era uma confeitaria garimpada em agosto, e as doze
+       pessoas que preencheram o formulário hoje estavam na posição 300.
+       Duas metades, cada uma com a ordem que lhe cabe:
+         1. quem procurou o estúdio (anúncio, formulário), da MAIS NOVA
+            para a mais antiga: a que preencheu há uma hora é a que ainda
+            está com o telefone na mão;
+         2. o garimpo, como antes: quente primeiro, depois o mais parado.
+       A pesquisa com IA só existe no garimpo, então o "quente" não tem
+       como furar a fila de quem pediu. */
+    semPasso: [
+      ...semPasso
+        .filter(procurouOEstudio)
+        .sort((a, b) => b.created_at.localeCompare(a.created_at)),
+      ...quentePrimeiro(
+        semPasso
+          .filter((l) => !procurouOEstudio(l))
+          .sort((a, b) => a.entrou_no_estagio_em.localeCompare(b.entrou_no_estagio_em)),
+      ),
+    ],
     /* Na ordem em que foram riscados: a pilha do dia se lê de cima para
        baixo, como a folha foi sendo preenchida. */
     riscados,
