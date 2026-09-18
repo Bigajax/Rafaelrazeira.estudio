@@ -109,9 +109,9 @@ export const PROPOSTAS: Record<string, Proposta> = {
     titulo: "Rafael Razeira Estúdio — Vitrine Digital Picorelli Premium",
     whatsapp: "5544991246187",
     itens: {
-      entrada_pix: { label: "Entrada de 50% para início do projeto", valor: 499.5, metodo: "pix" },
-      saldo_pix: { label: "Saldo de 50% na entrega, no Pix", valor: 499.5, metodo: "pix" },
-      saldo_card: { label: "Saldo de 50% na entrega, no cartão em até 3x", valor: 499.5, metodo: "card", maxParcelas: 3 },
+      entrada_pix: { label: "Entrada para início do projeto", valor: 199, metodo: "pix" },
+      saldo_pix: { label: "Saldo na entrega, no Pix", valor: 800, metodo: "pix" },
+      saldo_card: { label: "Saldo na entrega, no cartão em até 4x", valor: 800, metodo: "card", maxParcelas: 4 },
     },
   },
   sacrazen: {
@@ -119,36 +119,36 @@ export const PROPOSTAS: Record<string, Proposta> = {
     whatsapp: "5544991246187",
     itens: {
       avista_pix: { label: "À vista no Pix, com 10% de desconto (até 18/09)", valor: 899.1, metodo: "pix" },
-      entrada_pix: { label: "Entrada de 50% para início do projeto", valor: 499.5, metodo: "pix" },
-      saldo_pix: { label: "Saldo de 50% na entrega, no Pix", valor: 499.5, metodo: "pix" },
-      saldo_card: { label: "Saldo de 50% na entrega, no cartão em até 3x", valor: 499.5, metodo: "card", maxParcelas: 3 },
+      entrada_pix: { label: "Entrada para início do projeto", valor: 199, metodo: "pix" },
+      saldo_pix: { label: "Saldo na entrega, no Pix", valor: 800, metodo: "pix" },
+      saldo_card: { label: "Saldo na entrega, no cartão em até 4x", valor: 800, metodo: "card", maxParcelas: 4 },
     },
   },
   fantoche: {
     titulo: "Rafael Razeira Estúdio — Vitrine Digital Fantoche",
     whatsapp: "5544991246187",
     itens: {
-      entrada_pix: { label: "Entrada de 50% para início do projeto", valor: 499.5, metodo: "pix" },
-      saldo_pix: { label: "Saldo de 50% na entrega, no Pix", valor: 499.5, metodo: "pix" },
-      saldo_card: { label: "Saldo de 50% na entrega, no cartão em até 3x", valor: 499.5, metodo: "card", maxParcelas: 3 },
+      entrada_pix: { label: "Entrada para início do projeto", valor: 199, metodo: "pix" },
+      saldo_pix: { label: "Saldo na entrega, no Pix", valor: 800, metodo: "pix" },
+      saldo_card: { label: "Saldo na entrega, no cartão em até 4x", valor: 800, metodo: "card", maxParcelas: 4 },
     },
   },
   "minas-decor": {
     titulo: "Rafael Razeira Estúdio — Vitrine Digital Minas Brasil Decor",
     whatsapp: "5544991246187",
     itens: {
-      entrada_pix: { label: "Entrada de 50% para início do projeto", valor: 499.5, metodo: "pix" },
-      saldo_pix: { label: "Saldo de 50% na entrega, no Pix", valor: 499.5, metodo: "pix" },
-      saldo_card: { label: "Saldo de 50% na entrega, no cartão em até 3x", valor: 499.5, metodo: "card", maxParcelas: 3 },
+      entrada_pix: { label: "Entrada para início do projeto", valor: 199, metodo: "pix" },
+      saldo_pix: { label: "Saldo na entrega, no Pix", valor: 800, metodo: "pix" },
+      saldo_card: { label: "Saldo na entrega, no cartão em até 4x", valor: 800, metodo: "card", maxParcelas: 4 },
     },
   },
   "ortobom-aracaju": {
     titulo: "Rafael Razeira Estúdio — Vitrine Digital Ortobom Aracaju",
     whatsapp: "5544991246187",
     itens: {
-      entrada_pix: { label: "Entrada de 50% para início do projeto", valor: 499.5, metodo: "pix" },
-      saldo_pix: { label: "Saldo de 50% na entrega, no Pix", valor: 499.5, metodo: "pix" },
-      saldo_card: { label: "Saldo de 50% na entrega, no cartão em até 3x", valor: 499.5, metodo: "card", maxParcelas: 3 },
+      entrada_pix: { label: "Entrada para início do projeto", valor: 199, metodo: "pix" },
+      saldo_pix: { label: "Saldo na entrega, no Pix", valor: 800, metodo: "pix" },
+      saldo_card: { label: "Saldo na entrega, no cartão em até 4x", valor: 800, metodo: "card", maxParcelas: 4 },
     },
   },
   "ws-style-mens": {
