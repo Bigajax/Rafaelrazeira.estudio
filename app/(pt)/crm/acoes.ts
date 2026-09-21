@@ -204,7 +204,8 @@ export async function registrarToque(
        sem perguntar nada, e ali a pessoa demonstrou interesse pelo fato
        de ter escrito. */
     resposta?: Resposta;
-    /* Só quando `resposta` é "nao": o que a placa de perdido exige. */
+    /* Quando o destino é perdido (pelo teor "nao" ou pelo `estagio`): o
+       que a placa exige. */
     motivo_perda?: MotivoPerda | null;
     /* ---------- a etapa escolhida no registro (21/09/2026) ----------
        O trilho só anda sozinho nos degraus mecânicos (lista → contatado

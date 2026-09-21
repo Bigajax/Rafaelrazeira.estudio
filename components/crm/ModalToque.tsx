@@ -112,14 +112,20 @@ export function ModalToque({
   const teor = direcao === "entrada" ? resposta : undefined;
   const destino = destinoDoToque(direcao, lead.estagio, teor);
 
-  const ehGeladeira = direcao === "entrada" && resposta === "depois";
-  const ehPerda = direcao === "entrada" && resposta === "nao";
+  /* O teor da resposta decide; sem teor (o caminho "eu falei", ou o
+     "quer saber mais"), o "Mover para" pode levar às placas do fim: é o
+     descarte de quem já tinha dito não, do número errado, da conta que
+     não é loja, sem precisar inventar uma "resposta" que não houve. */
+  const teorDecide = direcao === "entrada" && resposta !== "interesse";
+  const ehGeladeira = (direcao === "entrada" && resposta === "depois") || (!teorDecide && etapa === "geladeira");
+  const ehPerda = (direcao === "entrada" && resposta === "nao") || (!teorDecide && etapa === "perdido");
   /* Perdido não tem agenda e a geladeira tem a sua própria, então a
      pergunta da regra 6 só sobra para o caminho vivo. */
   /* Mudando de etapa à mão, a regra 1 pede passo com data de novo: o
      passo antigo era de outra etapa. */
+  const mudaEtapaNoFunil = !teorDecide && etapa !== "" && etapa !== "geladeira" && etapa !== "perdido";
   const precisaDePasso =
-    !ehGeladeira && !ehPerda && (etapa !== "" || !lead.proxima_acao_em || lead.proxima_acao_em < hoje);
+    !ehGeladeira && !ehPerda && (mudaEtapaNoFunil || !lead.proxima_acao_em || lead.proxima_acao_em < hoje);
 
   useEffect(() => {
     const aoTeclar = (e: KeyboardEvent) => e.key === "Escape" && aoFechar();
@@ -137,14 +143,16 @@ export function ModalToque({
         resumo,
         resposta: teor,
         motivo_perda: ehPerda ? motivo : undefined,
+        /* o teor "depois"/"não" já leva à placa pelo trilho; a etapa só
+           viaja quando foi o select que escolheu */
+        estagio: teorDecide || etapa === "" ? undefined : etapa,
+        ticket_estimado: pedeTicket ? Number(ticket.replace(",", ".")) || null : undefined,
         /* A geladeira MANDA a data em vez de deixar o padrão entrar em
            campo vazio: o lead que está na fila do dia já tem uma data
            marcada (é por isso que ele apareceu), e sem mandar a nova ele
            dormiria até hoje de novo. */
         proximo_passo: ehGeladeira ? passoGelo : precisaDePasso ? passo : undefined,
         proxima_acao_em: ehGeladeira ? gelo : precisaDePasso ? data : undefined,
-        estagio: !ehGeladeira && !ehPerda && etapa !== "" ? etapa : undefined,
-        ticket_estimado: pedeTicket ? Number(ticket.replace(",", ".")) || null : undefined,
       });
       if (r.ok) aoFechar();
       else if ("erro" in r) setErro(r.erro);
@@ -313,7 +321,7 @@ export function ModalToque({
               Um select, e não botões: são sete etapas e a escolha é rara
               (o vazio serve na maioria dos toques). O rótulo do vazio diz
               para onde o trilho levaria, para a escolha ser consciente. */}
-          {!ehGeladeira && !ehPerda ? (
+          {!teorDecide ? (
             <label className={s.campo}>
               <span className={s.campoRot}>Mover para</span>
               <select value={etapa} onChange={(e) => setEtapa(e.target.value as Estagio | "")}>
@@ -322,11 +330,17 @@ export function ModalToque({
                     ? `Onde o trilho levar: ${NOME_ESTAGIO[destino]}`
                     : `Deixar em ${NOME_ESTAGIO[lead.estagio]}`}
                 </option>
-                {ESTAGIOS_NO_PIPELINE.filter((e) => e !== lead.estagio).map((e) => (
-                  <option key={e} value={e}>
-                    {NOME_ESTAGIO[e]}
-                  </option>
-                ))}
+                <optgroup label="No funil">
+                  {ESTAGIOS_NO_PIPELINE.filter((e) => e !== lead.estagio).map((e) => (
+                    <option key={e} value={e}>
+                      {NOME_ESTAGIO[e]}
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label="Sair do funil">
+                  {lead.estagio !== "geladeira" ? <option value="geladeira">Geladeira: volta na data que eu marcar</option> : null}
+                  <option value="perdido">Descartar: vai para Perdido, com o motivo</option>
+                </optgroup>
               </select>
             </label>
           ) : null}
