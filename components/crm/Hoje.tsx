@@ -101,6 +101,28 @@ const dataCurta = (iso: string) => DATA_CURTA.format(aoMeioDia(iso)).replace("."
    a sentinela leva um caractere que nenhum nicho digitado teria. */
 const PEDIRAM = "\u0000pediram";
 
+/* O baralho do dia no sessionStorage, uma chave por lista e por data:
+   amanhã é outra fila. Tudo em try/catch porque navegador embutido e
+   janela anônima podem negar o storage, e a fila tem que abrir do mesmo
+   jeito, só sem memória. */
+const chaveBaralho = (hoje: string, lista: "puladas" | "frente") => `crm:hoje:${hoje}:${lista}`;
+function lerBaralho(hoje: string, lista: "puladas" | "frente"): string[] {
+  try {
+    const bruto = window.sessionStorage.getItem(chaveBaralho(hoje, lista));
+    const v: unknown = bruto ? JSON.parse(bruto) : [];
+    return Array.isArray(v) ? v.filter((x): x is string => typeof x === "string") : [];
+  } catch {
+    return [];
+  }
+}
+function guardarBaralho(hoje: string, lista: "puladas" | "frente", ids: string[]) {
+  try {
+    window.sessionStorage.setItem(chaveBaralho(hoje, lista), JSON.stringify(ids));
+  } catch {
+    /* sem storage, sem memória: a fila funciona igual */
+  }
+}
+
 const plural = (n: number, um: string, muitos: string) => `${n} ${n === 1 ? um : muitos}`;
 
 /* A urgência do lead da vez, pintada na banda do topo da folha. É a mesma
@@ -118,8 +140,41 @@ export function Hoje({ painel, templates }: { painel: Painel; templates: Templat
   const [mensagem, setMensagem] = useState<LeadPainel | null>(null);
   const [toque, setToque] = useState<LeadPainel | null>(null);
   const [novo, setNovo] = useState(false);
-  const [posicao, setPosicao] = useState(0);
   const [segmento, setSegmento] = useState<string | null>(null);
+
+  /* ---------- O BARALHO (21/09) ----------
+     A fila era um ponteiro numérico: "Próxima" andava o índice e o card
+     pulado ficava parado no lugar dele. Bastava a fila mudar embaixo (um
+     resolvido sai, o servidor reordena um grupo) para o ponteiro cair em
+     outro card, e no fim do dia os pulados voltavam de trás para a frente,
+     não no fim da fila ("alguns que passo adiante tinha que ir para o
+     final da fila"). Agora pular é gesto de baralho: o card vai para o
+     FUNDO, na ordem em que foi pulado, e a carta da vez é sempre a de
+     cima. As duas listas guardam ids, não posições, então sobrevivem a
+     qualquer refresh do servidor: quem saiu da fila some delas sozinho.
+       puladas .. o fundo do baralho, na ordem em que foram pulados
+       frente ... quem foi trazido para cima na mão (a seta para trás e o
+                  clique na régua), o mais recente primeiro
+     Elas ficam no sessionStorage do dia: trocar de aba e voltar não
+     embaralha o que já foi varrido. */
+  const [puladas, setPuladas] = useState<string[]>([]);
+  const [frente, setFrente] = useState<string[]>([]);
+  /* Lido DEPOIS de montar, e não no estado inicial: o servidor renderiza
+     esta tela sem storage, e um primeiro card diferente entre servidor e
+     navegador seria erro de hidratação. Enquanto não leu, não grava, senão
+     a lista vazia do primeiro render apagaria a memória do dia. */
+  const baralhoLido = useRef(false);
+  useEffect(() => {
+    setPuladas(lerBaralho(painel.hoje, "puladas"));
+    setFrente(lerBaralho(painel.hoje, "frente"));
+    baralhoLido.current = true;
+  }, [painel.hoje]);
+  useEffect(() => {
+    if (baralhoLido.current) guardarBaralho(painel.hoje, "puladas", puladas);
+  }, [painel.hoje, puladas]);
+  useEffect(() => {
+    if (baralhoLido.current) guardarBaralho(painel.hoje, "frente", frente);
+  }, [painel.hoje, frente]);
 
   const { atrasados, paraHoje, semPasso, riscados } = painel;
 
@@ -180,10 +235,24 @@ export function Hoje({ painel, templates }: { painel: Painel; templates: Templat
     }
   }, [filaDia, segmento, pertence]);
 
-  const escolherSegmento = (chave: string | null) => {
-    setSegmento(chave);
-    setPosicao(0);
-  };
+  /* Trocar de monte não mexe no baralho: o que foi pulado num segmento
+     continua no fundo quando o monte inteiro volta. */
+  const escolherSegmento = (chave: string | null) => setSegmento(chave);
+
+  /* A ordem em que as cartas saem: a frente, o miolo na ordem da fila,
+     e o fundo. Só ids que ainda estão na fila contam. */
+  const baralho = useMemo(() => {
+    const naFila = new Map(fila.map((l) => [l.id, l]));
+    const deFrente = frente.map((id) => naFila.get(id)).filter((l): l is LeadPainel => Boolean(l));
+    const doFundo = puladas.map((id) => naFila.get(id)).filter((l): l is LeadPainel => Boolean(l));
+    const fixos = new Set([...frente, ...puladas]);
+    return [...deFrente, ...fila.filter((l) => !fixos.has(l.id)), ...doFundo];
+  }, [fila, frente, puladas]);
+
+  const trazerParaCima = useCallback((id: string) => {
+    setPuladas((ps) => ps.filter((x) => x !== id));
+    setFrente((fs) => [id, ...fs.filter((x) => x !== id)]);
+  }, []);
 
   /* ---------- pular direto para um nome ----------
      A régua do dia virou mapa: clicar numa marca pendente traz aquela
@@ -191,26 +260,33 @@ export function Hoje({ painel, templates }: { painel: Painel; templates: Templat
      filtro cai primeiro: um clique explícito num nome vale mais que o
      recorte que escondia ele. */
   const irPara = (id: string) => {
-    const naFiltrada = fila.findIndex((l) => l.id === id);
-    if (naFiltrada >= 0) return setPosicao(naFiltrada);
-    const noDia = filaDia.findIndex((l) => l.id === id);
-    if (noDia >= 0) {
-      setSegmento(null);
-      setPosicao(noDia);
-    }
+    if (!fila.some((l) => l.id === id) && filaDia.some((l) => l.id === id)) setSegmento(null);
+    trazerParaCima(id);
   };
 
-  /* A posição é PRESA aqui, e não corrigida por efeito. Quando o lead da vez
-     é resolvido, ele sai da fila do servidor e a fila encolhe embaixo do
-     índice: a próxima carta assume a mesma posição sozinha, que é o gesto
-     de baralho que a tela inteira imita. O `min` só existe para o caso de a
-     última ser resolvida, quando não há próxima e o índice tem que recuar. */
-  const indice = Math.min(posicao, Math.max(0, fila.length - 1));
-  const atual = fila[indice] ?? null;
+  /* A carta da vez é a de cima. Quando ela é resolvida, sai da fila do
+     servidor e a de baixo assume sozinha, que é o gesto de baralho que a
+     tela inteira imita. */
+  const atual = baralho[0] ?? null;
 
+  /* Para a direita, a carta de cima vai para o fundo (e sai da frente, se
+     tinha sido trazida). Com o baralho inteiro já pulado uma vez, o mesmo
+     gesto continua rodando: a carta volta para o fim da ordem dos
+     pulados. Para a esquerda, a última pulada volta para cima: é o
+     desfazer do pulo, e a seta diz o nome dela. */
   const andar = useCallback(
-    (passo: number) => setPosicao((p) => Math.min(Math.max(0, p + passo), Math.max(0, fila.length - 1))),
-    [fila.length],
+    (passo: number) => {
+      if (passo > 0) {
+        const id = baralho[0]?.id;
+        if (!id || baralho.length < 2) return;
+        setFrente((fs) => fs.filter((x) => x !== id));
+        setPuladas((ps) => [...ps.filter((x) => x !== id), id]);
+      } else {
+        const ultima = [...puladas].reverse().find((id) => fila.some((l) => l.id === id));
+        if (ultima) trazerParaCima(ultima);
+      }
+    },
+    [baralho, puladas, fila, trazerParaCima],
   );
 
   /* ---------- as setas ----------
@@ -237,8 +313,16 @@ export function Hoje({ painel, templates }: { painel: Painel; templates: Templat
   const [ano, mes, dia] = painel.hoje.split("-").map(Number);
   const dataPorExtenso = DATA_LONGA.format(new Date(Date.UTC(ano, mes - 1, dia, 12)));
 
-  const anterior = fila[indice - 1] ?? null;
-  const proximo = fila[indice + 1] ?? null;
+  const anterior = (() => {
+    const id = [...puladas].reverse().find((x) => fila.some((l) => l.id === x));
+    return id ? (fila.find((l) => l.id === id) ?? null) : null;
+  })();
+  const proximo = baralho[1] ?? null;
+  /* O contador conta a varredura: quantas já foram puladas nesta volta,
+     mais a da vez. Quando o baralho inteiro já rodou e a de cima é uma
+     pulada, a conta recomeça do lugar dela. */
+  const puladasNaFila = puladas.filter((id) => fila.some((l) => l.id === id));
+  const indice = atual && puladasNaFila.includes(atual.id) ? puladasNaFila.indexOf(atual.id) : puladasNaFila.length;
 
   return (
     <div className={s.wrapVez}>
@@ -418,7 +502,7 @@ export function Hoje({ painel, templates }: { painel: Painel; templates: Templat
             className={`${s.vezSeta} ${s.vezSetaProxima}`}
             onClick={() => andar(1)}
             disabled={!proximo}
-            title="Seta para a direita"
+            title="Seta para a direita: esta carta vai para o fim da fila"
           >
             <i className={s.vezSetaGlifo} aria-hidden="true">
               →
