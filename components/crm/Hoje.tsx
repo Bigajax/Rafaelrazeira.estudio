@@ -437,16 +437,12 @@ export function Hoje({ painel, templates }: { painel: Painel; templates: Templat
               aria-pressed={segmento === chave}
               aria-label={`${chave || "sem segmento"}, ${n} na fila`}
             >
+              {/* Sempre número (21/09): as marquinhas contáveis até nove
+                  eram uma segunda régua dentro da fileira, e com 25 montes
+                  em três linhas a fileira virou a coisa mais cheia da
+                  tela. Um monte é um nome e um número. */}
               {chave || "sem segmento"}
-              {n <= 9 ? (
-                <span className={s.vezMonteMarcas} aria-hidden="true">
-                  {Array.from({ length: n }, (_, i) => (
-                    <i key={i} />
-                  ))}
-                </span>
-              ) : (
-                <b className={s.vezMonteNum}>{n}</b>
-              )}
+              <b className={s.vezMonteNum}>{n}</b>
             </button>
           ))}
         </div>
