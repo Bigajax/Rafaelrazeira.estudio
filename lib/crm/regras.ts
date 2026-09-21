@@ -251,7 +251,7 @@ export const doisRetornos = (lead: Pick<LeadPainel, "saidas_seguidas">) => lead.
    SugerirResposta, que lê a linha do tempo).
    ============================================================ */
 export type Degrau = {
-  categoria: "abertura_fria" | "follow_up" | "encerramento";
+  categoria: "abertura_fria" | "abertura_morna" | "follow_up" | "encerramento";
   /* Qual template DAQUELA categoria, na ordem em que eles chegam da
      consulta, que é `order("ordem")` em lib/crm/dados.ts: o primeiro
      retorno é o primeiro follow-up, o segundo é o segundo. Por isso a
@@ -261,16 +261,39 @@ export type Degrau = {
      depois de dois retornos no vácuo, o próximo passo honesto é encerrar,
      e é isso que a escada devolve. */
   indice: number;
+  /* Quando a categoria tem mais de um texto e a ordem não basta: o
+     começo do título que a escada quer (o "Chegou pelo anúncio" entre as
+     aberturas mornas). Quem procura cai no índice se não achar. */
+  titulo?: string;
   porque: string;
 };
 
+/* O começo do título do único template que pode ser o primeiro disparo
+   de quem veio do anúncio. Vive aqui e não no banco porque é a escada
+   que o escolhe; mudar o título no CRM sem mudar aqui devolve a abertura
+   fria para quem preencheu o formulário. */
+export const TITULO_CHEGOU_PELO_ANUNCIO = "Chegou pelo anúncio";
+
 export function degrauDoSilencio(
-  lead: Pick<LeadPainel, "toques_entrada" | "saidas_seguidas">,
+  lead: Pick<LeadPainel, "toques_entrada" | "saidas_seguidas" | "origem">,
 ): Degrau | null {
   if (lead.toques_entrada > 0) return null;
 
   const n = lead.saidas_seguidas;
   if (n === 0) {
+    /* Quem preencheu o formulário do anúncio não é frio: pediu a vitrine
+       e está esperando alguém aparecer. A abertura fria ("posso te fazer
+       uma pergunta?") lida por essa pessoa dias depois é um estranho
+       puxando papo; o primeiro disparo dela se apresenta e devolve o que
+       ela pediu (21/09/2026). */
+    if (lead.origem === "trafego_pago") {
+      return {
+        categoria: "abertura_morna",
+        indice: 0,
+        titulo: TITULO_CHEGOU_PELO_ANUNCIO,
+        porque: "Veio do anúncio e ninguém falou com ela ainda: o primeiro toque diz quem sou e o que ela pediu",
+      };
+    }
     return { categoria: "abertura_fria", indice: 0, porque: "Ninguém falou com este lead ainda" };
   }
   if (n === 1) {

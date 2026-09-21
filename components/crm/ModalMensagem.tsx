@@ -49,7 +49,15 @@ import {
   renderTemplate,
   templateDaEtapa,
 } from "@/lib/crm/regras";
-import { NOME_CANAL, NOME_CATEGORIA, type Canal, type LeadPainel, type Template } from "@/lib/crm/tipos";
+import {
+  CATEGORIAS_TEMPLATE,
+  NOME_CANAL,
+  NOME_CATEGORIA,
+  type Canal,
+  type CategoriaTemplate,
+  type LeadPainel,
+  type Template,
+} from "@/lib/crm/tipos";
 import s from "@/app/(pt)/crm/crm.module.css";
 
 /* As duas mensagens da pesquisa entram no seletor como se fossem
@@ -89,9 +97,15 @@ export function ModalMensagem({
   const naCategoria = daEtapa ? templates.filter((t) => t.categoria === daEtapa.categoria) : [];
   const sugeridoEtapa = naCategoria[Math.min(daEtapa?.indice ?? 0, naCategoria.length - 1)] ?? null;
 
+  /* O degrau pode pedir um TÍTULO dentro da categoria (o "Chegou pelo
+     anúncio" entre as aberturas mornas); sem ele, ou sem achar, vale o
+     índice na ordem de sempre. */
+  const naEscada = degrau ? templates.filter((t) => t.categoria === degrau.categoria) : [];
   const sugeridoEscada =
     degrau
-      ? (templates.filter((t) => t.categoria === degrau.categoria)[degrau.indice] ?? null)
+      ? ((degrau.titulo ? naEscada.find((t) => t.titulo.startsWith(degrau.titulo!)) : null) ??
+        naEscada[degrau.indice] ??
+        null)
       : null;
   const sugerido = sugeridoEtapa ?? sugeridoEscada;
   const motivoDaSugestao = sugeridoEtapa ? daEtapa?.porque : degrau?.porque;
@@ -114,6 +128,20 @@ export function ModalMensagem({
 
   const partida = dePartida();
   const [escolhido, setEscolhido] = useState(partida);
+
+  /* O SELETOR EM GRUPOS. Uma lista corrida de "Título · Categoria" com
+     dezesseis linhas obrigava a ler tudo para achar o toque da vez. Agora
+     a lista abre com o grupo "A vez deste card" (o sugerido, sozinho, com
+     o porquê no rótulo), depois as duas mensagens da pesquisa, e o resto
+     agrupado por categoria na ordem do funil, que é a ordem de
+     CATEGORIAS_TEMPLATE. O sugerido não sai do grupo dele: aparece duas
+     vezes, uma no topo e outra no lugar, e o <option> repete o value de
+     propósito, porque é o mesmo template. */
+  const porCategoria = CATEGORIAS_TEMPLATE.map((c) => ({
+    categoria: c as CategoriaTemplate,
+    itens: templates.filter((t) => t.categoria === c),
+  })).filter((g) => g.itens.length > 0);
+  const semCategoria = templates.filter((t) => !t.categoria);
   const [copiado, setCopiado] = useState(false);
 
   /* O QUE A OFICINA SABE. Os toques da prévia levam o link, a contagem e
@@ -208,26 +236,49 @@ export function ModalMensagem({
             <label className={s.campo}>
               <span className={s.campoRot}>Template</span>
               <select value={escolhido} onChange={(e) => setEscolhido(e.target.value)}>
-                {aAbertura ? (
-                  <option value={ID_ABERTURA}>
-                    Abertura · primeiro toque, sem link
-                    {!sugeridoEtapa && degrau?.categoria === "abertura_fria" ? " · sugerido" : ""}
-                  </option>
+                {sugerido ? (
+                  <optgroup label="A vez deste card">
+                    <option value={sugerido.id}>
+                      ★ {sugerido.titulo}
+                      {motivoDaSugestao ? ` · ${motivoDaSugestao}` : ""}
+                    </option>
+                  </optgroup>
                 ) : null}
-                {daPesquisa ? (
-                  <option value={ID_PESQUISA}>
-                    {aAbertura
-                      ? "Mensagem 2 · depois que responder"
-                      : "Mensagem da pesquisa · feita para este lead"}
-                  </option>
+                {aAbertura || daPesquisa ? (
+                  <optgroup label="Da pesquisa, escritas para este lead">
+                    {aAbertura ? (
+                      <option value={ID_ABERTURA}>
+                        Abertura · primeiro toque, sem link
+                        {!sugeridoEtapa && degrau?.categoria === "abertura_fria" ? " · sugerido" : ""}
+                      </option>
+                    ) : null}
+                    {daPesquisa ? (
+                      <option value={ID_PESQUISA}>
+                        {aAbertura
+                          ? "Mensagem 2 · depois que responder"
+                          : "Mensagem da pesquisa · feita para este lead"}
+                      </option>
+                    ) : null}
+                  </optgroup>
                 ) : null}
-                {templates.map((t) => (
-                  <option key={t.id} value={t.id}>
-                    {t.titulo}
-                    {t.categoria ? ` · ${NOME_CATEGORIA[t.categoria]}` : ""}
-                    {sugerido?.id === t.id ? " · sugerido" : ""}
-                  </option>
+                {porCategoria.map((g) => (
+                  <optgroup key={g.categoria} label={NOME_CATEGORIA[g.categoria]}>
+                    {g.itens.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.titulo}
+                      </option>
+                    ))}
+                  </optgroup>
                 ))}
+                {semCategoria.length ? (
+                  <optgroup label="Sem categoria">
+                    {semCategoria.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.titulo}
+                      </option>
+                    ))}
+                  </optgroup>
+                ) : null}
               </select>
             </label>
 

@@ -1327,3 +1327,19 @@ select t.owner_id, 'Prévia, mensagem 2: o preço (só depois que responder)', '
    select 1 from public.crm_templates x
     where x.owner_id = t.owner_id and x.categoria = 'previa'
       and x.titulo = 'Prévia, mensagem 2: o preço (só depois que responder)');
+
+-- ============================================================
+-- 21/09/2026: A ABERTURA DE QUEM VEIO DO ANÚNCIO DIZ QUEM SOU
+-- Quem preenche o formulário na página (sem abrir o WhatsApp) recebe
+-- dias depois uma mensagem de número desconhecido dizendo "chegou aqui",
+-- e não sabe o que chegou onde. A primeira linha agora se apresenta e
+-- devolve as duas palavras que a pessoa viu na tela ("vitrine grátis",
+-- "anúncio do Instagram"). Já aplicado no banco por script; o bloco fica
+-- de registro. Esse template virou o primeiro disparo dos cards com
+-- origem trafego_pago (degrauDoSilencio em lib/crm/regras.ts).
+-- ============================================================
+update public.crm_templates
+   set titulo = 'Chegou pelo anúncio: quem sou e o que ela pediu',
+       conteudo = E'Fala, {nome}! Aqui é o Rafael, do estúdio. Você pediu a vitrine grátis da {instagram} no anúncio do Instagram, e já abri o seu perfil.\nVou montar a prévia hoje mesmo, com as fotos do seu Instagram. De graça e sem compromisso.\nSó me diz uma coisa pra eu começar certo: qual peça mais vende aí? Começo por ela.'
+ where categoria = 'abertura_morna'
+   and titulo like 'Chegou pelo anúncio%';
