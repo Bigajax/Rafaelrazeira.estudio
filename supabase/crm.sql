@@ -1343,3 +1343,21 @@ update public.crm_templates
        conteudo = E'Fala, {nome}! Aqui é o Rafael, do estúdio. Você pediu a vitrine grátis da {instagram} no anúncio do Instagram, e já abri o seu perfil.\nVou montar a prévia hoje mesmo, com as fotos do seu Instagram. De graça e sem compromisso.\nSó me diz uma coisa pra eu começar certo: qual peça mais vende aí? Começo por ela.'
  where categoria = 'abertura_morna'
    and titulo like 'Chegou pelo anúncio%';
+
+-- ============================================================
+-- 21/09/2026: O @ QUE NÃO ABRIU
+-- O cadastro do anúncio chega às vezes com um @ que a Meta não acha
+-- (conta pessoal, @ errado, "RID"); a /api/lead marca o card com a nota
+-- "@ NÃO CONFERIDO NA META". O primeiro toque desse card não é a
+-- apresentação de sempre, é pedir o @ certo. A escada escolhe este
+-- template sozinha quando a nota está lá (degrauDoSilencio). Já aplicado
+-- no banco por script; o bloco fica de registro.
+-- ============================================================
+insert into public.crm_templates (owner_id, titulo, canal, categoria, conteudo, ordem)
+select t.owner_id, 'Chegou pelo anúncio, mas o @ não abriu', 'whatsapp', 'abertura_morna',
+       E'Fala, {nome}! Aqui é o Rafael, do estúdio. Você pediu a vitrine grátis no anúncio do Instagram, mas o {instagram} que veio no cadastro não abriu aqui.\nMe manda o @ certo da loja (ou o link do perfil) que eu já começo a prévia hoje, de graça e sem compromisso.',
+       2
+  from (select distinct owner_id from public.crm_templates) t
+ where not exists (
+   select 1 from public.crm_templates x
+    where x.owner_id = t.owner_id and x.titulo = 'Chegou pelo anúncio, mas o @ não abriu');

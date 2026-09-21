@@ -272,10 +272,17 @@ export type Degrau = {
    de quem veio do anúncio. Vive aqui e não no banco porque é a escada
    que o escolhe; mudar o título no CRM sem mudar aqui devolve a abertura
    fria para quem preencheu o formulário. */
-export const TITULO_CHEGOU_PELO_ANUNCIO = "Chegou pelo anúncio";
+export const TITULO_CHEGOU_PELO_ANUNCIO = "Chegou pelo anúncio:";
+/* E o irmão dele para o card cujo @ a Meta não achou: a /api/lead deixa a
+   nota "@ NÃO CONFERIDO NA META" no cadastro, e o primeiro toque desse
+   card pede o @ certo em vez de se apresentar como se tivesse aberto o
+   perfil (21/09/2026). */
+export const TITULO_ARROBA_NAO_ABRIU = "Chegou pelo anúncio, mas o @ não abriu";
+export const arrobaNaoConferido = (lead: Pick<LeadPainel, "notas">) =>
+  /NÃO CONFERIDO NA META/i.test(lead.notas ?? "");
 
 export function degrauDoSilencio(
-  lead: Pick<LeadPainel, "toques" | "toques_entrada" | "saidas_seguidas" | "origem">,
+  lead: Pick<LeadPainel, "toques" | "toques_entrada" | "saidas_seguidas" | "origem" | "notas">,
 ): Degrau | null {
   /* ---------- o formulário não é resposta (21/09/2026) ----------
      O card que nasce do anúncio já nasce com UM toque de entrada: a
@@ -290,6 +297,14 @@ export function degrauDoSilencio(
   if (lead.origem === "trafego_pago") {
     const saidas = lead.toques - lead.toques_entrada;
     if (saidas === 0) {
+      if (arrobaNaoConferido(lead)) {
+        return {
+          categoria: "abertura_morna",
+          indice: 0,
+          titulo: TITULO_ARROBA_NAO_ABRIU,
+          porque: "Veio do anúncio e o @ do cadastro não abriu na Meta: o primeiro toque pede o @ certo",
+        };
+      }
       return {
         categoria: "abertura_morna",
         indice: 0,
