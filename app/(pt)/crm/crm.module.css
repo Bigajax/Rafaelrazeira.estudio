@@ -3195,3 +3195,116 @@
 .app button.vezMontePediram .vezMonteNum { font-size: 15px }
 .vezVeioDe { font: 700 11.5px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--rosa-live) }
 .vezVeioDe code { font: 600 11.5px var(--mono); letter-spacing: .02em; text-transform: none; color: var(--paper) }
+
+/* ============================================================
+   O PIPELINE, SEGUNDA GRAMÁTICA (21/09/2026)
+
+   O quadro era sete placas pretas sobre sete colunas contornadas, cada
+   ficha com quatro linhas em mono maiúscula: correto, e igual a qualquer
+   tabela com cabeçalho escuro. O que muda aqui, e só aqui (tudo debaixo
+   de `.pipe`, para o Hoje, a ficha e o caixa continuarem como estão):
+
+   1. UMA tinta cheia em vez de sete: o corte do funil, a silhueta que
+      desenha quantos leads há em cada etapa. É o objeto da tela.
+   2. PAPEL EM TRÊS TONS no lugar de contorno: a mesa (`--paper-2`), a
+      raia de cada etapa (`--paper`) e a folha de cada lead
+      (`--paper-alto`). Nada precisa de filete para existir; o que sobra
+      de filete é informação (a margem de urgência da ficha).
+   3. A VOZ LARGA da Archivo no placar das etapas: o número grande, o nome
+      ao lado em caixa normal. A manchete "Pipeline." continua condensada:
+      mesma família, duas larguras, dois papéis.
+   4. Menos etiqueta: legenda da etapa e sinal da ficha em frase, na
+      Inter; a mono fica só para o código do anúncio, que é código.
+   ============================================================ */
+.pipe { --colW: clamp(208px, 16vw, 238px); --placasW: clamp(150px, 12vw, 178px); --vao: 6px }
+
+.pipe .quadro {
+  display: grid;
+  grid-template-columns: repeat(7, var(--colW)) var(--placasW);
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 0 var(--vao);
+  align-items: stretch;
+  background: var(--paper-2);
+  padding: 10px var(--vao) var(--vao);
+  margin-top: 14px;
+}
+.pipe .quadroCaixa { margin-top: 0 }
+
+/* ---------- o corte ---------- */
+.pipe .perfil { grid-column: 1 / 8; grid-row: 1; height: 64px; display: block; min-width: 0 }
+.pipe .perfil svg { display: block; width: 100%; height: 100% }
+.pipe .perfil path { fill: var(--ink) }
+/* Um gesto só, na abertura: a silhueta se revela da esquerda para a
+   direita, no sentido do funil. Depois disso, nada se mexe sozinho. */
+@keyframes perfilRevela { from { clip-path: inset(0 100% 0 0) } to { clip-path: inset(0 0 0 0) } }
+.pipe .perfil { animation: perfilRevela .7s cubic-bezier(.2, .7, .2, 1) both }
+@media (prefers-reduced-motion: reduce) { .pipe .perfil { animation: none } }
+
+/* ---------- a raia de cada etapa ---------- */
+.pipe .coluna {
+  grid-row: 2; min-width: 0;
+  border: 0; background: var(--paper);
+}
+.pipe .coluna::before { display: none }
+.pipe .colunaCab { position: relative; background: var(--paper); color: var(--ink); padding: 12px 12px 9px; border-bottom: 1.5px solid var(--paper-2) }
+.pipe .colunaCab::after { display: none }
+.pipe .colunaTopo { display: flex; align-items: baseline; gap: 8px }
+.pipe .colunaCont {
+  font-family: var(--display); font-stretch: 118%; font-weight: 800;
+  font-size: 26px; line-height: 1; letter-spacing: -.02em;
+  font-variant-numeric: tabular-nums; color: var(--ink);
+}
+.pipe .colunaPedindo { color: var(--rosa); font-size: 26px }
+.pipe .colunaZero { color: var(--ink-fraco) }
+.pipe .colunaNome {
+  font-family: var(--display); font-stretch: 112%; font-weight: 700;
+  font-size: 13px; letter-spacing: 0; text-transform: none; color: var(--ink);
+}
+.pipe .colunaSoma { font: 600 11px var(--body); letter-spacing: 0; color: var(--ink-fraco); font-variant-numeric: tabular-nums; margin-left: auto }
+.pipe .colunaNota { font: 500 11.5px var(--body); letter-spacing: 0; text-transform: none; color: var(--ink-fraco); margin-top: 5px }
+.pipe .colunaNota::first-letter { text-transform: uppercase }
+.pipe .colunaPede { color: var(--rosa); font-weight: 600 }
+
+.pipe .colunaLista { padding: 6px 6px 10px; background: none; background-image: none }
+.pipe .colunaAlvo { background: var(--paper-alto); box-shadow: inset 0 0 0 2px var(--ink) }
+
+/* ---------- a folha de cada lead ---------- */
+.pipe .ficha { border: 1px solid var(--line); border-left-width: 3px; padding: 10px 11px 10px 12px }
+.pipe .ficha + .ficha { margin-top: 6px }
+.pipe .urgSemPasso { box-shadow: inset 0 0 0 1px var(--line) }
+.pipe .fichaNome { font-stretch: 100%; font-weight: 700; font-size: 14px; letter-spacing: -.005em; line-height: 1.15 }
+.pipe .fichaValor { font-stretch: 100%; font-weight: 700; font-size: 12.5px }
+.pipe .fichaContexto { font-size: 11.5px; margin-top: 3px }
+.pipe .fichaPasso { font-size: 12.5px; line-height: 1.35; margin-top: 6px }
+.pipe .sinal {
+  display: flex; align-items: center; gap: 6px; margin-top: 7px;
+  font: 600 11px var(--body); letter-spacing: 0; text-transform: none;
+}
+.pipe .sinal::before { content: ""; width: 6px; height: 6px; background: currentColor; flex: none }
+.pipe .sinalQuieto { font-weight: 500 }
+.pipe .sinalQuieto::before { width: 8px; height: 1.5px }
+
+/* ---------- as placas de saída, na mesma mesa ---------- */
+.pipe .placas { grid-column: 8; grid-row: 1 / 3; gap: var(--vao); flex: none; align-self: stretch }
+.pipe .placa { border: 0; border-left: 4px solid var(--line); background: var(--paper); padding: 12px 12px 12px 13px }
+.pipe .placaNome { font-stretch: 112%; font-weight: 700; font-size: 12.5px; letter-spacing: 0; text-transform: none }
+.pipe .placaNum { font-stretch: 118%; font-weight: 800; font-size: 28px; letter-spacing: -.02em; margin: 6px 0 3px }
+.pipe .placaSoma { font: 500 11px var(--body); letter-spacing: 0; text-transform: none; color: var(--ink-fraco) }
+.pipe .placaSoma::first-letter { text-transform: uppercase }
+@media (hover: hover) and (pointer: fine) {
+  .pipe .placa:hover { background: var(--paper-alto); box-shadow: none }
+}
+.pipe .placaAlvo, .pipe .placaAberta { background: var(--ink); box-shadow: none }
+.pipe .placaAlvo .placaSoma, .pipe .placaAberta .placaSoma { color: var(--sobre-ink) }
+
+/* A lista de saída aberta embaixo do quadro usa a mesma folha. */
+.pipe .saidaGrade { gap: var(--vao) }
+
+/* ---------- no celular, a raia escolhida pelo chip, como antes ---------- */
+@media (max-width: 860px) {
+  .pipe .quadro { display: block; background: none; padding: 0; margin-top: 0 }
+  .pipe .perfil { display: none }
+  .pipe .coluna { background: transparent }
+  .pipe .colunaCab { display: none }
+  .pipe .placas { margin-top: 14px }
+}

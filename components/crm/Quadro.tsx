@@ -221,17 +221,6 @@ export function Quadro({
     return oQuePede(oQueFalta(estagio, arrastando).filter((c) => !exigenciaComum.includes(c)));
   };
 
-  const cargaMaxima = useMemo(
-    () =>
-      Math.max(
-        0,
-        ...ESTAGIOS_DO_QUADRO.map((e) =>
-          porColuna[e].reduce((t, l) => t + (l.ticket_estimado ?? 0), 0),
-        ),
-      ),
-    [porColuna],
-  );
-
   /* ---------- onde o card cai, e com que posição ----------
      Devolve o estágio de destino e o número que vai para a coluna
      `posicao`. Separado do resto porque é a única conta do arrasto, e
@@ -353,7 +342,7 @@ export function Quadro({
   const pediram = useMemo(() => leads.filter(procurouOEstudio).length, [leads]);
 
   return (
-    <div className={s.wrapLargo}>
+    <div className={`${s.wrapLargo} ${s.pipe}`}>
       <div className={s.tituloLinha}>
         <h1>
           Pipeline<i className={s.ponto}>.</i>
@@ -572,13 +561,22 @@ export function Quadro({
             pergunta é do quadro ("há um card no ar?"), não de cada uma. */}
         <div className={s.quadroCaixa}>
           <div className={`${s.quadro} ${arrastando ? s.quadroEmVoo : ""}`}>
+            {/* ---------- O CORTE DO FUNIL (21/09) ----------
+                Uma silhueta de tinta atravessando as sete etapas, com a
+                altura de cada trecho na proporção de quantos leads há
+                ali (raiz quadrada, senão os 272 da Lista achatam o resto
+                em nada). É o desenho do que o quadro É: um funil. Ela
+                substitui as sete placas pretas e a régua de dinheiro de
+                4px, e é a única tinta cheia da mesa; o resto vira papel
+                em três tons. Conta o quadro FILTRADO, como o placar. */}
+            <PerfilDoFunil contagens={ESTAGIOS_DO_QUADRO.map((e) => porColuna[e].length)} />
+
             {ESTAGIOS_DO_QUADRO.map((estagio) => (
               <Coluna
                 key={estagio}
                 estagio={estagio}
                 leads={porColuna[estagio]}
                 hoje={hoje}
-                cargaMaxima={cargaMaxima}
                 assentando={assentando}
                 /* ---------- A MESA RESPONDE NA MÃO ----------
                    Com um card no ar, cada coluna escreve na própria placa o
@@ -739,7 +737,6 @@ function Coluna({
   estagio,
   leads,
   hoje,
-  cargaMaxima,
   assentando,
   pede,
   visivelNoCelular,
@@ -748,7 +745,6 @@ function Coluna({
   estagio: Estagio;
   leads: LeadPainel[];
   hoje: string;
-  cargaMaxima: number;
   assentando: string | null;
   pede: string;
   visivelNoCelular: boolean;
@@ -756,7 +752,6 @@ function Coluna({
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: idDaColuna(estagio) });
   const soma = leads.reduce((t, l) => t + (l.ticket_estimado ?? 0), 0);
-  const carga = cargaMaxima > 0 ? Math.round((soma / cargaMaxima) * 100) : 0;
 
   /* ---------- A CONTAGEM É UM SINAL, NÃO SÓ UM NÚMERO ----------
      Ela era sempre esmeralda, dissesse o que dissesse. Agora ela é rosa
@@ -784,15 +779,21 @@ function Coluna({
       data-visivel={visivelNoCelular ? "sim" : "nao"}
       aria-label={`${NOME_ESTAGIO[estagio]}: ${leads.length} leads`}
     >
+      {/* ---------- O PLACAR DA ETAPA (21/09) ----------
+          O número vem PRIMEIRO e grande, na Archivo larga: é ele que o
+          corte do funil logo acima desenha, e é ele que se lê varrendo
+          as sete etapas. O nome fica ao lado, em caixa normal; a legenda
+          embaixo, em frase. A placa de tinta que ficava aqui foi para o
+          perfil, uma vez só, em vez de sete. */}
       <header className={s.colunaCab}>
         <span className={s.colunaTopo}>
-          <h2 className={s.colunaNome}>{NOME_ESTAGIO[estagio]}</h2>
           <span
             className={`${s.colunaCont} ${pedindo ? s.colunaPedindo : ""} ${!leads.length ? s.colunaZero : ""}`}
             title={pedindo ? `${pedindo} esperando você` : undefined}
           >
             {leads.length}
           </span>
+          <h2 className={s.colunaNome}>{NOME_ESTAGIO[estagio]}</h2>
           {soma ? <span className={s.colunaSoma}>{dinheiroCurto(soma)}</span> : null}
         </span>
         {/* A legenda dá lugar à exigência enquanto há um card no ar. Não é
@@ -803,24 +804,8 @@ function Coluna({
         <span className={`${s.colunaNota} ${pede ? s.colunaPede : ""}`}>
           {pede || NOTA_ESTAGIO[estagio]}
         </span>
-
-        {/* ---------- A RÉGUA DE CARGA ----------
-            O filete no pé da placa enche na proporção do dinheiro desta
-            etapa contra a etapa mais carregada do quadro. Sozinho ele é um
-            detalhe; as sete placas lado a lado desenham o corte do funil em
-            cima das colunas que ele descreve, e o mesmo traço atravessa os
-            vãos entre elas.
-
-            `aria-hidden` porque ele não acrescenta informação: o valor está
-            escrito ao lado, na soma da placa, e o rótulo da coluna já leva a
-            contagem. Ele é a forma do que já está dito. */}
-        <span className={s.carga} aria-hidden>
-          <i
-            className={`${s.cargaFill} ${carga === 100 ? s.cargaMaior : ""}`}
-            style={{ width: `${carga}%` }}
-          />
-        </span>
       </header>
+
 
       <div ref={setNodeRef} className={`${s.colunaLista} ${isOver ? s.colunaAlvo : ""}`}>
         {/* Só a Lista tem o lote: é onde lead importado aterrissa, e é o
@@ -913,5 +898,52 @@ function PlacaDeSaida({
         {pede || (soma ? dinheiroCurto(soma) : NOTA_ESTAGIO[estagio])}
       </span>
     </button>
+  );
+}
+
+
+/* ============================================================
+   O CORTE DO FUNIL
+
+   Sete pontos, um por etapa do caminho, ligados por uma curva e fechados
+   até o chão: a silhueta é o funil visto de lado. A altura de cada ponto
+   é a raiz quadrada da contagem contra a maior das sete (com 272 na Lista
+   e 4 no Follow-up, a escala linear achataria seis etapas numa linha), e
+   uma etapa com alguém dentro nunca desce abaixo de um filete, para a
+   forma não dizer "vazio" onde há gente.
+
+   Ela é um SVG esticado (preserveAspectRatio none) na largura das sete
+   colunas: os pontos ficam no meio de cada coluna, e os 6px de vão entre
+   elas pesam menos de 1% da largura, o que não vale uma conta separada.
+   ============================================================ */
+function PerfilDoFunil({ contagens }: { contagens: number[] }) {
+  const L = 700;
+  const A = 64;
+  const maior = Math.max(0, ...contagens);
+  const altura = (n: number) => (n <= 0 || maior <= 0 ? 0 : 5 + 55 * (Math.sqrt(n) / Math.sqrt(maior)));
+  const pontos = contagens.map((n, i) => ({ x: ((i + 0.5) / contagens.length) * L, y: A - altura(n) }));
+  const inicio = { x: 0, y: pontos[0]?.y ?? A };
+  const fim = { x: L, y: pontos[pontos.length - 1]?.y ?? A };
+  const serie = [inicio, ...pontos, fim];
+
+  /* Catmull-Rom para Bézier: passa por todos os pontos, sem quina. */
+  let d = `M ${serie[0].x} ${serie[0].y}`;
+  for (let i = 0; i < serie.length - 1; i++) {
+    const p0 = serie[Math.max(0, i - 1)];
+    const p1 = serie[i];
+    const p2 = serie[i + 1];
+    const p3 = serie[Math.min(serie.length - 1, i + 2)];
+    const c1 = { x: p1.x + (p2.x - p0.x) / 6, y: p1.y + (p2.y - p0.y) / 6 };
+    const c2 = { x: p2.x - (p3.x - p1.x) / 6, y: p2.y - (p3.y - p1.y) / 6 };
+    d += ` C ${c1.x.toFixed(1)} ${c1.y.toFixed(1)}, ${c2.x.toFixed(1)} ${c2.y.toFixed(1)}, ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
+  }
+  d += ` L ${L} ${A} L 0 ${A} Z`;
+
+  return (
+    <div className={s.perfil} aria-hidden>
+      <svg viewBox={`0 0 ${L} ${A}`} preserveAspectRatio="none">
+        <path d={d} />
+      </svg>
+    </div>
   );
 }
