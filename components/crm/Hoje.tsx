@@ -181,10 +181,22 @@ export function Hoje({ painel, templates }: { painel: Painel; templates: Templat
   /* A emenda dos três grupos, na ordem de prioridade. É a única lista que
      sobrou, e ela não aparece em lugar nenhum da tela: é só a ordem em que
      as cartas saem. */
-  const filaDia = useMemo(
-    () => [...semPasso, ...atrasados, ...paraHoje],
-    [atrasados, paraHoje, semPasso],
-  );
+  /* ---------- QUEM PEDIU VEM ANTES DE TUDO (21/09) ----------
+     A emenda de grupos valia para a fila inteira, e o lead do anúncio que
+     eu já tinha tocado, com retorno marcado para hoje, ficava na posição
+     350: atrás de 290 cards de garimpo sem passo. Quem preencheu o
+     formulário está esperando; o garimpo não sabe que existe. Então a
+     fila tem duas metades: primeiro todo mundo que procurou o estúdio,
+     de qualquer grupo, do cadastro MAIS NOVO para o mais antigo (quem
+     preencheu há uma hora ainda está com o telefone na mão); depois o
+     garimpo na ordem de sempre dos três grupos. */
+  const filaDia = useMemo(() => {
+    const todos = [...semPasso, ...atrasados, ...paraHoje];
+    return [
+      ...todos.filter(procurouOEstudio).sort((a, b) => b.created_at.localeCompare(a.created_at)),
+      ...todos.filter((l) => !procurouOEstudio(l)),
+    ];
+  }, [atrasados, paraHoje, semPasso]);
 
   /* ---------- os segmentos ----------
      O garimpo importa por nicho, e trinta cartas embaralhadas de oito

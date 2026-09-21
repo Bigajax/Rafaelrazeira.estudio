@@ -275,18 +275,21 @@ export type Degrau = {
 export const TITULO_CHEGOU_PELO_ANUNCIO = "Chegou pelo anúncio";
 
 export function degrauDoSilencio(
-  lead: Pick<LeadPainel, "toques_entrada" | "saidas_seguidas" | "origem">,
+  lead: Pick<LeadPainel, "toques" | "toques_entrada" | "saidas_seguidas" | "origem">,
 ): Degrau | null {
-  if (lead.toques_entrada > 0) return null;
-
-  const n = lead.saidas_seguidas;
-  if (n === 0) {
-    /* Quem preencheu o formulário do anúncio não é frio: pediu a vitrine
-       e está esperando alguém aparecer. A abertura fria ("posso te fazer
-       uma pergunta?") lida por essa pessoa dias depois é um estranho
-       puxando papo; o primeiro disparo dela se apresenta e devolve o que
-       ela pediu (21/09/2026). */
-    if (lead.origem === "trafego_pago") {
+  /* ---------- o formulário não é resposta (21/09/2026) ----------
+     O card que nasce do anúncio já nasce com UM toque de entrada: a
+     /api/lead grava o envio do formulário como interação recebida (e
+     cada reenvio grava outra). Para a escada isso lia como "já
+     respondeu", o degrau saía nulo e o modal caía no primeiro template
+     da lista, a abertura fria, para quem tinha acabado de pedir a
+     vitrine. Para quem veio do anúncio, a conta é outra: enquanto eu
+     não mandei NADA (nenhuma saída no histórico), o toque da vez é a
+     apresentação; depois da primeira saída, vale o silêncio desde ela
+     (`saidas_seguidas`, que zera quando a pessoa responde de verdade). */
+  if (lead.origem === "trafego_pago") {
+    const saidas = lead.toques - lead.toques_entrada;
+    if (saidas === 0) {
       return {
         categoria: "abertura_morna",
         indice: 0,
@@ -294,6 +297,13 @@ export function degrauDoSilencio(
         porque: "Veio do anúncio e ninguém falou com ela ainda: o primeiro toque diz quem sou e o que ela pediu",
       };
     }
+    if (lead.saidas_seguidas === 0) return null;
+  } else if (lead.toques_entrada > 0) {
+    return null;
+  }
+
+  const n = lead.saidas_seguidas;
+  if (n === 0) {
     return { categoria: "abertura_fria", indice: 0, porque: "Ninguém falou com este lead ainda" };
   }
   if (n === 1) {
