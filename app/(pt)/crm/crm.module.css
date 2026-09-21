@@ -3393,3 +3393,33 @@
 .wrapVez .vezVeioDe { font: 600 12.5px var(--body); letter-spacing: 0; text-transform: none }
 .wrapVez .vezVeioDe code { font: 500 12px var(--mono); letter-spacing: 0 }
 .app .wrapVez button.riscadosPuxador { font: 600 11.5px var(--body); letter-spacing: 0; text-transform: none }
+
+/* ============================================================
+   O TRILHO, NA SEGUNDA GRAMÁTICA (21/09/2026)
+
+   A lombada da ferramenta fala na mesma voz que o pipeline e a fila
+   passaram a falar: o nome da rota na Archivo LARGA, em caixa normal
+   ("Pipeline" e não "PIPELINE"), a nota em frase na Inter, o número na
+   mesma Archivo larga que conta as etapas do quadro. A linha vertical e
+   a estação quadrada continuam: são o que faz o trilho ser trilho. A
+   marca no topo não muda: é a manchete condensada da casa, e o lugar
+   dela é ali.
+   ============================================================ */
+.trilho .trilhoLink { padding: 12px 18px 12px 40px }
+.trilho .trilhoLink b {
+  font-family: var(--display); font-stretch: 112%; font-weight: 700;
+  text-transform: none; font-size: 15px; letter-spacing: 0; line-height: 1.05;
+}
+.trilho .trilhoCont {
+  font-family: var(--display); font-stretch: 118%; font-weight: 800;
+  font-size: 14px; letter-spacing: -.01em; line-height: 1;
+}
+.trilho .trilhoCobra { font-size: 14px }
+.trilho .trilhoLink span { font: 500 11.5px var(--body); letter-spacing: 0; text-transform: none; margin-top: 4px }
+.app .trilhoAtivo::before { top: 15px }
+.app .trilho .trilhoSair { font: 600 11.5px var(--body); letter-spacing: 0; text-transform: none }
+
+@media (max-width: 860px) {
+  .trilho .trilhoLink b { font-size: 12px; font-stretch: 106% }
+  .trilho .trilhoCont, .trilho .trilhoCobra { font-size: 12px }
+}
