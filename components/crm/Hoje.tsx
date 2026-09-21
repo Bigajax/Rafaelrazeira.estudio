@@ -290,10 +290,17 @@ export function Hoje({ painel, templates }: { painel: Painel; templates: Templat
      carta para a frente. Se o nome está fora do segmento filtrado, o
      filtro cai primeiro: um clique explícito num nome vale mais que o
      recorte que escondia ele. */
-  const irPara = (id: string) => {
-    if (!fila.some((l) => l.id === id) && filaDia.some((l) => l.id === id)) setSegmento(null);
-    trazerParaCima(id);
-  };
+  const irPara = (id: string) => trazerParaCima(id);
+
+  /* A RÉGUA SEGUE O MONTE (21/09). Ela media sempre o dia inteiro, e com
+     "Anúncio e site" escolhido o clique numa marca trazia um card de
+     garimpo e derrubava o filtro ("quando eu clico no quadrado vai para
+     todos"). Agora, com um monte escolhido, a régua mostra só ele: os
+     riscados dele, as pendentes dele, e a marca só leva a cards dele. */
+  const riscadosDoMonte = useMemo(
+    () => riscados.filter((l) => pertence(l, segmento)),
+    [riscados, segmento, pertence],
+  );
 
   /* A carta da vez é a de cima. Quando ela é resolvida, sai da fila do
      servidor e a de baixo assume sozinha, que é o gesto de baralho que a
@@ -456,7 +463,7 @@ export function Hoje({ painel, templates }: { painel: Painel; templates: Templat
           janela. */}
       {atual ? (
         <div className={`${s.vezFolha} ${FOLHA[urgencia(atual, painel.hoje)] ?? s.folhaAgendado}`}>
-          <ReguaDoDia riscados={riscados} fila={filaDia} atualId={atual.id} painel={painel} aoIrPara={irPara} />
+          <ReguaDoDia riscados={riscadosDoMonte} fila={fila} atualId={atual.id} painel={painel} aoIrPara={irPara} />
 
           <div className={s.vezPalco}>
             <CartaDaVez
@@ -474,7 +481,7 @@ export function Hoje({ painel, templates }: { painel: Painel; templates: Templat
            limpo é uma conclusão: ele vive na mesa, com a moldura fechada
            que o `.diaLimpo` já tem. O placar continua, sozinho. */
         <>
-          <ReguaDoDia riscados={riscados} fila={filaDia} atualId={null} painel={painel} aoIrPara={irPara} />
+          <ReguaDoDia riscados={riscadosDoMonte} fila={fila} atualId={null} painel={painel} aoIrPara={irPara} />
           <div className={s.vezPalco}>
             <DiaLimpo painel={painel} aoAnotar={() => setNovo(true)} />
           </div>
@@ -639,10 +646,8 @@ function ReguaDoDia({
   aoIrPara,
 }: {
   riscados: LeadPainel[];
-  /* SEMPRE a fila do dia inteiro, nunca a filtrada por segmento: o filtro
-     muda o que a mão varre, não o tamanho do dia. A marca da vez acha o
-     lead pelo id, então ela continua acesa no lugar certo do dia mesmo
-     quando a carta veio de um monte filtrado. */
+  /* A fila DO MONTE escolhido (desde 21/09; antes era sempre o dia
+     inteiro). Sem monte, é o dia. A marca da vez acha o lead pelo id. */
   fila: LeadPainel[];
   atualId: string | null;
   painel: Painel;
