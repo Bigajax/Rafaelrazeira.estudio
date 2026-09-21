@@ -206,6 +206,16 @@ export async function registrarToque(
     resposta?: Resposta;
     /* Só quando `resposta` é "nao": o que a placa de perdido exige. */
     motivo_perda?: MotivoPerda | null;
+    /* ---------- a etapa escolhida no registro (21/09/2026) ----------
+       O trilho só anda sozinho nos degraus mecânicos (lista → contatado
+       → follow-up); de conversa em diante a etapa era julgamento do
+       Rafael, e o julgamento não tinha lugar no modal: "quando eu
+       registro um toque não tenho a possibilidade de colocar fazendo a
+       prévia". Com `estagio`, o registro do toque é também a passagem, e
+       ela obedece às mesmas exigências do quadro (`moverLead`): proposta
+       pede o ticket, que vem junto quando o lead não tem. */
+    estagio?: Estagio;
+    ticket_estimado?: number | null;
   },
 ): Promise<Resultado> {
   const usuario = await exigirSessao();
@@ -239,14 +249,16 @@ export async function registrarToque(
   }
 
   if (lead) {
-    const destino = destinoDoToque(dados.direcao, lead.estagio, dados.resposta);
+    /* A etapa marcada no modal vence o trilho; sem ela, o trilho de sempre. */
+    const destino = dados.estagio ?? destinoDoToque(dados.direcao, lead.estagio, dados.resposta);
     if (destino && destino !== lead.estagio) {
-      /* Escolhido = o Rafael marcou o teor da resposta e este destino é o
-         trabalho que ele pediu. Automático = o trilho mecânico, que é
-         cortesia e cala a boca quando não dá. */
-      const escolhido = dados.resposta === "nao" || dados.resposta === "depois";
+      /* Escolhido = o Rafael marcou o teor da resposta ou a etapa, e este
+         destino é o trabalho que ele pediu. Automático = o trilho
+         mecânico, que é cortesia e cala a boca quando não dá. */
+      const escolhido = dados.estagio !== undefined || dados.resposta === "nao" || dados.resposta === "depois";
 
       const passagem: Passagem = {};
+      if (dados.ticket_estimado !== undefined) passagem.ticket_estimado = dados.ticket_estimado;
 
       if (destino === "perdido") {
         /* A única exigência da placa de perdido, e a que faz o gráfico de

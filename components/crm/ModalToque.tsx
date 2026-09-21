@@ -38,6 +38,7 @@ import { destinoDoToque, hojeSP, linkWhatsapp, PADRAO_DO_DESTINO, somarDias } fr
 import {
   CANAIS,
   EFEITO_RESPOSTA,
+  ESTAGIOS_NO_PIPELINE,
   MOTIVOS_PERDA,
   NOME_CANAL,
   NOME_ESTAGIO,
@@ -46,6 +47,7 @@ import {
   RESPOSTAS,
   type Canal,
   type Direcao,
+  type Estagio,
   type LeadPainel,
   type MotivoPerda,
   type Resposta,
@@ -94,6 +96,16 @@ export function ModalToque({
   const [passoGelo, setPassoGelo] = useState(PADRAO_DO_DESTINO.geladeira?.passo ?? "");
   const [motivo, setMotivo] = useState<MotivoPerda>("sem_interesse");
 
+  /* ---------- a etapa, escolhida aqui (21/09) ----------
+     O trilho só anda sozinho nos degraus mecânicos, e "mandei a prévia"
+     é um toque que muda a etapa por julgamento: até aqui isso pedia
+     arrastar o card no quadro depois de registrar. Vazio = "onde o
+     trilho levar", que é o comportamento de sempre; escolhendo, o
+     registro já é a passagem, com as exigências dela pedidas aqui. */
+  const [etapa, setEtapa] = useState<Estagio | "">("");
+  const [ticket, setTicket] = useState(String(lead.ticket_estimado ?? 999));
+  const pedeTicket = etapa === "proposta" && !lead.ticket_estimado;
+
   /* O mesmo cálculo que o servidor vai refazer na gravação. É daqui que sai
      a frase de destino: a tela promete exatamente o que o servidor executa
      porque as duas leem a mesma função. */
@@ -104,8 +116,10 @@ export function ModalToque({
   const ehPerda = direcao === "entrada" && resposta === "nao";
   /* Perdido não tem agenda e a geladeira tem a sua própria, então a
      pergunta da regra 6 só sobra para o caminho vivo. */
+  /* Mudando de etapa à mão, a regra 1 pede passo com data de novo: o
+     passo antigo era de outra etapa. */
   const precisaDePasso =
-    !ehGeladeira && !ehPerda && (!lead.proxima_acao_em || lead.proxima_acao_em < hoje);
+    !ehGeladeira && !ehPerda && (etapa !== "" || !lead.proxima_acao_em || lead.proxima_acao_em < hoje);
 
   useEffect(() => {
     const aoTeclar = (e: KeyboardEvent) => e.key === "Escape" && aoFechar();
@@ -129,6 +143,8 @@ export function ModalToque({
            dormiria até hoje de novo. */
         proximo_passo: ehGeladeira ? passoGelo : precisaDePasso ? passo : undefined,
         proxima_acao_em: ehGeladeira ? gelo : precisaDePasso ? data : undefined,
+        estagio: !ehGeladeira && !ehPerda && etapa !== "" ? etapa : undefined,
+        ticket_estimado: pedeTicket ? Number(ticket.replace(",", ".")) || null : undefined,
       });
       if (r.ok) aoFechar();
       else if ("erro" in r) setErro(r.erro);
@@ -291,6 +307,35 @@ export function ModalToque({
                 </select>
               </label>
             </div>
+          ) : null}
+
+          {/* ---------- a etapa, no caminho vivo ----------
+              Um select, e não botões: são sete etapas e a escolha é rara
+              (o vazio serve na maioria dos toques). O rótulo do vazio diz
+              para onde o trilho levaria, para a escolha ser consciente. */}
+          {!ehGeladeira && !ehPerda ? (
+            <label className={s.campo}>
+              <span className={s.campoRot}>Mover para</span>
+              <select value={etapa} onChange={(e) => setEtapa(e.target.value as Estagio | "")}>
+                <option value="">
+                  {destino && destino !== lead.estagio
+                    ? `Onde o trilho levar: ${NOME_ESTAGIO[destino]}`
+                    : `Deixar em ${NOME_ESTAGIO[lead.estagio]}`}
+                </option>
+                {ESTAGIOS_NO_PIPELINE.filter((e) => e !== lead.estagio).map((e) => (
+                  <option key={e} value={e}>
+                    {NOME_ESTAGIO[e]}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
+
+          {pedeTicket ? (
+            <label className={s.campo}>
+              <span className={s.campoRot}>Ticket estimado (proposta pede)</span>
+              <input type="text" inputMode="decimal" value={ticket} onChange={(e) => setTicket(e.target.value)} />
+            </label>
           ) : null}
 
           {precisaDePasso ? (
