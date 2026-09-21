@@ -1160,15 +1160,29 @@
 /* Sem filete próprio: a borda de baixo da folha de tinta já é a linha que
    separa o objeto do dia das duas teclas, e nenhum filete de papel compete
    com uma aresta de grafite. */
+/* ---------- AS TECLAS NÃO SAEM DO LUGAR (21/09) ----------
+   A mão que varre a fila aperta "Próxima" o dia inteiro, e a tecla mudava
+   de lugar a cada carta: para baixo quando o passo tinha duas linhas ou o
+   nome quebrava (a folha cresce e empurra o pé), e para dentro quando o
+   nome do próximo era curto (a tecla encolhia com o conteúdo). "Todas as
+   vezes que aperto em próxima o botão está em outro lugar." Duas regras:
+   o pé é PRESO ao fundo da janela (sticky), então a linha das teclas fica
+   na mesma altura da tela seja a folha do tamanho que for; e cada tecla
+   tem LARGURA FIXA, o nome dentro é que se corta. */
 .vezPe {
   flex: none; display: flex; align-items: center; justify-content: space-between;
   gap: 14px 20px; flex-wrap: wrap;
   padding-top: clamp(16px, 2.4vh, 24px);
+  position: sticky; bottom: 0; z-index: 3;
+  background: var(--paper);
+  /* o papel do pé cobre a folha ao rolar; a folga de baixo é a do .main */
+  padding-bottom: clamp(20px, 2.6vw, 34px);
+  margin-bottom: calc(-1 * clamp(20px, 2.6vw, 34px));
 }
 
 .app .vezSeta {
   display: flex; align-items: center; gap: 12px;
-  min-width: 0; max-width: 320px; text-align: left;
+  min-width: 0; width: 320px; max-width: 320px; flex: none; text-align: left;
   padding: 9px 15px; cursor: pointer;
   background: var(--paper-alto); color: var(--ink);
   border: 1.5px solid var(--ink); box-shadow: 3px 3px 0 var(--ink);
@@ -2705,8 +2719,8 @@
   /* As duas teclas dividem a linha e o contador desce para o meio delas:
      numa tela de 390px, "4 DE 6 NA FILA" entre duas teclas de 160px
      espremeria as três coisas em nada. */
-  .vezPe { gap: 10px }
-  .app .vezSeta { flex: 1 1 0; max-width: none; padding: 9px 12px }
+  .vezPe { gap: 10px; padding-bottom: 12px; margin-bottom: 0 }
+  .app .vezSeta { flex: 1 1 0; width: auto; max-width: none; padding: 9px 12px }
   .vezPosicao { order: 3; flex: 1 1 100%; text-align: center }
 }
 
