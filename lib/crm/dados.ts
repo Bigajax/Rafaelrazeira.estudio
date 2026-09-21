@@ -69,6 +69,12 @@ export async function painelHoje() {
       .select("*")
       .in("estagio", ATIVOS)
       .order("proxima_acao_em", { ascending: true, nullsFirst: false })
+      /* Desempate FIXO (21/09): sem ele, os 295 sem passo (todos com
+         proxima_acao_em nula) voltavam do banco numa ordem qualquer a
+         cada refresh, e a fila do dia "embaralhava" a cada mensagem
+         registrada. */
+      .order("created_at", { ascending: false })
+      .order("id", { ascending: true })
       .returns<LeadPainel[]>(),
     supabase.from("crm_metas").select("id, toques_semana").limit(1).maybeSingle<Meta>(),
     /* `head: true` traz só a contagem, sem uma linha sequer de payload: o
@@ -192,8 +198,12 @@ export async function painelHoje() {
   const FILA_VEREDITO: Record<string, number> = { quente: 0, morno: 1, frio: 3 };
   const calorDaFila = (l: (typeof lista)[number]) =>
     FILA_VEREDITO[(l.dossie?.status === "ok" && l.dossie.veredito) || ""] ?? 2;
+  /* Todo sort daqui tem o id como último desempate: cards importados no
+     mesmo segundo (o garimpo entra em lote) empatam em qualquer data, e
+     ordem que depende de empate é ordem que muda entre dois refreshes. */
+  const porId = (a: { id: string }, b: { id: string }) => a.id.localeCompare(b.id);
   const quentePrimeiro = <T extends (typeof lista)[number]>(grupo: T[]) =>
-    [...grupo].sort((a, b) => calorDaFila(a) - calorDaFila(b));
+    [...grupo].sort((a, b) => calorDaFila(a) - calorDaFila(b) || porId(a, b));
 
   return {
     hoje,
@@ -216,11 +226,11 @@ export async function painelHoje() {
     semPasso: [
       ...semPasso
         .filter(procurouOEstudio)
-        .sort((a, b) => b.created_at.localeCompare(a.created_at)),
+        .sort((a, b) => b.created_at.localeCompare(a.created_at) || porId(a, b)),
       ...quentePrimeiro(
         semPasso
           .filter((l) => !procurouOEstudio(l))
-          .sort((a, b) => a.entrou_no_estagio_em.localeCompare(b.entrou_no_estagio_em)),
+          .sort((a, b) => a.entrou_no_estagio_em.localeCompare(b.entrou_no_estagio_em) || porId(a, b)),
       ),
     ],
     /* Na ordem em que foram riscados: a pilha do dia se lê de cima para

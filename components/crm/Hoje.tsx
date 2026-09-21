@@ -105,8 +105,9 @@ const PEDIRAM = "\u0000pediram";
    amanhã é outra fila. Tudo em try/catch porque navegador embutido e
    janela anônima podem negar o storage, e a fila tem que abrir do mesmo
    jeito, só sem memória. */
-const chaveBaralho = (hoje: string, lista: "puladas" | "frente") => `crm:hoje:${hoje}:${lista}`;
-function lerBaralho(hoje: string, lista: "puladas" | "frente"): string[] {
+type ListaGuardada = "puladas" | "frente" | "segmento";
+const chaveBaralho = (hoje: string, lista: ListaGuardada) => `crm:hoje:${hoje}:${lista}`;
+function lerBaralho(hoje: string, lista: ListaGuardada): string[] {
   try {
     const bruto = window.sessionStorage.getItem(chaveBaralho(hoje, lista));
     const v: unknown = bruto ? JSON.parse(bruto) : [];
@@ -115,7 +116,7 @@ function lerBaralho(hoje: string, lista: "puladas" | "frente"): string[] {
     return [];
   }
 }
-function guardarBaralho(hoje: string, lista: "puladas" | "frente", ids: string[]) {
+function guardarBaralho(hoje: string, lista: ListaGuardada, ids: string[]) {
   try {
     window.sessionStorage.setItem(chaveBaralho(hoje, lista), JSON.stringify(ids));
   } catch {
@@ -167,8 +168,15 @@ export function Hoje({ painel, templates }: { painel: Painel; templates: Templat
   useEffect(() => {
     setPuladas(lerBaralho(painel.hoje, "puladas"));
     setFrente(lerBaralho(painel.hoje, "frente"));
+    /* O monte escolhido também: a tela remonta depois de cada registro
+       (o refresh do servidor passa pelo carregando) e o filtro voltava
+       para "Todos" no meio da varredura ("voltando para todos tbm"). */
+    setSegmento(lerBaralho(painel.hoje, "segmento")[0] ?? null);
     baralhoLido.current = true;
   }, [painel.hoje]);
+  useEffect(() => {
+    if (baralhoLido.current) guardarBaralho(painel.hoje, "segmento", segmento === null ? [] : [segmento]);
+  }, [painel.hoje, segmento]);
   useEffect(() => {
     if (baralhoLido.current) guardarBaralho(painel.hoje, "puladas", puladas);
   }, [painel.hoje, puladas]);
@@ -193,7 +201,9 @@ export function Hoje({ painel, templates }: { painel: Painel; templates: Templat
   const filaDia = useMemo(() => {
     const todos = [...semPasso, ...atrasados, ...paraHoje];
     return [
-      ...todos.filter(procurouOEstudio).sort((a, b) => b.created_at.localeCompare(a.created_at)),
+      ...todos
+        .filter(procurouOEstudio)
+        .sort((a, b) => b.created_at.localeCompare(a.created_at) || a.id.localeCompare(b.id)),
       ...todos.filter((l) => !procurouOEstudio(l)),
     ];
   }, [atrasados, paraHoje, semPasso]);
