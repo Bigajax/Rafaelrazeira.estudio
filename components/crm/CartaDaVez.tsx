@@ -53,6 +53,7 @@ import {
   temperatura,
   urgencia,
 } from "@/lib/crm/regras";
+import { arrobaDe } from "@/lib/crm/regras";
 import { NOME_ESTAGIO, NOME_TIPO, type LeadPainel } from "@/lib/crm/tipos";
 import { BaixaRapida } from "./BaixaRapida";
 import s from "@/app/(pt)/crm/crm.module.css";
@@ -111,8 +112,15 @@ export function CartaDaVez({
      porque a diferença costuma ser uma caixa ou um espaço. */
   const mesmoNome =
     lead.empresa?.trim().toLocaleLowerCase("pt-BR") === lead.nome.trim().toLocaleLowerCase("pt-BR");
+  /* A LOJA do card de anúncio (21/09). Quem preenche o formulário chega
+     com `empresa` vazia e a loja só no @ ("Fernando" / pegabem_calcados_df),
+     e a carta dizia "Fernando · Vitrine digital" sem dizer de qual loja se
+     tratava. O @ entra no contexto sempre que não é o próprio nome. */
+  const arroba = arrobaDe(lead.instagram);
+  const arrobaEhONome = !arroba || lead.nome.trim().replace(/^@+/, "").toLocaleLowerCase("pt-BR") === arroba.toLocaleLowerCase("pt-BR");
   const contexto = [
     mesmoNome ? null : lead.empresa,
+    arrobaEhONome ? null : `@${arroba}`,
     lead.tipo_projeto ? NOME_TIPO[lead.tipo_projeto] : null,
     lead.cidade,
   ]

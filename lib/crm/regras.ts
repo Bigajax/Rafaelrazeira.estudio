@@ -811,6 +811,12 @@ export function linkWhatsapp(bruto: string | null, texto?: string): string | nul
 }
 
 /** Aceita "@loja", "loja" ou a URL inteira colada, e devolve sempre a URL. */
+/* "@Loja", "instagram.com/loja/" e "LOJA " viram "Loja": o @ limpo do
+   cadastro, do jeito que a carta e as teclas da fila mostram. */
+export function arrobaDe(bruto: string | null | undefined): string {
+  return (bruto ?? "").trim().replace(/^@+/, "").replace(/^https?:\/\/(www\.)?instagram\.com\//i, "").replace(/\/.*$/, "");
+}
+
 export function linkInstagram(bruto: string | null): string | null {
   const v = String(bruto || "").trim();
   if (!v) return null;

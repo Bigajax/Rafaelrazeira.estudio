@@ -47,7 +47,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { diasEntre, dinheiroCurto, JANELA_HORIZONTE, procurouOEstudio, urgencia } from "@/lib/crm/regras";
+import { arrobaDe, diasEntre, dinheiroCurto, JANELA_HORIZONTE, procurouOEstudio, urgencia } from "@/lib/crm/regras";
 import { NOME_ESTAGIO, type LeadPainel, type Template } from "@/lib/crm/tipos";
 import { CartaDaVez } from "./CartaDaVez";
 import { ModalMensagem } from "./ModalMensagem";
@@ -122,6 +122,15 @@ function guardarBaralho(hoje: string, lista: ListaGuardada, ids: string[]) {
   } catch {
     /* sem storage, sem memória: a fila funciona igual */
   }
+}
+
+/* O nome que a tecla mostra: o do card e, quando o card é de gente com a
+   loja só no @, a loja junto ("Fernando · @pegabem_calcados_df"), senão
+   a fila diz "Carlos" e "Fernando" sem dizer de onde. */
+function nomeDaTecla(l: LeadPainel): string {
+  const arroba = arrobaDe(l.instagram);
+  if (!arroba || l.nome.trim().replace(/^@+/, "").toLocaleLowerCase("pt-BR") === arroba.toLocaleLowerCase("pt-BR")) return l.nome;
+  return `${l.nome} · @${arroba}`;
 }
 
 const plural = (n: number, um: string, muitos: string) => `${n} ${n === 1 ? um : muitos}`;
@@ -501,7 +510,7 @@ export function Hoje({ painel, templates }: { painel: Painel; templates: Templat
             </i>
             <span className={s.vezSetaTexto}>
               <span className={s.vezSetaRot}>Anterior</span>
-              <b className={s.vezSetaNome}>{anterior ? anterior.nome : "Começo da fila"}</b>
+              <b className={s.vezSetaNome}>{anterior ? nomeDaTecla(anterior) : "Começo da fila"}</b>
             </span>
           </button>
 
@@ -531,7 +540,7 @@ export function Hoje({ painel, templates }: { painel: Painel; templates: Templat
             </i>
             <span className={s.vezSetaTexto}>
               <span className={s.vezSetaRot}>Próxima</span>
-              <b className={s.vezSetaNome}>{proximo ? proximo.nome : "Última do dia"}</b>
+              <b className={s.vezSetaNome}>{proximo ? nomeDaTecla(proximo) : "Última do dia"}</b>
             </span>
           </button>
         </footer>
