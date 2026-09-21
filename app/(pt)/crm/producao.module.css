@@ -2003,3 +2003,64 @@
   text-decoration-color: var(--rosa);
 }
 .prova2Proibida.prova2Proibida::before { content: "× "; color: var(--rosa); font-weight: 700; text-decoration: none }
+
+/* ============================================================
+   A BANCADA, NA SEGUNDA GRAMÁTICA (21/09/2026)
+
+   O mesmo acerto do pipeline, da fila e do trilho, aqui na oficina. O que
+   pesava: a régua de quatro marcos com quatro rótulos em mono de 8,5px
+   brigando por 280px ("CATÁLOGO" e "CONFERIDA" se atropelavam), os três
+   números com a palavra em caixa alta embaixo, o nome da loja em
+   condensada maiúscula, e as fichas contornadas soltas no papel.
+
+   1. A RÉGUA VIRA BARRA DE QUATRO TRECHOS: vencido em tinta, o da vez em
+      rosa, o que falta em papel escuro. Só UM rótulo aparece, o do trecho
+      da vez ("catálogo"), em frase; os outros três estão ditos pela forma
+      e continuam no HTML para o leitor de tela. A ficha da loja usa a
+      mesma régua e ganha a mesma barra.
+   2. OS NÚMEROS NA ARCHIVO LARGA com a palavra em frase, na Inter.
+   3. O NOME EM CAIXA NORMAL, na Archivo larga; o @ e a idade em Inter.
+   4. AS FICHAS SOBRE A MESA: a lista ganha o chão em `--paper-2` e as
+      fichas em `--paper-alto` com filete de 1px; a margem esquerda de
+      status continua, que é informação.
+   ============================================================ */
+.regua { gap: 3px; align-items: start }
+.regua::before { display: none }
+.marco { display: grid; gap: 6px; justify-items: start; flex: 1 1 0; min-width: 0 }
+.marco i {
+  width: 100%; height: 6px; border-radius: 0; border: 0;
+  background: var(--paper-2);
+}
+.marco span {
+  display: none;
+  font: 600 11.5px var(--body); letter-spacing: 0; text-transform: none;
+  color: var(--ink); white-space: nowrap;
+}
+.marco span::first-letter { text-transform: uppercase }
+.marcoFeito i { background: var(--ink); border: 0 }
+.marcoAtual i { background: var(--rosa); border: 0; box-shadow: none }
+.marcoAtual span { display: block; color: var(--rosa); font-weight: 600 }
+.reguaCompleta .marco:last-child span { display: block; color: var(--green-dark) }
+
+.bancada { gap: 8px; padding: 8px; background: var(--paper-2) }
+.ficha { gap: 12px; padding: 14px 15px 13px 15px; border: 1px solid var(--line); border-left-width: 3px }
+.ficha:hover { border-color: var(--ink) }
+.fichaNome b {
+  font-family: var(--display); font-stretch: 112%; font-weight: 700;
+  text-transform: none; font-size: 15px; letter-spacing: 0; line-height: 1.1;
+}
+.fichaNome small { font: 500 12px var(--body); color: var(--ink-fraco) }
+.fichaNome small em { font-style: normal }
+
+.numeros { gap: 18px; padding-top: 10px; border-top: 1px solid var(--paper-2) }
+.num { gap: 1px }
+.num b {
+  font-family: var(--display); font-stretch: 118%; font-weight: 800;
+  font-size: 22px; letter-spacing: -.02em; line-height: 1;
+}
+.num span { font: 500 11px var(--body); letter-spacing: 0; text-transform: none; color: var(--ink-fraco) }
+
+.estado b { font: 600 12px var(--body); letter-spacing: 0; text-transform: none }
+.estado b::first-letter { text-transform: uppercase }
+.vazio b { font-family: var(--display); font-stretch: 112%; font-weight: 700; text-transform: none; letter-spacing: 0 }
+.entradaRot, .campoLead span { font: 600 11.5px var(--body); letter-spacing: 0; text-transform: none; color: var(--ink-fraco) }

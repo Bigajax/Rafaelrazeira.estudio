@@ -65,7 +65,9 @@ export function Regua({ etapas, className }: { etapas: Etapas; className?: strin
   const aVez = MARCOS.find((m) => !etapas[m.chave])?.chave ?? null;
 
   return (
-    <ol className={`${s.regua} ${className ?? ""}`}>
+    /* `reguaCompleta` (21/09): sem marco da vez, a régua inteira é tinta
+       cheia e o único rótulo que aparece é o do fim, "pronta". */
+    <ol className={`${s.regua} ${aVez === null ? s.reguaCompleta : ""} ${className ?? ""}`}>
       {MARCOS.map(({ chave, rotulo }) => (
         <li
           key={chave}
