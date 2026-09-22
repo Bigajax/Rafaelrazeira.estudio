@@ -2,26 +2,26 @@
 
 Dois clientes, duas histórias diferentes, e é isso que a página precisa: o Xavier vende **camisa de futebol pelo Instagram**, com estoque em mãos; o André vende **importados premium sob encomenda e pronta entrega**, direto do fornecedor, e fechou em um dia depois de ver a prévia pronta. Um prova a tese do pedido pronto; o outro prova que dá pra confiar em quem você nunca viu, e que a vitrine é do lojista: ele mesmo cadastra as peças pelo celular.
 
-## Como gravar (vale pros dois)
+## Como gravar (vale pros dois): de selfie, sozinho, uma pergunta por vídeo
 
-- **Entrevista, nunca decoreba.** Você pergunta, ele responde com as palavras dele, você corta as perguntas na edição. Depoimento lido soa falso e mata a prova social.
-- **Presencial se der; se não, ele grava sozinho** respondendo uma pergunta por vez, em vídeos separados. Manda o briefing da seção "Se ele gravar sozinho".
-- **Vertical (9:16)**, celular apoiado na altura dos olhos, luz de frente (porta ou janela), lugar silencioso. Som ruim estraga mais que imagem ruim.
-- **Fundo com produto**: as camisas atrás do Xavier; as caixas e os pares em mãos atrás do André (ou a logo da Arena na tela do celular, se ele gravar em casa).
-- Ele olha pra você, ao lado da câmera, não pra lente. Cada resposta duas vezes; se enrolar, "resume em uma frase".
-- Grava 8 a 10 minutos de conversa. **Corte final: 40 a 60 segundos.**
+- **Selfie, falando pra lente, do jeito que ele fala no story.** Não é entrevista nem decoreba: você manda as perguntas, ele responde uma por vez, cada resposta num vídeo separado. Assim ele pode errar e regravar só aquela, e você monta a ordem na edição.
+- **Câmera da frente, vertical (9:16)**, braço esticado ou o celular apoiado na altura dos olhos, do peito pra cima. Luz de frente (de cara pra janela ou pra porta), nunca de costas pra luz. Lugar silencioso: som ruim estraga mais que imagem ruim.
+- **Fundo com produto**: as camisas atrás do Xavier; as caixas e os pares em mãos atrás do André.
+- **Cada resposta em 15 a 25 segundos.** Se passou de 30, regrava mais curto. Começa a falar já na resposta, sem "oi, então...". Pode olhar a pergunta antes, mas fala olhando pra lente.
+- Grava as 7; se alguma sair travada, regrava só ela. **Corte final: 40 a 60 segundos.**
+- Manda por WhatsApp como **documento** (não como vídeo), pra vir na qualidade original.
 - **O que não pode aparecer**: número inventado ou induzido ("dobrei as vendas"); promessa de faturamento em nome do serviço; elogio genérico sem cena ("ótimo profissional, recomendo"). Se ele tiver número real e quiser falar, ótimo. Roteirizar isso, nunca.
 
 ## Mensagens pra combinar (WhatsApp)
 
 **Xavier**
 ```
-Xavier, preciso de uma força tua. Tô montando a página nova do estúdio e queria um depoimento teu em vídeo sobre a vitrine, coisa de 1 minuto no corte final. Não precisa decorar nada: eu te faço umas perguntas e tu responde do teu jeito, depois eu edito. Te tomo uns 15 minutos. E o vídeo trabalha pra ti também: vou marcar a Xavier's em tudo que eu postar com ele. Consigo passar aí essa semana?
+Xavier, preciso de uma força tua. Tô montando a página nova do estúdio e queria um depoimento teu em vídeo sobre a vitrine, coisa de 1 minuto no corte final. É de selfie, no celular, do jeito que tu grava story: eu te mando 7 perguntas, tu responde uma por vídeo, curtinho, e eu edito. Uns 15 minutos. E o vídeo trabalha pra ti também: vou marcar a Xavier's em tudo que eu postar com ele. Consegue essa semana?
 ```
 
 **André**
 ```
-André, preciso de uma força. Tô montando a página nova do estúdio e queria um depoimento teu em vídeo sobre a vitrine, coisa de 1 minuto no corte final. Sem decorar nada: eu mando umas perguntas, tu responde do teu jeito no celular e eu edito. Uns 15 minutos. E o vídeo marca a Arena Imports Floripa em tudo que eu postar com ele. Consegue essa semana?
+André, preciso de uma força. Tô montando a página nova do estúdio e queria um depoimento teu em vídeo sobre a vitrine, coisa de 1 minuto no corte final. É de selfie, no celular, do jeito que tu grava story: eu te mando 7 perguntas, tu responde uma por vídeo, curtinho, e eu edito. Uns 15 minutos. E o vídeo marca a Arena Imports Floripa em tudo que eu postar com ele. Consegue essa semana?
 ```
 
 ---
@@ -51,7 +51,7 @@ André, preciso de uma força. Tô montando a página nova do estúdio e queria 
 
 ### Caminho de fallback (~45 s), só se ele travar
 
-Deixa claro: com as palavras dele; isso é só o caminho.
+Manda só se ele pedir "me dá uma ideia do que falar". Deixa claro: com as palavras dele; isso é só o caminho.
 
 > Eu sou o Xavier, da Xavier's Sports. Vendo camisa de futebol pelo Instagram. Antes, todo atendimento era no direct: o cliente perguntava preço, pedia foto, perguntava tamanho, e muita gente sumia no meio disso. Hoje o cliente entra pelo link, vê tudo, foto, tamanho, o que tem, e me chama no WhatsApp com o pedido pronto. Chega mensagem tipo "quero a camisa tal, tamanho G, ainda tem?". É só fechar. Eu vi a vitrine pronta antes de pagar o resto, e paguei parcelado. Se você vende pelo Instagram, vale muito.
 
@@ -86,10 +86,17 @@ Deixa claro: com as palavras dele; isso é só o caminho.
 
 ---
 
-## Se ele gravar sozinho (briefing pra mandar no WhatsApp)
+## O briefing pra mandar no WhatsApp (as perguntas, uma por vídeo)
+
+Manda em duas bolhas: primeiro o "como", depois a lista.
 
 ```
-Combinado assim: grava um vídeo curto pra cada pergunta, na loja, celular em pé, luz de frente, sem decorar. Responde do teu jeito, pode errar e regravar, eu edito tudo.
+Combinado assim: câmera da frente, celular em pé, de cara pra luz (janela ou porta), do peito pra cima, num lugar quieto. Fala olhando pra lente, do teu jeito, como no story.
+Uma pergunta por vídeo, de 15 a 25 segundos cada. Errou, regrava só aquela. Não precisa dizer "oi", já começa respondendo.
+No fim me manda os vídeos como documento (não como vídeo), pra vir na qualidade original.
+```
+
+```
 1. Teu nome, a loja e o que vocês vendem.
 2. Como era atender no direct antes da vitrine.
 3. [Xavier] Uma venda que você sente que perdeu no meio das perguntas. / [André] O que te fez fechar no mesmo dia.
@@ -97,8 +104,9 @@ Combinado assim: grava um vídeo curto pra cada pergunta, na loja, celular em p�
 5. Um pedido específico que chegou pronto.
 6. [Xavier] Como foi o processo: prazo, ver pronto antes de pagar o resto, parcelado. / [André] Como é cadastrar peça pelo celular ou colar o link do fornecedor.
 7. Pra quem você recomendaria.
-Manda por aqui mesmo, em qualidade original (documento, não foto).
 ```
+
+Quando chegarem: assiste tudo antes de cortar e anota o segundo de cada frase boa. A ordem do corte é a das perguntas, mas a melhor frase (quase sempre a da pergunta 3 ou 5) abre o vídeo, antes da apresentação.
 
 ## Depois de gravado: o mesmo vídeo vira 4 ativos
 
