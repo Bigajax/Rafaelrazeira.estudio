@@ -16,8 +16,9 @@
      PROPOSTA COMERCIAL — MINAS BRASIL DECOR (vitrine digital, Contagem MG)
      Base: proposta/fantoche.html · Vitrine já construída com as 33 peças do Instagram da loja
      Checkout real (Pix/cartão) via Mercado Pago, sem sair da página.
-     Itens em lib/propostas.ts (proposta "minas-decor":
-     entrada_pix R$ 199 · saldo_pix R$ 800 · saldo_card R$ 800 em até 4x).
+     SEM ENTRADA: um pagamento só, de R$ 999 no Pix, no dia da
+     publicação. Item em lib/propostas.ts (proposta "minas-decor":
+     avista_pix R$ 999). Esta proposta não tem opção de cartão.
      Suporte mensal R$ 149,90 com até 4 alterações + relatório mensal (extra R$ 39; transferência R$ 350). Sem tráfego pago, como na Fantoche.
      Para PDF: Ctrl+P → Salvar como PDF (o mockup não sai
      na impressão; o restante é 100% imprimível).
@@ -562,65 +563,34 @@ a{color:inherit;text-decoration:none}
         </div>
         <div class="split">
           <div>
-            <span class="tag">ENTRADA · R$ 199 NO PIX</span>
-            <span class="desc">R$ 199 para começar a revisão do catálogo com vocês</span>
+            <span class="tag">SEM ENTRADA</span>
+            <span class="desc">Vocês não adiantam nada para eu começar: a revisão do catálogo sai antes de qualquer cobrança</span>
           </div>
           <div>
-            <span class="tag">SALDO · R$ 800 NA ENTREGA</span>
-            <span class="desc">R$ 800 no dia da publicação: no cartão em até 4x, ou no Pix</span>
+            <span class="tag">PAGAMENTO ÚNICO · R$ 999 NO PIX</span>
+            <span class="desc">Uma vez só, no dia da publicação, depois de vocês verem a vitrine no ar</span>
           </div>
         </div>
-        <p class="host-note">A entrada é paga aqui na página, no Pix. O saldo só existe depois que a vitrine estiver publicada com o WhatsApp da loja: vocês pagam no Pix ou no cartão, como preferirem.</p>
+        <p class="host-note">É um pagamento só, no Pix, aqui na página. Ele acontece depois que a vitrine estiver publicada com o WhatsApp da loja e vocês aprovarem o que está no ar.</p>
 
         <aside class="guarantee">
           <span class="g-label">RISCO ZERO</span>
-          <p>Se, depois da entrada, a vitrine publicada não for o que vocês viram na prévia, a entrada é <b>devolvida integralmente</b>. O saldo só existe <b>depois que vocês aprovarem a publicação</b>.</p>
+          <p>Vocês pagam <b>depois</b> de ver a vitrine publicada. Se ela não for o que vocês viram na prévia, <b>não existe cobrança</b>: nada foi adiantado.</p>
         </aside>
 
-        <div class="pay-cards pay-cards--duo">
+        <div class="pay-cards pay-cards--one">
           <div class="pay pay--rec">
-            <div class="pay-head">Entrada no Pix</div>
+            <div class="pay-head">Pagamento único no Pix</div>
             <div class="pay-body">
-              <div class="pay-top">
-                <div class="pay-ctx">Para começar</div>
-                <div class="pay-price">R$ 199 <small>entrada para início do projeto</small></div>
+              <div class="pay-top pay-top--auto">
+                <div class="pay-ctx">No dia da publicação</div>
+                <div class="pay-price">R$ 999 <small>uma vez, sem entrada e sem mensalidade</small></div>
               </div>
               <ul class="pay-feats">
                 <li><span>QR code aqui na página, confirmação na hora</span></li>
-                <li><span>A revisão do catálogo começa no mesmo dia</span></li>
+                <li><span>Nada é pago antes: a vitrine sobe primeiro</span></li>
               </ul>
-              <button class="btn-pay" type="button" data-checkout-item="entrada_pix">Pagar a entrada</button>
-            </div>
-          </div>
-          <div class="pay">
-            <div class="pay-head">Saldo no Pix</div>
-            <div class="pay-body">
-              <div class="pay-top">
-                <div class="pay-ctx">Na entrega</div>
-                <div class="pay-price">R$ 800 <small>no dia da publicação</small></div>
-              </div>
-              <ul class="pay-feats">
-                <li><span>Pagamento único, sem parcelas</span></li>
-                <li><span>Total R$ 999,00</span></li>
-              </ul>
-              <button class="btn-pay btn-pay--ghost" type="button" data-checkout-item="saldo_pix">Pagar o saldo no Pix</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="pay-cards pay-cards--one">
-          <div class="pay pay--dark">
-            <div class="pay-head">Saldo no cartão</div>
-            <div class="pay-body">
-              <div class="pay-top pay-top--auto">
-                <div class="pay-ctx">Na entrega, parcelado</div>
-                <div class="pay-price">R$ 800 <small>em até 4x no cartão de crédito</small></div>
-              </div>
-              <ul class="pay-feats">
-                <li><span>Parcelas em <b>até 4x</b>, calculadas na hora no seu limite</span></li>
-                <li><span>Aprovação imediata</span></li>
-              </ul>
-              <button class="btn-pay btn-pay--ghost" type="button" data-checkout-item="saldo_card">Pagar saldo no cartão</button>
+              <button class="btn-pay" type="button" data-checkout-item="avista_pix">Pagar no Pix</button>
             </div>
           </div>
         </div>
@@ -635,8 +605,8 @@ a{color:inherit;text-decoration:none}
     <div>
       <h2>PRAZO</h2>
       <div class="body">
-        <p class="deadline">NO AR EM ATÉ <em>5 DIAS ÚTEIS</em> APÓS A ENTRADA</p>
-        <p style="margin-top:14px">O projeto que vocês viram acima já está construído com as 33 peças do Instagram. Depois da entrada, o que falta é só o que não está em lugar nenhum: <b>o número de WhatsApp da loja</b>, o horário de funcionamento, a largura dos retráteis montados (a ficha corta), as cores e os tecidos disponíveis de cada peça, e a tabela de preços se vocês quiserem preço na etiqueta (sem ela, a vitrine diz "consulte o valor no WhatsApp", como está na prévia). O prazo conta a partir do dia em que essa lista chega.</p>
+        <p class="deadline">NO AR EM ATÉ <em>5 DIAS ÚTEIS</em> APÓS O ACEITE</p>
+        <p style="margin-top:14px">O projeto que vocês viram acima já está construído com as 33 peças do Instagram. Depois do aceite, o que falta é só o que não está em lugar nenhum: <b>o número de WhatsApp da loja</b>, o horário de funcionamento, a largura dos retráteis montados (a ficha corta), as cores e os tecidos disponíveis de cada peça, e a tabela de preços se vocês quiserem preço na etiqueta (sem ela, a vitrine diz "consulte o valor no WhatsApp", como está na prévia). O prazo conta a partir do dia em que essa lista chega.</p>
       </div>
     </div>
   </section>
@@ -694,9 +664,9 @@ a{color:inherit;text-decoration:none}
       <h2>PRÓXIMOS PASSOS</h2>
       <div class="body">
         <ol class="next">
-          <li><span>Vocês confirmam o <b>aceite desta proposta</b> por WhatsApp e pagam a <b>entrada de R$ 199 no Pix</b> aqui na página.</span></li>
+          <li><span>Vocês confirmam o <b>aceite desta proposta</b> por WhatsApp. Não há nada a pagar neste passo.</span></li>
           <li><span>Vocês me mandam o WhatsApp da loja, o horário, os tecidos e cores de cada peça, a largura dos retráteis e, se quiserem, a tabela de preços.</span></li>
-          <li><span>Reviso o catálogo com vocês, publico a vitrine, vocês pagam o saldo e a <b>Minas Brasil Decor entra no ar</b>.</span></li>
+          <li><span>Reviso o catálogo com vocês e publico a vitrine. Com a <b>Minas Brasil Decor no ar</b> e aprovada, vocês pagam os <b>R$ 999 no Pix</b>, aqui nesta página.</span></li>
         </ol>
       </div>
     </div>
