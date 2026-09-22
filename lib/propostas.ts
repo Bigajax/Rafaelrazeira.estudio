@@ -212,4 +212,18 @@ export const PROPOSTAS: Record<string, Proposta> = {
       saldo_card: { label: "Saldo na entrega, no cartão em até 4x", valor: 800, metodo: "card", maxParcelas: 4 },
     },
   },
+  /* A ÚNICA que não segue os R$ 999 de tabela. O Santana recuou do preço
+     cheio no WhatsApp em 22/09 ("achei que era um valor mensal") e fechou
+     em R$ 500, com a entrada menor para caber no mês. O desconto tem motivo
+     amarrado a este caso na página: é a primeira loja de chuteira do
+     portfólio. Não é tabela nova. */
+  "jk-imports": {
+    titulo: "Rafael Razeira Estúdio — Vitrine Digital JK Imports",
+    whatsapp: "5544991246187",
+    itens: {
+      entrada_pix: { label: "Entrada para início do projeto", valor: 100, metodo: "pix" },
+      saldo_pix: { label: "Saldo depois da entrega aprovada, no Pix", valor: 400, metodo: "pix" },
+      saldo_card: { label: "Saldo depois da entrega aprovada, no cartão em até 4x", valor: 400, metodo: "card", maxParcelas: 4 },
+    },
+  },
 };
