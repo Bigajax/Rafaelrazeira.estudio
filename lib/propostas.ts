@@ -203,4 +203,13 @@ export const PROPOSTAS: Record<string, Proposta> = {
       avista_card: { label: "No cartão, em até 12x", valor: 6500, metodo: "card", maxParcelas: 12 },
     },
   },
+  "narciso-store": {
+    titulo: "Rafael Razeira Estúdio — Vitrine Digital Narciso Store",
+    whatsapp: "5544991246187",
+    itens: {
+      entrada_pix: { label: "Entrada para início do projeto", valor: 199, metodo: "pix" },
+      saldo_pix: { label: "Saldo na entrega, no Pix", valor: 800, metodo: "pix" },
+      saldo_card: { label: "Saldo na entrega, no cartão em até 4x", valor: 800, metodo: "card", maxParcelas: 4 },
+    },
+  },
 };
