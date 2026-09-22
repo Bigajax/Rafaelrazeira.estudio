@@ -594,6 +594,25 @@ function medirLeitura() {
     ultimoCampo = alvo.closest("#hero-form") ? `hero_${alvo.name}` : alvo.name;
   });
 
+  /* ---------- a primeira interação (22/09/2026) ----------
+     Na semana de 15 a 21/09, 40 dos 79 visitantes de iPhone do anúncio
+     tinham UM evento só (abriu e sumiu, em menos de 5 s, todos no navegador
+     do Instagram); no Android era 1 em 63. Isso é ou o navegador interno
+     pré-carregando a página antes de a pessoa tocar (visita fantasma, que
+     infla o "abriu" e não é gente) ou gente fugindo antes de a página
+     aparecer. O PageView não separa os dois; o primeiro toque, rolagem ou
+     tecla separa: fantasma nunca interage. Um evento por visita, com o
+     tipo e o tempo até ele, só para a Mixpanel. */
+  let interagiu = false;
+  const aoInteragir = (tipo: string) => {
+    if (interagiu) return;
+    interagiu = true;
+    mpTrack("Interagiu", { tipo, segundos: segundos() });
+  };
+  addEventListener("pointerdown", () => aoInteragir("toque"), { passive: true, once: true });
+  addEventListener("scroll", () => aoInteragir("rolagem"), { passive: true, once: true });
+  addEventListener("keydown", () => aoInteragir("tecla"), { once: true });
+
   let saiu = false;
   const aoSair = () => {
     if (saiu) return;
@@ -602,6 +621,7 @@ function medirLeitura() {
       segundos: segundos(),
       profundidade_max: maior,
       rolou: maior > 0,
+      interagiu,
       ...(ultimoCampo ? { form_ultimo_campo: ultimoCampo } : {}),
     });
   };
@@ -636,7 +656,10 @@ export function initTracking(cfg?: Partial<ConfigTracking>) {
   const idPageView = idAleatorio();
   fbq("track", "PageView", {}, { eventID: idPageView });
   enviarCapi("PageView", idPageView);
-  mpTrack("PageView");
+  /* `visivel`: se a aba já nasce escondida (visibilityState "hidden" ou
+     prerender), é o navegador pré-carregando e não uma pessoa olhando.
+     É a outra metade da prova do "Interagiu" em medirLeitura. */
+  mpTrack("PageView", { visivel: document.visibilityState === "visible" });
   medirLeitura();
 
   // ViewContent — visitante viu a oferta (1x por sessão)

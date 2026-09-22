@@ -118,6 +118,32 @@ const reais = [...pessoas.values()].filter((v) => v.tipo === "visitante real");
 if (!reais.length) { console.log("\nNenhum visitante real no período."); process.exit(0); }
 
 const tem = (v, ev) => v.eventos.some((x) => x.ev === ev);
+
+/* ---------- gente x fantasma, por sistema (22/09/2026) ----------
+   O "Interagiu" (primeiro toque, rolagem ou tecla) e o `visivel` do
+   PageView separam a visita de gente da página pré-carregada pelo
+   navegador interno do Instagram. Só aparece quando o período tem esses
+   eventos; antes de 22/09 não existiam. */
+const temInteragiu = reais.some((v) => tem(v, "Interagiu"));
+if (temInteragiu) {
+  console.log("\n=== gente x fantasma (por sistema) ===");
+  const porOs = {};
+  for (const v of reais) {
+    const os = v.p.$os || "?";
+    const g = (porOs[os] ??= { abriu: 0, escondida: 0, interagiu: 0, enviou: 0 });
+    g.abriu++;
+    const pv = v.eventos.find((x) => x.ev === "Abriu a página");
+    if (pv && pv.props.visivel === false) g.escondida++;
+    if (tem(v, "Interagiu")) g.interagiu++;
+    if (tem(v, "Enviou o formulário")) g.enviou++;
+  }
+  for (const [os, g] of Object.entries(porOs).sort((a, b) => b[1].abriu - a[1].abriu)) {
+    const pctI = ((g.interagiu / g.abriu) * 100).toFixed(0);
+    const pctE = g.interagiu ? ((g.enviou / g.interagiu) * 100).toFixed(0) : "0";
+    console.log(`  ${os.padEnd(10)} abriu ${String(g.abriu).padStart(3)} | nasceu escondida ${String(g.escondida).padStart(3)} | interagiu ${String(g.interagiu).padStart(3)} (${pctI}%) | enviou ${String(g.enviou).padStart(3)} (${pctE}% de quem interagiu)`);
+  }
+}
+
 console.log(`\n=== funil dos ${reais.length} visitantes reais ===`);
 for (const ev of ["Abriu a página", "Rolou", "Viu a oferta", "Clicou em CTA", "Tocou no formulário", "Enviou o formulário"]) {
   const n = reais.filter((v) => tem(v, ev)).length;
