@@ -204,6 +204,18 @@ export const PROPOSTAS: Record<string, Proposta> = {
       avista_card: { label: "No cartão, em até 12x", valor: 6500, metodo: "card", maxParcelas: 12 },
     },
   },
+  /* A Ivone fecha em R$ 499: metade do preço de tabela, combinado com o
+     Rafael por WhatsApp em 22/09. A entrada segue a mesma de todas as
+     outras (199), e o saldo cai para 300. */
+  "ivone-calcados": {
+    titulo: "Rafael Razeira Estúdio — Vitrine Digital Ivone Calçados SBC",
+    whatsapp: "5544991246187",
+    itens: {
+      entrada_pix: { label: "Entrada para início do projeto", valor: 199, metodo: "pix" },
+      saldo_pix: { label: "Saldo na entrega, no Pix", valor: 300, metodo: "pix" },
+      saldo_card: { label: "Saldo na entrega, no cartão em até 4x", valor: 300, metodo: "card", maxParcelas: 4 },
+    },
+  },
   "narciso-store": {
     titulo: "Rafael Razeira Estúdio — Vitrine Digital Narciso Store",
     whatsapp: "5544991246187",
