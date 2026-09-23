@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Como usar a sua loja · Arena Imports Floripa · Rafael Razeira Estúdio</title>
+<meta name="description" content="Como usar a sua loja e o seu painel, passo a passo. Arena Imports Floripa, por Rafael Razeira Estúdio." />
+<meta name="theme-color" content="#0A0A0A" />
+<meta name="robots" content="noindex, nofollow" />
+
+<!-- O ícone da aba: a logo da Arena sobre o preto (ela tem o A branco e
+     só o arco em verde, então some em fundo claro). -->
+<link rel="icon" type="image/png" href="/entrega/arena-imports/favicon.png" />
+<link rel="apple-touch-icon" href="/entrega/arena-imports/apple-touch-icon.png" />
+
+<!-- O cartão que aparece quando o link é mandado no WhatsApp. -->
+<meta property="og:type" content="article" />
+<meta property="og:locale" content="pt_BR" />
+<meta property="og:site_name" content="Rafael Razeira Estúdio" />
+<meta property="og:title" content="Como usar a sua loja · Arena Imports Floripa" />
+<meta property="og:description" content="O guia do seu painel, passo a passo. Sem linguagem de computador." />
+<meta property="og:url" content="https://rafaelrazeira.com.br/entrega/arena-imports.html" />
+<meta property="og:image" content="https://rafaelrazeira.com.br/entrega/arena-imports/og.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Cartilha de entrega da Arena Imports Floripa" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="canonical" href="https://rafaelrazeira.com.br/entrega/arena-imports.html" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/entrega/arena-imports/styles.css" />
+</head>
+<body>
+
+<!-- Topbar mobile -->
+<header class="topbar">
+  <div class="topbar__left">
+    <img class="topbar__logo" src="/entrega/arena-imports/logo-monograma.png" alt="Logo Arena Imports Floripa" />
+    <strong>Como usar a sua loja</strong>
+  </div>
+  <button class="menu-btn" id="menuBtn" aria-label="Abrir sumário" aria-expanded="false">Sumário</button>
+</header>
+<div class="scrim" id="scrim"></div>
+
+<div class="layout">
+
+  <!-- Sidebar / Sumário -->
+  <aside class="sidebar" id="sidebar" aria-label="Sumário">
+    <div class="sidebar__brand">
+      <img class="sidebar__logo" src="/entrega/arena-imports/logo-monograma.png" alt="Logo Arena Imports Floripa" />
+      <div>
+        <strong>Arena Imports</strong>
+        <span>Como usar a sua loja</span>
+      </div>
+    </div>
+    <nav class="sidebar__nav" id="toc">
+      <a href="#capa"><span class="n">00</span> Capa</a>
+      <a href="#comece"><span class="n">→</span> Comece por aqui</a>
+
+      <span class="grupo">Parte 1 · O que você tem</span>
+      <a href="#sec-1"><span class="n">01</span> A loja e o painel</a>
+      <a href="#sec-2"><span class="n">02</span> Em mãos ou encomenda</a>
+      <a href="#sec-3"><span class="n">03</span> O que tem dentro hoje</a>
+
+      <span class="grupo">Parte 2 · O dia a dia</span>
+      <a href="#sec-4"><span class="n">04</span> Vendi o último par</a>
+      <a href="#sec-5"><span class="n">05</span> Chegou peça nova</a>
+      <a href="#sec-6"><span class="n">06</span> Quero mudar o preço</a>
+      <a href="#sec-7"><span class="n">07</span> Quero trocar a foto</a>
+      <a href="#sec-8"><span class="n">08</span> Quero pôr na capa</a>
+      <a href="#sec-9"><span class="n">09</span> Sumiu, voltou, esgotou</a>
+      <a href="#sec-10"><span class="n">10</span> Mudar o recado ou o zap</a>
+
+      <span class="grupo">Parte 3 · O painel por dentro</span>
+      <a href="#sec-11"><span class="n">11</span> A lista e as abas</a>
+      <a href="#sec-12"><span class="n">12</span> A ficha da peça</a>
+      <a href="#sec-13"><span class="n">13</span> As fotos</a>
+      <a href="#sec-14"><span class="n">14</span> Os três interruptores</a>
+
+      <span class="grupo">Parte 4 · Cuidar da loja</span>
+      <a href="#sec-15"><span class="n">15</span> Entrar no painel</a>
+      <a href="#sec-16"><span class="n">16</span> A sua semana</a>
+      <a href="#sec-17"><span class="n">17</span> O que o site não faz</a>
+      <a href="#sec-18"><span class="n">18</span> Quando der problema</a>
+      <a href="#sec-19"><span class="n">19</span> Ficha técnica</a>
+      <a href="#sec-20"><span class="n">20</span> Termo de entrega</a>
+    </nav>
+  </aside>
+
+  <!-- Conteúdo -->
+  <main class="content">
+    <div class="page">
+
+      <!-- CAPA -->
+      <section class="cover" id="capa">
+        <div class="cover__brandline">
+          <img class="cover__logo" src="/entrega/arena-imports/logo-monograma.png" alt="Logo Arena Imports Floripa" />
+          <p class="cover__kicker">Cartilha de Entrega</p>
+        </div>
+        <h1>Como usar<br /><span class="em">a sua loja</span></h1>
+        <p class="cover__sub">Arena Imports Floripa. Tudo o que você precisa saber, na ordem em que você vai precisar.</p>
+        <p class="cover__desc">André, a sua loja está no ar. Isto aqui não é manual de computador: é a sua loja explicada. A <b>Parte 2</b> é a que importa no dia a dia, porque ela responde as perguntas do jeito que elas aparecem: "vendi o último par, e agora?", "chegou peça nova", "quero mudar esse preço". Se alguma coisa não fizer sentido, a culpa é da minha escrita e eu reescrevo.</p>
+        <p class="cover__by"><span class="dot"></span> Desenvolvido por <b>Rafael Razeira Estúdio</b></p>
+
+        <div class="cover__links">
+          <a class="clink primary" href="https://www.arenaimportsfloripa.com" target="_blank" rel="noopener noreferrer">Abrir a loja ↗</a>
+          <a class="clink" href="https://www.arenaimportsfloripa.com/painel" target="_blank" rel="noopener noreferrer">Abrir o painel ↗</a>
+        </div>
+
+        <a class="dl-logo" href="/entrega/arena-imports/logo-arena.png" download="arena-imports-floripa-logo.png" title="Baixar a logo da Arena Imports Floripa">
+          <img src="/entrega/arena-imports/logo-monograma.png" alt="" aria-hidden="true" />
+          <span>Baixar a logo da marca (PNG com fundo transparente)</span>
+          <span class="dl-logo__arrow" aria-hidden="true">↓</span>
+        </a>
+        <p class="muted" style="margin-top:10px">A mesma logo que está no site, no favicon e no cartão que aparece quando alguém manda o link no WhatsApp. Serve para etiqueta, sacola e post.</p>
+
+        <dl class="cover__meta">
+          <div><dt>A sua loja</dt><dd class="fill">arenaimportsfloripa.com</dd></div>
+          <div><dt>O seu painel</dt><dd class="fill">arenaimportsfloripa.com/painel</dd></div>
+          <div><dt>Data de entrega</dt><dd>22/09/2026</dd></div>
+          <div><dt>Versão</dt><dd>1.0.0</dd></div>
+        </dl>
+      </section>
+
+      <!-- COMECE POR AQUI -->
+      <section class="section" id="comece">
+        <div class="agora">
+          <h3>Se você só tiver 15 minutos hoje, faça isto</h3>
+          <p>A loja já está de pé e funcionando. Três coisas dependem de você, e elas mudam o resultado mais do que qualquer outra. Estão explicadas em detalhe adiante, mas se você fizer só isto, já valeu o dia.</p>
+          <ol>
+            <li><div><b>Troque a sua senha</b><small>A que eu criei é fraca de propósito, só para o primeiro acesso. Me chame e eu troco em um minuto. Seção 15.</small></div></li>
+            <li><div><b>Marque o que está em mãos</b><small>Hoje só 1 das 136 peças tem o selo de pronta entrega, e por isso essa página está praticamente vazia. Ligue o interruptor no que está na sua prateleira. Seção 4.</small></div></li>
+            <li><div><b>Ponha preço nas dez que mais saem</b><small>Hoje só 1 peça tem valor. Quem não vê preço muitas vezes nem pergunta. Comece pelas que você mais vende. Seção 6.</small></div></li>
+          </ol>
+        </div>
+        <p class="muted" style="margin-top:18px">Depois disso, troque o link da bio do seu Instagram pelo endereço da loja. É de graça e é o que traz gente.</p>
+      </section>
+
+      <!-- ══════ PARTE 1 ══════ -->
+      <div class="parte" id="parte-1">
+        <span class="parte__n">Parte 1</span>
+        <h2>O que você tem</h2>
+        <p>Três coisas para entender antes de mexer em qualquer botão. Cinco minutos de leitura, e o resto da cartilha fica fácil.</p>
+      </div>
+
+      <!-- 1 -->
+      <section class="section" id="sec-1">
+        <span class="section__num">01</span>
+        <h2>A loja e o painel</h2>
+        <p class="lead">São dois endereços. Um é a vitrine que todo mundo vê. O outro é o seu fundo de loja, onde só você entra.</p>
+        <div class="grid cols-2">
+          <div class="card"><span class="card__num">Público</span><h4>A loja</h4><p><b>arenaimportsfloripa.com</b><br />É o link que você manda para cliente, põe na bio e no story. Qualquer pessoa abre.</p></div>
+          <div class="card"><span class="card__num">Só você</span><h4>O painel</h4><p><b>arenaimportsfloripa.com/painel</b><br />Protegido por e-mail e senha. É onde você cadastra peça, muda preço e troca foto.</p></div>
+        </div>
+        <div class="callout note"><span class="ic">i</span><p>O que você salva no painel aparece na loja <strong>na hora</strong>. Não precisa me avisar e não precisa esperar nada publicar. Você salva no celular e o cliente já vê.</p></div>
+        <h3>Como o cliente compra</h3>
+        <div class="flow">
+          <span class="step">Vê a peça na loja</span>
+          <span class="arr">→</span>
+          <span class="step">Escolhe o tamanho</span>
+          <span class="arr">→</span>
+          <span class="step hl">Toca em pedir</span>
+          <span class="arr">→</span>
+          <span class="step">Cai no seu WhatsApp com tudo escrito</span>
+        </div>
+        <p>Não existe carrinho nem pagamento dentro do site, e isso é de propósito: quem vende importado precisa conversar sobre numeração, prazo e frete. A loja não substitui você, ela <strong>prepara o cliente</strong>: quando ele chega na conversa, já escolheu.</p>
+      </section>
+
+      <!-- 2 -->
+      <section class="section" id="sec-2">
+        <span class="section__num">02</span>
+        <h2>Em mãos ou encomenda</h2>
+        <p class="lead">Se você entender só uma coisa desta cartilha, que seja esta. É a diferença que mais vende na sua loja.</p>
+        <p>Toda peça tem um interruptor chamado <strong>em mãos</strong>. Ele responde a pergunta que o cliente faz antes de qualquer outra: "tem pra hoje?".</p>
+
+        <div class="chaves">
+          <span class="chave chave--on">Em mãos, ligado</span>
+          <span class="chave chave--off">Em mãos, desligado</span>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th></th><th>Ligado</th><th>Desligado</th></tr></thead>
+            <tbody>
+              <tr><td><strong>O cliente vê</strong></td><td>Selo verde de pronta entrega no cartão</td><td>Sob encomenda, com prazo</td></tr>
+              <tr><td><strong>Onde ela aparece</strong></td><td>Na página de pronta entrega e na prateleira do topo da loja</td><td>Só no catálogo</td></tr>
+              <tr><td><strong>A mensagem que chega</strong></td><td>Já diz que é pronta entrega</td><td>Já diz que é encomenda</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout warn"><span class="ic">!</span><p><strong>Hoje só 1 das 136 peças está com esse interruptor ligado.</strong> É o Mercurial Superfly society branco. Enquanto as outras não forem marcadas, a sua página de pronta entrega fica quase vazia, e ela é a que vende mais rápido.</p></div>
+      </section>
+
+      <!-- 3 -->
+      <section class="section" id="sec-3">
+        <span class="section__num">03</span>
+        <h2>O que tem dentro hoje</h2>
+        <p>São <strong>136 peças</strong> em <strong>7 portas</strong>. As chuteiras ficam separadas por onde se joga, que é a primeira pergunta de quem compra chuteira.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Porta</th><th>Peças</th><th>Endereço direto</th></tr></thead>
+            <tbody>
+              <tr><td>Tênis casual</td><td class="num">37</td><td><code>/catalogo/tenis-casual</code></td></tr>
+              <tr><td>Bolsas</td><td class="num">31</td><td><code>/catalogo/bolsas</code></td></tr>
+              <tr><td>Camisas de time</td><td class="num">30</td><td><code>/catalogo/camisas-de-time</code></td></tr>
+              <tr><td>Chuteiras de campo</td><td class="num">28</td><td><code>/catalogo/chuteiras-de-campo</code></td></tr>
+              <tr><td>Tênis de corrida</td><td class="num">5</td><td><code>/catalogo/tenis-de-corrida</code></td></tr>
+              <tr><td>Chuteiras society</td><td class="num">4</td><td><code>/catalogo/chuteiras-society</code></td></tr>
+              <tr><td>Chuteiras de futsal</td><td class="num">1</td><td><code>/catalogo/chuteiras-de-futsal</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="how">
+          <h4>Um truque do dia a dia <span class="badge">10 segundos</span></h4>
+          <p>Cada porta tem endereço próprio. Quando um cliente perguntar de chuteira de campo, em vez de mandar a loja inteira, mande só a porta:</p>
+          <p><code>arenaimportsfloripa.com/catalogo/chuteiras-de-campo</code></p>
+          <p>Ele abre já dentro do que quer. É a mesma coisa que mostrar a prateleira certa em vez de virar a loja de cabeça para baixo.</p>
+        </div>
+      </section>
+
+      <!-- ══════ PARTE 2 ══════ -->
+      <div class="parte" id="parte-2">
+        <span class="parte__n">Parte 2</span>
+        <h2>O dia a dia</h2>
+        <p>Esta é a parte que você vai abrir toda semana. Cada seção é uma pergunta de verdade, com o passo a passo e quanto tempo leva. Se você ler só esta parte, está resolvido.</p>
+      </div>
+
+      <!-- 4 -->
+      <section class="section" id="sec-4">
+        <span class="section__num">04</span>
+        <h2>"Vendi o último par"</h2>
+        <p class="lead">Esta é a coisa que você mais vai fazer. E a resposta é: <strong>não apague nada.</strong></p>
+        <div class="how">
+          <h4>O que fazer <span class="badge">10 segundos</span></h4>
+          <p>Abra o painel, ache a peça na lista e <strong>desligue o interruptor de em mãos</strong>. Pronto, acabou.</p>
+          <p>Ela perde o selo verde, sai da página de pronta entrega e vira <strong>sob encomenda</strong>. Continua vendendo, só que com prazo.</p>
+        </div>
+        <div class="callout warn"><span class="ic">!</span><p><strong>Não use o botão de excluir para isso.</strong> Excluir apaga a peça e as fotos para sempre, e você vai ter que cadastrar tudo de novo quando repor. Desligar é reversível: chegou mais, você liga de volta e ela volta com selo e tudo.</p></div>
+        <h3>E se você nem quiser que ela apareça?</h3>
+        <p>Aí desligue o segundo interruptor, o de <strong>no ar</strong>. A peça some da loja inteira, mas continua guardada no painel, na aba "escondidas". É o caso do modelo que saiu de linha e você não vai repor tão cedo.</p>
+      </section>
+
+      <!-- 5 -->
+      <section class="section" id="sec-5">
+        <span class="section__num">05</span>
+        <h2>"Chegou peça nova"</h2>
+        <div class="how">
+          <h4>O que fazer <span class="badge">2 minutos</span></h4>
+          <p>No pé da tela do painel tem um botão de <strong>peça nova</strong>, sempre à mão. Toque nele e preencha de cima para baixo. Tudo cabe numa tela só.</p>
+        </div>
+        <ol class="steps">
+          <li><b>As fotos</b> Toque no botão de foto. Ou você tira na hora com a câmera, ou cola o link do álbum do Yupoo. A seção 13 explica os dois.</li>
+          <li><b>O nome</b> Escreva como você chama a peça. É o que o cliente lê e o que a busca procura: "Nike Mercurial Superfly society branco" é melhor que "chuteira branca".</li>
+          <li><b>O preço</b> Digite só os números. O campo põe o R$ e a vírgula sozinho.</li>
+          <li><b>A porta</b> Em qual das 7 ela entra.</li>
+          <li><b>Os tamanhos</b> Toque nos números que você tem. Toque de novo para desmarcar.</li>
+          <li><b>Os interruptores</b> Chegou e está na sua mão? Deixe o de em mãos ligado.</li>
+          <li><b>Salvar</b> O botão fica preso no pé da tela. Salvou, já está na loja.</li>
+        </ol>
+        <div class="callout note"><span class="ic">i</span><p>Marca, cor e descrição são <strong>opcionais</strong> e ficam dobradas em "mais detalhes". Se você não preencher, a peça funciona igual. Não trave o cadastro por causa delas.</p></div>
+        <p>O <strong>código</strong> da peça (AR-0001 e por aí) nasce sozinho. Você não precisa inventar nem controlar nada. Ele serve para quando o cliente mandar print: você acha a peça no painel pelo código.</p>
+      </section>
+
+      <!-- 6 -->
+      <section class="section" id="sec-6">
+        <span class="section__num">06</span>
+        <h2>"Quero mudar o preço"</h2>
+        <div class="how">
+          <h4>O que fazer <span class="badge">20 segundos</span></h4>
+          <p>Toque na linha da peça na lista. Ela abre por cima. Mude o preço, salve, feche. A lista continua onde estava e a loja já mostra o valor novo.</p>
+        </div>
+        <h3>O campo de preço</h3>
+        <p>Digite <strong>só os números</strong>, sem ponto e sem vírgula. Se digitar <code>45000</code>, o campo mostra <strong>R$ 450,00</strong> sozinho.</p>
+        <h3>Fazer promoção</h3>
+        <p>Tem um segundo campo, o de <strong>preço promocional</strong>. Quando você preenche, a loja mostra o preço antigo riscado e o novo do lado, que é o que dá aquele empurrão de "baixou agora".</p>
+        <div class="callout warn"><span class="ic">!</span><p>Peça sem preço aparece com "valor na conversa". Funciona, mas vende menos: tem cliente que não vê preço e nem pergunta. Se você não quiser publicar o preço de tudo, publique ao menos o das que mais saem.</p></div>
+      </section>
+
+      <!-- 7 -->
+      <section class="section" id="sec-7">
+        <span class="section__num">07</span>
+        <h2>"Quero trocar a foto"</h2>
+        <div class="how">
+          <h4>O que fazer <span class="badge">1 minuto</span></h4>
+          <p>Abra a peça, vá nas fotos lá em cima e toque no botão de foto. Adicione a nova e remova a antiga. A primeira foto da fila é a <strong>capa</strong>, que é a que aparece no cartão dentro da loja.</p>
+        </div>
+        <p>A foto é o que vende. A mesma chuteira, com foto escura e com foto clara, não vende igual. A seção 13 traz os dois jeitos de subir foto e o padrão de ângulos que usei no catálogo.</p>
+      </section>
+
+      <!-- 8 -->
+      <section class="section" id="sec-8">
+        <span class="section__num">08</span>
+        <h2>"Quero pôr essa na capa"</h2>
+        <div class="how">
+          <h4>O que fazer <span class="badge">10 segundos</span></h4>
+          <p>Abra a peça e ligue o interruptor de <strong>destaque</strong>. Ela sobe para a prateleira iluminada da primeira tela da loja.</p>
+        </div>
+        <p>É o lugar mais valioso da sua loja, então use com critério: <strong>seis a doze peças</strong> é o ponto certo. Se tudo é destaque, nada é destaque.</p>
+        <p>Boa regra: destaque o que acabou de chegar e o que está em mãos. Novidade e disponibilidade são os dois motivos que fazem alguém parar de rolar.</p>
+      </section>
+
+      <!-- 9 -->
+      <section class="section" id="sec-9">
+        <span class="section__num">09</span>
+        <h2>Sumiu, voltou, esgotou</h2>
+        <p class="lead">Uma tabela de consulta rápida. Aconteceu isso, faça aquilo.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Aconteceu</th><th>O que fazer</th></tr></thead>
+            <tbody>
+              <tr><td>Vendi o último par</td><td>Desligar <strong>em mãos</strong>. Vira encomenda.</td></tr>
+              <tr><td>Chegou reposição</td><td>Ligar <strong>em mãos</strong> de volta.</td></tr>
+              <tr><td>Saiu de linha, não vou repor</td><td>Desligar <strong>no ar</strong>. Some da loja e fica guardada.</td></tr>
+              <tr><td>Quero limpar o catálogo de vez</td><td>Aí sim, excluir. Mas pense duas vezes: apaga as fotos junto.</td></tr>
+              <tr><td>Errei o preço e já publiquei</td><td>Abrir a peça, corrigir, salvar. Muda na hora.</td></tr>
+              <tr><td>Quero fazer promoção de um dia</td><td>Preencher o preço promocional. No dia seguinte, apagar o campo.</td></tr>
+              <tr><td>O cliente mandou print e não sei qual é</td><td>Procurar pelo código (AR-0001) ou pelo nome, na busca do painel.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 10 -->
+      <section class="section" id="sec-10">
+        <span class="section__num">10</span>
+        <h2>Mudar o recado do topo ou o seu zap</h2>
+        <p>Isso não fica na peça, fica nos <strong>dados da loja</strong>: <code>arenaimportsfloripa.com/painel/config</code></p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Campo</th><th>O que ele muda</th></tr></thead>
+            <tbody>
+              <tr><td>WhatsApp</td><td>O número que recebe <strong>todos</strong> os pedidos. Com país e DDD, só números.</td></tr>
+              <tr><td>Recados da tarja</td><td>A faixa que passa em looping no topo da loja. Separe cada recado com o sinal <code>|</code>.</td></tr>
+              <tr><td>Frase da capa</td><td>A frase embaixo da logo, na primeira tela.</td></tr>
+              <tr><td>Endereço e horário</td><td>Aparecem no rodapé. Vazio, o site mostra só a cidade.</td></tr>
+              <tr><td>Instagram e cidade</td><td>Rodapé também. O Instagram vai sem o @.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="how">
+          <h4>Exemplo de tarja <span class="badge">copie e cole</span></h4>
+          <p><code>Envio para todo o Brasil | Em mãos hoje em Floripa | Importados premium direto da fonte</code></p>
+          <p>Troque quando chegar coleção nova, quando tiver frete grátis, quando quiser avisar de alguma coisa. É o seu cartaz de vitrine.</p>
+        </div>
+        <div class="callout warn"><span class="ic">!</span><p>Se você trocar o número do WhatsApp, <strong>teste você mesmo</strong>: abra a loja, toque em pedir em qualquer peça e veja se a mensagem chega no número novo. Leva trinta segundos e evita perder pedido sem saber.</p></div>
+      </section>
+
+      <!-- ══════ PARTE 3 ══════ -->
+      <div class="parte" id="parte-3">
+        <span class="parte__n">Parte 3</span>
+        <h2>O painel por dentro</h2>
+        <p>Aqui é consulta, não leitura. Serve para quando você quiser entender uma tela inteira, em vez de só resolver uma tarefa.</p>
+      </div>
+
+      <!-- 11 -->
+      <section class="section" id="sec-11">
+        <span class="section__num">11</span>
+        <h2>A lista e as abas</h2>
+        <p>É a primeira tela depois de entrar. Foi desenhada para o <strong>polegar</strong>: você resolve de pé, na loja, com uma mão só.</p>
+        <h3>Cada peça é uma linha</h3>
+        <p>Foto, nome, preço, e os <strong>dois interruptores mais usados</strong> do lado direito, para você mexer sem abrir nada:</p>
+        <div class="chaves">
+          <span class="chave chave--on">Em mãos</span>
+          <span class="chave chave--on">No ar</span>
+        </div>
+        <h3>As quatro abas do topo</h3>
+        <p>São as quatro perguntas que você faz no dia a dia:</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Aba</th><th>Responde</th></tr></thead>
+            <tbody>
+              <tr><td>Todas</td><td>"O que eu tenho cadastrado?"</td></tr>
+              <tr><td>Pronta</td><td>"O que está na minha mão agora?"</td></tr>
+              <tr><td>Encomenda</td><td>"O que é sob encomenda?"</td></tr>
+              <tr><td>Escondidas</td><td>"O que eu tirei da loja?"</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>O placar</h3>
+        <p>No topo ficam três números: quantas peças existem, quantas estão em mãos e quantas estão no ar. É para você bater o olho e saber onde está, sem contar nada.</p>
+        <p>Tocar em qualquer linha abre a peça <strong>por cima da lista</strong>. Salvou, fechou, e a lista continua exatamente onde estava. Você não perde o lugar.</p>
+      </section>
+
+      <!-- 12 -->
+      <section class="section" id="sec-12">
+        <span class="section__num">12</span>
+        <h2>A ficha da peça</h2>
+        <p>Tudo numa tela só, na ordem em que você preenche:</p>
+        <div class="grid cols-2">
+          <div class="card"><span class="card__num">1</span><h4>Fotos</h4><p>No alto. Câmera, galeria ou link do Yupoo. A primeira é a capa.</p></div>
+          <div class="card"><span class="card__num">2</span><h4>Nome</h4><p>Como você chama a peça. É o que a busca procura.</p></div>
+          <div class="card"><span class="card__num">3</span><h4>Preço</h4><p>Só números. E o campo de promoção, se quiser.</p></div>
+          <div class="card"><span class="card__num">4</span><h4>Porta</h4><p>Em qual das 7 categorias ela entra.</p></div>
+          <div class="card"><span class="card__num">5</span><h4>Tamanhos</h4><p>Botões: toque para marcar, toque para desmarcar.</p></div>
+          <div class="card"><span class="card__num">6</span><h4>Interruptores</h4><p>Em mãos, destaque e no ar. A seção 14 explica.</p></div>
+        </div>
+        <p>Marca, cor e descrição ficam dobradas em <strong>"mais detalhes"</strong>, porque não são obrigatórias. O botão de salvar fica preso no pé da tela: você nunca precisa procurar por ele.</p>
+      </section>
+
+      <!-- 13 -->
+      <section class="section" id="sec-13">
+        <span class="section__num">13</span>
+        <h2>As fotos</h2>
+        <p class="lead">Dois caminhos, e os dois funcionam do celular.</p>
+
+        <div class="how">
+          <h4>Caminho 1: foto sua, na hora <span class="badge">o melhor</span></h4>
+          <p>Toque no botão de foto. O celular abre as opções de sempre: tirar foto agora ou escolher da galeria. Ela sobe e já aparece na peça.</p>
+        </div>
+        <p>O padrão que usei no catálogo, e que vale seguir:</p>
+        <div class="grid cols-3 keep-2">
+          <div class="card"><h4>Fundo limpo</h4><p>Parede clara ou o chão da loja. Evite fundo poluído.</p></div>
+          <div class="card"><h4>Quatro ângulos</h4><p>Frente, de cima, de lado e o solado.</p></div>
+          <div class="card"><h4>A capa é a de lado</h4><p>É a vista que mais vende chuteira e tênis. Ponha ela em primeiro.</p></div>
+        </div>
+
+        <div class="how">
+          <h4>Caminho 2: fotos do Yupoo, pelo link <span class="badge">o mais rápido</span></h4>
+          <p>Abra o álbum do fornecedor no Yupoo, copie o link e cole no campo do painel. <strong>As fotos entram sozinhas</strong>, sem você baixar e subir nada.</p>
+        </div>
+        <ul>
+          <li>o link pode vir <strong>do jeito que estiver</strong>: sem o <code>https</code>, sem o <code>x.</code> na frente, ou até colado no meio de uma mensagem que te mandaram;</li>
+          <li>a busca demora alguns segundos, porque são várias fotos. É normal;</li>
+          <li>se o álbum tiver senha, me avise que eu configuro.</li>
+        </ul>
+        <div class="callout note"><span class="ic">i</span><p>As fotos ficam guardadas <strong>com você</strong>, não no Yupoo. Se o álbum do fornecedor sair do ar amanhã, as suas fotos continuam na sua loja.</p></div>
+      </section>
+
+      <!-- 14 -->
+      <section class="section" id="sec-14">
+        <span class="section__num">14</span>
+        <h2>Os três interruptores</h2>
+        <p>O painel inteiro se resume a estes três. Decorar eles é decorar o painel.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Interruptor</th><th>Ligado</th><th>Desligado</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Em mãos</strong></td><td>Selo verde e entra na pronta entrega</td><td>Vira sob encomenda</td></tr>
+              <tr><td><strong>Destaque</strong></td><td>Sobe para a prateleira da capa</td><td>Fica só no catálogo</td></tr>
+              <tr><td><strong>No ar</strong></td><td>O cliente vê a peça</td><td>Some da loja, fica guardada</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>A combinação de cada situação</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Situação</th><th>Em mãos</th><th>Destaque</th><th>No ar</th></tr></thead>
+            <tbody>
+              <tr><td>Chegou agora e está na loja</td><td><span class="chip ok">liga</span></td><td><span class="chip ok">liga</span></td><td><span class="chip ok">liga</span></td></tr>
+              <tr><td>Vende só sob encomenda</td><td><span class="chip off">desliga</span></td><td><span class="chip off">desliga</span></td><td><span class="chip ok">liga</span></td></tr>
+              <tr><td>Vendeu o último par</td><td><span class="chip off">desliga</span></td><td><span class="chip off">desliga</span></td><td><span class="chip ok">liga</span></td></tr>
+              <tr><td>Saiu de linha</td><td><span class="chip off">desliga</span></td><td><span class="chip off">desliga</span></td><td><span class="chip off">desliga</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ══════ PARTE 4 ══════ -->
+      <div class="parte" id="parte-4">
+        <span class="parte__n">Parte 4</span>
+        <h2>Cuidar da loja</h2>
+        <p>O acesso, a rotina, o que o site não faz e como me chamar quando precisar.</p>
+      </div>
+
+      <!-- 15 -->
+      <section class="section" id="sec-15">
+        <span class="section__num">15</span>
+        <h2>Entrar no painel</h2>
+        <ol class="steps">
+          <li><b>Abra o endereço</b> No celular ou no computador: <code>arenaimportsfloripa.com/painel</code></li>
+          <li><b>Digite o e-mail e a senha</b> Estão no quadro abaixo.</li>
+          <li><b>Entre</b> Você cai direto na lista de peças.</li>
+          <li><b>Saia ao terminar</b> Só se o aparelho não for seu. No seu celular, pode ficar conectado.</li>
+        </ol>
+
+        <div class="terms-grid">
+          <div><dt>O endereço</dt><strong>arenaimportsfloripa.com/painel</strong></div>
+          <div><dt>O seu e-mail</dt><strong>arenaimports@gmail.com</strong></div>
+          <div><dt>A senha (por enquanto)</dt><strong>12345678</strong></div>
+        </div>
+
+        <div class="callout warn"><span class="ic">!</span><p><strong>Troque essa senha.</strong> Ela é fraca de propósito, só para você conseguir entrar a primeira vez. Me chame no WhatsApp que eu troco por uma que só você saiba, em um minuto. Quem tem esse login manda na loja inteira.</p></div>
+
+        <div class="how">
+          <h4>Deixe o painel na palma da mão <span class="badge">faça hoje</span></h4>
+          <p>No celular, abra o painel e use <strong>"Adicionar à tela de início"</strong>. Ele vira um ícone na sua tela, igual a um aplicativo, e você não precisa digitar o endereço nunca mais.</p>
+        </div>
+      </section>
+
+      <!-- 16 -->
+      <section class="section" id="sec-16">
+        <span class="section__num">16</span>
+        <h2>A sua semana</h2>
+        <p>Não é regra, é sugestão. Mas quem faz isso mantém a loja viva sem esforço.</p>
+        <div class="grid cols-3">
+          <div class="card"><span class="card__num">Todo dia</span><h4>Dois toques</h4><p>Vendeu? Desliga o em mãos. Chegou? Cadastra na hora, com a foto do celular.</p></div>
+          <div class="card"><span class="card__num">Toda semana</span><h4>Dez minutos</h4><p>Troca os destaques da capa e atualiza o recado da tarja com o que está chegando.</p></div>
+          <div class="card"><span class="card__num">Todo mês</span><h4>Meia hora</h4><p>Revisa os preços, esconde o que saiu de linha e sobe as novidades do fornecedor pelo Yupoo.</p></div>
+        </div>
+        <div class="callout note"><span class="ic">i</span><p>A loja não precisa estar perfeita para vender. Precisa estar <strong>verdadeira</strong>: o que está marcado como pronta entrega tem que estar mesmo na sua mão. Cliente perdoa catálogo pequeno, não perdoa promessa furada.</p></div>
+      </section>
+
+      <!-- 17 -->
+      <section class="section" id="sec-17">
+        <span class="section__num">17</span>
+        <h2>O que o site não faz</h2>
+        <p>Para não haver surpresa depois:</p>
+        <ul>
+          <li><strong>Não tem carrinho nem pagamento.</strong> O pedido fecha no WhatsApp, com você. Foi decisão de projeto, não falta.</li>
+          <li><strong>Não conta estoque por número.</strong> Ele diz se a peça está em mãos, não que o 42 acabou e o 41 não.</li>
+          <li><strong>Não calcula frete.</strong> Envio e prazo ficam para a conversa.</li>
+          <li><strong>Não guarda cadastro de cliente</strong> nem histórico de pedido. Isso continua no seu WhatsApp.</li>
+          <li><strong>Não emite nota fiscal</strong> e não conversa com sistema de gestão.</li>
+        </ul>
+        <h3>O que dá para fazer depois, se fizer sentido</h3>
+        <div class="grid cols-2">
+          <div class="card"><h4>Estoque por numeração</h4><p>Saber que o 42 acabou e o 41 não, direto no painel.</p></div>
+          <div class="card"><h4>Relatório mensal</h4><p>Quantas visitas, quantos cliques no WhatsApp e quais peças foram mais vistas.</p></div>
+          <div class="card"><h4>E-mail no seu domínio</h4><p>contato@arenaimportsfloripa.com, agora que o domínio é seu.</p></div>
+          <div class="card"><h4>Porta por marca</h4><p>Uma página por grife, para quem chega procurando pela marca.</p></div>
+        </div>
+      </section>
+
+      <!-- 18 -->
+      <section class="section" id="sec-18">
+        <span class="section__num">18</span>
+        <h2>Quando der problema</h2>
+        <p class="lead">Me chame no WhatsApp <strong>(44) 99124-6187</strong>. Print, áudio, do jeito que for mais fácil para você.</p>
+        <p><strong>30 dias de suporte</strong> a partir desta entrega, sem custo: dúvida de uso, ajuste pequeno e correção de erro.</p>
+        <p>Depois desse mês, a loja continua no ar e o painel continua seu, sem mensalidade: você mexe à vontade e não paga nada por isso. Se em algum momento você quiser que <em>eu</em> mexa por você, ou quiser seção nova, aí a gente combina à parte.</p>
+        <h3>De quem é o quê</h3>
+        <div class="grid cols-2">
+          <div class="card"><h4>Comigo</h4><p>O site estar no ar, o painel funcionar e corrigir erro do sistema.</p></div>
+          <div class="card"><h4>Com você</h4><p>O conteúdo: preço, foto, o que está em mãos, e responder o cliente.</p></div>
+        </div>
+      </section>
+
+      <!-- 19 -->
+      <section class="section" id="sec-19">
+        <span class="section__num">19</span>
+        <h2>Ficha técnica</h2>
+        <p class="muted">Esta seção é para consulta futura, ou para quem for mexer no projeto depois de mim. Você não precisa dela para usar a loja.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Item</th><th>Detalhe</th></tr></thead>
+            <tbody>
+              <tr><td>Endereço</td><td>arenaimportsfloripa.com, no nome da Arena, com HTTPS</td></tr>
+              <tr><td>Site</td><td>Next.js 15 (App Router), React 19, TypeScript</td></tr>
+              <tr><td>Estilo</td><td>Tailwind CSS v4</td></tr>
+              <tr><td>Banco de dados</td><td>Supabase (PostgreSQL), com acesso por sessão</td></tr>
+              <tr><td>Fotos</td><td>Supabase Storage</td></tr>
+              <tr><td>Hospedagem</td><td>Vercel</td></tr>
+              <tr><td>Fotos do fornecedor</td><td>Rota própria que lê o álbum do Yupoo pelo link</td></tr>
+              <tr><td>Identidade</td><td>Preto da loja, verde do arco da logo (#cef745), Chakra Petch e Barlow</td></tr>
+              <tr><td>Código da peça</td><td>Prefixo AR, criado automaticamente</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>Onde as coisas ficam guardadas</h3>
+        <div class="grid cols-2">
+          <div class="card"><h4>As peças</h4><p>Num banco de dados na nuvem. Some o celular, não some a loja.</p></div>
+          <div class="card"><h4>As fotos</h4><p>Num armazenamento na nuvem, ligado ao mesmo projeto.</p></div>
+          <div class="card"><h4>O site</h4><p>Hospedado na Vercel, com o seu domínio apontando para lá.</p></div>
+          <div class="card"><h4>Os pedidos</h4><p>No seu WhatsApp, como sempre foi. O site não guarda conversa.</p></div>
+        </div>
+      </section>
+
+      <!-- 20 -->
+      <section class="section" id="sec-20">
+        <span class="section__num">20</span>
+        <h2>Termo de entrega</h2>
+        <div class="terms-grid">
+          <div><dt>Projeto</dt><strong>Arena Imports Floripa</strong></div>
+          <div><dt>Desenvolvimento</dt><strong>Rafael Razeira Estúdio</strong></div>
+          <div><dt>Versão</dt><strong>1.0.0</strong></div>
+          <div><dt>Data</dt><strong>22/09/2026</strong></div>
+          <div><dt>Endereço</dt><strong>arenaimportsfloripa.com</strong></div>
+          <div><dt>Responsável pelo recebimento</dt><strong>André</strong></div>
+        </div>
+        <div class="aceite">
+          <h4>Confirmação de aceite</h4>
+          <p>André, se estiver tudo certo, é só confirmar aqui. O botão abre uma mensagem já pronta no meu WhatsApp; você só precisa enviar que eu registro a data e a hora do recebimento.</p>
+          <button type="button" class="aceite-btn" id="btnAceite" data-whats="5544991246187">Confirmar aceite pelo WhatsApp ↗</button>
+        </div>
+        <div class="sign-row">
+          <div class="sign">Rafael Razeira Estúdio · Quem entrega</div>
+          <div class="sign">André · Quem recebe</div>
+        </div>
+        <p class="muted" style="margin-top:20px">Este é um espaço visual para confirmar a entrega e não substitui um instrumento jurídico.</p>
+      </section>
+
+      <!-- RODAPÉ -->
+      <footer class="doc-footer">
+        <div>
+          <p class="sig">Rafael Razeira <span>Estúdio</span></p>
+          <p>Design, tecnologia e conversão para marcas que querem vender melhor.</p>
+        </div>
+        <p>Como usar a sua loja · Arena Imports Floripa · v1.0.0</p>
+      </footer>
+
+    </div>
+  </main>
+</div>
+
+<button class="print-btn" id="printBtn">Imprimir / Salvar PDF</button>
+
+<script src="/entrega/arena-imports/script.js"></script>
+</body>
+</html>
