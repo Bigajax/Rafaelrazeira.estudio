@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Proposta de tráfego pago Arena Imports Floripa · Rafael Razeira Estúdio</title>
+
+<!-- O cartao do link: a logo RR no preview do WhatsApp (URL absoluta de proposito) -->
+<meta property="og:image" content="https://rafaelrazeira.com.br/assets/og-rr.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Monograma RR do Rafael Razeira Estudio" />
+
+<!-- ============================================================
+     PROPOSTA COMERCIAL · ARENA IMPORTS FLORIPA · TRÁFEGO PAGO (24/09/2026)
+     Para o Luiz Antonio. A vitrine já é cliente (fechou em 18/09, no ar em
+     www.arenaimportsfloripa.com); esta é a segunda proposta, só do tráfego.
+     Base: proposta/ivone-calcados.html (molde) + a seção de tráfego da
+     ortobom-aracaju.html (a tabela 497/697/997 aprovada em 15/09).
+     Decisões do Rafael em 24/09: a instalação da medição (Pixel + envio pelo
+     servidor, Mixpanel, código do pedido, venda registrada) vai INCLUSA no
+     1º mês, e o contrato tem MÍNIMO DE 3 MESES, que é o que paga a instalação.
+     Checkout: itens em lib/propostas.ts (proposta "arena-imports-trafego":
+     mes1_inicio R$ 497 · mes1_ritmo R$ 697 · mes1_escala R$ 997, no Pix).
+     Os meses seguintes são cobrados por fora, mês a mês.
+     ============================================================ -->
+
+<link rel="icon" type="image/png" href="/assets/favicon.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+<!-- Checkout na proposta (modal Pix/cartão) -->
+<link rel="stylesheet" href="/css/proposta-checkout.css" />
+<script src="/js/proposta-checkout.js" defer></script>
+
+<style>
+/* ——— Tokens copiados de css/base.css da landing ——— */
+:root{
+  --emerald:#10B981;
+  --emerald-dark:#065F46;
+  --emerald-light:#D1FAE5;
+  --off-white:#FAFAF7;
+  --black:#0A0A0A;
+  --ink-60:rgba(10,10,10,.60);
+  --ink-40:rgba(10,10,10,.40);
+  --line:rgba(10,10,10,.10);
+  --maxw:1040px;
+  --pad:clamp(20px,6vw,72px);
+  --font-display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --font-body:"Inter",system-ui,-apple-system,sans-serif;
+  --font-mono:"Space Mono",ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font-body);background:var(--off-white);color:var(--black);
+  line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+b{font-weight:600}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--emerald);outline-offset:3px}
+
+.grid-lines{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  max-width:var(--maxw);margin:0 auto;
+  display:flex;justify-content:space-between;padding:0 var(--pad);
+}
+.grid-lines span{width:1px;background:var(--line)}
+.grid-lines span:first-child,.grid-lines span:last-child{opacity:0}
+/* mobile: as linhas verticais atravessariam preços e textos — some tudo */
+@media(max-width:640px){.grid-lines{display:none}}
+.doc{position:relative;z-index:1;max-width:var(--maxw);margin:0 auto;padding:0 var(--pad)}
+
+/* ——— Header ——— */
+.doc-header{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding-block:clamp(20px,4vw,32px);border-bottom:1px solid var(--line);
+}
+.brand{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(15px,4vw,19px);letter-spacing:-.01em;white-space:nowrap}
+.brand small{font-weight:800;color:var(--ink-40);letter-spacing:.01em;font-size:1em}
+.doc-header .date{font-family:var(--font-mono);font-size:clamp(11px,3vw,13px);color:var(--ink-60);white-space:nowrap}
+
+/* ——— Abertura ——— */
+.opening{padding-block:clamp(44px,9vw,96px)}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:12px;flex-wrap:wrap;
+  font-family:var(--font-mono);font-size:clamp(11px,3vw,13px);
+  letter-spacing:.06em;text-transform:uppercase;color:var(--ink-60);
+}
+.status{color:var(--emerald-dark);font-weight:700}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--emerald);flex:none;position:relative}
+.dot::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--emerald);animation:pulse 2.2s ease-out infinite}
+@keyframes pulse{0%{transform:scale(1);opacity:.6}70%{transform:scale(2.6);opacity:0}100%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.dot::after{animation:none}}
+.opening h1{
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(2.05rem,8.4vw,5.5rem);line-height:.94;letter-spacing:-.035em;
+  margin-top:clamp(20px,4vw,32px);
+}
+.opening h1 em{font-style:normal;color:var(--emerald)}
+.opening .meta{
+  margin-top:clamp(24px,4vw,36px);font-size:clamp(1rem,4vw,1.15rem);color:var(--ink-60);max-width:52ch;
+}
+.opening .meta b{color:var(--black)}
+
+/* ——— Mockup: a vitrine real em notebook + smartphone ——— */
+/* Cada moldura tem LARGURA FIXA e a escala do iframe calculada para o
+   miolo exato (largura − bordas) — nunca misturar escala fixa com vw,
+   senão o site renderiza maior que a moldura e aparece cortado. */
+.mockup{
+  margin-top:clamp(36px,7vw,64px);
+  display:flex;align-items:flex-end;justify-content:center;gap:clamp(16px,3vw,32px);
+}
+.mockup iframe{border:none;transform-origin:0 0;pointer-events:none;background:#fff}
+.mockup img{display:block;width:100%;height:100%;object-fit:cover;object-position:top}
+.laptop{flex:none;max-width:100%}
+.laptop .screen{
+  width:600px;max-width:100%;aspect-ratio:16/10;overflow:hidden;
+  border:8px solid var(--black);border-radius:14px 14px 0 0;
+  background:var(--black);
+}
+.laptop .screen iframe{width:1280px;height:900px;transform:scale(.45625)}   /* 584/1280 */
+.laptop .base{
+  height:12px;margin:0 -22px;
+  background:linear-gradient(#111,#2a2a2a);border-radius:0 0 12px 12px;
+}
+.phone{flex:none}
+.phone .screen{
+  width:148px;aspect-ratio:390/800;overflow:hidden;
+  border:5px solid var(--black);border-radius:20px;
+  background:var(--black);box-shadow:0 24px 48px -24px rgba(10,10,10,.35);
+}
+.phone .screen iframe{width:390px;height:844px;transform:scale(.353846)}    /* 138/390 */
+/* Mobile/tablet: empilha os aparelhos, centralizados, com tamanhos exatos */
+@media(max-width:979px){
+  .mockup{flex-direction:column;align-items:center;gap:24px}
+  .laptop .screen{width:320px;border-width:6px;border-radius:10px 10px 0 0}
+  .laptop .screen iframe{transform:scale(.240625)}                          /* 308/1280 */
+  .laptop .base{height:10px;margin:0 -14px}
+  .phone .screen{width:132px;border-width:4px;border-radius:16px}
+  .phone .screen iframe{transform:scale(.317948)}                           /* 124/390 */
+}
+/* Telas muito estreitas (<340px) */
+@media(max-width:339px){
+  .laptop .screen{width:264px}
+  .laptop .screen iframe{transform:scale(.196875)}                          /* 252/1280 */
+}
+.mockup-note{
+  margin-top:14px;text-align:center;
+  font-family:var(--font-mono);font-size:clamp(10px,2.8vw,12px);
+  letter-spacing:.08em;text-transform:uppercase;color:var(--ink-40);
+}
+
+/* ——— Seções numeradas ——— */
+.sec{padding-block:clamp(40px,7vw,72px);border-top:1px solid var(--line)}
+@media(min-width:820px){.sec{display:grid;grid-template-columns:110px 1fr;gap:16px}}
+.sec .num{
+  font-family:var(--font-mono);font-weight:700;font-size:clamp(1rem,4vw,1.35rem);
+  color:var(--emerald-dark);letter-spacing:.02em;margin-bottom:12px;
+}
+.sec h2{
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.5rem,6.5vw,2.4rem);line-height:1.02;letter-spacing:-.025em;
+}
+.sec .body{margin-top:clamp(16px,3vw,24px);max-width:62ch}
+.sec .body--wide{max-width:none}
+.sec p{font-size:clamp(1rem,4vw,1.15rem);color:var(--ink-60);line-height:1.55}
+.sec p + p{margin-top:12px}
+.sec p b{color:var(--black)}
+
+/* Inclusos: cards elegantes em grade, check esmeralda */
+.grid-list{list-style:none;display:grid;gap:12px;margin-top:4px}
+@media(min-width:680px){.grid-list{grid-template-columns:1fr 1fr}}
+.grid-list li{
+  display:flex;gap:12px;align-items:flex-start;
+  border:1px solid var(--line);border-radius:14px;
+  padding:16px 18px;background:#fff;
+  font-size:clamp(.98rem,3.8vw,1.05rem);line-height:1.45;color:var(--ink-60);
+  transition:border-color .3s,box-shadow .3s;
+}
+.grid-list li:hover{border-color:rgba(16,185,129,.5);box-shadow:0 10px 24px -18px rgba(16,185,129,.55)}
+.grid-list .check{color:var(--emerald);font-family:var(--font-mono);font-weight:700;flex:none;line-height:1.45}
+.grid-list b{color:var(--black)}
+
+/* Exclusões: lista sóbria, traço cinza */
+.list{list-style:none}
+.list li{
+  display:flex;gap:14px;align-items:flex-start;
+  padding-block:14px;border-bottom:1px solid var(--line);
+  font-size:clamp(1rem,4vw,1.1rem);line-height:1.5;color:var(--ink-60);
+}
+.list li:last-child{border-bottom:none}
+.list li::before{font-family:var(--font-mono);font-weight:700;flex:none;line-height:1.5}
+.list--out li::before{content:"·";color:var(--ink-40)}
+.list-note{margin-top:16px;font-size:clamp(.9rem,3.4vw,.98rem);color:var(--ink-40)}
+
+/* ——— Condição especial (primeiros cases) — card esmeralda ——— */
+.founding{
+  display:block;
+  background:var(--emerald-light);color:var(--black);
+  border-radius:24px;padding:clamp(24px,5vw,44px);
+  box-shadow:0 24px 60px -24px rgba(6,95,70,.35);
+}
+.founding .f-label{
+  display:inline-flex;align-items:center;gap:10px;
+  font-family:var(--font-mono);font-size:12px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--emerald-dark);
+}
+.founding h3{
+  margin-top:12px;font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.5rem,6.5vw,2.3rem);line-height:.98;letter-spacing:-.03em;
+}
+.founding p{margin-top:14px;font-size:clamp(1rem,4vw,1.1rem);line-height:1.55;color:rgba(10,10,10,.72);max-width:58ch}
+.founding p b{color:var(--black)}
+.founding ul{list-style:none;margin-top:18px}
+.founding li{
+  display:flex;gap:12px;align-items:flex-start;
+  padding-block:10px;border-top:1px solid rgba(6,95,70,.15);
+  font-size:clamp(.98rem,3.8vw,1.05rem);color:rgba(10,10,10,.78);line-height:1.5;
+}
+.founding li::before{content:"•";color:var(--emerald-dark);font-weight:700;flex:none}
+
+/* ——— Investimento ——— */
+.price-compare{margin-top:clamp(8px,2vw,16px)}
+.price-row{
+  display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;
+  padding-block:14px;border-bottom:1px solid var(--line);
+}
+.price-row .p-tag{
+  font-family:var(--font-mono);font-weight:700;font-size:clamp(11px,3vw,13px);
+  letter-spacing:.06em;text-transform:uppercase;color:var(--ink-40);flex:none;min-width:210px;
+}
+.price-row--main .p-tag{color:var(--emerald-dark)}
+.price-main{
+  font-family:var(--font-display);font-weight:900;letter-spacing:-.03em;
+  font-size:clamp(2.6rem,11vw,4.2rem);line-height:1;
+}
+.price-main small{font-size:.34em;font-weight:800;letter-spacing:0;color:var(--ink-40);text-transform:uppercase;white-space:nowrap}
+.split{margin-top:clamp(20px,4vw,28px);border-top:1px solid var(--line)}
+.split div{
+  display:flex;justify-content:space-between;gap:16px;align-items:baseline;
+  padding-block:14px;border-bottom:1px solid var(--line);
+}
+.split .tag{font-family:var(--font-mono);font-weight:700;font-size:clamp(11px,3vw,13px);letter-spacing:.06em;text-transform:uppercase;color:var(--emerald-dark);white-space:nowrap}
+.split .desc{font-size:clamp(.95rem,3.8vw,1.05rem);color:var(--ink-60);text-align:right}
+/* mobile: empilha etiqueta + descrição, alinhadas à esquerda */
+@media(max-width:560px){
+  .split div{flex-direction:column;align-items:flex-start;gap:4px}
+  .split .desc{text-align:left}
+}
+
+.guarantee{
+  display:block;margin-top:clamp(28px,5vw,40px);
+  border:1.5px solid var(--emerald);border-radius:20px;
+  padding:clamp(20px,4.5vw,32px);
+}
+.guarantee .g-label{
+  font-family:var(--font-mono);font-size:12px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--emerald-dark);
+}
+.guarantee p{margin-top:10px;font-size:clamp(1rem,4vw,1.1rem);line-height:1.5;color:var(--ink-60);max-width:58ch}
+.guarantee p b{color:var(--black)}
+
+/* ——— Formas de pagamento: cards Pix + cartão (checkout Mercado Pago) ——— */
+.pay-cards{margin-top:clamp(24px,4vw,32px);display:grid;gap:16px;align-items:stretch}
+@media(min-width:720px){.pay-cards{grid-template-columns:repeat(3,1fr)}}
+.pay-cards--duo{grid-template-columns:1fr}
+@media(min-width:720px){.pay-cards--duo{grid-template-columns:repeat(2,1fr)}}
+.pay-cards--one{grid-template-columns:1fr;margin-top:16px}
+@media(min-width:720px){.pay-cards--one{grid-template-columns:1fr}}
+.pay{
+  display:flex;flex-direction:column;
+  border:1.5px solid var(--line);border-radius:20px;
+  background:#fff;overflow:hidden;
+}
+.pay--rec{
+  border-color:var(--emerald);
+  box-shadow:0 20px 44px -24px rgba(16,185,129,.55);
+}
+@media(min-width:720px){.pay--rec{transform:translateY(-8px)}}
+.pay-head{
+  padding:10px 16px;text-align:center;
+  display:flex;align-items:center;justify-content:center;min-height:58px;
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(.95rem,3.8vw,1.05rem);letter-spacing:-.01em;
+  background:var(--off-white);border-bottom:1.5px solid var(--line);
+  color:var(--black);
+}
+/* Zona de preço com altura reservada: alinha os checklists entre os cards */
+.pay-top{display:flex;flex-direction:column;align-items:flex-start}
+@media(min-width:720px){.pay-top{min-height:132px}}
+.pay-top--auto{min-height:0}
+@media(min-width:720px){.pay-top--auto{min-height:0}}
+/* Contexto do desconto (Pix à vista): preço antigo riscado + pill −10% */
+.pay-ctx{display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-height:22px}
+.off-old{font-family:var(--font-mono);font-size:clamp(12px,3vw,13px);color:var(--ink-40)}
+.off-old s{text-decoration-thickness:2px}
+.off-pill{
+  font-family:var(--font-mono);font-weight:700;font-size:11px;letter-spacing:.04em;
+  color:#fff;background:var(--emerald);border-radius:999px;padding:3px 9px;line-height:1;
+}
+.pay-save{
+  margin-top:6px;font-family:var(--font-mono);font-weight:700;font-size:clamp(11px,3vw,12px);
+  letter-spacing:.02em;color:var(--emerald-dark);
+}
+.pay--rec .pay-head{background:var(--emerald);border-color:var(--emerald);color:#fff}
+.pay--dark .pay-head{background:var(--black);border-color:var(--black);color:#fff}
+.pay--soft .pay-head{background:var(--emerald-light);border-color:var(--emerald-light);color:var(--emerald-dark)}
+.pay-body{display:flex;flex-direction:column;flex:1;padding:clamp(18px,4vw,24px)}
+.pay-price{
+  margin-top:8px;font-family:var(--font-display);font-weight:900;letter-spacing:-.02em;
+  font-size:clamp(1.6rem,6.5vw,2rem);line-height:1;
+}
+.pay--rec .pay-price{color:var(--emerald-dark);font-size:clamp(1.9rem,7vw,2.3rem)}
+.pay-price{white-space:nowrap}
+.pay-price small{white-space:normal}
+.pay-price small{display:block;margin-top:6px;font-size:11px;font-weight:800;color:var(--ink-40);text-transform:uppercase;letter-spacing:.02em}
+.pay-feats{list-style:none;margin-top:14px;margin-bottom:18px}
+.pay-feats li{
+  display:flex;gap:10px;align-items:flex-start;
+  padding-block:8px;border-top:1px solid var(--line);
+  font-size:clamp(.88rem,3.4vw,.95rem);color:var(--ink-60);line-height:1.45;
+}
+.pay-feats li::before{content:"✓";font-family:var(--font-mono);font-weight:700;color:var(--emerald);flex:none;line-height:1.45}
+.pay-feats b{color:var(--black)}
+.btn-pay{
+  margin-top:auto;width:100%;
+  border:none;border-radius:999px;background:var(--emerald);color:#fff;
+  padding:14px 20px;cursor:pointer;
+  font-family:var(--font-display);font-weight:900;font-size:14px;
+  letter-spacing:.03em;text-transform:uppercase;
+  transition:background .25s,transform .1s;
+}
+.btn-pay:hover{background:var(--emerald-dark)}
+.btn-pay:active{transform:scale(.99)}
+.btn-pay:focus-visible{outline:2px solid var(--emerald-dark);outline-offset:2px}
+.btn-pay--ghost{background:#fff;color:var(--emerald-dark);border:1.5px solid var(--emerald)}
+.btn-pay--ghost:hover{background:var(--emerald-light)}
+.pay-note{margin-top:16px;font-family:var(--font-mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-40)}
+@media print{
+  .pay-cards .btn-pay{display:none}
+  .pay--rec{transform:none}
+  .pay-head{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
+/* ——— Hospedagem: dois formatos lado a lado ——— */
+.host-cards{margin-top:clamp(20px,4vw,28px);display:grid;gap:16px}
+@media(min-width:720px){.host-cards{grid-template-columns:1fr 1fr}}
+.host{border:1.5px solid var(--line);border-radius:20px;padding:clamp(20px,4.5vw,28px);background:#fff}
+.host--rec{border-color:var(--emerald);box-shadow:0 12px 32px -20px rgba(16,185,129,.45)}
+.host .h-tag{font-family:var(--font-mono);font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--emerald-dark)}
+.host h3{
+  margin-top:10px;font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.1rem,4.6vw,1.35rem);line-height:1.02;letter-spacing:-.015em;
+}
+.host .h-price{
+  margin-top:10px;font-family:var(--font-display);font-weight:900;letter-spacing:-.02em;
+  font-size:clamp(1.5rem,6vw,1.9rem);line-height:1;
+}
+.host .h-price small{font-size:.55em;font-weight:800;color:var(--ink-40);text-transform:uppercase;letter-spacing:0;white-space:nowrap}
+.host p{margin-top:12px;font-size:clamp(.95rem,3.8vw,1.02rem)}
+.host-note{margin-top:clamp(16px,3vw,22px)}
+@media print{.host-cards{break-inside:avoid}}
+
+/* ——— Próximos passos ——— */
+.next{list-style:none;counter-reset:np}
+.next li{
+  counter-increment:np;display:flex;gap:14px;align-items:flex-start;
+  padding-block:14px;border-bottom:1px solid var(--line);
+  font-size:clamp(1rem,4vw,1.1rem);color:var(--ink-60);line-height:1.5;
+}
+.next li:last-child{border-bottom:none}
+.next li::before{
+  content:counter(np,decimal-leading-zero);
+  font-family:var(--font-mono);font-weight:700;color:var(--emerald-dark);flex:none;line-height:1.5;
+}
+.next b{color:var(--black)}
+
+/* ——— Prazo ——— */
+.deadline{
+  font-family:var(--font-display);font-weight:900;letter-spacing:-.02em;
+  font-size:clamp(1.6rem,7vw,2.6rem);line-height:1.05;text-transform:uppercase;
+}
+.deadline em{font-style:normal;color:var(--emerald)}
+
+/* ——— CTA final ——— */
+.closing{padding-block:clamp(48px,9vw,96px);border-top:1px solid var(--line);text-align:center}
+.closing h2{
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(1.8rem,8vw,3.4rem);line-height:1;letter-spacing:-.03em;
+  max-width:22ch;margin-inline:auto;
+}
+.closing h2 em{font-style:normal;color:var(--emerald)}
+.cta-wrap{margin-top:clamp(28px,5vw,40px)}
+.cta-alt{margin-top:clamp(22px,3vw,28px)}
+.cta-alt a{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--font-mono);font-weight:700;font-size:13px;letter-spacing:.04em;text-transform:uppercase;
+  color:var(--emerald-dark);border-bottom:1.5px solid var(--emerald);padding-bottom:3px;
+  text-decoration:none;transition:color .2s;
+}
+.cta-alt a:hover{color:var(--emerald)}
+@media print{.cta-alt{display:none}}
+
+/* ——— Rodapé ——— */
+.doc-footer{
+  padding-block:clamp(24px,4vw,36px);
+  border-top:1px solid var(--line);
+  display:flex;flex-wrap:wrap;gap:8px 24px;
+  font-family:var(--font-mono);font-size:clamp(11px,3vw,12px);
+  letter-spacing:.04em;text-transform:uppercase;color:var(--ink-60);
+}
+
+/* ——— Impressão / PDF (A4) ——— */
+@page{size:A4;margin:16mm}
+@media print{
+  body{background:#fff}
+  .grid-lines,.cta-wrap,.mockup,.mockup-note{display:none}
+  .dot::after{animation:none}
+  .doc{max-width:none;padding:0}
+  .opening{padding-block:28px 36px}
+  .sec{padding-block:24px;break-inside:avoid}
+  .founding,.guarantee{
+    box-shadow:none;border:1.5px solid var(--emerald-dark);
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;
+    break-inside:avoid;
+  }
+  .grid-list li{break-inside:avoid}
+}
+
+/* ——— Regras do suporte: o que conta como alteração e o que fica fora ——— */
+.rules{margin-top:clamp(16px,3vw,22px);display:grid;gap:16px}
+@media(min-width:720px){.rules{grid-template-columns:1fr 1fr}}
+.rule{border:1px solid var(--line);border-radius:16px;padding:clamp(16px,4vw,22px);background:#fff}
+.rule .r-tag{font-family:var(--font-mono);font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--emerald-dark)}
+.rule ul{list-style:none;margin-top:10px}
+.rule li{
+  display:flex;gap:10px;align-items:flex-start;padding-block:8px;border-top:1px solid var(--line);
+  font-size:clamp(.92rem,3.6vw,1rem);color:var(--ink-60);line-height:1.45;
+}
+.rule li::before{content:"·";font-family:var(--font-mono);font-weight:700;color:var(--ink-40);flex:none}
+.rule li b{color:var(--black)}
+
+/* ——— Tabela do tráfego pago ——— */
+.table-wrap{margin-top:clamp(20px,4vw,28px);overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tabela{width:100%;min-width:640px;border-collapse:separate;border-spacing:0;background:#fff;border:1.5px solid var(--line);border-radius:16px;overflow:hidden}
+.tabela th,.tabela td{padding:14px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);font-size:clamp(.9rem,3.5vw,.98rem);line-height:1.45;color:var(--ink-60)}
+.tabela th{font-family:var(--font-mono);font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-40);background:var(--off-white)}
+.tabela tbody tr:last-child td{border-bottom:none}
+.tabela td b{color:var(--black);font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:1.05rem;letter-spacing:-.01em}
+.tabela td small{display:block;font-family:var(--font-mono);font-size:11px;color:var(--ink-40);margin-top:2px;letter-spacing:.02em}
+.tabela .num-cell{font-family:var(--font-display);font-weight:900;font-size:clamp(1.05rem,4vw,1.2rem);color:var(--black);white-space:nowrap;letter-spacing:-.01em}
+.tabela--rec td{background:var(--emerald-light)}
+.tabela--rec td b,.tabela--rec .num-cell{color:var(--emerald-dark)}
+@media print{.table-wrap{overflow:visible}.tabela{min-width:0}.tabela--rec td{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+</head>
+<body data-proposta="arena-imports-trafego">
+
+<div class="grid-lines" aria-hidden="true">
+  <span></span><span></span><span></span><span></span><span></span>
+</div>
+
+<div class="doc">
+
+  <header class="doc-header">
+    <div class="brand">RAFAEL RAZEIRA <small>ESTÚDIO</small></div>
+    <div class="date">24/09/2026</div>
+  </header>
+
+  <!-- 1 · HERO -->
+  <section class="opening">
+    <div class="eyebrow">
+      <span class="dot"></span><span class="status">PROPOSTA COMERCIAL · TRÁFEGO PAGO</span>
+    </div>
+    <h1>A LOJA ESTÁ NO AR. AGORA É LEVAR GENTE ATÉ A <em>ARENA</em>.</h1>
+    <p class="meta">Luiz, a vitrine da Arena Imports Floripa já está pronta para vender: catálogo, pronta entrega, painel e o pedido caindo no seu WhatsApp. O que falta é <b>gente nova chegando todo dia</b>, e saber <b>de onde veio cada pedido</b>. Esta proposta é isso: anúncio no Instagram levando para a sua loja, com cada clique medido do anúncio até a venda.</p>
+
+    <!-- A vitrine real, ao vivo, dentro das molduras -->
+    <div class="mockup" aria-hidden="true">
+      <div class="laptop">
+        <div class="screen"><iframe src="https://www.arenaimportsfloripa.com" loading="lazy" title=""></iframe></div>
+        <div class="base"></div>
+      </div>
+      <div class="phone">
+        <div class="screen"><iframe src="https://www.arenaimportsfloripa.com" loading="lazy" title=""></iframe></div>
+      </div>
+    </div>
+    <p class="mockup-note">Para onde o anúncio leva: a Arena ao vivo, em notebook e celular</p>
+  </section>
+
+  <!-- 2 · OBJETIVO -->
+  <section class="sec">
+    <div class="num">01</div>
+    <div>
+      <h2>O OBJETIVO</h2>
+      <div class="body">
+        <p>Anúncio sem medição é chute caro. Você coloca R$ 50 por dia, chega mensagem no WhatsApp, e ninguém sabe dizer qual anúncio trouxe aquela pessoa, qual chuteira ela viu antes de pedir, nem se ela comprou. No mês seguinte o dinheiro vai para o mesmo lugar, dando certo ou não.</p>
+        <p>Aqui é o contrário. Antes do primeiro anúncio, eu instalo na sua loja o mesmo sistema de medição que uso nas minhas páginas. A partir daí, cada pedido que chega no seu WhatsApp vem com <b>um código que diz de qual anúncio ele saiu</b>, e cada venda que você fecha volta para a Meta como venda. É isso que ensina o Instagram a procurar <b>quem compra</b>, e não só quem clica.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 · O QUE ESTÁ INCLUSO -->
+  <section class="sec">
+    <div class="num">02</div>
+    <div>
+      <h2>O QUE ESTÁ INCLUSO</h2>
+      <div class="body body--wide">
+        <h3 style="font-family:var(--font-mono);font-weight:700;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--emerald-dark);margin-bottom:12px">A MEDIÇÃO, INSTALADA NA SUA LOJA</h3>
+        <ul class="grid-list">
+          <li><span class="check">✓</span><span><b>Pixel da Meta na vitrine</b>: o Instagram fica sabendo quem entrou na loja, quem abriu uma chuteira e quem tocou em "Pedir". É o que permite mostrar o anúncio de novo para quem já visitou</span></li>
+          <li><span class="check">✓</span><span><b>Envio pelo servidor, além do navegador</b>: bloqueador de anúncio e o navegador do próprio Instagram engolem parte do que o Pixel manda. A loja avisa a Meta pelos dois caminhos, sem contar duas vezes</span></li>
+          <li><span class="check">✓</span><span><b>Mixpanel, o painel de dados da loja</b>: quantas pessoas entraram, quantas rolaram até o catálogo, quais peças foram mais abertas, pronta entrega ou encomenda, e quantas tocaram em "Pedir". Por anúncio e por dia</span></li>
+          <li><span class="check">✓</span><span><b>O código do pedido</b>: todo pedido que chega no seu WhatsApp traz uma linha "Ref:" com um código curto. É por ele que eu ligo aquela conversa ao anúncio que a trouxe</span></li>
+          <li><span class="check">✓</span><span><b>A venda registrada</b>: fechou no WhatsApp, você me passa o código e o valor, e a venda volta para a Meta. A partir daí a campanha para de procurar curioso e passa a procurar comprador</span></li>
+          <li><span class="check">✓</span><span><b>Teste não suja o número</b>: visita minha, sua e de teste não entra na conta. O que aparece no relatório é cliente de verdade</span></li>
+        </ul>
+
+        <h3 style="font-family:var(--font-mono);font-weight:700;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--emerald-dark);margin:clamp(28px,5vw,40px) 0 12px">A CAMPANHA, TODO MÊS</h3>
+        <ul class="grid-list">
+          <li><span class="check">✓</span><span><b>Anúncios no Instagram</b> (feed, stories e reels) levando direto para a peça na vitrine, não para o perfil</span></li>
+          <li><span class="check">✓</span><span><b>Criativos feitos por mim</b> com as fotos da loja e do fornecedor, na identidade da Arena</span></li>
+          <li><span class="check">✓</span><span><b>Teste em lotes</b>: vários começos de anúncio rodando juntos. O que não segura a atenção sai em poucos dias, e o que traz pedido mais barato fica com a verba</span></li>
+          <li><span class="check">✓</span><span><b>Remarketing</b> para quem abriu uma chuteira e não pediu: a mesma peça aparece de novo para ela</span></li>
+          <li><span class="check">✓</span><span><b>Relatório em linguagem de gente</b>: quanto foi gasto, quantas pessoas chegaram, quantos pedidos, quantas vendas e quanto custou cada uma</span></li>
+          <li><span class="check">✓</span><span><b>Configuração da conta de anúncios</b> da Meta no nome da loja, com o cartão da loja pagando a verba</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 · O QUE NÃO ESTÁ INCLUSO -->
+  <section class="sec">
+    <div class="num">03</div>
+    <div>
+      <h2>O QUE NÃO ESTÁ INCLUSO</h2>
+      <div class="body">
+        <ul class="list list--out">
+          <li><span><b>A verba dos anúncios.</b> Ela é paga direto para a Meta, no cartão da loja, e não passa por mim. A tabela abaixo mostra quanto sugiro em cada plano</span></li>
+          <li><span>Atendimento das conversas no WhatsApp: o anúncio traz a pessoa com a peça escolhida, e o fechamento é seu</span></li>
+          <li><span>Produção de vídeo e sessão de fotos: os criativos saem das fotos que a loja já tem e das que você mandar. Vídeo gravado é orçado à parte</span></li>
+          <li><span>Postagens do perfil e gestão das redes sociais</span></li>
+          <li><span>Anúncio no Facebook e no Google: o trabalho é no Instagram, que é onde o seu cliente está</span></li>
+          <li><span>Promessa de número de vendas. Ninguém sério promete isso antes de rodar. O que eu garanto é saber, com número, o que está funcionando e o que não está</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 · INVESTIMENTO -->
+  <section class="sec">
+    <div class="num">04</div>
+    <div>
+      <h2>INVESTIMENTO</h2>
+      <div class="body body--wide">
+        <p>São dois valores separados: <b>a gestão</b>, que é o meu trabalho e vem para mim, e <b>a verba</b>, que é o dinheiro dos anúncios e vai direto para a Meta. Você escolhe um dos três planos:</p>
+
+        <div class="table-wrap">
+          <table class="tabela">
+            <thead>
+              <tr>
+                <th>Plano</th>
+                <th>Gestão mensal</th>
+                <th>Verba sugerida (paga à Meta)</th>
+                <th>O que inclui</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>Início</b><br /><small>para testar o canal</small></td>
+                <td class="num-cell">R$ 497</td>
+                <td class="num-cell">R$ 600 a R$ 900<br /><small>R$ 20 a R$ 30 por dia</small></td>
+                <td>1 campanha levando para a vitrine, 4 criativos por mês, remarketing para quem visitou, relatório mensal</td>
+              </tr>
+              <tr class="tabela--rec">
+                <td><b>Ritmo</b><br /><small>recomendado</small></td>
+                <td class="num-cell">R$ 697</td>
+                <td class="num-cell">R$ 1.200 a R$ 1.800<br /><small>R$ 40 a R$ 60 por dia</small></td>
+                <td>2 campanhas (pronta entrega em destaque e remarketing), 8 criativos por mês, um lote de teste novo por semana, relatório a cada 15 dias</td>
+              </tr>
+              <tr>
+                <td><b>Escala</b><br /><small>quando o canal já paga</small></td>
+                <td class="num-cell">R$ 997</td>
+                <td class="num-cell">a partir de R$ 2.500<br /><small>R$ 85 ou mais por dia</small></td>
+                <td>Uma campanha por categoria (chuteira de campo, society, corrida e sneakers), remarketing em camadas, 12 criativos por mês, catálogo da loja no Instagram, relatório semanal</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <aside class="founding" style="margin-top:clamp(28px,5vw,40px)">
+          <span class="f-label">A INSTALAÇÃO VEM INCLUSA</span>
+          <h3>A MEDIÇÃO SAI SEM CUSTO À PARTE</h3>
+          <p>Pixel, envio pelo servidor, Mixpanel, o código do pedido e o registro de venda são o trabalho mais pesado desta proposta, e ele <b>não é cobrado separado</b>: vem dentro do primeiro mês de qualquer plano.</p>
+          <p>Em troca, a gente trabalha junto por <b>no mínimo 3 meses</b>. Não é trava por trava: a Meta leva algumas semanas para aprender quem compra da Arena, e o teste de anúncios só dá leitura confiável depois de três ou quatro rodadas. Um mês só costuma acabar justo quando a campanha começa a acertar.</p>
+          <ul>
+            <li><span>Mínimo de 3 meses de gestão, e depois segue mês a mês, cancelando quando quiser</span></li>
+            <li><span>Pode subir ou descer de plano de um mês para o outro</span></li>
+            <li><span>A conta de anúncios, o Pixel e os dados ficam <b>no nome da loja</b>. Se um dia a gente parar, tudo continua seu</span></li>
+          </ul>
+        </aside>
+
+        <h3 style="margin-top:clamp(28px,5vw,40px);font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.1rem,4.6vw,1.35rem);letter-spacing:-.015em">COMO O DINHEIRO SAI, PASSO A PASSO</h3>
+        <ol class="next" style="margin-top:14px">
+          <li><span><b>Hoje sai só o primeiro mês de gestão</b>, no Pix, aqui nesta página. Nenhum real vai para a Meta ainda.</span></li>
+          <li><span><b>Eu instalo a medição na sua loja</b> e confiro que ela está contando certo, fazendo um pedido de teste de ponta a ponta.</span></li>
+          <li><span><b>Você cadastra o cartão da loja na conta de anúncios.</b> É ali que a verba é cobrada, direto pela Meta, conforme os anúncios rodam.</span></li>
+          <li><span><b>A campanha entra no ar.</b> O primeiro mês é de teste e ajuste, e fecha com o primeiro relatório.</span></li>
+          <li><span><b>Os meses 2 e 3</b> são cobrados na mesma data do primeiro, com o relatório do mês na mão antes de cada cobrança.</span></li>
+        </ol>
+
+        <div class="pay-cards">
+          <div class="pay">
+            <div class="pay-head">Início</div>
+            <div class="pay-body">
+              <div class="pay-top">
+                <div class="pay-ctx">Primeiro mês</div>
+                <div class="pay-price">R$ 497 <small>gestão + instalação da medição</small></div>
+              </div>
+              <ul class="pay-feats">
+                <li><span>Verba sugerida de R$ 20 a R$ 30 por dia</span></li>
+                <li><span>1 campanha e 4 criativos</span></li>
+              </ul>
+              <button class="btn-pay btn-pay--ghost" type="button" data-checkout-item="mes1_inicio">Começar no Início</button>
+            </div>
+          </div>
+          <div class="pay pay--rec">
+            <div class="pay-head">Ritmo · recomendado</div>
+            <div class="pay-body">
+              <div class="pay-top">
+                <div class="pay-ctx">Primeiro mês</div>
+                <div class="pay-price">R$ 697 <small>gestão + instalação da medição</small></div>
+              </div>
+              <ul class="pay-feats">
+                <li><span>Verba sugerida de R$ 40 a R$ 60 por dia</span></li>
+                <li><span>2 campanhas e 8 criativos</span></li>
+              </ul>
+              <button class="btn-pay" type="button" data-checkout-item="mes1_ritmo">Começar no Ritmo</button>
+            </div>
+          </div>
+          <div class="pay pay--dark">
+            <div class="pay-head">Escala</div>
+            <div class="pay-body">
+              <div class="pay-top">
+                <div class="pay-ctx">Primeiro mês</div>
+                <div class="pay-price">R$ 997 <small>gestão + instalação da medição</small></div>
+              </div>
+              <ul class="pay-feats">
+                <li><span>Verba a partir de R$ 85 por dia</span></li>
+                <li><span>Campanha por categoria e 12 criativos</span></li>
+              </ul>
+              <button class="btn-pay btn-pay--ghost" type="button" data-checkout-item="mes1_escala">Começar no Escala</button>
+            </div>
+          </div>
+        </div>
+        <p class="pay-note">Pagamento no Pix, processado pelo Mercado Pago, sem sair desta página.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 · PRAZO -->
+  <section class="sec">
+    <div class="num">05</div>
+    <div>
+      <h2>PRAZO</h2>
+      <div class="body">
+        <p class="deadline">CAMPANHA NO AR EM ATÉ <em>5 DIAS ÚTEIS</em></p>
+        <p style="margin-top:14px">Contados a partir do primeiro pagamento e do cartão da loja cadastrado na conta de anúncios. Nesse tempo eu instalo a medição, testo um pedido de ponta a ponta e monto o primeiro lote de anúncios. A primeira leitura de resultado vem com 30 dias de campanha rodando.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 · DEPOIS: A ROTINA DO MÊS -->
+  <section class="sec">
+    <div class="num">06</div>
+    <div>
+      <h2>DEPOIS QUE ENTRA NO AR</h2>
+      <div class="body body--wide">
+        <div class="rules">
+          <div class="rule">
+            <span class="r-tag">O QUE EU FAÇO</span>
+            <ul>
+              <li><span>Acompanho a campanha, corto o anúncio que não segura a atenção e passo a verba para o que traz pedido</span></li>
+              <li><span>Monto os criativos novos de cada mês</span></li>
+              <li><span>Registro as vendas que você me passar e mando para a Meta</span></li>
+              <li><span>Mando o relatório e explico o que ele quer dizer</span></li>
+            </ul>
+          </div>
+          <div class="rule">
+            <span class="r-tag">O QUE DEPENDE DE VOCÊ</span>
+            <ul>
+              <li><span>Manter o catálogo em dia pelo painel: anúncio levando para peça que acabou é dinheiro jogado fora</span></li>
+              <li><span>Me mandar foto de peça nova que chegar, principalmente de pronta entrega</span></li>
+              <li><span><b>Me passar o código "Ref" e o valor de cada venda fechada.</b> Leva 10 segundos por venda, e é o que faz a campanha aprender</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 · PRÓXIMOS PASSOS -->
+  <section class="sec">
+    <div class="num">07</div>
+    <div>
+      <h2>PRÓXIMOS PASSOS</h2>
+      <div class="body">
+        <ol class="next">
+          <li><span>Você escolhe o plano e paga o <b>primeiro mês no Pix</b> aqui na página.</span></li>
+          <li><span>Eu instalo a medição na loja e crio a conta de anúncios no nome da Arena. Você cadastra o cartão da loja nela.</span></li>
+          <li><span>A campanha entra no ar, e <b>o primeiro pedido com código</b> chega no seu WhatsApp.</span></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 · CTA -->
+  <section class="closing">
+    <h2>VAMOS LEVAR GENTE PARA A <em>ARENA</em>.</h2>
+    <div class="cta-wrap">
+      <p class="cta-alt"><a href="https://wa.me/5544991246187?text=Ol%C3%A1%20Rafael%2C%20tenho%20uma%20d%C3%BAvida%20sobre%20a%20proposta%20de%20tr%C3%A1fego%20da%20Arena%20Imports%20Floripa." target="_blank" rel="noopener">Ficou com uma dúvida? Fala comigo no WhatsApp <span aria-hidden="true">→</span></a></p>
+    </div>
+  </section>
+
+  <footer class="doc-footer">
+    <span>RAFAEL RAZEIRA ESTÚDIO</span>
+    <span>rafael.rbarbon@gmail.com</span>
+    <span>(44) 99124-6187</span>
+    <span>@rafaelrazeira.estudio</span>
+  </footer>
+
+</div>
+
+</body>
+</html>

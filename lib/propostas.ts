@@ -239,4 +239,18 @@ export const PROPOSTAS: Record<string, Proposta> = {
       saldo_card: { label: "Saldo depois da entrega aprovada, no cartão em até 4x", valor: 400, metodo: "card", maxParcelas: 4 },
     },
   },
+  /* A segunda proposta da Arena (24/09/2026), só do tráfego pago: a
+     vitrine já está paga. A tabela é a de referência do estúdio
+     (497/697/997, aprovada na Ortobom em 15/09). Cada item é o PRIMEIRO
+     mês de um plano, com a instalação da medição inclusa; os meses 2 e 3
+     do mínimo de três são cobrados por fora, mês a mês. */
+  "arena-imports-trafego": {
+    titulo: "Rafael Razeira Estúdio · Tráfego pago Arena Imports Floripa",
+    whatsapp: "5544991246187",
+    itens: {
+      mes1_inicio: { label: "Primeiro mês do plano Início, com a instalação da medição", valor: 497, metodo: "pix" },
+      mes1_ritmo: { label: "Primeiro mês do plano Ritmo, com a instalação da medição", valor: 697, metodo: "pix" },
+      mes1_escala: { label: "Primeiro mês do plano Escala, com a instalação da medição", valor: 997, metodo: "pix" },
+    },
+  },
 };

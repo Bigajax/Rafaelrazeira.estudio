@@ -56,7 +56,7 @@
       var data = agora.toLocaleDateString("pt-BR");
       var hora = agora.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
       var msg =
-        "Ola, Rafael! Sou o Andre, da Arena Imports Floripa. " +
+        "Ola, Rafael! Sou o Luiz Antonio, da Arena Imports Floripa. " +
         "Confirmo o recebimento e o aceite da entrega do projeto (versao 1.0.0) em " +
         data + " as " + hora + ". Esta tudo certo, pode considerar aceito.";
       var url = "https://wa.me/" + whats + "?text=" + encodeURIComponent(msg);
