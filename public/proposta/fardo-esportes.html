@@ -19,673 +19,390 @@
 
 <!-- ============================================================
      PROPOSTA COMERCIAL · FARDO ESPORTES (vitrine digital, Erechim RS)
-     Base: proposta/minas-decor.html · Vitrine ja construida (prévia em
-     fardo-esportes.vercel.app, 40 pecas do Instagram de 2022 a 2024).
+     No molde de 25/09/2026 (public/proposta/template.html); foi o piloto dele.
      Condicao da Valeria (24/09): R$ 999, PAGAMENTO UNICO no Pix, sem
-     entrada e sem parcelar. Item em lib/propostas.ts (proposta
-     "fardo-esportes": avista_pix R$ 999). Dominio fora: R$ 40 por 1 ano.
-     Cadastro de ate 60 pecas na entrega (nome, referencia e cor que ela
-     manda; foto dela ou a oficial da marca). Suporte opcional R$ 149,90/mes: ate 10 pecas/mes com fundo
-     tratado, ate 3 fotos cada; peca extra R$ 15.
-     Para PDF: Ctrl+P, Salvar como PDF (o mockup nao sai na impressao).
+     entrada e sem parcelar. Item em lib/propostas.ts ("fardo-esportes":
+     avista_pix R$ 999). Dominio fora: R$ 40 por 1 ano.
+     Cadastro de ate 60 pecas na entrega, com o fundo tratado.
+     Suporte opcional R$ 149,90/mes: ate 10 pecas/mes com fundo tratado,
+     ate 3 fotos cada; peca extra R$ 15.
+     As pranchas: scripts/capturar-pranchas.mjs fardo-esportes
+       https://fardo-esportes.vercel.app --secoes fitness,camisas
      ============================================================ -->
 
 <link rel="icon" type="image/png" href="/assets/favicon.png" />
-
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
 
-<!-- Checkout na proposta (modal Pix/cartão) -->
 <link rel="stylesheet" href="/css/proposta-checkout.css" />
 <script src="/js/proposta-checkout.js" defer></script>
 
 <style>
-/* ——— Tokens copiados de css/base.css da landing ——— */
 :root{
   --emerald:#10B981;
   --emerald-dark:#065F46;
   --emerald-light:#D1FAE5;
   --off-white:#FAFAF7;
   --black:#0A0A0A;
-  --ink-60:rgba(10,10,10,.60);
-  --ink-40:rgba(10,10,10,.40);
-  --line:rgba(10,10,10,.10);
-  --maxw:1040px;
-  --pad:clamp(20px,6vw,72px);
+  --ink-70:rgba(10,10,10,.70);
+  --ink-55:rgba(10,10,10,.55);
+  --line:rgba(10,10,10,.12);
+  --maxw:1160px;
+  --pad:clamp(16px,5vw,64px);
   --font-display:"Archivo","Arial Narrow",system-ui,sans-serif;
   --font-body:"Inter",system-ui,-apple-system,sans-serif;
   --font-mono:"Space Mono",ui-monospace,monospace;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{
-  font-family:var(--font-body);background:var(--off-white);color:var(--black);
-  line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;
-}
-b{font-weight:600}
-a{color:inherit;text-decoration:none}
-:focus-visible{outline:2px solid var(--emerald);outline-offset:3px}
+body{font-family:var(--font-body);background:var(--off-white);color:var(--black);line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+b{font-weight:600;color:var(--black)}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--emerald-dark);outline-offset:3px}
+img{display:block;max-width:100%}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--pad)}
 
-.grid-lines{
-  position:fixed;inset:0;z-index:0;pointer-events:none;
-  max-width:var(--maxw);margin:0 auto;
-  display:flex;justify-content:space-between;padding:0 var(--pad);
-}
-.grid-lines span{width:1px;background:var(--line)}
-.grid-lines span:first-child,.grid-lines span:last-child{opacity:0}
-/* mobile: as linhas verticais atravessariam preços e textos — some tudo */
-@media(max-width:640px){.grid-lines{display:none}}
-.doc{position:relative;z-index:1;max-width:var(--maxw);margin:0 auto;padding:0 var(--pad)}
+/* ——— Cabeçalho ——— */
+.topo{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding-block:24px;border-bottom:1px solid var(--line)}
+.marca{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(15px,4vw,19px);letter-spacing:-.01em;white-space:nowrap}
+.marca small{font-size:1em;font-weight:800;color:var(--ink-55)}
+.topo time{font-family:var(--font-mono);font-size:13px;color:var(--ink-55)}
 
-/* ——— Header ——— */
-.doc-header{
-  display:flex;align-items:center;justify-content:space-between;gap:16px;
-  padding-block:clamp(20px,4vw,32px);border-bottom:1px solid var(--line);
+/* ——— Hero: capa de documento + a vitrine ao vivo ——— */
+.capa{display:grid;gap:clamp(40px,6vw,72px);padding-block:clamp(40px,8vw,88px) clamp(56px,8vw,96px);align-items:center}
+@media(min-width:900px){.capa{grid-template-columns:minmax(0,1.15fr) auto}}
+.capa-para{font-family:var(--font-mono);font-size:14px;color:var(--ink-70)}
+.capa h1{
+  margin-top:20px;font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(2.6rem,9vw,6.4rem);line-height:.96;letter-spacing:-.04em;max-width:10ch;
 }
-.brand{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(15px,4vw,19px);letter-spacing:-.01em;white-space:nowrap}
-.brand small{font-weight:800;color:var(--ink-40);letter-spacing:.01em;font-size:1em}
-.doc-header .date{font-family:var(--font-mono);font-size:clamp(11px,3vw,13px);color:var(--ink-60);white-space:nowrap}
+.ficha{margin-top:clamp(32px,5vw,48px);border-top:2px solid var(--black);max-width:520px}
+.ficha div{display:grid;grid-template-columns:130px 1fr;gap:16px;padding-block:13px;border-bottom:1px solid var(--line)}
+.ficha dt{font-family:var(--font-mono);font-size:13px;color:var(--ink-55);padding-top:2px}
+.ficha dd{font-size:clamp(1rem,3.8vw,1.08rem);line-height:1.45}
+.ficha dd a{text-decoration:underline;text-decoration-color:var(--emerald);text-underline-offset:3px;text-decoration-thickness:2px}
+@media(max-width:420px){.ficha div{grid-template-columns:1fr;gap:2px}}
 
-/* ——— Abertura ——— */
-.opening{padding-block:clamp(44px,9vw,96px)}
-.eyebrow{
-  display:inline-flex;align-items:center;gap:12px;flex-wrap:wrap;
-  font-family:var(--font-mono);font-size:clamp(11px,3vw,13px);
-  letter-spacing:.06em;text-transform:uppercase;color:var(--ink-60);
+/* O celular: 390x844 escalado. Desktop 0.8, celular 0.66. */
+.aparelho{position:relative;justify-self:center}
+.celular{
+  width:calc(390px * .8 + 20px);height:calc(844px * .8 + 20px);
+  border:10px solid var(--black);border-radius:48px;overflow:hidden;background:var(--black);
+  box-shadow:0 40px 80px -40px rgba(10,10,10,.45);
 }
-.status{color:var(--emerald-dark);font-weight:700}
-.dot{width:12px;height:12px;border-radius:50%;background:var(--emerald);flex:none;position:relative}
-.dot::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--emerald);animation:pulse 2.2s ease-out infinite}
-@keyframes pulse{0%{transform:scale(1);opacity:.6}70%{transform:scale(2.6);opacity:0}100%{opacity:0}}
-@media(prefers-reduced-motion:reduce){.dot::after{animation:none}}
-.opening h1{
-  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
-  font-size:clamp(2.05rem,8.4vw,5.5rem);line-height:.94;letter-spacing:-.035em;
-  margin-top:clamp(20px,4vw,32px);
+.celular iframe{width:390px;height:844px;border:0;transform:scale(.8);transform-origin:0 0;background:#fff;display:block}
+.aparelho-nota{display:flex;gap:10px;align-items:flex-start;margin-top:18px;max-width:330px;font-size:.95rem;color:var(--ink-70);line-height:1.45}
+.aparelho-nota a{font-weight:600;color:var(--black);text-decoration:underline;text-decoration-color:var(--emerald);text-decoration-thickness:2px;text-underline-offset:3px}
+@media(max-width:899px){
+  .celular{width:calc(390px * .66 + 16px);height:calc(844px * .66 + 16px);border-width:8px;border-radius:38px}
+  .celular iframe{transform:scale(.66)}
 }
-.opening h1 em{font-style:normal;color:var(--emerald)}
-.opening .meta{
-  margin-top:clamp(24px,4vw,36px);font-size:clamp(1rem,4vw,1.15rem);color:var(--ink-60);max-width:52ch;
-}
-.opening .meta b{color:var(--black)}
+/* No toque, rolar dentro do iframe prende a página: fica só o link. */
+.so-toque{display:none}
+@media(hover:none){.celular iframe{pointer-events:none}.so-mouse{display:none}.so-toque{display:inline}}
 
-/* ——— Mockup: a vitrine real em notebook + smartphone ——— */
-/* Cada moldura tem LARGURA FIXA e a escala do iframe calculada para o
-   miolo exato (largura − bordas) — nunca misturar escala fixa com vw,
-   senão o site renderiza maior que a moldura e aparece cortado. */
-.mockup{
-  margin-top:clamp(36px,7vw,64px);
-  display:flex;align-items:flex-end;justify-content:center;gap:clamp(16px,3vw,32px);
+/* ——— O marcador: a anotação do estúdio ——— */
+.pin{
+  display:inline-grid;place-items:center;flex:none;
+  width:28px;height:28px;border-radius:50%;
+  background:var(--emerald);color:var(--black);
+  font-family:var(--font-mono);font-weight:700;font-size:13px;line-height:1;
+  box-shadow:0 0 0 3px var(--off-white);
+  transition:transform .2s ease-out,background-color .2s;
 }
-.mockup iframe{border:none;transform-origin:0 0;pointer-events:none;background:#fff}
-.mockup img{display:block;width:100%;height:100%;object-fit:cover;object-position:top}
-.laptop{flex:none;max-width:100%}
-.laptop .screen{
-  width:600px;max-width:100%;aspect-ratio:16/10;overflow:hidden;
-  border:8px solid var(--black);border-radius:14px 14px 0 0;
-  background:var(--black);
-}
-.laptop .screen iframe{width:1280px;height:900px;transform:scale(.45625)}   /* 584/1280 */
-.laptop .base{
-  height:12px;margin:0 -22px;
-  background:linear-gradient(#111,#2a2a2a);border-radius:0 0 12px 12px;
-}
-.phone{flex:none}
-.phone .screen{
-  width:148px;aspect-ratio:390/800;overflow:hidden;
-  border:5px solid var(--black);border-radius:20px;
-  background:var(--black);box-shadow:0 24px 48px -24px rgba(10,10,10,.35);
-}
-.phone .screen iframe{width:390px;height:844px;transform:scale(.353846)}    /* 138/390 */
-/* Mobile/tablet: empilha os aparelhos, centralizados, com tamanhos exatos */
-@media(max-width:979px){
-  .mockup{flex-direction:column;align-items:center;gap:24px}
-  .laptop .screen{width:320px;border-width:6px;border-radius:10px 10px 0 0}
-  .laptop .screen iframe{transform:scale(.240625)}                          /* 308/1280 */
-  .laptop .base{height:10px;margin:0 -14px}
-  .phone .screen{width:132px;border-width:4px;border-radius:16px}
-  .phone .screen iframe{transform:scale(.317948)}                           /* 124/390 */
-}
-/* Telas muito estreitas (<340px) */
-@media(max-width:339px){
-  .laptop .screen{width:264px}
-  .laptop .screen iframe{transform:scale(.196875)}                          /* 252/1280 */
-}
-.mockup-note{
-  margin-top:14px;text-align:center;
-  font-family:var(--font-mono);font-size:clamp(10px,2.8vw,12px);
-  letter-spacing:.08em;text-transform:uppercase;color:var(--ink-40);
+.pin.acende{transform:scale(1.3);background:var(--black);color:var(--off-white)}
+@media(prefers-reduced-motion:reduce){.pin{transition:none}}
+
+/* ——— Seções ——— */
+.sec{padding-block:clamp(56px,9vw,112px);border-top:1px solid var(--line)}
+.sec h2{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.9rem,6.5vw,3.4rem);line-height:.95;letter-spacing:-.03em;max-width:16ch}
+.sec-intro{margin-top:18px;max-width:58ch;font-size:clamp(1rem,3.9vw,1.15rem);color:var(--ink-70)}
+
+/* ——— As pranchas ——— */
+.prancha{margin-top:clamp(48px,7vw,80px);display:grid;gap:clamp(20px,3vw,40px);align-items:start}
+@media(min-width:900px){.prancha{grid-template-columns:minmax(0,1.7fr) minmax(0,1fr)}}
+.prancha figure{position:relative;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:#fff}
+.prancha figure img{width:100%;height:auto}
+.prancha figure .pin{position:absolute;transform:translate(-50%,-50%)}
+.prancha figure .pin.acende{transform:translate(-50%,-50%) scale(1.3)}
+.prancha-titulo{font-family:var(--font-mono);font-size:13px;color:var(--ink-55)}
+.prancha-titulo b{font-family:var(--font-display);font-weight:900;font-size:1.35rem;text-transform:uppercase;letter-spacing:-.02em;display:block;color:var(--black);margin-top:4px}
+.notas{list-style:none;margin-top:18px;border-top:2px solid var(--black)}
+.notas li{display:flex;gap:14px;align-items:flex-start;padding-block:14px;border-bottom:1px solid var(--line);font-size:clamp(.98rem,3.8vw,1.04rem);color:var(--ink-70);line-height:1.5;cursor:default}
+@media(min-width:900px){
+  .prancha--inv{grid-template-columns:minmax(0,1fr) minmax(0,1.7fr)}
+  .prancha--inv figure{order:2}
 }
 
-/* ——— Seções numeradas ——— */
-.sec{padding-block:clamp(40px,7vw,72px);border-top:1px solid var(--line)}
-@media(min-width:820px){.sec{display:grid;grid-template-columns:110px 1fr;gap:16px}}
-.sec .num{
-  font-family:var(--font-mono);font-weight:700;font-size:clamp(1rem,4vw,1.35rem);
-  color:var(--emerald-dark);letter-spacing:.02em;margin-bottom:12px;
-}
-.sec h2{
-  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
-  font-size:clamp(1.5rem,6.5vw,2.4rem);line-height:1.02;letter-spacing:-.025em;
-}
-.sec .body{margin-top:clamp(16px,3vw,24px);max-width:62ch}
-.sec .body--wide{max-width:none}
-.sec p{font-size:clamp(1rem,4vw,1.15rem);color:var(--ink-60);line-height:1.55}
-.sec p + p{margin-top:12px}
-.sec p b{color:var(--black)}
+/* O que não aparece na tela: lista corrida em duas colunas, sem cartão */
+.fora-da-tela{margin-top:clamp(56px,8vw,88px);display:grid;gap:clamp(20px,4vw,48px)}
+@media(min-width:900px){.fora-da-tela{grid-template-columns:minmax(0,1fr) minmax(0,1.7fr)}}
+.fora-da-tela h3{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.3rem,4.6vw,1.7rem);line-height:1;letter-spacing:-.02em}
+.fora-da-tela ul{list-style:none;columns:2 280px;column-gap:40px;border-top:2px solid var(--black)}
+.fora-da-tela li{break-inside:avoid;padding-block:12px;border-bottom:1px solid var(--line);color:var(--ink-70)}
 
-/* Inclusos: cards elegantes em grade, check esmeralda */
-.grid-list{list-style:none;display:grid;gap:12px;margin-top:4px}
-@media(min-width:680px){.grid-list{grid-template-columns:1fr 1fr}}
-.grid-list li{
-  display:flex;gap:12px;align-items:flex-start;
-  border:1px solid var(--line);border-radius:14px;
-  padding:16px 18px;background:#fff;
-  font-size:clamp(.98rem,3.8vw,1.05rem);line-height:1.45;color:var(--ink-60);
-  transition:border-color .3s,box-shadow .3s;
-}
-.grid-list li:hover{border-color:rgba(16,185,129,.5);box-shadow:0 10px 24px -18px rgba(16,185,129,.55)}
-.grid-list .check{color:var(--emerald);font-family:var(--font-mono);font-weight:700;flex:none;line-height:1.45}
-.grid-list b{color:var(--black)}
-
-/* Exclusões: lista sóbria, traço cinza */
-.list{list-style:none}
-.list li{
-  display:flex;gap:14px;align-items:flex-start;
-  padding-block:14px;border-bottom:1px solid var(--line);
-  font-size:clamp(1rem,4vw,1.1rem);line-height:1.5;color:var(--ink-60);
-}
-.list li:last-child{border-bottom:none}
-.list li::before{font-family:var(--font-mono);font-weight:700;flex:none;line-height:1.5}
-.list--out li::before{content:"·";color:var(--ink-40)}
-.list-note{margin-top:16px;font-size:clamp(.9rem,3.4vw,.98rem);color:var(--ink-40)}
-
-/* ——— Condição especial (primeiros cases) — card esmeralda ——— */
-.founding{
-  display:block;
-  background:var(--emerald-light);color:var(--black);
-  border-radius:24px;padding:clamp(24px,5vw,44px);
-  box-shadow:0 24px 60px -24px rgba(6,95,70,.35);
-}
-.founding .f-label{
-  display:inline-flex;align-items:center;gap:10px;
-  font-family:var(--font-mono);font-size:12px;font-weight:700;
-  letter-spacing:.12em;text-transform:uppercase;color:var(--emerald-dark);
-}
-.founding h3{
-  margin-top:12px;font-family:var(--font-display);font-weight:900;text-transform:uppercase;
-  font-size:clamp(1.5rem,6.5vw,2.3rem);line-height:.98;letter-spacing:-.03em;
-}
-.founding p{margin-top:14px;font-size:clamp(1rem,4vw,1.1rem);line-height:1.55;color:rgba(10,10,10,.72);max-width:58ch}
-.founding p b{color:var(--black)}
-.founding ul{list-style:none;margin-top:18px}
-.founding li{
-  display:flex;gap:12px;align-items:flex-start;
-  padding-block:10px;border-top:1px solid rgba(6,95,70,.15);
-  font-size:clamp(.98rem,3.8vw,1.05rem);color:rgba(10,10,10,.78);line-height:1.5;
-}
-.founding li::before{content:"•";color:var(--emerald-dark);font-weight:700;flex:none}
-
-/* ——— Investimento ——— */
-.price-compare{margin-top:clamp(8px,2vw,16px)}
-.price-row{
-  display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;
-  padding-block:14px;border-bottom:1px solid var(--line);
-}
-.price-row .p-tag{
-  font-family:var(--font-mono);font-weight:700;font-size:clamp(11px,3vw,13px);
-  letter-spacing:.06em;text-transform:uppercase;color:var(--ink-40);flex:none;min-width:210px;
-}
-.price-row--main .p-tag{color:var(--emerald-dark)}
-.price-main{
-  font-family:var(--font-display);font-weight:900;letter-spacing:-.03em;
-  font-size:clamp(2.6rem,11vw,4.2rem);line-height:1;
-}
-.price-main small{font-size:.34em;font-weight:800;letter-spacing:0;color:var(--ink-40);text-transform:uppercase;white-space:nowrap}
-.split{margin-top:clamp(20px,4vw,28px);border-top:1px solid var(--line)}
-.split div{
-  display:flex;justify-content:space-between;gap:16px;align-items:baseline;
-  padding-block:14px;border-bottom:1px solid var(--line);
-}
-.split .tag{font-family:var(--font-mono);font-weight:700;font-size:clamp(11px,3vw,13px);letter-spacing:.06em;text-transform:uppercase;color:var(--emerald-dark);white-space:nowrap}
-.split .desc{font-size:clamp(.95rem,3.8vw,1.05rem);color:var(--ink-60);text-align:right}
-/* mobile: empilha etiqueta + descrição, alinhadas à esquerda */
-@media(max-width:560px){
-  .split div{flex-direction:column;align-items:flex-start;gap:4px}
-  .split .desc{text-align:left}
-}
-
-.guarantee{
-  display:block;margin-top:clamp(28px,5vw,40px);
-  border:1.5px solid var(--emerald);border-radius:20px;
-  padding:clamp(20px,4.5vw,32px);
-}
-.guarantee .g-label{
-  font-family:var(--font-mono);font-size:12px;font-weight:700;
-  letter-spacing:.12em;text-transform:uppercase;color:var(--emerald-dark);
-}
-.guarantee p{margin-top:10px;font-size:clamp(1rem,4vw,1.1rem);line-height:1.5;color:var(--ink-60);max-width:58ch}
-.guarantee p b{color:var(--black)}
-
-/* ——— Formas de pagamento: cards Pix + cartão (checkout Mercado Pago) ——— */
-.pay-cards{margin-top:clamp(24px,4vw,32px);display:grid;gap:16px;align-items:stretch}
-@media(min-width:720px){.pay-cards{grid-template-columns:repeat(3,1fr)}}
-.pay-cards--duo{grid-template-columns:1fr}
-@media(min-width:720px){.pay-cards--duo{grid-template-columns:repeat(2,1fr)}}
-.pay-cards--one{grid-template-columns:1fr;margin-top:16px}
-@media(min-width:720px){.pay-cards--one{grid-template-columns:1fr}}
-.pay{
-  display:flex;flex-direction:column;
-  border:1.5px solid var(--line);border-radius:20px;
-  background:#fff;overflow:hidden;
-}
-.pay--rec{
-  border-color:var(--emerald);
-  box-shadow:0 20px 44px -24px rgba(16,185,129,.55);
-}
-@media(min-width:720px){.pay--rec{transform:translateY(-8px)}}
-.pay-head{
-  padding:10px 16px;text-align:center;
-  display:flex;align-items:center;justify-content:center;min-height:58px;
-  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
-  font-size:clamp(.95rem,3.8vw,1.05rem);letter-spacing:-.01em;
-  background:var(--off-white);border-bottom:1.5px solid var(--line);
-  color:var(--black);
-}
-/* Zona de preço com altura reservada: alinha os checklists entre os cards */
-.pay-top{display:flex;flex-direction:column;align-items:flex-start}
-@media(min-width:720px){.pay-top{min-height:132px}}
-.pay-top--auto{min-height:0}
-@media(min-width:720px){.pay-top--auto{min-height:0}}
-/* Contexto do desconto (Pix à vista): preço antigo riscado + pill −10% */
-.pay-ctx{display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-height:22px}
-.off-old{font-family:var(--font-mono);font-size:clamp(12px,3vw,13px);color:var(--ink-40)}
-.off-old s{text-decoration-thickness:2px}
-.off-pill{
-  font-family:var(--font-mono);font-weight:700;font-size:11px;letter-spacing:.04em;
-  color:#fff;background:var(--emerald);border-radius:999px;padding:3px 9px;line-height:1;
-}
-.pay-save{
-  margin-top:6px;font-family:var(--font-mono);font-weight:700;font-size:clamp(11px,3vw,12px);
-  letter-spacing:.02em;color:var(--emerald-dark);
-}
-.pay--rec .pay-head{background:var(--emerald);border-color:var(--emerald);color:#fff}
-.pay--dark .pay-head{background:var(--black);border-color:var(--black);color:#fff}
-.pay--soft .pay-head{background:var(--emerald-light);border-color:var(--emerald-light);color:var(--emerald-dark)}
-.pay-body{display:flex;flex-direction:column;flex:1;padding:clamp(18px,4vw,24px)}
-.pay-price{
-  margin-top:8px;font-family:var(--font-display);font-weight:900;letter-spacing:-.02em;
-  font-size:clamp(1.6rem,6.5vw,2rem);line-height:1;
-}
-.pay--rec .pay-price{color:var(--emerald-dark);font-size:clamp(1.9rem,7vw,2.3rem)}
-.pay-price{white-space:nowrap}
-.pay-price small{white-space:normal}
-.pay-price small{display:block;margin-top:6px;font-size:11px;font-weight:800;color:var(--ink-40);text-transform:uppercase;letter-spacing:.02em}
-.pay-feats{list-style:none;margin-top:14px;margin-bottom:18px}
-.pay-feats li{
-  display:flex;gap:10px;align-items:flex-start;
-  padding-block:8px;border-top:1px solid var(--line);
-  font-size:clamp(.88rem,3.4vw,.95rem);color:var(--ink-60);line-height:1.45;
-}
-.pay-feats li::before{content:"✓";font-family:var(--font-mono);font-weight:700;color:var(--emerald);flex:none;line-height:1.45}
-.pay-feats b{color:var(--black)}
+/* ——— Investimento: uma tela, com a linha de cota ——— */
+.valor{padding-block:clamp(72px,12vw,140px)}
+.valor-numero{font-family:var(--font-display);font-weight:900;letter-spacing:-.05em;line-height:.85;font-size:clamp(5rem,24vw,15rem);margin-top:clamp(24px,4vw,40px);white-space:nowrap}
+.valor-numero small{font-size:.28em;letter-spacing:-.02em;vertical-align:.95em;margin-right:.08em}
+.cota{position:relative;margin-top:22px;height:14px;border-bottom:2px solid var(--emerald)}
+.cota::before,.cota::after{content:"";position:absolute;bottom:-8px;width:2px;height:16px;background:var(--emerald)}
+.cota::before{left:0}.cota::after{right:0}
+.cota-legenda{margin-top:14px;font-family:var(--font-mono);font-size:clamp(12px,3.4vw,14px);color:var(--emerald-dark)}
+.valor-grade{margin-top:clamp(40px,6vw,64px);display:grid;gap:clamp(28px,4vw,56px)}
+@media(min-width:900px){.valor-grade{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}}
+.valor-grade p{font-size:clamp(1rem,3.9vw,1.12rem);color:var(--ink-70);max-width:52ch}
+.valor-grade p + p{margin-top:14px}
+.garantia{margin-top:24px;padding:20px 22px;border-left:3px solid var(--emerald);background:var(--emerald-light)}
+.garantia p{color:rgba(10,10,10,.78)}
+.pagar{border:2px solid var(--black);border-radius:6px;padding:clamp(20px,4vw,28px);background:#fff;align-self:start}
+.pagar-titulo{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:1.25rem;letter-spacing:-.01em}
+.pagar ul{list-style:none;margin:14px 0 20px}
+.pagar li{padding-block:9px;border-top:1px solid var(--line);font-size:.96rem;color:var(--ink-70)}
 .btn-pay{
-  margin-top:auto;width:100%;
-  border:none;border-radius:999px;background:var(--emerald);color:#fff;
-  padding:14px 20px;cursor:pointer;
-  font-family:var(--font-display);font-weight:900;font-size:14px;
-  letter-spacing:.03em;text-transform:uppercase;
-  transition:background .25s,transform .1s;
+  width:100%;border:none;border-radius:999px;background:var(--emerald);color:var(--black);
+  padding:15px 20px;cursor:pointer;font-family:var(--font-display);font-weight:900;font-size:15px;
+  letter-spacing:.02em;text-transform:uppercase;transition:background-color .2s;
 }
-.btn-pay:hover{background:var(--emerald-dark)}
-.btn-pay:active{transform:scale(.99)}
-.btn-pay:focus-visible{outline:2px solid var(--emerald-dark);outline-offset:2px}
-.btn-pay--ghost{background:#fff;color:var(--emerald-dark);border:1.5px solid var(--emerald)}
-.btn-pay--ghost:hover{background:var(--emerald-light)}
-.pay-note{margin-top:16px;font-family:var(--font-mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-40)}
+.btn-pay:hover{background:#0ea371}
+.pagar-rodape{margin-top:12px;font-family:var(--font-mono);font-size:12px;color:var(--ink-55)}
+
+/* ——— Depois da publicação ——— */
+.opcoes{margin-top:clamp(32px,5vw,48px);display:grid;gap:0;border-top:2px solid var(--black)}
+@media(min-width:760px){.opcoes{grid-template-columns:1fr 1fr}.opcao + .opcao{border-left:1px solid var(--line);padding-left:clamp(20px,4vw,40px)}}
+.opcao{padding-block:24px;padding-right:clamp(0px,3vw,32px);border-bottom:1px solid var(--line)}
+.opcao h3{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.2rem,4.4vw,1.5rem);letter-spacing:-.02em;line-height:1}
+.opcao-preco{margin-top:10px;font-family:var(--font-display);font-weight:900;font-size:clamp(1.8rem,6vw,2.4rem);letter-spacing:-.03em;line-height:1}
+.opcao-preco small{font-size:.45em;color:var(--ink-55)}
+.opcao p{margin-top:12px;color:var(--ink-70);max-width:44ch}
+.opcao ul{list-style:none;margin-top:14px}
+.opcao li{padding-block:8px;border-top:1px solid var(--line);font-size:.96rem;color:var(--ink-70)}
+
+/* ——— Prazo e passos ——— */
+.prazo{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.6rem,6vw,2.6rem);letter-spacing:-.025em;line-height:1;margin-top:clamp(24px,4vw,36px)}
+.passos{list-style:none;counter-reset:p;margin-top:clamp(28px,4vw,40px);border-top:2px solid var(--black);max-width:760px}
+.passos li{counter-increment:p;display:flex;gap:16px;padding-block:16px;border-bottom:1px solid var(--line);color:var(--ink-70);font-size:clamp(1rem,3.9vw,1.1rem)}
+.passos li::before{content:counter(p);font-family:var(--font-display);font-weight:900;font-size:1.4rem;line-height:1.1;color:var(--black);min-width:1.2em}
+
+/* ——— Não incluso: nota de rodapé ——— */
+.rodape-nota{padding-block:clamp(40px,6vw,64px);border-top:1px solid var(--line);display:grid;gap:16px}
+@media(min-width:900px){.rodape-nota{grid-template-columns:minmax(0,1fr) minmax(0,1.7fr)}}
+.rodape-nota h2{font-family:var(--font-mono);font-weight:700;font-size:14px;color:var(--ink-55)}
+.rodape-nota ul{list-style:none}
+.rodape-nota li{padding-block:8px;border-bottom:1px solid var(--line);font-size:.95rem;color:var(--ink-70)}
+
+/* ——— Fecho ——— */
+.fecho{padding-block:clamp(64px,10vw,120px);border-top:1px solid var(--line)}
+.fecho h2{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(2.2rem,8vw,4.6rem);line-height:.92;letter-spacing:-.04em;max-width:12ch}
+.fecho a{display:inline-block;margin-top:28px;font-weight:600;font-size:1.1rem;text-decoration:underline;text-decoration-color:var(--emerald);text-decoration-thickness:2px;text-underline-offset:4px}
+.assinatura{padding-block:28px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px 28px;font-family:var(--font-mono);font-size:12px;color:var(--ink-55)}
+
+@page{size:A4;margin:14mm}
 @media print{
-  .pay-cards .btn-pay{display:none}
-  .pay--rec{transform:none}
-  .pay-head{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .aparelho,.btn-pay,.fecho a{display:none}
+  .capa{grid-template-columns:1fr}
+  .sec,.valor{padding-block:28px}
+  .prancha{break-inside:avoid}
+  .pin,.garantia{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
-
-/* ——— Hospedagem: dois formatos lado a lado ——— */
-.host-cards{margin-top:clamp(20px,4vw,28px);display:grid;gap:16px}
-@media(min-width:720px){.host-cards{grid-template-columns:1fr 1fr}}
-.host{border:1.5px solid var(--line);border-radius:20px;padding:clamp(20px,4.5vw,28px);background:#fff}
-.host--rec{border-color:var(--emerald);box-shadow:0 12px 32px -20px rgba(16,185,129,.45)}
-.host .h-tag{font-family:var(--font-mono);font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--emerald-dark)}
-.host h3{
-  margin-top:10px;font-family:var(--font-display);font-weight:900;text-transform:uppercase;
-  font-size:clamp(1.1rem,4.6vw,1.35rem);line-height:1.02;letter-spacing:-.015em;
-}
-.host .h-price{
-  margin-top:10px;font-family:var(--font-display);font-weight:900;letter-spacing:-.02em;
-  font-size:clamp(1.5rem,6vw,1.9rem);line-height:1;
-}
-.host .h-price small{font-size:.55em;font-weight:800;color:var(--ink-40);text-transform:uppercase;letter-spacing:0;white-space:nowrap}
-.host p{margin-top:12px;font-size:clamp(.95rem,3.8vw,1.02rem)}
-.host-note{margin-top:clamp(16px,3vw,22px)}
-@media print{.host-cards{break-inside:avoid}}
-
-/* ——— Próximos passos ——— */
-.next{list-style:none;counter-reset:np}
-.next li{
-  counter-increment:np;display:flex;gap:14px;align-items:flex-start;
-  padding-block:14px;border-bottom:1px solid var(--line);
-  font-size:clamp(1rem,4vw,1.1rem);color:var(--ink-60);line-height:1.5;
-}
-.next li:last-child{border-bottom:none}
-.next li::before{
-  content:counter(np,decimal-leading-zero);
-  font-family:var(--font-mono);font-weight:700;color:var(--emerald-dark);flex:none;line-height:1.5;
-}
-.next b{color:var(--black)}
-
-/* ——— Prazo ——— */
-.deadline{
-  font-family:var(--font-display);font-weight:900;letter-spacing:-.02em;
-  font-size:clamp(1.6rem,7vw,2.6rem);line-height:1.05;text-transform:uppercase;
-}
-.deadline em{font-style:normal;color:var(--emerald)}
-
-/* ——— CTA final ——— */
-.closing{padding-block:clamp(48px,9vw,96px);border-top:1px solid var(--line);text-align:center}
-.closing h2{
-  font-family:var(--font-display);font-weight:900;text-transform:uppercase;
-  font-size:clamp(1.8rem,8vw,3.4rem);line-height:1;letter-spacing:-.03em;
-  max-width:22ch;margin-inline:auto;
-}
-.closing h2 em{font-style:normal;color:var(--emerald)}
-.cta-wrap{margin-top:clamp(28px,5vw,40px)}
-.cta-alt{margin-top:clamp(22px,3vw,28px)}
-.cta-alt a{
-  display:inline-flex;align-items:center;gap:8px;
-  font-family:var(--font-mono);font-weight:700;font-size:13px;letter-spacing:.04em;text-transform:uppercase;
-  color:var(--emerald-dark);border-bottom:1.5px solid var(--emerald);padding-bottom:3px;
-  text-decoration:none;transition:color .2s;
-}
-.cta-alt a:hover{color:var(--emerald)}
-@media print{.cta-alt{display:none}}
-
-/* ——— Rodapé ——— */
-.doc-footer{
-  padding-block:clamp(24px,4vw,36px);
-  border-top:1px solid var(--line);
-  display:flex;flex-wrap:wrap;gap:8px 24px;
-  font-family:var(--font-mono);font-size:clamp(11px,3vw,12px);
-  letter-spacing:.04em;text-transform:uppercase;color:var(--ink-60);
-}
-
-/* ——— Impressão / PDF (A4) ——— */
-@page{size:A4;margin:16mm}
-@media print{
-  body{background:#fff}
-  .grid-lines,.cta-wrap,.mockup,.mockup-note{display:none}
-  .dot::after{animation:none}
-  .doc{max-width:none;padding:0}
-  .opening{padding-block:28px 36px}
-  .sec{padding-block:24px;break-inside:avoid}
-  .founding,.guarantee{
-    box-shadow:none;border:1.5px solid var(--emerald-dark);
-    -webkit-print-color-adjust:exact;print-color-adjust:exact;
-    break-inside:avoid;
-  }
-  .grid-list li{break-inside:avoid}
-}
-
-/* ——— Regras do suporte: o que conta como alteração e o que fica fora ——— */
-.rules{margin-top:clamp(16px,3vw,22px);display:grid;gap:16px}
-@media(min-width:720px){.rules{grid-template-columns:1fr 1fr}}
-.rule{border:1px solid var(--line);border-radius:16px;padding:clamp(16px,4vw,22px);background:#fff}
-.rule .r-tag{font-family:var(--font-mono);font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--emerald-dark)}
-.rule ul{list-style:none;margin-top:10px}
-.rule li{
-  display:flex;gap:10px;align-items:flex-start;padding-block:8px;border-top:1px solid var(--line);
-  font-size:clamp(.92rem,3.6vw,1rem);color:var(--ink-60);line-height:1.45;
-}
-.rule li::before{content:"·";font-family:var(--font-mono);font-weight:700;color:var(--ink-40);flex:none}
-.rule li b{color:var(--black)}
-
-/* ——— Tabela do tráfego pago ——— */
-.table-wrap{margin-top:clamp(20px,4vw,28px);overflow-x:auto;-webkit-overflow-scrolling:touch}
-.tabela{width:100%;min-width:640px;border-collapse:separate;border-spacing:0;background:#fff;border:1.5px solid var(--line);border-radius:16px;overflow:hidden}
-.tabela th,.tabela td{padding:14px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);font-size:clamp(.9rem,3.5vw,.98rem);line-height:1.45;color:var(--ink-60)}
-.tabela th{font-family:var(--font-mono);font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-40);background:var(--off-white)}
-.tabela tbody tr:last-child td{border-bottom:none}
-.tabela td b{color:var(--black);font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:1.05rem;letter-spacing:-.01em}
-.tabela td small{display:block;font-family:var(--font-mono);font-size:11px;color:var(--ink-40);margin-top:2px;letter-spacing:.02em}
-.tabela .num-cell{font-family:var(--font-display);font-weight:900;font-size:clamp(1.05rem,4vw,1.2rem);color:var(--black);white-space:nowrap;letter-spacing:-.01em}
-.tabela--rec td{background:var(--emerald-light)}
-.tabela--rec td b,.tabela--rec .num-cell{color:var(--emerald-dark)}
-@media print{.table-wrap{overflow:visible}.tabela{min-width:0}.tabela--rec td{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 </style>
 </head>
 <body data-proposta="fardo-esportes">
 
-<div class="grid-lines" aria-hidden="true">
-  <span></span><span></span><span></span><span></span><span></span>
-</div>
+<div class="wrap">
 
-<div class="doc">
-
-  <header class="doc-header">
-    <div class="brand">RAFAEL RAZEIRA <small>ESTÚDIO</small></div>
-    <div class="date">25/09/2026</div>
+  <header class="topo">
+    <div class="marca">Rafael Razeira <small>Estúdio</small></div>
+    <time datetime="2026-09-25">25/09/2026</time>
   </header>
 
-  <!-- 1 · HERO -->
-  <section class="opening">
-    <div class="eyebrow">
-      <span class="dot"></span><span class="status">PROPOSTA COMERCIAL</span>
-    </div>
-    <h1>CHUTEIRA, CAMISA DO GRENAL E FITNESS. A VITRINE DA <em>FARDO ESPORTES</em> JÁ ESTÁ PRONTA.</h1>
-    <p class="meta">A vitrine que você viu no link é a <b>Fardo Esportes com identidade própria</b>: o fitness feminino em destaque logo abaixo do topo, com a Caju Brasil, a Alto Giro e a CCM na frente, as camisas de gremista e de colorado, as chuteiras na prateleira e o pedido chegando no seu WhatsApp com a peça escrita. Esta proposta é o que falta para ela entrar no ar.</p>
-
-    <!-- A vitrine ao vivo nas duas molduras: a proposta nunca mostra versão velha. -->
-    <div class="mockup" aria-hidden="true">
-      <div class="laptop">
-        <div class="screen"><iframe src="https://fardo-esportes.vercel.app" title="" loading="lazy" tabindex="-1"></iframe></div>
-        <div class="base"></div>
-      </div>
-      <div class="phone">
-        <div class="screen"><iframe src="https://fardo-esportes.vercel.app" title="" loading="lazy" tabindex="-1"></iframe></div>
-      </div>
-    </div>
-    <p class="mockup-note">A vitrine ao vivo, em notebook e smartphone</p>
-  </section>
-
-  <!-- 2 · OBJETIVO -->
-  <section class="sec">
-    <div class="num">01</div>
+  <!-- CAPA -->
+  <section class="capa">
     <div>
-      <h2>O OBJETIVO DO PROJETO</h2>
-      <div class="body">
-        <p>Hoje quem quer ver o que tem na Fardo precisa rolar o Instagram, e o que mais vende (chuteira e camisa) está nas postagens antigas, lá embaixo. A vitrine resolve isso: <b>a loja inteira num link só</b>, separada do jeito que você vende: fardamento de treino, de torcida, de campo e pro dia a dia.</p>
-        <p>E ela trabalha no que você me disse que quer vender mais: <b>o fitness feminino</b>. Ele ganhou a primeira seção da página, com cada marca na sua cor e os looks em foto grande. A cliente escolhe a peça, aperta o botão e chega na sua conversa com a mensagem pronta. Você passa o preço, o tamanho e fecha a venda.</p>
+      <p class="capa-para">Proposta para a Valeria, da Fardo Esportes</p>
+      <h1>A Fardo inteira, num link só.</h1>
+      <dl class="ficha">
+        <div><dt>A vitrine</dt><dd><a href="https://fardo-esportes.vercel.app" target="_blank" rel="noopener">fardo-esportes.vercel.app</a>, já construída</dd></div>
+        <div><dt>O que entra</dt><dd>Até 60 peças cadastradas por mim, com o fundo das fotos tratado</dd></div>
+        <div><dt>Investimento</dt><dd><b>R$ 999</b>, pagamento único no Pix, sem entrada</dd></div>
+        <div><dt>No ar em</dt><dd>Até 5 dias úteis depois da sua lista de peças</dd></div>
+      </dl>
+    </div>
+
+    <div class="aparelho">
+      <div class="celular">
+        <iframe src="https://fardo-esportes.vercel.app" title="A vitrine da Fardo Esportes, ao vivo" loading="lazy"></iframe>
       </div>
+      <p class="aparelho-nota"><span class="pin" aria-hidden="true">↕</span><span class="so-mouse">Essa é a sua vitrine de verdade: role aí dentro. Ou <a href="https://fardo-esportes.vercel.app" target="_blank" rel="noopener">abra numa aba nova</a>.</span><span class="so-toque">Essa é a sua vitrine de verdade, ao vivo. <a href="https://fardo-esportes.vercel.app" target="_blank" rel="noopener">Abrir a vitrine</a>.</span></p>
     </div>
   </section>
 
-  <!-- 3 · O QUE ESTÁ INCLUSO -->
+  <!-- O QUE JÁ ESTÁ PRONTO -->
   <section class="sec">
-    <div class="num">02</div>
-    <div>
-      <h2>O QUE ESTÁ INCLUSO</h2>
-      <div class="body body--wide">
-        <ul class="grid-list">
-          <li><span class="check">✓</span><span><b>Identidade própria para a Fardo Esportes</b>: o vermelho da sua logo, a calçada de petit-pavé no rodapé e a frase da sua bio no topo; nada de modelo pronto</span></li>
-          <li><span class="check">✓</span><span><b>Página inicial completa</b>: as fotos da sua campanha no topo, a faixa com as marcas que você trabalha, o fitness por marca, gremista ou colorado, as chuteiras e o pro dia a dia</span></li>
-          <li><span class="check">✓</span><span><b>Cadastro de até 60 peças, feito por mim, na entrega, com o fundo das fotos tratado no padrão da vitrine</b>: você me manda o nome, a referência e a cor de cada uma. Se tiver foto sua, melhor ainda; se não tiver, eu uso a foto oficial da marca</span></li>
-          <li><span class="check">✓</span><span><b>Fitness feminino em destaque</b>: uma faixa para cada marca, na cor das peças, com todos os looks em foto grande, sem precisar clicar para ver</span></li>
-          <li><span class="check">✓</span><span><b>Camisas com personalização</b>: Grêmio e Inter lado a lado, e o aviso de que você coloca o nome na camisa</span></li>
-          <li><span class="check">✓</span><span><b>Catálogo com busca e filtros</b> por categoria e por marca: chuteiras, camisas, fitness, moletons, tênis e botas</span></li>
-          <li><span class="check">✓</span><span><b>Página de cada peça</b> com as fotos, a marca, os tamanhos, as cores e o pedido montado sozinho para o seu WhatsApp</span></li>
-          <li><span class="check">✓</span><span><b>Painel administrativo</b> para você mesma colocar e trocar peças: foto, nome, marca, preço, promoção, tamanhos, cores e destaque, sem depender de ninguém</span></li>
-          <li><span class="check">✓</span><span><b>Versão mobile</b> feita para quem chega pelo Instagram e pelo WhatsApp</span></li>
-          <li><span class="check">✓</span><span><b>Favicon e prévia do link</b>: a sua marca na aba e no cartão quando alguém manda o link no WhatsApp</span></li>
-          <li><span class="check">✓</span><span><b>SEO configurado</b> para a Fardo aparecer no Google por nome e por "loja de artigos esportivos em Erechim"</span></li>
-          <li><span class="check">✓</span><span><b>Publicação do projeto</b> com o WhatsApp da loja, o endereço, o horário e o Instagram apontando para o link</span></li>
-          <li><span class="check">✓</span><span><b>2 rodadas de revisão</b> antes da publicação</span></li>
-          <li><span class="check">✓</span><span><b>Treinamento do painel</b> + 30 dias de suporte pós-publicação</span></li>
-        </ul>
-      </div>
-    </div>
-  </section>
+    <h2>O que você recebe, apontado na tela</h2>
+    <p class="sec-intro">Em vez de uma lista, as partes da sua vitrine com uma nota em cada uma. Passe o dedo ou o mouse numa nota e o número acende na imagem.</p>
 
-  <!-- 4 · O QUE NÃO ESTÁ INCLUSO -->
-  <section class="sec">
-    <div class="num">03</div>
-    <div>
-      <h2>O QUE NÃO ESTÁ INCLUSO</h2>
-      <div class="body">
-        <ul class="list list--out">
-          <li><span><b>Domínio próprio</b> (o endereço com o nome da loja, .com.br): R$ 40 por 1 ano, cobrado à parte e registrado no nome da loja. Eu faço a configuração</span></li>
-          <li><span>Carrinho de compras, checkout e pagamento online (o pedido fecha no WhatsApp)</span></li>
-          <li><span>Controle de estoque, ERP e emissão fiscal</span></li>
-          <li><span>Tirar as fotos dos produtos: a foto é sua (do celular serve) ou a oficial da marca. O tratamento do fundo é comigo, no cadastro da entrega e no plano de suporte</span></li>
-          <li><span>Simulador de frete e parcelamento com valor: o preço e a entrega ficam para a conversa no WhatsApp</span></li>
-          <li><span>Cadastro de peças depois da entrega: você faz pelo painel, ou eu faço no plano de suporte</span></li>
-        </ul>
-        <p class="list-note">Qualquer um desses itens pode ser conversado em uma etapa futura, como evolução da vitrine.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- 5 · INVESTIMENTO -->
-  <section class="sec">
-    <div class="num">04</div>
-    <div>
-      <h2>INVESTIMENTO</h2>
-      <div class="body">
-        <p>Vitrine completa com identidade própria, painel administrativo, até 60 peças cadastradas e pedido pelo WhatsApp. O projeto que você viu acima <b>já está construído</b>: o valor cobre o cadastro das suas peças, a revisão com você, a publicação e o treinamento.</p>
-        <div class="price-compare">
-          <div class="price-row price-row--main">
-            <span class="p-tag">VALOR TOTAL DO PROJETO</span>
-            <span class="price-main">R$ 999,00</span>
-          </div>
-        </div>
-        <div class="split">
-          <div>
-            <span class="tag">SEM ENTRADA</span>
-            <span class="desc">Você não adianta nada para eu começar o cadastro</span>
-          </div>
-          <div>
-            <span class="tag">PAGAMENTO ÚNICO · R$ 999 NO PIX</span>
-            <span class="desc">Uma vez só, no dia da publicação, depois de você ver a vitrine no ar</span>
-          </div>
-        </div>
-        <p class="host-note">É um pagamento só, no Pix, aqui na página. O domínio, se você quiser o endereço próprio, é à parte: R$ 40 por 1 ano.</p>
-
-        <aside class="guarantee">
-          <span class="g-label">RISCO ZERO</span>
-          <p>Você paga <b>depois</b> de ver a vitrine publicada com as suas peças. Se ela não for o que você viu na prévia, <b>não existe cobrança</b>: nada foi adiantado.</p>
-        </aside>
-
-        <div class="pay-cards pay-cards--one">
-          <div class="pay pay--rec">
-            <div class="pay-head">Pagamento único no Pix</div>
-            <div class="pay-body">
-              <div class="pay-top pay-top--auto">
-                <div class="pay-ctx">No dia da publicação</div>
-                <div class="pay-price">R$ 999 <small>uma vez, sem entrada</small></div>
-              </div>
-              <ul class="pay-feats">
-                <li><span>QR code aqui na página, confirmação na hora</span></li>
-                <li><span>Nada é pago antes: a vitrine sobe primeiro</span></li>
-              </ul>
-              <button class="btn-pay" type="button" data-checkout-item="avista_pix">Pagar no Pix</button>
-            </div>
-          </div>
-        </div>
-        <p class="pay-note">Pagamento processado pelo Mercado Pago, sem sair desta página.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- 6 · PRAZO -->
-  <section class="sec">
-    <div class="num">05</div>
-    <div>
-      <h2>PRAZO</h2>
-      <div class="body">
-        <p class="deadline">NO AR EM ATÉ <em>5 DIAS ÚTEIS</em> APÓS A SUA LISTA</p>
-        <p style="margin-top:14px">A vitrine já está construída. O que falta é o que só você sabe: <b>a lista das peças</b> (nome, referência e cor de cada uma, até 60), as suas fotos se tiver, quais peças da prévia ainda existem na loja (as camisas e o fitness saíram de postagens de 2022 a 2024) e o logo da CCM, que eu não achei oficial. O prazo conta a partir do dia em que a lista chega.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- 7 · DEPOIS DA PUBLICAÇÃO -->
-  <section class="sec">
-    <div class="num">06</div>
-    <div>
-      <h2>DEPOIS DA PUBLICAÇÃO</h2>
-      <div class="body body--wide">
-        <p>Depois da entrega, <b>você mesma consegue colocar e trocar peças pelo painel</b>: é simples, e eu te mostro como no treinamento. Se preferir que eu cuide disso pra você todo mês, tem o plano de suporte.</p>
-        <div class="host-cards">
-          <div class="host">
-            <span class="h-tag">PELO PAINEL</span>
-            <h3>VOCÊ MESMA CUIDA</h3>
-            <div class="h-price">R$ 0<small>/mês</small></div>
-            <p>Coloca peça nova, troca foto e preço, marca promoção e destaque direto no celular. Sem limite e sem pedir para ninguém.</p>
-          </div>
-          <div class="host host--rec">
-            <span class="h-tag">PLANO DE SUPORTE</span>
-            <h3>EU CUIDO PRA VOCÊ</h3>
-            <div class="h-price">R$ 149,90<small>/mês</small></div>
-            <p>Você me manda as peças novas pelo WhatsApp e eu <b>trato o fundo das fotos</b>, cadastro e atualizo na vitrine: <b>até 10 peças por mês</b>. Sem fidelidade: cancela quando quiser.</p>
-          </div>
-        </div>
-
-        <div class="rules">
-          <div class="rule">
-            <span class="r-tag">ENTRA NO PLANO</span>
-            <ul>
-              <li><span><b>Até 10 peças por mês</b>, cada uma com até 3 fotos, com o fundo tratado no padrão da vitrine</span></li>
-              <li><span>Trocar foto, nome, preço, promoção, tamanhos ou cores de uma peça que já está na vitrine</span></li>
-              <li><span>Tirar da vitrine o que acabou na loja</span></li>
-            </ul>
-          </div>
-          <div class="rule">
-            <span class="r-tag">FICA FORA DO PLANO</span>
-            <ul>
-              <li><span>Acima de 10 peças no mês: <b>R$ 15 por peça extra</b></span></li>
-              <li><span>Seção nova, página nova ou mudança de layout: orçamento à parte</span></li>
-              <li><span>O que você mesma faz no painel não conta e não tem limite</span></li>
-            </ul>
-          </div>
-        </div>
-        <p class="host-note">As peças do plano não acumulam de um mês para o outro.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- 8 · PRÓXIMOS PASSOS -->
-  <section class="sec">
-    <div class="num">07</div>
-    <div>
-      <h2>PRÓXIMOS PASSOS</h2>
-      <div class="body">
-        <ol class="next">
-          <li><span>Você confirma o <b>aceite desta proposta</b> pelo WhatsApp. Não há nada a pagar neste passo.</span></li>
-          <li><span>Você me manda a lista das peças: <b>nome, referência e cor</b> de cada uma, e as fotos que tiver.</span></li>
-          <li><span>Eu cadastro, reviso com você e publico a vitrine. Com a <b>Fardo Esportes no ar</b> e aprovada, você paga os <b>R$ 999 no Pix</b>, aqui nesta página.</span></li>
+    <div class="prancha" data-prancha>
+      <figure>
+        <img src="/assets/proposta/fardo-esportes/topo.webp" width="1600" height="944" alt="O topo da vitrine da Fardo Esportes: duas fotos de campanha, a busca e a faixa de marcas" />
+        <span class="pin" data-n="1" style="left:22%;top:40%">1</span>
+        <span class="pin" data-n="2" style="left:64%;top:5%">2</span>
+        <span class="pin" data-n="3" style="left:50%;top:88.8%">3</span>
+      </figure>
+      <div>
+        <p class="prancha-titulo">Prancha 1 de 4<b>A abertura</b></p>
+        <ol class="notas">
+          <li data-n="1"><span class="pin">1</span><span>As fotos da sua campanha, com gente vestindo a roupa, e a frase da sua bio: "Vista o incentivo."</span></li>
+          <li data-n="2"><span class="pin">2</span><span>A busca entende o jeito de perguntar da cliente: chuteira, camisa do Grêmio, legging.</span></li>
+          <li data-n="3"><span class="pin">3</span><span>As marcas que você trabalha, com o logo oficial de cada uma, passando devagar.</span></li>
         </ol>
       </div>
     </div>
-  </section>
 
-  <!-- 9 · CTA -->
-  <section class="closing">
-    <h2>VAMOS COLOCAR A <em>FARDO ESPORTES</em> NO AR.</h2>
-    <div class="cta-wrap">
-      <p class="cta-alt"><a href="https://wa.me/5544991246187?text=Ol%C3%A1%20Rafael%2C%20tenho%20uma%20d%C3%BAvida%20sobre%20a%20proposta%20da%20Fardo%20Esportes." target="_blank" rel="noopener">Ficou com uma dúvida? Fala comigo no WhatsApp <span aria-hidden="true">→</span></a></p>
+    <div class="prancha prancha--inv" data-prancha>
+      <figure>
+        <img src="/assets/proposta/fardo-esportes/fitness.webp" width="1600" height="1075" alt="A seção de fitness feminino, com a faixa salmão da Caju Brasil e as fotos dos looks" />
+        <span class="pin" data-n="4" style="left:24%;top:33%">4</span>
+        <span class="pin" data-n="5" style="left:50%;top:26%">5</span>
+        <span class="pin" data-n="6" style="left:23%;top:60%">6</span>
+      </figure>
+      <div>
+        <p class="prancha-titulo">Prancha 2 de 4<b>Fardamento de treino</b></p>
+        <ol class="notas">
+          <li data-n="4"><span class="pin">4</span><span>O fitness abre a página, logo depois do topo, porque é o que você quer vender mais. Cada marca tem uma faixa na cor das peças.</span></li>
+          <li data-n="5"><span class="pin">5</span><span>Todos os looks em foto grande, como foto revelada presa com fita. Nada escondido atrás de um clique.</span></li>
+          <li data-n="6"><span class="pin">6</span><span>Cada marca tem o seu botão: a cliente pergunta direto da Caju Brasil, da Alto Giro ou da CCM.</span></li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="prancha" data-prancha>
+      <figure>
+        <img src="/assets/proposta/fardo-esportes/camisas.webp" width="1600" height="1148" alt="A seção de camisas, dividida entre Grêmio e Inter" />
+        <span class="pin" data-n="7" style="left:49.6%;top:34%">7</span>
+        <span class="pin" data-n="8" style="left:57%;top:94%">8</span>
+      </figure>
+      <div>
+        <p class="prancha-titulo">Prancha 3 de 4<b>Fardamento de torcida</b></p>
+        <ol class="notas">
+          <li data-n="7"><span class="pin">7</span><span>Gremista ou colorado, meio a meio, de adulto e infantil. É a única parte da vitrine com azul.</span></li>
+          <li data-n="8"><span class="pin">8</span><span>O aviso de que a camisa sai com o nome nas costas, que hoje só aparece nas suas legendas.</span></li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="prancha prancha--inv" data-prancha>
+      <figure>
+        <img src="/assets/proposta/fardo-esportes/peca.webp" width="1600" height="1000" alt="A página de uma peça, com o código e o botão de pedir no WhatsApp" />
+        <span class="pin" data-n="9" style="left:66.5%;top:46.5%">9</span>
+        <span class="pin" data-n="10" style="left:95%;top:76.5%">10</span>
+      </figure>
+      <div>
+        <p class="prancha-titulo">Prancha 4 de 4<b>A página da peça</b></p>
+        <ol class="notas">
+          <li data-n="9"><span class="pin">9</span><span>Toda peça tem um código. Quando a cliente chama, você sabe na hora de qual ela está falando.</span></li>
+          <li data-n="10"><span class="pin">10</span><span>O pedido chega no seu WhatsApp já montado, com a peça, o código e o recado dela. Você responde com o preço e o tamanho.</span></li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="fora-da-tela">
+      <h3>E o que não aparece na tela</h3>
+      <ul>
+        <li><b>Até 60 peças cadastradas por mim</b> na entrega, com o fundo das fotos tratado. Você manda o nome, a referência e a cor; foto sua, ou eu uso a oficial da marca</li>
+        <li><b>O painel</b> para você mesma colocar e trocar peças, preço, promoção, tamanhos e destaque</li>
+        <li><b>A versão de celular</b>, para quem chega pelo Instagram</li>
+        <li><b>O Google</b>: a Fardo aparece por nome e por "artigos esportivos em Erechim"</li>
+        <li><b>O cartão do link</b>: a sua marca aparece quando alguém manda o endereço no WhatsApp</li>
+        <li><b>2 rodadas de revisão</b> antes de publicar</li>
+        <li><b>Treinamento do painel</b> e 30 dias de suporte depois da publicação</li>
+      </ul>
     </div>
   </section>
 
-  <footer class="doc-footer">
-    <span>RAFAEL RAZEIRA ESTÚDIO</span>
+  <!-- INVESTIMENTO -->
+  <section class="sec valor">
+    <h2>O investimento</h2>
+    <p class="valor-numero"><small>R$</small>999</p>
+    <div class="cota" aria-hidden="true"></div>
+    <p class="cota-legenda">Uma vez só, no Pix, no dia da publicação. Sem entrada, sem mensalidade.</p>
+
+    <div class="valor-grade">
+      <div>
+        <p>A vitrine que você viu <b>já está construída</b>. O valor cobre o cadastro das suas peças com o fundo tratado, a revisão com você, a publicação e o treinamento do painel.</p>
+        <p>O domínio próprio, se você quiser o endereço com o nome da loja, é à parte: <b>R$ 40 por 1 ano</b>, registrado no nome da loja. Eu faço a configuração.</p>
+        <div class="garantia">
+          <p>Você paga <b>depois</b> de ver a vitrine publicada com as suas peças. Se ela não for o que você viu, <b>não existe cobrança</b>: nada foi adiantado.</p>
+        </div>
+      </div>
+      <div class="pagar">
+        <p class="pagar-titulo">Pagar no dia da publicação</p>
+        <ul>
+          <li>QR code do Pix aqui na página, com confirmação na hora</li>
+          <li>Nada é pago antes: a vitrine sobe primeiro</li>
+        </ul>
+        <button class="btn-pay" type="button" data-checkout-item="avista_pix">Pagar R$ 999 no Pix</button>
+        <p class="pagar-rodape">Processado pelo Mercado Pago, sem sair desta página.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEPOIS DA PUBLICAÇÃO -->
+  <section class="sec">
+    <h2>Depois que ela estiver no ar</h2>
+    <p class="sec-intro">Você mesma consegue colocar e trocar peças pelo painel: é simples, e eu te mostro como no treinamento. Se preferir que eu cuide disso pra você todo mês, tem o plano de suporte.</p>
+    <div class="opcoes">
+      <div class="opcao">
+        <h3>Você mesma cuida</h3>
+        <p class="opcao-preco">R$ 0<small>/mês</small></p>
+        <p>Peça nova, foto, preço, promoção e destaque, direto do celular. Sem limite e sem pedir para ninguém.</p>
+      </div>
+      <div class="opcao">
+        <h3>Eu cuido pra você</h3>
+        <p class="opcao-preco">R$ 149,90<small>/mês</small></p>
+        <p>Você me manda as peças novas pelo WhatsApp e eu trato o fundo das fotos, cadastro e atualizo. Sem fidelidade.</p>
+        <ul>
+          <li><b>Até 10 peças por mês</b>, cada uma com até 3 fotos</li>
+          <li>Trocar foto, preço, tamanhos ou cores do que já está na vitrine, e tirar o que acabou</li>
+          <li>Acima de 10 peças no mês: <b>R$ 15 por peça extra</b></li>
+          <li>Não acumula de um mês para o outro. Seção ou página nova é orçamento à parte</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRAZO E PASSOS -->
+  <section class="sec">
+    <h2>Como a gente segue</h2>
+    <p class="prazo">No ar em até 5 dias úteis depois da sua lista</p>
+    <ol class="passos">
+      <li><span>Você confirma o <b>aceite</b> pelo WhatsApp. Nada a pagar neste passo.</span></li>
+      <li><span>Você me manda a lista das peças, com <b>nome, referência e cor</b>, e as fotos que tiver. Me diz também quais peças da prévia ainda existem na loja (as camisas e o fitness saíram de postagens de 2022 a 2024) e, se tiver, o logo da CCM.</span></li>
+      <li><span>Eu cadastro, trato as fotos, reviso com você e publico.</span></li>
+      <li><span>Com a Fardo no ar e aprovada, você paga os <b>R$ 999 no Pix</b>, aqui nesta página.</span></li>
+    </ol>
+  </section>
+
+  <!-- NÃO INCLUSO -->
+  <section class="rodape-nota">
+    <h2>O que não está incluso</h2>
+    <ul>
+      <li>Domínio próprio: R$ 40 por 1 ano, à parte, no nome da loja</li>
+      <li>Carrinho e pagamento online: o pedido fecha no WhatsApp</li>
+      <li>Controle de estoque, ERP e nota fiscal</li>
+      <li>Tirar as fotos: a foto é sua (do celular serve) ou a oficial da marca; o tratamento do fundo é comigo</li>
+      <li>Simulador de frete e de parcelamento: preço e entrega ficam para a conversa</li>
+    </ul>
+  </section>
+
+  <section class="fecho">
+    <h2>Vamos colocar a Fardo no ar.</h2>
+    <a href="https://wa.me/5544991246187?text=Ol%C3%A1%20Rafael%2C%20tenho%20uma%20d%C3%BAvida%20sobre%20a%20proposta%20da%20Fardo%20Esportes." target="_blank" rel="noopener">Ficou com dúvida? Me chama no WhatsApp</a>
+  </section>
+
+  <footer class="assinatura">
+    <span>Rafael Razeira Estúdio</span>
     <span>rafael.rbarbon@gmail.com</span>
     <span>(44) 99124-6187</span>
     <span>@rafaelrazeira.estudio</span>
@@ -693,5 +410,21 @@ a{color:inherit;text-decoration:none}
 
 </div>
 
+<script>
+/* A nota acende o número dela na imagem (mouse, foco ou toque). */
+document.querySelectorAll("[data-prancha]").forEach(function (prancha) {
+  prancha.querySelectorAll(".notas li").forEach(function (li) {
+    li.tabIndex = 0;
+    var alvo = prancha.querySelector('figure .pin[data-n="' + li.dataset.n + '"]');
+    if (!alvo) return;
+    var liga = function () { alvo.classList.add("acende"); };
+    var desliga = function () { alvo.classList.remove("acende"); };
+    li.addEventListener("mouseenter", liga);
+    li.addEventListener("mouseleave", desliga);
+    li.addEventListener("focus", liga);
+    li.addEventListener("blur", desliga);
+  });
+});
+</script>
 </body>
 </html>
