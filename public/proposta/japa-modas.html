@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Proposta Japa Modas · Rafael Razeira Estúdio</title>
+
+<!-- O cartao do link: a logo RR no preview do WhatsApp (URL absoluta de proposito) -->
+<meta property="og:image" content="https://rafaelrazeira.com.br/assets/og-rr.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Monograma RR do Rafael Razeira Estudio" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Rafael Razeira Estúdio" />
+<meta property="og:title" content="Proposta · Japa Modas" />
+<meta property="og:description" content="Rafael Razeira Estúdio: o que está incluso, o investimento e o prazo." />
+<meta property="og:url" content="https://rafaelrazeira.com.br/proposta/japa-modas.html" />
+
+
+<link rel="icon" type="image/png" href="/assets/favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+<link rel="stylesheet" href="/css/proposta-checkout.css" />
+<script src="/js/proposta-checkout.js" defer></script>
+
+<style>
+:root{
+  --emerald:#10B981;
+  --emerald-dark:#065F46;
+  --emerald-light:#D1FAE5;
+  --off-white:#FAFAF7;
+  --black:#0A0A0A;
+  --ink-70:rgba(10,10,10,.70);
+  --ink-55:rgba(10,10,10,.55);
+  --line:rgba(10,10,10,.12);
+  --maxw:1160px;
+  --pad:clamp(16px,5vw,64px);
+  --font-display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --font-body:"Inter",system-ui,-apple-system,sans-serif;
+  --font-mono:"Space Mono",ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--font-body);background:var(--off-white);color:var(--black);line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+b{font-weight:600;color:var(--black)}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--emerald-dark);outline-offset:3px}
+img{display:block;max-width:100%}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--pad)}
+
+/* ——— Cabeçalho ——— */
+.topo{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding-block:24px;border-bottom:1px solid var(--line)}
+.marca{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(15px,4vw,19px);letter-spacing:-.01em;white-space:nowrap}
+.marca small{font-size:1em;font-weight:800;color:var(--ink-55)}
+.topo time{font-family:var(--font-mono);font-size:13px;color:var(--ink-55)}
+
+/* ——— Hero: capa de documento + a vitrine ao vivo ——— */
+.capa{display:grid;gap:clamp(40px,6vw,72px);padding-block:clamp(40px,8vw,88px) clamp(56px,8vw,96px);align-items:center}
+@media(min-width:900px){.capa{grid-template-columns:minmax(0,1.15fr) auto}}
+.capa-para{font-family:var(--font-mono);font-size:14px;color:var(--ink-70)}
+.capa h1{
+  margin-top:20px;font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(2.6rem,9vw,6.4rem);line-height:.96;letter-spacing:-.04em;max-width:10ch;
+}
+.ficha{margin-top:clamp(32px,5vw,48px);border-top:2px solid var(--black);max-width:520px}
+.ficha div{display:grid;grid-template-columns:130px 1fr;gap:16px;padding-block:13px;border-bottom:1px solid var(--line)}
+.ficha dt{font-family:var(--font-mono);font-size:13px;color:var(--ink-55);padding-top:2px}
+.ficha dd{font-size:clamp(1rem,3.8vw,1.08rem);line-height:1.45}
+.ficha dd a{text-decoration:underline;text-decoration-color:var(--emerald);text-underline-offset:3px;text-decoration-thickness:2px}
+@media(max-width:420px){.ficha div{grid-template-columns:1fr;gap:2px}}
+
+/* O celular: 390x844 escalado. Desktop 0.8, celular 0.66. */
+.aparelho{position:relative;justify-self:center}
+.celular{
+  width:calc(390px * .8 + 20px);height:calc(844px * .8 + 20px);
+  border:10px solid var(--black);border-radius:48px;overflow:hidden;background:var(--black);
+  box-shadow:0 40px 80px -40px rgba(10,10,10,.45);
+}
+.celular iframe{width:390px;height:844px;border:0;transform:scale(.8);transform-origin:0 0;background:#fff;display:block}
+.aparelho-nota{display:flex;gap:10px;align-items:flex-start;margin-top:18px;max-width:330px;font-size:.95rem;color:var(--ink-70);line-height:1.45}
+.aparelho-nota a{font-weight:600;color:var(--black);text-decoration:underline;text-decoration-color:var(--emerald);text-decoration-thickness:2px;text-underline-offset:3px}
+@media(max-width:899px){
+  .celular{width:calc(390px * .66 + 16px);height:calc(844px * .66 + 16px);border-width:8px;border-radius:38px}
+  .celular iframe{transform:scale(.66)}
+}
+/* No toque, rolar dentro do iframe prende a página: fica só o link. */
+.so-toque{display:none}
+@media(hover:none){.celular iframe{pointer-events:none}.so-mouse{display:none}.so-toque{display:inline}}
+
+/* ——— O marcador: a anotação do estúdio ——— */
+.pin{
+  display:inline-grid;place-items:center;flex:none;
+  width:28px;height:28px;border-radius:50%;
+  background:var(--emerald);color:var(--black);
+  font-family:var(--font-mono);font-weight:700;font-size:13px;line-height:1;
+  box-shadow:0 0 0 3px var(--off-white);
+  transition:transform .2s ease-out,background-color .2s;
+}
+.pin.acende{transform:scale(1.3);background:var(--black);color:var(--off-white)}
+@media(prefers-reduced-motion:reduce){.pin{transition:none}}
+
+/* ——— Seções ——— */
+.sec{padding-block:clamp(56px,9vw,112px);border-top:1px solid var(--line)}
+.sec h2{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.9rem,6.5vw,3.4rem);line-height:.95;letter-spacing:-.03em;max-width:16ch}
+.sec-intro{margin-top:18px;max-width:58ch;font-size:clamp(1rem,3.9vw,1.15rem);color:var(--ink-70)}
+
+/* ——— As pranchas ——— */
+.prancha{margin-top:clamp(48px,7vw,80px);display:grid;gap:clamp(20px,3vw,40px);align-items:start}
+@media(min-width:900px){.prancha{grid-template-columns:minmax(0,1.7fr) minmax(0,1fr)}}
+.prancha figure{position:relative;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:#fff}
+.prancha figure img{width:100%;height:auto}
+.prancha figure .pin{position:absolute;transform:translate(-50%,-50%)}
+.prancha figure .pin.acende{transform:translate(-50%,-50%) scale(1.3)}
+.prancha-titulo{font-family:var(--font-mono);font-size:13px;color:var(--ink-55)}
+.prancha-titulo b{font-family:var(--font-display);font-weight:900;font-size:1.35rem;text-transform:uppercase;letter-spacing:-.02em;display:block;color:var(--black);margin-top:4px}
+.notas{list-style:none;margin-top:18px;border-top:2px solid var(--black)}
+.notas li{display:flex;gap:14px;align-items:flex-start;padding-block:14px;border-bottom:1px solid var(--line);font-size:clamp(.98rem,3.8vw,1.04rem);color:var(--ink-70);line-height:1.5;cursor:default}
+@media(min-width:900px){
+  .prancha--inv{grid-template-columns:minmax(0,1fr) minmax(0,1.7fr)}
+  .prancha--inv figure{order:2}
+}
+
+/* O que não aparece na tela: lista corrida em duas colunas, sem cartão */
+.fora-da-tela{margin-top:clamp(56px,8vw,88px);display:grid;gap:clamp(20px,4vw,48px)}
+@media(min-width:900px){.fora-da-tela{grid-template-columns:minmax(0,1fr) minmax(0,1.7fr)}}
+.fora-da-tela h3{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.3rem,4.6vw,1.7rem);line-height:1;letter-spacing:-.02em}
+.fora-da-tela ul{list-style:none;columns:2 280px;column-gap:40px;border-top:2px solid var(--black)}
+.fora-da-tela li{break-inside:avoid;padding-block:12px;border-bottom:1px solid var(--line);color:var(--ink-70)}
+
+/* ——— Investimento: uma tela, com a linha de cota ——— */
+.valor{padding-block:clamp(72px,12vw,140px)}
+.valor-numero{font-family:var(--font-display);font-weight:900;letter-spacing:-.05em;line-height:.85;font-size:clamp(5rem,24vw,15rem);margin-top:clamp(24px,4vw,40px);white-space:nowrap}
+.valor-numero small{font-size:.28em;letter-spacing:-.02em;vertical-align:.95em;margin-right:.08em}
+.cota{position:relative;margin-top:22px;height:14px;border-bottom:2px solid var(--emerald)}
+.cota::before,.cota::after{content:"";position:absolute;bottom:-8px;width:2px;height:16px;background:var(--emerald)}
+.cota::before{left:0}.cota::after{right:0}
+.cota-legenda{margin-top:14px;font-family:var(--font-mono);font-size:clamp(12px,3.4vw,14px);color:var(--emerald-dark)}
+.valor-grade{margin-top:clamp(40px,6vw,64px);display:grid;gap:clamp(28px,4vw,56px)}
+@media(min-width:900px){.valor-grade{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}}
+.valor-grade p{font-size:clamp(1rem,3.9vw,1.12rem);color:var(--ink-70);max-width:52ch}
+.valor-grade p + p{margin-top:14px}
+.garantia{margin-top:24px;padding:20px 22px;border-left:3px solid var(--emerald);background:var(--emerald-light)}
+.garantia p{color:rgba(10,10,10,.78)}
+.pagar{border:2px solid var(--black);border-radius:6px;padding:clamp(20px,4vw,28px);background:#fff;align-self:start}
+.pagar-titulo{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:1.25rem;letter-spacing:-.01em}
+.pagar ul{list-style:none;margin:14px 0 20px}
+.pagar li{padding-block:9px;border-top:1px solid var(--line);font-size:.96rem;color:var(--ink-70)}
+.btn-pay{
+  width:100%;border:none;border-radius:999px;background:var(--emerald);color:var(--black);
+  padding:15px 20px;cursor:pointer;font-family:var(--font-display);font-weight:900;font-size:15px;
+  letter-spacing:.02em;text-transform:uppercase;transition:background-color .2s;
+}
+.btn-pay:hover{background:#0ea371}
+.pagar-rodape{margin-top:12px;font-family:var(--font-mono);font-size:12px;color:var(--ink-55)}
+
+/* ——— Depois da publicação ——— */
+.opcoes{margin-top:clamp(32px,5vw,48px);display:grid;gap:0;border-top:2px solid var(--black)}
+@media(min-width:760px){.opcoes{grid-template-columns:1fr 1fr}.opcao + .opcao{border-left:1px solid var(--line);padding-left:clamp(20px,4vw,40px)}}
+.opcao{padding-block:24px;padding-right:clamp(0px,3vw,32px);border-bottom:1px solid var(--line)}
+.opcao h3{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.2rem,4.4vw,1.5rem);letter-spacing:-.02em;line-height:1}
+.opcao-preco{margin-top:10px;font-family:var(--font-display);font-weight:900;font-size:clamp(1.8rem,6vw,2.4rem);letter-spacing:-.03em;line-height:1}
+.opcao-preco small{font-size:.45em;color:var(--ink-55)}
+.opcao p{margin-top:12px;color:var(--ink-70);max-width:44ch}
+.opcao ul{list-style:none;margin-top:14px}
+.opcao li{padding-block:8px;border-top:1px solid var(--line);font-size:.96rem;color:var(--ink-70)}
+
+/* ——— Prazo e passos ——— */
+.prazo{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.6rem,6vw,2.6rem);letter-spacing:-.025em;line-height:1;margin-top:clamp(24px,4vw,36px)}
+.passos{list-style:none;counter-reset:p;margin-top:clamp(28px,4vw,40px);border-top:2px solid var(--black);max-width:760px}
+.passos li{counter-increment:p;display:flex;gap:16px;padding-block:16px;border-bottom:1px solid var(--line);color:var(--ink-70);font-size:clamp(1rem,3.9vw,1.1rem)}
+.passos li::before{content:counter(p);font-family:var(--font-display);font-weight:900;font-size:1.4rem;line-height:1.1;color:var(--black);min-width:1.2em}
+
+/* ——— Não incluso: nota de rodapé ——— */
+.rodape-nota{padding-block:clamp(40px,6vw,64px);border-top:1px solid var(--line);display:grid;gap:16px}
+@media(min-width:900px){.rodape-nota{grid-template-columns:minmax(0,1fr) minmax(0,1.7fr)}}
+.rodape-nota h2{font-family:var(--font-mono);font-weight:700;font-size:14px;color:var(--ink-55)}
+.rodape-nota ul{list-style:none}
+.rodape-nota li{padding-block:8px;border-bottom:1px solid var(--line);font-size:.95rem;color:var(--ink-70)}
+
+/* ——— Fecho ——— */
+.fecho{padding-block:clamp(64px,10vw,120px);border-top:1px solid var(--line)}
+.fecho h2{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(2.2rem,8vw,4.6rem);line-height:.92;letter-spacing:-.04em;max-width:12ch}
+.fecho a{display:inline-block;margin-top:28px;font-weight:600;font-size:1.1rem;text-decoration:underline;text-decoration-color:var(--emerald);text-decoration-thickness:2px;text-underline-offset:4px}
+.assinatura{padding-block:28px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px 28px;font-family:var(--font-mono);font-size:12px;color:var(--ink-55)}
+
+@page{size:A4;margin:14mm}
+@media print{
+  .aparelho,.btn-pay,.fecho a{display:none}
+  .capa{grid-template-columns:1fr}
+  .sec,.valor{padding-block:28px}
+  .prancha{break-inside:avoid}
+  .pin,.garantia{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
+/* ——— Entrada e saldo (Japa Modas: R$ 199 + R$ 800) ——— */
+.btn-pay--ghost{background:transparent;border:2px solid var(--black);margin-top:10px}
+.btn-pay--ghost:hover{background:var(--black);color:#fff}
+.pagar-saldo{margin-top:24px;padding-top:20px;border-top:2px solid var(--black)}
+.pagar-titulo--menor{font-size:1rem}
+.pagar-nota{margin:8px 0 12px;font-size:.92rem;color:var(--ink-70)}
+.saldo-titulo{margin-top:clamp(40px,6vw,64px);font-family:var(--font-mono);font-weight:700;font-size:14px;color:var(--ink-55)}
+.valor .passos{margin-top:16px}
+</style>
+</head>
+<body data-proposta="japa-modas">
+
+<div class="wrap">
+
+  <header class="topo">
+    <div class="marca">Rafael Razeira <small>Estúdio</small></div>
+    <time datetime="2026-09-25">25/09/2026</time>
+  </header>
+
+  <!-- CAPA -->
+  <section class="capa">
+    <div>
+      <p class="capa-para">Proposta para a Japa Modas</p>
+      <h1>A Japa Modas, aberta 24 horas num link só.</h1>
+      <dl class="ficha">
+        <div><dt>A vitrine</dt><dd><a href="https://japa-modas.vercel.app" target="_blank" rel="noopener">japa-modas.vercel.app</a>, já construída</dd></div>
+        <div><dt>O que entra</dt><dd>Até 60 peças cadastradas por mim, com o fundo das fotos tratado</dd></div>
+        <div><dt>Investimento</dt><dd><b>R$ 999</b>, R$ 199 de entrada no Pix e R$ 800 na entrega</dd></div>
+        <div><dt>No ar em</dt><dd>Até 5 dias úteis depois da sua lista de peças</dd></div>
+      </dl>
+    </div>
+
+    <div class="aparelho">
+      <div class="celular">
+        <iframe src="https://japa-modas.vercel.app" title="A vitrine da Japa Modas, ao vivo" loading="lazy"></iframe>
+      </div>
+      <p class="aparelho-nota"><span class="pin" aria-hidden="true">↕</span><span class="so-mouse">Essa é a sua vitrine de verdade: role aí dentro. Ou <a href="https://japa-modas.vercel.app" target="_blank" rel="noopener">abra numa aba nova</a>.</span><span class="so-toque">Essa é a sua vitrine de verdade, ao vivo. <a href="https://japa-modas.vercel.app" target="_blank" rel="noopener">Abrir a vitrine</a>.</span></p>
+    </div>
+  </section>
+
+  <!-- AS PRANCHAS -->
+  <section class="sec">
+    <h2>O que você recebe, apontado na tela</h2>
+    <p class="sec-intro">Em vez de uma lista, as partes da sua vitrine com uma nota em cada uma. Passe o dedo ou o mouse numa nota e o número acende na imagem.</p>
+
+    <div class="prancha" data-prancha>
+      <figure>
+        <img src="/assets/proposta/japa-modas/topo.webp" width="1600" height="998" alt="O topo da vitrine da Japa Modas: a foto do dono na loja, a frase da logo e a nota do Google" />
+        <span class="pin" data-n="1" style="left:41%;top:30%">1</span>
+        <span class="pin" data-n="2" style="left:52.5%;top:2.4%">2</span>
+      </figure>
+      <div>
+        <p class="prancha-titulo">Prancha 1 de 4<b>A abertura</b></p>
+        <ol class="notas">
+          <li data-n="1"><span class="pin">1</span><span>A página abre com você na loja, e a frase da sua logo do lado: "Estilo faz parte da sua história". Quem chega pelo Instagram reconhece na hora quem vende.</span></li>
+          <li data-n="2"><span class="pin">2</span><span>O endereço no Simioni, o horário e o 4,8 do Google no topo de toda página. É loja de rua, e isso vende.</span></li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="prancha prancha--inv" data-prancha>
+      <figure>
+        <img src="/assets/proposta/japa-modas/kits.webp" width="1600" height="1099" alt="A seção dos kits: cada conjunto com a foto, as peças que vêm nele e o botão de pedir" />
+        <span class="pin" data-n="3" style="left:55%;top:8.5%">3</span>
+        <span class="pin" data-n="4" style="left:46%;top:26.6%">4</span>
+        <span class="pin" data-n="5" style="left:49%;top:48%">5</span>
+      </figure>
+      <div>
+        <p class="prancha-titulo">Prancha 2 de 4<b>Mizuno, Nike ou Lacoste: qual kit?</b></p>
+        <ol class="notas">
+          <li data-n="3"><span class="pin">3</span><span>A sua pergunta vira o título, do jeito que você posta. Cada kit tem o nome da cor, e não a marca repetida quatro vezes.</span></li>
+          <li data-n="4"><span class="pin">4</span><span>Ao lado da foto, o que vem no kit, peça por peça.</span></li>
+          <li data-n="5"><span class="pin">5</span><span>Um botão por kit: o cliente pede o conjunto inteiro, e a mensagem já chega dizendo qual.</span></li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="prancha" data-prancha>
+      <figure>
+        <img src="/assets/proposta/japa-modas/loja.webp" width="1600" height="723" alt="A seção Vem na loja, com o endereço, o horário e o botão do mapa" />
+        <span class="pin" data-n="6" style="left:72.5%;top:33%">6</span>
+        <span class="pin" data-n="7" style="left:84.5%;top:55%">7</span>
+      </figure>
+      <div>
+        <p class="prancha-titulo">Prancha 3 de 4<b>Vem na loja</b></p>
+        <ol class="notas">
+          <li data-n="6"><span class="pin">6</span><span>O endereço da Rua Luís Carvalho Pereira, com a sua foto de Oakley do lado, e o botão que abre a rota no mapa.</span></li>
+          <li data-n="7"><span class="pin">7</span><span>O horário da semana, do sábado e do domingo, igual ao do Google.</span></li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="prancha prancha--inv" data-prancha>
+      <figure>
+        <img src="/assets/proposta/japa-modas/peca.webp" width="1600" height="1000" alt="A página de uma peça, o slide Oakley Titan, com o preço, o código e o botão de pedir no WhatsApp" />
+        <span class="pin" data-n="8" style="left:80%;top:53.5%">8</span>
+        <span class="pin" data-n="9" style="left:68.5%;top:58.5%">9</span>
+        <span class="pin" data-n="10" style="left:97%;top:92%">10</span>
+      </figure>
+      <div>
+        <p class="prancha-titulo">Prancha 4 de 4<b>A página da peça</b></p>
+        <ol class="notas">
+          <li data-n="8"><span class="pin">8</span><span>O preço que você publicou, com a promoção riscada e o desconto calculado sozinho.</span></li>
+          <li data-n="9"><span class="pin">9</span><span>Toda peça tem um código. Quando o cliente chama, você sabe na hora de qual ele está falando.</span></li>
+          <li data-n="10"><span class="pin">10</span><span>O pedido chega no seu WhatsApp já montado, com a peça, o código e o recado. Você responde com o tamanho e combina a retirada ou a entrega.</span></li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="fora-da-tela">
+      <h3>E o que não aparece na tela</h3>
+      <ul>
+        <li><b>Até 60 peças cadastradas por mim</b> na entrega, com o fundo das fotos tratado. Você manda o nome, a referência e a cor; foto sua, ou eu uso a oficial da marca</li>
+        <li><b>O painel</b> para você colocar e trocar peças, preço, promoção, tamanhos e destaque</li>
+        <li><b>A versão de celular</b>, para quem chega pelo Instagram</li>
+        <li><b>O Google</b>: a Japa Modas aparece por nome e por "moda masculina em Ribeirão Preto"</li>
+        <li><b>O cartão do link</b>: a sua logo aparece quando alguém manda o endereço no WhatsApp</li>
+        <li><b>2 rodadas de revisão</b> antes de publicar</li>
+        <li><b>Treinamento do painel</b> e 30 dias de suporte depois da publicação</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- INVESTIMENTO: R$ 199 de entrada + R$ 800 na entrega -->
+  <section class="sec valor">
+    <h2>O investimento</h2>
+    <p class="valor-numero"><small>R$</small>999</p>
+    <div class="cota" aria-hidden="true"></div>
+    <p class="cota-legenda">R$ 199 de entrada no Pix hoje e R$ 800 na entrega. Uma vez só, sem mensalidade.</p>
+
+    <div class="valor-grade">
+      <div>
+        <p>A vitrine que você viu <b>já está construída</b>. O valor cobre o cadastro das suas peças com o fundo tratado, a revisão com você, a publicação e o treinamento do painel.</p>
+        <p>O domínio próprio, se você quiser o endereço com o nome da loja, é à parte: <b>R$ 40 por 1 ano</b>, registrado no nome da loja. Eu faço a configuração.</p>
+        <div class="garantia">
+          <p>Se a vitrine publicada não for o que você viu nesta proposta, <b>a entrada volta inteira</b> e o saldo não existe. Você nunca paga o saldo por algo que ainda não viu funcionando.</p>
+        </div>
+      </div>
+      <div class="pagar">
+        <p class="pagar-titulo">Para começar: R$ 199</p>
+        <ul>
+          <li>QR code do Pix aqui na página, com confirmação na hora</li>
+          <li>Com a entrada, eu começo a cadastrar as suas peças</li>
+        </ul>
+        <!-- Um botão por item de lib/propostas.ts; o valor NUNCA vem daqui -->
+        <button class="btn-pay" type="button" data-checkout-item="entrada_pix">Pagar a entrada de R$ 199</button>
+        <div class="pagar-saldo">
+          <p class="pagar-titulo pagar-titulo--menor">Na entrega: R$ 800</p>
+          <p class="pagar-nota">Só depois de você aprovar a vitrine publicada. No Pix, ou no cartão em até 4x com os juros do cartão calculados na hora.</p>
+          <button class="btn-pay btn-pay--ghost" type="button" data-checkout-item="saldo_pix">Pagar o saldo no Pix</button>
+          <button class="btn-pay btn-pay--ghost" type="button" data-checkout-item="saldo_card">Pagar o saldo no cartão</button>
+        </div>
+        <p class="pagar-rodape">Processado pelo Mercado Pago, sem sair desta página.</p>
+      </div>
+    </div>
+
+    <p class="saldo-titulo">Como funciona o saldo, passo a passo</p>
+    <ol class="passos">
+      <li><span>Hoje sai só a entrada: <b>R$ 199 no Pix</b>.</span></li>
+      <li><span>Eu cadastro as suas peças, publico a vitrine e te entrego o painel.</span></li>
+      <li><span>Você confere no celular, com calma, e aprova.</span></li>
+      <li><span>Só então existe o saldo: <b>R$ 800</b>, no Pix ou no cartão em até 4x.</span></li>
+      <li><span>E acabou: sem mensalidade, sem renovação e sem cobrança surpresa.</span></li>
+    </ol>
+  </section>
+
+  <!-- DEPOIS DA PUBLICAÇÃO -->
+  <section class="sec">
+    <h2>Depois que ela estiver no ar</h2>
+    <p class="sec-intro">Você consegue colocar e trocar peças pelo painel: é simples, e eu te mostro como no treinamento. Se preferir que eu cuide disso pra você todo mês, tem o plano de suporte.</p>
+    <div class="opcoes">
+      <div class="opcao">
+        <h3>Você cuida</h3>
+        <p class="opcao-preco">R$ 0<small>/mês</small></p>
+        <p>Peça nova, foto, preço, promoção e destaque, direto do celular. Sem limite e sem pedir para ninguém.</p>
+      </div>
+      <div class="opcao">
+        <h3>Eu cuido pra você</h3>
+        <p class="opcao-preco">R$ 149,90<small>/mês</small></p>
+        <p>Você me manda as peças novas pelo WhatsApp e eu trato o fundo das fotos, cadastro e atualizo. Sem fidelidade.</p>
+        <ul>
+          <li><b>Até 10 peças por mês</b>, cada uma com até 3 fotos</li>
+          <li>Trocar foto, preço, tamanhos ou cores do que já está na vitrine, e tirar o que acabou</li>
+          <li>Acima de 10 peças no mês: <b>R$ 15 por peça extra</b></li>
+          <li>Não acumula de um mês para o outro. Seção ou página nova é orçamento à parte</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRAZO E PASSOS -->
+  <section class="sec">
+    <h2>Como a gente segue</h2>
+    <p class="prazo">No ar em até 5 dias úteis depois da sua lista</p>
+    <ol class="passos">
+      <li><span>Você confirma o <b>aceite</b> pelo WhatsApp e paga a <b>entrada de R$ 199</b> no Pix, aqui nesta página.</span></li>
+      <li><span>Você me manda a lista das peças, com <b>nome, referência e cor</b>, e as fotos que tiver. Me passa também os preços e os tamanhos das peças que hoje estão como "Valor no WhatsApp", e qual número recebe os pedidos.</span></li>
+      <li><span>Eu cadastro, trato as fotos, reviso com você e publico.</span></li>
+      <li><span>Com a Japa no ar e aprovada, você paga os <b>R$ 800</b> no Pix ou no cartão, aqui nesta página.</span></li>
+    </ol>
+  </section>
+
+  <!-- NÃO INCLUSO -->
+  <section class="rodape-nota">
+    <h2>O que não está incluso</h2>
+    <ul>
+      <li>Domínio próprio: R$ 40 por 1 ano, à parte, no nome da loja</li>
+      <li>Carrinho e pagamento online: o pedido fecha no WhatsApp</li>
+      <li>Controle de estoque, ERP e nota fiscal</li>
+      <li>Tirar as fotos: a foto é sua (do celular serve) ou a oficial da marca; o tratamento do fundo é comigo</li>
+      <li>Simulador de frete e de parcelamento: preço e entrega ficam para a conversa</li>
+    </ul>
+  </section>
+
+  <section class="fecho">
+    <h2>Vamos colocar a Japa Modas no ar.</h2>
+    <a href="https://wa.me/5544991246187?text=Ol%C3%A1%20Rafael%2C%20tenho%20uma%20d%C3%BAvida%20sobre%20a%20proposta%20da%20Japa%20Modas." target="_blank" rel="noopener">Ficou com dúvida? Me chama no WhatsApp</a>
+  </section>
+
+  <footer class="assinatura">
+    <span>Rafael Razeira Estúdio</span>
+    <span>rafael.rbarbon@gmail.com</span>
+    <span>(44) 99124-6187</span>
+    <span>@rafaelrazeira.estudio</span>
+  </footer>
+
+</div>
+
+<script>
+/* A nota acende o número dela na imagem (mouse, foco ou toque). */
+document.querySelectorAll("[data-prancha]").forEach(function (prancha) {
+  prancha.querySelectorAll(".notas li").forEach(function (li) {
+    li.tabIndex = 0;
+    var alvo = prancha.querySelector('figure .pin[data-n="' + li.dataset.n + '"]');
+    if (!alvo) return;
+    var liga = function () { alvo.classList.add("acende"); };
+    var desliga = function () { alvo.classList.remove("acende"); };
+    li.addEventListener("mouseenter", liga);
+    li.addEventListener("mouseleave", desliga);
+    li.addEventListener("focus", liga);
+    li.addEventListener("blur", desliga);
+  });
+});
+</script>
+</body>
+</html>

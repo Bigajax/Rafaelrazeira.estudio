@@ -164,6 +164,19 @@ export const PROPOSTAS: Record<string, Proposta> = {
       ecommerce_saldo_pix: { label: "E-commerce: saldo na entrega", valor: 1749.5, metodo: "pix" },
     },
   },
+  /* A Japa Modas fecha na condição padrão (25/09): R$ 199 de entrada no
+     Pix e R$ 800 na entrega, no Pix ou no cartão em até 4x com os juros
+     do Mercado Pago. Cada item é um recebimento: o saldo no cartão cai
+     de uma vez, quem parcela é o banco do cliente. */
+  "japa-modas": {
+    titulo: "Rafael Razeira Estúdio, Vitrine Digital Japa Modas",
+    whatsapp: "5544991246187",
+    itens: {
+      entrada_pix: { label: "Entrada para início do projeto", valor: 199, metodo: "pix" },
+      saldo_pix: { label: "Saldo na entrega, no Pix", valor: 800, metodo: "pix" },
+      saldo_card: { label: "Saldo na entrega, no cartão em até 4x", valor: 800, metodo: "card", maxParcelas: 4 },
+    },
+  },
   /* A Fardo fecha como a Minas: pagamento único no Pix, sem entrada e
      sem parcelar (condição passada à Valeria em 24/09). O domínio, R$ 40
      por 1 ano, é cobrado à parte e não tem botão aqui. */
