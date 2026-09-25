@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Proposta Fardo Esportes, loja online · Rafael Razeira Estúdio</title>
+
+<!-- O cartao do link: a logo RR no preview do WhatsApp (URL absoluta de proposito) -->
+<meta property="og:image" content="https://rafaelrazeira.com.br/assets/og-rr.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Monograma RR do Rafael Razeira Estudio" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Rafael Razeira Estúdio" />
+<meta property="og:title" content="Proposta · Fardo Esportes, loja online" />
+<meta property="og:description" content="Rafael Razeira Estúdio: duas opções para vender pela internet, o que inclui cada uma, o investimento e o prazo." />
+<meta property="og:url" content="https://rafaelrazeira.com.br/proposta/fardo-esportes-loja.html" />
+
+<!-- ============================================================
+     PROPOSTA · FARDO ESPORTES, LOJA ONLINE (25/09/2026)
+     No molde de template.html. Separada da proposta da vitrine
+     (fardo-esportes.html), que continua valendo.
+     Duas opcoes: 1 "vender perto" R$ 1.990 (vitrine + Pix e cartao,
+     entrega em Erechim e regiao ou retirada, compra de uma peca por vez)
+     e 2 e-commerce R$ 3.499 (sacola, estoque por tamanho, frete
+     calculado, painel de pedidos). Metade de entrada, metade na entrega.
+     Mensalidade: opcional R$ 149,90 na 1, obrigatoria R$ 249,90 na 2.
+     Itens em lib/propostas.ts ("fardo-esportes-loja"). Se a vitrine de
+     R$ 999 ja estiver paga, abate: diferenca R$ 991 / R$ 2.500, com
+     itens proprios criados quando acontecer.
+     ============================================================ -->
+
+<link rel="icon" type="image/png" href="/assets/favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+<link rel="stylesheet" href="/css/proposta-checkout.css" />
+<script src="/js/proposta-checkout.js" defer></script>
+
+<style>
+:root{
+  --emerald:#10B981;
+  --emerald-dark:#065F46;
+  --emerald-light:#D1FAE5;
+  --off-white:#FAFAF7;
+  --black:#0A0A0A;
+  --ink-70:rgba(10,10,10,.70);
+  --ink-55:rgba(10,10,10,.55);
+  --line:rgba(10,10,10,.12);
+  --maxw:1160px;
+  --pad:clamp(16px,5vw,64px);
+  --font-display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --font-body:"Inter",system-ui,-apple-system,sans-serif;
+  --font-mono:"Space Mono",ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--font-body);background:var(--off-white);color:var(--black);line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+b{font-weight:600;color:var(--black)}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--emerald-dark);outline-offset:3px}
+img{display:block;max-width:100%}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--pad)}
+
+/* ——— Cabeçalho ——— */
+.topo{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding-block:24px;border-bottom:1px solid var(--line)}
+.marca{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(15px,4vw,19px);letter-spacing:-.01em;white-space:nowrap}
+.marca small{font-size:1em;font-weight:800;color:var(--ink-55)}
+.topo time{font-family:var(--font-mono);font-size:13px;color:var(--ink-55)}
+
+/* ——— Hero: capa de documento + a vitrine ao vivo ——— */
+.capa{display:grid;gap:clamp(40px,6vw,72px);padding-block:clamp(40px,8vw,88px) clamp(56px,8vw,96px);align-items:center}
+@media(min-width:900px){.capa{grid-template-columns:minmax(0,1.15fr) auto}}
+.capa-para{font-family:var(--font-mono);font-size:14px;color:var(--ink-70)}
+.capa h1{
+  margin-top:20px;font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(2.6rem,9vw,6.4rem);line-height:.96;letter-spacing:-.04em;max-width:10ch;
+}
+.ficha{margin-top:clamp(32px,5vw,48px);border-top:2px solid var(--black);max-width:520px}
+.ficha div{display:grid;grid-template-columns:130px 1fr;gap:16px;padding-block:13px;border-bottom:1px solid var(--line)}
+.ficha dt{font-family:var(--font-mono);font-size:13px;color:var(--ink-55);padding-top:2px}
+.ficha dd{font-size:clamp(1rem,3.8vw,1.08rem);line-height:1.45}
+.ficha dd a{text-decoration:underline;text-decoration-color:var(--emerald);text-underline-offset:3px;text-decoration-thickness:2px}
+@media(max-width:420px){.ficha div{grid-template-columns:1fr;gap:2px}}
+
+/* O celular: 390x844 escalado. Desktop 0.8, celular 0.66. */
+.aparelho{position:relative;justify-self:center}
+.celular{
+  width:calc(390px * .8 + 20px);height:calc(844px * .8 + 20px);
+  border:10px solid var(--black);border-radius:48px;overflow:hidden;background:var(--black);
+  box-shadow:0 40px 80px -40px rgba(10,10,10,.45);
+}
+.celular iframe{width:390px;height:844px;border:0;transform:scale(.8);transform-origin:0 0;background:#fff;display:block}
+.aparelho-nota{display:flex;gap:10px;align-items:flex-start;margin-top:18px;max-width:330px;font-size:.95rem;color:var(--ink-70);line-height:1.45}
+.aparelho-nota a{font-weight:600;color:var(--black);text-decoration:underline;text-decoration-color:var(--emerald);text-decoration-thickness:2px;text-underline-offset:3px}
+@media(max-width:899px){
+  .celular{width:calc(390px * .66 + 16px);height:calc(844px * .66 + 16px);border-width:8px;border-radius:38px}
+  .celular iframe{transform:scale(.66)}
+}
+/* No toque, rolar dentro do iframe prende a página: fica só o link. */
+.so-toque{display:none}
+@media(hover:none){.celular iframe{pointer-events:none}.so-mouse{display:none}.so-toque{display:inline}}
+
+/* ——— O marcador: a anotação do estúdio ——— */
+.pin{
+  display:inline-grid;place-items:center;flex:none;
+  width:28px;height:28px;border-radius:50%;
+  background:var(--emerald);color:var(--black);
+  font-family:var(--font-mono);font-weight:700;font-size:13px;line-height:1;
+  box-shadow:0 0 0 3px var(--off-white);
+  transition:transform .2s ease-out,background-color .2s;
+}
+.pin.acende{transform:scale(1.3);background:var(--black);color:var(--off-white)}
+@media(prefers-reduced-motion:reduce){.pin{transition:none}}
+
+/* ——— Seções ——— */
+.sec{padding-block:clamp(56px,9vw,112px);border-top:1px solid var(--line)}
+.sec h2{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.9rem,6.5vw,3.4rem);line-height:.95;letter-spacing:-.03em;max-width:16ch}
+.sec-intro{margin-top:18px;max-width:58ch;font-size:clamp(1rem,3.9vw,1.15rem);color:var(--ink-70)}
+
+/* ——— As pranchas ——— */
+.prancha{margin-top:clamp(48px,7vw,80px);display:grid;gap:clamp(20px,3vw,40px);align-items:start}
+@media(min-width:900px){.prancha{grid-template-columns:minmax(0,1.7fr) minmax(0,1fr)}}
+.prancha figure{position:relative;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:#fff}
+.prancha figure img{width:100%;height:auto}
+.prancha figure .pin{position:absolute;transform:translate(-50%,-50%)}
+.prancha figure .pin.acende{transform:translate(-50%,-50%) scale(1.3)}
+.prancha-titulo{font-family:var(--font-mono);font-size:13px;color:var(--ink-55)}
+.prancha-titulo b{font-family:var(--font-display);font-weight:900;font-size:1.35rem;text-transform:uppercase;letter-spacing:-.02em;display:block;color:var(--black);margin-top:4px}
+.notas{list-style:none;margin-top:18px;border-top:2px solid var(--black)}
+.notas li{display:flex;gap:14px;align-items:flex-start;padding-block:14px;border-bottom:1px solid var(--line);font-size:clamp(.98rem,3.8vw,1.04rem);color:var(--ink-70);line-height:1.5;cursor:default}
+@media(min-width:900px){
+  .prancha--inv{grid-template-columns:minmax(0,1fr) minmax(0,1.7fr)}
+  .prancha--inv figure{order:2}
+}
+
+/* O que não aparece na tela: lista corrida em duas colunas, sem cartão */
+.fora-da-tela{margin-top:clamp(56px,8vw,88px);display:grid;gap:clamp(20px,4vw,48px)}
+@media(min-width:900px){.fora-da-tela{grid-template-columns:minmax(0,1fr) minmax(0,1.7fr)}}
+.fora-da-tela h3{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.3rem,4.6vw,1.7rem);line-height:1;letter-spacing:-.02em}
+.fora-da-tela ul{list-style:none;columns:2 280px;column-gap:40px;border-top:2px solid var(--black)}
+.fora-da-tela li{break-inside:avoid;padding-block:12px;border-bottom:1px solid var(--line);color:var(--ink-70)}
+
+/* ——— Investimento: uma tela, com a linha de cota ——— */
+.valor{padding-block:clamp(72px,12vw,140px)}
+.valor-numero{font-family:var(--font-display);font-weight:900;letter-spacing:-.05em;line-height:.85;font-size:clamp(5rem,24vw,15rem);margin-top:clamp(24px,4vw,40px);white-space:nowrap}
+.valor-numero small{font-size:.28em;letter-spacing:-.02em;vertical-align:.95em;margin-right:.08em}
+.cota{position:relative;margin-top:22px;height:14px;border-bottom:2px solid var(--emerald)}
+.cota::before,.cota::after{content:"";position:absolute;bottom:-8px;width:2px;height:16px;background:var(--emerald)}
+.cota::before{left:0}.cota::after{right:0}
+.cota-legenda{margin-top:14px;font-family:var(--font-mono);font-size:clamp(12px,3.4vw,14px);color:var(--emerald-dark)}
+.valor-grade{margin-top:clamp(40px,6vw,64px);display:grid;gap:clamp(28px,4vw,56px)}
+@media(min-width:900px){.valor-grade{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}}
+.valor-grade p{font-size:clamp(1rem,3.9vw,1.12rem);color:var(--ink-70);max-width:52ch}
+.valor-grade p + p{margin-top:14px}
+.garantia{margin-top:24px;padding:20px 22px;border-left:3px solid var(--emerald);background:var(--emerald-light)}
+.garantia p{color:rgba(10,10,10,.78)}
+.pagar{border:2px solid var(--black);border-radius:6px;padding:clamp(20px,4vw,28px);background:#fff;align-self:start}
+.pagar-titulo{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:1.25rem;letter-spacing:-.01em}
+.pagar ul{list-style:none;margin:14px 0 20px}
+.pagar li{padding-block:9px;border-top:1px solid var(--line);font-size:.96rem;color:var(--ink-70)}
+.btn-pay{
+  width:100%;border:none;border-radius:999px;background:var(--emerald);color:var(--black);
+  padding:15px 20px;cursor:pointer;font-family:var(--font-display);font-weight:900;font-size:15px;
+  letter-spacing:.02em;text-transform:uppercase;transition:background-color .2s;
+}
+.btn-pay:hover{background:#0ea371}
+.pagar-rodape{margin-top:12px;font-family:var(--font-mono);font-size:12px;color:var(--ink-55)}
+
+/* ——— Depois da publicação ——— */
+.opcoes{margin-top:clamp(32px,5vw,48px);display:grid;gap:0;border-top:2px solid var(--black)}
+@media(min-width:760px){.opcoes{grid-template-columns:1fr 1fr}.opcao + .opcao{border-left:1px solid var(--line);padding-left:clamp(20px,4vw,40px)}}
+.opcao{padding-block:24px;padding-right:clamp(0px,3vw,32px);border-bottom:1px solid var(--line)}
+.opcao h3{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.2rem,4.4vw,1.5rem);letter-spacing:-.02em;line-height:1}
+.opcao-preco{margin-top:10px;font-family:var(--font-display);font-weight:900;font-size:clamp(1.8rem,6vw,2.4rem);letter-spacing:-.03em;line-height:1}
+.opcao-preco small{font-size:.45em;color:var(--ink-55)}
+.opcao p{margin-top:12px;color:var(--ink-70);max-width:44ch}
+.opcao ul{list-style:none;margin-top:14px}
+.opcao li{padding-block:8px;border-top:1px solid var(--line);font-size:.96rem;color:var(--ink-70)}
+
+/* ——— Prazo e passos ——— */
+.prazo{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.6rem,6vw,2.6rem);letter-spacing:-.025em;line-height:1;margin-top:clamp(24px,4vw,36px)}
+.passos{list-style:none;counter-reset:p;margin-top:clamp(28px,4vw,40px);border-top:2px solid var(--black);max-width:760px}
+.passos li{counter-increment:p;display:flex;gap:16px;padding-block:16px;border-bottom:1px solid var(--line);color:var(--ink-70);font-size:clamp(1rem,3.9vw,1.1rem)}
+.passos li::before{content:counter(p);font-family:var(--font-display);font-weight:900;font-size:1.4rem;line-height:1.1;color:var(--black);min-width:1.2em}
+
+/* ——— Não incluso: nota de rodapé ——— */
+.rodape-nota{padding-block:clamp(40px,6vw,64px);border-top:1px solid var(--line);display:grid;gap:16px}
+@media(min-width:900px){.rodape-nota{grid-template-columns:minmax(0,1fr) minmax(0,1.7fr)}}
+.rodape-nota h2{font-family:var(--font-mono);font-weight:700;font-size:14px;color:var(--ink-55)}
+.rodape-nota ul{list-style:none}
+.rodape-nota li{padding-block:8px;border-bottom:1px solid var(--line);font-size:.95rem;color:var(--ink-70)}
+
+/* ——— Fecho ——— */
+.fecho{padding-block:clamp(64px,10vw,120px);border-top:1px solid var(--line)}
+.fecho h2{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(2.2rem,8vw,4.6rem);line-height:.92;letter-spacing:-.04em;max-width:12ch}
+.fecho a{display:inline-block;margin-top:28px;font-weight:600;font-size:1.1rem;text-decoration:underline;text-decoration-color:var(--emerald);text-decoration-thickness:2px;text-underline-offset:4px}
+.assinatura{padding-block:28px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px 28px;font-family:var(--font-mono);font-size:12px;color:var(--ink-55)}
+
+@page{size:A4;margin:14mm}
+@media print{
+  .aparelho,.btn-pay,.fecho a{display:none}
+  .capa{grid-template-columns:1fr}
+  .sec,.valor{padding-block:28px}
+  .prancha{break-inside:avoid}
+  .pin,.garantia{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
+/* ——— As duas opções lado a lado ——— */
+.compara{margin-top:clamp(32px,5vw,48px);overflow-x:auto;-webkit-overflow-scrolling:touch}
+.compara table{width:100%;min-width:560px;border-collapse:collapse;border-top:2px solid var(--black)}
+.compara th,.compara td{padding:14px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);font-size:clamp(.95rem,3.6vw,1rem);line-height:1.45}
+.compara thead th{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.05rem,3.8vw,1.3rem);letter-spacing:-.02em;line-height:1.05;color:var(--black)}
+.compara thead th small{display:block;margin-top:6px;font-family:var(--font-body);font-weight:500;text-transform:none;letter-spacing:0;font-size:.85rem;color:var(--ink-55)}
+.compara tbody th{font-family:var(--font-mono);font-weight:400;font-size:13px;color:var(--ink-55);width:26%}
+.compara td{color:var(--ink-70)}
+.compara td b{color:var(--black)}
+.compara .nao{color:var(--ink-55)}
+.compara-nota{margin-top:14px;font-size:.95rem;color:var(--ink-55);max-width:62ch}
+
+/* ——— O investimento das duas ——— */
+.duas-contas{margin-top:clamp(28px,5vw,48px);display:grid;gap:clamp(40px,6vw,56px)}
+@media(min-width:900px){.duas-contas{grid-template-columns:1fr 1fr;gap:clamp(40px,5vw,72px)}}
+.conta-nome{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.15rem,4vw,1.4rem);letter-spacing:-.02em;line-height:1}
+.conta-nome small{display:block;margin-top:6px;font-family:var(--font-body);font-weight:500;text-transform:none;letter-spacing:0;font-size:.95rem;color:var(--ink-55)}
+.conta .valor-numero{font-size:clamp(4rem,15vw,8.5rem);margin-top:18px}
+.conta .pagar{margin-top:24px}
+.conta .btn-pay{margin-top:4px}
+.abate{margin-top:clamp(32px,5vw,48px);padding:20px 22px;border:1.5px solid var(--black);border-radius:6px;background:#fff;max-width:760px}
+.abate p{color:var(--ink-70);font-size:clamp(1rem,3.9vw,1.08rem)}
+.abate p + p{margin-top:8px}
+.abate b{color:var(--black)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+</style>
+</head>
+<body data-proposta="fardo-esportes-loja">
+
+<div class="wrap">
+
+  <header class="topo">
+    <div class="marca">Rafael Razeira <small>Estúdio</small></div>
+    <time datetime="2026-09-25">25/09/2026</time>
+  </header>
+
+  <!-- CAPA -->
+  <section class="capa">
+    <div>
+      <p class="capa-para">Proposta para a Valeria, da Fardo Esportes</p>
+      <h1>A Fardo vendendo pela internet.</h1>
+      <dl class="ficha">
+        <div><dt>A base</dt><dd>A vitrine que você já viu, em <a href="https://fardo-esportes.vercel.app" target="_blank" rel="noopener">fardo-esportes.vercel.app</a></dd></div>
+        <div><dt>Opção 1</dt><dd><b>Vender perto</b>: Pix e cartão na vitrine, entrega em Erechim e região. <b>R$ 1.990</b></dd></div>
+        <div><dt>Opção 2</dt><dd><b>E-commerce</b>: sacola, estoque e frete para o Brasil. <b>R$ 3.499</b></dd></div>
+        <div><dt>No ar em</dt><dd>Até 10 dias úteis (opção 1) ou 15 a 20 (opção 2)</dd></div>
+      </dl>
+    </div>
+
+    <div class="aparelho">
+      <div class="celular">
+        <iframe src="https://fardo-esportes.vercel.app" title="A vitrine da Fardo Esportes, ao vivo" loading="lazy"></iframe>
+      </div>
+      <p class="aparelho-nota"><span class="pin" aria-hidden="true">↕</span><span class="so-mouse">A sua vitrine de hoje: role aí dentro. As duas opções partem dela. Ou <a href="https://fardo-esportes.vercel.app" target="_blank" rel="noopener">abra numa aba nova</a>.</span><span class="so-toque">A sua vitrine de hoje, ao vivo. As duas opções partem dela. <a href="https://fardo-esportes.vercel.app" target="_blank" rel="noopener">Abrir a vitrine</a>.</span></p>
+    </div>
+  </section>
+
+  <!-- O QUE MUDA, APONTADO NA TELA -->
+  <section class="sec">
+    <h2>O que muda, apontado na tela</h2>
+    <p class="sec-intro">Hoje a cliente escolhe a peça e manda mensagem. Nas duas opções ela paga ali mesmo. Passe o dedo ou o mouse numa nota e o número acende na imagem.</p>
+
+    <div class="prancha" data-prancha>
+      <figure>
+        <img src="/assets/proposta/fardo-esportes/peca.webp" width="1600" height="1000" alt="A página de uma peça da vitrine da Fardo, com o código e o botão de pedir no WhatsApp" />
+        <span class="pin" data-n="1" style="left:95%;top:76.5%">1</span>
+        <span class="pin" data-n="2" style="left:88%;top:42%">2</span>
+        <span class="pin" data-n="3" style="left:69.5%;top:46.5%">3</span>
+      </figure>
+      <div>
+        <p class="prancha-titulo">Prancha 1 de 2<b>A página da peça</b></p>
+        <ol class="notas">
+          <li data-n="1"><span class="pin">1</span><span>O "Pedir no WhatsApp" vira <b>"Comprar"</b>: a cliente escolhe o número e paga com Pix ou cartão, sem sair da loja. Nas duas opções.</span></li>
+          <li data-n="2"><span class="pin">2</span><span>O preço vai para a página. Com pagamento online, cada peça precisa do valor dela: você me passa a tabela.</span></li>
+          <li data-n="3"><span class="pin">3</span><span>O código continua. É por ele que o pedido chega no seu celular, <b>já pago</b>, e você sabe na hora qual peça separar.</span></li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="prancha prancha--inv" data-prancha>
+      <figure>
+        <img src="/assets/proposta/fardo-esportes/topo.webp" width="1600" height="944" alt="O topo da vitrine da Fardo, com a busca e o botão do WhatsApp" />
+        <span class="pin" data-n="4" style="left:77%;top:5%">4</span>
+        <span class="pin" data-n="5" style="left:50%;top:88.8%">5</span>
+      </figure>
+      <div>
+        <p class="prancha-titulo">Prancha 2 de 2<b>O topo</b></p>
+        <ol class="notas">
+          <li data-n="4"><span class="pin">4</span><span><b>Só no e-commerce:</b> ao lado do WhatsApp entra a sacola, para a cliente levar várias peças numa compra só. O WhatsApp fica, para dúvida.</span></li>
+          <li data-n="5"><span class="pin">5</span><span>Tudo o que a vitrine já tem continua: as fotos da campanha, o fitness por marca, gremista ou colorado, e o painel para você trocar as peças.</span></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- AS DUAS OPÇÕES -->
+  <section class="sec">
+    <h2>As duas opções, lado a lado</h2>
+    <p class="sec-intro">A diferença é para onde você quer vender. Se quase toda venda é de Erechim e região, a opção 1 resolve. Se você quer mandar para outras cidades, é a opção 2.</p>
+    <div class="compara">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col"><span class="sr-only">O que</span></th>
+            <th scope="col">1. Vender perto<small>R$ 1.990</small></th>
+            <th scope="col">2. E-commerce<small>R$ 3.499</small></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Pagamento</th><td>Pix e cartão, na página da peça</td><td>Pix e cartão, no fechamento da sacola</td></tr>
+          <tr><th scope="row">Compra</th><td>Uma peça por vez</td><td><b>Várias peças numa compra só</b>, com a sacola</td></tr>
+          <tr><th scope="row">Entrega</th><td>Erechim e região, com a taxa que você definir por lugar, ou retirada na loja</td><td><b>Todo o Brasil</b>, com o frete calculado pelo CEP, e a retirada na loja</td></tr>
+          <tr><th scope="row">Estoque</th><td>Você marca no painel o número que acabou, e ele aparece riscado</td><td><b>Baixa sozinho</b> a cada venda, número por número</td></tr>
+          <tr><th scope="row">O pedido</th><td>Chega no seu WhatsApp com o pagamento confirmado</td><td>Chega no WhatsApp e numa <b>lista de pedidos</b> no painel: pago, em separação, enviado</td></tr>
+          <tr><th scope="row">Peças cadastradas</th><td>Até 60, com o fundo tratado</td><td>Até 60, com o fundo tratado</td></tr>
+          <tr><th scope="row">No ar em</th><td>Até 10 dias úteis</td><td>15 a 20 dias úteis</td></tr>
+          <tr><th scope="row">Por mês</th><td>Nada obrigatório. Suporte opcional de R$ 149,90</td><td><b>R$ 249,90</b>, obrigatório (abaixo, o porquê)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="compara-nota">O prazo conta a partir da entrada e da sua lista de peças com o preço de cada uma.</p>
+  </section>
+
+  <!-- INVESTIMENTO -->
+  <section class="sec valor">
+    <h2>O investimento</h2>
+
+    <div class="duas-contas">
+      <div class="conta">
+        <p class="conta-nome">1. Vender perto<small>Pix e cartão, entrega em Erechim e região</small></p>
+        <p class="valor-numero"><small>R$</small>1.990</p>
+        <div class="cota" aria-hidden="true"></div>
+        <p class="cota-legenda">R$ 995 de entrada no Pix e R$ 995 na entrega.</p>
+        <div class="pagar">
+          <p class="pagar-titulo">Começar a opção 1</p>
+          <ul>
+            <li>A entrada no Pix aqui na página, com confirmação na hora</li>
+            <li>O saldo só na entrega, com a loja no ar e aprovada</li>
+          </ul>
+          <button class="btn-pay" type="button" data-checkout-item="perto_entrada_pix">Pagar a entrada de R$ 995</button>
+        </div>
+      </div>
+
+      <div class="conta">
+        <p class="conta-nome">2. E-commerce<small>Sacola, estoque e frete para o Brasil</small></p>
+        <p class="valor-numero"><small>R$</small>3.499</p>
+        <div class="cota" aria-hidden="true"></div>
+        <p class="cota-legenda">R$ 1.749,50 de entrada no Pix e R$ 1.749,50 na entrega.</p>
+        <div class="pagar">
+          <p class="pagar-titulo">Começar a opção 2</p>
+          <ul>
+            <li>A entrada no Pix aqui na página, com confirmação na hora</li>
+            <li>O saldo só na entrega, com a loja no ar e aprovada</li>
+          </ul>
+          <button class="btn-pay" type="button" data-checkout-item="ecommerce_entrada_pix">Pagar a entrada de R$ 1.749,50</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="abate">
+      <p><b>Se você já contratou a vitrine</b>, os R$ 999 dela abatem daqui: a opção 1 sai por <b>R$ 991</b> e a opção 2 por <b>R$ 2.500</b>. Nesse caso eu te mando o link de pagamento da diferença.</p>
+    </div>
+
+    <div class="valor-grade">
+      <div>
+        <p>Aqui a entrada é de metade, e não simbólica como na vitrine: a maior parte do trabalho acontece antes de a loja existir (o pagamento, a entrega, o cadastro das peças com o preço).</p>
+        <div class="garantia">
+          <p>O saldo só existe <b>depois</b> que a loja estiver no ar e você aprovar. Se a loja publicada não for o que está escrito aqui, <b>a entrada volta</b>.</p>
+        </div>
+      </div>
+      <p class="pagar-rodape">Pagamentos processados pelo Mercado Pago, sem sair desta página.</p>
+    </div>
+  </section>
+
+  <!-- POR MÊS -->
+  <section class="sec">
+    <h2>Por mês, depois que ela estiver no ar</h2>
+    <p class="sec-intro">Loja que recebe pagamento não pode sair do ar. É por isso que as duas opções pedem coisas diferentes por mês.</p>
+    <div class="opcoes">
+      <div class="opcao">
+        <h3>Opção 1: opcional</h3>
+        <p class="opcao-preco">R$ 149,90<small>/mês</small></p>
+        <p>O mesmo plano da vitrine: você me manda as peças novas pelo WhatsApp e eu trato o fundo das fotos, cadastro e atualizo. Sem fidelidade.</p>
+        <ul>
+          <li><b>Até 10 peças por mês</b>, cada uma com até 3 fotos</li>
+          <li>Acima disso: <b>R$ 15 por peça extra</b></li>
+          <li>Sem o plano, você mesma cuida pelo painel, sem limite</li>
+        </ul>
+      </div>
+      <div class="opcao">
+        <h3>Opção 2: obrigatório</h3>
+        <p class="opcao-preco">R$ 249,90<small>/mês</small></p>
+        <p>Um e-commerce precisa de um banco de dados que nunca pausa e de alguém olhando o pagamento e o frete. Isso tem custo todo mês, e está aqui dentro.</p>
+        <ul>
+          <li>Hospedagem e banco de dados pagos, que não saem do ar</li>
+          <li>Acompanhamento do pagamento, do frete e das atualizações</li>
+          <li><b>Até 10 peças por mês</b> com o fundo tratado, cada uma com até 3 fotos; acima disso, <b>R$ 15 por peça</b></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- PASSOS -->
+  <section class="sec">
+    <h2>Como a gente segue</h2>
+    <ol class="passos">
+      <li><span>Você escolhe a opção e confirma pelo WhatsApp.</span></li>
+      <li><span>Você paga a <b>entrada no Pix</b>, aqui nesta página.</span></li>
+      <li><span>Você me manda a lista das peças com <b>nome, referência, cor e preço</b>, e as fotos que tiver. Na opção 1, também os lugares que você atende e a taxa de cada um.</span></li>
+      <li><span>Eu construo, cadastro, trato as fotos e te mostro antes de publicar. Você testa uma compra de verdade.</span></li>
+      <li><span>Com a loja no ar e aprovada, você paga o saldo.</span></li>
+    </ol>
+  </section>
+
+  <!-- NÃO INCLUSO -->
+  <section class="rodape-nota">
+    <h2>O que não está incluso</h2>
+    <ul>
+      <li>Domínio próprio: R$ 40 por 1 ano, à parte, no nome da loja</li>
+      <li>A taxa do Mercado Pago em cada venda, descontada do valor que você recebe</li>
+      <li>O frete, que a sua cliente paga na compra</li>
+      <li>Nota fiscal, ERP e integração com marketplace (Mercado Livre, Shopee)</li>
+      <li>Tirar as fotos: a foto é sua (do celular serve) ou a oficial da marca; o tratamento do fundo é comigo</li>
+    </ul>
+  </section>
+
+  <section class="fecho">
+    <h2>Escolha a sua e vamos colocar no ar.</h2>
+    <a href="https://wa.me/5544991246187?text=Ol%C3%A1%20Rafael%2C%20tenho%20uma%20d%C3%BAvida%20sobre%20a%20proposta%20da%20loja%20online%20da%20Fardo%20Esportes." target="_blank" rel="noopener">Ficou com dúvida? Me chama no WhatsApp</a>
+  </section>
+
+  <footer class="assinatura">
+    <span>Rafael Razeira Estúdio</span>
+    <span>rafael.rbarbon@gmail.com</span>
+    <span>(44) 99124-6187</span>
+    <span>@rafaelrazeira.estudio</span>
+  </footer>
+
+</div>
+
+<script>
+/* A nota acende o número dela na imagem (mouse, foco ou toque). */
+document.querySelectorAll("[data-prancha]").forEach(function (prancha) {
+  prancha.querySelectorAll(".notas li").forEach(function (li) {
+    li.tabIndex = 0;
+    var alvo = prancha.querySelector('figure .pin[data-n="' + li.dataset.n + '"]');
+    if (!alvo) return;
+    var liga = function () { alvo.classList.add("acende"); };
+    var desliga = function () { alvo.classList.remove("acende"); };
+    li.addEventListener("mouseenter", liga);
+    li.addEventListener("mouseleave", desliga);
+    li.addEventListener("focus", liga);
+    li.addEventListener("blur", desliga);
+  });
+});
+</script>
+</body>
+</html>

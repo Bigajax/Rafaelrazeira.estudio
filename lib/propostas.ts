@@ -142,6 +142,28 @@ export const PROPOSTAS: Record<string, Proposta> = {
       saldo_card: { label: "Saldo na entrega, no cartão em até 4x", valor: 800, metodo: "card", maxParcelas: 4 },
     },
   },
+  /* A LOJA ONLINE da Fardo (25/09), proposta separada da vitrine, com
+     duas opções: "vender perto" (a vitrine com Pix e cartão, entrega em
+     Erechim e região ou retirada) por R$ 1.990, e o e-commerce completo
+     (sacola, estoque por tamanho, frete calculado) por R$ 3.499, o valor
+     de tabela da /e-commerce. Metade de entrada e metade na entrega, as
+     duas no Pix: a maior parte do trabalho acontece antes de existir loja,
+     por isso aqui não cabe a entrada simbólica da vitrine. Os saldos são
+     cobrados na entrega.
+     SE A VITRINE DE R$ 999 JÁ ESTIVER PAGA, ela abate e a Valeria paga só a
+     diferença: R$ 991 no "vender perto" e R$ 2.500 no e-commerce. Não dá
+     para abater do saldo (no "vender perto" a diferença é MENOR que a
+     entrada), então esse caso ganha itens próprios aqui quando acontecer. */
+  "fardo-esportes-loja": {
+    titulo: "Rafael Razeira Estúdio, loja online Fardo Esportes",
+    whatsapp: "5544991246187",
+    itens: {
+      perto_entrada_pix: { label: "Vender perto: entrada, metade do projeto", valor: 995, metodo: "pix" },
+      perto_saldo_pix: { label: "Vender perto: saldo na entrega", valor: 995, metodo: "pix" },
+      ecommerce_entrada_pix: { label: "E-commerce: entrada, metade do projeto", valor: 1749.5, metodo: "pix" },
+      ecommerce_saldo_pix: { label: "E-commerce: saldo na entrega", valor: 1749.5, metodo: "pix" },
+    },
+  },
   /* A Fardo fecha como a Minas: pagamento único no Pix, sem entrada e
      sem parcelar (condição passada à Valeria em 24/09). O domínio, R$ 40
      por 1 ano, é cobrado à parte e não tem botão aqui. */
