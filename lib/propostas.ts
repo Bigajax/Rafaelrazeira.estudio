@@ -142,6 +142,16 @@ export const PROPOSTAS: Record<string, Proposta> = {
       saldo_card: { label: "Saldo na entrega, no cartão em até 4x", valor: 800, metodo: "card", maxParcelas: 4 },
     },
   },
+  /* A Fardo fecha como a Minas: pagamento único no Pix, sem entrada e
+     sem parcelar (condição passada à Valeria em 24/09). O domínio, R$ 40
+     por 1 ano, é cobrado à parte e não tem botão aqui. */
+  "fardo-esportes": {
+    titulo: "Rafael Razeira Estúdio — Vitrine Digital Fardo Esportes",
+    whatsapp: "5544991246187",
+    itens: {
+      avista_pix: { label: "Vitrine digital, pagamento único no Pix", valor: 999, metodo: "pix" },
+    },
+  },
   /* A Minas fecha SEM ENTRADA: um pagamento só, no Pix, no dia da
      publicação. Não existe item de entrada nem de cartão aqui de
      propósito, senão um botão antigo continuaria cobrando R$ 199. */
