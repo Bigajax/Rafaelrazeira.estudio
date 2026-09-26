@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Como usar a sua loja · Japa Modas · Rafael Razeira Estúdio</title>
+<meta name="description" content="Como usar a sua loja e o seu painel, passo a passo. Japa Modas, por Rafael Razeira Estúdio." />
+<meta name="theme-color" content="#0A0A0A" />
+<meta name="robots" content="noindex, nofollow" />
+
+<!-- O ícone da aba: a logo redonda da Japa (a onda sobre o sol), que já
+     vem com o fundo escuro dela. -->
+<link rel="icon" type="image/png" href="/entrega/japa-modas/favicon.png" />
+<link rel="apple-touch-icon" href="/entrega/japa-modas/apple-touch-icon.png" />
+
+<!-- O cartão que aparece quando o link é mandado no WhatsApp. -->
+<meta property="og:type" content="article" />
+<meta property="og:locale" content="pt_BR" />
+<meta property="og:site_name" content="Rafael Razeira Estúdio" />
+<meta property="og:title" content="Como usar a sua loja · Japa Modas" />
+<meta property="og:description" content="O guia do seu painel, passo a passo. Sem linguagem de computador." />
+<meta property="og:url" content="https://rafaelrazeira.com.br/entrega/japa-modas.html" />
+<meta property="og:image" content="https://rafaelrazeira.com.br/entrega/japa-modas/og.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Cartilha de entrega da Japa Modas" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="canonical" href="https://rafaelrazeira.com.br/entrega/japa-modas.html" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/entrega/japa-modas/styles.css" />
+<style>
+  /* as telas do painel entram como foto de celular, ao lado do passo a passo */
+  .lado { display: grid; gap: 22px; margin-top: 18px; align-items: start; }
+  @media (min-width: 760px) { .lado { grid-template-columns: minmax(0, 1fr) 260px; } }
+  /* largura fixa: centralizada na grade, a moldura encolhia até a legenda e a foto sumia */
+  .shot--celular { width: 100%; max-width: 260px; margin: 0 auto; }
+  .shot--celular img { display: block; }
+  .chave--japa-on::before { background: #1f7a45; }
+  .chave--japa-on { color: #1f7a45; }
+</style>
+</head>
+<body>
+
+<!-- Topbar mobile -->
+<header class="topbar">
+  <div class="topbar__left">
+    <img class="topbar__logo" src="/entrega/japa-modas/logo-japa.png" alt="Logo Japa Modas" />
+    <strong>Como usar a sua loja</strong>
+  </div>
+  <button class="menu-btn" id="menuBtn" aria-label="Abrir sumário" aria-expanded="false">Sumário</button>
+</header>
+<div class="scrim" id="scrim"></div>
+
+<div class="layout">
+
+  <!-- Sidebar / Sumário -->
+  <aside class="sidebar" id="sidebar" aria-label="Sumário">
+    <div class="sidebar__brand">
+      <img class="sidebar__logo" src="/entrega/japa-modas/logo-japa.png" alt="Logo Japa Modas" />
+      <div>
+        <strong>Japa Modas</strong>
+        <span>Como usar a sua loja</span>
+      </div>
+    </div>
+    <nav class="sidebar__nav" id="toc">
+      <a href="#capa"><span class="n">00</span> Capa</a>
+      <a href="#comece"><span class="n">→</span> Comece por aqui</a>
+
+      <span class="grupo">Parte 1 · O que você tem</span>
+      <a href="#sec-1"><span class="n">01</span> A loja e o painel</a>
+      <a href="#sec-2"><span class="n">02</span> O início do painel</a>
+      <a href="#sec-3"><span class="n">03</span> O que tem dentro hoje</a>
+
+      <span class="grupo">Parte 2 · O dia a dia</span>
+      <a href="#sec-4"><span class="n">04</span> Acabou o estoque</a>
+      <a href="#sec-5"><span class="n">05</span> Pôr ou mudar o preço</a>
+      <a href="#sec-6"><span class="n">06</span> Chegou peça nova</a>
+      <a href="#sec-7"><span class="n">07</span> Pôr na página inicial</a>
+      <a href="#sec-8"><span class="n">08</span> Trocar o banner</a>
+      <a href="#sec-9"><span class="n">09</span> Mudou o WhatsApp</a>
+      <a href="#sec-10"><span class="n">10</span> Aconteceu isso, faça aquilo</a>
+
+      <span class="grupo">Parte 3 · O painel por dentro</span>
+      <a href="#sec-11"><span class="n">11</span> As abas</a>
+      <a href="#sec-12"><span class="n">12</span> Os interruptores</a>
+
+      <span class="grupo">Parte 4 · Cuidar da loja</span>
+      <a href="#sec-13"><span class="n">13</span> Entrar no painel</a>
+      <a href="#sec-14"><span class="n">14</span> A sua semana</a>
+      <a href="#sec-15"><span class="n">15</span> O que o site não faz</a>
+      <a href="#sec-16"><span class="n">16</span> Quando der problema</a>
+      <a href="#sec-17"><span class="n">17</span> Ficha técnica</a>
+      <a href="#sec-18"><span class="n">18</span> Termo de entrega</a>
+    </nav>
+  </aside>
+
+  <!-- Conteúdo -->
+  <main class="content">
+    <div class="page">
+
+      <!-- CAPA -->
+      <section class="cover" id="capa">
+        <div class="cover__brandline">
+          <img class="cover__logo" src="/entrega/japa-modas/logo-japa.png" alt="Logo Japa Modas" />
+          <p class="cover__kicker">Cartilha de Entrega</p>
+        </div>
+        <h1>Como usar<br /><span class="em">a sua loja</span></h1>
+        <p class="cover__sub">Japa Modas. Tudo o que você precisa saber, na ordem em que você vai precisar.</p>
+        <p class="cover__desc">Japa, a sua loja está no ar. Isto aqui não é manual de computador: é a sua loja explicada. A <b>Parte 2</b> é a que importa no dia a dia, porque ela responde as perguntas do jeito que elas aparecem: "acabou o estoque, e agora?", "chegou peça nova", "quero trocar o banner". Se alguma coisa não fizer sentido, a culpa é da minha escrita e eu reescrevo.</p>
+        <p class="cover__by"><span class="dot"></span> Desenvolvido por <b>Rafael Razeira Estúdio</b></p>
+
+        <div class="cover__links">
+          <a class="clink primary" href="https://japa-modas.vercel.app" target="_blank" rel="noopener noreferrer">Abrir a loja ↗</a>
+          <a class="clink" href="https://japa-modas.vercel.app/painel" target="_blank" rel="noopener noreferrer">Abrir o painel ↗</a>
+        </div>
+
+        <dl class="cover__meta">
+          <div><dt>A sua loja</dt><dd class="fill">japa-modas.vercel.app</dd></div>
+          <div><dt>O seu painel</dt><dd class="fill">japa-modas.vercel.app/painel</dd></div>
+          <div><dt>Data de entrega</dt><dd>26/09/2026</dd></div>
+          <div><dt>Versão</dt><dd>1.0.0</dd></div>
+        </dl>
+      </section>
+
+      <!-- COMECE POR AQUI -->
+      <section class="section" id="comece">
+        <div class="agora">
+          <h3>Se você só tiver 15 minutos hoje, faça isto</h3>
+          <p>A loja já está de pé e funcionando. Três coisas dependem de você, e elas mudam o resultado mais do que qualquer outra. Estão explicadas em detalhe adiante, mas se você fizer só isto, já valeu o dia.</p>
+          <ol>
+            <li><div><b>Troque a sua senha</b><small>A que eu criei é só para o primeiro acesso. Me chame e eu troco por uma que só você saiba, em um minuto. Seção 13.</small></div></li>
+            <li><div><b>Ponha preço nas calças</b><small>As 10 calças estão sem preço, e no site aparece "Valor pelo WhatsApp". No total são 23 peças assim. No painel, o Início tem o atalho "Pôr os preços", que mostra só elas. Seção 5.</small></div></li>
+            <li><div><b>Ponha o painel na tela do celular</b><small>Abra o painel e use "Adicionar à tela de início". Ele vira um ícone, igual a um aplicativo. Seção 13.</small></div></li>
+          </ol>
+        </div>
+        <p class="muted" style="margin-top:18px">Depois disso, ponha o endereço da loja no link da bio do Instagram. É de graça e é o que traz gente.</p>
+      </section>
+
+      <!-- ══════ PARTE 1 ══════ -->
+      <div class="parte" id="parte-1">
+        <span class="parte__n">Parte 1</span>
+        <h2>O que você tem</h2>
+        <p>Três coisas para entender antes de mexer em qualquer botão. Cinco minutos de leitura, e o resto da cartilha fica fácil.</p>
+      </div>
+
+      <!-- 1 -->
+      <section class="section" id="sec-1">
+        <span class="section__num">01</span>
+        <h2>A loja e o painel</h2>
+        <p class="lead">São dois endereços. Um é a vitrine que todo mundo vê. O outro é o seu fundo de loja, onde só você entra.</p>
+        <div class="grid cols-2">
+          <div class="card"><span class="card__num">Público</span><h4>A loja</h4><p><b>japa-modas.vercel.app</b><br />É o link que você manda para cliente, põe na bio e no story. Qualquer pessoa abre.</p></div>
+          <div class="card"><span class="card__num">Só você</span><h4>O painel</h4><p><b>japa-modas.vercel.app/painel</b><br />Protegido por e-mail e senha. É onde você cadastra peça, muda preço e troca os banners.</p></div>
+        </div>
+        <div class="callout note"><span class="ic">i</span><p>O que você salva no painel aparece na loja <strong>na hora</strong>. Não precisa me avisar e não precisa esperar nada publicar. Você salva no celular e o cliente já vê.</p></div>
+        <h3>Como o cliente compra</h3>
+        <div class="flow">
+          <span class="step">Vê a peça na loja</span>
+          <span class="arr">→</span>
+          <span class="step">Escolhe o tamanho</span>
+          <span class="arr">→</span>
+          <span class="step hl">Toca em pedir</span>
+          <span class="arr">→</span>
+          <span class="step">Cai no seu WhatsApp com tudo escrito</span>
+        </div>
+        <p>Não existe carrinho nem pagamento dentro do site, e isso é de propósito: você fecha a venda na conversa, como sempre fez. A loja não substitui você, ela <strong>prepara o cliente</strong>: quando ele chega no WhatsApp, já escolheu a peça.</p>
+      </section>
+
+      <!-- 2 -->
+      <section class="section" id="sec-2">
+        <span class="section__num">02</span>
+        <h2>O início do painel</h2>
+        <p class="lead">Quando você entra, o painel pergunta o que você veio fazer.</p>
+        <div class="lado">
+          <div>
+            <p>São quatro botões grandes, um para cada coisa do dia a dia:</p>
+            <ul>
+              <li><strong>Cadastrar peça nova</strong>: foto, nome e preço.</li>
+              <li><strong>Mudar preço ou tirar do site</strong>: a lista de todas as peças.</li>
+              <li><strong>Trocar os banners</strong>: as imagens grandes do topo do site.</li>
+              <li><strong>Mudar o WhatsApp</strong>: o número que recebe os pedidos.</li>
+            </ul>
+            <p>Embaixo vem <strong>"Como está a loja agora"</strong>: quantas peças estão no site, quantas estão sem preço, quantas estão guardadas e quantos banners estão passando. Cada número já traz o atalho para resolver.</p>
+            <p>No celular, as abas ficam presas <strong>embaixo da tela</strong>, onde o polegar alcança: Início, Peças, Banners e Loja.</p>
+          </div>
+          <figure class="shot shot--celular"><img src="/entrega/japa-modas/telas/inicio.webp" alt="O início do painel no celular: Oi, Japa! O que vai fazer hoje? e os quatro botões de tarefa" loading="lazy" /><figcaption>O início do painel</figcaption></figure>
+        </div>
+      </section>
+
+      <!-- 3 -->
+      <section class="section" id="sec-3">
+        <span class="section__num">03</span>
+        <h2>O que tem dentro hoje</h2>
+        <p>São <strong>37 peças no site</strong> em <strong>6 categorias</strong>. Todos os tênis já têm preço. O que falta está na última coluna.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Categoria</th><th>No site</th><th>Sem preço</th><th>Endereço direto</th></tr></thead>
+            <tbody>
+              <tr><td>Tênis</td><td class="num">10</td><td class="num">0</td><td><code>/catalogo/tenis</code></td></tr>
+              <tr><td>Chinelos e slides</td><td class="num">10</td><td class="num">9</td><td><code>/catalogo/chinelos-e-slides</code></td></tr>
+              <tr><td>Calças</td><td class="num">10</td><td class="num">10</td><td><code>/catalogo/calcas</code></td></tr>
+              <tr><td>Camisetas e polos</td><td class="num">4</td><td class="num">3</td><td><code>/catalogo/camisetas-e-polos</code></td></tr>
+              <tr><td>Bonés</td><td class="num">2</td><td class="num">1</td><td><code>/catalogo/bones</code></td></tr>
+              <tr><td>Bermudas</td><td class="num">1</td><td class="num">0</td><td><code>/catalogo/bermudas</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="muted">Os kits estão guardados, fora do site, por enquanto. Continuam no painel para quando você quiser voltar com eles.</p>
+        <div class="how">
+          <h4>Um truque do dia a dia <span class="badge">10 segundos</span></h4>
+          <p>Cada categoria tem endereço próprio. Quando um cliente perguntar de chinelo, em vez de mandar a loja inteira, mande só a categoria:</p>
+          <p><code>japa-modas.vercel.app/catalogo/chinelos-e-slides</code></p>
+          <p>Ele abre já dentro do que quer.</p>
+        </div>
+      </section>
+
+      <!-- ══════ PARTE 2 ══════ -->
+      <div class="parte" id="parte-2">
+        <span class="parte__n">Parte 2</span>
+        <h2>O dia a dia</h2>
+        <p>Esta é a parte que você vai abrir toda semana. Cada seção é uma pergunta de verdade, com o passo a passo e quanto tempo leva. Se você ler só esta parte, está resolvido.</p>
+      </div>
+
+      <!-- 4 -->
+      <section class="section" id="sec-4">
+        <span class="section__num">04</span>
+        <h2>"Acabou o estoque"</h2>
+        <p class="lead">Esta é a coisa que você mais vai fazer. E a resposta é: <strong>não apague nada.</strong></p>
+        <div class="lado">
+          <div>
+            <div class="how">
+              <h4>O que fazer <span class="badge">10 segundos</span></h4>
+              <p>No painel, toque em <strong>Peças</strong>, ache a peça na lista e desligue o interruptor <strong>No site</strong>. Ele passa a dizer <strong>Guardada</strong>. Pronto.</p>
+              <p>A peça some do site na hora, mas continua no painel, com foto, preço e tudo. Chegou de novo? Ligue o interruptor e ela volta igualzinha.</p>
+            </div>
+            <div class="chaves">
+              <span class="chave chave--japa-on chave--on">No site</span>
+              <span class="chave chave--off">Guardada</span>
+            </div>
+          </div>
+          <figure class="shot shot--celular"><img src="/entrega/japa-modas/telas/pecas.webp" alt="A lista de peças no celular, cada uma com a foto, o preço e os interruptores No site e Na página inicial" loading="lazy" /><figcaption>A lista de peças</figcaption></figure>
+        </div>
+        <div class="callout warn"><span class="ic">!</span><p><strong>Não use o "Apagar peça" para isso.</strong> Apagar tira a peça e as fotos para sempre, e você vai ter que cadastrar tudo de novo quando repor. O próprio painel pergunta antes e lembra disso.</p></div>
+        <p>Para achar uma peça rápido, use a busca no topo da lista: dá para buscar pelo nome, pela marca ("Oakley") ou pelo código que vem no pedido do WhatsApp ("JP-0043").</p>
+      </section>
+
+      <!-- 5 -->
+      <section class="section" id="sec-5">
+        <span class="section__num">05</span>
+        <h2>"Quero pôr ou mudar o preço"</h2>
+        <div class="lado">
+          <div>
+            <div class="how">
+              <h4>O que fazer <span class="badge">30 segundos</span></h4>
+              <p>Em <strong>Peças</strong>, toque em <strong>Editar</strong> na peça, desça até o passo <strong>5. Preço cheio</strong>, escreva só os números (o R$ e a vírgula entram sozinhos) e toque em <strong>Salvar e pôr no site</strong>.</p>
+            </div>
+            <p>São dois campos de preço, e cada combinação aparece de um jeito no site:</p>
+          </div>
+          <figure class="shot shot--celular"><img src="/entrega/japa-modas/telas/ficha-preco.webp" alt="Os campos Preço cheio e Preço com desconto na ficha da peça, com a explicação embaixo" loading="lazy" /><figcaption>Os dois preços</figcaption></figure>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Você preenche</th><th>No site aparece</th></tr></thead>
+            <tbody>
+              <tr><td>Só o <strong>preço cheio</strong></td><td>O preço, normal</td></tr>
+              <tr><td>O <strong>cheio</strong> e o <strong>com desconto</strong></td><td>O cheio riscado, o com desconto em destaque e quanto a pessoa economiza</td></tr>
+              <tr><td>Nenhum dos dois</td><td>"Valor pelo WhatsApp"</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="how">
+          <h4>As 23 sem preço, de uma vez <span class="badge">15 minutos</span></h4>
+          <p>No <strong>Início</strong> do painel, na linha "peças estão sem preço", toque em <strong>Pôr os preços</strong>. A lista mostra só essas. Vá de uma em uma: cada uma que você salva sai da lista.</p>
+        </div>
+        <div class="callout note"><span class="ic">i</span><p>Se você digitar um preço acima de R$ 10 mil (um zero a mais, por exemplo), o painel não salva e mostra "Confira o preço". É de propósito: um dígito a mais no celular não vira preço de carro no site.</p></div>
+      </section>
+
+      <!-- 6 -->
+      <section class="section" id="sec-6">
+        <span class="section__num">06</span>
+        <h2>"Chegou peça nova"</h2>
+        <div class="lado">
+          <div>
+            <div class="how">
+              <h4>O que fazer <span class="badge">2 minutos</span></h4>
+              <p>No Início, toque em <strong>Cadastrar peça nova</strong>. A ficha abre e vai em etapas numeradas, de cima para baixo. Só a foto e o nome são obrigatórios.</p>
+            </div>
+            <ol class="steps">
+              <li><b>Fotos</b> Toque em "Adicionar foto" e escolha do celular. Pode mandar várias. A primeira é a que aparece no site; para mudar a ordem, arraste.</li>
+              <li><b>Nome da peça</b> Escreva como o cliente procuraria: "Tênis Nike Court Vision branco" é melhor que "tênis branco".</li>
+              <li><b>Categoria</b> Em qual das seis ela entra.</li>
+              <li><b>Marca</b> Nike, Oakley, Mizuno. O painel sugere as que você já usou.</li>
+              <li><b>Preço</b> Veja a seção 5.</li>
+              <li><b>Tamanhos</b> Escreva um e aperte Enter: 40, 41, 42 ou P, M, G.</li>
+              <li><b>Descrição</b> Opcional. Nos tênis, a linha do à vista e do parcelado fica aqui.</li>
+            </ol>
+          </div>
+          <figure class="shot shot--celular"><img src="/entrega/japa-modas/telas/ficha-topo.webp" alt="A ficha da peça: 1. Fotos, com as fotos e o botão Adicionar foto, e 2. Nome da peça" loading="lazy" /><figcaption>A ficha da peça</figcaption></figure>
+        </div>
+        <p>No fim, toque em <strong>Salvar e pôr no site</strong>. Em segundos ela está na loja.</p>
+        <div class="callout note"><span class="ic">i</span><p><strong>Foto boa vende.</strong> A peça inteira, com luz de dia, sem nada escrito por cima. Cada foto pode ter até 5MB, que é o tamanho normal de uma foto de celular.</p></div>
+      </section>
+
+      <!-- 7 -->
+      <section class="section" id="sec-7">
+        <span class="section__num">07</span>
+        <h2>"Quero essa peça na página inicial"</h2>
+        <p class="lead">A página inicial do site mostra 4 peças de cada categoria. Você escolhe quais.</p>
+        <div class="how">
+          <h4>O que fazer <span class="badge">10 segundos</span></h4>
+          <p>Em <strong>Peças</strong>, ligue o interruptor <strong>Na página inicial</strong> da peça. As marcadas aparecem primeiro na vitrine daquela categoria, logo na primeira página do site.</p>
+        </div>
+        <div class="chaves">
+          <span class="chave chave--japa-on chave--on">Na página inicial</span>
+        </div>
+        <p>Hoje estão marcados 4 tênis: o Court Vision, o Air Max Fire, o V5 RNR e o Air Qinflo. Se marcar mais de 4 na mesma categoria, entram as 4 primeiras da lista. A ordem da lista você muda arrastando as linhas, no computador.</p>
+      </section>
+
+      <!-- 8 -->
+      <section class="section" id="sec-8">
+        <span class="section__num">08</span>
+        <h2>"Quero trocar o banner do topo"</h2>
+        <p class="lead">Os banners são as imagens grandes que passam no topo do site, um a cada 6 segundos. Hoje são 4: o Nike com 30% off, o BLCK, a Oakley e o "se é pra sair, sai no estilo".</p>
+        <div class="lado">
+          <div>
+            <div class="how">
+              <h4>Mudar só a frase <span class="badge">1 minuto</span></h4>
+              <p>Em <strong>Banners</strong>, toque em <strong>Editar</strong>. Troque o título, a linha de baixo ou o texto do botão. Lá em cima tem a <strong>prévia</strong>, que muda enquanto você escreve: você vê como vai ficar antes de salvar.</p>
+            </div>
+            <div class="how">
+              <h4>Trocar a imagem <span class="badge">2 minutos</span></h4>
+              <p>No mesmo lugar, toque em <strong>Trocar a imagem</strong>. A imagem precisa ser <strong>larga</strong> (1920 x 820 é o ideal), com <strong>um lado vazio e claro</strong>, que é onde a frase entra. Diga de que lado fica o texto e onde a pessoa da foto está, para o corte do celular.</p>
+            </div>
+          </div>
+          <figure class="shot shot--celular"><img src="/entrega/japa-modas/telas/banner-editar.webp" alt="A edição do banner no celular: a prévia com o título Nike com até 30% off. Hoje. e os campos embaixo" loading="lazy" /><figcaption>Editando um banner</figcaption></figure>
+        </div>
+        <div class="callout warn"><span class="ic">!</span><p><strong>Não escreva texto dentro da imagem.</strong> O título e o preço entram por cima, pelo painel. Assim você muda a frase em um minuto, sem refazer a arte, e ela fica nítida em qualquer tela.</p></div>
+        <h3>Campanha de data</h3>
+        <p>Banner de Black Friday, Dia dos Pais, Natal: quando a data passar, <strong>desligue</strong> o interruptor <strong>No ar</strong> em vez de apagar. Ele fica guardado e no ano que vem você só liga de novo. As setas ↑ e ↓ mudam a ordem: o primeiro é o que aparece quando alguém abre o site.</p>
+      </section>
+
+      <!-- 9 -->
+      <section class="section" id="sec-9">
+        <span class="section__num">09</span>
+        <h2>"Mudou o número do WhatsApp"</h2>
+        <div class="lado">
+          <div>
+            <div class="how">
+              <h4>O que fazer <span class="badge">30 segundos</span></h4>
+              <p>Toque em <strong>Loja</strong>, escreva o número novo com o DDD, do jeito que preferir, "(16) 99270-0388" por exemplo, e toque em <strong>Salvar</strong>.</p>
+              <p>A partir daí, todo botão "Pedir no WhatsApp" do site vai para o número novo.</p>
+            </div>
+            <p>Na mesma tela fica o <strong>Instagram</strong> da loja, que aparece no topo e no rodapé do site.</p>
+            <div class="callout note"><span class="ic">i</span><p><strong>Endereço e horário</strong> mudam comigo, porque o site usa o horário para dizer se a loja está aberta agora. Mudou alguma coisa? É só me avisar.</p></div>
+          </div>
+          <figure class="shot shot--celular"><img src="/entrega/japa-modas/telas/loja.webp" alt="A tela Loja do painel, com o WhatsApp que recebe os pedidos e o Instagram" loading="lazy" /><figcaption>A tela Loja</figcaption></figure>
+        </div>
+      </section>
+
+      <!-- 10 -->
+      <section class="section" id="sec-10">
+        <span class="section__num">10</span>
+        <h2>Aconteceu isso, faça aquilo</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Aconteceu</th><th>No painel</th><th>Seção</th></tr></thead>
+            <tbody>
+              <tr><td>Acabou o estoque</td><td>Peças, desligue "No site"</td><td class="num">04</td></tr>
+              <tr><td>O estoque voltou</td><td>Peças, ligue "No site" de novo</td><td class="num">04</td></tr>
+              <tr><td>Entrou em promoção</td><td>Editar, preencha o "Preço com desconto"</td><td class="num">05</td></tr>
+              <tr><td>Acabou a promoção</td><td>Editar, apague o "Preço com desconto"</td><td class="num">05</td></tr>
+              <tr><td>Chegou peça nova</td><td>Início, "Cadastrar peça nova"</td><td class="num">06</td></tr>
+              <tr><td>Quero destacar uma peça</td><td>Peças, ligue "Na página inicial"</td><td class="num">07</td></tr>
+              <tr><td>Começou uma campanha</td><td>Banners, "Criar banner"</td><td class="num">08</td></tr>
+              <tr><td>Acabou a campanha</td><td>Banners, desligue "No ar"</td><td class="num">08</td></tr>
+              <tr><td>Troquei de número</td><td>Loja, WhatsApp</td><td class="num">09</td></tr>
+              <tr><td>Saiu de linha de vez</td><td>Editar, "Apagar peça"</td><td class="num">04</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ══════ PARTE 3 ══════ -->
+      <div class="parte" id="parte-3">
+        <span class="parte__n">Parte 3</span>
+        <h2>O painel por dentro</h2>
+        <p>Para consultar quando bater a dúvida. Não precisa ler de uma vez.</p>
+      </div>
+
+      <!-- 11 -->
+      <section class="section" id="sec-11">
+        <span class="section__num">11</span>
+        <h2>As abas</h2>
+        <div class="grid cols-2">
+          <div class="card"><span class="card__num">Início</span><h4>O que vai fazer hoje?</h4><p>As quatro tarefas e o resumo da loja, com o atalho para o que está faltando.</p></div>
+          <div class="card"><span class="card__num">Peças</span><h4>Todas as peças</h4><p>Busca, filtro por categoria, os interruptores e o Editar de cada uma.</p></div>
+          <div class="card"><span class="card__num">Banners</span><h4>O topo do site</h4><p>Criar, editar, ligar e desligar, e a ordem em que passam.</p></div>
+          <div class="card"><span class="card__num">Loja</span><h4>WhatsApp e Instagram</h4><p>O número que recebe os pedidos e o perfil da loja.</p></div>
+        </div>
+        <p>No topo ficam mais três: <strong>Ajuda</strong> (abre esta cartilha), <strong>Ver meu site</strong> (abre a loja numa aba nova, só no computador) e <strong>Sair</strong>.</p>
+      </section>
+
+      <!-- 12 -->
+      <section class="section" id="sec-12">
+        <span class="section__num">12</span>
+        <h2>Os interruptores</h2>
+        <p>Todo interruptor do painel diz o que está acontecendo com a palavra ao lado. Verde é ligado.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Onde</th><th>Ligado</th><th>Desligado</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Peça: No site</strong></td><td>Aparece no site</td><td>"Guardada": some do site, fica no painel</td></tr>
+              <tr><td><strong>Peça: Na página inicial</strong></td><td>Aparece primeiro na vitrine da categoria</td><td>Aparece normal, na ordem da lista</td></tr>
+              <tr><td><strong>Banner: No ar</strong></td><td>Passa no topo do site</td><td>"Guardado": sai do topo, fica no painel</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout note"><span class="ic">i</span><p>Tocou, mudou. Não precisa salvar depois. Uma mensagem preta aparece embaixo da tela confirmando: "Pronto: a peça saiu do site e ficou guardada".</p></div>
+      </section>
+
+      <!-- ══════ PARTE 4 ══════ -->
+      <div class="parte" id="parte-4">
+        <span class="parte__n">Parte 4</span>
+        <h2>Cuidar da loja</h2>
+        <p>O acesso, a rotina, o que o site não faz e como me chamar quando precisar.</p>
+      </div>
+
+      <!-- 13 -->
+      <section class="section" id="sec-13">
+        <span class="section__num">13</span>
+        <h2>Entrar no painel</h2>
+        <div class="lado">
+          <div>
+            <ol class="steps">
+              <li><b>Abra o endereço</b> No celular ou no computador: <code>japa-modas.vercel.app/painel</code></li>
+              <li><b>Digite o e-mail e a senha</b> Estão no quadro abaixo.</li>
+              <li><b>Toque em "Entrar no painel"</b> Você cai no Início.</li>
+              <li><b>Saia ao terminar</b> Só se o aparelho não for seu. No seu celular, pode ficar conectado.</li>
+            </ol>
+          </div>
+          <figure class="shot shot--celular"><img src="/entrega/japa-modas/telas/login.webp" alt="A tela de entrada do painel: Painel da Japa, e-mail, senha e o botão Entrar no painel" loading="lazy" /><figcaption>A entrada do painel</figcaption></figure>
+        </div>
+
+        <div class="terms-grid">
+          <div><dt>O endereço</dt><strong>japa-modas.vercel.app/painel</strong></div>
+          <div><dt>O e-mail</dt><strong>japamodas.painel@gmail.com</strong></div>
+          <div><dt>A senha (por enquanto)</dt><strong>japa-vgwgsf66</strong></div>
+        </div>
+
+        <div class="callout warn"><span class="ic">!</span><p><strong>Troque essa senha e esse e-mail.</strong> Eu criei os dois só para o primeiro acesso. Me chame no WhatsApp e eu troco pelo seu e-mail e por uma senha que só você saiba, em um minuto. Quem tem esse login manda na loja inteira.</p></div>
+
+        <div class="how">
+          <h4>Deixe o painel na palma da mão <span class="badge">faça hoje</span></h4>
+          <p>No celular, abra o painel e use <strong>"Adicionar à tela de início"</strong> (no iPhone fica no botão de compartilhar; no Android, nos três pontinhos). Ele vira um ícone na sua tela, igual a um aplicativo.</p>
+        </div>
+        <p>Esqueceu a senha? Na tela de entrada tem o link <strong>"Chame o Rafael no WhatsApp"</strong>, que já abre a conversa comigo.</p>
+      </section>
+
+      <!-- 14 -->
+      <section class="section" id="sec-14">
+        <span class="section__num">14</span>
+        <h2>A sua semana</h2>
+        <p>Não é regra, é sugestão. Mas quem faz isso mantém a loja viva sem esforço.</p>
+        <div class="grid cols-3">
+          <div class="card"><span class="card__num">Todo dia</span><h4>Dois toques</h4><p>Acabou? Desliga o "No site". Chegou? Cadastra na hora, com a foto do celular.</p></div>
+          <div class="card"><span class="card__num">Toda semana</span><h4>Dez minutos</h4><p>Troca as peças da página inicial e confere se os banners falam do que está saindo.</p></div>
+          <div class="card"><span class="card__num">Todo mês</span><h4>Meia hora</h4><p>Revisa os preços, guarda o que não vai voltar e troca o banner de campanha.</p></div>
+        </div>
+        <div class="callout note"><span class="ic">i</span><p>A loja não precisa estar perfeita para vender. Precisa estar <strong>verdadeira</strong>: o que está no site tem que ter na loja. Cliente perdoa catálogo pequeno, não perdoa peça que não existe.</p></div>
+      </section>
+
+      <!-- 15 -->
+      <section class="section" id="sec-15">
+        <span class="section__num">15</span>
+        <h2>O que o site não faz</h2>
+        <p>Para não haver surpresa depois:</p>
+        <ul>
+          <li><strong>Não tem carrinho nem pagamento.</strong> O pedido fecha no WhatsApp, com você. Foi decisão de projeto, não falta.</li>
+          <li><strong>Não conta estoque por tamanho.</strong> Ele mostra os tamanhos que você cadastrou; se o 42 acabou, tire o 42 da peça.</li>
+          <li><strong>Não calcula frete.</strong> Envio e prazo ficam para a conversa.</li>
+          <li><strong>Não guarda cadastro de cliente</strong> nem histórico de pedido. Isso continua no seu WhatsApp.</li>
+          <li><strong>Endereço e horário</strong> não se mudam pelo painel: me avise (seção 9).</li>
+        </ul>
+        <h3>O endereço da loja</h3>
+        <p>Hoje a loja está em <strong>japa-modas.vercel.app</strong>. O endereço <strong>japamodas.com.br</strong>, que aparece no seu perfil do Google, não está abrindo. O domínio não faz parte do projeto, mas se você quiser usar o .com.br, eu aponto para a loja: me chame e a gente vê o registro dele.</p>
+      </section>
+
+      <!-- 16 -->
+      <section class="section" id="sec-16">
+        <span class="section__num">16</span>
+        <h2>Quando der problema</h2>
+        <p class="lead">Me chame no WhatsApp <strong>(44) 99124-6187</strong>. Print, áudio, do jeito que for mais fácil para você.</p>
+        <p><strong>30 dias de suporte</strong> depois da publicação, sem custo, como está na proposta: dúvida de uso, ajuste pequeno e correção de erro.</p>
+        <p>Depois desse mês, a loja continua no ar e o painel continua seu, sem mensalidade: você mexe à vontade e não paga nada por isso. Se em algum momento você quiser que <em>eu</em> cuide das peças por você todo mês, tem o plano de suporte, que a gente combina à parte.</p>
+        <h3>De quem é o quê</h3>
+        <div class="grid cols-2">
+          <div class="card"><h4>Comigo</h4><p>O site estar no ar, o painel funcionar e corrigir erro do sistema.</p></div>
+          <div class="card"><h4>Com você</h4><p>O conteúdo: preço, foto, o que está no site, os banners e responder o cliente.</p></div>
+        </div>
+      </section>
+
+      <!-- 17 -->
+      <section class="section" id="sec-17">
+        <span class="section__num">17</span>
+        <h2>Ficha técnica</h2>
+        <p class="muted">Esta seção é para consulta futura, ou para quem for mexer no projeto depois de mim. Você não precisa dela para usar a loja.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Item</th><th>Detalhe</th></tr></thead>
+            <tbody>
+              <tr><td>Endereço</td><td>japa-modas.vercel.app, com HTTPS</td></tr>
+              <tr><td>Site</td><td>Next.js 15 (App Router), React 19, TypeScript</td></tr>
+              <tr><td>Estilo</td><td>Tailwind CSS v4</td></tr>
+              <tr><td>Banco de dados</td><td>Supabase (PostgreSQL), com acesso por sessão</td></tr>
+              <tr><td>Fotos</td><td>Supabase Storage (as novas) e o próprio site (as do catálogo inicial)</td></tr>
+              <tr><td>Hospedagem</td><td>Vercel</td></tr>
+              <tr><td>Identidade</td><td>Branco-gelo, tinta e o vermelho do sol da logo (#d7261e), Oxanium e Zen Kaku Gothic New</td></tr>
+              <tr><td>Código da peça</td><td>Prefixo JP, criado automaticamente</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>Onde as coisas ficam guardadas</h3>
+        <div class="grid cols-2">
+          <div class="card"><h4>As peças e os banners</h4><p>Num banco de dados na nuvem. Some o celular, não some a loja.</p></div>
+          <div class="card"><h4>As fotos</h4><p>Num armazenamento na nuvem, ligado ao mesmo projeto.</p></div>
+          <div class="card"><h4>O site</h4><p>Hospedado na Vercel.</p></div>
+          <div class="card"><h4>Os pedidos</h4><p>No seu WhatsApp, como sempre foi. O site não guarda conversa.</p></div>
+        </div>
+      </section>
+
+      <!-- 18 -->
+      <section class="section" id="sec-18">
+        <span class="section__num">18</span>
+        <h2>Termo de entrega</h2>
+        <div class="terms-grid">
+          <div><dt>Projeto</dt><strong>Japa Modas</strong></div>
+          <div><dt>Desenvolvimento</dt><strong>Rafael Razeira Estúdio</strong></div>
+          <div><dt>Versão</dt><strong>1.0.0</strong></div>
+          <div><dt>Data</dt><strong>26/09/2026</strong></div>
+          <div><dt>Endereço</dt><strong>japa-modas.vercel.app</strong></div>
+          <div><dt>Responsável pelo recebimento</dt><strong>Japa</strong></div>
+        </div>
+        <div class="aceite">
+          <h4>Confirmação de aceite</h4>
+          <p>Japa, se estiver tudo certo, é só confirmar aqui. O botão abre uma mensagem já pronta no meu WhatsApp; você só precisa enviar que eu registro a data e a hora do recebimento.</p>
+          <button type="button" class="aceite-btn" id="btnAceite" data-whats="5544991246187">Confirmar aceite pelo WhatsApp ↗</button>
+        </div>
+        <div class="sign-row">
+          <div class="sign">Rafael Razeira Estúdio · Quem entrega</div>
+          <div class="sign">Japa Modas · Quem recebe</div>
+        </div>
+        <p class="muted" style="margin-top:20px">Este é um espaço visual para confirmar a entrega e não substitui um instrumento jurídico.</p>
+      </section>
+
+      <!-- RODAPÉ -->
+      <footer class="doc-footer">
+        <div>
+          <p class="sig">Rafael Razeira <span>Estúdio</span></p>
+          <p>Design, tecnologia e conversão para marcas que querem vender melhor.</p>
+        </div>
+        <p>Como usar a sua loja · Japa Modas · v1.0.0</p>
+      </footer>
+
+    </div>
+  </main>
+</div>
+
+<button class="print-btn" id="printBtn">Imprimir / Salvar PDF</button>
+
+<script src="/entrega/japa-modas/script.js"></script>
+</body>
+</html>
