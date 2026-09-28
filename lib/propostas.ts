@@ -282,6 +282,11 @@ export const PROPOSTAS: Record<string, Proposta> = {
       entrada_pix: { label: "Entrada para início do projeto", valor: 100, metodo: "pix" },
       saldo_pix: { label: "Saldo depois da entrega aprovada, no Pix", valor: 400, metodo: "pix" },
       saldo_card: { label: "Saldo depois da entrega aprovada, no cartão em até 4x", valor: 400, metodo: "card", maxParcelas: 4 },
+      /* 28/09: o saldo de R$ 400 virou duas partes no Pix, combinadas com
+         o Santana. A vitrine mostra "pagamento pendente" a partir de cada
+         data até a parte ser marcada como paga (lib/cobranca.ts dela). */
+      saldo_parte1_pix: { label: "Saldo, 1ª parte (até 30/09), no Pix", valor: 200, metodo: "pix" },
+      saldo_parte2_pix: { label: "Saldo, 2ª parte (até 10/10), no Pix", valor: 199, metodo: "pix" },
     },
   },
   /* A segunda proposta da Arena (24/09/2026), só do tráfego pago: a
