@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Proposta One Tênis · Rafael Razeira Estúdio</title>
+
+<!-- O cartao do link: a logo RR no preview do WhatsApp (URL absoluta de proposito) -->
+<meta property="og:image" content="https://rafaelrazeira.com.br/assets/og-rr.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Monograma RR do Rafael Razeira Estudio" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Rafael Razeira Estúdio" />
+<meta property="og:title" content="Proposta · One Tênis" />
+<meta property="og:description" content="Rafael Razeira Estúdio: o que está incluso, o investimento e o prazo." />
+<meta property="og:url" content="https://rafaelrazeira.com.br/proposta/one-tenis.html" />
+
+
+<!-- ============================================================
+     PROPOSTA COMERCIAL · ONE TENIS (distribuidora de tenis para revenda, Minas)
+     No molde de 25/09/2026, com o bloco da condicao (como a store-blessed.html).
+     28/09: a Adriana disse "eu me interesso sim" e "vou fazer a partir do mes
+     que vem". O Rafael ofereceu 10% a vista no Pix: R$ 899,10, um Pix so no
+     aceite. A condicao padrao (199 + 800) fica ao lado.
+     Itens em lib/propostas.ts ("one-tenis"). Dominio fora.
+     As pranchas: scripts/capturar-pranchas.mjs one-tenis
+       https://one-tenis.vercel.app --secoes adidas=2,revendedoras
+     ============================================================ -->
+<link rel="icon" type="image/png" href="/assets/favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+<link rel="stylesheet" href="/css/proposta-checkout.css" />
+<script src="/js/proposta-checkout.js" defer></script>
+
+<style>
+:root{
+  --emerald:#10B981;
+  --emerald-dark:#065F46;
+  --emerald-light:#D1FAE5;
+  --off-white:#FAFAF7;
+  --black:#0A0A0A;
+  --ink-70:rgba(10,10,10,.70);
+  --ink-55:rgba(10,10,10,.55);
+  --line:rgba(10,10,10,.12);
+  --maxw:1160px;
+  --pad:clamp(16px,5vw,64px);
+  --font-display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --font-body:"Inter",system-ui,-apple-system,sans-serif;
+  --font-mono:"Space Mono",ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--font-body);background:var(--off-white);color:var(--black);line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+b{font-weight:600;color:var(--black)}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--emerald-dark);outline-offset:3px}
+img{display:block;max-width:100%}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--pad)}
+
+/* ——— Cabeçalho ——— */
+.topo{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding-block:24px;border-bottom:1px solid var(--line)}
+.marca{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(15px,4vw,19px);letter-spacing:-.01em;white-space:nowrap}
+.marca small{font-size:1em;font-weight:800;color:var(--ink-55)}
+.topo time{font-family:var(--font-mono);font-size:13px;color:var(--ink-55)}
+
+/* ——— Hero: capa de documento + a vitrine ao vivo ——— */
+.capa{display:grid;gap:clamp(40px,6vw,72px);padding-block:clamp(40px,8vw,88px) clamp(56px,8vw,96px);align-items:center}
+@media(min-width:900px){.capa{grid-template-columns:minmax(0,1.15fr) auto}}
+.capa-para{font-family:var(--font-mono);font-size:14px;color:var(--ink-70)}
+.capa h1{
+  margin-top:20px;font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(2.6rem,9vw,6.4rem);line-height:.96;letter-spacing:-.04em;max-width:10ch;
+}
+.ficha{margin-top:clamp(32px,5vw,48px);border-top:2px solid var(--black);max-width:520px}
+.ficha div{display:grid;grid-template-columns:130px 1fr;gap:16px;padding-block:13px;border-bottom:1px solid var(--line)}
+.ficha dt{font-family:var(--font-mono);font-size:13px;color:var(--ink-55);padding-top:2px}
+.ficha dd{font-size:clamp(1rem,3.8vw,1.08rem);line-height:1.45}
+.ficha dd a{text-decoration:underline;text-decoration-color:var(--emerald);text-underline-offset:3px;text-decoration-thickness:2px}
+@media(max-width:420px){.ficha div{grid-template-columns:1fr;gap:2px}}
+
+/* O celular: 390x844 escalado. Desktop 0.8, celular 0.66. */
+.aparelho{position:relative;justify-self:center}
+.celular{
+  width:calc(390px * .8 + 20px);height:calc(844px * .8 + 20px);
+  border:10px solid var(--black);border-radius:48px;overflow:hidden;background:var(--black);
+  box-shadow:0 40px 80px -40px rgba(10,10,10,.45);
+}
+.celular iframe{width:390px;height:844px;border:0;transform:scale(.8);transform-origin:0 0;background:#fff;display:block}
+.aparelho-nota{display:flex;gap:10px;align-items:flex-start;margin-top:18px;max-width:330px;font-size:.95rem;color:var(--ink-70);line-height:1.45}
+.aparelho-nota a{font-weight:600;color:var(--black);text-decoration:underline;text-decoration-color:var(--emerald);text-decoration-thickness:2px;text-underline-offset:3px}
+@media(max-width:899px){
+  .celular{width:calc(390px * .66 + 16px);height:calc(844px * .66 + 16px);border-width:8px;border-radius:38px}
+  .celular iframe{transform:scale(.66)}
+}
+/* No toque, rolar dentro do iframe prende a página: fica só o link. */
+.so-toque{display:none}
+@media(hover:none){.celular iframe{pointer-events:none}.so-mouse{display:none}.so-toque{display:inline}}
+
+/* ——— O marcador: a anotação do estúdio ——— */
+.pin{
+  display:inline-grid;place-items:center;flex:none;
+  width:28px;height:28px;border-radius:50%;
+  background:var(--emerald);color:var(--black);
+  font-family:var(--font-mono);font-weight:700;font-size:13px;line-height:1;
+  box-shadow:0 0 0 3px var(--off-white);
+  transition:transform .2s ease-out,background-color .2s;
+}
+.pin.acende{transform:scale(1.3);background:var(--black);color:var(--off-white)}
+@media(prefers-reduced-motion:reduce){.pin{transition:none}}
+
+/* ——— Seções ——— */
+.sec{padding-block:clamp(56px,9vw,112px);border-top:1px solid var(--line)}
+.sec h2{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.9rem,6.5vw,3.4rem);line-height:.95;letter-spacing:-.03em;max-width:16ch}
+.sec-intro{margin-top:18px;max-width:58ch;font-size:clamp(1rem,3.9vw,1.15rem);color:var(--ink-70)}
+
+/* ——— As pranchas ——— */
+.prancha{margin-top:clamp(48px,7vw,80px);display:grid;gap:clamp(20px,3vw,40px);align-items:start}
+@media(min-width:900px){.prancha{grid-template-columns:minmax(0,1.7fr) minmax(0,1fr)}}
+.prancha figure{position:relative;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:#fff}
+.prancha figure img{width:100%;height:auto}
+.prancha figure .pin{position:absolute;transform:translate(-50%,-50%)}
+.prancha figure .pin.acende{transform:translate(-50%,-50%) scale(1.3)}
+.prancha-titulo{font-family:var(--font-mono);font-size:13px;color:var(--ink-55)}
+.prancha-titulo b{font-family:var(--font-display);font-weight:900;font-size:1.35rem;text-transform:uppercase;letter-spacing:-.02em;display:block;color:var(--black);margin-top:4px}
+.notas{list-style:none;margin-top:18px;border-top:2px solid var(--black)}
+.notas li{display:flex;gap:14px;align-items:flex-start;padding-block:14px;border-bottom:1px solid var(--line);font-size:clamp(.98rem,3.8vw,1.04rem);color:var(--ink-70);line-height:1.5;cursor:default}
+@media(min-width:900px){
+  .prancha--inv{grid-template-columns:minmax(0,1fr) minmax(0,1.7fr)}
+  .prancha--inv figure{order:2}
+}
+
+/* O que não aparece na tela: lista corrida em duas colunas, sem cartão */
+.fora-da-tela{margin-top:clamp(56px,8vw,88px);display:grid;gap:clamp(20px,4vw,48px)}
+@media(min-width:900px){.fora-da-tela{grid-template-columns:minmax(0,1fr) minmax(0,1.7fr)}}
+.fora-da-tela h3{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.3rem,4.6vw,1.7rem);line-height:1;letter-spacing:-.02em}
+.fora-da-tela ul{list-style:none;columns:2 280px;column-gap:40px;border-top:2px solid var(--black)}
+.fora-da-tela li{break-inside:avoid;padding-block:12px;border-bottom:1px solid var(--line);color:var(--ink-70)}
+
+/* ——— Investimento: uma tela, com a linha de cota ——— */
+.valor{padding-block:clamp(72px,12vw,140px)}
+.valor-numero{font-family:var(--font-display);font-weight:900;letter-spacing:-.05em;line-height:.85;font-size:clamp(5rem,24vw,15rem);margin-top:clamp(24px,4vw,40px);white-space:nowrap}
+.valor-numero small{font-size:.28em;letter-spacing:-.02em;vertical-align:.95em;margin-right:.08em}
+.cota{position:relative;margin-top:22px;height:14px;border-bottom:2px solid var(--emerald)}
+.cota::before,.cota::after{content:"";position:absolute;bottom:-8px;width:2px;height:16px;background:var(--emerald)}
+.cota::before{left:0}.cota::after{right:0}
+.cota-legenda{margin-top:14px;font-family:var(--font-mono);font-size:clamp(12px,3.4vw,14px);color:var(--emerald-dark)}
+.valor-grade{margin-top:clamp(40px,6vw,64px);display:grid;gap:clamp(28px,4vw,56px)}
+@media(min-width:900px){.valor-grade{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}}
+.valor-grade p{font-size:clamp(1rem,3.9vw,1.12rem);color:var(--ink-70);max-width:52ch}
+.valor-grade p + p{margin-top:14px}
+.garantia{margin-top:24px;padding:20px 22px;border-left:3px solid var(--emerald);background:var(--emerald-light)}
+.garantia p{color:rgba(10,10,10,.78)}
+.pagar{border:2px solid var(--black);border-radius:6px;padding:clamp(20px,4vw,28px);background:#fff;align-self:start}
+.pagar-titulo{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:1.25rem;letter-spacing:-.01em}
+.pagar ul{list-style:none;margin:14px 0 20px}
+.pagar li{padding-block:9px;border-top:1px solid var(--line);font-size:.96rem;color:var(--ink-70)}
+.btn-pay{
+  width:100%;border:none;border-radius:999px;background:var(--emerald);color:var(--black);
+  padding:15px 20px;cursor:pointer;font-family:var(--font-display);font-weight:900;font-size:15px;
+  letter-spacing:.02em;text-transform:uppercase;transition:background-color .2s;
+}
+.btn-pay:hover{background:#0ea371}
+.pagar-rodape{margin-top:12px;font-family:var(--font-mono);font-size:12px;color:var(--ink-55)}
+
+/* ——— Depois da publicação ——— */
+.opcoes{margin-top:clamp(32px,5vw,48px);display:grid;gap:0;border-top:2px solid var(--black)}
+@media(min-width:760px){.opcoes{grid-template-columns:1fr 1fr}.opcao + .opcao{border-left:1px solid var(--line);padding-left:clamp(20px,4vw,40px)}}
+.opcao{padding-block:24px;padding-right:clamp(0px,3vw,32px);border-bottom:1px solid var(--line)}
+.opcao h3{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.2rem,4.4vw,1.5rem);letter-spacing:-.02em;line-height:1}
+.opcao-preco{margin-top:10px;font-family:var(--font-display);font-weight:900;font-size:clamp(1.8rem,6vw,2.4rem);letter-spacing:-.03em;line-height:1}
+.opcao-preco small{font-size:.45em;color:var(--ink-55)}
+.opcao p{margin-top:12px;color:var(--ink-70);max-width:44ch}
+.opcao ul{list-style:none;margin-top:14px}
+.opcao li{padding-block:8px;border-top:1px solid var(--line);font-size:.96rem;color:var(--ink-70)}
+
+/* ——— Prazo e passos ——— */
+.prazo{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.6rem,6vw,2.6rem);letter-spacing:-.025em;line-height:1;margin-top:clamp(24px,4vw,36px)}
+.passos{list-style:none;counter-reset:p;margin-top:clamp(28px,4vw,40px);border-top:2px solid var(--black);max-width:760px}
+.passos li{counter-increment:p;display:flex;gap:16px;padding-block:16px;border-bottom:1px solid var(--line);color:var(--ink-70);font-size:clamp(1rem,3.9vw,1.1rem)}
+.passos li::before{content:counter(p);font-family:var(--font-display);font-weight:900;font-size:1.4rem;line-height:1.1;color:var(--black);min-width:1.2em}
+
+/* ——— Não incluso: nota de rodapé ——— */
+.rodape-nota{padding-block:clamp(40px,6vw,64px);border-top:1px solid var(--line);display:grid;gap:16px}
+@media(min-width:900px){.rodape-nota{grid-template-columns:minmax(0,1fr) minmax(0,1.7fr)}}
+.rodape-nota h2{font-family:var(--font-mono);font-weight:700;font-size:14px;color:var(--ink-55)}
+.rodape-nota ul{list-style:none}
+.rodape-nota li{padding-block:8px;border-bottom:1px solid var(--line);font-size:.95rem;color:var(--ink-70)}
+
+/* ——— Fecho ——— */
+.fecho{padding-block:clamp(64px,10vw,120px);border-top:1px solid var(--line)}
+.fecho h2{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(2.2rem,8vw,4.6rem);line-height:.92;letter-spacing:-.04em;max-width:12ch}
+.fecho a{display:inline-block;margin-top:28px;font-weight:600;font-size:1.1rem;text-decoration:underline;text-decoration-color:var(--emerald);text-decoration-thickness:2px;text-underline-offset:4px}
+.assinatura{padding-block:28px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px 28px;font-family:var(--font-mono);font-size:12px;color:var(--ink-55)}
+
+@page{size:A4;margin:14mm}
+@media print{
+  .aparelho,.btn-pay,.fecho a{display:none}
+  .capa{grid-template-columns:1fr}
+  .sec,.valor{padding-block:28px}
+  .prancha{break-inside:avoid}
+  .pin,.garantia{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
+/* ——— A condição combinada (o molde do desconto da jk-imports) ——— */
+.condicao{margin-top:clamp(32px,5vw,48px);padding:clamp(22px,4vw,36px);background:var(--emerald-light);border-left:3px solid var(--emerald);max-width:760px}
+.condicao-rotulo{font-family:var(--font-mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--emerald-dark)}
+.condicao h3{margin-top:10px;font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.5rem,6vw,2.2rem);line-height:.98;letter-spacing:-.03em}
+.condicao p{margin-top:14px;font-size:clamp(1rem,3.9vw,1.1rem);color:rgba(10,10,10,.78);max-width:58ch}
+.condicao ul{list-style:none;margin-top:16px}
+.condicao li{padding-block:9px;border-top:1px solid rgba(6,95,70,.18);color:rgba(10,10,10,.78)}
+.valor-numero s{font-size:.2em;letter-spacing:-.01em;color:var(--ink-55);vertical-align:1.6em;margin-left:.15em;font-weight:800}
+@media print{.condicao{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+.pagar-ou{margin-top:22px;padding-top:18px;border-top:2px solid var(--black)}
+.pagar-ou p{font-size:.96rem;color:var(--ink-70)}
+.btn-pay--linha{margin-top:14px;background:transparent;border:2px solid var(--black)}
+.btn-pay--linha:hover{background:var(--black);color:var(--off-white)}
+</style>
+</head>
+<body data-proposta="one-tenis">
+
+<div class="wrap">
+
+  <header class="topo">
+    <div class="marca">Rafael Razeira <small>Estúdio</small></div>
+    <time datetime="2026-09-29">29/09/2026</time>
+  </header>
+
+  <!-- CAPA -->
+  <section class="capa">
+    <div>
+      <p class="capa-para">Proposta para a Adriana, da One Tênis</p>
+      <h1>O catálogo que você manda para revendedora nova.</h1>
+      <dl class="ficha">
+        <div><dt>A vitrine</dt><dd><a href="https://one-tenis.vercel.app" target="_blank" rel="noopener">one-tenis.vercel.app</a>, já construída</dd></div>
+        <div><dt>O que entra</dt><dd>Até 60 peças cadastradas por mim, com o fundo das fotos tratado</dd></div>
+        <div><dt>Investimento</dt><dd><b>R$ 899,10</b> à vista no Pix, ou R$ 999 com R$ 199 de entrada</dd></div>
+        <div><dt>No ar em</dt><dd>Até 5 dias úteis depois da sua lista de peças</dd></div>
+      </dl>
+    </div>
+
+    <div class="aparelho">
+      <div class="celular">
+        <iframe src="https://one-tenis.vercel.app" title="A vitrine da One Tênis, ao vivo" loading="lazy"></iframe>
+      </div>
+      <p class="aparelho-nota"><span class="pin" aria-hidden="true">↕</span><span class="so-mouse">Essa é a sua vitrine de verdade: role aí dentro. Ou <a href="https://one-tenis.vercel.app" target="_blank" rel="noopener">abra numa aba nova</a>.</span><span class="so-toque">Essa é a sua vitrine de verdade, ao vivo. <a href="https://one-tenis.vercel.app" target="_blank" rel="noopener">Abrir a vitrine</a>.</span></p>
+    </div>
+  </section>
+
+  <!-- O QUE JÁ ESTÁ PRONTO -->
+  <section class="sec">
+    <h2>O que você recebe, apontado na tela</h2>
+    <p class="sec-intro">Em vez de uma lista, as partes da sua vitrine com uma nota em cada uma. Passe o dedo ou o mouse numa nota e o número acende na imagem.</p>
+
+    <div class="prancha" data-prancha>
+      <figure>
+        <img src="/assets/proposta/one-tenis/topo.webp" width="1600" height="1155" alt="O topo da vitrine da One Tênis: a estante com seis pares em cima das caixas, o botão Quero revender e as marcas" />
+        <span class="pin" data-n="1" style="left:37.5%;top:40%">1</span>
+        <span class="pin" data-n="2" style="left:11.3%;top:84%">2</span>
+        <span class="pin" data-n="3" style="left:66%;top:16.5%">3</span>
+      </figure>
+      <div>
+        <p class="prancha-titulo">Prancha 1 de 4<b>A abertura</b></p>
+        <ol class="notas">
+          <li data-n="1"><span class="pin">1</span><span>A estante do seu estoque: os pares em cima da própria caixa, contra a parede de compensado, do jeito que você fotografa. Cada etiqueta leva o modelo e, quando você publica, o preço de atacado.</span></li>
+          <li data-n="2"><span class="pin">2</span><span>"Quero revender" é o primeiro botão da página, porque o seu cliente é quem revende.</span></li>
+          <li data-n="3"><span class="pin">3</span><span>A loja dividida por marca, com a contagem de modelos: adidas, New Balance, Asics, Nike, On, Mizuno e Puma, chinelos.</span></li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="prancha prancha--inv" data-prancha>
+      <figure>
+        <img src="/assets/proposta/one-tenis/adidas.webp" width="1600" height="759" alt="A prateleira da adidas, com o preço de atacado e o botão Quero no atacado" />
+        <span class="pin" data-n="4" style="left:19%;top:12%">4</span>
+        <span class="pin" data-n="5" style="left:21%;top:92.6%">5</span>
+      </figure>
+      <div>
+        <p class="prancha-titulo">Prancha 2 de 4<b>As prateleiras</b></p>
+        <ol class="notas">
+          <li data-n="4"><span class="pin">4</span><span>Uma prateleira por marca, com a contagem. Todo preço diz "no atacado", e sem preço cadastrado o cartão diz "valor de atacado no WhatsApp".</span></li>
+          <li data-n="5"><span class="pin">5</span><span>"Quero no atacado" em cada modelo. Não tem carrinho: o pedido vai para o seu WhatsApp e você fecha valor e pagamento na conversa, como já faz.</span></li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="prancha" data-prancha>
+      <figure>
+        <img src="/assets/proposta/one-tenis/revendedoras.webp" width="1600" height="943" alt="O mapa das dez revendedoras da One Tênis, com as rotas saindo de Minas" />
+        <span class="pin" data-n="6" style="left:45.5%;top:13.8%">6</span>
+        <span class="pin" data-n="7" style="left:86%;top:27%">7</span>
+      </figure>
+      <div>
+        <p class="prancha-titulo">Prancha 3 de 4<b>Quem já revende</b></p>
+        <ol class="notas">
+          <li data-n="6"><span class="pin">6</span><span>As dez revendedoras que você mostra no Instagram, com nome, cidade e o reel de cada uma. É a prova que a revendedora nova quer ver antes de comprar.</span></li>
+          <li data-n="7"><span class="pin">7</span><span>O mapa com as rotas saindo de Minas, do Rio de Janeiro a Carazinho. Ninguém mais tem isso.</span></li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="prancha prancha--inv" data-prancha>
+      <figure>
+        <img src="/assets/proposta/one-tenis/peca.webp" width="1600" height="1000" alt="A página do adidas Slip On marrom, com o preço de atacado, os tamanhos e os números" />
+        <span class="pin" data-n="8" style="left:72.5%;top:55.6%">8</span>
+        <span class="pin" data-n="9" style="left:84.5%;top:91.3%">9</span>
+        <span class="pin" data-n="10" style="left:69.8%;top:10.1%">10</span>
+      </figure>
+      <div>
+        <p class="prancha-titulo">Prancha 4 de 4<b>A página do modelo</b></p>
+        <ol class="notas">
+          <li data-n="8"><span class="pin">8</span><span>O preço de atacado grande, quando você quiser mostrar.</span></li>
+          <li data-n="9"><span class="pin">9</span><span>A grade com os números que o modelo tem: quem pede já marca o número.</span></li>
+          <li data-n="10"><span class="pin">10</span><span>O pedido chega no seu WhatsApp já montado, com o modelo, o número e o link. Você responde com o valor e o envio.</span></li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="fora-da-tela">
+      <h3>E o que não aparece na tela</h3>
+      <ul>
+        <li><b>Até 60 peças cadastradas por mim</b> na entrega, com o fundo das fotos tratado. Os 24 modelos da prévia a gente confere junto: o que ainda tem, fica</li>
+        <li><b>O painel</b> para você mesma colocar e trocar modelos, preço, promoção, tamanhos, destaque e os banners, e os dados da loja: aviso do topo, frase de abertura, WhatsApp, horário e endereço</li>
+        <li><b>A versão de celular</b>, para a revendedora que abre o link no WhatsApp</li>
+        <li><b>O Google</b>: a One Tênis aparece quando procuram pelo nome da loja</li>
+        <li><b>O cartão do link</b>: a sua marca aparece quando alguém manda o endereço no WhatsApp</li>
+        <li><b>2 rodadas de revisão</b> antes de publicar</li>
+        <li><b>Treinamento do painel</b> e 30 dias de suporte depois da publicação</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- INVESTIMENTO -->
+  <section class="sec valor">
+    <h2>O investimento</h2>
+
+    <aside class="condicao">
+      <p class="condicao-rotulo">Condição combinada no WhatsApp</p>
+      <h3>R$ 899,10 à vista no lugar dos R$ 999</h3>
+      <p>A tabela do estúdio para uma vitrine completa é <b>R$ 999</b>. À vista, para a One Tênis, o valor é <b>R$ 899,10</b>: os <b>10% de desconto do pagamento à vista</b> que eu te ofereci no WhatsApp, num Pix só, no aceite. É uma condição deste projeto, não uma tabela nova.</p>
+      <ul>
+        <li>Mesmo escopo da vitrine de R$ 999: a vitrine que você viu, as peças cadastradas, o painel e a publicação</li>
+        <li>Pagamento único. Não existe mensalidade nem renovação</li>
+        <li>Se preferir dividir, a condição de sempre continua valendo: R$ 199 para começar e R$ 800 na entrega</li>
+      </ul>
+    </aside>
+
+    <p class="valor-numero"><small>R$</small>899<small>,10</small><s>R$ 999</s></p>
+    <div class="cota" aria-hidden="true"></div>
+    <p class="cota-legenda">À vista, num Pix só, no aceite. Sem mensalidade.</p>
+
+    <div class="valor-grade">
+      <div>
+        <p>A vitrine que você viu <b>já está construída</b>. O valor cobre o cadastro das suas peças com o fundo tratado, a revisão com você, a publicação e o treinamento do painel.</p>
+        <p>O domínio próprio, se você quiser o endereço com o nome da loja, é à parte: <b>cerca de R$ 40 por ano</b> no Registro.br, no nome da loja. Eu faço a configuração.</p>
+        <div class="garantia">
+          <p>Você não paga no escuro: a vitrine já está no ar para você conferir. E se a publicada não for o que você viu, <b>o que você pagou volta inteiro</b>: os R$ 899,10 à vista, ou a entrada de R$ 199. Na opção dividida, os R$ 800 só existem depois que você aprovar.</p>
+        </div>
+      </div>
+      <div class="pagar">
+        <p class="pagar-titulo">À vista, no aceite</p>
+        <ul>
+          <li>QR code do Pix aqui na página, com confirmação na hora</li>
+          <li>Com o Pix confirmado, eu começo o cadastro das suas peças</li>
+        </ul>
+        <button class="btn-pay" type="button" data-checkout-item="avista_pix">Pagar R$ 899,10 no Pix</button>
+        <div class="pagar-ou">
+          <p><b>Ou dividido: R$ 999.</b> R$ 199 de entrada no Pix agora, e R$ 800 na entrega, no Pix ou no cartão em até 4x (com os juros do cartão).</p>
+          <button class="btn-pay btn-pay--linha" type="button" data-checkout-item="entrada_pix">Pagar a entrada de R$ 199</button>
+        </div>
+        <p class="pagar-rodape">Processado pelo Mercado Pago, sem sair desta página.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEPOIS DA PUBLICAÇÃO -->
+  <section class="sec">
+    <h2>Depois que ela estiver no ar</h2>
+    <p class="sec-intro">Você mesmo consegue colocar e trocar peças pelo painel: é simples, e eu te mostro como no treinamento. Se preferir que eu cuide disso pra você todo mês, tem o plano de suporte.</p>
+    <div class="opcoes">
+      <div class="opcao">
+        <h3>Você mesmo cuida</h3>
+        <p class="opcao-preco">R$ 0<small>/mês</small></p>
+        <p>Peça nova, foto, preço, promoção e destaque, direto do celular. Sem limite e sem pedir para ninguém.</p>
+      </div>
+      <div class="opcao">
+        <h3>Eu cuido pra você</h3>
+        <p class="opcao-preco">R$ 149,90<small>/mês</small></p>
+        <p>Você me manda as peças novas pelo WhatsApp e eu trato o fundo das fotos, cadastro e atualizo. Sem fidelidade.</p>
+        <ul>
+          <li><b>Até 10 peças por mês</b>, cada uma com até 3 fotos</li>
+          <li>Trocar foto, preço, tamanhos ou cores do que já está na vitrine, e tirar o que acabou</li>
+          <li>Acima de 10 peças no mês: <b>R$ 15 por peça extra</b></li>
+          <li>Não acumula de um mês para o outro. Seção ou página nova é orçamento à parte</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRAZO E PASSOS -->
+  <section class="sec">
+    <h2>Como a gente segue</h2>
+    <p class="prazo">No ar em até 5 dias úteis depois da sua lista</p>
+    <ol class="passos">
+      <li><span>Você confirma o <b>aceite</b> pelo WhatsApp e paga aqui nesta página: os <b>R$ 899,10 à vista</b>, ou só a <b>entrada de R$ 199</b>.</span></li>
+      <li><span>Você me diz <b>qual número recebe os pedidos</b> (este em que a gente conversa ou outro), me manda os modelos novos com os números e o preço de atacado que quiser mostrar, e me diz quais dos 24 da prévia ainda tem aí.</span></li>
+      <li><span>Eu cadastro, trato as fotos, reviso com você e publico.</span></li>
+      <li><span>Você recebe o painel e o treinamento. À vista, acabou aqui. Na opção dividida, os <b>R$ 800</b> saem só agora, com a vitrine no ar e aprovada.</span></li>
+    </ol>
+  </section>
+
+  <!-- NÃO INCLUSO -->
+  <section class="rodape-nota">
+    <h2>O que não está incluso</h2>
+    <ul>
+      <li>Domínio próprio: cerca de R$ 40 por ano no Registro.br, à parte, no nome da loja</li>
+      <li>Carrinho e pagamento online: o pedido fecha no WhatsApp</li>
+      <li>Controle de estoque, ERP e nota fiscal</li>
+      <li>Tirar as fotos: a foto é sua (do celular serve) ou a oficial da marca; o tratamento do fundo é comigo</li>
+      <li>Cálculo de frete e de parcelamento: valor e envio ficam para a conversa</li>
+    </ul>
+  </section>
+
+  <section class="fecho">
+    <h2>Vamos colocar a One Tênis no ar.</h2>
+    <a href="https://wa.me/5544991246187?text=Ol%C3%A1%20Rafael%2C%20tenho%20uma%20d%C3%BAvida%20sobre%20a%20proposta%20da%20One%20T%C3%AAnis." target="_blank" rel="noopener">Ficou com dúvida? Me chama no WhatsApp</a>
+  </section>
+
+  <footer class="assinatura">
+    <span>Rafael Razeira Estúdio</span>
+    <span>rafael.rbarbon@gmail.com</span>
+    <span>(44) 99124-6187</span>
+    <span>@rafaelrazeira.estudio</span>
+  </footer>
+
+</div>
+
+<script>
+/* A nota acende o número dela na imagem (mouse, foco ou toque). */
+document.querySelectorAll("[data-prancha]").forEach(function (prancha) {
+  prancha.querySelectorAll(".notas li").forEach(function (li) {
+    li.tabIndex = 0;
+    var alvo = prancha.querySelector('figure .pin[data-n="' + li.dataset.n + '"]');
+    if (!alvo) return;
+    var liga = function () { alvo.classList.add("acende"); };
+    var desliga = function () { alvo.classList.remove("acende"); };
+    li.addEventListener("mouseenter", liga);
+    li.addEventListener("mouseleave", desliga);
+    li.addEventListener("focus", liga);
+    li.addEventListener("blur", desliga);
+  });
+});
+</script>
+</body>
+</html>

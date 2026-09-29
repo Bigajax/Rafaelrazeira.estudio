@@ -241,6 +241,19 @@ export const PROPOSTAS: Record<string, Proposta> = {
       saldo_card: { label: "Saldo na entrega, no cartão em até 4x", valor: 800, metodo: "card", maxParcelas: 4 },
     },
   },
+  /* A One Tênis (29/09): a Adriana disse "eu me interesso sim" e "vou fazer
+     a partir do mês que vem". No WhatsApp o Rafael ofereceu 10% à vista
+     no Pix: R$ 899,10, um Pix só no aceite. A condição padrão fica ao lado. */
+  "one-tenis": {
+    titulo: "Rafael Razeira Estúdio, Vitrine Digital One Tênis",
+    whatsapp: "5544991246187",
+    itens: {
+      avista_pix: { label: "Vitrine digital, à vista no Pix com 10% de desconto, no aceite", valor: 899.1, metodo: "pix" },
+      entrada_pix: { label: "Entrada para início do projeto", valor: 199, metodo: "pix" },
+      saldo_pix: { label: "Saldo na entrega, no Pix", valor: 800, metodo: "pix" },
+      saldo_card: { label: "Saldo na entrega, no cartão em até 4x", valor: 800, metodo: "card", maxParcelas: 4 },
+    },
+  },
   /* A Minas fecha SEM ENTRADA: um pagamento só, no Pix, no dia da
      publicação. Não existe item de entrada nem de cartão aqui de
      propósito, senão um botão antigo continuaria cobrando R$ 199. */
