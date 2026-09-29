@@ -14,7 +14,7 @@
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Rafael Razeira Estúdio" />
 <meta property="og:title" content="Proposta · Japa Modas" />
-<meta property="og:description" content="Rafael Razeira Estúdio: o que está incluso, o investimento e o prazo." />
+<meta property="og:description" content="A vitrine no ar, o que você recebe e o saldo da entrega." />
 <meta property="og:url" content="https://rafaelrazeira.com.br/proposta/japa-modas.html" />
 
 
@@ -203,6 +203,10 @@ img{display:block;max-width:100%}
 .pagar-nota{margin:8px 0 12px;font-size:.92rem;color:var(--ink-70)}
 .saldo-titulo{margin-top:clamp(40px,6vw,64px);font-family:var(--font-mono);font-weight:700;font-size:14px;color:var(--ink-55)}
 .valor .passos{margin-top:16px}
+/* na entrega (29/09): a entrada aparece como paga, e o saldo é o pagamento aberto */
+.pagar-feito{padding:12px 14px;background:var(--emerald-light);border-left:3px solid var(--emerald);font-size:.95rem}
+.pagar-saldo--agora{margin-top:18px;padding-top:0;border-top:0}
+.pagar-saldo--agora .btn-pay + .btn-pay{margin-top:10px}
 </style>
 </head>
 <body data-proposta="japa-modas">
@@ -211,19 +215,19 @@ img{display:block;max-width:100%}
 
   <header class="topo">
     <div class="marca">Rafael Razeira <small>Estúdio</small></div>
-    <time datetime="2026-09-25">25/09/2026</time>
+    <time datetime="2026-09-29">29/09/2026</time>
   </header>
 
-  <!-- CAPA -->
+  <!-- CAPA (atualizada na entrega, 29/09/2026) -->
   <section class="capa">
     <div>
-      <p class="capa-para">Proposta para a Japa Modas</p>
+      <p class="capa-para">Proposta da Japa Modas, atualizada na entrega</p>
       <h1>A Japa Modas, aberta 24 horas num link só.</h1>
       <dl class="ficha">
-        <div><dt>A vitrine</dt><dd><a href="https://www.japamodasurf.com.br" target="_blank" rel="noopener">japamodasurf.com.br</a>, no ar</dd></div>
-        <div><dt>O que entra</dt><dd>Até 60 peças cadastradas por mim, com o fundo das fotos tratado</dd></div>
-        <div><dt>Investimento</dt><dd><b>R$ 999</b>, R$ 199 de entrada no Pix e R$ 800 na entrega</dd></div>
-        <div><dt>No ar em</dt><dd>Até 5 dias úteis depois da sua lista de peças</dd></div>
+        <div><dt>A vitrine</dt><dd><a href="https://www.japamodasurf.com.br" target="_blank" rel="noopener">japamodasurf.com.br</a>, no ar desde 28/09</dd></div>
+        <div><dt>O que está dentro</dt><dd>68 peças no site, 54 com preço, de 11 marcas</dd></div>
+        <div><dt>O seu painel</dt><dd><a href="https://www.japamodasurf.com.br/painel" target="_blank" rel="noopener">japamodasurf.com.br/painel</a>, com o manual dentro</dd></div>
+        <div><dt>Investimento</dt><dd><b>R$ 999</b>: a entrada de R$ 199 foi paga em 25/09, falta o saldo de R$ 800</dd></div>
       </dl>
     </div>
 
@@ -231,75 +235,92 @@ img{display:block;max-width:100%}
       <div class="celular">
         <iframe src="https://www.japamodasurf.com.br" title="A vitrine da Japa Modas, ao vivo" loading="lazy"></iframe>
       </div>
-      <p class="aparelho-nota"><span class="pin" aria-hidden="true">↕</span><span class="so-mouse">Essa é a sua vitrine de verdade: role aí dentro. Ou <a href="https://www.japamodasurf.com.br" target="_blank" rel="noopener">abra numa aba nova</a>.</span><span class="so-toque">Essa é a sua vitrine de verdade, ao vivo. <a href="https://www.japamodasurf.com.br" target="_blank" rel="noopener">Abrir a vitrine</a>.</span></p>
+      <p class="aparelho-nota"><span class="pin" aria-hidden="true">↕</span><span class="so-mouse">Essa é a sua vitrine de verdade, no ar: role aí dentro. Ou <a href="https://www.japamodasurf.com.br" target="_blank" rel="noopener">abra numa aba nova</a>.</span><span class="so-toque">Essa é a sua vitrine de verdade, no ar. <a href="https://www.japamodasurf.com.br" target="_blank" rel="noopener">Abrir a vitrine</a>.</span></p>
     </div>
   </section>
 
-  <!-- AS PRANCHAS -->
+  <!-- AS PRANCHAS: a v3 no ar, capturada em 29/09 -->
   <section class="sec">
     <h2>O que você recebe, apontado na tela</h2>
-    <p class="sec-intro">Em vez de uma lista, as partes da sua vitrine com uma nota em cada uma. Passe o dedo ou o mouse numa nota e o número acende na imagem.</p>
+    <p class="sec-intro">As partes da sua vitrine, do jeito que ela está no ar, com uma nota em cada uma. Passe o dedo ou o mouse numa nota e o número acende na imagem.</p>
 
     <div class="prancha" data-prancha>
       <figure>
-        <img src="/assets/proposta/japa-modas/topo.webp" width="1600" height="998" alt="O topo da vitrine da Japa Modas: a foto do dono na loja, a frase da logo e a nota do Google" />
-        <span class="pin" data-n="1" style="left:41%;top:30%">1</span>
-        <span class="pin" data-n="2" style="left:52.5%;top:2.4%">2</span>
+        <img src="/assets/proposta/japa-modas/topo.webp" width="1600" height="1035" alt="O topo da Japa: a faixa vermelha de ofertas, a logo, as seções com o desconto de cada uma e o banner da campanha dos tênis Nike" />
+        <span class="pin" data-n="1" style="left:32%;top:2.4%">1</span>
+        <span class="pin" data-n="2" style="left:11%;top:27.5%">2</span>
+        <span class="pin" data-n="3" style="left:55.3%;top:43%">3</span>
+        <span class="pin" data-n="4" style="left:2.6%;top:94%">4</span>
       </figure>
       <div>
-        <p class="prancha-titulo">Prancha 1 de 4<b>A abertura</b></p>
+        <p class="prancha-titulo">Prancha 1 de 5<b>O topo</b></p>
         <ol class="notas">
-          <li data-n="1"><span class="pin">1</span><span>A página abre com você na loja, e a frase da sua logo do lado: "Estilo faz parte da sua história". Quem chega pelo Instagram reconhece na hora quem vende.</span></li>
-          <li data-n="2"><span class="pin">2</span><span>O endereço no Simioni, o horário e o 4,8 do Google no topo de toda página. É loja de rua, e isso vende.</span></li>
+          <li data-n="1"><span class="pin">1</span><span>A faixa de ofertas, rolando no alto de toda página. Cada frase leva para a peça ou para a seção dela. Você escreve, troca e desliga pelo painel.</span></li>
+          <li data-n="2"><span class="pin">2</span><span>As seções da loja, na ordem que você escolher, cada uma com o maior desconto que tem dentro. O desconto se calcula sozinho a partir dos seus preços.</span></li>
+          <li data-n="3"><span class="pin">3</span><span>A campanha: quatro banners grandes que passam sozinhos, cada um com a frase e o botão. A frase é texto, não imagem: você troca pelo painel sem refazer a arte.</span></li>
+          <li data-n="4"><span class="pin">4</span><span>As logos oficiais das marcas que você vende, rolando. Marca nova que você cadastrar entra sozinha.</span></li>
         </ol>
       </div>
     </div>
 
     <div class="prancha prancha--inv" data-prancha>
       <figure>
-        <img src="/assets/proposta/japa-modas/kits.webp" width="1600" height="1099" alt="A seção dos kits: cada conjunto com a foto, as peças que vêm nele e o botão de pedir" />
-        <span class="pin" data-n="3" style="left:55%;top:8.5%">3</span>
-        <span class="pin" data-n="4" style="left:46%;top:26.6%">4</span>
-        <span class="pin" data-n="5" style="left:49%;top:48%">5</span>
+        <img src="/assets/proposta/japa-modas/tenis.webp" width="1600" height="1105" alt="A vitrine dos tênis: quatro cartões com o desconto num disco vermelho, o preço à vista, o cheio riscado, o parcelamento e a economia em reais" />
+        <span class="pin" data-n="5" style="left:21.5%;top:71.7%">5</span>
+        <span class="pin" data-n="6" style="left:19%;top:56.4%">6</span>
       </figure>
       <div>
-        <p class="prancha-titulo">Prancha 2 de 4<b>Mizuno, Nike ou Lacoste: qual kit?</b></p>
+        <p class="prancha-titulo">Prancha 2 de 5<b>Uma vitrine por seção</b></p>
         <ol class="notas">
-          <li data-n="3"><span class="pin">3</span><span>A sua pergunta vira o título, do jeito que você posta. Cada kit tem o nome da cor, e não a marca repetida quatro vezes.</span></li>
-          <li data-n="4"><span class="pin">4</span><span>Ao lado da foto, o que vem no kit, peça por peça.</span></li>
-          <li data-n="5"><span class="pin">5</span><span>Um botão por kit: o cliente pede o conjunto inteiro, e a mensagem já chega dizendo qual.</span></li>
+          <li data-n="5"><span class="pin">5</span><span>Cada peça com o preço à vista, o cheio riscado, o parcelamento e quanto a pessoa economiza. O desconto em porcentagem sai sozinho.</span></li>
+          <li data-n="6"><span class="pin">6</span><span>Um toque na foto mostra o próximo ângulo, sem sair da página. Os tracinhos dizem quantas fotos a peça tem.</span></li>
         </ol>
       </div>
     </div>
 
     <div class="prancha" data-prancha>
       <figure>
-        <img src="/assets/proposta/japa-modas/loja.webp" width="1600" height="723" alt="A seção Vem na loja, com o endereço, o horário e o botão do mapa" />
-        <span class="pin" data-n="6" style="left:72.5%;top:33%">6</span>
-        <span class="pin" data-n="7" style="left:84.5%;top:55%">7</span>
+        <img src="/assets/proposta/japa-modas/secao.webp" width="1600" height="1175" alt="A página de camisetas e polos: a capa com o maior desconto, as abas Todos, Originais e Premium, os botões de marca com a logo e os tamanhos" />
+        <span class="pin" data-n="7" style="left:36%;top:30.3%">7</span>
+        <span class="pin" data-n="8" style="left:62%;top:38%">8</span>
+        <span class="pin" data-n="9" style="left:38.5%;top:45.5%">9</span>
       </figure>
       <div>
-        <p class="prancha-titulo">Prancha 3 de 4<b>Vem na loja</b></p>
+        <p class="prancha-titulo">Prancha 3 de 5<b>A página de cada seção</b></p>
         <ol class="notas">
-          <li data-n="6"><span class="pin">6</span><span>O endereço da Rua Luís Carvalho Pereira, com a sua foto de Oakley do lado, e o botão que abre a rota no mapa.</span></li>
-          <li data-n="7"><span class="pin">7</span><span>O horário da semana, do sábado e do domingo, igual ao do Google.</span></li>
+          <li data-n="7"><span class="pin">7</span><span>Originais e Premium em abas separadas, com a quantidade de cada uma. Você marca a origem de cada peça no painel.</span></li>
+          <li data-n="8"><span class="pin">8</span><span>Um botão por marca, com a logo oficial: um toque mostra só a Nike, só a Lacoste.</span></li>
+          <li data-n="9"><span class="pin">9</span><span>O número ou o tamanho: quem procura o 41 vê só o que tem no 41.</span></li>
         </ol>
       </div>
     </div>
 
     <div class="prancha prancha--inv" data-prancha>
       <figure>
-        <img src="/assets/proposta/japa-modas/peca.webp" width="1600" height="1000" alt="A página de uma peça, o slide Oakley Titan, com o preço, o código e o botão de pedir no WhatsApp" />
-        <span class="pin" data-n="8" style="left:80%;top:53.5%">8</span>
-        <span class="pin" data-n="9" style="left:68.5%;top:58.5%">9</span>
-        <span class="pin" data-n="10" style="left:97%;top:92%">10</span>
+        <img src="/assets/proposta/japa-modas/loja.webp" width="1600" height="818" alt="A seção Chega na Japa: o endereço com o 504 em destaque, o aviso de aberta agora, o horário da semana, a rota e as fotos da fachada e de dentro da loja" />
+        <span class="pin" data-n="10" style="left:24%;top:55.2%">10</span>
+        <span class="pin" data-n="11" style="left:44.6%;top:87.8%">11</span>
       </figure>
       <div>
-        <p class="prancha-titulo">Prancha 4 de 4<b>A página da peça</b></p>
+        <p class="prancha-titulo">Prancha 4 de 5<b>Chega na Japa</b></p>
         <ol class="notas">
-          <li data-n="8"><span class="pin">8</span><span>O preço que você publicou, com a promoção riscada e o desconto calculado sozinho.</span></li>
-          <li data-n="9"><span class="pin">9</span><span>Toda peça tem um código. Quando o cliente chama, você sabe na hora de qual ele está falando.</span></li>
-          <li data-n="10"><span class="pin">10</span><span>O pedido chega no seu WhatsApp já montado, com a peça, o código e o recado. Você responde com o tamanho e combina a retirada ou a entrega.</span></li>
+          <li data-n="10"><span class="pin">10</span><span>O endereço com o 504 em destaque e o "Aberta agora", que segue o seu horário da semana. Mudou o horário ou é feriado? Você troca no painel e o aviso acompanha.</span></li>
+          <li data-n="11"><span class="pin">11</span><span>A rota até a loja no mapa, e o WhatsApp do lado, com a fachada e a loja por dentro nas suas fotos.</span></li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="prancha" data-prancha>
+      <figure>
+        <img src="/assets/proposta/japa-modas/peca.webp" width="1600" height="1000" alt="A página do tênis Nike Journey Run: as fotos, o preço à vista num bloco preto com o cheio riscado, o parcelamento, a economia e o botão Garantir pelo WhatsApp" />
+        <span class="pin" data-n="12" style="left:80%;top:54.8%">12</span>
+        <span class="pin" data-n="13" style="left:53.4%;top:76.3%">13</span>
+      </figure>
+      <div>
+        <p class="prancha-titulo">Prancha 5 de 5<b>A página da peça</b></p>
+        <ol class="notas">
+          <li data-n="12"><span class="pin">12</span><span>O preço num bloco só: à vista, o cheio riscado, em quantas vezes, e a economia em reais e em porcentagem.</span></li>
+          <li data-n="13"><span class="pin">13</span><span>O pedido chega no seu WhatsApp já escrito: o nome da peça, o número que a pessoa escolheu, o valor e o link. Você só responde.</span></li>
         </ol>
       </div>
     </div>
@@ -307,71 +328,67 @@ img{display:block;max-width:100%}
     <div class="fora-da-tela">
       <h3>E o que não aparece na tela</h3>
       <ul>
-        <li><b>Até 60 peças cadastradas por mim</b> na entrega, com o fundo das fotos tratado. Você manda o nome, a referência e a cor; foto sua, ou eu uso a oficial da marca</li>
-        <li><b>O painel</b> para você colocar e trocar peças, preço, promoção, tamanhos e destaque</li>
+        <li><b>O painel</b>, que muda o site na hora, pelo celular: peças, preço, promoção, parcelamento, tamanhos, original ou premium, os banners do topo, as seções, a faixa de ofertas, o endereço e o horário</li>
+        <li><b>O manual</b> dentro do painel, no botão Ajuda, escrito sem linguagem de computador</li>
+        <li><b>68 peças cadastradas</b>, das fotos do seu Instagram e das que você mandou</li>
+        <li><b>O seu domínio</b>, japamodasurf.com.br, ligado à vitrine com o cadeado de site seguro</li>
         <li><b>A versão de celular</b>, para quem chega pelo Instagram</li>
-        <li><b>O Google</b>: a Japa Modas aparece por nome e por "moda masculina em Ribeirão Preto"</li>
         <li><b>O cartão do link</b>: a sua logo aparece quando alguém manda o endereço no WhatsApp</li>
-        <li><b>2 rodadas de revisão</b> antes de publicar</li>
-        <li><b>Treinamento do painel</b> e 30 dias de suporte depois da publicação</li>
+        <li><b>Pronta para o Google</b>: cada peça com o nome, o preço e a foto no formato que ele lê</li>
+        <li><b>30 dias de suporte</b> comigo, a contar da entrega</li>
       </ul>
     </div>
   </section>
 
-  <!-- INVESTIMENTO: R$ 199 de entrada + R$ 800 na entrega -->
+  <!-- INVESTIMENTO: a entrada paga em 25/09; falta o saldo de R$ 800 -->
   <section class="sec valor">
     <h2>O investimento</h2>
     <p class="valor-numero"><small>R$</small>999</p>
     <div class="cota" aria-hidden="true"></div>
-    <p class="cota-legenda">R$ 199 de entrada no Pix hoje e R$ 800 na entrega. Uma vez só, sem mensalidade.</p>
+    <p class="cota-legenda">A entrada de R$ 199 foi paga em 25/09. Falta só o saldo: R$ 800. Uma vez só, sem mensalidade.</p>
 
     <div class="valor-grade">
       <div>
-        <p>A vitrine que você viu <b>já está construída</b>. O valor cobre o cadastro das suas peças com o fundo tratado, a revisão com você, a publicação e o treinamento do painel.</p>
-        <p>O domínio próprio, se você quiser o endereço com o nome da loja, é à parte: <b>R$ 40 por 1 ano</b>, registrado no nome da loja. Eu faço a configuração.</p>
+        <p>A vitrine <b>está no ar</b>, com as suas peças, no seu domínio, e o painel é seu. O valor cobre a construção, o cadastro das peças, a publicação, o painel com o manual e os 30 dias de suporte.</p>
+        <p>O domínio <b>japamodasurf.com.br</b> é seu: está registrado no seu nome no Registro.br, e eu fiz a ligação com a vitrine. A renovação é uma vez por ano, direto com o Registro.br.</p>
         <div class="garantia">
-          <p>Se a vitrine publicada não for o que você viu nesta proposta, <b>a entrada volta inteira</b> e o saldo não existe. Você nunca paga o saldo por algo que ainda não viu funcionando.</p>
+          <p>Confira tudo no celular antes de pagar. Se alguma coisa não estiver como nesta proposta, <b>me chama que eu acerto antes</b>: o saldo só existe com a vitrine aprovada por você.</p>
         </div>
       </div>
       <div class="pagar">
-        <p class="pagar-titulo">Para começar: R$ 199</p>
-        <ul>
-          <li>QR code do Pix aqui na página, com confirmação na hora</li>
-          <li>Com a entrada, eu começo a cadastrar as suas peças</li>
-        </ul>
-        <!-- Um botão por item de lib/propostas.ts; o valor NUNCA vem daqui -->
-        <button class="btn-pay" type="button" data-checkout-item="entrada_pix">Pagar a entrada de R$ 199</button>
+        <p class="pagar-feito">Entrada de R$ 199: <b>paga em 25/09</b></p>
         <!-- #saldo: o link da entrega (29/09) cai direto aqui -->
         <div id="saldo" style="scroll-margin-top:24px"></div>
-        <div class="pagar-saldo">
-          <p class="pagar-titulo pagar-titulo--menor">Na entrega: R$ 800</p>
-          <p class="pagar-nota">Só depois de você aprovar a vitrine publicada. No Pix, ou no cartão em até 4x com os juros do cartão calculados na hora.</p>
-          <button class="btn-pay btn-pay--ghost" type="button" data-checkout-item="saldo_pix">Pagar o saldo no Pix</button>
+        <div class="pagar-saldo pagar-saldo--agora">
+          <p class="pagar-titulo">Agora, o saldo: R$ 800</p>
+          <p class="pagar-nota">No Pix, com o QR code aqui na página, ou no cartão em até 4x com os juros do cartão calculados na hora.</p>
+          <!-- Um botão por item de lib/propostas.ts; o valor NUNCA vem daqui -->
+          <button class="btn-pay" type="button" data-checkout-item="saldo_pix">Pagar o saldo no Pix</button>
           <button class="btn-pay btn-pay--ghost" type="button" data-checkout-item="saldo_card">Pagar o saldo no cartão</button>
         </div>
         <p class="pagar-rodape">Processado pelo Mercado Pago, sem sair desta página.</p>
       </div>
     </div>
 
-    <p class="saldo-titulo">Como funciona o saldo, passo a passo</p>
+    <p class="saldo-titulo">Onde a gente está, passo a passo</p>
     <ol class="passos">
-      <li><span>Hoje sai só a entrada: <b>R$ 199 no Pix</b>.</span></li>
-      <li><span>Eu cadastro as suas peças, publico a vitrine e te entrego o painel.</span></li>
-      <li><span>Você confere no celular, com calma, e aprova.</span></li>
-      <li><span>Só então existe o saldo: <b>R$ 800</b>, no Pix ou no cartão em até 4x.</span></li>
-      <li><span>E acabou: sem mensalidade, sem renovação e sem cobrança surpresa.</span></li>
+      <li><span><b>Feito:</b> o aceite e a entrada de R$ 199, em 25/09.</span></li>
+      <li><span><b>Feito:</b> as peças cadastradas, a vitrine no ar em 28/09 e os pedidos caindo no seu WhatsApp.</span></li>
+      <li><span><b>Feito:</b> o domínio ligado em 29/09 e o painel com o manual.</span></li>
+      <li><span><b>Agora:</b> você confere no celular, com calma, e aprova. Então sai o saldo de <b>R$ 800</b>, no Pix ou no cartão em até 4x.</span></li>
+      <li><span>E acabou: sem mensalidade e sem cobrança surpresa. Só a renovação anual do domínio, direto no Registro.br.</span></li>
     </ol>
   </section>
 
-  <!-- DEPOIS DA PUBLICAÇÃO -->
+  <!-- DEPOIS DA ENTREGA -->
   <section class="sec">
-    <h2>Depois que ela estiver no ar</h2>
-    <p class="sec-intro">Você consegue colocar e trocar peças pelo painel: é simples, e eu te mostro como no treinamento. Se preferir que eu cuide disso pra você todo mês, tem o plano de suporte.</p>
+    <h2>Depois da entrega</h2>
+    <p class="sec-intro">Você muda quase tudo pelo painel, e o manual fica lá dentro, no botão Ajuda. Se preferir que eu cuide disso pra você todo mês, tem o plano de suporte.</p>
     <div class="opcoes">
       <div class="opcao">
         <h3>Você cuida</h3>
         <p class="opcao-preco">R$ 0<small>/mês</small></p>
-        <p>Peça nova, foto, preço, promoção e destaque, direto do celular. Sem limite e sem pedir para ninguém.</p>
+        <p>Peça nova, foto, preço, promoção, as ofertas do topo, os banners, as seções e o horário, direto do celular. Sem limite e sem pedir para ninguém.</p>
       </div>
       <div class="opcao">
         <h3>Eu cuido pra você</h3>
@@ -387,33 +404,21 @@ img{display:block;max-width:100%}
     </div>
   </section>
 
-  <!-- PRAZO E PASSOS -->
-  <section class="sec">
-    <h2>Como a gente segue</h2>
-    <p class="prazo">No ar em até 5 dias úteis depois da sua lista</p>
-    <ol class="passos">
-      <li><span>Você confirma o <b>aceite</b> pelo WhatsApp e paga a <b>entrada de R$ 199</b> no Pix, aqui nesta página.</span></li>
-      <li><span>Você me manda a lista das peças, com <b>nome, referência e cor</b>, e as fotos que tiver. Me passa também os preços e os tamanhos das peças que hoje estão como "Valor no WhatsApp", e qual número recebe os pedidos.</span></li>
-      <li><span>Eu cadastro, trato as fotos, reviso com você e publico.</span></li>
-      <li><span>Com a Japa no ar e aprovada, você paga os <b>R$ 800</b> no Pix ou no cartão, aqui nesta página.</span></li>
-    </ol>
-  </section>
-
   <!-- NÃO INCLUSO -->
   <section class="rodape-nota">
     <h2>O que não está incluso</h2>
     <ul>
-      <li>Domínio próprio: R$ 40 por 1 ano, à parte, no nome da loja</li>
+      <li>A renovação anual do domínio, direto no Registro.br, no seu nome</li>
       <li>Carrinho e pagamento online: o pedido fecha no WhatsApp</li>
       <li>Controle de estoque, ERP e nota fiscal</li>
-      <li>Tirar as fotos: a foto é sua (do celular serve) ou a oficial da marca; o tratamento do fundo é comigo</li>
-      <li>Simulador de frete e de parcelamento: preço e entrega ficam para a conversa</li>
+      <li>Tirar as fotos: a foto é sua (do celular serve) ou a oficial da marca</li>
+      <li>Simulador de frete: a entrega fica para a conversa</li>
     </ul>
   </section>
 
   <section class="fecho">
-    <h2>Vamos colocar a Japa Modas no ar.</h2>
-    <a href="https://wa.me/5544991246187?text=Ol%C3%A1%20Rafael%2C%20tenho%20uma%20d%C3%BAvida%20sobre%20a%20proposta%20da%20Japa%20Modas." target="_blank" rel="noopener">Ficou com dúvida? Me chama no WhatsApp</a>
+    <h2>A Japa Modas está no ar.</h2>
+    <a href="https://wa.me/5544991246187?text=Ol%C3%A1%20Rafael%2C%20tenho%20uma%20d%C3%BAvida%20sobre%20a%20entrega%20da%20Japa%20Modas." target="_blank" rel="noopener">Ficou com dúvida? Me chama no WhatsApp</a>
   </section>
 
   <footer class="assinatura">
