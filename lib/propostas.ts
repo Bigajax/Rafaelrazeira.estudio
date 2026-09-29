@@ -198,6 +198,20 @@ export const PROPOSTAS: Record<string, Proposta> = {
       avista_pix: { label: "Vitrine digital, à vista no Pix, no aceite", valor: 799, metodo: "pix" },
     },
   },
+  /* A Store Blessed (29/09): o Fabio gostou da prévia e travou no
+     orçamento ("deu uma apertada"). O Rafael faz R$ 799 À VISTA, um Pix
+     só no aceite, e o motivo do desconto é esse pagamento na frente. A
+     condição padrão fica ao lado (199 + 800), para ele escolher. */
+  "store-blessed": {
+    titulo: "Rafael Razeira Estúdio, Vitrine Digital Store Blessed",
+    whatsapp: "5544991246187",
+    itens: {
+      avista_pix: { label: "Vitrine digital, à vista no Pix, no aceite", valor: 799, metodo: "pix" },
+      entrada_pix: { label: "Entrada para início do projeto", valor: 199, metodo: "pix" },
+      saldo_pix: { label: "Saldo na entrega, no Pix", valor: 800, metodo: "pix" },
+      saldo_card: { label: "Saldo na entrega, no cartão em até 4x", valor: 800, metodo: "card", maxParcelas: 4 },
+    },
+  },
   /* A Minas fecha SEM ENTRADA: um pagamento só, no Pix, no dia da
      publicação. Não existe item de entrada nem de cartão aqui de
      propósito, senão um botão antigo continuaria cobrando R$ 199. */
