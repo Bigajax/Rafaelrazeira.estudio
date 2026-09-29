@@ -188,14 +188,17 @@ export const PROPOSTAS: Record<string, Proposta> = {
     },
   },
   /* A Full Time fecha em R$ 799 (28/09): pediu para melhorar o valor
-     ("estamos no começo e as vendas não estão fácil, época de eleição")
-     e o desconto sai em troca do pagamento À VISTA E ADIANTADO, um Pix só
-     no aceite. Sem entrada, sem saldo e sem cartão de propósito. */
+     ("estamos no começo e as vendas não estão fácil, época de eleição").
+     Em 29/09 o Rafael mudou a forma: 20% de entrada no Pix, no aceite, e o
+     resto 5 dias DEPOIS DA ENTRADA (não da entrega), também no Pix. Sem
+     cartão de propósito. O motivo do desconto na página passou a ser o
+     momento da loja; o "à vista e adiantado" deixou de valer. */
   fulltime: {
     titulo: "Rafael Razeira Estúdio, Vitrine Digital Full Time Skateboards",
     whatsapp: "5544991246187",
     itens: {
-      avista_pix: { label: "Vitrine digital, à vista no Pix, no aceite", valor: 799, metodo: "pix" },
+      entrada_pix: { label: "Entrada de 20%, no Pix, no aceite", valor: 159.8, metodo: "pix" },
+      saldo_pix: { label: "Saldo, no Pix, 5 dias depois da entrada", valor: 639.2, metodo: "pix" },
     },
   },
   /* A Store Blessed (29/09): o Fabio gostou da prévia e travou no

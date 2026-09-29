@@ -22,9 +22,11 @@
      PROPOSTA COMERCIAL · FULL TIME SKATEBOARDS (vitrine digital, Galeria Xaxim, Curitiba)
      No molde de 25/09/2026 (public/proposta/template.html), com o bloco da
      condicao do molde do desconto (jk-imports.html).
-     Condicao fechada em 28/09: R$ 799 no lugar dos R$ 999, A VISTA E
-     ADIANTADO, um Pix so no aceite. O motivo do desconto e esse pagamento.
-     Item em lib/propostas.ts ("fulltime": avista_pix R$ 799). Dominio fora.
+     Condicao fechada em 28/09: R$ 799 no lugar dos R$ 999. Em 29/09 a forma
+     mudou: 20% de entrada no Pix no aceite (R$ 159,80) e o saldo 5 dias
+     depois da entrada (R$ 639,20), so Pix. O motivo do desconto passou a
+     ser o momento da loja. Itens em lib/propostas.ts ("fulltime":
+     entrada_pix e saldo_pix). Dominio fora.
      A vitrine e a fulltime-nu.vercel.app: a fulltime.vercel.app e de outra
      pessoa (um "React App").
      As pranchas: scripts/capturar-pranchas.mjs fulltime
@@ -217,6 +219,14 @@ img{display:block;max-width:100%}
 .condicao li{padding-block:9px;border-top:1px solid rgba(6,95,70,.18);color:rgba(10,10,10,.78)}
 .valor-numero s{font-size:.2em;letter-spacing:-.01em;color:var(--ink-55);vertical-align:1.6em;margin-left:.15em;font-weight:800}
 @media print{.condicao{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+/* entrada e saldo (29/09) */
+.btn-pay--ghost{background:transparent;border:2px solid var(--black);color:var(--black);margin-top:10px}
+.btn-pay--ghost:hover{background:var(--black);color:#fff}
+.pagar-saldo{margin-top:24px;padding-top:20px;border-top:2px solid var(--black)}
+.pagar-titulo--menor{font-size:1rem}
+.pagar-nota{margin:8px 0 12px;font-size:.92rem;color:var(--ink-70)}
+.saldo-titulo{margin-top:clamp(40px,6vw,64px);font-family:var(--font-mono);font-weight:700;font-size:14px;color:var(--ink-55)}
+.valor .passos{margin-top:16px}
 </style>
 </head>
 <body data-proposta="fulltime">
@@ -236,7 +246,7 @@ img{display:block;max-width:100%}
       <dl class="ficha">
         <div><dt>A vitrine</dt><dd><a href="https://fulltime-nu.vercel.app" target="_blank" rel="noopener">fulltime-nu.vercel.app</a>, já construída</dd></div>
         <div><dt>O que entra</dt><dd>Até 60 peças cadastradas por mim, com o fundo das fotos tratado</dd></div>
-        <div><dt>Investimento</dt><dd><b>R$ 799</b> à vista no Pix, no lugar dos R$ 999</dd></div>
+        <div><dt>Investimento</dt><dd><b>R$ 799</b>, no lugar dos R$ 999: 20% de entrada no Pix e o resto 5 dias depois</dd></div>
         <div><dt>No ar em</dt><dd>Até 5 dias úteis depois da sua lista de peças</dd></div>
       </dl>
     </div>
@@ -339,36 +349,52 @@ img{display:block;max-width:100%}
     <aside class="condicao">
       <p class="condicao-rotulo">Condição combinada no WhatsApp</p>
       <h3>R$ 799 no lugar dos R$ 999</h3>
-      <p>A tabela do estúdio para uma vitrine completa é <b>R$ 999</b>. Com a Full Time o valor é <b>R$ 799</b>, e o motivo é um só: o pagamento é <b>à vista e na frente</b>, num Pix só, no aceite. É uma condição deste projeto, não uma tabela nova.</p>
+      <p>A tabela do estúdio para uma vitrine completa é <b>R$ 999</b>. Você me contou que a loja está começando e que as vendas estão difíceis nesta época de eleição: para a Full Time entrar no ar agora, fechei em <b>R$ 799</b>. É uma condição deste projeto, não uma tabela nova.</p>
       <ul>
         <li>Mesmo escopo da vitrine de R$ 999: a vitrine que você viu, as peças cadastradas, o painel e a publicação</li>
         <li>Pagamento único. Não existe mensalidade nem renovação</li>
-        <li>Um Pix só, sem entrada e sem saldo para lembrar depois</li>
+        <li>20% de entrada no aceite, <b>R$ 159,80</b>, e o resto, <b>R$ 639,20</b>, cinco dias depois, os dois no Pix</li>
       </ul>
     </aside>
 
     <p class="valor-numero"><small>R$</small>799<s>R$ 999</s></p>
     <div class="cota" aria-hidden="true"></div>
-    <p class="cota-legenda">Uma vez só, à vista no Pix, no aceite. Sem mensalidade.</p>
+    <p class="cota-legenda">R$ 159,80 de entrada no Pix, no aceite, e R$ 639,20 cinco dias depois. Uma vez só, sem mensalidade.</p>
 
     <div class="valor-grade">
       <div>
         <p>A vitrine que você viu <b>já está construída</b>. O valor cobre o cadastro das suas peças com o fundo tratado, a revisão com você, a publicação e o treinamento do painel.</p>
         <p>O domínio próprio, se você quiser o endereço com o nome da loja, é à parte: <b>cerca de R$ 40 por ano</b> no Registro.br, no nome da loja. Eu faço a configuração.</p>
         <div class="garantia">
-          <p>Você paga na frente, mas não no escuro: a vitrine já está no ar para você conferir. E se a publicada não for o que você viu, <b>os R$ 799 voltam inteiros</b>.</p>
+          <p>Você paga antes da entrega, mas não no escuro: a vitrine já está no ar para você conferir. E se a publicada não for o que você viu, <b>o que você pagou volta inteiro</b>.</p>
         </div>
       </div>
       <div class="pagar">
-        <p class="pagar-titulo">Pagar no aceite</p>
+        <p class="pagar-titulo">No aceite: R$ 159,80</p>
         <ul>
           <li>QR code do Pix aqui na página, com confirmação na hora</li>
-          <li>Com o Pix confirmado, eu começo o cadastro das suas peças</li>
+          <li>Com a entrada confirmada, eu começo o cadastro das suas peças</li>
         </ul>
-        <button class="btn-pay" type="button" data-checkout-item="avista_pix">Pagar R$ 799 no Pix</button>
+        <!-- Um botão por item de lib/propostas.ts; o valor NUNCA vem daqui -->
+        <button class="btn-pay" type="button" data-checkout-item="entrada_pix">Pagar a entrada de R$ 159,80</button>
+        <div id="saldo" style="scroll-margin-top:24px"></div>
+        <div class="pagar-saldo">
+          <p class="pagar-titulo pagar-titulo--menor">5 dias depois: R$ 639,20</p>
+          <p class="pagar-nota">O saldo, no Pix, aqui nesta mesma página.</p>
+          <button class="btn-pay btn-pay--ghost" type="button" data-checkout-item="saldo_pix">Pagar o saldo de R$ 639,20 no Pix</button>
+        </div>
         <p class="pagar-rodape">Processado pelo Mercado Pago, sem sair desta página.</p>
       </div>
     </div>
+
+    <p class="saldo-titulo">Como funciona o pagamento, passo a passo</p>
+    <ol class="passos">
+      <li><span>No aceite sai só a entrada: <b>R$ 159,80 no Pix</b>.</span></li>
+      <li><span>Eu começo o cadastro das suas peças.</span></li>
+      <li><span>Cinco dias depois da entrada, o saldo: <b>R$ 639,20 no Pix</b>, aqui nesta página.</span></li>
+      <li><span>Eu publico, te entrego o painel e o treinamento.</span></li>
+      <li><span>E acabou: sem mensalidade e sem cobrança surpresa.</span></li>
+    </ol>
   </section>
 
   <!-- DEPOIS DA PUBLICAÇÃO -->
@@ -400,9 +426,10 @@ img{display:block;max-width:100%}
     <h2>Como a gente segue</h2>
     <p class="prazo">No ar em até 5 dias úteis depois da sua lista</p>
     <ol class="passos">
-      <li><span>Você confirma o <b>aceite</b> pelo WhatsApp e paga os <b>R$ 799 no Pix</b>, aqui nesta página.</span></li>
+      <li><span>Você confirma o <b>aceite</b> pelo WhatsApp e paga a <b>entrada de R$ 159,80</b> no Pix, aqui nesta página.</span></li>
       <li><span>Você me manda a lista das peças, com <b>nome, marca e tamanho ou largura</b>, e as fotos que tiver. Me diz também quais das 43 peças da prévia ainda estão na loja: elas saíram do Instagram.</span></li>
       <li><span>Eu cadastro, trato as fotos, reviso com você e publico.</span></li>
+      <li><span>Cinco dias depois da entrada, você paga o <b>saldo de R$ 639,20</b> no Pix, aqui nesta página.</span></li>
       <li><span>Você recebe o acesso ao painel e o treinamento. E acabou: não existe outra cobrança.</span></li>
     </ol>
   </section>
