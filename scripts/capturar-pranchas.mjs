@@ -10,6 +10,7 @@
          -> mostra o mapa das seções da home e captura só o topo
 
      node scripts/capturar-pranchas.mjs <cliente> <url> --secoes fitness,camisas [--peca /produto/slug]
+       (seção sem id: nome=posição no mapa, do 0: --secoes portas=3,loja)
          -> captura o topo, cada seção pelo id (até 940px da tela de altura, cortada
             de cima) e a página de uma peça (a primeira da home, se --peca
             não vier)
@@ -92,10 +93,13 @@ try {
   console.log("\nCapturas:");
   await gravar(inteira, "topo", { left: 0, top: 0, width: LARGURA * dpr, height: Math.min(fimTopo, ALTURA_MAX) * dpr });
 
-  for (const id of secoes) {
-    const s = mapa.find((m) => m.id === id);
+  /* Seção sem id (Full Time, 29/09) vai como nome=posição no mapa,
+     contando do 0: --secoes portas=3,quem=6,loja */
+  for (const pedido of secoes) {
+    const [id, pos] = pedido.split("=");
+    const s = pos !== undefined ? mapa[Number(pos)] : mapa.find((m) => m.id === id);
     if (!s) {
-      console.log(`  (não achei a seção #${id})`);
+      console.log(`  (não achei a seção ${pedido})`);
       continue;
     }
     await gravar(inteira, id, { left: 0, top: s.topo * dpr, width: LARGURA * dpr, height: Math.min(s.altura, ALTURA_MAX) * dpr });

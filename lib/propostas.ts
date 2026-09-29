@@ -187,6 +187,17 @@ export const PROPOSTAS: Record<string, Proposta> = {
       avista_pix: { label: "Vitrine digital, pagamento único no Pix", valor: 999, metodo: "pix" },
     },
   },
+  /* A Full Time fecha em R$ 799 (28/09): pediu para melhorar o valor
+     ("estamos no começo e as vendas não estão fácil, época de eleição")
+     e o desconto sai em troca do pagamento À VISTA E ADIANTADO, um Pix só
+     no aceite. Sem entrada, sem saldo e sem cartão de propósito. */
+  fulltime: {
+    titulo: "Rafael Razeira Estúdio, Vitrine Digital Full Time Skateboards",
+    whatsapp: "5544991246187",
+    itens: {
+      avista_pix: { label: "Vitrine digital, à vista no Pix, no aceite", valor: 799, metodo: "pix" },
+    },
+  },
   /* A Minas fecha SEM ENTRADA: um pagamento só, no Pix, no dia da
      publicação. Não existe item de entrada nem de cartão aqui de
      propósito, senão um botão antigo continuaria cobrando R$ 199. */
