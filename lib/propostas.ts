@@ -226,6 +226,21 @@ export const PROPOSTAS: Record<string, Proposta> = {
       saldo_card: { label: "Saldo na entrega, no cartão em até 4x", valor: 800, metodo: "card", maxParcelas: 4 },
     },
   },
+  /* A Shopping do Tênis (29/09): o Edney recebeu o preço cheio em 21/09,
+     foi "analisar com o sócio" e, na reativação, respondeu "no momento a
+     gente tem outras prioridades". Mesma condição da Store Blessed: R$ 799
+     À VISTA, um Pix só no aceite, motivo escrito (o pagamento na frente),
+     e a condição padrão (199 + 800) ao lado. */
+  "shopping-do-tenis": {
+    titulo: "Rafael Razeira Estúdio, Vitrine Digital Shopping do Tênis",
+    whatsapp: "5544991246187",
+    itens: {
+      avista_pix: { label: "Vitrine digital, à vista no Pix, no aceite", valor: 799, metodo: "pix" },
+      entrada_pix: { label: "Entrada para início do projeto", valor: 199, metodo: "pix" },
+      saldo_pix: { label: "Saldo na entrega, no Pix", valor: 800, metodo: "pix" },
+      saldo_card: { label: "Saldo na entrega, no cartão em até 4x", valor: 800, metodo: "card", maxParcelas: 4 },
+    },
+  },
   /* A Minas fecha SEM ENTRADA: um pagamento só, no Pix, no dia da
      publicação. Não existe item de entrada nem de cartão aqui de
      propósito, senão um botão antigo continuaria cobrando R$ 199. */
