@@ -254,6 +254,20 @@ export const PROPOSTAS: Record<string, Proposta> = {
       saldo_card: { label: "Saldo na entrega, no cartão em até 4x", valor: 800, metodo: "card", maxParcelas: 4 },
     },
   },
+  /* A Ciclo Skate Shop (29/09): o San disse "não está caro, mas estou um
+     pouco apertado" e volta no começo do mês. R$ 799 À VISTA, um Pix só no
+     aceite, motivo escrito (o pagamento na frente), a condição padrão ao
+     lado. O estoque por tamanho entra NO MESMO VALOR (decisão do Rafael). */
+  "ciclo-skate": {
+    titulo: "Rafael Razeira Estúdio, Vitrine Digital Ciclo Skate Shop",
+    whatsapp: "5544991246187",
+    itens: {
+      avista_pix: { label: "Vitrine digital, à vista no Pix, no aceite", valor: 799, metodo: "pix" },
+      entrada_pix: { label: "Entrada para início do projeto", valor: 199, metodo: "pix" },
+      saldo_pix: { label: "Saldo na entrega, no Pix", valor: 800, metodo: "pix" },
+      saldo_card: { label: "Saldo na entrega, no cartão em até 4x", valor: 800, metodo: "card", maxParcelas: 4 },
+    },
+  },
   /* A Minas fecha SEM ENTRADA: um pagamento só, no Pix, no dia da
      publicação. Não existe item de entrada nem de cartão aqui de
      propósito, senão um botão antigo continuaria cobrando R$ 199. */
