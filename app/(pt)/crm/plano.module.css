@@ -1,0 +1,355 @@
+/* ============================================================
+   PLANO (30/09/2026): o rumo do estúdio
+
+   A mesma mesa de papel do CRM (tinta, papel, filete e sombra dura), com
+   uma coisa própria: as quatro faixas do painel da G4. Elas são a única cor
+   forte da tela, porque é a cor que diz se o ano está indo:
+
+     bateu    esmeralda da casa      100% ou mais
+     perto    esmeralda clara        80 a 99%
+     atenção  âmbar                  60 a 79%
+     fora     rosa da casa           abaixo de 60%
+   ============================================================ */
+
+.tela { max-width: 1480px; margin: 0 auto; --f-bateu: #0C9159; --f-perto: #7CC39D; --f-atencao: #E3A21A; --f-fora: #E31B62 }
+.ocupado { opacity: .7; transition: opacity .15s }
+
+.cabeca {
+  display: grid; grid-template-columns: 1fr auto; gap: 10px 20px; align-items: end;
+  padding-bottom: 18px; border-bottom: 3px solid var(--ink); margin-bottom: 20px;
+}
+.cabeca h1 { font-size: clamp(34px, 5vw, 64px); line-height: .86 }
+.tela .cabeca .voz { margin: 8px 0 0 }
+.ponto { color: var(--rosa); font-style: normal }
+.anos { display: flex; gap: 6px; align-items: baseline; font: 700 13px var(--mono) }
+.anos a { color: var(--ink-fraco); padding: 4px 8px; border: 1.5px solid var(--line) }
+.anos a:hover { border-color: var(--ink); color: var(--ink) }
+.anos b { padding: 4px 8px; background: var(--ink); color: var(--paper) }
+
+.tela .rotulo { display: block; font: 700 13px var(--body); color: var(--ink-soft) }
+.tela .voz { font: 400 15.5px/1.55 var(--body); color: var(--ink-soft); max-width: 72ch; margin: 6px 0 16px }
+.num {
+  display: inline-grid; place-items: center; width: 1.15em; height: 1.15em; margin-right: 8px;
+  background: var(--ceu); color: #fff; font-style: normal; font-size: .78em; vertical-align: .1em;
+}
+.legenda { list-style: none; margin: -6px 0 12px; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12.5px; color: var(--ink-soft) }
+.legenda li::before { content: ""; display: inline-block; width: 11px; height: 11px; margin-right: 6px; background: var(--f); vertical-align: -1px }
+.tela .erro { background: #FDE7EF; border: 1.5px solid var(--rosa); color: var(--rosa-dark); padding: 10px 12px; margin-bottom: 16px; font-size: 14px }
+.aviso { border: 1.5px dashed var(--ink-fraco); padding: 18px; background: var(--paper-alto) }
+.aviso b { display: block; font: 900 18px var(--display); font-stretch: 88%; text-transform: uppercase; margin-bottom: 6px }
+.aviso code { font: 13px var(--mono); background: var(--paper-2, #ECE8DC); padding: 1px 5px }
+.vazio { border: 1.5px dashed var(--line); padding: 14px; font-size: 13.5px; color: var(--ink-soft) }
+
+.btn {
+  font: 700 12px var(--mono); letter-spacing: .08em; text-transform: uppercase;
+  background: var(--ink); color: var(--paper); border: 1.5px solid var(--ink); padding: 8px 12px; cursor: pointer;
+}
+.btn:hover { box-shadow: 3px 3px 0 var(--green) }
+.mini {
+  font: 700 10.5px var(--mono); letter-spacing: .08em; text-transform: uppercase;
+  background: none; color: var(--ink-soft); border: 1.5px solid var(--line); padding: 4px 8px; cursor: pointer;
+}
+.mini:hover { border-color: var(--ink); color: var(--ink) }
+
+/* ---------- as faixas ---------- */
+.fBateu { --f: var(--f-bateu) }
+.fPerto { --f: var(--f-perto) }
+.fAtencao { --f: var(--f-atencao) }
+.fFora { --f: var(--f-fora) }
+.fSem { --f: var(--line) }
+
+/* ============================================================
+   A SUBIDA: a montanha dos prêmios (a única peça com cor própria)
+
+   O céu cobalto e a neve são os da foto do Rafael nos Alpes, a mesma do
+   post "Prazer, sou o Rafael". Fora da montanha a tela volta ao papel e à
+   tinta do CRM: a cor mora num lugar só, e é ela que se lembra.
+   ============================================================ */
+.tela { --ceu: #2F58C4; --ceu-fundo: #5B80DA; --rocha: #1C2F5E; --neve: #F6F9FF; --pinho: #16453A; --sol: #F5B82E; --voce: #FF5C8D }
+
+.subida {
+  display: grid; grid-template-columns: minmax(260px, .85fr) minmax(0, 1.5fr);
+  background: linear-gradient(#2A4FBC, #5E86DE); color: #fff; border: 1.5px solid var(--ink); box-shadow: 5px 5px 0 var(--ink);
+  overflow: hidden;
+}
+.subidaTexto { padding: clamp(18px, 2.4vw, 30px); display: grid; align-content: center; gap: 12px }
+.tela .subidaAno { font: 700 13px var(--body); letter-spacing: .02em; color: #DCE6FF }
+.tela .subidaFrase { font: 900 clamp(30px, 3.4vw, 48px)/1 var(--display); font-stretch: 76%; color: #fff; text-wrap: balance }
+.tela .subidaApoio { font-size: 14px; line-height: 1.55; color: #E3EAFF; max-width: 46ch }
+.tela .subidaApoio b { color: #fff }
+
+.montanha { position: relative; min-height: 300px; align-self: stretch }
+.montanha svg { display: block; width: 100%; height: 100% }
+.serraLonge { fill: #7C9DE6; opacity: .55 }
+.serra { fill: #3F62BE }
+.faceLuz { fill: #33508F }
+.faceSombra { fill: #1B2B57 }
+.neve { fill: var(--neve) }
+.neveSombra { fill: #B6C6EE }
+.regua { stroke: rgba(255, 255, 255, .55); stroke-width: 1.5 }
+.guia { stroke: rgba(255, 255, 255, .35); stroke-width: 1.2; stroke-dasharray: 1 4; stroke-linecap: round }
+.marco { stroke: #fff; stroke-width: 2.4; stroke-linecap: round }
+.campoProximo .guia { stroke: var(--sol); stroke-width: 1.6; opacity: .9 }
+.campoProximo .marco { stroke: var(--sol); stroke-width: 3.5 }
+.campoFeito .guia { stroke: var(--green-live); opacity: .8 }
+.campoFeito .marco { stroke: var(--green-live); stroke-width: 3.5 }
+.mastroCume { stroke: #fff; stroke-width: 2 }
+.guiaVoce { stroke: var(--voce); stroke-width: 1.6; stroke-dasharray: 3 3 }
+.pinho { fill: var(--pinho) }
+.trilha { fill: none; stroke: #fff; stroke-width: 2.2; stroke-dasharray: 2 7; stroke-linecap: round; opacity: .85 }
+.pegada { fill: none; stroke: #fff; stroke-width: 2; opacity: .8 }
+.mastro { stroke: #fff; stroke-width: 2 }
+.bandeira { fill: #fff }
+.base { fill: #fff }
+.campoFeito .bandeira, .campoFeito .base { fill: var(--green-live) }
+.campoProximo .bandeira, .campoProximo .base { fill: var(--sol) }
+.campoLonge .bandeira, .campoLonge .base { fill: var(--ceu-fundo); stroke: #fff; stroke-width: 1.2 }
+.campoLonge .mastro { opacity: .7 }
+.cumeBandeira { fill: var(--sol); stroke: #fff; stroke-width: 2 }
+.voceHalo { fill: #fff; opacity: .9 }
+.voceBola { fill: var(--voce) }
+.voce { animation: sobe 1.4s cubic-bezier(.2, .8, .2, 1) both }
+@keyframes sobe { from { transform: translateY(var(--sobe)); opacity: .2 } to { transform: none; opacity: 1 } }
+@media (prefers-reduced-motion: reduce) { .voce { animation: none } }
+
+.marcoRotulo, .rotuloCume, .rotuloVoce { position: absolute; pointer-events: none }
+.marcoRotulo { transform: translateY(-50%); display: grid; gap: 1px; max-width: 26%; color: #fff; line-height: 1.15 }
+.marcoRotulo b { font: 800 14px/1.1 var(--display); font-stretch: 86% }
+.marcoRotulo span { font: 500 11.5px/1.25 var(--body); color: #D2DCFA }
+.marcoRotulo:not(.marcoFeito):not(.marcoProximo) { opacity: .78 }
+.marcoProximo b { color: var(--sol) }
+.marcoProximo span { color: #FFE7A8 }
+.marcoFeito b { color: var(--green-live) }
+.rotuloCume { transform: translate(-50%, -100%); font: 800 13px var(--display); font-stretch: 86%; color: #fff; white-space: nowrap }
+.rotuloVoce {
+  transform: translate(-100%, -50%); font: 700 12px var(--body); background: var(--voce); color: #fff;
+  padding: 3px 8px; white-space: nowrap;
+}
+.camposLista { display: none }
+
+/* ---------- o placar em linha, logo abaixo da montanha ---------- */
+.placar {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) auto; align-items: center;
+  border: 1.5px solid var(--ink); border-top: 0; background: var(--paper-alto); margin-bottom: 26px;
+}
+.placar > div { padding: 12px 16px; display: flex; align-items: baseline; gap: 10px; border-right: 1px solid var(--line) }
+.placar > button { margin: 0 14px }
+.placarNum { font: 900 34px/1 var(--display); font-stretch: 72%; color: var(--ink) }
+.placarNum small { font-size: .5em; color: var(--ink-fraco) }
+.placar > div > span { font-size: 13px; color: var(--ink-soft); line-height: 1.3 }
+.placar > .fBateu .placarNum, .placar > .fAtencao .placarNum, .placar > .fFora .placarNum { color: var(--f) }
+.placar > .fPerto .placarNum { color: var(--green-dark) }
+.editaPremios { border: 1.5px solid var(--ink); border-top: 0; background: var(--paper-alto); padding: 14px 16px; margin: -26px 0 26px }
+
+/* ---------- o guia: o próximo passo e como funciona ---------- */
+.guia { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); gap: 18px; margin-bottom: 38px; align-items: start }
+.proximo { border: 1.5px solid var(--ink); box-shadow: 4px 4px 0 var(--sol); background: var(--paper-alto); padding: 14px 16px }
+.tela .proximoTitulo, .tela .comoTitulo { font: 800 18px var(--display); font-stretch: 85%; margin-bottom: 8px }
+.proximo ol { margin: 0; padding-left: 20px; display: grid; gap: 8px }
+.proximo li { font-size: 14px; line-height: 1.4 }
+.proximo li::marker { font: 700 13px var(--display); color: var(--ink-fraco) }
+.proximo li span { margin-right: 8px }
+.proximo li a { font-weight: 700; color: var(--ink); text-decoration: underline; text-decoration-color: var(--sol); text-decoration-thickness: 3px; text-underline-offset: 3px }
+.tela .proximoNada { font-size: 14px; color: var(--ink-soft) }
+.como ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1.5px solid var(--line) }
+.como li + li { border-left: 1.5px solid var(--line) }
+.como a { display: grid; align-content: start; gap: 4px; padding: 12px; height: 100%; color: var(--ink) }
+.como a:hover { background: var(--paper-alto) }
+.como a:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px }
+.como i { font: 900 26px/1 var(--display); font-style: normal; color: var(--ceu) }
+.como b { font: 800 15px var(--display); font-stretch: 88% }
+.como span { font-size: 12.5px; line-height: 1.4; color: var(--ink-soft) }
+.tela .comoPe { font-size: 13px; color: var(--ink-soft); margin-top: 8px }
+
+/* ---------- a escada de prêmios ---------- */
+.degraus { list-style: none; margin: 4px 0 6px; padding: 0; display: grid; gap: 8px }
+.degraus li { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 10px; align-items: start }
+.degrauMarca {
+  width: 26px; height: 26px; display: grid; place-items: center;
+  font: 800 12px var(--mono); border: 1.5px solid var(--line); color: var(--ink-fraco);
+}
+.degrauTexto { display: grid; gap: 3px; min-width: 0 }
+.degrauTexto b { font: 800 15px/1.15 var(--display); font-stretch: 88% }
+.degrauTexto em { font: 11px var(--mono); font-style: normal; color: var(--ink-fraco) }
+.degrauBarra { display: block; height: 6px; background: var(--line) }
+.degrauBarra i { display: block; height: 100%; background: var(--ink-fraco) }
+.degrauFeito .degrauMarca { background: var(--green); border-color: var(--green); color: #fff }
+.degrauFeito b { color: var(--green-dark) }
+.degrauFeito .degrauBarra i { background: var(--green) }
+.degrauProximo .degrauMarca { background: var(--ink); border-color: var(--ink); color: var(--paper) }
+.degrauProximo .degrauBarra { height: 8px }
+.degrauProximo .degrauBarra i { background: var(--f-atencao) }
+.degrauLonge { opacity: .55 }
+.tela .degrauVazio { font-size: 13px; color: var(--ink-soft) }
+.degrausForm { display: grid; gap: 8px; margin: 4px 0 }
+.degrauEdita { display: grid; grid-template-columns: minmax(0, 1fr) auto auto auto; gap: 8px; align-items: center; font: 11px var(--mono); color: var(--ink-fraco) }
+.degrauEdita input { font: 13px var(--body); padding: 5px 7px; border: 1.5px solid var(--line); background: var(--paper) }
+.degrauEdita label input { width: 6.5em; font: 700 12px var(--mono) }
+.degrauEdita label:last-of-type input { width: 3.2em }
+.degrausPe { display: flex; flex-wrap: wrap; gap: 8px; align-items: center }
+.premio > .mini { justify-self: start }
+
+/* ============================================================
+   OS ANDARES
+   ============================================================ */
+.andar { margin-bottom: 40px }
+.andar h2 { font-size: clamp(24px, 3vw, 34px) }
+.nota2 { font-size: 13.5px; color: var(--ink-soft); max-width: 78ch; margin: 6px 0 16px; line-height: 1.5 }
+.pesoOk { color: var(--green-dark); font-weight: 700 }
+.pesoFalta { color: var(--rosa-dark); font-weight: 700 }
+
+.campo { display: grid; gap: 6px }
+.campo textarea, .porque, .linhaForm input, .formMeta input, .formMeta select, .projecoes input, .horizonte input, .rmrValor {
+  font: 14px/1.45 var(--body); color: var(--ink); background: var(--paper-alto);
+  border: 1.5px solid var(--line); padding: 8px 10px; width: 100%;
+}
+.campo textarea:focus, .porque:focus, .linhaForm input:focus, .formMeta input:focus, .formMeta select:focus, .projecoes input:focus, .rmrValor:focus {
+  outline: none; border-color: var(--ink)
+}
+.campo textarea { resize: vertical; font-size: 16px }
+
+/* ---------- 2. o estratégico ---------- */
+.estrategico { display: grid; grid-template-columns: 1fr 1fr 1.1fr; gap: 18px; align-items: start }
+.visao { display: grid; gap: 8px }
+.horizonte { display: flex; align-items: center; gap: 8px }
+.horizonte .rotulo { display: inline }
+.horizonte input { width: 7em; font: 700 14px var(--mono) }
+.projecoes { display: grid; gap: 8px; justify-items: start }
+.projecoes table { border-collapse: collapse; width: 100% }
+.projecoes th { font: 600 12px var(--body); color: var(--ink-soft); text-align: left; padding: 0 6px 4px 0 }
+.projecoes td { padding: 2px 6px 2px 0; font: 700 13px var(--mono) }
+.projecoes input { padding: 5px 7px; font: 13px var(--mono) }
+
+/* ---------- 3. os projetos ---------- */
+.projetos { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 16px }
+.projeto {
+  display: grid; gap: 8px; align-content: start; padding: 14px;
+  background: var(--paper-alto); border: 1.5px solid var(--ink); box-shadow: 4px 4px 0 var(--ink);
+}
+.P1 { box-shadow: 6px 6px 0 var(--green) }
+.P3 { border-style: dashed; box-shadow: none }
+.pausado { opacity: .6 }
+.projetoCab { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 8px; align-items: center }
+.prio {
+  font: 900 15px var(--display); font-stretch: 80%; background: var(--ink); color: var(--paper);
+  border: 0; padding: 4px 6px; cursor: pointer;
+}
+.P1 .prio { background: var(--green) }
+.P3 .prio { background: var(--paper); color: var(--ink); outline: 1.5px solid var(--ink) }
+.projetoNome {
+  font: 800 18px/1.15 var(--display); font-stretch: 85%; border: 0; border-bottom: 1.5px dashed transparent;
+  background: none; padding: 2px 0; width: 100%; color: var(--ink);
+}
+.projetoNome:hover { border-bottom-color: var(--line) }
+.projetoNome:focus { outline: none; border-bottom-color: var(--ink) }
+.notaMini { font: 700 12px var(--mono); padding: 2px 6px; border: 1.5px solid var(--f); color: var(--ink) }
+.porque { font-size: 13.5px; resize: vertical }
+.projetoPe { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font: 11px var(--mono); color: var(--ink-fraco) }
+.projetoPe select { font: 11px var(--mono); padding: 2px 4px; border: 1px solid var(--line); background: var(--paper) }
+.qtd { margin-right: auto }
+.novoProjeto { display: grid; align-content: center; border: 1.5px dashed var(--ink-fraco); padding: 14px }
+.linhaForm { display: flex; flex-wrap: wrap; gap: 8px }
+.linhaForm input { flex: 1 1 200px }
+
+.naos { margin-top: 18px; border-top: 1px solid var(--line); padding-top: 12px }
+.naos ul { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 6px }
+.naos li { display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; font-size: 14px }
+.naos s { font-weight: 700; color: var(--ink-fraco) }
+.naos em { font-size: 13px; color: var(--ink-soft) }
+
+/* ---------- 4. o painel de metas ---------- */
+.painel {
+  --cols: minmax(220px, 2.4fr) 62px repeat(12, minmax(34px, 1fr)) 58px;
+  border: 1.5px solid var(--ink); background: var(--paper-alto); overflow-x: auto;
+}
+.painelCab, .meta { display: grid; grid-template-columns: var(--cols); gap: 3px; align-items: center; min-width: 860px }
+.painelCab { padding: 8px 12px; border-bottom: 1.5px solid var(--ink); font: 700 12px var(--body); color: var(--ink-soft) }
+.painelCab span { text-align: center }
+.painelCab span:first-child { text-align: left }
+.mesAtual { color: var(--ink); text-decoration: underline 2px }
+.grupo { border-bottom: 1px solid var(--line); padding: 8px 12px 10px; min-width: 860px }
+.grupoCab { font: 800 15px var(--display); font-stretch: 88%; margin-bottom: 6px }
+.grupoCab b { background: var(--ink); color: var(--paper); padding: 1px 5px; margin-right: 4px }
+.grupoCab em { font: 11px var(--mono); text-transform: none; color: var(--ink-fraco) }
+.meta { padding: 5px 0; min-width: 0 }
+.meta + .meta { border-top: 1px dotted var(--line) }
+.metaNome { display: grid; gap: 1px; min-width: 0 }
+.metaTitulo { all: unset; cursor: pointer; font-size: 14px; font-weight: 600; color: var(--ink); overflow-wrap: anywhere }
+.metaTitulo:hover { text-decoration: underline }
+.metaAlvo { font: 11px var(--mono); color: var(--ink-fraco) }
+.metaAlvo i { font-style: normal; color: var(--green-dark) }
+.peso { width: 100%; font: 700 12px var(--mono); padding: 4px 2px; border: 1px solid var(--line); background: var(--paper); text-align: center }
+.celula {
+  height: 30px; display: grid; place-items: center; font: 700 10.5px var(--mono);
+  background: color-mix(in srgb, var(--f) 22%, transparent); border-bottom: 3px solid var(--f); color: var(--ink);
+}
+.celula.fSem { background: transparent; border-bottom-color: var(--line) }
+.futuro { height: 30px; background: repeating-linear-gradient(-45deg, transparent 0 5px, var(--line) 5px 6px); opacity: .5 }
+.noAno { font: 800 14px var(--mono); text-align: center; color: var(--ink); border: 2px solid var(--f); padding: 4px 0 }
+.addMeta { all: unset; cursor: pointer; font: 700 11px var(--mono); color: var(--ink-fraco); padding: 6px 0 0 }
+.addMeta:hover { color: var(--ink); text-decoration: underline }
+.formMeta {
+  grid-column: 1 / -1; display: grid; gap: 6px; align-items: center; margin: 8px 0 4px; padding: 10px;
+  grid-template-columns: minmax(180px, 2fr) minmax(150px, 1.4fr) 90px 70px 100px 64px auto auto;
+  background: var(--paper); border: 1.5px solid var(--ink);
+}
+.formMeta input, .formMeta select { padding: 6px 7px; font-size: 13px }
+
+/* ---------- 5. a RMR ---------- */
+.trocaMes select { font: 700 12px var(--mono); padding: 2px 4px; border: 1px solid var(--line); background: var(--paper) }
+.rmr { list-style: none; margin: 0 0 16px; padding: 0; border: 1.5px solid var(--ink); background: var(--paper-alto) }
+.rmrLinha { display: grid; grid-template-columns: 14px minmax(0, 1fr) 160px 64px; gap: 12px; align-items: center; padding: 10px 14px }
+.rmrLinha + .rmrLinha { border-top: 1px solid var(--line) }
+.bolinha { width: 12px; height: 12px; border-radius: 50%; background: var(--f) }
+.rmrMeta { display: grid; gap: 2px; min-width: 0 }
+.rmrMeta b { font-size: 14.5px }
+.rmrMeta em { font: 11px var(--mono); font-style: normal; color: var(--ink-fraco) }
+.rmrValor { font: 700 14px var(--mono); padding: 6px 8px }
+.rmrAuto { font: 700 14px var(--mono); display: grid }
+.rmrAuto i { font: 12px var(--body); font-style: normal; color: var(--green-dark) }
+.rmrPct { font: 800 15px var(--mono); text-align: center; border: 2px solid var(--f); padding: 4px 0 }
+.fechar { display: grid; grid-template-columns: 1fr 1fr; gap: 14px }
+.fecharPe { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; font-size: 13.5px }
+.tela .fechada { grid-column: 1 / -1; font: 12px var(--mono); color: var(--green-dark) }
+.historico { margin-top: 22px }
+.historico ul { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 6px }
+.historico li { display: grid; grid-template-columns: 90px 58px minmax(0, 1fr); gap: 10px; align-items: baseline; font-size: 13.5px }
+.historico em { font-style: normal; color: var(--ink-soft) }
+
+/* ============================================================
+   CELULAR
+   ============================================================ */
+@media (max-width: 1100px) {
+  .subida { grid-template-columns: 1fr }
+  .montanha { min-height: 0; aspect-ratio: 640 / 400 }
+  .guia { grid-template-columns: 1fr }
+  .placar { grid-template-columns: 1fr 1fr }
+  .degrauEdita { grid-template-columns: 1fr 1fr }
+  .degrauEdita input:first-child { grid-column: 1 / -1 }
+  .placar > button { margin: 10px 16px }
+  .estrategico { grid-template-columns: 1fr }
+  .formMeta { grid-template-columns: 1fr 1fr }
+  .formMeta input[name="titulo"] { grid-column: 1 / -1 }
+}
+@media (max-width: 560px) {
+  .cabeca { grid-template-columns: 1fr }
+  .anos { justify-content: flex-start }
+  .placar { grid-template-columns: 1fr }
+  .placar > div { border-right: 0; border-bottom: 1px solid var(--line) }
+  .como ol { grid-template-columns: 1fr 1fr }
+  .como li:nth-child(3) { border-left: 0 }
+  .como li:nth-child(n+3) { border-top: 1.5px solid var(--line) }
+  .marcoRotulo, .rotuloCume { display: none }
+  .camposLista { display: grid; gap: 6px; margin: 0; padding: 12px 16px 16px; list-style: none; background: var(--rocha) }
+  .camposLista li { display: grid; gap: 1px; padding: 6px 10px; background: rgba(255, 255, 255, .08); color: #fff }
+  .camposLista b { font: 800 14px var(--display); font-stretch: 88% }
+  .camposLista span { font-size: 12.5px; color: #D6E0FF }
+  .camposLista .rotuloFeito { background: var(--green-dark) }
+  .camposLista .rotuloProximo { background: var(--sol); color: var(--ink) }
+  .camposLista .rotuloProximo span { color: var(--ink-soft) }
+  .rmrLinha { grid-template-columns: 14px minmax(0, 1fr) 64px }
+  .rmrValor, .rmrAuto { grid-column: 2 / -1 }
+  .fechar { grid-template-columns: 1fr }
+  .historico li { grid-template-columns: 80px 52px }
+  .historico em { grid-column: 1 / -1 }
+}

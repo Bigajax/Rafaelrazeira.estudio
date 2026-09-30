@@ -2639,14 +2639,28 @@
     z-index: 60; box-shadow: 0 -2px 0 var(--line-dark);
     padding-bottom: env(safe-area-inset-bottom);
   }
-  .trilhoMarca, .trilhoPe { display: none }
+  /* `.app` na frente pela quarta vez da mesma armadilha: o `.app
+     .trilhoMarca { display: block }` do computador vencia este `none`, a
+     placa da marca ficava na barra e empurrava as rotas para fora da tela
+     (visto em 30/09, ao entrar a sétima rota). */
+  .app .trilhoMarca, .trilhoPe { display: none }
   /* O trilho de pé não existe deitado: uma linha vertical na ponta esquerda
      de uma barra horizontal não é trilho, é sujeira. A estação some junto,
      e quem marca a rota aqui volta a ser o filete de cima. */
   .trilhoLista::before { display: none }
   .app .trilhoAtivo::before { display: none }
-  .trilhoLista { flex-direction: row; flex: 1 }
-  .trilhoLista li { flex: 1; min-width: 0 }
+  /* ---------- a nona rota (30/09) ----------
+     Com o Plano, cada célula caía para 43px e "Templates" não cabe em 43px:
+     a barra transbordava pelos dois lados. Espremer mais não resolve (a
+     próxima rota quebraria de novo), então a barra DESLIZA de lado: cada
+     rota tem a largura do nome, e o Trilho centraliza a rota atual ao
+     abrir. A página continua sem rolagem horizontal; só a barra rola. */
+  .trilhoLista {
+    flex-direction: row; flex: 1; min-width: 0;
+    overflow-x: auto; scrollbar-width: none; overscroll-behavior-x: contain;
+  }
+  .trilhoLista::-webkit-scrollbar { display: none }
+  .trilhoLista li { flex: 1 0 auto; min-width: 72px }
   .trilhoLink {
     text-align: center; padding: 11px 4px;
     border-top: 3px solid transparent;
@@ -3420,6 +3434,10 @@
 .app .trilho .trilhoSair { font: 600 11.5px var(--body); letter-spacing: 0; text-transform: none }
 
 @media (max-width: 860px) {
-  .trilho .trilhoLink b { font-size: 12px; font-stretch: 106% }
-  .trilho .trilhoCont, .trilho .trilhoCobra { font-size: 12px }
+  /* O recuo de 40px do trilho de pé vazava para a barra deitada, e com a
+     sétima rota (Marketing, 30/09) cada uma tem ~55px em 390: a largura
+     encolhe para a condensada e o recuo some. */
+  .trilho .trilhoLink { padding: 11px 2px }
+  .trilho .trilhoLink b { font-size: 11px; font-stretch: 84%; gap: 3px }
+  .trilho .trilhoCont, .trilho .trilhoCobra { font-size: 11px }
 }

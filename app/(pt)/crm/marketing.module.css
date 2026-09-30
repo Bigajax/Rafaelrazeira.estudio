@@ -1,0 +1,534 @@
+/* ============================================================
+   MARKETING — a aba do time, na gramática do CRM
+
+   Nenhum token novo: tudo sai do `.app` do crm.module.css (papel, tinta,
+   três verdes, rosa de ação). A ousadia desta tela mora num lugar só, o
+   calendário, que mostra a CAPA real de cada peça no dia dela. O resto é
+   ferramenta quieta.
+
+   Os estados da peça seguem a marca de margem do CRM, agora como moldura
+   da capinha:
+     tracejado ... rascunho (o tracejado da casa é ausência: falta fazer)
+     verde ....... pronta, esperando o dia
+     tinta ....... postada, e a capinha apaga um tom
+     rosa ........ atrasada: o dia passou e ela não saiu do rascunho
+   ============================================================ */
+
+.tela { max-width: 1480px; margin: 0 auto }
+.tela .ocupado { opacity: .6; pointer-events: none; transition: opacity .15s }
+
+/* ---------- o cabeçalho ---------- */
+.tela .cabeca {
+  display: grid; grid-template-columns: 1fr auto; gap: 10px 20px; align-items: end;
+  padding-bottom: 18px; border-bottom: 3px solid var(--ink); margin-bottom: 20px;
+}
+.tela .cabeca h1 { font-size: clamp(34px, 5vw, 64px); line-height: .86 }
+.tela .placar { font: 12px var(--mono); letter-spacing: .06em; color: var(--ink-fraco); margin-top: 8px }
+.tela .meses { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end }
+.tela .meses a { text-transform: lowercase }
+
+/* O batimento do worker: um ponto e uma frase. Apagado = dormindo. */
+.tela .sinal {
+  grid-column: 1 / -1;
+  display: flex; align-items: baseline; gap: 10px;
+  font-size: 13px; color: var(--ink-soft);
+}
+.tela .sinal i { flex: none; width: 9px; height: 9px; background: var(--line); border: 1.5px solid var(--ink-fraco); transform: translateY(1px) }
+.tela .sinalVivo i { background: var(--green); border-color: var(--green-dark) }
+.tela .sinal code, .tela .timeDorme code {
+  font: 12px var(--mono); background: var(--paper-2); padding: 2px 6px; color: var(--ink); white-space: nowrap;
+}
+
+/* ============================================================
+   O CALENDÁRIO
+   ============================================================ */
+.tela .calendario { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 22px; align-items: start }
+
+.tela .grade {
+  display: grid; grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 1px; background: var(--line); border: 1px solid var(--line);
+}
+.tela .semanaNome {
+  background: var(--paper); padding: 8px 10px;
+  font: 700 10.5px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-fraco);
+}
+.tela .dia {
+  position: relative; background: var(--paper-alto);
+  min-height: 168px; padding: 8px 8px 10px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.tela .diaFora { background: var(--paper); }
+.tela .diaFora .diaCab b { color: var(--line) }
+.tela .diaPassado .diaCab b { color: var(--ink-fraco) }
+.tela .diaHoje { box-shadow: inset 0 3px 0 var(--ink) }
+.tela .diaHoje .diaCab b { background: var(--ink); color: var(--paper); padding: 1px 6px }
+.tela .diaAlvo { background: #E4F3EA; box-shadow: inset 0 0 0 2px var(--green) }
+.tela .diaEscolhendo { cursor: copy }
+@media (hover: hover) and (pointer: fine) {
+  .tela .diaEscolhendo:hover { background: #E4F3EA }
+}
+
+.tela .diaCab { display: flex; align-items: center; gap: 6px; min-height: 22px }
+.tela .diaCab b { font: 800 15px var(--display); font-stretch: 78% }
+.tela .diaSemana { display: none; font: 10.5px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-fraco) }
+.tela .diaMais {
+  margin-left: auto; width: 24px; height: 24px; padding: 0;
+  background: none; border: 1.5px solid transparent; color: var(--ink-fraco);
+  font: 700 16px/1 var(--mono); cursor: pointer; opacity: 0;
+}
+.tela .dia:hover .diaMais, .tela .diaMais:focus-visible { opacity: 1; border-color: var(--line) }
+@media (hover: none) { .tela .diaMais { opacity: 1 } }
+.tela .diaMais:hover { border-color: var(--ink); color: var(--ink) }
+
+.tela .diaPecas { display: flex; flex-wrap: wrap; gap: 6px }
+
+/* ---------- a capinha: a capa real, reduzida ---------- */
+.tela .capinha {
+  position: relative; display: block; flex: none;
+  outline: 2px dashed var(--ink-fraco); outline-offset: 2px;
+  cursor: grab; transition: transform .1s ease;
+}
+.tela .capinha:active { cursor: grabbing }
+@media (hover: hover) and (pointer: fine) {
+  .tela .capinha:hover { transform: translate(-2px, -2px); box-shadow: 3px 3px 0 var(--ink) }
+}
+.tela .estPronta { outline: 3px solid var(--green) }
+.tela .estPostada { outline: 2px solid var(--ink); opacity: .55 }
+.tela .estAtrasada { outline: 3px solid var(--rosa) }
+.tela .capinhaCod {
+  position: absolute; left: 0; bottom: 0;
+  background: var(--ink); color: var(--paper);
+  font: 700 9.5px var(--mono); font-style: normal; letter-spacing: .08em; padding: 2px 4px;
+}
+
+/* ---------- a bandeja: o que espera data ---------- */
+.tela .bandeja {
+  position: sticky; top: 16px;
+  background: var(--paper-alto); border: 1.5px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  padding: 16px 16px 18px;
+  max-height: calc(100dvh - 32px); overflow-y: auto;
+}
+.tela .bandejaAlvo { box-shadow: 4px 4px 0 var(--green); border-color: var(--green) }
+.tela .bandeja h2 { display: flex; align-items: baseline; gap: 4px }
+.tela .cont { margin-left: auto; font: 700 12px var(--mono); color: var(--ink-fraco) }
+.tela .bandejaNota { font-size: 12.5px; margin-top: 6px }
+
+.tela .pautas { margin: 14px 0 12px; padding: 12px 0; border-block: 1px solid var(--line); display: grid; gap: 10px }
+.tela .pautasLinha { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 13px; color: var(--ink-soft) }
+.tela .pautasLinha select { width: auto; padding: 5px 24px 5px 8px; font-size: 12.5px }
+.tela .pautas button { justify-self: start }
+
+.tela .bandejaVazia { border: 1.5px dashed var(--line); padding: 14px; margin-top: 8px }
+.tela .bandejaVazia b { display: block; font: 900 14px var(--display); font-stretch: 88%; text-transform: uppercase; margin-bottom: 4px }
+.tela .bandejaVazia p { font-size: 12.5px }
+
+.tela .bandejaLista { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 14px }
+.tela .bandejaLista li { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 12px; align-items: start }
+.tela .pegando .bandejaTexto button { background: var(--ink); color: var(--paper); border-color: var(--ink) }
+.tela .bandejaTexto { display: grid; gap: 5px; justify-items: start; min-width: 0 }
+.tela .bandejaCod { font: 10.5px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-fraco) }
+.tela .bandejaCod b { color: var(--ink) }
+.tela .bandejaGancho { font-size: 13.5px; line-height: 1.35; color: var(--ink); overflow-wrap: anywhere }
+.tela .bandejaGancho:hover { text-decoration: underline }
+
+@media (max-width: 1180px) {
+  .tela .calendario { grid-template-columns: minmax(0, 1fr) }
+  .tela .bandeja { position: static; max-height: none }
+}
+
+/* No celular a grade vira agenda: um dia por linha, e só os dias que têm
+   peça (mais o hoje). Sete colunas de 44px não mostram capa nenhuma. */
+@media (max-width: 760px) {
+  .tela .cabeca { grid-template-columns: minmax(0, 1fr) }
+  .tela .meses { justify-content: flex-start }
+  .tela .grade { display: grid; grid-template-columns: minmax(0, 1fr) }
+  .tela .semanaNome, .tela .diaFora, .tela .diaVazio:not(.diaHoje) { display: none }
+  .tela .dia { min-height: 0; flex-direction: row; align-items: flex-start; gap: 14px; padding: 12px }
+  .tela .diaCab { flex-direction: column; align-items: flex-start; width: 42px; flex: none }
+  .tela .diaSemana { display: block }
+  .tela .diaMais { margin-left: 0; opacity: 1 }
+  .tela .diaEscolhendo.diaVazio { display: flex }
+}
+
+/* ============================================================
+   A PEÇA
+   ============================================================ */
+.tela .pecaCab { padding-bottom: 16px; border-bottom: 3px solid var(--ink); margin-bottom: 22px }
+.tela .voltar {
+  display: inline-block; margin-bottom: 10px;
+  font: 700 10.5px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft);
+}
+.tela .voltar::before { content: "‹ " }
+.tela .voltar:hover { color: var(--ink) }
+.tela .pecaCab h1 { font-size: clamp(26px, 3.6vw, 44px); max-width: 26ch; overflow-wrap: anywhere }
+.tela .pecaMeta { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; margin-top: 16px }
+.tela .metaItem { display: flex; align-items: center; gap: 8px; font: 700 10.5px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft) }
+.tela .metaItem input { width: auto; padding: 6px 8px; font-size: 12px }
+
+.tela .estados { display: flex; border: 1.5px solid var(--ink) }
+.tela .estado {
+  background: none; border: 0; border-left: 1.5px solid var(--ink); cursor: pointer;
+  font: 700 10.5px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft);
+  padding: 7px 11px;
+}
+.tela .estado:first-child { border-left: 0 }
+.tela .estadoAtivo { background: var(--ink); color: var(--paper) }
+
+.tela .pecaCorpo { display: grid; grid-template-columns: minmax(300px, 420px) minmax(0, 1fr); gap: clamp(20px, 3vw, 40px); align-items: start }
+@media (max-width: 1000px) { .tela .pecaCorpo { grid-template-columns: minmax(0, 1fr) } }
+.tela .coluna { min-width: 0 }
+
+/* ---------- o time ---------- */
+.tela .time { border: 1.5px solid var(--ink); background: var(--paper-alto); box-shadow: 4px 4px 0 var(--ink); margin: 6px 0 22px }
+.tela .timeCab { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 14px; border-bottom: 1.5px solid var(--ink) }
+.tela .timeDorme, .tela .timeRodando, .tela .timeErro { font-size: 12.5px; padding: 10px 14px; border-bottom: 1px solid var(--line) }
+.tela .timeRodando { color: var(--green-dark); font-weight: 600 }
+.tela .timeErro { color: var(--rosa-dark) }
+
+/* Numerado porque É sequência: a copy precisa da pauta, a arte da copy. */
+.tela .agentes { list-style: none; margin: 0; padding: 0; counter-reset: ag }
+.tela .agentes > li { counter-increment: ag; padding: 12px 14px; border-top: 1px solid var(--line) }
+.tela .agentes > li:first-child { border-top: 0 }
+.tela .agenteRodando { background: #E4F3EA; box-shadow: inset 3px 0 0 var(--green) }
+.tela .agenteLinha { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: baseline; gap: 10px }
+.tela .agenteLinha::before { content: counter(ag); font: 700 11px var(--mono); color: var(--ink-fraco); grid-row: 1; margin-right: -4px }
+.tela .agenteLinha { grid-template-columns: 12px auto minmax(0, 1fr) auto }
+.tela .agenteLinha b { font: 900 15px var(--display); font-stretch: 88%; text-transform: uppercase }
+.tela .agenteLinha span { font-size: 12.5px; color: var(--ink-soft) }
+.tela .agenteNota { margin: 8px 0 0 22px }
+.tela .agenteNota summary { cursor: pointer; font: 700 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft) }
+.tela .agenteNota p { font-size: 12.5px; margin-top: 6px; white-space: pre-wrap }
+
+.tela .ganchos { display: grid; gap: 6px; margin: 10px 0 0 22px }
+.tela .gancho {
+  text-align: left; background: var(--paper); border: 1.5px solid var(--line); cursor: pointer;
+  font-size: 13px; line-height: 1.35; padding: 8px 10px; color: var(--ink);
+}
+.tela .gancho:hover { border-color: var(--ink) }
+.tela .ganchoAtivo { border-color: var(--ink); box-shadow: 3px 3px 0 var(--ink); background: var(--paper-alto) }
+
+.tela .veredito { margin: 10px 0 0 22px; padding: 10px 12px; border-left: 4px solid var(--line); background: var(--paper) }
+.tela .veredito b { font: 700 11px var(--mono); letter-spacing: .1em; text-transform: uppercase }
+.tela .veredito ul { margin: 6px 0 0; padding-left: 16px; font-size: 12.5px; color: var(--ink-soft) }
+.tela .verAPPROVE { border-left-color: var(--green) }
+.tela .verAPPROVE b { color: var(--green-dark) }
+.tela .verCONDITIONAL { border-left-color: var(--ink) }
+.tela .verREJECT { border-left-color: var(--rosa) }
+.tela .verREJECT b { color: var(--rosa-dark) }
+
+.tela .rotComAcao { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 5px }
+.tela .rotComAcao > span { margin: 0 }
+.tela .apagar { margin-top: 26px; padding-top: 14px; border-top: 1px solid var(--line) }
+
+/* ---------- a mesa ---------- */
+.tela .mesa { min-width: 0 }
+.tela .fundoBloco {
+  position: relative;
+  display: grid; grid-template-columns: minmax(0, 1fr) 190px; gap: 16px;
+  padding-bottom: 20px; border-bottom: 1px solid var(--line); margin-bottom: 18px;
+}
+@media (max-width: 560px) { .tela .fundoBloco { grid-template-columns: minmax(0, 1fr) } }
+.tela .fundoTexto textarea { font-size: 13px; width: 100% }
+.tela .fundoAcoes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px }
+.tela .desligado { opacity: .4; pointer-events: none }
+
+.tela .soltar {
+  display: flex; align-items: flex-end; justify-content: center;
+  aspect-ratio: 4 / 5; cursor: pointer;
+  border: 2px dashed var(--ink-fraco); background: var(--paper-2) center / cover no-repeat;
+  padding: 12px; text-align: center;
+  font: 700 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft);
+}
+.tela .soltar:hover { border-color: var(--ink) }
+.tela .soltarCheio { border: 2px solid var(--ink); box-shadow: 4px 4px 0 var(--ink) }
+.tela .soltarCheio span { background: var(--ink); color: var(--paper); padding: 5px 8px }
+.tela .escondido { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none }
+.tela .fundoColuna { display: grid; gap: 8px; align-content: start; justify-items: end }
+.tela .fundoColuna .soltar { width: 100% }
+
+.tela .mesaCab { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px }
+.tela .medida { margin-left: 10px; font: 11px var(--mono); letter-spacing: .08em; color: var(--ink-fraco); text-transform: none }
+
+.tela .mesaVazia { border: 1.5px dashed var(--line); background: var(--paper-alto); padding: 22px }
+.tela .mesaVazia b { display: block; font: 900 15px var(--display); font-stretch: 88%; text-transform: uppercase; margin-bottom: 6px }
+.tela .mesaVazia p { font-size: 13px }
+
+/* A tira de contato: os slides lado a lado, rolando na horizontal, como
+   o carrossel vai ser lido. Cada um com os seus campos embaixo. */
+.tela .slides {
+  list-style: none; margin: 0; padding: 4px 4px 18px;
+  display: flex; gap: 22px; overflow-x: auto; scroll-snap-type: x proximity;
+}
+.tela .slide { flex: none; width: 300px; scroll-snap-align: start; display: grid; gap: 12px; align-content: start }
+.tela .slideArte { box-shadow: 4px 4px 0 var(--ink); outline: 1.5px solid var(--ink); overflow: hidden }
+.tela .slideCampos { display: grid; gap: 6px }
+.tela .slides .slideCampos input, .tela .slides .slideCampos textarea { font-size: 13px; padding: 7px 9px; min-height: 0 }
+.tela .slideTopo { display: flex; align-items: center; gap: 5px }
+.tela .slideTopo b { font: 700 12px var(--mono); margin-right: 2px }
+.tela .slideTopo select { flex: 1; min-width: 0; font-size: 12px; padding: 5px 22px 5px 7px }
+.tela .slideTopo button { padding: 4px 7px; min-width: 28px }
+.tela .slidePe { display: flex; gap: 6px }
+.tela .slidePe input { flex: 1; min-width: 0 }
+.tela .slideNovo { flex: none; align-self: start; padding-top: 12px }
+
+.tela .foraDaTela { position: fixed; left: -20000px; top: 0; pointer-events: none }
+
+/* ============================================================
+   O POST DE HOJE, NO PAINEL HOJE (30/09)
+   Compacto de propósito: a margem de cima do Hoje é da pergunta e do
+   "Anotar lead", e a plaquinha não pode empurrar a carta para baixo.
+   ============================================================ */
+.tela .postHoje { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px }
+.tela .postHojeItem { display: flex; align-items: center; gap: 10px }
+.tela .postHojeTexto { display: grid; gap: 5px }
+.tela .postHojeRot { font: 700 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft) }
+.tela .postHojeAcoes { display: flex; gap: 6px; flex-wrap: wrap }
+
+/* ============================================================
+   A PÁGINA DE CRIAÇÃO (v2, 30/09)
+
+   Uma mesa de diagramação em três colunas: a tira dos slides, o palco com
+   o slide grande, e o painel de controles. O palco é o protagonista: é o
+   único lugar da tela com o post em tamanho de leitura, e tudo em volta é
+   ferramenta quieta, na voz do CRM.
+   ============================================================ */
+.tela.criar { max-width: none }
+.tela .criarCab { padding-bottom: 14px; border-bottom: 3px solid var(--ink); margin-bottom: 18px }
+.tela .criarCab h1 { font-size: clamp(22px, 2.6vw, 34px); max-width: 40ch; overflow-wrap: anywhere }
+.tela .pilarSelo {
+  font: 700 10.5px var(--mono); letter-spacing: .12em; text-transform: uppercase;
+  background: var(--ink); color: var(--paper); padding: 6px 9px;
+}
+
+.tela .mesaCriar {
+  display: grid; grid-template-columns: 150px minmax(0, 1fr) 380px; gap: 22px; align-items: start;
+}
+@media (max-width: 1240px) { .tela .mesaCriar { grid-template-columns: 132px minmax(0, 1fr) 340px } }
+@media (max-width: 1000px) {
+  .tela .mesaCriar { grid-template-columns: minmax(0, 1fr) }
+  .tela .tira { position: static; max-height: none }
+  .tela .tira ol { flex-direction: row; overflow-x: auto }
+}
+
+/* ---------- a tira ---------- */
+.tela .tira { position: sticky; top: 16px; max-height: calc(100dvh - 32px); overflow-y: auto; padding: 4px 6px 12px 4px }
+.tela .tira ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px }
+.tela .tiraItem {
+  display: grid; grid-template-columns: 22px auto; gap: 6px; align-items: start;
+  background: none; border: 0; padding: 0; cursor: pointer; text-align: left;
+}
+.tela .tiraNum { font: 700 11px var(--mono); color: var(--ink-fraco); padding-top: 2px }
+.tela .tiraArte { display: block; overflow: hidden; outline: 1.5px solid var(--line); transition: outline-color .12s }
+.tela .tiraItem:hover .tiraArte { outline-color: var(--ink-fraco) }
+.tela .tiraAtivo .tiraArte { outline: 3px solid var(--ink); box-shadow: 4px 4px 0 var(--ink) }
+.tela .tiraAtivo .tiraNum { color: var(--ink) }
+.tela .tiraNovo { display: grid; gap: 5px; margin-top: 14px; padding-left: 28px }
+.tela .tiraNovo span { font: 700 10px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft) }
+.tela .tiraNovo select { font-size: 12px; padding: 6px 22px 6px 8px }
+
+/* ---------- o palco ---------- */
+.tela .palco { min-width: 0; display: flex; flex-direction: column; align-items: center; position: sticky; top: 16px }
+.tela .palcoArte { overflow: hidden; box-shadow: 6px 6px 0 var(--ink); outline: 1.5px solid var(--ink) }
+.tela .palcoPe { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 16px }
+@media (max-width: 1000px) { .tela .palco { position: static } }
+
+/* ---------- o painel ---------- */
+.tela .painel { background: var(--paper-alto); border: 1.5px solid var(--ink); box-shadow: 4px 4px 0 var(--ink) }
+.tela .abas { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1.5px solid var(--ink) }
+.tela .aba {
+  position: relative; background: none; border: 0; border-left: 1.5px solid var(--ink); cursor: pointer;
+  font: 700 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft);
+  padding: 12px 6px;
+}
+.tela .aba:first-child { border-left: 0 }
+.tela .abaAtiva { background: var(--ink); color: var(--paper) }
+.tela .abaVivo { position: absolute; top: 7px; right: 7px; width: 7px; height: 7px; background: var(--green) }
+.tela .painelCorpo { padding: 16px 16px 20px }
+.tela .painelCorpo .time { margin: 4px 0 18px; box-shadow: none }
+.tela .ajuda { font-size: 12.5px; color: var(--ink-fraco); margin: -4px 0 14px }
+.tela .timeNota { font-size: 12px; color: var(--ink-fraco); padding: 8px 14px; border-bottom: 1px solid var(--line) }
+
+.tela .segmento { display: flex; border: 1.5px solid var(--ink) }
+.tela .segmento button {
+  flex: 1; background: none; border: 0; border-left: 1.5px solid var(--ink); cursor: pointer;
+  font: 700 10px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft);
+  padding: 9px 6px;
+}
+.tela .segmento button:first-child { border-left: 0 }
+.tela .segmento .segAtivo { background: var(--ink); color: var(--paper) }
+
+.tela .lados { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px }
+.tela .ladoCampo { display: grid; gap: 6px; align-content: start }
+.tela .ladoCampo textarea { min-height: 64px; font-size: 12.5px }
+
+.tela .ajustes { border: 1px solid var(--line); padding: 10px 12px 12px; margin: 6px 0 14px; display: grid; gap: 10px }
+.tela .ajustes legend { padding: 0 4px }
+.tela .ajusteLinha { display: grid; grid-template-columns: 92px 1fr 42px; align-items: center; gap: 8px; font-size: 12.5px; color: var(--ink-soft) }
+.tela .ajusteLinha .segmento { grid-column: 2 / 4 }
+.tela .ajusteLinha b { font: 700 11px var(--mono); text-align: right; color: var(--ink) }
+.tela .ajusteLinha input[type="range"] { accent-color: var(--ink); width: 100% }
+.tela .ajustes > button { justify-self: start }
+
+.tela .slideAcoes { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 12px; border-top: 1px solid var(--line) }
+
+.tela .familias { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px }
+.tela .familia {
+  display: grid; grid-template-columns: 1fr; gap: 0; background: none; border: 1.5px solid var(--line);
+  padding: 0; cursor: pointer; text-align: left; position: relative;
+}
+.tela .familia i { display: block; height: 42px }
+.tela .familia b { position: absolute; top: 8px; right: 8px; width: 12px; height: 12px }
+.tela .familia span { font: 700 10px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); padding: 6px 7px }
+.tela .familiaAtiva { border-color: var(--ink); box-shadow: 3px 3px 0 var(--ink) }
+.tela .familiaAtiva span { color: var(--ink) }
+
+.tela .soltaBloco { display: grid; gap: 6px; justify-items: end; margin-bottom: 12px }
+.tela .soltaBloco .soltar { width: 100% }
+.tela .soltarLargo { aspect-ratio: 16 / 10 }
+
+/* ---------- as abas do Marketing: Calendário e Criar ---------- */
+.tela .abasMkt { display: flex; gap: 22px; margin-bottom: 14px }
+.tela .abasMkt a {
+  font: 700 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-fraco);
+  padding-bottom: 6px; border-bottom: 3px solid transparent;
+}
+.tela .abasMkt a:hover { color: var(--ink) }
+.tela .abasMkt .abaMktAtiva { color: var(--ink); border-bottom-color: var(--ink) }
+
+/* ============================================================
+   CRIAR: o pilar primeiro
+   Os cartões de pilar são o único lugar da tela que pede escolha; o
+   formulário embaixo é curto de propósito. O cartão de venda é o único
+   com a voz rosa, porque é o que tem cota.
+   ============================================================ */
+.tela .nova { display: grid; gap: 22px; max-width: 1100px }
+.tela .pilares { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px }
+@media (max-width: 900px) { .tela .pilares { grid-template-columns: repeat(2, minmax(0, 1fr)) } }
+.tela .pilarCartao {
+  display: grid; gap: 6px; align-content: start; text-align: left; cursor: pointer;
+  background: var(--paper-alto); border: 1.5px solid var(--line); padding: 14px 14px 16px; min-height: 118px;
+}
+.tela .pilarCartao b { font: 900 16px var(--display); font-stretch: 88%; text-transform: uppercase; color: var(--ink) }
+.tela .pilarCartao span { font-size: 12.5px; line-height: 1.4; color: var(--ink-soft) }
+.tela .pilarCartao em { font: 700 10px var(--mono); font-style: normal; letter-spacing: .1em; text-transform: uppercase; color: var(--rosa-dark); margin-top: 4px }
+.tela .pilarCartao:hover { border-color: var(--ink-fraco) }
+.tela .pilarAtivo { border-color: var(--ink); box-shadow: 4px 4px 0 var(--ink) }
+.tela .pilarVenda { border-style: dashed }
+.tela .novaForm { max-width: 680px; display: grid; gap: 4px }
+.tela .novaForm > button { justify-self: start; margin-top: 8px }
+.tela .esqueleto { font-size: 12.5px; color: var(--ink-soft); padding-top: 9px }
+.tela .check { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: var(--ink-soft); cursor: pointer }
+.tela .check input { margin-top: 3px; accent-color: var(--ink) }
+
+/* ---------- v3: a cor do slide e a direção da peça ---------- */
+.tela .cores { display: flex; flex-wrap: wrap; gap: 6px }
+.tela .corAmostra { position: relative; width: 34px; height: 34px; border: 1.5px solid var(--line); cursor: pointer; padding: 0 }
+.tela .corAmostra i { position: absolute; right: 3px; bottom: 3px; width: 10px; height: 10px }
+.tela .corAtiva { outline: 3px solid var(--ink); outline-offset: 2px }
+.tela .direcoes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px }
+.tela .direcaoCartao { display: grid; gap: 5px; text-align: left; background: var(--paper); border: 1.5px solid var(--line); padding: 10px; cursor: pointer }
+.tela .direcaoCartao b { font: 900 13px var(--display); font-stretch: 88%; text-transform: uppercase; color: var(--ink) }
+.tela .direcaoCartao > span:last-child { font-size: 11.5px; line-height: 1.35; color: var(--ink-soft) }
+.tela .direcaoCores { display: flex; height: 16px }
+.tela .direcaoCores i { flex: 1 }
+.tela .direcaoAtiva { border-color: var(--ink); box-shadow: 3px 3px 0 var(--ink) }
+
+/* o roteiro da imagem no Criar: é sequência, então é lista numerada */
+.tela .roteiro { margin: 6px 0 0; padding-left: 20px; font-size: 12.5px; line-height: 1.55; color: var(--ink-soft) }
+.tela .roteiro b { color: var(--ink); font-weight: 600 }
+
+/* ---------- v4: o papel da imagem e a série ---------- */
+.tela .papelBloco { border: 1.5px solid var(--ink); background: var(--paper); padding: 12px 12px 4px; margin: 4px 0 14px }
+.tela .extra { border-top: 1px solid var(--line); padding-top: 14px; margin-top: 6px }
+.tela .extra textarea { width: 100%; font-size: 13px }
+/* o lugar onde o Ctrl+V vai colar agora */
+.tela .soltarAtivo { border-color: var(--green); box-shadow: 0 0 0 3px #E4F3EA }
+
+/* a imagem própria do slide, dentro do bloco do papel */
+.tela .imagemSlide { border-top: 1px solid var(--line); padding: 12px 0 8px; margin-top: 4px; display: grid; gap: 6px }
+.tela .imagemSlide textarea { width: 100%; font-size: 13px }
+.tela .imagemSlide > button { justify-self: start }
+
+/* a amostra "automática" da cor do título e do destaque */
+.tela .corAuto { height: 34px; padding: 0 10px; border: 1.5px dashed var(--ink-fraco); background: var(--paper-alto); cursor: pointer; font: 700 10px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft) }
+
+/* outra versão da imagem do slide: o pedido de mudança para a Dora */
+.tela .outraVersao { border-top: 1px solid var(--line); padding: 12px 0 8px; display: grid; gap: 6px }
+.tela .outraVersao textarea { width: 100%; font-size: 13px; min-height: 0 }
+.tela .outraVersao > button { justify-self: start }
+
+/* ---------- o texto livre no editor (30/09) ---------- */
+.tela .palcoArte { position: relative }
+.tela .alca {
+  position: absolute; z-index: 5; min-height: 26%;
+  border: 2px dashed var(--green); background: rgba(12, 145, 89, .06);
+  cursor: move; touch-action: none;
+}
+.tela .alcaRot {
+  position: absolute; top: 4px; left: 4px; background: var(--green); color: #fff;
+  font: 700 9.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; padding: 3px 6px; pointer-events: none;
+}
+.tela .alcaBorda { position: absolute; top: 0; right: 0; width: 12px; height: 100%; cursor: ew-resize; background: var(--green); opacity: .7 }
+.tela .textoBloco { border: 1.5px solid var(--line); background: var(--paper); padding: 10px 12px 12px; margin: 2px 0 12px; display: grid; gap: 6px }
+
+/* ---------- a galeria de moldes (30/09) ---------- */
+.tela .moldesBloco { display: grid; gap: 6px; margin: 0 0 14px }
+.tela .moldesGrade { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; max-height: 360px; overflow-y: auto; padding: 2px }
+.tela .moldeItem { display: grid; gap: 4px; justify-items: center; padding: 4px 2px 6px; background: var(--paper); border: 1.5px solid var(--line); cursor: pointer; font: inherit; color: inherit }
+.tela .moldeItem:hover { border-color: var(--ink) }
+.tela .moldeItem:focus-visible { outline: 2px solid var(--green); outline-offset: 2px }
+.tela .moldeAtivo { border-color: var(--green); box-shadow: 0 0 0 2px var(--green) }
+.tela .moldeMini { display: block; overflow: hidden; pointer-events: none }
+.tela .moldeNome { font-size: 11px; line-height: 1.2; text-align: center }
+/* a composição que o molde acrescenta ao prompt (30/09) */
+.tela .composicao { font-size: 12px; line-height: 1.45; color: var(--ink-2, #555); background: var(--paper); border-left: 3px solid var(--green); padding: 7px 10px; margin: 6px 0 8px }
+.tela .composicao b { color: var(--ink); font-weight: 700 }
+
+/* ============================================================
+   A PRODUÇÃO (30/09): o que falta em cada peça
+   ============================================================ */
+.tela .prodColunas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; align-items: start }
+.tela .prodColuna {
+  background: var(--paper-alto); border: 1.5px solid var(--ink); box-shadow: 4px 4px 0 var(--ink);
+  padding: 16px 16px 18px;
+}
+.tela .prodColuna h2 { display: flex; align-items: baseline; gap: 4px }
+.tela .prodLista { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 16px }
+.tela .prodCartao {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: start;
+  padding-top: 14px; border-top: 1px solid var(--line);
+}
+.tela .prodCartao:first-child { padding-top: 0; border-top: 0 }
+.tela .prodCapa { display: block; outline: 1.5px solid var(--line); outline-offset: 2px }
+@media (hover: hover) and (pointer: fine) {
+  .tela .prodCapa:hover { outline-color: var(--ink) }
+}
+.tela .prodTexto { display: grid; gap: 6px; min-width: 0 }
+.tela .prodMeta { font: 10.5px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-fraco) }
+.tela .prodMeta b { color: var(--ink) }
+.tela .prodAtrasada { color: var(--rosa); font-weight: 700 }
+.tela .prodGancho { font-size: 13.5px; line-height: 1.35; color: var(--ink); overflow-wrap: anywhere }
+.tela .prodGancho:hover { text-decoration: underline }
+.tela .prodTime {
+  justify-self: start; font: 700 10.5px var(--mono); letter-spacing: .06em;
+  background: var(--green); color: #fff; padding: 2px 6px;
+}
+.tela .prodBarra { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; margin-top: 2px }
+.tela .prodBarra i { height: 5px; background: var(--line) }
+.tela .prodBarra .prodBarraFeita { background: var(--green) }
+.tela .prodPassos { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; font-size: 12.5px }
+.tela .prodPassos em { font-style: normal; color: var(--ink-fraco); margin-left: 6px; font-size: 12px }
+.tela .prodFeito { color: var(--ink-soft) }
+.tela .prodFeito span { color: var(--green-dark); font-weight: 700 }
+.tela .prodFalta { color: var(--ink); font-weight: 600 }
+.tela .prodFalta span { color: var(--ink-fraco) }
+.tela .prodFalta em { font-weight: 400 }
+
+@media (max-width: 1180px) {
+  .tela .prodColunas { grid-template-columns: minmax(0, 1fr) }
+}
+.tela .prodFila {
+  justify-self: start; font: 700 10.5px var(--mono); letter-spacing: .06em;
+  border: 1.5px solid var(--ink-fraco); color: var(--ink-soft); padding: 1px 6px;
+}

@@ -25,6 +25,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { apagarLoja, marcarPronta } from "@/app/(pt)/crm/acoes-producao";
+import { VirarPost } from "@/components/marketing/VirarPost";
 import s from "@/app/(pt)/crm/crm.module.css";
 import p from "@/app/(pt)/crm/producao.module.css";
 import type { Ativo, Loja, Produto, VersaoPrompt } from "@/lib/producao/tipos";
@@ -158,6 +159,9 @@ export function FichaLoja({
               mesmo jeito que uma fala de cliente entra num documento. É
               dela que sai o tom que o prompt vai pedir ao gerador. */}
           {loja.bio && <blockquote className={p.bio}>{loja.bio}</blockquote>}
+          {/* A loja com catálogo lido é insumo de post F2 (Entrega com
+              número): o botão leva a pauta pronta para o Marketing. */}
+          {produtos.length ? <VirarPost lojaId={loja.id} /> : null}
           {/* ---------- o link da bio, e o número que a vitrine inteira usa ----------
               Quando o link da bio é um wa.me (o caso mais comum em loja que
               vende no direct), ele não é "o site": é O WHATSAPP DA LOJA, o

@@ -12,6 +12,7 @@
 
    USO
      node scripts/material-cliente.mjs fulltime
+     node scripts/material-cliente.mjs japa-modas   (a chave do link /checklist/<chave>)
      node scripts/material-cliente.mjs fulltime --destino "C:/outra/pasta"
 
    Sem --destino, vai para ~/Desktop/<loja>/_material (a pasta da vitrine),
@@ -82,10 +83,23 @@ const d = await r.json();
 mkdirSync(destino, { recursive: true });
 writeFileSync(join(destino, "respostas.json"), JSON.stringify(d, null, 2));
 
-const pecas = pecasDoChecklist();
+/* os checklists criados pelo CRM guardam as peças na config do cofre; os
+   feitos à mão (Full Time), dentro da própria página */
+const cfg = await fetch(`${URL_}/storage/v1/object/material/${loja}/config.json`, { headers: cab });
+const pecas = cfg.ok ? (await cfg.json()).pecas || [] : pecasDoChecklist();
 const nomeDe = {};
 for (const p of pecas) nomeDe[p.id] = p.nome;
-for (const n of d.novas || []) nomeDe[n.id] = `NOVA ${n.nome || "sem nome"}`;
+/* duas peças novas com o mesmo nome (a calça cargo cinza e a preta da Full
+   Time, 30/09) cairiam na mesma pasta: a cor entra no nome, e se ainda
+   bater, um número */
+const usados = new Set();
+for (const n of d.novas || []) {
+  let nome = `NOVA ${(n.nome || "sem nome").trim()}`;
+  if ([...usados].some((u) => pasta(u) === pasta(nome)) && (n.cores || []).length) nome += ` ${n.cores.join(" ")}`;
+  for (let k = 2; [...usados].some((u) => pasta(u) === pasta(nome)); k++) nome = `${nome} ${k}`;
+  usados.add(nome);
+  nomeDe[n.id] = nome;
+}
 nomeDe.logos = "logos das marcas";
 
 /* ---------- as fotos ---------- */

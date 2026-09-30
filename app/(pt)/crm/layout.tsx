@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Archivo, Inter, JetBrains_Mono } from "next/font/google";
+import { Archivo, Instrument_Serif, Inter, JetBrains_Mono } from "next/font/google";
 import s from "./crm.module.css";
 
 /* As mesmas três vozes da /vitrine-digital e do /portfolio, e é essa a razão
@@ -8,6 +8,9 @@ import s from "./crm.module.css";
 const display = Archivo({ subsets: ["latin"], axes: ["wdth"], variable: "--font-display" });
 const body = Inter({ subsets: ["latin"], variable: "--font-body" });
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
+/* A serifa leve é a primeira voz do título dos posts do Marketing (a
+   segunda é a Archivo condensada). Só os posts usam; a ferramenta não. */
+const serif = Instrument_Serif({ subsets: ["latin"], weight: "400", style: ["normal", "italic"], variable: "--font-serif" });
 
 export const metadata: Metadata = {
   title: { default: "CRM", template: "%s — CRM" },
@@ -23,7 +26,7 @@ export const dynamic = "force-dynamic";
 
 export default function LayoutCRM({ children }: { children: React.ReactNode }) {
   return (
-    <div className={`${s.app} ${display.variable} ${body.variable} ${mono.variable}`}>
+    <div className={`${s.app} ${display.variable} ${body.variable} ${mono.variable} ${serif.variable}`}>
       {children}
     </div>
   );

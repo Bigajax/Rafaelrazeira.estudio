@@ -58,6 +58,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useRef } from "react";
 import type { Contagens } from "@/lib/crm/dados";
 import s from "@/app/(pt)/crm/crm.module.css";
 
@@ -72,14 +73,31 @@ const ROTAS = [
      esperando revisão) só existe depois de você olhar, e um contador que
      pede atenção sem ter cobrança é ruído no trilho. */
   { href: "/crm/producao", rotulo: "Produção", nota: "a oficina", conta: null },
+  /* Projetos vem logo depois da oficina porque é a continuação dela: a
+     prévia vira contrato e o contrato vira loja entregue. Sem número pelo
+     mesmo motivo da Produção: o que cobra dinheiro já conta no Caixa. */
+  { href: "/crm/projetos", rotulo: "Projetos", nota: "as entregas", conta: null },
   /* "Caixa" e não "Financeiro" por duas razões que apontam para o mesmo
      lado: é a palavra exata do que a tela responde (quanto entrou, quem me
      deve), e cinco letras cabem na barra do celular, onde cada rota tem
      78px com cinco itens. "Financeiro" é o nome do departamento de uma
      empresa que este estúdio não é. */
   { href: "/crm/caixa", rotulo: "Caixa", nota: "o dinheiro", conta: "cobrar" },
+  /* O Financeiro vem colado no Caixa porque é a outra metade da mesma
+     pergunta (30/09): o Caixa diz quem deve e o que entrou; o Financeiro diz
+     o que saiu e se sobrou. Sem número: o resultado do mês tem contexto só
+     dentro da tela. */
+  { href: "/crm/financeiro", rotulo: "Financeiro", nota: "o resultado", conta: null },
   { href: "/crm/templates", rotulo: "Templates", nota: "as mensagens", conta: "templates" },
+  /* O marketing olha para fora do funil: é o que traz o próximo lead, não o
+     que trabalha o atual. Por isso vem depois das mensagens, e sem número:
+     peça sem data não é cobrança. */
+  { href: "/crm/marketing", rotulo: "Marketing", nota: "os posts", conta: null },
   { href: "/crm/metricas", rotulo: "Métricas", nota: "os números", conta: null },
+  /* O plano fecha o trilho porque é o que dá sentido ao resto: as métricas
+     dizem como o mês foi, o plano diz para onde o ano vai (30/09). Sem
+     número: a nota do painel mora na própria tela, onde ela tem contexto. */
+  { href: "/crm/plano", rotulo: "Plano", nota: "o rumo", conta: null },
 ] as const;
 
 /* Quais números falam alto. A regra já estava escrita neste arquivo ("no
@@ -91,6 +109,16 @@ const COBRAM: readonly string[] = ["fila", "cobrar"];
 
 export function Trilho({ sair, contagens }: { sair: () => void; contagens: Contagens }) {
   const caminho = usePathname() ?? "";
+  /* no celular a barra desliza (nove rotas não cabem em 390px): ao trocar de
+     tela, a rota acesa vem para o meio, senão o Plano abria escondido na
+     ponta direita. No computador a lista não rola e isto não faz nada. */
+  const lista = useRef<HTMLUListElement>(null);
+  useEffect(() => {
+    const ul = lista.current;
+    const aceso = ul?.querySelector<HTMLElement>("[aria-current=page]");
+    if (!ul || !aceso || ul.scrollWidth <= ul.clientWidth) return;
+    ul.scrollLeft = aceso.offsetLeft - (ul.clientWidth - aceso.offsetWidth) / 2;
+  }, [caminho]);
 
   return (
     <nav className={s.trilho} aria-label="Seções do CRM">
@@ -104,7 +132,7 @@ export function Trilho({ sair, contagens }: { sair: () => void; contagens: Conta
         <span>PROSPECÇÃO</span>
       </Link>
 
-      <ul className={s.trilhoLista}>
+      <ul className={s.trilhoLista} ref={lista}>
         {ROTAS.map(({ href, rotulo, nota, conta }) => {
           /* "/crm" só acende em si mesmo; as outras acendem também nas
              telas que nascem delas, como /crm/lead/[id], filha do pipeline. */

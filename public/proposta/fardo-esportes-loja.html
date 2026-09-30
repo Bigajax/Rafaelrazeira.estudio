@@ -208,17 +208,53 @@ img{display:block;max-width:100%}
   .pin,.garantia{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 
-/* ——— As duas opções lado a lado ——— */
-.compara{margin-top:clamp(32px,5vw,48px);overflow-x:auto;-webkit-overflow-scrolling:touch}
-.compara table{width:100%;min-width:560px;border-collapse:collapse;border-top:2px solid var(--black)}
-.compara th,.compara td{padding:14px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);font-size:clamp(.95rem,3.6vw,1rem);line-height:1.45}
-.compara thead th{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.05rem,3.8vw,1.3rem);letter-spacing:-.02em;line-height:1.05;color:var(--black)}
-.compara thead th small{display:block;margin-top:6px;font-family:var(--font-body);font-weight:500;text-transform:none;letter-spacing:0;font-size:.85rem;color:var(--ink-55)}
-.compara tbody th{font-family:var(--font-mono);font-weight:400;font-size:13px;color:var(--ink-55);width:26%}
-.compara td{color:var(--ink-70)}
+/* ——— O mapa de alcance: a pergunta que separa as duas opções ———
+   Mesma gramática das pranchas: formas no traço técnico, e o esmeralda
+   é a cor das anotações. Texto nenhum dentro do SVG (encolheria até 8px
+   no celular): as palavras moram na legenda em HTML. */
+.alcance{margin-top:clamp(28px,5vw,48px);display:grid;gap:clamp(20px,4vw,48px);align-items:center}
+@media(min-width:900px){.alcance{grid-template-columns:minmax(0,1.45fr) minmax(0,1fr)}}
+.alcance-mapa{width:100%;height:auto;display:block;border:1px solid var(--line);border-radius:6px;background:#fff;overflow:hidden}
+.alc-longe{fill:var(--emerald-light);fill-opacity:.55;stroke:var(--emerald-dark);stroke-width:2;stroke-dasharray:10 8}
+.alc-perto{fill:#fff;stroke:var(--black);stroke-width:2.5}
+.alc-cidades circle{fill:var(--emerald-dark);opacity:.45}
+.alc-cidades--perto circle{fill:var(--black);opacity:.35}
+.alc-loja{fill:var(--black)}
+.alc-loja-anel{fill:none;stroke:var(--black);stroke-width:1.5;opacity:.35}
+.alc-pin circle{fill:var(--emerald);stroke:#fff;stroke-width:4}
+.alc-pin text{font-family:var(--font-mono);font-weight:700;font-size:26px;text-anchor:middle;fill:var(--black)}
+.alcance-legenda{list-style:none;border-top:2px solid var(--black)}
+.alcance-legenda li{display:flex;gap:14px;align-items:flex-start;padding-block:16px;border-bottom:1px solid var(--line);color:var(--ink-70);font-size:clamp(1rem,3.8vw,1.05rem);line-height:1.5}
+.alcance-legenda b{display:block;font-family:var(--font-display);font-weight:900;text-transform:uppercase;letter-spacing:-.02em;font-size:clamp(1.2rem,4.4vw,1.5rem);line-height:1.05;color:var(--black);margin-bottom:4px}
+.alcance-legenda em{font-style:normal;font-weight:600;color:var(--emerald-dark);white-space:nowrap}
+.alcance-loja{font-size:.92rem !important;color:var(--ink-55) !important;border-bottom:none !important}
+.alc-ponto{flex:none;width:12px;height:12px;border-radius:50%;background:var(--black);margin:6px 8px 0}
+
+/* ——— O que muda: o igual numa linha só, e só as diferenças depois ——— */
+.compara{margin-top:clamp(40px,6vw,64px)}
+.compara table{width:100%;border-collapse:collapse;border-top:2px solid var(--black)}
+.compara th,.compara td{padding:16px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);font-size:clamp(.95rem,3.6vw,1.02rem);line-height:1.45}
+.compara thead th{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.05rem,3.8vw,1.3rem);letter-spacing:-.02em;line-height:1;color:var(--black);padding-top:22px}
+.compara-num{display:block;font-size:clamp(3rem,8vw,4.5rem);line-height:.8;letter-spacing:-.05em;color:var(--emerald);margin-bottom:10px}
+.compara tbody th{font-family:var(--font-mono);font-weight:400;font-size:13px;color:var(--ink-55);width:22%}
+.compara td{color:var(--ink-70);width:39%}
 .compara td b{color:var(--black)}
-.compara .nao{color:var(--ink-55)}
+.compara .igual td{background:var(--emerald-light);color:rgba(10,10,10,.8)}
+.compara .igual th{color:var(--emerald-dark);font-weight:700}
 .compara-nota{margin-top:14px;font-size:.95rem;color:var(--ink-55);max-width:62ch}
+/* No celular a tabela empilha: cada linha vira um bloco, e cada célula
+   diz de qual opção é. Rolar de lado escondia a opção 2. */
+@media(max-width:699px){
+  .compara thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+  .compara table,.compara tbody,.compara tr,.compara th,.compara td{display:block;width:auto}
+  .compara tr{padding-block:14px;border-bottom:1px solid var(--line)}
+  .compara th,.compara td{border-bottom:none;padding:4px 0}
+  .compara tbody th{font-size:12px;margin-bottom:4px}
+  .compara td::before{content:attr(data-op);display:block;font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--emerald-dark);margin-top:8px}
+  .compara .igual{background:var(--emerald-light);padding-inline:14px}
+  .compara .igual td{background:none}
+  .compara .igual td::before{content:none}
+}
 
 /* ——— O investimento das duas ——— */
 .duas-contas{margin-top:clamp(28px,5vw,48px);display:grid;gap:clamp(40px,6vw,56px)}
@@ -303,28 +339,58 @@ img{display:block;max-width:100%}
     </div>
   </section>
 
-  <!-- AS DUAS OPÇÕES -->
+  <!-- AS DUAS OPÇÕES: o mapa de alcance e o que muda -->
   <section class="sec">
-    <h2>As duas opções, lado a lado</h2>
-    <p class="sec-intro">A diferença é para onde você quer vender. Se quase toda venda é de Erechim e região, a opção 1 resolve. Se você quer mandar para outras cidades, é a opção 2.</p>
+    <h2>Para onde você quer vender?</h2>
+    <p class="sec-intro">É essa a pergunta que separa as duas opções. O resto vem dela.</p>
+
+    <div class="alcance">
+      <svg class="alcance-mapa" viewBox="0 0 800 400" role="img" aria-labelledby="alcance-titulo">
+        <title id="alcance-titulo">A Fardo no centro. Um círculo pequeno em volta é Erechim e região, a opção 1. Um arco grande, que sai da tela, é o Brasil, a opção 2.</title>
+        <!-- 2: o Brasil, o arco que sai da tela -->
+        <circle class="alc-longe" cx="200" cy="210" r="470" />
+        <g class="alc-cidades">
+          <circle cx="380" cy="90" r="5" /><circle cx="470" cy="300" r="5" /><circle cx="560" cy="150" r="5" />
+          <circle cx="330" cy="355" r="5" /><circle cx="520" cy="55" r="5" /><circle cx="600" cy="330" r="5" />
+          <circle cx="430" cy="200" r="5" /><circle cx="640" cy="240" r="5" /><circle cx="300" cy="40" r="5" />
+        </g>
+        <!-- 1: Erechim e região -->
+        <circle class="alc-perto" cx="200" cy="210" r="92" />
+        <g class="alc-cidades alc-cidades--perto">
+          <circle cx="150" cy="178" r="5" /><circle cx="248" cy="262" r="5" /><circle cx="160" cy="268" r="5" /><circle cx="222" cy="150" r="5" />
+        </g>
+        <!-- a loja -->
+        <circle class="alc-loja-anel" cx="200" cy="210" r="16" />
+        <circle class="alc-loja" cx="200" cy="210" r="8" />
+        <!-- as marcações, no traço das pranchas -->
+        <g class="alc-pin"><circle cx="265" cy="145" r="24" /><text x="265" y="154">1</text></g>
+        <g class="alc-pin"><circle cx="670" cy="210" r="24" /><text x="670" y="219">2</text></g>
+      </svg>
+
+      <ol class="alcance-legenda">
+        <li><span class="pin">1</span><span><b>Vender perto</b>Erechim e região, com entrega sua ou retirada na loja. <em>R$ 1.990</em></span></li>
+        <li><span class="pin">2</span><span><b>E-commerce</b>Qualquer cidade do Brasil, com o frete calculado pelo CEP. <em>R$ 3.499</em></span></li>
+        <li class="alcance-loja"><span class="alc-ponto" aria-hidden="true"></span><span>O ponto preto é a Fardo, na Torres Gonçalves.</span></li>
+      </ol>
+    </div>
+
     <div class="compara">
       <table>
         <thead>
           <tr>
             <th scope="col"><span class="sr-only">O que</span></th>
-            <th scope="col">1. Vender perto<small>R$ 1.990</small></th>
-            <th scope="col">2. E-commerce<small>R$ 3.499</small></th>
+            <th scope="col"><span class="compara-num">1</span>Vender perto</th>
+            <th scope="col"><span class="compara-num">2</span>E-commerce</th>
           </tr>
         </thead>
         <tbody>
-          <tr><th scope="row">Pagamento</th><td>Pix e cartão, na página da peça</td><td>Pix e cartão, no fechamento da sacola</td></tr>
-          <tr><th scope="row">Compra</th><td>Uma peça por vez</td><td><b>Várias peças numa compra só</b>, com a sacola</td></tr>
-          <tr><th scope="row">Entrega</th><td>Erechim e região, com a taxa que você definir por lugar, ou retirada na loja</td><td><b>Todo o Brasil</b>, com o frete calculado pelo CEP, e a retirada na loja</td></tr>
-          <tr><th scope="row">Estoque</th><td>Você marca no painel o número que acabou, e ele aparece riscado</td><td><b>Baixa sozinho</b> a cada venda, número por número</td></tr>
-          <tr><th scope="row">O pedido</th><td>Chega no seu WhatsApp com o pagamento confirmado</td><td>Chega no WhatsApp e numa <b>lista de pedidos</b> no painel: pago, em separação, enviado</td></tr>
-          <tr><th scope="row">Peças cadastradas</th><td>Até 60, com o fundo tratado</td><td>Até 60, com o fundo tratado</td></tr>
-          <tr><th scope="row">No ar em</th><td>Até 10 dias úteis</td><td>15 a 20 dias úteis</td></tr>
-          <tr><th scope="row">Por mês</th><td>Nada obrigatório. Suporte opcional de R$ 149,90</td><td><b>R$ 249,90</b>, obrigatório (abaixo, o porquê)</td></tr>
+          <tr class="igual"><th scope="row">Nas duas</th><td colspan="2" data-op="Nas duas">Pix e cartão sem sair da loja, o pedido chegando já pago, e <b>até 60 peças cadastradas por mim</b>, com o fundo tratado</td></tr>
+          <tr><th scope="row">Entrega</th><td data-op="1. Vender perto">Erechim e região, com a taxa que você definir por lugar, ou retirada na loja</td><td data-op="2. E-commerce"><b>Todo o Brasil</b>, com o frete calculado pelo CEP, e a retirada na loja</td></tr>
+          <tr><th scope="row">Compra</th><td data-op="1. Vender perto">Uma peça por vez, direto na página dela</td><td data-op="2. E-commerce"><b>Várias peças numa compra só</b>, com a sacola</td></tr>
+          <tr><th scope="row">Estoque</th><td data-op="1. Vender perto">Você marca no painel o número que acabou, e ele aparece riscado</td><td data-op="2. E-commerce"><b>Baixa sozinho</b> a cada venda, número por número</td></tr>
+          <tr><th scope="row">O pedido</th><td data-op="1. Vender perto">Chega no seu WhatsApp</td><td data-op="2. E-commerce">Chega no WhatsApp e numa <b>lista de pedidos</b> no painel: pago, em separação, enviado</td></tr>
+          <tr><th scope="row">No ar em</th><td data-op="1. Vender perto">Até 10 dias úteis</td><td data-op="2. E-commerce">15 a 20 dias úteis</td></tr>
+          <tr><th scope="row">Por mês</th><td data-op="1. Vender perto">Nada obrigatório. Suporte opcional de R$ 149,90</td><td data-op="2. E-commerce"><b>R$ 249,90</b>, obrigatório (abaixo, o porquê)</td></tr>
         </tbody>
       </table>
     </div>

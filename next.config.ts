@@ -46,6 +46,9 @@ const nextConfig: NextConfig = {
       { source: "/js/:path*", destination: "/estudio/js/:path*" },
       { source: "/briefing", destination: "/briefing.html" },
       { source: "/proposta/:slug", destination: "/proposta/:slug.html" },
+      /* O checklist do cliente (aba Projetos do CRM): uma página só para
+         todas as lojas, que lê a chave do próprio endereço. */
+      { source: "/checklist/:loja", destination: "/entrega/checklist.html" },
     ];
   },
 };

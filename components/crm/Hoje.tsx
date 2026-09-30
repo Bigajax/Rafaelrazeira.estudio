@@ -53,6 +53,8 @@ import { CartaDaVez } from "./CartaDaVez";
 import { ModalMensagem } from "./ModalMensagem";
 import { ModalNovoLead } from "./ModalNovoLead";
 import { ModalToque } from "./ModalToque";
+import { PostDoDia } from "@/components/marketing/PostDoDia";
+import type { Peca } from "@/lib/marketing/tipos";
 import s from "@/app/(pt)/crm/crm.module.css";
 
 type Dia = { data: string; n: number };
@@ -146,7 +148,7 @@ const FOLHA: Record<string, string> = {
   agendado: s.folhaAgendado,
 };
 
-export function Hoje({ painel, templates }: { painel: Painel; templates: Template[] }) {
+export function Hoje({ painel, templates, posts = [] }: { painel: Painel; templates: Template[]; posts?: Peca[] }) {
   const [mensagem, setMensagem] = useState<LeadPainel | null>(null);
   const [toque, setToque] = useState<LeadPainel | null>(null);
   const [novo, setNovo] = useState(false);
@@ -381,9 +383,15 @@ export function Hoje({ painel, templates }: { painel: Painel; templates: Templat
           </h2>
         </div>
 
-        <button type="button" className={s.btnAcao} onClick={() => setNovo(true)}>
-          Anotar lead
-        </button>
+        {/* O post de hoje (Marketing) mora ao lado do "Anotar lead": são as
+            duas coisas do dia que não são a carta da vez. Some quando não
+            há post marcado para hoje. */}
+        <div style={{ display: "flex", alignItems: "center", gap: 18, flexWrap: "wrap" }}>
+          <PostDoDia posts={posts} />
+          <button type="button" className={s.btnAcao} onClick={() => setNovo(true)}>
+            Anotar lead
+          </button>
+        </div>
       </div>
 
       {/* ---------- os segmentos: um monte por sentada ----------

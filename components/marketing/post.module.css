@@ -1,0 +1,257 @@
+/* ============================================================
+   O DESIGN SYSTEM DOS POSTS, v3 (30/09/2026)
+
+   Estes estilos NÃO são tela: são a prancha de 1080x1350 (1080x1920 no
+   story) que vira PNG. Tudo em px absoluto, na medida do Instagram.
+
+   ---------- como se chegou aqui ----------
+   v1  seis moldes de papel, manchete na margem: "engessado"
+   v2  cinema (Vison) + papel: elegante, mas "sem nada de disruptivo e com
+       personalidade"
+   v3  três direções montadas em PNG com o mesmo conteúdo; o Rafael escolheu
+       DUAS e elas alternam no feed:
+
+     .acido    Pôster ácido: cor chapada, foto em círculo, título gigante
+               que quase sai da tela, selo torto com sombra dura
+     .colagem  Colagem editorial: cor quente, foto em arco com fita,
+               serifa grande sobreposta, foto torta de borda branca
+
+   As duas vozes do título continuam as mesmas (Instrument Serif itálica +
+   Archivo condensada caixa alta): é o que faz as duas direções lerem como
+   a mesma conta.
+
+   Cada regra começa por `.prancha` para vencer o `.app h2` e o `.app p`
+   do CRM, que vazavam caixa alta e cor para dentro do post.
+   ============================================================ */
+
+.prancha {
+  --t: 250px;
+  position: relative;
+  width: 1080px;
+  height: 1350px;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body), Arial, sans-serif;
+  box-sizing: border-box;
+}
+.prancha * { box-sizing: border-box; margin: 0 }
+.prancha.story { height: 1920px }
+
+/* ---------- a mobília ---------- */
+.prancha .rr { position: absolute; top: 64px; left: 72px; height: 50px; width: auto; z-index: 5 }
+.prancha .rrClaro { filter: brightness(0) invert(1) }
+.prancha .rrEscuro { filter: brightness(0) }
+.prancha .cont { position: absolute; top: 70px; right: 72px; font: 700 26px var(--font-mono), monospace; z-index: 5 }
+.prancha .arroba { position: absolute; bottom: 58px; left: 72px; font: 500 22px var(--font-mono), monospace; letter-spacing: .14em; z-index: 5 }
+.prancha.story .rr, .prancha.story .cont { top: 150px }
+.prancha.story .arroba { bottom: 250px }
+
+/* ---------- o título em duas vozes ---------- */
+.prancha .titulo { font: inherit; text-transform: none; letter-spacing: 0; font-stretch: 100%; line-height: 1 }
+.prancha .voz1 {
+  display: block; font-family: var(--font-serif), Georgia, serif; font-weight: 400; font-style: italic;
+  font-size: calc(var(--t) * .52); line-height: .95; letter-spacing: -.02em; text-transform: none;
+}
+.prancha .voz2 {
+  display: block; font-family: var(--font-display), Arial, sans-serif; font-weight: 900; font-stretch: 62%;
+  text-transform: uppercase; font-size: var(--t); line-height: .84; letter-spacing: -.01em;
+}
+.prancha .destaque { color: var(--ac); font-style: inherit }
+.prancha .corpo { font-size: 40px; line-height: 1.32; font-weight: 500; color: var(--fg) }
+.prancha .rotulo { display: block; font: 700 24px var(--font-mono), monospace; letter-spacing: .16em; text-transform: uppercase; color: var(--ac); margin-bottom: 24px }
+
+/* ---------- foto: cor original ou duotone ---------- */
+.prancha .foto { position: absolute; overflow: hidden; background: var(--ac) }
+.prancha .foto img { width: 100%; height: 100%; object-fit: cover; display: block }
+.prancha .duo img { filter: grayscale(1) contrast(1.35); mix-blend-mode: multiply }
+/* sem foto ainda: a forma fica, cheia da cor, com listras, para a
+   composição não desmontar enquanto o ChatGPT não entrega */
+.prancha .fotoVazia { background: repeating-linear-gradient(135deg, var(--fio) 0 26px, transparent 26px 52px) }
+
+/* ============================================================
+   A · PÔSTER ÁCIDO
+   ============================================================ */
+.prancha.acido .selo {
+  position: absolute; z-index: 4;
+  background: var(--ac); color: var(--selo); padding: 22px 30px;
+  font: 800 36px var(--font-display), Arial, sans-serif; font-stretch: 100%; text-transform: uppercase;
+  transform: rotate(-9deg); box-shadow: 10px 10px 0 #111;
+}
+.prancha.acido .capaFoto { width: 900px; height: 900px; border-radius: 50%; right: -180px; top: 170px }
+.prancha.story.acido .capaFoto { top: 330px; width: 1000px; height: 1000px }
+.prancha.acido .capaTitulo { position: absolute; left: 60px; right: 40px; bottom: 150px; z-index: 3 }
+.prancha.story.acido .capaTitulo { bottom: 340px }
+.prancha.acido .capaTitulo .voz1 { color: var(--ac); margin-bottom: 8px }
+.prancha.acido .capaTitulo .corpo { font-size: 32px; margin-top: 26px; max-width: 700px }
+
+.prancha.acido .indice { position: absolute; top: 120px; left: 50px; font: 900 520px/0.8 var(--font-display), Arial, sans-serif; font-stretch: 62%; color: var(--ac) }
+.prancha.acido .miniFoto { width: 380px; height: 380px; border-radius: 50%; right: -60px; top: 110px }
+.prancha.acido .bloco { position: absolute; left: 72px; right: 72px; top: 600px }
+.prancha.acido .bloco .corpo { margin-top: 36px; max-width: 860px }
+.prancha.acido .blocoMeio { top: 330px }
+
+.prancha.acido .cabeca { position: absolute; left: 72px; right: 72px; top: 150px }
+.prancha.acido .cartao {
+  position: absolute; width: 440px; height: 580px; border: 5px solid #111; box-shadow: 16px 16px 0 #111;
+  padding: 30px; font-size: 34px; line-height: 1.3; font-weight: 500; overflow: hidden;
+}
+.prancha.acido .cartao b { display: block; font: 800 26px var(--font-mono), monospace; letter-spacing: .1em; margin-bottom: 20px; text-transform: uppercase }
+.prancha.acido .cartao.comImg { padding: 0 }
+.prancha.acido .cartao.comImg b { position: absolute; top: 0; left: 0; right: 0; margin: 0; padding: 14px 18px; background: #111; color: #fff; z-index: 2 }
+.prancha.acido .cartao img { width: 100%; height: 100%; object-fit: cover; display: block }
+.prancha.acido .ruim { left: 72px; top: 560px; transform: rotate(-4deg); background: #E9E9E9; color: #555 }
+.prancha.acido .bom { right: 72px; top: 600px; transform: rotate(3deg); background: var(--ac); color: var(--selo) }
+
+.prancha.acido .lista { position: absolute; left: 72px; right: 72px; top: 560px; list-style: none; padding: 0 }
+.prancha.acido .lista li { display: grid; grid-template-columns: 130px 1fr; align-items: center; padding: 26px 0; border-top: 3px solid var(--fio); font-size: 42px; font-weight: 600; line-height: 1.2 }
+.prancha.acido .lista li i { font: 900 76px var(--font-display), Arial, sans-serif; font-stretch: 62%; font-style: normal; color: var(--ac) }
+
+.prancha.acido .janela { position: absolute; left: 72px; right: 72px; top: 520px; height: 530px; transform: rotate(-2deg); border: 5px solid #111; border-radius: 18px; box-shadow: 18px 18px 0 #111; overflow: hidden; background: #fff; display: flex; flex-direction: column }
+
+.prancha.acido .numeroGrande { position: absolute; left: 60px; top: 170px; font: 900 400px/0.82 var(--font-display), Arial, sans-serif; font-stretch: 62%; color: var(--ac); letter-spacing: -.02em }
+
+.prancha.acido .aspas { position: absolute; left: 50px; top: 90px; font: 400 520px/1 var(--font-serif), Georgia, serif; color: var(--ac) }
+.prancha.acido .tese { position: absolute; left: 72px; right: 72px; top: 420px }
+.prancha.acido .tese .voz1 { font-size: 118px; line-height: 1 }
+
+.prancha.acido .fecho { position: absolute; left: 72px; right: 72px; top: 260px }
+.prancha.acido .fecho .corpo { margin-top: 36px; max-width: 820px }
+.prancha.acido .acao { left: 72px; bottom: 190px; font-size: 44px; padding: 28px 38px; transform: rotate(-6deg) }
+
+/* ============================================================
+   C · COLAGEM EDITORIAL
+   ============================================================ */
+.prancha.colagem .fita { position: absolute; width: 230px; height: 60px; background: rgba(255, 255, 255, .72); z-index: 4 }
+.prancha .bola {
+  position: absolute; z-index: 4; width: 240px; height: 240px; border-radius: 50%;
+  background: var(--bola); color: var(--bolaFg); display: flex; align-items: center; justify-content: center;
+  text-align: center; padding: 28px; font: 800 32px/1.02 var(--font-display), Arial, sans-serif; font-stretch: 90%;
+  text-transform: uppercase; transform: rotate(12deg);
+}
+/* a foto fica ACIMA do título: título preto sobre foto escura sumia (bancada, 30/09) */
+.prancha.colagem .capaFoto { left: 290px; top: 150px; width: 500px; height: 560px; border-radius: 250px 250px 0 0 }
+.prancha.story.colagem .capaFoto { top: 320px; height: 980px }
+.prancha.colagem .capaTitulo { position: absolute; left: 40px; right: 40px; bottom: 130px; text-align: center; z-index: 3 }
+.prancha.story.colagem .capaTitulo { bottom: 330px }
+.prancha.colagem .capaTitulo .voz1 { color: var(--ac); font-size: calc(var(--t) * .62) }
+.prancha.colagem .capaTitulo .voz2 { margin-top: -.12em }
+
+.prancha.colagem .polaroid { position: absolute; border: 16px solid #fff; box-shadow: 0 30px 50px rgba(0, 0, 0, .25); overflow: hidden; background: var(--ac) }
+.prancha.colagem .polaroid img { width: 100%; height: 100%; object-fit: cover; display: block }
+.prancha.colagem .ladoFoto { right: -40px; top: 120px; width: 470px; height: 620px; transform: rotate(5deg) }
+.prancha.colagem .bloco { position: absolute; left: 72px; top: 300px; right: 72px }
+.prancha.colagem .blocoEstreito { right: 520px }
+.prancha.colagem .bloco .voz1 { font-size: calc(var(--t) * .66); color: var(--fg) }
+.prancha.colagem .bloco .voz2 { color: var(--ac); font-size: var(--t) }
+.prancha.colagem .rodape { position: absolute; left: 72px; right: 72px; bottom: 150px; border-top: 6px solid var(--fg); padding-top: 30px }
+
+.prancha.colagem .cabeca { position: absolute; left: 72px; right: 72px; top: 170px }
+.prancha.colagem .cabeca .voz1 { font-size: calc(var(--t) * .58); color: var(--fg) }
+.prancha.colagem .cabeca .voz2 { color: var(--ac); font-size: calc(var(--t) * .92) }
+
+.prancha.colagem .foto2 { position: absolute; top: 560px; width: 440px; height: 540px; border: 16px solid #fff; box-shadow: 0 26px 44px rgba(0, 0, 0, .25); background: #fff; overflow: hidden; display: flex; align-items: center; justify-content: center; padding: 26px; font-size: 32px; line-height: 1.3; font-weight: 500; color: #111 }
+.prancha.colagem .foto2 img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover }
+.prancha.colagem .foto2.um { left: 72px; transform: rotate(-5deg) }
+.prancha.colagem .foto2.dois { right: 72px; transform: rotate(4deg); top: 590px }
+.prancha.colagem .legenda { position: absolute; top: 1150px; font: 400 52px var(--font-serif), Georgia, serif; font-style: italic }
+.prancha.colagem .legenda.um { left: 90px }
+.prancha.colagem .legenda.dois { right: 90px }
+
+.prancha.colagem .lista { position: absolute; left: 72px; right: 72px; top: 580px; list-style: none; padding: 0 }
+.prancha.colagem .lista li { display: flex; gap: 26px; align-items: baseline; font-size: 46px; font-weight: 600; padding: 22px 0; border-bottom: 4px solid var(--fg); line-height: 1.2 }
+.prancha.colagem .lista li i { font: 400 72px var(--font-serif), Georgia, serif; font-style: italic; color: var(--ac); width: 70px; flex: none }
+
+.prancha.colagem .janela { position: absolute; left: 90px; right: 90px; top: 540px; height: 620px; transform: rotate(2deg); border: 14px solid #fff; box-shadow: 0 30px 50px rgba(0, 0, 0, .28); overflow: hidden; background: #fff; display: flex; flex-direction: column }
+
+.prancha.colagem .numeroGrande { position: absolute; left: 60px; top: 150px; font: 400 420px/0.9 var(--font-serif), Georgia, serif; font-style: italic; color: var(--ac); letter-spacing: -.04em }
+
+.prancha.colagem .tese { position: absolute; left: 90px; right: 90px; top: 330px; text-align: center }
+.prancha.colagem .tese .voz1 { font-size: 124px; line-height: 1 }
+.prancha.colagem .tese .rotulo { margin: 50px 0 0 }
+
+.prancha.colagem .fecho { position: absolute; left: 72px; right: 72px; top: 330px; text-align: center }
+.prancha.colagem .fecho .corpo { margin: 36px auto 0; max-width: 820px }
+.prancha.colagem .acao { right: 90px; bottom: 150px; width: 300px; height: 300px; font-size: 36px }
+
+/* ---------- o navegador (tela real), comum às duas ---------- */
+.prancha .barra { flex: none; height: 46px; display: flex; align-items: center; gap: 10px; padding: 0 20px; background: #EFECE3; border-bottom: 2px solid #D8D3C4 }
+.prancha .barra i { width: 13px; height: 13px; border-radius: 50%; background: #CFC9B8 }
+.prancha .tela { flex: 1; min-height: 0; overflow: hidden; background: #EAE6D9; display: flex; align-items: center; justify-content: center; font: 700 24px var(--font-mono), monospace; letter-spacing: .12em; text-transform: uppercase; color: #3A4144 }
+.prancha .tela img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block }
+.prancha .telaApoio { position: absolute; left: 72px; right: 72px; bottom: 110px; font-size: 32px; font-weight: 600 }
+
+/* ============================================================
+   v4 (30/09): o PAPEL DA IMAGEM monta o slide
+   ============================================================ */
+/* abertura sangrada: o título no respiro que a imagem deixou */
+.prancha .aberturaTitulo .voz1 { color: var(--ac) }
+.prancha .subAbertura { font-size: 32px; margin-top: 24px }
+/* título no pé, sobre a imagem: o véu segura a leitura só embaixo */
+.prancha .veuBase { position: absolute; inset: 0; z-index: 2; background: linear-gradient(to top, rgba(10, 12, 14, .94) 0%, rgba(10, 12, 14, .82) 30%, rgba(10, 12, 14, .35) 48%, rgba(10, 12, 14, 0) 62%) }
+.prancha .veuBase ~ .aberturaTitulo .corpo { color: #fff }
+
+/* zoom: o título no pé, a foto recortada em cima */
+.prancha .blocoBase { position: absolute; left: 72px; right: 72px; bottom: 150px; z-index: 3 }
+.prancha.story .blocoBase { bottom: 340px }
+.prancha .blocoBase .voz1 { color: var(--ac) }
+.prancha .blocoBase .corpo { margin-top: 26px; max-width: 800px }
+.prancha.colagem .blocoBase .corpo { margin-left: auto; margin-right: auto }
+
+/* contraste sem imagem: o texto do lado */
+.prancha .ladoTexto { position: absolute; inset: 0; display: flex; align-items: center; padding: 30px; font-size: 32px; line-height: 1.3; font-weight: 500; color: #111 }
+
+/* resposta, fecho e você: a voz 1 na cor de acento */
+.prancha .foto ~ div .voz1 { color: var(--ac) }
+
+/* a ação centrada do fecho no pôster */
+.prancha.acido .acaoCentro { left: 50%; bottom: 120px; transform: translateX(-50%) rotate(-5deg); font-size: 34px; padding: 22px 32px }
+
+/* o apoio da abertura por cima da imagem: curto e estreito, nunca um parágrafo
+   (na peça de 30/09 cinco linhas passaram por cima da pessoa) */
+/* nada de cortar texto com reticências: em 30/09 o apoio sumia no meio
+   ("o que pede sua aprovação e o...") sem ninguém saber. O texto aparece
+   inteiro; quem controla o tamanho é o limite de palavras e o Rafael. */
+.prancha .subAbertura { max-width: 420px }
+/* CTA comprido não cabe na bola: vira faixa */
+.prancha .acaoFaixa { position: absolute; left: 72px; right: 72px; bottom: 120px; z-index: 4; text-align: center; background: var(--ac); color: var(--selo); font: 800 30px var(--font-display), Arial, sans-serif; font-stretch: 100%; text-transform: uppercase; padding: 20px 26px; transform: rotate(-2deg); box-shadow: 10px 10px 0 #111 }
+
+/* ---------- a leitura do título na abertura (30/09) ---------- */
+/* véu do lado de cima, para o título no topo */
+/* forte até onde o título e o apoio moram (a capa do Dots mostrou que 50% não bastava) */
+.prancha .veuTopo { position: absolute; inset: 0; z-index: 2; background: linear-gradient(to bottom, rgba(10, 12, 14, .94) 0%, rgba(10, 12, 14, .86) 42%, rgba(10, 12, 14, .45) 58%, rgba(10, 12, 14, 0) 74%) }
+.prancha .veuTopo ~ .aberturaTitulo .corpo { color: #fff }
+/* faixa: o título num bloco de cor chapada, com o gesto de cada direção */
+.prancha .faixaAcido { background: var(--bg); padding: 34px 38px 38px; box-shadow: 14px 14px 0 #111; transform: rotate(-1.5deg) }
+.prancha .faixaColagem { background: var(--bg); padding: 34px 38px 38px; box-shadow: 0 24px 40px rgba(0, 0, 0, .3); transform: rotate(1deg) }
+.prancha .faixaAcido .subAbertura, .prancha .faixaColagem .subAbertura { max-width: none }
+
+/* ---------- o texto livre (30/09) ---------- */
+.prancha .semTexto { display: contents }
+.prancha .semTexto .titulo, .prancha .semTexto .rotulo, .prancha .semTexto .corpo,
+.prancha .semTexto .aberturaTitulo, .prancha .semTexto .blocoBase, .prancha .semTexto .veuTopo, .prancha .semTexto .veuBase { display: none }
+.prancha .textoLivre { position: absolute; z-index: 4 }
+.prancha .textoLivre .voz1 { color: var(--ac) }
+.prancha .textoLivre .corpo { margin-top: 24px }
+.prancha .textoLivre.faixaAcido, .prancha .textoLivre.faixaColagem { transform: none }
+
+/* ---------- os moldes cadastrados (30/09) ---------- */
+.prancha .textoMolde .voz1 { color: var(--ac) }
+.prancha .textoMolde .corpo { margin-top: 24px }
+/* a faixa que atravessa a imagem inteira, de borda a borda */
+.prancha .faixaInteira {
+  position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); z-index: 4;
+  background: var(--bg); color: var(--fg); padding: 56px 72px 60px;
+}
+.prancha.acido .faixaInteira { box-shadow: 0 14px 0 #111 }
+.prancha.acido .fita { position: absolute; width: 230px; height: 56px; background: var(--fg); opacity: .9; z-index: 4 }
+.prancha .textoClaro .corpo, .prancha .textoClaro .rotulo { color: #FFFFFF }
+.prancha .textoMolde.textoClaro .voz1 { color: #FFFFFF }
+/* o apoio sobre imagem cheia ganha um cartão na cor do slide (30/09: no slide 3
+   do Dots o texto pequeno caiu em cima do boneco azul e não se lia). O título
+   continua solto; texto pequeno sobre imagem movimentada nunca lê só com cor. */
+.prancha .aberturaTitulo .apoioCartao { padding: 22px 28px; text-shadow: none }
+.prancha.acido .aberturaTitulo .apoioCartao { box-shadow: 10px 10px 0 #111 }
+.prancha.colagem .aberturaTitulo .apoioCartao { box-shadow: 0 18px 36px rgba(0, 0, 0, .22) }
+/* o arroba sobre imagem: pílula escura, lê em qualquer fundo (30/09) */
+.prancha .arroba.arrobaSobre { background: rgba(10, 12, 14, .62); color: #FFFFFF; padding: 8px 14px; margin-left: -14px; margin-bottom: -8px }

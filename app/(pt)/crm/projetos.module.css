@@ -1,0 +1,217 @@
+/* ============================================================
+   PROJETOS — a aba do depois do "fechou", na gramática do CRM
+
+   Nenhum token novo: tudo sai do `.app` do crm.module.css. A assinatura
+   desta tela é a RÉGUA: a linha com seis estações, irmã do trilho e da
+   régua do dia. Estação cheia de tinta é etapa pronta, a esmeralda é a da
+   vez, a vazada é o que ainda vem. O resto é ferramenta quieta.
+   ============================================================ */
+
+.tela { max-width: 1360px; margin: 0 auto }
+
+.somenteLeitor {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+/* ---------- o cabeçalho ---------- */
+.cabeca, .cabecaProjeto {
+  display: flex; justify-content: space-between; align-items: flex-end; gap: 12px 24px; flex-wrap: wrap;
+  padding-bottom: 18px; border-bottom: 3px solid var(--ink); margin-bottom: 8px;
+}
+.tela .cabeca h1, .tela .cabecaProjeto h1 { font-size: clamp(34px, 5vw, 64px); line-height: .9 }
+.tela .cabecaProjeto h1 { text-transform: none; letter-spacing: -.02em; overflow-wrap: anywhere }
+.placar { font: 12px var(--mono); letter-spacing: .06em; color: var(--ink-fraco); margin-top: 10px }
+.atalhos { display: flex; gap: 6px; flex-wrap: wrap }
+.voltar {
+  display: inline-block; margin-bottom: 14px;
+  font: 700 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-fraco); text-decoration: none;
+}
+.voltar:hover { color: var(--ink) }
+
+.aviso {
+  margin: 16px 0; padding: 12px 14px; border-left: 3px solid var(--rosa);
+  background: var(--paper-alto); font-size: 14px; max-width: 80ch;
+}
+.aviso code, .materialVazio code, .comando code { font: 12.5px var(--mono); background: var(--paper-2); padding: 1px 5px }
+.vazio { margin-top: 28px; color: var(--ink-soft) }
+
+/* ---------- a régua ---------- */
+.regua {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(5, 1fr) auto; position: relative;
+}
+/* a linha corre por baixo das estações, de ponta a ponta */
+.regua::before {
+  content: ""; position: absolute; left: 6px; right: 6px; top: 5px; height: 2px; background: var(--line);
+}
+.estacao { position: relative; min-width: 0 }
+.estacaoMarca {
+  display: block; position: relative; width: 12px; height: 12px;
+  background: var(--paper); border: 2px solid var(--ink-fraco);
+}
+.estacaoPronta .estacaoMarca { background: var(--ink); border-color: var(--ink) }
+.estacaoAtual .estacaoMarca { background: var(--green); border-color: var(--green); box-shadow: 0 0 0 3px #0C915933 }
+
+.reguaGrande { margin: 26px 0 30px }
+.reguaGrande::before { top: 8px; height: 3px }
+.reguaGrande .estacaoMarca { width: 18px; height: 18px; border-width: 3px }
+.estacaoTexto { display: block; margin-top: 10px; padding-right: 8px }
+.estacaoTexto b {
+  display: block; font: 700 15px/1.1 var(--display); font-stretch: 112%; color: var(--ink-fraco);
+}
+.estacaoTexto i { font: 11px var(--mono); font-style: normal; color: var(--ink-fraco); letter-spacing: .06em }
+.estacaoPronta .estacaoTexto b { color: var(--ink) }
+.estacaoAtual .estacaoTexto b { color: var(--green-dark) }
+
+/* ---------- a lista ---------- */
+.lista { list-style: none; margin: 0; padding: 0 }
+.linha { border-bottom: 1px solid var(--line) }
+.linhaLink {
+  display: grid; grid-template-columns: minmax(180px, 1.1fr) minmax(260px, 1.6fr) minmax(150px, .7fr);
+  gap: 16px 32px; align-items: center; padding: 20px 4px; color: inherit; text-decoration: none;
+  transition: background .15s ease;
+}
+@media (hover: hover) and (pointer: fine) { .linhaLink:hover { background: var(--paper-alto) } }
+.linha .linhaNome h2 {
+  font: 800 clamp(20px, 2.2vw, 28px)/1 var(--display); font-stretch: 112%;
+  text-transform: none; letter-spacing: -.01em; margin: 0; overflow-wrap: anywhere;
+}
+.linhaNome span { display: block; font: 12px var(--mono); color: var(--ink-fraco); margin-top: 6px }
+.linhaRegua { min-width: 0 }
+.linhaEtapa { display: block; font-size: 13.5px; color: var(--ink-soft); margin-top: 10px; line-height: 1.4 }
+.linhaEtapa b { color: var(--ink) }
+.linhaDinheiro { text-align: right }
+.linhaDinheiro b { display: block; font: 800 20px var(--display); font-stretch: 112% }
+.linhaDinheiro span { display: block; font: 12px var(--mono); color: var(--ink-fraco); margin-top: 4px }
+.linhaDinheiro .quitado { color: var(--green-dark); font-weight: 700 }
+.linhaDinheiro .semContrato { color: var(--rosa) }
+.linhaEntregue { opacity: .62 }
+
+@media (max-width: 860px) {
+  .linhaLink { grid-template-columns: 1fr; gap: 12px }
+  .linhaDinheiro { text-align: left }
+}
+
+/* ---------- o projeto aberto ---------- */
+.corpo { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr); gap: 28px; align-items: start }
+@media (max-width: 1000px) { .corpo { grid-template-columns: minmax(0, 1fr) } }
+
+.etapas { display: grid; gap: 14px }
+.erro { color: var(--rosa); font-weight: 600; margin: 0 }
+.etapa { background: var(--paper-alto); border: 1px solid var(--line); padding: 16px 18px 12px }
+.etapaAtual { border-color: var(--green); box-shadow: inset 3px 0 0 var(--green) }
+.etapaPronta { background: transparent }
+.etapaCabeca { display: flex; align-items: baseline; gap: 10px }
+.etapa .etapaCabeca h2 { font: 800 20px/1 var(--display); font-stretch: 112%; text-transform: none; margin: 0; flex: 1 }
+.etapaNum, .etapaConta { font: 700 11px var(--mono); letter-spacing: .08em; color: var(--ink-fraco) }
+.etapaPronta .etapaConta { color: var(--green-dark) }
+.etapaNota { font: 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-fraco); margin: 4px 0 10px }
+
+.itens { list-style: none; margin: 0; padding: 0 }
+.item { display: flex; align-items: flex-start; gap: 10px; padding: 7px 0; border-top: 1px dashed var(--line) }
+.item:first-child { border-top: 0 }
+.item label { display: flex; align-items: flex-start; gap: 10px; flex: 1; cursor: pointer; min-width: 0 }
+.item input { position: absolute; opacity: 0; pointer-events: none }
+.caixinha, .caixinhaTravada {
+  flex: none; width: 18px; height: 18px; margin-top: 1px; border: 2px solid var(--ink); background: #fff;
+  display: grid; place-items: center;
+}
+.caixinhaTravada { border-style: dashed; border-color: var(--ink-fraco); background: transparent }
+.itemFeito .caixinha, .itemFeito .caixinhaTravada { background: var(--green); border: 2px solid var(--green) }
+.itemFeito .caixinha::after, .itemFeito .caixinhaTravada::after {
+  content: ""; width: 9px; height: 5px; border: solid #fff; border-width: 0 0 2px 2px; transform: translateY(-1px) rotate(-45deg);
+}
+.item input:focus-visible + .caixinha { outline: 3px solid var(--green); outline-offset: 2px }
+.itemTexto { font-size: 14.5px; line-height: 1.4 }
+.itemFeito .itemTexto { color: var(--ink-fraco); text-decoration: line-through; text-decoration-color: var(--line) }
+.etiqueta {
+  display: inline-block; margin-left: 8px; padding: 2px 5px 1px; vertical-align: 1px;
+  font: 700 9.5px var(--mono); letter-spacing: .08em; text-transform: uppercase;
+  border: 1px solid var(--line); color: var(--ink-fraco); text-decoration: none;
+}
+.irCaixa { font: 700 11px var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--rosa); text-decoration: none; margin-left: auto }
+.tirar {
+  flex: none; border: 0; background: none; cursor: pointer; font-size: 18px; line-height: 1; color: var(--ink-fraco); padding: 0 4px;
+}
+.tirar:hover { color: var(--rosa) }
+.acrescentar input {
+  width: 100%; margin-top: 6px; padding: 7px 0; border: 0; border-top: 1px dashed var(--line);
+  background: transparent; font: 13.5px var(--body); color: var(--ink);
+}
+.acrescentar input:focus { outline: none; border-top-color: var(--green) }
+
+/* ---------- a coluna do lado ---------- */
+.lado { display: grid; gap: 14px; position: sticky; top: 16px }
+@media (max-width: 1000px) { .lado { position: static } }
+.painel { background: var(--paper-alto); border: 1px solid var(--line); padding: 16px 18px }
+.painel .painelTitulo {
+  font: 700 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-fraco); margin: 0 0 12px;
+}
+
+.materialVazio { font-size: 14px; color: var(--ink-soft); margin: 0 0 10px }
+.materialQuando { font: 12px var(--mono); color: var(--ink-fraco); margin: 0 0 10px }
+.materialLink {
+  display: inline-block; margin-top: 10px; font: 700 11px var(--mono); letter-spacing: .08em; text-transform: uppercase;
+  color: var(--green-dark); text-decoration: none; border-bottom: 1.5px solid currentColor;
+}
+.fatos { margin: 0; display: grid; gap: 0 }
+.fatos > div { display: grid; grid-template-columns: 118px 1fr; gap: 10px; padding: 6px 0; border-top: 1px dashed var(--line) }
+.fatos > div:first-child { border-top: 0 }
+.fatos dt { font: 11px var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-fraco); padding-top: 2px }
+.fatos dd { margin: 0; font-size: 13.5px; color: var(--ink-soft); overflow-wrap: anywhere }
+.fatos .fatoOk dd { color: var(--ink) }
+.fatos .fatoOk dt { color: var(--green-dark) }
+.recado { margin: 12px 0 0; padding: 8px 12px; border-left: 3px solid var(--ink); font-size: 14px; background: #fff }
+.miniaturas { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; margin-top: 12px }
+.miniaturas img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: var(--paper-2) }
+.comando { font-size: 13px; color: var(--ink-soft); margin: 12px 0 0 }
+
+.campos { display: grid; gap: 12px }
+.campo span { display: flex; justify-content: space-between; font: 700 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-fraco); margin-bottom: 5px }
+.campo input, .campo textarea {
+  width: 100%; padding: 9px 10px; border: 1px solid var(--line); background: #fff;
+  font: 14px var(--body); color: var(--ink); resize: vertical;
+}
+.campo input:focus, .campo textarea:focus { outline: 2px solid var(--green); outline-offset: -1px; border-color: var(--green) }
+.salvando, .salvo, .naoSalvo { font-style: normal; text-transform: none; letter-spacing: 0 }
+.salvo { color: var(--green-dark) }
+.naoSalvo { color: var(--rosa); font-size: 12px }
+
+.entregueBloco { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line) }
+.btnEntregue, .btnSecundario {
+  padding: 10px 14px; font: 700 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; cursor: pointer;
+  border: 2px solid var(--ink);
+}
+.btnEntregue { background: var(--ink); color: #fff }
+.btnSecundario { background: transparent; color: var(--ink) }
+.btnEntregue:disabled, .btnSecundario:disabled { opacity: .5; cursor: wait }
+.entregueNota { font-size: 12.5px; color: var(--ink-fraco) }
+
+@media (max-width: 560px) {
+  .reguaGrande .estacaoTexto b { font-size: 11.5px; font-stretch: 90% }
+  .fatos > div { grid-template-columns: 96px 1fr }
+}
+
+/* ---------- o checklist do cliente, dentro do projeto ---------- */
+.linkCliente { display: grid; gap: 10px; margin-bottom: 14px }
+.linkUrl { font: 13px var(--mono); color: var(--green-dark); overflow-wrap: anywhere }
+.linkAcoes { display: flex; gap: 8px; flex-wrap: wrap; align-items: center }
+.linkAcoes a { text-decoration: none; display: inline-block }
+.btnLeve {
+  background: none; border: 0; padding: 8px 2px; cursor: pointer;
+  font: 700 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-fraco);
+  text-decoration: underline; text-underline-offset: 3px;
+}
+.btnLeve:hover { color: var(--ink) }
+.criar { display: grid; gap: 12px; margin-bottom: 14px }
+.perguntas { border: 0; margin: 0; padding: 0; display: grid; gap: 6px }
+.perguntas legend { font: 700 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-fraco); margin-bottom: 6px; padding: 0 }
+.perguntas label { display: flex; align-items: center; gap: 10px; font-size: 14px; cursor: pointer }
+.perguntas input { position: absolute; opacity: 0; pointer-events: none }
+.perguntas input:checked + .caixinha { background: var(--green); border-color: var(--green) }
+.perguntas input:checked + .caixinha::after {
+  content: ""; width: 9px; height: 5px; border: solid #fff; border-width: 0 0 2px 2px; transform: translateY(-1px) rotate(-45deg);
+}
+.perguntas input:focus-visible + .caixinha { outline: 3px solid var(--green); outline-offset: 2px }
+.respostas { border-top: 1px solid var(--line); padding-top: 14px; margin-top: 4px }

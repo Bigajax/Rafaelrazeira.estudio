@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { MetaSemana } from "@/components/crm/MetaSemana";
 import { metricas } from "@/lib/crm/dados";
-import { dataCurta, dinheiro, dinheiroCurto, rotuloSemana } from "@/lib/crm/regras";
+import { constancia } from "@/lib/marketing/dados";
+import { dataCurta, dinheiro, dinheiroCurto, hojeSP, rotuloSemana } from "@/lib/crm/regras";
 import { NOME_CANAL, NOME_MOTIVO, type Canal, type MotivoPerda } from "@/lib/crm/tipos";
 import s from "../../crm.module.css";
 
@@ -90,7 +91,8 @@ export default async function PaginaMetricas({
   const pedido = Number(bruto);
   const dias = (PERIODOS as readonly number[]).includes(pedido) ? (pedido as 7 | 30 | 90) : 30;
 
-  const m = exemplo ? { ...EXEMPLO, dias } : await metricas(dias);
+  const [m, feed] = await Promise.all([exemplo ? { ...EXEMPLO, dias } : metricas(dias), constancia(hojeSP())]);
+  const tetoFeed = Math.max(1, ...feed.semanas.map((x) => x.postadas));
 
   const taxaResposta = m.respostas.contatados
     ? Math.round((m.respostas.responderam / m.respostas.contatados) * 100)
@@ -382,6 +384,44 @@ export default async function PaginaMetricas({
           </section>
         </>
       ) : null}
+
+      {/* ---------- 3b. a constância do Instagram (30/09) ----------
+          O Marketing existe para postar sem parar até o feed achar o ritmo,
+          e ritmo se lê por semana, não por período: por isso esta seção
+          ignora o seletor de dias e mostra sempre as últimas oito semanas.
+          Sem meta desenhada de propósito: a meta de posts ainda não foi
+          decidida, e uma linha inventada viraria régua de mentira. */}
+      <h2 className={s.rotulo}>
+        Constância no Instagram
+        <span className={s.rotuloCont}>
+          {feed.proximas} {feed.proximas === 1 ? "agendado" : "agendados"} para os próximos 7 dias, {feed.prontas}{" "}
+          {feed.prontas === 1 ? "pronto" : "prontos"}
+        </span>
+      </h2>
+
+      <section className={s.bloco}>
+        {feed.semanas.every((x) => !x.postadas) ? (
+          <p className={s.blocoNota}>
+            Nenhum post marcado como postado nas últimas oito semanas. Ao postar, aperte "Postada" na peça (ou
+            "Postei" no Hoje) e ele entra aqui.
+          </p>
+        ) : (
+          <div className={s.barras}>
+            {feed.semanas.map((w) => (
+              <div key={w.inicio} className={s.barra}>
+                <span className={s.barraRot}>{w.atual ? "esta semana" : `semana de ${dataCurta(w.inicio)}`}</span>
+                <span className={s.barraTrilho}>
+                  <i className={s.barraFill} style={{ width: `${(w.postadas / tetoFeed) * 100}%` }} />
+                </span>
+                <b className={s.barraNum}>{w.postadas}</b>
+              </div>
+            ))}
+          </div>
+        )}
+        <p className={s.blocoNota} style={{ marginTop: 12 }}>
+          Conta a data do post no <Link href="/crm/marketing">calendário do Marketing</Link>, só das peças marcadas como postadas.
+        </p>
+      </section>
 
       {/* ---------- 4. motivos de perda ---------- */}
       <h2 className={s.rotulo}>

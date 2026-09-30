@@ -17,13 +17,16 @@
    navegador manda a foto direto para o Storage.
 
    QUEM PODE: não tem login. Quem tem o link do checklist manda, igual às
-   páginas de proposta e entrega. Por isso a loja precisa estar em LOJAS, o
-   caminho é montado aqui (nunca vem pronto do navegador) e o bucket só
-   aceita imagem de até 25 MB.
+   páginas de proposta e entrega. Por isso a loja precisa EXISTIR: ou está
+   em LOJAS (os checklists feitos à mão, antes do gerador), ou tem um
+   <loja>/config.json no bucket, que só o CRM escreve (aba Projetos, desde
+   30/09). O caminho é montado aqui (nunca vem pronto do navegador) e o
+   bucket só aceita imagem de até 25 MB.
    ============================================================ */
 import crypto from "crypto";
 
 const BUCKET = "material";
+/* os checklists feitos à mão, que não têm config.json */
 const LOJAS = new Set(["fulltime"]);
 const EXTENSOES = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp", "image/heic": "heic", "image/heif": "heif", "image/avif": "avif" };
 const LIMITE_RESPOSTAS = 400 * 1024;
@@ -48,6 +51,20 @@ function storage(caminho, opcoes = {}) {
 
 /* só letra, número e hífen: o id da peça vira pasta */
 const limpo = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9-]/g, "").slice(0, 60);
+
+async function lerConfig(loja) {
+  const r = await storage(`object/${BUCKET}/${loja}/config.json`);
+  if (!r.ok) return null;
+  return r.json().catch(() => null);
+}
+
+/* a loja vale se é das antigas ou se o CRM já criou o checklist dela */
+async function lojaValida(loja) {
+  if (!loja) return { ok: false, config: null };
+  if (LOJAS.has(loja)) return { ok: true, config: null };
+  const config = await lerConfig(loja);
+  return { ok: !!config, config };
+}
 
 async function lerRespostas(loja) {
   const r = await storage(`object/${BUCKET}/${loja}/respostas.json`);
@@ -75,16 +92,17 @@ export default async function handler(req, res) {
   try {
     if (req.method === "GET") {
       const loja = limpo(req.query.loja);
-      if (!LOJAS.has(loja)) return erro(res, 404, "loja desconhecida");
+      const v = await lojaValida(loja);
+      if (!v.ok) return erro(res, 404, "loja desconhecida");
       const respostas = await lerRespostas(loja);
       const caminhos = Object.values(respostas.fotos || {}).flat();
-      return responder(res, 200, { ok: true, respostas, miniaturas: await assinarLeitura(caminhos) });
+      return responder(res, 200, { ok: true, config: v.config, respostas, miniaturas: await assinarLeitura(caminhos) });
     }
 
     if (req.method !== "POST") return erro(res, 405, "use GET ou POST");
     const b = req.body || {};
     const loja = limpo(b.loja);
-    if (!LOJAS.has(loja)) return erro(res, 404, "loja desconhecida");
+    if (!(await lojaValida(loja)).ok) return erro(res, 404, "loja desconhecida");
 
     if (b.acao === "assinar") {
       const ext = EXTENSOES[b.tipo];

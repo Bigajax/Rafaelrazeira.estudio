@@ -116,14 +116,23 @@ pessoa nem lembra qual era.
 
 **Nome:** `17 · pip-h28u-story-some` · utm_content `pip-h28u-story-some`
 
-| Tempo | Fala (você) | Texto na tela | Imagem |
+**Publicado em 18/09/2026** (id 120251278791960201), ligado no conjunto da vitrine ao lado de 01, 07 e 15. Saiu com 52 s (as falas gravadas são mais longas que o texto; encurtar é regravar). Render e LEIA-ME em `Desktop/Time Agentes Marketing/squads/rafaelrazeira-estudio/output/2026-09-17-ugc-solo-urb/`.
+
+**Quem fala:** a colaboradora, como no vídeo da Star Point. Ela apresenta
+a loja e o serviço, mas quem monta é o Rafael, então a fala é "a gente
+monta" e "o Rafael desenha", nunca "eu monto". O nome dele entra uma vez
+só, no bloco do preço, onde a promessa é pessoal (uma pessoa, não uma
+agência). No texto do anúncio (o que a página publica) a voz continua em
+primeira pessoa, igual aos outros 15.
+
+| Tempo | Fala (colaboradora) | Texto na tela | Imagem |
 |---|---|---|---|
-| 0 a 3s | "Você vende roupa e tênis pelo story e ele some em 24 horas? Eu monto a sua loja inteira no link da bio e te mostro pronta. Só paga se gostar." | O STORY SOME. A LOJA FICA. | Você, close |
-| 3 a 9s | "Essa aqui é a Sölo Urb: tênis, roupa e relógio de várias marcas, tudo no mesmo lugar. Mandou o @, eu montei com o estoque dela, e viu pronta antes de pagar." | SÖLO URB · O ESTOQUE INTEIRO NO LINK DA BIO | Celular: catálogo da Sölo Urb rolando por categoria (tênis → roupa → relógio) |
-| 9 a 15s | "Categoria, foto, preço e tamanho. O cliente acha o que viu no story três dias depois, escolhe e o pedido chega decidido no seu WhatsApp." | ACHA · ESCOLHE · PEDE NO WHATSAPP | Peça aberta → botão → balão "Quero a camiseta preta, M" |
-| 15 a 20s | "É do seu Instagram que eu tiro as fotos. Manda o @ da loja no formulário e em 24 horas eu te mando o link da sua." | MANDA O @ · PRÉVIA EM 24H | Você, celular na mão |
-| 20 a 26s | "Gostou? Começa com 199 e fecha em 999, sem mensalidade. Não gostou, não paga nada. Uma pessoa, não uma agência." | R$199 PARA COMEÇAR · R$999 NO TOTAL · SEM MENSALIDADE | Você |
-| 26 a 30s | "Quero ver a minha loja. É esse o botão." | QUERO VER A MINHA LOJA ↓ | Formulário do hero |
+| 0 a 3s | "Você vende roupa e tênis pelo story, e ele some em 24 horas? A gente monta a sua loja inteira no link da bio e te mostra pronta. Você só paga se gostar." | O STORY SOME. A LOJA FICA. | Ela, close, olhando na câmera |
+| 3 a 9s | "Essa aqui é a Sölo Urb: tênis, roupa e relógio, várias marcas, tudo no mesmo lugar. Ela mandou o @, recebeu a loja montada com o estoque dela e navegou antes de pagar." | SÖLO URB · O ESTOQUE INTEIRO NO LINK DA BIO | Celular: catálogo da Sölo Urb rolando por categoria (tênis → roupa → relógio) |
+| 9 a 15s | "Categoria, foto, preço e tamanho. O que passou no story continua aqui três dias depois: o cliente acha, escolhe o tamanho, e o pedido chega decidido no seu WhatsApp." | ACHA · ESCOLHE · PEDE NO WHATSAPP | Peça aberta com a grade → toque no botão → balão "Quero a camiseta preta, M" |
+| 15 a 20s | "As fotos saem do seu Instagram. Manda o @ da loja no formulário e em 24 horas você recebe o link da sua." | MANDA O @ · PRÉVIA EM 24H | Ela, celular na mão |
+| 20 a 26s | "Gostou? Começa com 199 e fecha em 999, sem mensalidade. Não gostou, não paga nada. Quem desenha é o Rafael, e é com ele que você fala, do primeiro oi até a loja no ar." | R$199 PARA COMEÇAR · R$999 NO TOTAL · SEM MENSALIDADE | Ela; se quiser, o Rafael entra de relance no fundo, sem falar |
+| 26 a 30s | "Quero ver a minha loja. É esse o botão." | QUERO VER A MINHA LOJA ↓ | Formulário do hero com o campo do @ |
 
 **Texto principal:**
 "Para loja de roupa e tênis que vende pelo story. Eu monto a sua loja
@@ -131,8 +140,9 @@ inteira no link da bio e te mostro pronta. Você só paga se gostar.
 
 Essa é a Sölo Urb: tênis, roupa e relógio de várias marcas no mesmo
 lugar. Mandou o @, viu a loja montada com o estoque dela e navegou antes
-de pagar. O story some em 24 horas; a loja fica, e o pedido chega
-decidido no WhatsApp.
+de pagar. O story some em 24 horas; a loja fica: o cliente acha a peça
+três dias depois, escolhe o tamanho e o pedido chega decidido no seu
+WhatsApp.
 
 Manda o @ da sua no formulário e em 24 horas eu te mando o link. Gostou?
 R$ 199 para começar, R$ 999 no total, sem mensalidade. Não gostou, não
@@ -147,7 +157,7 @@ tela.
 
 ## O que é igual nos três anúncios
 
-- **Título:** "Sua loja de roupa pronta antes de pagar".
+- **Título:** "Você vê pronta antes de pagar", o mesmo do h17u. O 15 (Star Point) saiu assim em 17/09 para manter a constante do teste; "Sua loja de roupa pronta antes de pagar" fica guardado para um teste de título depois.
 - **Descrição:** "Prévia grátis com as suas peças".
 - **CTA:** Saiba mais.
 - **URL:** `https://rafaelrazeira.com.br/vitrine-digital` com
@@ -158,6 +168,9 @@ tela.
   Mixpanel separa os dois funis.
 - **Mesmo conjunto** (`previa-gratis · br · 13 criativos`). Não criar
   conjunto novo.
+- **Voz:** quando a colaboradora grava, a fala é "a gente monta" e o
+  Rafael é nomeado uma vez no bloco do preço. O vídeo 2 (Star Point) foi
+  gravado assim em 16/09 e publicado em 17/09 como `15 · pip-h27u-loja-fisica`.
 - **Sugestões de público** no Advantage+ (ponto de partida, não trava):
   interesses streetwear, moda, lojista, Nuvemshop/Shopify; cargo
   proprietário de loja; idade 22 a 45.

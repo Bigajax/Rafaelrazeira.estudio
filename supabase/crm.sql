@@ -1361,3 +1361,25 @@ select t.owner_id, 'Chegou pelo anúncio, mas o @ não abriu', 'whatsapp', 'aber
  where not exists (
    select 1 from public.crm_templates x
     where x.owner_id = t.owner_id and x.titulo = 'Chegou pelo anúncio, mas o @ não abriu');
+
+-- ============================================================
+-- 28/09/2026: DISSE QUE IA FAZER E SUMIU
+-- O caso da VAYLW: o Luis gostou da prévia, disse na sexta que ia fazer,
+-- e na segunda ainda não tinha voltado. A primeira versão fechava com
+-- "te mando o Pix dos R$ 199 e começo", e o Rafael barrou: "muito
+-- insistivo o pix". Ficou assim: retoma o que a pessoa disse (sem
+-- cobrar), pede UM dado que a produção precisa de verdade (o número que
+-- recebe os pedidos, que toda loja tem que confirmar) e termina na
+-- pergunta. O Pix sai só na resposta dela, junto com o "começo hoje".
+-- Ordem 12, no fim da categoria: não mexe nos índices 0 e 1 que
+-- `templateDaEtapa` usa. Já aplicado no banco por script; o bloco fica
+-- de registro.
+-- ============================================================
+insert into public.crm_templates (owner_id, titulo, canal, categoria, conteudo, ordem)
+select t.owner_id, 'Disse que ia fazer e sumiu: um dado, sem Pix', 'whatsapp', 'previa',
+       'Oi, {nome}! Você falou que ia fazer a vitrine da {instagram}, então já vou deixando tudo pronto pra ligar no seu número. Só me confirma uma coisa: os pedidos caem neste WhatsApp aqui mesmo, ou em outro número?',
+       12
+  from (select distinct owner_id from public.crm_templates) t
+ where not exists (
+   select 1 from public.crm_templates x
+    where x.owner_id = t.owner_id and x.titulo = 'Disse que ia fazer e sumiu: um dado, sem Pix');

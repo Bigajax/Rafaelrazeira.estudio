@@ -1,0 +1,239 @@
+/* ============================================================
+   FINANCEIRO (30/09/2026): quanto entra, quanto sai, o que sobra
+
+   A mesa de papel do CRM, com duas cores que DIZEM alguma coisa:
+     azul (o céu do Plano)   o que entrou
+     tinta                   o que saiu
+     rosa da casa            o vermelho do mês
+   E uma peça com personalidade: o resultado impresso como cupom de caixa,
+   levemente torto, com a borda serrilhada. É o DRE que qualquer um lê.
+
+   Toda classe que cai num <p> leva `.tela` na frente: o `.app p` do CRM
+   (0,1,1) vence uma classe sozinha e pinta tudo de cinza (visto no Plano,
+   30/09).
+   ============================================================ */
+
+.tela {
+  max-width: 1400px; margin: 0 auto;
+  --azul: #2F58C4; --azul-claro: #9DB4EE; --vermelho: var(--rosa); --cupom: #FFFEF9;
+  --c-trafego: #F5B82E; --c-ferramenta: #6E80B8; --c-pessoal: #0C9159; --c-imposto: #5C6467; --c-outro: #B9B3A3; --c-taxa: #D8D3C4;
+}
+.ocupado { opacity: .7; transition: opacity .15s }
+.ponto { color: var(--rosa); font-style: normal }
+.azul { color: var(--azul) }
+.vermelho { color: var(--vermelho) }
+
+.cabeca {
+  display: grid; grid-template-columns: 1fr auto; gap: 10px 20px; align-items: end;
+  padding-bottom: 18px; border-bottom: 3px solid var(--ink); margin-bottom: 24px;
+}
+.cabeca h1 { font-size: clamp(34px, 5vw, 64px); line-height: .86 }
+.tela .voz { font: 400 15.5px/1.55 var(--body); color: var(--ink-soft); max-width: 72ch; margin: 6px 0 16px }
+.tela .cabeca .voz { margin: 8px 0 0 }
+.meses { display: flex; gap: 6px; align-items: baseline; font: 700 13px var(--body) }
+.meses a { color: var(--ink-fraco); padding: 5px 9px; border: 1.5px solid var(--line) }
+.meses a:hover { border-color: var(--ink); color: var(--ink) }
+.meses b { padding: 5px 9px; background: var(--ink); color: var(--paper) }
+
+.tela .erro { background: #FDE7EF; border: 1.5px solid var(--rosa); color: var(--rosa-dark); padding: 10px 12px; margin-bottom: 16px; font-size: 14px }
+.aviso { border: 1.5px dashed var(--ink-fraco); padding: 18px; background: var(--paper-alto); margin-top: 20px }
+.aviso b { display: block; font: 900 18px var(--display); font-stretch: 88%; margin-bottom: 6px }
+.aviso code { font: 13px var(--mono) }
+
+.btn {
+  font: 700 13px var(--body); background: var(--ink); color: var(--paper);
+  border: 1.5px solid var(--ink); padding: 9px 14px; cursor: pointer;
+}
+.btn:hover { box-shadow: 3px 3px 0 var(--azul) }
+.mini { font: 600 12.5px var(--body); background: none; color: var(--ink-soft); border: 1.5px solid var(--line); padding: 4px 9px; cursor: pointer }
+.mini:hover { border-color: var(--ink); color: var(--ink) }
+
+/* ============================================================
+   O TOPO: a frase do mês e o cupom
+   ============================================================ */
+.topo { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(320px, .9fr); gap: clamp(22px, 4vw, 56px); align-items: start; margin-bottom: 44px }
+.frase { display: grid; gap: 14px; padding-top: 6px }
+.tela .fraseGrande { font: 900 clamp(30px, 3.6vw, 50px)/1.02 var(--display); font-stretch: 76%; color: var(--ink); text-wrap: balance }
+.entrou { color: var(--azul) }
+.saiu { text-decoration: underline 4px var(--ink); text-underline-offset: 6px }
+.tela .veredito { font: 900 clamp(20px, 2.2vw, 28px)/1.15 var(--display); font-stretch: 78% }
+.tela .veredito.azul { color: var(--azul) }
+.tela .veredito.vermelho { color: var(--vermelho) }
+.tela .nota { font-size: 13.5px; color: var(--ink-fraco) }
+
+.cem { margin-top: 10px; display: grid; gap: 10px }
+.tela .cemTitulo { font: 700 14px var(--body); color: var(--ink) }
+.barra { position: relative; display: flex; height: 30px; margin-top: 16px; background: var(--paper-alto); border: 1.5px solid var(--ink) }
+.barra i { display: block; height: 100% }
+.barra i + i { border-left: 2px solid var(--paper) }
+.linhaCem { position: absolute; top: -8px; bottom: -8px; width: 0; border-left: 2px dashed var(--ink) }
+.linhaCem::after {
+  content: "o que entrou"; position: absolute; top: -20px; left: 0; transform: translateX(-50%);
+  font: 600 11.5px var(--body); color: var(--ink); white-space: nowrap;
+}
+.cemLista { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 14px; color: var(--ink-soft) }
+.cemLista i { display: inline-block; width: 11px; height: 11px; margin-right: 5px; vertical-align: -1px }
+.cemLista .falta { color: var(--vermelho); font-weight: 700 }
+.c_trafego { background: var(--c-trafego) }
+.c_ferramenta { background: var(--c-ferramenta) }
+.c_pessoal { background: var(--c-pessoal) }
+.c_imposto { background: var(--c-imposto) }
+.c_outro { background: var(--c-outro) }
+.c_taxa { background: var(--c-taxa) }
+.c_sobra { background: var(--azul-claro) }
+
+/* ---------- o cupom ---------- */
+.cupom {
+  --serra: 10px;
+  position: relative; background: var(--cupom); color: var(--ink);
+  padding: 22px 22px calc(22px + var(--serra)); transform: rotate(.6deg);
+  box-shadow: 0 1px 0 var(--line), 6px 10px 0 -2px rgba(20, 24, 26, .12);
+  font: 13.5px/1.45 var(--body); font-variant-numeric: tabular-nums;
+  /* a borda de baixo serrilhada, como papel de maquininha */
+  -webkit-mask: linear-gradient(#000 0 0) top / 100% calc(100% - var(--serra)) no-repeat,
+    conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) bottom / calc(2 * var(--serra)) var(--serra) repeat-x;
+  mask: linear-gradient(#000 0 0) top / 100% calc(100% - var(--serra)) no-repeat,
+    conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) bottom / calc(2 * var(--serra)) var(--serra) repeat-x;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .cupom { transition: transform .2s ease }
+  .cupom:hover { transform: rotate(0deg) }
+}
+.tela .cupomCab { text-align: center; font: 700 14px/1.45 var(--body); color: var(--ink); padding-bottom: 10px; border-bottom: 1.5px dashed var(--ink) }
+.tela .cupomDica { font: 400 12.5px/1.4 var(--body); color: var(--ink-fraco); text-align: center; margin: 8px 0 12px }
+.linha { display: grid; grid-template-columns: auto 1fr auto; align-items: baseline; gap: 6px; padding: 5px 0 }
+.linhaRotulo { font-weight: 700 }
+.pontilhado { border-bottom: 1.5px dotted var(--ink-fraco); transform: translateY(-3px) }
+.linhaValor { font-weight: 700; white-space: nowrap }
+.explica { grid-column: 1 / -1; font: 12.5px/1.35 var(--body); color: var(--ink-fraco) }
+.linhaTotal { border-top: 1.5px dashed var(--ink); border-bottom: 1.5px dashed var(--ink); margin: 6px 0 8px; padding: 7px 0 }
+.bloco + .bloco { margin-top: 4px }
+.miudos { list-style: none; margin: 0 0 4px; padding: 0 0 0 12px; display: grid; gap: 1px; font-size: 12px; color: var(--ink-soft) }
+.miudos li { display: flex; justify-content: space-between; gap: 10px }
+.final {
+  display: grid; grid-template-columns: 1fr auto; align-items: baseline; gap: 10px;
+  margin-top: 12px; padding-top: 10px; border-top: 3px double var(--ink);
+}
+.final span { font-weight: 700; color: var(--ink) }
+.final b { font: 900 clamp(26px, 3vw, 36px)/1 var(--display); font-stretch: 72% }
+.tela .cupomPe { text-align: center; font: 500 12.5px var(--body); color: var(--ink-fraco); margin-top: 10px }
+
+/* ============================================================
+   MÊS A MÊS
+   ============================================================ */
+.andar { margin-bottom: 44px }
+.andar h2 { font-size: clamp(24px, 3vw, 34px) }
+.historico { list-style: none; margin: 0; padding: 0; display: flex; gap: 14px; align-items: flex-end; overflow-x: auto; padding-bottom: 6px }
+.historico a { display: grid; gap: 4px; justify-items: center; color: var(--ink); min-width: 74px; padding: 8px 6px; border: 1.5px solid transparent }
+.historico a:hover { border-color: var(--line) }
+.historico .mesAtual a { border-color: var(--ink); background: var(--paper-alto) }
+.barras { display: flex; gap: 4px; align-items: flex-end; height: 120px }
+.barras i { display: block; width: 22px; min-height: 2px }
+.bEntrou { background: var(--azul) }
+.bSaiu { background: var(--ink) }
+.historico b { font: 700 13px var(--body) }
+.historico em { font: 700 12px var(--body); font-style: normal }
+
+/* ============================================================
+   OS CUSTOS
+   ============================================================ */
+.custos { display: grid; gap: 14px; justify-items: start }
+.tabela { width: 100%; border-collapse: collapse; background: var(--paper-alto); border: 1.5px solid var(--ink); font-size: 14px }
+.tabela th { text-align: left; font: 700 12.5px var(--body); color: var(--ink-soft); padding: 9px 12px; border-bottom: 1.5px solid var(--ink) }
+.tabela td { padding: 10px 12px; border-top: 1px solid var(--line); vertical-align: top }
+.tabela tbody tr:first-child td { border-top: 0 }
+.tabela tfoot td { border-top: 1.5px solid var(--ink); font-weight: 700 }
+.tabela b { font-weight: 700 }
+.porMes { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums }
+.estimado { margin-left: 8px; font: 500 11.5px var(--body); color: var(--ink-fraco); border-bottom: 1px dashed var(--ink-fraco) }
+.notaCusto { display: block; font-size: 12.5px; color: var(--ink-fraco); margin-top: 2px }
+.tela .parados { font-size: 13px; color: var(--ink-fraco) }
+
+.form {
+  width: 100%; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px 12px; align-items: end;
+  padding: 14px; background: var(--paper); border: 1.5px solid var(--ink);
+}
+.form label { display: grid; gap: 4px; font: 600 12.5px var(--body); color: var(--ink-soft) }
+.form input, .form select { font: 14px var(--body); color: var(--ink); background: var(--paper-alto); border: 1.5px solid var(--line); padding: 7px 9px; width: 100% }
+.form input:focus, .form select:focus { outline: none; border-color: var(--ink) }
+.form .largo { grid-column: span 2 }
+.form .check { display: flex; align-items: center; gap: 8px; font-weight: 500 }
+.form .check input { width: auto }
+.formPe { grid-column: 1 / -1; display: flex; gap: 8px; flex-wrap: wrap }
+
+/* ============================================================
+   CELULAR
+   ============================================================ */
+@media (max-width: 1000px) {
+  .topo { grid-template-columns: 1fr }
+  .cupom { transform: none; max-width: 520px }
+}
+@media (max-width: 560px) {
+  .cabeca { grid-template-columns: 1fr }
+  .form { grid-template-columns: 1fr 1fr }
+  .form .largo { grid-column: 1 / -1 }
+  .tabela thead { display: none }
+  .tabela, .tabela tbody, .tabela tr, .tabela td, .tabela tfoot { display: block; width: 100% }
+  .tabela tr { border-top: 1px solid var(--line); padding: 8px 0 }
+  .tabela td { border: 0; padding: 2px 12px }
+  .tabela tfoot tr { display: flex; justify-content: space-between; border-top: 1.5px solid var(--ink) }
+  .tabela tfoot td { width: auto; border: 0 }
+  .tabela tfoot td:empty { display: none }
+  .porMes { text-align: left }
+}
+
+/* ============================================================
+   A CONTA DA VIRADA (30/09): quantas vitrines pagam o mês
+   ============================================================ */
+.viradaPerguntas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 18px }
+.viradaPerguntas label { display: grid; gap: 6px; align-content: start; padding: 14px 16px; background: var(--paper-alto); border: 1.5px solid var(--ink) }
+.viradaPerguntas label > span:first-child { font: 600 13.5px var(--body); color: var(--ink-soft) }
+.viradaPerguntas em { font: 400 12.5px/1.4 var(--body); font-style: normal; color: var(--ink-fraco) }
+.campoDinheiro { display: flex; align-items: baseline; gap: 6px; font: 900 28px var(--display); font-stretch: 76% }
+.tela .campoDinheiro input[type] {
+  width: 5.2em; font: 900 34px/1 var(--display); font-stretch: 76%; color: var(--azul);
+  background: none; border: 0; border-bottom: 2px dashed var(--azul); padding: 0 2px;
+}
+.tela .campoDinheiro input[type]:focus { outline: none; border-bottom-style: solid }
+.custoFixo { font: 900 34px/1 var(--display); font-stretch: 76%; color: var(--ink) }
+
+.viradaNumeros { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px }
+.viradaNumeros > div { display: flex; align-items: center; gap: 14px; padding: 14px 18px; border: 1.5px solid var(--ink); background: var(--paper-alto) }
+.viradaNumeros b { font: 900 clamp(56px, 7vw, 88px)/.85 var(--display); font-stretch: 70%; color: var(--ink) }
+.viradaNumeros span { display: grid; gap: 4px; font: 800 19px/1.15 var(--display); font-stretch: 85% }
+.viradaNumeros em { font: 400 13px/1.4 var(--body); font-style: normal; color: var(--ink-soft) }
+.viradaNumeros > .viradaMeta { background: var(--azul); border-color: var(--azul); color: #fff }
+.viradaMeta b, .viradaMeta span { color: #fff }
+.viradaMeta em { color: #DCE6FF }
+
+.fileira { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px }
+.fileira i { position: relative; display: block; width: 34px; height: 42px; border: 2px dashed var(--ink-fraco) }
+.fileira .qVendida { background: var(--ink); border: 2px solid var(--ink) }
+.fileira .qEmpate { border-color: var(--ink) }
+.fileira .qMargem { border-color: var(--azul); background: color-mix(in srgb, var(--azul) 10%, transparent) }
+.fileira i span {
+  position: absolute; left: 50%; bottom: -20px; transform: translateX(-50%);
+  font: 700 11px var(--body); color: var(--ink); white-space: nowrap;
+}
+.fileiraLegenda { list-style: none; margin: 18px 0 16px; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 20px; font-size: 13.5px; color: var(--ink-soft) }
+.fileiraLegenda li::before { content: ""; display: inline-block; width: 12px; height: 14px; margin-right: 6px; vertical-align: -2px; border: 2px dashed var(--ink-fraco) }
+.fileiraLegenda .lVendida::before { background: var(--ink); border: 2px solid var(--ink) }
+.fileiraLegenda .lEmpate::before { border-color: var(--ink) }
+.fileiraLegenda .lMargem::before { border-color: var(--azul) }
+.levar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; font-size: 13.5px; color: var(--ink-soft) }
+
+/* ---------- a tabela editável na linha ---------- */
+.tela .linhaViva input[type], .tela .linhaViva input:not([type]), .tela .linhaViva select {
+  font: inherit; color: var(--ink); background-color: transparent; border: 1.5px solid transparent; padding: 4px 6px;
+}
+.tela .linhaViva select { padding-right: 22px; background-position: right 10px center, right 5px center }
+.tela .linhaViva input:hover, .tela .linhaViva select:hover { border-color: var(--line) }
+.tela .linhaViva input:focus, .tela .linhaViva select:focus { outline: none; border-color: var(--ink); background: #fff }
+.tela .linhaViva input.celNome { font-weight: 700; width: 100%; max-width: 260px }
+.celValor { display: flex; gap: 2px; align-items: center; flex-wrap: nowrap }
+.tela .linhaViva .celValor select { width: auto }
+.tela .linhaViva .celValor input[type] { width: 6.5em; text-align: right; font-variant-numeric: tabular-nums }
+
+@media (max-width: 900px) {
+  .viradaPerguntas, .viradaNumeros { grid-template-columns: 1fr }
+}

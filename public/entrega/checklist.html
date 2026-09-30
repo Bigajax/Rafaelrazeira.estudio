@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>O que falta pra sua loja ficar pronta · Rafael Razeira Estúdio</title>
+<meta name="description" content="O checklist pra terminar a sua loja: preencha peça por peça e mande as fotos por aqui." />
+<meta name="theme-color" content="#0A0A0A" />
+<meta name="robots" content="noindex, nofollow" />
+
+<!-- ============================================================
+     O CHECKLIST DO CLIENTE, UMA PÁGINA PARA TODAS AS LOJAS (30/09/2026)
+
+     O link é rafaelrazeira.com.br/checklist/<chave> (rewrite no
+     next.config). A página lê a chave do endereço, pede a config e as
+     respostas em /api/material, e se monta: as peças da vitrine, as grades
+     de cada categoria e só as perguntas que o Rafael ligou no CRM (aba
+     Projetos, "Criar checklist do cliente").
+
+     Nasceu do checklist da Full Time, feito à mão
+     (/entrega/fulltime-checklist.html), que continua valendo como está.
+     ============================================================ -->
+
+<link rel="icon" type="image/png" href="/assets/favicon.png" />
+<link rel="apple-touch-icon" href="/assets/favicon.png" />
+
+<meta property="og:type" content="article" />
+<meta property="og:locale" content="pt_BR" />
+<meta property="og:site_name" content="Rafael Razeira Estúdio" />
+<meta property="og:title" content="O que falta pra sua loja ficar pronta" />
+<meta property="og:description" content="Preencha peça por peça e mande as fotos por aqui. Salva sozinho." />
+<meta property="og:image" content="https://rafaelrazeira.com.br/entrega/checklist/og.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="O checklist da sua loja, do Rafael Razeira Estúdio" />
+<meta name="twitter:card" content="summary_large_image" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;900&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --papel: #FAFAF7;
+    --tinta: #0A0A0A;
+    --cinza: #6B6B66;
+    --fio: #E4E4DE;
+    --verde: #10B981;
+    --verde-escuro: #047857;
+    --verde-claro: #F0FBF6;
+    --erro: #B42318;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--papel);
+    color: var(--tinta);
+    font: 400 16px/1.55 Inter, system-ui, sans-serif;
+  }
+  a { color: inherit; }
+  button { font: inherit; color: inherit; }
+  [hidden] { display: none !important; }
+
+  /* O topo: a logo da loja no preto, o selo do estúdio em cima. */
+  .topo { background: var(--tinta); color: #fff; padding: 28px 20px 32px; }
+  .topo__dentro, .miolo { max-width: 680px; margin: 0 auto; }
+  .rotulo { font: 700 11px/1 "Space Mono", monospace; letter-spacing: .14em; text-transform: uppercase; }
+  .topo .rotulo { color: var(--verde); }
+  .topo img { display: block; width: 150px; height: auto; margin: 22px 0 26px; }
+  h1 {
+    font: 900 clamp(34px, 9vw, 56px)/.95 Archivo, sans-serif;
+    text-transform: uppercase; letter-spacing: -.01em; margin: 0 0 16px;
+  }
+  .topo p { margin: 0 0 10px; color: #C9C9C3; max-width: 34em; }
+  .topo p:last-child { margin: 0; }
+  .topo strong { color: #fff; font-weight: 600; }
+
+  /* A barra presa no alto: quanto já foi e se está salvo. */
+  .progresso {
+    position: sticky; top: 0; z-index: 20;
+    background: var(--papel); border-bottom: 1px solid var(--fio); padding: 10px 20px;
+  }
+  .progresso__linha { max-width: 680px; margin: 0 auto; display: flex; align-items: center; gap: 12px; }
+  .progresso__trilho { flex: 1; height: 8px; background: var(--fio); border-radius: 99px; overflow: hidden; }
+  .progresso__cheio { height: 100%; width: 0; background: var(--verde); transition: width .3s ease-out; }
+  .progresso__conta { font: 700 12px/1 "Space Mono", monospace; white-space: nowrap; }
+  .salvo { font: 700 11px/1 "Space Mono", monospace; letter-spacing: .06em; text-transform: uppercase; color: var(--cinza); white-space: nowrap; min-width: 74px; text-align: right; }
+  .salvo--ok { color: var(--verde-escuro); }
+  .salvo--erro { color: var(--erro); }
+
+  .miolo { padding: 8px 20px 60px; }
+  .bloco { padding: 34px 0 30px; border-bottom: 1px solid var(--fio); }
+  .bloco__num { font: 700 12px/1 "Space Mono", monospace; color: var(--cinza); }
+  h2 { font: 900 26px/1.05 Archivo, sans-serif; text-transform: uppercase; margin: 8px 0 10px; }
+  .bloco > p { margin: 0 0 18px; color: #3A3A36; }
+  .bloco--feito > h2::after {
+    content: "ok"; display: inline-block; vertical-align: middle;
+    margin-left: 10px; padding: 4px 8px 3px; background: var(--verde); color: #fff;
+    font: 700 11px/1 "Space Mono", monospace; letter-spacing: .1em; text-transform: uppercase; border-radius: 4px;
+  }
+  h3 {
+    font: 700 11px/1 "Space Mono", monospace; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--cinza); margin: 26px 0 10px; display: flex; justify-content: space-between;
+  }
+
+  /* As escolhas de uma resposta só. */
+  .escolhas { display: grid; gap: 8px; margin: 0 0 8px; }
+  .item {
+    display: flex; gap: 14px; align-items: flex-start;
+    padding: 14px 16px; background: #fff; border: 1px solid var(--fio); border-radius: 12px;
+    cursor: pointer; user-select: none; transition: border-color .15s ease-out, background-color .15s ease-out;
+  }
+  .item input { position: absolute; opacity: 0; pointer-events: none; }
+  .bolinha {
+    flex: none; width: 26px; height: 26px; margin-top: -1px; border: 2px solid var(--tinta); border-radius: 99px;
+    display: grid; place-items: center; transition: background-color .15s ease-out, border-color .15s ease-out;
+  }
+  .bolinha::after { content: ""; width: 10px; height: 10px; border-radius: 99px; background: #fff; opacity: 0; transition: opacity .15s ease-out; }
+  .item input:checked + .bolinha { background: var(--verde); border-color: var(--verde); }
+  .item input:checked + .bolinha::after { opacity: 1; }
+  .item:has(input:checked) { border-color: var(--verde); background: var(--verde-claro); }
+  .item input:focus-visible + .bolinha { outline: 3px solid var(--verde); outline-offset: 2px; }
+  .item__texto strong { display: block; font-weight: 600; }
+  .item__texto span { display: block; color: var(--cinza); font-size: 14px; margin-top: 2px; }
+
+  .campo { display: block; margin: 0 0 14px; }
+  .campo > span { display: block; font-weight: 600; margin-bottom: 6px; }
+  .campo small { display: block; color: var(--cinza); font-size: 13px; margin: -2px 0 6px; font-weight: 400; }
+  input[type="text"], input[type="tel"], input[type="email"], input[type="number"], textarea {
+    width: 100%; font: inherit; font-size: 16px; padding: 12px 14px;
+    border: 1px solid #CFCFC8; border-radius: 10px; background: #fff; color: var(--tinta);
+  }
+  textarea { min-height: 96px; resize: vertical; }
+  input:focus, textarea:focus { outline: 2px solid var(--verde); outline-offset: 1px; border-color: var(--verde); }
+  .opcional {
+    font: 700 10px/1 "Space Mono", monospace; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--cinza); border: 1px solid var(--fio); border-radius: 4px; padding: 3px 5px 2px;
+    margin-left: 6px; vertical-align: 2px; white-space: nowrap; font-style: normal;
+  }
+  .nota { margin: 14px 0 0; padding: 14px 16px; border-left: 4px solid var(--tinta); background: #fff; font-size: 14px; color: #3A3A36; }
+  .link {
+    display: inline-flex; align-items: center; gap: 8px; margin: 0 0 18px; padding: 12px 16px;
+    background: var(--tinta); color: #fff; text-decoration: none; font-weight: 600; font-size: 15px; border-radius: 10px;
+  }
+  .link::after { content: "→"; }
+
+  /* ---------- A PEÇA ----------
+     Fechada, é uma linha com a foto, o nome e o que já foi preenchido.
+     Aberta, mostra tudo o que dá pra mandar dela. */
+  .peca { background: #fff; border: 1px solid var(--fio); border-radius: 14px; margin: 0 0 8px; overflow: hidden; }
+  .peca--pronta { border-color: var(--verde); }
+  .peca--saiu { background: #F3F3EF; }
+  .peca__cabeca {
+    width: 100%; display: flex; gap: 12px; align-items: center; padding: 10px 12px;
+    background: none; border: 0; text-align: left; cursor: pointer;
+  }
+  .peca__foto { flex: none; width: 56px; height: 56px; border-radius: 8px; background: #EFEFEC; object-fit: cover; }
+  .peca__foto--vazia { display: grid; place-items: center; font: 700 10px/1 "Space Mono", monospace; color: var(--cinza); }
+  .peca--saiu .peca__foto { filter: grayscale(1); opacity: .5; }
+  .peca__nome { flex: 1; min-width: 0; }
+  .peca__nome strong { display: block; font-weight: 600; line-height: 1.3; }
+  .peca--saiu .peca__nome strong { text-decoration: line-through; color: var(--cinza); }
+  .selos { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+  .selo { font: 700 10px/1 "Space Mono", monospace; letter-spacing: .04em; text-transform: uppercase; padding: 4px 6px 3px; border-radius: 4px; background: #F0F0EC; color: var(--cinza); }
+  .selo--ok { background: var(--verde-claro); color: var(--verde-escuro); }
+  .selo--saiu { background: var(--tinta); color: #fff; }
+  .seta { flex: none; width: 20px; height: 20px; transition: transform .2s ease-out; }
+  .peca--aberta .seta { transform: rotate(180deg); }
+  .peca__corpo { padding: 4px 14px 18px; border-top: 1px solid var(--fio); }
+
+  .duas { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 14px 0 4px; }
+  .botao-sn {
+    padding: 12px 10px; border: 1.5px solid var(--fio); border-radius: 10px; background: #fff;
+    font-weight: 600; cursor: pointer; transition: border-color .15s ease-out, background-color .15s ease-out;
+  }
+  .botao-sn[aria-pressed="true"] { border-color: var(--tinta); background: var(--tinta); color: #fff; }
+  .botao-sn:active { transform: scale(.98); }
+
+  .rotulo-campo { display: block; font-weight: 600; margin: 18px 0 8px; font-size: 15px; }
+  .preco { position: relative; }
+  .preco span { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--cinza); pointer-events: none; }
+  .preco input { padding-left: 42px; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    min-width: 46px; padding: 9px 11px; border: 1.5px solid var(--fio); border-radius: 8px; background: #fff;
+    font-weight: 600; font-size: 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 7px;
+    transition: border-color .12s ease-out, background-color .12s ease-out;
+  }
+  .chip[aria-pressed="true"] { border-color: var(--tinta); background: var(--tinta); color: #fff; }
+  .amostra { width: 14px; height: 14px; border-radius: 99px; border: 1px solid rgba(0,0,0,.2); flex: none; }
+  .amostra--listras { background: repeating-linear-gradient(45deg, #e98bb3 0 3px, #2f6fd1 3px 6px, #f2c230 6px 9px); }
+  .grade-nome { font-size: 12px; color: var(--cinza); margin: 10px 0 6px; }
+  .outro { margin-top: 8px; }
+
+  /* As fotos: a grade das que já foram e o botão de mandar mais. */
+  .fotos { display: grid; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 8px; }
+  .foto { position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden; background: #EFEFEC; }
+  .foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .foto__tirar {
+    position: absolute; top: 4px; right: 4px; width: 26px; height: 26px; border-radius: 99px; border: 0;
+    background: rgba(10,10,10,.75); color: #fff; font-size: 16px; line-height: 1; cursor: pointer;
+  }
+  .foto__estado {
+    position: absolute; inset: auto 0 0 0; padding: 4px; background: rgba(10,10,10,.7); color: #fff;
+    font: 700 10px/1.2 "Space Mono", monospace; text-align: center;
+  }
+  .foto--erro .foto__estado { background: var(--erro); }
+  .mandar-fotos {
+    aspect-ratio: 1; border: 1.5px dashed #BDBDB6; border-radius: 8px; background: #fff; cursor: pointer;
+    display: grid; place-content: center; text-align: center; gap: 2px; font-size: 13px; font-weight: 600; color: #3A3A36;
+  }
+  .mandar-fotos b { font-size: 24px; line-height: 1; font-weight: 400; }
+  .mandar-fotos input { display: none; }
+
+  .nova-peca {
+    width: 100%; padding: 16px; margin: 6px 0 0; border: 1.5px dashed #BDBDB6; border-radius: 12px; background: #fff;
+    font-weight: 600; cursor: pointer;
+  }
+  .tirar-peca { margin-top: 16px; background: none; border: 0; padding: 0; color: var(--erro); text-decoration: underline; font-size: 14px; cursor: pointer; }
+
+  /* O fim: avisar o Rafael. */
+  .fim { padding: 40px 0 0; }
+  .fim h2 { font-size: 30px; }
+  .enviar {
+    display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%;
+    padding: 18px 20px; margin: 8px 0 12px; background: var(--verde); color: #fff; border: 0; border-radius: 12px;
+    font: 700 17px/1.2 Inter, sans-serif; cursor: pointer; transition: background-color .15s ease-out, transform .1s ease-out;
+  }
+  .enviar:hover { background: var(--verde-escuro); }
+  .enviar:active { transform: scale(.98); }
+  .enviar svg { width: 22px; height: 22px; }
+  .miudo { font-size: 13px; color: var(--cinza); margin: 0; }
+  .assinatura { margin-top: 48px; padding-top: 18px; border-top: 1px solid var(--fio); }
+  .assinatura .rotulo { color: var(--cinza); }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+  /* o nome da loja no topo, com o ícone do próprio site dela quando existe */
+  .topo__loja { display: flex; align-items: center; gap: 14px; margin: 22px 0 22px; font: 900 22px/1.1 Archivo, sans-serif; text-transform: uppercase; letter-spacing: .01em }
+  .topo__loja img { width: 56px; height: 56px; border-radius: 12px; background: #fff; object-fit: contain; flex: none }
+  .fora h2 { font-size: 24px }
+</style>
+
+</head>
+<body>
+
+<header class="topo">
+  <div class="topo__dentro">
+    <div class="rotulo">Rafael Razeira Estúdio · checklist</div>
+    <div class="topo__loja">
+      <img id="icone" alt="" width="56" height="56" hidden />
+      <span id="nome-loja">Sua loja</span>
+    </div>
+    <h1>O que falta pra sua loja ficar pronta</h1>
+    <p>Preenche aqui e manda as fotos por aqui mesmo, que <strong>chega tudo direto pra mim</strong> e eu cadastro no site. As fotos vão em qualidade boa, sem a compressão do WhatsApp.</p>
+    <p>Salva sozinho a cada coisa que você preenche. Pode parar e voltar outro dia.</p>
+  </div>
+</header>
+
+<div class="progresso" aria-live="polite">
+  <div class="progresso__linha">
+    <div class="progresso__trilho"><div class="progresso__cheio" id="cheio"></div></div>
+    <div class="progresso__conta" id="conta"></div>
+    <div class="salvo" id="salvo">…</div>
+  </div>
+</div>
+
+<main class="miolo" id="miolo">
+
+  <section class="bloco fora" id="nao-achei" hidden>
+    <h2>Não achei este checklist</h2>
+    <p>Confira se o link veio inteiro. Se continuar assim, me chama no WhatsApp que eu mando de novo.</p>
+  </section>
+
+  <section class="bloco" id="b-preco" data-pergunta="preco" hidden>
+    <div class="bloco__num"></div>
+    <h2>Preço no site</h2>
+    <p>O site pode mostrar o preço de cada peça ou deixar "Valor no WhatsApp". Antes das peças, me diz como você quer.</p>
+    <div class="escolhas">
+      <label class="item"><input type="radio" name="precoNoSite" value="sim"><span class="bolinha"></span><span class="item__texto"><strong>Quero mostrar o preço</strong><span>Aí cada peça abaixo ganha o campo do preço.</span></span></label>
+      <label class="item"><input type="radio" name="precoNoSite" value="nao"><span class="bolinha"></span><span class="item__texto"><strong>Prefiro deixar "Valor no WhatsApp"</strong></span></label>
+    </div>
+  </section>
+
+  <section class="bloco" id="b-pecas" hidden>
+    <div class="bloco__num"></div>
+    <h2>As peças</h2>
+    <p id="pecas-intro"></p>
+    <a class="link" id="link-catalogo" target="_blank" rel="noopener">Ver as peças no site</a>
+    <div id="lista-pecas"></div>
+  </section>
+
+  <section class="bloco" id="b-novas" data-pergunta="novas" hidden>
+    <div class="bloco__num"></div>
+    <h2>Peças que faltam</h2>
+    <p>O que tem na loja e não apareceu no site. Uma por peça, com o nome e as fotos.</p>
+    <div id="lista-novas"></div>
+    <button class="nova-peca" id="nova-peca" type="button">+ Adicionar uma peça</button>
+  </section>
+
+  <section class="bloco" id="b-marcas" data-pergunta="marcas" hidden>
+    <div class="bloco__num"></div>
+    <h2>Marcas</h2>
+    <p>Quero cadastrar todas as marcas que vocês trabalham, e não só as que já estão no site.</p>
+    <label class="campo"><span>Todas as marcas</span><small>Uma por linha.</small><textarea data-campo="marcas"></textarea></label>
+    <span class="rotulo-campo">Logos das marcas <em class="opcional">se tiver</em></span>
+    <div class="fotos" data-fotos="logos"></div>
+  </section>
+
+  <section class="bloco" id="b-banners" data-pergunta="banners" hidden>
+    <div class="bloco__num"></div>
+    <h2>Banners</h2>
+    <p>Os banners são as fotos grandes do topo do site.</p>
+    <a class="link" id="link-site" target="_blank" rel="noopener">Ver os banners</a>
+    <div class="escolhas">
+      <label class="item"><input type="radio" name="banners" value="aprovo"><span class="bolinha"></span><span class="item__texto"><strong>Aprovo os banners</strong></span></label>
+      <label class="item"><input type="radio" name="banners" value="trocar"><span class="bolinha"></span><span class="item__texto"><strong>Quero trocar alguma coisa</strong></span></label>
+    </div>
+    <label class="campo" id="banners-obs" hidden><span>O que você quer trocar?</span><textarea data-campo="bannersObs"></textarea></label>
+  </section>
+
+  <section class="bloco" id="b-dominio" data-pergunta="dominio" hidden>
+    <div class="bloco__num"></div>
+    <h2>O endereço da loja</h2>
+    <p>O domínio é o endereço do site, tipo <strong>sualoja.com.br</strong>.</p>
+    <span class="rotulo-campo">Vocês já têm um domínio?</span>
+    <div class="escolhas">
+      <label class="item"><input type="radio" name="temDominio" value="sim"><span class="bolinha"></span><span class="item__texto"><strong>Sim, já temos</strong></span></label>
+      <label class="item"><input type="radio" name="temDominio" value="nao"><span class="bolinha"></span><span class="item__texto"><strong>Não temos</strong><span>Sem problema: a gente vê junto qual registrar.</span></span></label>
+    </div>
+    <div id="dominio-sim" hidden>
+      <label class="campo"><span>Qual é o domínio?</span><input type="text" data-campo="dominio" placeholder="sualoja.com.br" autocapitalize="off"></label>
+      <label class="campo"><span>Onde ele está e quem tem o acesso?</span><small>Registro.br, HostGator, GoDaddy… e o nome da pessoa, ou "eu mesmo".</small><input type="text" data-campo="hostgator"></label>
+      <div class="nota">A senha não escreve aqui: me manda direto no WhatsApp.</div>
+      <span class="rotulo-campo">Vocês usam algum e-mail com esse domínio (tipo contato@sualoja.com.br)?</span>
+      <div class="escolhas">
+        <label class="item"><input type="radio" name="emailDominio" value="sim"><span class="bolinha"></span><span class="item__texto"><strong>Sim, usamos</strong><span>Eu mudo só o site e deixo o e-mail do jeito que está.</span></span></label>
+        <label class="item"><input type="radio" name="emailDominio" value="nao"><span class="bolinha"></span><span class="item__texto"><strong>Não usamos</strong></span></label>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloco" id="b-contato" data-pergunta="contato" hidden>
+    <div class="bloco__num"></div>
+    <h2>WhatsApp e e-mail</h2>
+    <p>Os pedidos do site chegam no WhatsApp da loja. E o painel, onde você vai mexer nas peças depois, entra com um e-mail.</p>
+    <label class="campo"><span>Número que vai receber os pedidos</span><input type="tel" inputmode="tel" autocomplete="tel" placeholder="(DDD) 9…" data-campo="whatsapp"></label>
+    <label class="campo"><span>E-mail pra entrar no painel</span><input type="email" inputmode="email" autocomplete="email" placeholder="seuemail@…" data-campo="email"></label>
+  </section>
+
+  <section class="fim" id="fim" hidden>
+    <h2>Avisar o Rafael</h2>
+    <label class="campo"><span>Quer dizer mais alguma coisa? <em class="opcional">se quiser</em></span><textarea data-campo="recado" placeholder="Uma dúvida, um pedido, o que ficou pra depois…"></textarea></label>
+    <button class="enviar" id="enviar" type="button">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.7.3-.2.3-.9.9-.9 2.2s1 2.5 1.1 2.7c.1.2 1.9 2.9 4.6 4 1.7.7 2.4.8 3.2.7.5-.1 1.5-.6 1.8-1.2.2-.6.2-1.1.1-1.2l-.4-.2Z"/></svg>
+      Avisar que mandei
+    </button>
+    <p class="miudo">Tudo o que você preencheu já chegou pra mim. Esse botão só me avisa no WhatsApp pra eu começar. Pode avisar quantas vezes quiser, a cada parte que for fechando.</p>
+    <div class="assinatura"><span class="rotulo">Rafael Razeira Estúdio</span></div>
+  </section>
+
+</main>
+
+<script>
+(function () {
+  var API = "/api/material";
+  var WHATS = "5544991246187";
+  var partes = location.pathname.split("/").filter(Boolean);
+  var LOJA = (new URLSearchParams(location.search).get("loja") || (partes[0] === "checklist" ? partes[1] : "") || "").toLowerCase().replace(/[^a-z0-9-]/g, "");
+  var CHAVE_LOCAL = "checklist-" + LOJA;
+
+  var CONFIG = null, PECAS = [], PERG = {}, SITE = "";
+  var GRADES = {
+    roupa: { nome: "Roupa", t: ["PP", "P", "M", "G", "GG", "XG"] },
+    calca: { nome: "Calça e bermuda", t: ["36", "38", "40", "42", "44", "46", "48"] },
+    unico: { nome: "Acessório", t: ["Único"] },
+    tenis: { nome: "Calçado", t: ["33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45"] },
+    shape: { nome: "Largura do shape", t: ["7.75", "7.875", "8.0", "8.125", "8.25", "8.38", "8.5", "8.75"] }
+  };
+  var DA_CATEGORIA = {};
+  var CORES = [
+    ["Preto", "#111111"], ["Branco", "#ffffff"], ["Cinza", "#9a9a96"], ["Azul-marinho", "#1c2b4a"], ["Azul", "#2f6fd1"],
+    ["Verde", "#2e7d4f"], ["Vermelho", "#c62d2d"], ["Vinho", "#6e1f2e"], ["Marrom", "#6b4a32"], ["Bege", "#d8c7a6"],
+    ["Amarelo", "#f2c230"], ["Laranja", "#ec7a2a"], ["Rosa", "#e98bb3"], ["Roxo", "#6e4aa5"], ["Estampado", "listras"]
+  ];
+
+  var estado = { pecas: {}, novas: [], fotos: {} };
+  var miniaturas = {};
+  var abertas = {};
+
+  function el(tag, attrs, filhos) {
+    var e = document.createElement(tag);
+    for (var k in attrs || {}) {
+      if (k === "class") e.className = attrs[k];
+      else if (k === "text") e.textContent = attrs[k];
+      else if (k.slice(0, 2) === "on") e.addEventListener(k.slice(2), attrs[k]);
+      else e.setAttribute(k, attrs[k]);
+    }
+    (filhos || []).forEach(function (f) { if (f) e.appendChild(typeof f === "string" ? document.createTextNode(f) : f); });
+    return e;
+  }
+  function post(corpo) {
+    corpo.loja = LOJA;
+    return fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(corpo) }).then(function (r) { return r.json(); });
+  }
+
+  /* ---------- SALVAR ---------- */
+  var timer = null, salvando = false, pendente = false;
+  function marcarSalvo(txt, classe) {
+    var s = document.getElementById("salvo");
+    s.textContent = txt; s.className = "salvo" + (classe ? " " + classe : "");
+  }
+  function guardar() {
+    try { localStorage.setItem(CHAVE_LOCAL, JSON.stringify(estado)); } catch (e) {}
+    marcarSalvo("salvando", "");
+    clearTimeout(timer);
+    timer = setTimeout(enviarAoCofre, 900);
+    atualizarProgresso();
+  }
+  function enviarAoCofre() {
+    if (salvando) { pendente = true; return; }
+    salvando = true;
+    post({ acao: "salvar", dados: estado })
+      .then(function (j) { marcarSalvo(j.ok ? "salvo ✓" : "não salvou", j.ok ? "salvo--ok" : "salvo--erro"); })
+      .catch(function () { marcarSalvo("sem internet", "salvo--erro"); })
+      .then(function () { salvando = false; if (pendente) { pendente = false; enviarAoCofre(); } });
+  }
+  window.addEventListener("online", function () { if (CONFIG) enviarAoCofre(); });
+
+  /* ---------- FOTOS ----------
+     Reduzida no aparelho para 2400 px no lado maior, em JPEG 92: acima dos
+     1600 px que o site usa e leve para subir no 4G. HEIC que o aparelho não
+     abre vai do jeito que está. */
+  var LADO = 2400;
+  function preparar(arquivo) {
+    return new Promise(function (ok) {
+      if (!/^image\/(jpeg|png|webp)$/.test(arquivo.type)) return ok(arquivo);
+      var url = URL.createObjectURL(arquivo);
+      var img = new Image();
+      img.onload = function () {
+        var w = img.naturalWidth, h = img.naturalHeight, maior = Math.max(w, h);
+        if (maior <= LADO && arquivo.size < 4 * 1024 * 1024) { URL.revokeObjectURL(url); return ok(arquivo); }
+        var escala = Math.min(1, LADO / maior);
+        var c = document.createElement("canvas");
+        c.width = Math.round(w * escala); c.height = Math.round(h * escala);
+        c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        c.toBlob(function (b) { ok(b ? new File([b], "foto.jpg", { type: "image/jpeg" }) : arquivo); }, "image/jpeg", 0.92);
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); ok(arquivo); };
+      img.src = url;
+    });
+  }
+  function tipoDe(arquivo) {
+    if (arquivo.type) return arquivo.type;
+    var n = (arquivo.name || "").toLowerCase();
+    if (/\.hei[cf]$/.test(n)) return "image/heic";
+    if (/\.jpe?g$/.test(n)) return "image/jpeg";
+    if (/\.png$/.test(n)) return "image/png";
+    return "";
+  }
+  function subir(pasta, arquivo, caixa) {
+    var estadoTxt = caixa.querySelector(".foto__estado");
+    return preparar(arquivo).then(function (pronto) {
+      return post({ acao: "assinar", peca: pasta, tipo: tipoDe(pronto) }).then(function (j) {
+        if (!j.ok) throw new Error(j.erro || "falhou");
+        var fd = new FormData();
+        fd.append("cacheControl", "3600");
+        fd.append("", pronto);
+        return fetch(j.envio, { method: "PUT", body: fd }).then(function (r) {
+          if (!r.ok) throw new Error("falhou");
+          return j.caminho;
+        });
+      });
+    }).then(function (caminho) {
+      estado.fotos[pasta] = (estado.fotos[pasta] || []).concat([caminho]);
+      miniaturas[caminho] = caixa.querySelector("img").src;
+      guardar();
+      caixa.replaceWith(fotoPronta(pasta, caminho));
+    }).catch(function (e) {
+      caixa.classList.add("foto--erro");
+      estadoTxt.textContent = (e && e.message && e.message.length < 60 && e.message !== "falhou") ? e.message : "não foi, tente de novo";
+    });
+  }
+  function fotoPronta(pasta, caminho) {
+    var caixa = el("div", { class: "foto" }, [el("img", { src: miniaturas[caminho] || "", alt: "", loading: "lazy" })]);
+    caixa.appendChild(el("button", { class: "foto__tirar", type: "button", "aria-label": "Tirar esta foto", text: "×", onclick: function () {
+      estado.fotos[pasta] = (estado.fotos[pasta] || []).filter(function (c) { return c !== caminho; });
+      post({ acao: "apagar", caminho: caminho });
+      caixa.remove();
+      guardar(); atualizarPeca(pasta);
+    } }));
+    return caixa;
+  }
+  function desenharFotos(pasta) {
+    var alvo = document.querySelector('[data-fotos="' + pasta + '"]');
+    if (!alvo) return;
+    alvo.innerHTML = "";
+    (estado.fotos[pasta] || []).forEach(function (caminho) { alvo.appendChild(fotoPronta(pasta, caminho)); });
+    var input = el("input", { type: "file", accept: "image/*", multiple: "" });
+    input.addEventListener("change", function () {
+      Array.prototype.forEach.call(input.files, function (arquivo) {
+        var caixa = el("div", { class: "foto" }, [
+          el("img", { src: URL.createObjectURL(arquivo), alt: "" }),
+          el("div", { class: "foto__estado", text: "enviando…" })
+        ]);
+        alvo.insertBefore(caixa, alvo.lastChild);
+        subir(pasta, arquivo, caixa).then(function () { atualizarPeca(pasta); });
+      });
+      input.value = "";
+    });
+    alvo.appendChild(el("label", { class: "mandar-fotos" }, [input, el("b", { text: "+" }), "Mandar fotos"]));
+  }
+
+  /* ---------- A PEÇA ---------- */
+  function novaPorId(id) { for (var i = 0; i < estado.novas.length; i++) if (estado.novas[i].id === id) return estado.novas[i]; return null; }
+  function dados(id) { return novaPorId(id) || estado.pecas[id] || (estado.pecas[id] = {}); }
+
+  function selos(id, nova) {
+    var d = dados(id), s = [];
+    if (!nova && d.status === "saiu") return [el("span", { class: "selo selo--saiu", text: "já saiu" })];
+    if (!nova && d.status === "tem") s.push(el("span", { class: "selo selo--ok", text: "tem" }));
+    if (PERG.preco && estado.precoNoSite === "sim") s.push(el("span", { class: "selo" + (d.preco ? " selo--ok" : ""), text: d.preco ? "R$ " + d.preco : "sem preço" }));
+    if (PERG.tamanhos) {
+      var nt = (d.tamanhos || []).length + (d.outrosTamanhos ? 1 : 0);
+      s.push(el("span", { class: "selo" + (nt ? " selo--ok" : ""), text: nt ? nt + " tam." : "sem tamanho" }));
+    }
+    if (PERG.cores) {
+      var nc = (d.cores || []).length + (d.outrasCores ? 1 : 0);
+      s.push(el("span", { class: "selo" + (nc ? " selo--ok" : ""), text: nc ? nc + (nc > 1 ? " cores" : " cor") : "sem cor" }));
+    }
+    var nf = (estado.fotos[id] || []).length;
+    if (nf) s.push(el("span", { class: "selo selo--ok", text: "+" + nf + " foto" + (nf > 1 ? "s" : "") }));
+    return s;
+  }
+  function atualizarPeca(id) {
+    var cartao = document.querySelector('[data-peca="' + id + '"]');
+    if (!cartao) return;
+    var nova = cartao.hasAttribute("data-nova");
+    var box = cartao.querySelector(".selos");
+    box.innerHTML = ""; selos(id, nova).forEach(function (s) { box.appendChild(s); });
+    cartao.classList.toggle("peca--saiu", !nova && dados(id).status === "saiu");
+    cartao.classList.toggle("peca--pronta", !nova && dados(id).status === "tem");
+    atualizarProgresso();
+  }
+  function alternarNaLista(lista, valor) {
+    var i = lista.indexOf(valor);
+    if (i > -1) lista.splice(i, 1); else lista.push(valor);
+    return i < 0;
+  }
+  function chipsTamanho(id, categoria) {
+    var d = dados(id), frag = el("div");
+    var grades = categoria && DA_CATEGORIA[categoria] && DA_CATEGORIA[categoria].length ? DA_CATEGORIA[categoria] : ["roupa", "tenis", "unico"];
+    grades.forEach(function (g) {
+      if (!GRADES[g]) return;
+      if (grades.length > 1) frag.appendChild(el("div", { class: "grade-nome", text: GRADES[g].nome }));
+      var linha = el("div", { class: "chips" });
+      GRADES[g].t.forEach(function (t) {
+        var b = el("button", { class: "chip", type: "button", "aria-pressed": String((d.tamanhos || []).indexOf(t) > -1), text: t });
+        b.addEventListener("click", function () {
+          d.tamanhos = d.tamanhos || [];
+          b.setAttribute("aria-pressed", String(alternarNaLista(d.tamanhos, t)));
+          guardar(); atualizarPeca(id);
+        });
+        linha.appendChild(b);
+      });
+      frag.appendChild(linha);
+    });
+    var outro = el("input", { type: "text", class: "outro", placeholder: "Outro tamanho? Escreve aqui" });
+    outro.value = d.outrosTamanhos || "";
+    outro.addEventListener("input", function () { d.outrosTamanhos = outro.value; guardar(); atualizarPeca(id); });
+    frag.appendChild(outro);
+    return frag;
+  }
+  function chipsCor(id) {
+    var d = dados(id), frag = el("div"), linha = el("div", { class: "chips" });
+    CORES.forEach(function (c) {
+      var amostra = el("span", { class: "amostra" + (c[1] === "listras" ? " amostra--listras" : "") });
+      if (c[1] !== "listras") amostra.style.background = c[1];
+      var b = el("button", { class: "chip", type: "button", "aria-pressed": String((d.cores || []).indexOf(c[0]) > -1) }, [amostra, c[0]]);
+      b.addEventListener("click", function () {
+        d.cores = d.cores || [];
+        b.setAttribute("aria-pressed", String(alternarNaLista(d.cores, c[0])));
+        guardar(); atualizarPeca(id);
+      });
+      linha.appendChild(b);
+    });
+    frag.appendChild(linha);
+    var outra = el("input", { type: "text", class: "outro", placeholder: "Outra cor? Escreve aqui" });
+    outra.value = d.outrasCores || "";
+    outra.addEventListener("input", function () { d.outrasCores = outra.value; guardar(); atualizarPeca(id); });
+    frag.appendChild(outra);
+    return frag;
+  }
+  function campoTexto(id, chave, rotulo, placeholder) {
+    var d = dados(id);
+    var longo = chave === "obs";
+    var i = el(longo ? "textarea" : "input", longo ? { placeholder: placeholder || "" } : { type: "text", placeholder: placeholder || "" });
+    if (longo) i.style.minHeight = "64px";
+    i.value = d[chave] || "";
+    i.addEventListener("input", function () {
+      d[chave] = i.value; guardar();
+      if (chave === "nome") { var n = document.querySelector('[data-peca="' + id + '"] .peca__nome strong'); if (n) n.textContent = i.value || "Peça nova"; }
+    });
+    return el("label", { class: "campo" }, [el("span", { text: rotulo }), i]);
+  }
+  function precoInput(d, chave, id) {
+    var i = el("input", { type: "text", inputmode: "decimal", placeholder: "0,00" });
+    i.value = d[chave] || "";
+    i.addEventListener("input", function () { d[chave] = i.value.replace(/[^\d,.]/g, ""); guardar(); atualizarPeca(id); });
+    return el("div", { class: "preco" }, [el("span", { text: "R$" }), i]);
+  }
+  function corpoDa(id, categoria, nova) {
+    var d = dados(id);
+    var corpo = el("div", { class: "peca__corpo" });
+    var resto = el("div");
+    if (nova) {
+      corpo.appendChild(el("div", { style: "height:14px" }));
+      corpo.appendChild(campoTexto(id, "nome", "Nome da peça", "Ex.: Moletom cinza com capuz"));
+    } else {
+      var tem = el("button", { class: "botao-sn", type: "button", "aria-pressed": String(d.status === "tem"), text: "Ainda tem" });
+      var saiu = el("button", { class: "botao-sn", type: "button", "aria-pressed": String(d.status === "saiu"), text: "Já saiu" });
+      var escolher = function (v) {
+        d.status = v;
+        tem.setAttribute("aria-pressed", String(v === "tem"));
+        saiu.setAttribute("aria-pressed", String(v === "saiu"));
+        resto.hidden = v === "saiu";
+        guardar(); atualizarPeca(id);
+      };
+      tem.addEventListener("click", function () { escolher("tem"); });
+      saiu.addEventListener("click", function () { escolher("saiu"); });
+      corpo.appendChild(el("div", { class: "duas" }, [tem, saiu]));
+      resto.hidden = d.status === "saiu";
+    }
+    if (PERG.preco) {
+      var blocoPreco = el("div", { class: "so-preco" });
+      blocoPreco.hidden = estado.precoNoSite !== "sim";
+      blocoPreco.appendChild(el("span", { class: "rotulo-campo", text: "Preço" }));
+      blocoPreco.appendChild(precoInput(d, "preco", id));
+      blocoPreco.appendChild(el("span", { class: "rotulo-campo" }, ["Preço de promoção ", el("em", { class: "opcional", text: "se tiver" })]));
+      blocoPreco.appendChild(precoInput(d, "promocao", id));
+      resto.appendChild(blocoPreco);
+    }
+    if (PERG.tamanhos) {
+      resto.appendChild(el("span", { class: "rotulo-campo", text: "Tamanhos que tem" }));
+      resto.appendChild(chipsTamanho(id, categoria));
+    }
+    if (PERG.cores) {
+      resto.appendChild(el("span", { class: "rotulo-campo", text: "Cores que tem" }));
+      resto.appendChild(chipsCor(id));
+    }
+    if (PERG.fotos || nova) {
+      resto.appendChild(el("span", { class: "rotulo-campo", text: nova ? "Fotos da peça" : "Mais fotos" }));
+      resto.appendChild(el("div", { class: "fotos", "data-fotos": id }));
+    }
+    resto.appendChild(el("div", { style: "height:14px" }));
+    resto.appendChild(campoTexto(id, "obs", "Alguma observação?", "Ex.: só por encomenda, chega semana que vem…"));
+    if (nova) {
+      resto.appendChild(el("button", { class: "tirar-peca", type: "button", text: "Tirar esta peça", onclick: function () {
+        (estado.fotos[id] || []).forEach(function (c) { post({ acao: "apagar", caminho: c }); });
+        delete estado.fotos[id];
+        estado.novas = estado.novas.filter(function (n) { return n.id !== id; });
+        guardar(); desenharNovas();
+      } }));
+    }
+    corpo.appendChild(resto);
+    return corpo;
+  }
+
+  var SETA = '<svg class="seta" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8l5 5 5-5"/></svg>';
+  function cartao(id, nome, foto, categoria, nova) {
+    var c = el("div", { class: "peca", "data-peca": id });
+    if (nova) c.setAttribute("data-nova", "");
+    var imagem = foto
+      ? el("img", { class: "peca__foto", src: foto, alt: "", loading: "lazy", width: "56", height: "56" })
+      : el("div", { class: "peca__foto peca__foto--vazia", text: nova ? "nova" : "" });
+    var cabeca = el("button", { class: "peca__cabeca", type: "button", "aria-expanded": "false" }, [
+      imagem,
+      el("div", { class: "peca__nome" }, [el("strong", { text: nome }), el("div", { class: "selos" })])
+    ]);
+    cabeca.insertAdjacentHTML("beforeend", SETA);
+    c.appendChild(cabeca);
+    var corpo = null;
+    function abrir(sim) {
+      abertas[id] = sim;
+      c.classList.toggle("peca--aberta", sim);
+      cabeca.setAttribute("aria-expanded", String(sim));
+      if (sim && !corpo) { corpo = corpoDa(id, categoria, nova); c.appendChild(corpo); desenharFotos(id); }
+      if (corpo) corpo.hidden = !sim;
+    }
+    cabeca.addEventListener("click", function () { abrir(!abertas[id]); });
+    if (abertas[id]) setTimeout(function () { abrir(true); });
+    return c;
+  }
+  function desenharPecas() {
+    var lista = document.getElementById("lista-pecas");
+    lista.innerHTML = "";
+    var catAtual = null;
+    PECAS.forEach(function (p) {
+      if (p.catNome !== catAtual) {
+        catAtual = p.catNome;
+        var qtd = PECAS.filter(function (x) { return x.catNome === catAtual; }).length;
+        lista.appendChild(el("h3", {}, [el("span", { text: catAtual }), el("span", { text: String(qtd) })]));
+      }
+      lista.appendChild(cartao(p.id, p.nome, p.foto, p.cat, false));
+      atualizarPeca(p.id);
+    });
+  }
+  function desenharNovas() {
+    var lista = document.getElementById("lista-novas");
+    lista.innerHTML = "";
+    estado.novas.forEach(function (n) {
+      lista.appendChild(cartao(n.id, n.nome || "Peça nova", "", null, true));
+      atualizarPeca(n.id);
+    });
+    atualizarProgresso();
+  }
+  document.getElementById("nova-peca").addEventListener("click", function () {
+    var id = "nova-" + Date.now().toString(36);
+    estado.novas.push({ id: id, nome: "" });
+    abertas[id] = true;
+    guardar(); desenharNovas();
+    var c = document.querySelector('[data-peca="' + id + '"]');
+    if (c) setTimeout(function () { c.scrollIntoView({ behavior: "smooth", block: "start" }); var i = c.querySelector("input"); if (i) i.focus({ preventScroll: true }); }, 50);
+  });
+
+  /* ---------- OS CAMPOS SOLTOS E AS ESCOLHAS ---------- */
+  function ligarCampos() {
+    document.querySelectorAll("[data-campo]").forEach(function (i) {
+      i.value = estado[i.dataset.campo] || "";
+      i.addEventListener("input", function () { estado[i.dataset.campo] = i.value; guardar(); });
+    });
+    ["precoNoSite", "banners", "temDominio", "emailDominio"].forEach(function (nome) {
+      document.querySelectorAll('input[name="' + nome + '"]').forEach(function (r) {
+        r.checked = estado[nome] === r.value;
+        r.addEventListener("change", function () {
+          estado[nome] = r.value; guardar(); mostrarCondicionais();
+          if (nome === "precoNoSite") {
+            PECAS.forEach(function (p) { atualizarPeca(p.id); });
+            estado.novas.forEach(function (n) { atualizarPeca(n.id); });
+          }
+        });
+      });
+    });
+    mostrarCondicionais();
+  }
+  function mostrarCondicionais() {
+    document.querySelectorAll(".so-preco").forEach(function (b) { b.hidden = estado.precoNoSite !== "sim"; });
+    document.getElementById("banners-obs").hidden = estado.banners !== "trocar";
+    document.getElementById("dominio-sim").hidden = estado.temDominio !== "sim";
+  }
+
+  /* ---------- A BARRA ---------- */
+  function atualizarProgresso() {
+    if (!CONFIG) return;
+    var respondidas = PECAS.filter(function (p) { var d = estado.pecas[p.id]; return d && (d.status === "tem" || d.status === "saiu"); }).length;
+    var itens = [];
+    if (PERG.preco) itens.push(["b-preco", !!estado.precoNoSite]);
+    if (PERG.marcas) itens.push(["b-marcas", !!(estado.marcas || "").trim()]);
+    if (PERG.banners) itens.push(["b-banners", !!estado.banners]);
+    if (PERG.dominio) itens.push(["b-dominio", estado.temDominio === "nao" || (estado.temDominio === "sim" && !!(estado.hostgator || "").trim() && !!estado.emailDominio)]);
+    if (PERG.contato) itens.push(["b-contato", !!(estado.whatsapp || "").trim() && !!(estado.email || "").trim()]);
+    var feitos = respondidas, total = PECAS.length;
+    itens.forEach(function (x) { total++; if (x[1]) feitos++; document.getElementById(x[0]).classList.toggle("bloco--feito", x[1]); });
+    document.getElementById("b-pecas").classList.toggle("bloco--feito", PECAS.length > 0 && respondidas === PECAS.length);
+    document.getElementById("conta").textContent = PECAS.length ? "peças " + respondidas + "/" + PECAS.length : feitos + " de " + total;
+    document.getElementById("cheio").style.width = (total ? feitos / total * 100 : 0) + "%";
+  }
+
+  /* ---------- AVISAR NO WHATSAPP ---------- */
+  document.getElementById("enviar").addEventListener("click", function () {
+    var tem = 0, saiu = 0, comPreco = 0, comTam = 0, comCor = 0, fotos = 0;
+    PECAS.forEach(function (p) {
+      var d = estado.pecas[p.id] || {};
+      if (d.status === "tem") tem++;
+      if (d.status === "saiu") saiu++;
+      if (d.preco) comPreco++;
+      if ((d.tamanhos || []).length || d.outrosTamanhos) comTam++;
+      if ((d.cores || []).length || d.outrasCores) comCor++;
+    });
+    Object.keys(estado.fotos).forEach(function (k) { fotos += estado.fotos[k].length; });
+    var l = ["*Checklist " + (CONFIG.nome || "da loja") + ": mandei material*", ""];
+    if (PECAS.length) l.push("Peças: " + tem + " ainda tem, " + saiu + " já saíram, " + (PECAS.length - tem - saiu) + " sem resposta");
+    if (PERG.novas) l.push("Peças novas: " + estado.novas.length);
+    if (PERG.preco) l.push(estado.precoNoSite === "sim" ? "Preço: mostrar no site (" + comPreco + " com preço)" : estado.precoNoSite === "nao" ? "Preço: deixar \"Valor no WhatsApp\"" : "Preço: ainda não decidi");
+    if (PERG.tamanhos || PERG.cores) l.push("Com tamanho: " + comTam + " · com cor: " + comCor);
+    l.push("Fotos enviadas: " + fotos);
+    if (PERG.marcas) l.push("Marcas: " + ((estado.marcas || "").trim() ? "mandei" : "ainda não"));
+    if (PERG.banners) l.push("Banners: " + (estado.banners === "aprovo" ? "aprovados" : estado.banners === "trocar" ? "quero trocar" : "ainda não vi"));
+    if (PERG.dominio) l.push("Domínio: " + (estado.temDominio === "nao" ? "não temos" : (estado.dominio || "").trim() || "ainda não"));
+    if (estado.whatsapp) l.push("WhatsApp dos pedidos: " + estado.whatsapp);
+    if (estado.email) l.push("E-mail do painel: " + estado.email);
+    if ((estado.recado || "").trim()) { l.push(""); l.push("*Recado:* " + estado.recado.trim()); }
+    window.open("https://wa.me/" + WHATS + "?text=" + encodeURIComponent(l.join("\n")), "_blank");
+  });
+
+  /* ---------- COMEÇAR ---------- */
+  function montar(doCofre) {
+    PERG = CONFIG.perguntas || {};
+    PECAS = CONFIG.pecas || [];
+    SITE = (CONFIG.site || "").replace(/\/$/, "");
+    (CONFIG.categorias || []).forEach(function (c) { DA_CATEGORIA[c.slug] = c.grades || []; });
+
+    document.getElementById("nome-loja").textContent = CONFIG.nome || "Sua loja";
+    document.title = "O que falta pra sua loja ficar pronta · " + (CONFIG.nome || "") + " · Rafael Razeira Estúdio";
+    if (SITE) {
+      var icone = document.getElementById("icone");
+      icone.onload = function () { icone.hidden = false; };
+      icone.src = SITE + "/icon.png";
+      document.getElementById("link-catalogo").href = SITE + "/catalogo";
+      document.getElementById("link-site").href = SITE;
+    }
+    document.getElementById("pecas-intro").textContent = "São as " + PECAS.length + " peças que estão no site hoje. Toca em cada uma e me diz se ainda tem na loja" +
+      (PERG.tamanhos ? ", os tamanhos" : "") + (PERG.cores ? ", as cores" : "") + (PERG.fotos ? " e, se puder, manda mais fotos." : ".");
+
+    /* as seções que o Rafael ligou, numeradas na ordem em que aparecem */
+    var n = 0;
+    document.querySelectorAll(".bloco[id^='b-']").forEach(function (b) {
+      var ligada = b.id === "b-pecas" ? PECAS.length > 0 : !!PERG[b.dataset.pergunta];
+      b.hidden = !ligada;
+      if (ligada) b.querySelector(".bloco__num").textContent = String(++n).padStart(2, "0");
+    });
+    document.getElementById("fim").hidden = false;
+
+    var local = null;
+    try { local = JSON.parse(localStorage.getItem(CHAVE_LOCAL)); } catch (e) {}
+    estado = (doCofre && doCofre.atualizado) ? doCofre : (local || {});
+    estado.pecas = estado.pecas || {};
+    estado.novas = estado.novas || [];
+    estado.fotos = estado.fotos || {};
+    estado.totalPecas = PECAS.length;
+    delete estado.atualizado;
+    ligarCampos();
+    desenharPecas();
+    desenharNovas();
+    desenharFotos("logos");
+    atualizarProgresso();
+  }
+  function naoAchei() {
+    document.getElementById("nao-achei").hidden = false;
+    document.querySelector(".progresso").hidden = true;
+  }
+  if (!LOJA) return naoAchei();
+  fetch(API + "?loja=" + LOJA, { cache: "no-store" })
+    .then(function (r) { return r.json(); })
+    .then(function (j) {
+      if (!j.ok || !j.config) return naoAchei();
+      CONFIG = j.config;
+      miniaturas = j.miniaturas || {};
+      marcarSalvo("salvo ✓", "salvo--ok");
+      montar(j.respostas);
+    })
+    .catch(function () { marcarSalvo("sem internet", "salvo--erro"); naoAchei(); });
+})();
+</script>
+</body>
+</html>
