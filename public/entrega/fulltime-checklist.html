@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>O que falta pra sua loja · Full Time Skateboards · Rafael Razeira Estúdio</title>
+<meta name="description" content="O checklist pra terminar a loja da Full Time: vá marcando e mande pro Rafael no fim." />
+<meta name="theme-color" content="#0A0A0A" />
+<meta name="robots" content="noindex, nofollow" />
+
+<!-- O ícone da aba: a logo da Full Time em branco sobre o preto. -->
+<link rel="icon" type="image/png" href="/entrega/fulltime/favicon.png" />
+<link rel="apple-touch-icon" href="/entrega/fulltime/apple-touch-icon.png" />
+
+<!-- O cartão que aparece quando o link é mandado no WhatsApp. -->
+<meta property="og:type" content="article" />
+<meta property="og:locale" content="pt_BR" />
+<meta property="og:site_name" content="Rafael Razeira Estúdio" />
+<meta property="og:title" content="O que falta pra sua loja · Full Time" />
+<meta property="og:description" content="Vá marcando o que já mandou. No fim, um botão manda tudo pro Rafael." />
+<meta property="og:url" content="https://rafaelrazeira.com.br/entrega/fulltime-checklist.html" />
+<meta property="og:image" content="https://rafaelrazeira.com.br/entrega/fulltime/og.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Checklist da loja da Full Time Skateboards" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="canonical" href="https://rafaelrazeira.com.br/entrega/fulltime-checklist.html" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;900&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --papel: #FAFAF7;
+    --tinta: #0A0A0A;
+    --cinza: #6B6B66;
+    --fio: #E4E4DE;
+    --verde: #10B981;
+    --verde-escuro: #047857;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--papel);
+    color: var(--tinta);
+    font: 400 16px/1.55 Inter, system-ui, sans-serif;
+  }
+  a { color: inherit; }
+
+  /* O topo: a logo da loja no preto, o selo do estúdio em cima. */
+  .topo {
+    background: var(--tinta);
+    color: #fff;
+    padding: 28px 20px 32px;
+  }
+  .topo__dentro, .miolo { max-width: 680px; margin: 0 auto; }
+  .rotulo {
+    font: 700 11px/1 "Space Mono", monospace;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+  .topo .rotulo { color: var(--verde); }
+  .topo img { display: block; width: 150px; height: auto; margin: 22px 0 26px; }
+  h1 {
+    font: 900 clamp(34px, 9vw, 56px)/.95 Archivo, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: -.01em;
+    margin: 0 0 16px;
+  }
+  .topo p { margin: 0; color: #C9C9C3; max-width: 34em; }
+
+  /* A barra que mostra quanto já foi. Fica presa no alto ao rolar. */
+  .progresso {
+    position: sticky; top: 0; z-index: 5;
+    background: var(--papel);
+    border-bottom: 1px solid var(--fio);
+    padding: 12px 20px;
+  }
+  .progresso__linha {
+    max-width: 680px; margin: 0 auto;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .progresso__trilho { flex: 1; height: 8px; background: var(--fio); border-radius: 99px; overflow: hidden; }
+  .progresso__cheio { height: 100%; width: 0; background: var(--verde); transition: width .3s ease-out; }
+  .progresso__conta { font: 700 13px/1 "Space Mono", monospace; white-space: nowrap; }
+
+  .miolo { padding: 8px 20px 60px; }
+
+  .bloco { padding: 34px 0 30px; border-bottom: 1px solid var(--fio); }
+  .bloco__num { font: 700 12px/1 "Space Mono", monospace; color: var(--cinza); }
+  h2 {
+    font: 900 26px/1.05 Archivo, sans-serif;
+    text-transform: uppercase;
+    margin: 8px 0 10px;
+  }
+  .bloco > p { margin: 0 0 18px; color: #3A3A36; }
+  .bloco--feito h2::after {
+    content: "ok";
+    display: inline-block; vertical-align: middle;
+    margin-left: 10px; padding: 4px 8px 3px;
+    background: var(--verde); color: #fff;
+    font: 700 11px/1 "Space Mono", monospace; letter-spacing: .1em; text-transform: uppercase;
+    border-radius: 4px;
+  }
+
+  .link {
+    display: inline-flex; align-items: center; gap: 8px;
+    margin: 0 0 18px; padding: 12px 16px;
+    background: var(--tinta); color: #fff; text-decoration: none;
+    font-weight: 600; font-size: 15px; border-radius: 10px;
+  }
+  .link::after { content: "→"; }
+
+  /* Cada item é o botão inteiro: dá pra tocar em qualquer parte da linha. */
+  .item {
+    display: flex; gap: 14px; align-items: flex-start;
+    padding: 14px 16px; margin: 0 0 8px;
+    background: #fff; border: 1px solid var(--fio); border-radius: 12px;
+    cursor: pointer; user-select: none;
+    transition: border-color .15s ease-out, background-color .15s ease-out;
+  }
+  .item input { position: absolute; opacity: 0; pointer-events: none; }
+  .caixa {
+    flex: none; width: 26px; height: 26px; margin-top: -1px;
+    border: 2px solid var(--tinta); border-radius: 7px;
+    display: grid; place-items: center;
+    transition: background-color .15s ease-out, border-color .15s ease-out;
+  }
+  .caixa svg { width: 16px; height: 16px; opacity: 0; transform: scale(.6); transition: opacity .15s ease-out, transform .15s ease-out; }
+  .item input:checked + .caixa { background: var(--verde); border-color: var(--verde); }
+  .item input:checked + .caixa svg { opacity: 1; transform: scale(1); }
+  .item:has(input:checked) { border-color: var(--verde); background: #F0FBF6; }
+  .item input:focus-visible + .caixa { outline: 3px solid var(--verde); outline-offset: 2px; }
+  .item__texto strong { display: block; font-weight: 600; }
+  .item__texto span { display: block; color: var(--cinza); font-size: 14px; margin-top: 2px; }
+  .opcional {
+    font: 700 10px/1 "Space Mono", monospace; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--cinza); border: 1px solid var(--fio); border-radius: 4px; padding: 3px 5px 2px;
+    margin-left: 6px; vertical-align: 2px; white-space: nowrap;
+  }
+
+  /* As escolhas de uma resposta só (a do preço e a dos banners). */
+  .escolhas { display: grid; gap: 8px; margin: 0 0 8px; }
+  .escolhas .caixa { border-radius: 99px; }
+  .escolhas .caixa::after {
+    content: ""; width: 10px; height: 10px; border-radius: 99px; background: #fff;
+    opacity: 0; transition: opacity .15s ease-out;
+  }
+  .escolhas .caixa svg { display: none; }
+  .escolhas input:checked + .caixa::after { opacity: 1; }
+  .pergunta { font-weight: 600; margin: 18px 0 10px; }
+
+  .campo { display: block; margin: 0 0 14px; }
+  .campo span { display: block; font-weight: 600; margin-bottom: 6px; }
+  .campo input, .campo textarea {
+    width: 100%; font: inherit; font-size: 16px;
+    padding: 13px 14px; border: 1px solid #CFCFC8; border-radius: 10px; background: #fff; color: var(--tinta);
+  }
+  .campo textarea { min-height: 84px; resize: vertical; }
+  .campo input:focus, .campo textarea:focus { outline: 2px solid var(--verde); outline-offset: 1px; border-color: var(--verde); }
+
+  .nota {
+    margin: 14px 0 0; padding: 14px 16px;
+    border-left: 4px solid var(--tinta); background: #fff;
+    font-size: 14px; color: #3A3A36;
+  }
+
+  /* O fim: mandar tudo pro Rafael. */
+  .fim { padding: 40px 0 0; }
+  .fim h2 { font-size: 30px; }
+  .enviar {
+    display: flex; justify-content: center; align-items: center; gap: 10px;
+    width: 100%; padding: 18px 20px; margin: 8px 0 12px;
+    background: var(--verde); color: #fff; border: 0; border-radius: 12px;
+    font: 700 17px/1.2 Inter, sans-serif; cursor: pointer;
+    transition: background-color .15s ease-out, transform .1s ease-out;
+  }
+  .enviar:hover { background: var(--verde-escuro); }
+  .enviar:active { transform: scale(.98); }
+  .enviar svg { width: 22px; height: 22px; }
+  .miudo { font-size: 13px; color: var(--cinza); margin: 0; }
+  .limpar { background: none; border: 0; padding: 0; font: inherit; font-size: 13px; color: var(--cinza); text-decoration: underline; cursor: pointer; }
+
+  .assinatura {
+    margin-top: 48px; padding-top: 18px; border-top: 1px solid var(--fio);
+    display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  }
+  .assinatura .rotulo { color: var(--cinza); }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topo">
+  <div class="topo__dentro">
+    <div class="rotulo">Rafael Razeira Estúdio · checklist</div>
+    <img src="/entrega/fulltime/logo-branca.png" alt="Full Time Skateboards" width="600" height="395" />
+    <h1>O que falta pra sua loja ficar pronta</h1>
+    <p>São 8 partes. Vá marcando o que já mandou, no seu tempo: o que você marcar fica salvo neste celular. No fim, um botão manda tudo pro meu WhatsApp.</p>
+  </div>
+</header>
+
+<div class="progresso" aria-live="polite">
+  <div class="progresso__linha">
+    <div class="progresso__trilho"><div class="progresso__cheio" id="cheio"></div></div>
+    <div class="progresso__conta" id="conta">0 de 0</div>
+  </div>
+</div>
+
+<main class="miolo" id="lista">
+
+  <section class="bloco" data-bloco="As peças">
+    <div class="bloco__num">01</div>
+    <h2>As peças</h2>
+    <p>Coloquei no site 43 peças, todas tiradas do Instagram de vocês. Dá uma olhada e me conta o que mudou.</p>
+    <a class="link" href="https://fulltime-nu.vercel.app/catalogo" target="_blank" rel="noopener">Ver as 43 peças</a>
+    <label class="item"><input type="checkbox" data-id="pecas-vi"><span class="caixa"><svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="item__texto"><strong>Olhei as peças no site</strong></span></label>
+    <label class="item"><input type="checkbox" data-id="pecas-sairam"><span class="caixa"><svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="item__texto"><strong>Avisei quais já saíram da loja</strong><span>Pode mandar o nome ou o print da peça.</span></span></label>
+    <label class="item"><input type="checkbox" data-id="pecas-faltam"><span class="caixa"><svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="item__texto"><strong>Mandei as peças que estão faltando</strong><span>O que tem na loja e não apareceu no site.</span></span></label>
+  </section>
+
+  <section class="bloco" data-bloco="Tamanhos e cores">
+    <div class="bloco__num">02</div>
+    <h2>Tamanhos e cores</h2>
+    <p>Nenhuma peça está com tamanho ou cor ainda. É isso que deixa o cliente escolher antes de chamar no WhatsApp.</p>
+    <label class="item"><input type="checkbox" data-id="tamanhos"><span class="caixa"><svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="item__texto"><strong>Mandei os tamanhos de cada peça</strong><span>Roupa (P, M, G…), tênis (numeração) e a largura dos shapes e dos montados.</span></span></label>
+    <label class="item"><input type="checkbox" data-id="cores"><span class="caixa"><svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="item__texto"><strong>Mandei as cores que tem de cada uma</strong></span></label>
+  </section>
+
+  <section class="bloco" data-bloco="Preço">
+    <div class="bloco__num">03</div>
+    <h2>Preço</h2>
+    <p>Hoje o site não mostra preço: aparece "Valor no WhatsApp". Você escolhe.</p>
+    <div class="pergunta">Como você quer?</div>
+    <div class="escolhas" data-pergunta="Mostrar o preço no site">
+      <label class="item"><input type="radio" name="preco" value="Quero mostrar o preço no site" data-id="preco-escolha"><span class="caixa"><svg viewBox="0 0 16 16"></svg></span><span class="item__texto"><strong>Quero mostrar o preço no site</strong></span></label>
+      <label class="item"><input type="radio" name="preco" value="Prefiro deixar &quot;Valor no WhatsApp&quot;" data-id="preco-escolha"><span class="caixa"><svg viewBox="0 0 16 16"></svg></span><span class="item__texto"><strong>Prefiro deixar "Valor no WhatsApp"</strong></span></label>
+    </div>
+    <label class="item" id="item-tabela"><input type="checkbox" data-id="tabela"><span class="caixa"><svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="item__texto"><strong>Mandei a tabela de preço</strong><span>Só se for mostrar o preço. Pode ser foto, planilha ou lista no WhatsApp.</span></span></label>
+  </section>
+
+  <section class="bloco" data-bloco="Marcas">
+    <div class="bloco__num">04</div>
+    <h2>Marcas</h2>
+    <p>Quero cadastrar todas as marcas que vocês trabalham, e não só as que apareceram no Instagram.</p>
+    <label class="item"><input type="checkbox" data-id="marcas"><span class="caixa"><svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="item__texto"><strong>Mandei a lista de todas as marcas</strong></span></label>
+    <label class="item"><input type="checkbox" data-id="logos" data-opcional><span class="caixa"><svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="item__texto"><strong>Mandei as logos que eu tenho <em class="opcional">se tiver</em></strong></span></label>
+  </section>
+
+  <section class="bloco" data-bloco="Fotos">
+    <div class="bloco__num">05</div>
+    <h2>Fotos</h2>
+    <p>A maioria das peças está com uma foto só. Com mais fotos, o cliente vê a peça inteira sem precisar perguntar.</p>
+    <label class="item"><input type="checkbox" data-id="fotos"><span class="caixa"><svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="item__texto"><strong>Mandei mais fotos das peças</strong><span>Frente, costas, a sola do tênis, o shape de lado. Pelo celular mesmo, com boa luz.</span></span></label>
+  </section>
+
+  <section class="bloco" data-bloco="Banners">
+    <div class="bloco__num">06</div>
+    <h2>Banners</h2>
+    <p>Os 3 banners do topo já estão no ar: a sessão, os skates montados e a loja.</p>
+    <a class="link" href="https://fulltime-nu.vercel.app" target="_blank" rel="noopener">Ver os banners</a>
+    <div class="escolhas" data-pergunta="Aprovar os banners">
+      <label class="item"><input type="radio" name="banners" value="Aprovo os banners" data-id="banners"><span class="caixa"><svg viewBox="0 0 16 16"></svg></span><span class="item__texto"><strong>Aprovo os 3 banners</strong></span></label>
+      <label class="item"><input type="radio" name="banners" value="Quero trocar alguma coisa nos banners" data-id="banners"><span class="caixa"><svg viewBox="0 0 16 16"></svg></span><span class="item__texto"><strong>Quero trocar alguma coisa</strong><span>Me conta o que no WhatsApp.</span></span></label>
+    </div>
+  </section>
+
+  <section class="bloco" data-bloco="Domínio">
+    <div class="bloco__num">07</div>
+    <h2>O endereço da loja</h2>
+    <p>O <strong>fulltimeskateboards.com.br</strong> já é de vocês e está na HostGator. Pra colocar a loja nova nesse endereço, eu preciso entrar lá.</p>
+    <label class="item"><input type="checkbox" data-id="hostgator"><span class="caixa"><svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="item__texto"><strong>Mandei o acesso da HostGator</strong><span>Ou me disse quem tem o acesso, que eu falo com a pessoa.</span></span></label>
+    <div class="pergunta">Vocês usam algum e-mail que termina em @fulltimeskateboards.com.br?</div>
+    <div class="escolhas" data-pergunta="Usamos e-mail @fulltimeskateboards">
+      <label class="item"><input type="radio" name="email-dominio" value="Usamos e-mail @fulltimeskateboards" data-id="email-dominio"><span class="caixa"><svg viewBox="0 0 16 16"></svg></span><span class="item__texto"><strong>Sim, usamos</strong><span>Eu mudo só o site e deixo o e-mail do jeito que está.</span></span></label>
+      <label class="item"><input type="radio" name="email-dominio" value="Não usamos e-mail @fulltimeskateboards" data-id="email-dominio"><span class="caixa"><svg viewBox="0 0 16 16"></svg></span><span class="item__texto"><strong>Não usamos</strong></span></label>
+    </div>
+  </section>
+
+  <section class="bloco" data-bloco="WhatsApp e e-mail">
+    <div class="bloco__num">08</div>
+    <h2>WhatsApp e e-mail</h2>
+    <p>Os pedidos do site chegam no WhatsApp da loja. E o painel, onde você mexe nas peças, entra com um e-mail.</p>
+    <label class="campo"><span>Número que vai receber os pedidos</span><input type="tel" inputmode="tel" autocomplete="tel" placeholder="(41) 9…" data-id="whatsapp"></label>
+    <label class="campo"><span>E-mail pra entrar no painel</span><input type="email" inputmode="email" autocomplete="email" placeholder="seuemail@…" data-id="email"></label>
+    <div class="nota">Os destaques da página inicial e a ordem das peças você também consegue mudar depois, direto pelo painel.</div>
+  </section>
+
+  <section class="fim">
+    <h2>Mandar pro Rafael</h2>
+    <label class="campo"><span>Quer dizer mais alguma coisa? <em class="opcional">se quiser</em></span><textarea data-id="recado" placeholder="Uma dúvida, um pedido, o que ficou pra depois…"></textarea></label>
+    <button class="enviar" id="enviar" type="button">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.7.3-.2.3-.9.9-.9 2.2s1 2.5 1.1 2.7c.1.2 1.9 2.9 4.6 4 1.7.7 2.4.8 3.2.7.5-.1 1.5-.6 1.8-1.2.2-.6.2-1.1.1-1.2l-.4-.2Z"/></svg>
+      Mandar o checklist no WhatsApp
+    </button>
+    <p class="miudo">Abre o WhatsApp com tudo o que você marcou já escrito. Pode mandar quantas vezes quiser, a cada parte que for fechando.</p>
+
+    <div class="assinatura">
+      <span class="rotulo">Rafael Razeira Estúdio</span>
+      <button class="limpar" id="limpar" type="button">Desmarcar tudo</button>
+    </div>
+  </section>
+
+</main>
+
+<script>
+(function () {
+  var CHAVE = "fulltime-checklist";
+  var WHATS = "5544991246187";
+  var estado = {};
+  try { estado = JSON.parse(localStorage.getItem(CHAVE)) || {}; } catch (e) { estado = {}; }
+
+  var campos = Array.prototype.slice.call(document.querySelectorAll("[data-id]"));
+
+  function guardar() {
+    try { localStorage.setItem(CHAVE, JSON.stringify(estado)); } catch (e) {}
+  }
+
+  function ler(el) {
+    if (el.type === "checkbox") return el.checked;
+    if (el.type === "radio") return el.checked ? el.value : undefined;
+    return el.value;
+  }
+
+  // Devolve ao que estava salvo neste celular.
+  campos.forEach(function (el) {
+    var v = estado[el.dataset.id];
+    if (v === undefined) return;
+    if (el.type === "checkbox") el.checked = !!v;
+    else if (el.type === "radio") el.checked = el.value === v;
+    else el.value = v;
+  });
+
+  // O que conta na barra: cada caixa obrigatória, cada pergunta e cada campo do bloco 8.
+  function passos() {
+    var lista = [];
+    document.querySelectorAll(".bloco").forEach(function (b) {
+      var feitos = 0, total = 0;
+      b.querySelectorAll('input[type="checkbox"]:not([data-opcional])').forEach(function (c) {
+        if (c.dataset.id === "tabela" && estado["preco-escolha"] && estado["preco-escolha"].indexOf("Valor no WhatsApp") > -1) return;
+        total++; if (c.checked) feitos++;
+      });
+      var grupos = {};
+      b.querySelectorAll('input[type="radio"]').forEach(function (r) { grupos[r.name] = grupos[r.name] || !!r.checked; });
+      Object.keys(grupos).forEach(function (n) { total++; if (grupos[n]) feitos++; });
+      b.querySelectorAll('.campo input').forEach(function (i) { total++; if (i.value.trim()) feitos++; });
+      b.classList.toggle("bloco--feito", total > 0 && feitos === total);
+      lista.push({ feitos: feitos, total: total });
+    });
+    return lista;
+  }
+
+  function atualizar() {
+    var semTabela = estado["preco-escolha"] && estado["preco-escolha"].indexOf("Valor no WhatsApp") > -1;
+    document.getElementById("item-tabela").style.display = semTabela ? "none" : "";
+    var p = passos(), feitos = 0, total = 0;
+    p.forEach(function (x) { feitos += x.feitos; total += x.total; });
+    document.getElementById("conta").textContent = feitos + " de " + total;
+    document.getElementById("cheio").style.width = (total ? feitos / total * 100 : 0) + "%";
+  }
+
+  campos.forEach(function (el) {
+    el.addEventListener(el.tagName === "INPUT" && (el.type === "checkbox" || el.type === "radio") ? "change" : "input", function () {
+      var v = ler(el);
+      if (v !== undefined) estado[el.dataset.id] = v;
+      guardar();
+      atualizar();
+    });
+  });
+
+  // A mensagem: cada parte com o que foi marcado, pra eu saber onde ele parou.
+  document.getElementById("enviar").addEventListener("click", function () {
+    var linhas = ["*Checklist da Full Time*", ""];
+    document.querySelectorAll(".bloco").forEach(function (b, i) {
+      linhas.push("*" + (i + 1) + ". " + b.dataset.bloco + "*");
+      b.querySelectorAll('input[type="checkbox"]').forEach(function (c) {
+        if (c.closest(".item").style.display === "none") return;
+        var t = c.closest(".item").querySelector("strong").childNodes[0].textContent.trim();
+        linhas.push((c.checked ? "✅ " : "⬜ ") + t);
+      });
+      var vistos = {};
+      b.querySelectorAll('input[type="radio"]').forEach(function (r) {
+        if (vistos[r.name]) return; vistos[r.name] = true;
+        var marcado = b.querySelector('input[name="' + r.name + '"]:checked');
+        linhas.push(marcado ? "✅ " + marcado.value : "⬜ " + r.closest(".escolhas").dataset.pergunta + ": ainda não respondi");
+      });
+      b.querySelectorAll(".campo input").forEach(function (inp) {
+        var rot = inp.closest(".campo").querySelector("span").textContent;
+        linhas.push((inp.value.trim() ? "✅ " : "⬜ ") + rot + ": " + (inp.value.trim() || "ainda não"));
+      });
+      linhas.push("");
+    });
+    var recado = (estado.recado || "").trim();
+    if (recado) linhas.push("*Recado:* " + recado);
+    window.open("https://wa.me/" + WHATS + "?text=" + encodeURIComponent(linhas.join("\n").trim()), "_blank");
+  });
+
+  document.getElementById("limpar").addEventListener("click", function () {
+    estado = {};
+    guardar();
+    campos.forEach(function (el) {
+      if (el.type === "checkbox" || el.type === "radio") el.checked = false; else el.value = "";
+    });
+    atualizar();
+  });
+
+  atualizar();
+})();
+</script>
+</body>
+</html>
