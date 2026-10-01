@@ -187,13 +187,17 @@ export const PROPOSTAS: Record<string, Proposta> = {
       avista_pix: { label: "Vitrine digital, pagamento único no Pix", valor: 999, metodo: "pix" },
     },
   },
-  /* A VAYLW fecha como a Fardo (01/10/2026): R$ 999, pagamento único no
-     Pix, sem entrada e sem parcelar; pode pagar já, no aceite. Sem item de
-     entrada nem de cartão de propósito. Domínio à parte, sem botão. */
+  /* A VAYLW abriu como a Fardo (01/10/2026): R$ 999 no Pix, sem entrada.
+     No mesmo dia o Rafael mudou: o pagamento é no CARTÃO, em até 12x COM
+     os juros do Mercado Pago. O valor é o mesmo R$ 999 (nada somado); o
+     Brick calcula cada parcela na hora e o MP repassa de uma vez, então é
+     UM recebimento. O Pix fica como alternativa. Sem item de entrada de
+     propósito. Domínio à parte, sem botão. */
   vaylw: {
     titulo: "Rafael Razeira Estúdio, Vitrine Digital VAYLW",
     whatsapp: "5544991246187",
     itens: {
+      avista_card: { label: "Vitrine digital, no cartão em até 12x", valor: 999, metodo: "card", maxParcelas: 12 },
       avista_pix: { label: "Vitrine digital, pagamento único no Pix", valor: 999, metodo: "pix" },
     },
   },
