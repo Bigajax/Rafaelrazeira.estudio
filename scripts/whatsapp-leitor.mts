@@ -42,7 +42,7 @@ import makeWASocket, {
 } from "baileys";
 import pino from "pino";
 import { MAIS_LONGO_SEGUNDOS, transcrever, transcricaoDisponivel } from "./whatsapp-transcrever.mts";
-import qrcode from "qrcode-terminal";
+import { claudeDisponivel, pedirAnaliseAutomatica, pegarAnalise, processarAnalise } from "./whatsapp-analisar.mts";
 import QRCode from "qrcode";
 import { exec } from "node:child_process";
 import { hojeSP } from "../lib/crm/regras";
@@ -100,6 +100,29 @@ async function mostrarQR(qr: string) {
 <div style="text-align:center"><img src="${img}" width="420" height="420" alt="QR code do WhatsApp">
 <p>No celular do estúdio: WhatsApp &gt; Aparelhos conectados &gt; Conectar um aparelho.</p>
 <p style="color:#666">O código troca sozinho a cada 20 segundos.</p></div></body>`,
+  );
+  if (!qrAberto) {
+    qrAberto = true;
+    exec(`start "" "${ARQUIVO_QR}"`);
+  }
+}
+/* ---------- o código de 8 letras, no lugar do QR ----------
+   `--codigo=5544991246187` (o número do estúdio com 55): em vez do QR, o
+   leitor pede ao WhatsApp um código, e o Rafael digita no celular em
+   Aparelhos conectados > Conectar um aparelho > "Conectar com número de
+   telefone". Nasceu em 01/10, depois de uma hora de QR trocando sem nenhum
+   pareamento chegar: sem câmera, sem QR, sem janela no meio. */
+const NUMERO_CODIGO = process.argv.find((a) => a.startsWith("--codigo="))?.split("=")[1]?.replace(/\D/g, "") || null;
+function mostrarCodigo(codigo: string) {
+  fs.mkdirSync(PASTA_SESSAO, { recursive: true });
+  const legivel = codigo.length === 8 ? `${codigo.slice(0, 4)}-${codigo.slice(4)}` : codigo;
+  fs.writeFileSync(
+    ARQUIVO_QR,
+    `<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="4"><title>Conectar o leitor</title>
+<body style="margin:0;min-height:100vh;display:grid;place-items:center;background:#f4f1ea;font:18px system-ui">
+<div style="text-align:center"><p>No celular do estúdio: WhatsApp &gt; Aparelhos conectados &gt; Conectar um aparelho &gt; <b>Conectar com número de telefone</b>, e digite:</p>
+<p style="font:700 64px ui-monospace,monospace;letter-spacing:.12em;margin:24px 0">${legivel}</p>
+<p style="color:#666">Vale por uns 2 minutos. Se expirar, um código novo aparece aqui sozinho.</p></div></body>`,
   );
   if (!qrAberto) {
     qrAberto = true;
@@ -169,7 +192,8 @@ const hora = () => new Date().toLocaleTimeString("pt-BR", { timeZone: "America/S
 let ignoradas = 0;
 
 /* ---------- gravar uma bolha ---------- */
-export async function gravar(lead: LeadDoLeitor, waId: string, direcao: Direcao, tipo: string, texto: string | null, linha: string, quando: Date) {
+/* Devolve true quando a bolha era nova (a repetida de uma reconexão volta false). */
+export async function gravar(lead: LeadDoLeitor, waId: string, direcao: Direcao, tipo: string, texto: string | null, linha: string, quando: Date): Promise<boolean> {
   const { data: nova, error } = await supabase
     .from("crm_mensagens")
     .upsert(
@@ -178,7 +202,7 @@ export async function gravar(lead: LeadDoLeitor, waId: string, direcao: Direcao,
     )
     .select("id");
   if (error) throw new Error(`Não gravei a mensagem: ${error.message}`);
-  if (!nova?.length) return; // já estava gravada (reconexão)
+  if (!nova?.length) return false; // já estava gravada (reconexão)
   const idMensagem = nova[0].id as string;
   const nome = nomeDoLead(lead);
   const seta = direcao === "entrada" ? "↓" : "↑";
@@ -214,7 +238,7 @@ export async function gravar(lead: LeadDoLeitor, waId: string, direcao: Direcao,
     }
     await supabase.from("crm_mensagens").update({ interacao_id: anterior.interacao_id }).eq("id", idMensagem);
     console.log(`${hora()} ${seta} ${nome}: mais uma bolha na mesma conversa`);
-    return;
+    return true;
   }
 
   /* 2. O toque que o modal gravou no clique, antes de a mensagem sair. */
@@ -235,7 +259,7 @@ export async function gravar(lead: LeadDoLeitor, waId: string, direcao: Direcao,
     if (count) continue;
     await supabase.from("crm_mensagens").update({ interacao_id: m.id }).eq("id", idMensagem);
     console.log(`${hora()} ${seta} ${nome}: casada com o toque que o CRM já tinha registrado`);
-    return;
+    return true;
   }
 
   /* 3. Toque novo. A data é a da mensagem, não a de agora: a escada do
@@ -269,6 +293,7 @@ export async function gravar(lead: LeadDoLeitor, waId: string, direcao: Direcao,
   }
   const etapa = mudanca?.estagio ? ` (${atual!.estagio} → ${mudanca.estagio})` : "";
   console.log(`${hora()} ${seta} ${nome}: ${direcao === "entrada" ? "respondeu" : "mensagem sua pelo celular"}${etapa}`);
+  return true;
 }
 
 /* ---------- a conexão ---------- */
@@ -305,9 +330,10 @@ async function ligar() {
     logger,
     browser: Browsers.windows("CRM do estúdio (só leitura)"),
     markOnlineOnConnect: false,
-    /* O histórico fica LIGADO, mesmo sem uso: o Baileys avisa que desligá-lo
-       corta o mapa dos ids anônimos (@lid) e derruba a sessão. A conversa
-       antiga não entra pelo filtro de data em `ler`, não por aqui. */
+    /* O histórico fica LIGADO: o Baileys avisa que desligá-lo corta o mapa
+       dos ids anônimos (@lid) e derruba a sessão. A conversa antiga entra
+       só como bolha (guardarHistorico), nunca como toque; o filtro de data
+       em `ler` segura o resto. */
     syncFullHistory: false,
     generateHighQualityLinkPreview: false,
   });
@@ -321,11 +347,31 @@ async function ligar() {
   (sock as any).relayMessage = trava;
 
   sock.ev.on("creds.update", saveCreds);
+  let codigoPedido = false;
 
   sock.ev.on("connection.update", ({ connection, lastDisconnect, qr }) => {
-    if (qr) {
-      console.log("\nNo celular do estúdio: WhatsApp > Aparelhos conectados > Conectar um aparelho.\n");
-      qrcode.generate(qr, { small: true });
+    /* O QR sai SÓ como imagem no navegador. Desenhado em texto na janela do
+       cmd, o pareamento falhou duas vezes em 01/10 ("failed to ack
+       notification", e o celular dizia "Verifique sua conexão"): a escrita
+       no console do Windows é síncrona, e uma janela lenta para desenhar o
+       QR, ou com um clique que congela a seleção, trava o processo inteiro
+       bem na hora em que o celular responde. Rodado com a saída num
+       arquivo, pareou de primeira. */
+    if (qr && NUMERO_CODIGO) {
+      /* Um código por conexão: o evento de QR repete a cada 20 s, e pedir
+         código novo a cada vez invalidaria o que está na tela. */
+      if (!codigoPedido) {
+        codigoPedido = true;
+        sock
+          .requestPairingCode(NUMERO_CODIGO)
+          .then((codigo) => {
+            console.log(`${hora()} Código para o celular: ${codigo} (também na aba "Conectar o leitor" do navegador).`);
+            mostrarCodigo(codigo);
+          })
+          .catch((e) => console.error(`${hora()} Não consegui pedir o código: ${(e as Error).message}`));
+      }
+    } else if (qr) {
+      if (!qrAberto) console.log("O QR abriu no navegador (aba \"Conectar o leitor\"). No celular: WhatsApp > Aparelhos conectados > Conectar um aparelho.");
       void mostrarQR(qr);
     }
     if (connection === "open") {
@@ -348,6 +394,10 @@ async function ligar() {
     }
   });
 
+  sock.ev.on("messaging-history.set", ({ messages }) => {
+    fila = fila.then(() => guardarHistorico(sock, messages)).catch((e) => console.error(`${hora()} ${e.message}`));
+  });
+
   sock.ev.on("messages.upsert", ({ messages }) => {
     const ordenadas = [...messages].sort((a, b) => Number(a.messageTimestamp ?? 0) - Number(b.messageTimestamp ?? 0));
     for (const msg of ordenadas) {
@@ -357,7 +407,22 @@ async function ligar() {
   });
 }
 
-async function ler(sock: ReturnType<typeof makeWASocket>, msg: WAMessage, desde: number) {
+/* De quem é a mensagem. Conta nova chega com um id anônimo (@lid) no lugar
+   do telefone; o próprio WhatsApp manda o par, e o Baileys guarda. Quem
+   não é lead devolve undefined, e a mensagem para aqui. */
+type Socket = ReturnType<typeof makeWASocket>;
+async function leadDaMensagem(sock: Socket, msg: WAMessage): Promise<LeadDoLeitor | undefined> {
+  const jid = msg.key.remoteJid!;
+  let numero: string | null | undefined = jid.endsWith("@lid") ? msg.key.remoteJidAlt : jid;
+  if (!numero && jid.endsWith("@lid")) {
+    numero = await sock.signalRepository.lidMapping.getPNForLID(jid).catch(() => null);
+  }
+  const chave = chaveDoNumero(numero);
+  await carregarLeads();
+  return chave ? porNumero.get(chave) : undefined;
+}
+
+async function ler(sock: Socket, msg: WAMessage, desde: number) {
   const jid = msg.key.remoteJid;
   if (!ehConversaDireta(jid) || !msg.key.id) return;
   const quando = new Date(Number(msg.messageTimestamp ?? 0) * 1000);
@@ -366,15 +431,7 @@ async function ler(sock: ReturnType<typeof makeWASocket>, msg: WAMessage, desde:
   const conteudo = conteudoDaMensagem(msg.message);
   if (!conteudo) return;
 
-  /* O número de verdade. Conta nova chega com um id anônimo (@lid) no lugar
-     do telefone; o próprio WhatsApp manda o par, e o Baileys guarda. */
-  let numero: string | null | undefined = jid!.endsWith("@lid") ? msg.key.remoteJidAlt : jid;
-  if (!numero && jid!.endsWith("@lid")) {
-    numero = await sock.signalRepository.lidMapping.getPNForLID(jid!).catch(() => null);
-  }
-  const chave = chaveDoNumero(numero);
-  await carregarLeads();
-  const lead = chave ? porNumero.get(chave) : undefined;
+  const lead = await leadDaMensagem(sock, msg);
   if (!lead) {
     ignoradas++;
     return;
@@ -395,30 +452,109 @@ async function ler(sock: ReturnType<typeof makeWASocket>, msg: WAMessage, desde:
     }
   }
 
-  await gravar(
-    lead,
-    msg.key.id,
-    msg.key.fromMe ? "saida" : "entrada",
-    conteudo.tipo,
-    conteudo.texto,
-    linhaDoResumo(conteudo),
-    quando,
-  );
+  const direcao: Direcao = msg.key.fromMe ? "saida" : "entrada";
+  const nova = await gravar(lead, msg.key.id, direcao, conteudo.tipo, conteudo.texto, linhaDoResumo(conteudo), quando);
+
+  /* O lead respondeu: a leitura da conversa entra na fila sozinha, e espera
+     a pessoa parar de digitar antes de rodar (whatsapp-analisar.mts). */
+  if (nova && direcao === "entrada" && claudeDisponivel()) {
+    await pedirAnaliseAutomatica(supabase, lead.owner_id, lead.id);
+  }
+}
+
+/* ---------- o histórico ----------
+   Na conexão, o WhatsApp manda as conversas recentes. Elas não viram TOQUE
+   (o que já aconteceu foi registrado à mão, e trazer como toque duplicaria
+   a escada do silêncio): viram só BOLHA, sem toque, para a leitura da
+   conversa ter o que ler de quem já conversava antes do leitor existir.
+   Só de lead, como sempre; áudio antigo fica "[áudio]". */
+async function guardarHistorico(sock: Socket, mensagens: WAMessage[]) {
+  let guardadas = 0;
+  for (const msg of mensagens) {
+    if (!ehConversaDireta(msg.key.remoteJid) || !msg.key.id) continue;
+    const conteudo = conteudoDaMensagem(msg.message);
+    if (!conteudo) continue;
+    const lead = await leadDaMensagem(sock, msg);
+    if (!lead) continue;
+    const { data } = await supabase
+      .from("crm_mensagens")
+      .upsert(
+        {
+          owner_id: lead.owner_id,
+          lead_id: lead.id,
+          wa_id: msg.key.id,
+          direcao: msg.key.fromMe ? "saida" : "entrada",
+          tipo: conteudo.tipo,
+          texto: conteudo.texto,
+          enviada_em: new Date(Number(msg.messageTimestamp ?? 0) * 1000).toISOString(),
+        },
+        { onConflict: "wa_id", ignoreDuplicates: true },
+      )
+      .select("id");
+    if (data?.length) guardadas++;
+  }
+  if (guardadas) console.log(`${hora()} Histórico: ${guardadas} mensagens antigas de leads guardadas para a leitura da conversa.`);
+}
+
+/* ---------- as análises ----------
+   Um laço à parte da fila das mensagens: a leitura leva meio minuto no
+   claude, e a mensagem que chega nesse meio tempo não pode esperar. */
+async function lacoDasAnalises() {
+  if (!claudeDisponivel()) {
+    console.log("Leitura da conversa: desligada (não achei o claude no PC).");
+    return;
+  }
+  /* Análise que ficou "rodando" é de um leitor que caiu no meio: volta para
+     a fila em vez de ficar presa para sempre. */
+  await supabase.from("crm_analises").update({ status: "na_fila" }).eq("status", "rodando");
+  console.log("Leitura da conversa: ligada, pela assinatura do Claude.");
+  for (;;) {
+    const pedido = await pegarAnalise(supabase).catch(() => null);
+    if (!pedido) {
+      await new Promise((r) => setTimeout(r, 4000));
+      continue;
+    }
+    const inicio = Date.now();
+    const lead = [...porNumero.values()].find((l) => l.id === pedido.lead_id);
+    const nome = lead ? nomeDoLead(lead) : "lead";
+    try {
+      const leitura = await processarAnalise(supabase, pedido);
+      console.log(`${hora()} ✎ ${nome}: conversa lida em ${Math.round((Date.now() - inicio) / 1000)}s. ${leitura.situacao}`);
+    } catch (e) {
+      console.error(`${hora()} ✎ ${nome}: a leitura falhou (${(e as Error).message})`);
+    }
+  }
 }
 
 /* ---------- a partida ---------- */
 async function main() {
   /* Sem `head`: a consulta só de cabeçalho volta "204, sem erro" mesmo com a
      tabela inexistente, e o leitor seguia para conectar sem ter onde gravar. */
-  const { error } = await supabase.from("crm_mensagens").select("id").limit(1);
-  if (error) {
-    console.error("A tabela crm_mensagens ainda não existe. Rode supabase/whatsapp-leitor.sql no SQL Editor do Supabase e tente de novo.");
-    process.exit(1);
+  for (const [tabela, sql] of [
+    ["crm_mensagens", "whatsapp-leitor.sql"],
+    ["crm_analises", "whatsapp-analise.sql"],
+  ]) {
+    const { error } = await supabase.from(tabela).select("*").limit(1);
+    if (error) {
+      console.error(`A tabela ${tabela} ainda não existe. Rode supabase/${sql} no SQL Editor do Supabase e tente de novo.`);
+      process.exit(1);
+    }
   }
   await carregarLeads(true);
   console.log(`${porNumero.size} leads com WhatsApp no CRM.`);
   console.log(transcricaoDisponivel() ? "Áudios de lead: transcritos no PC, pelo Whisper." : "Áudios de lead: sem transcrição (whisper não encontrado em ~/whisper).");
   await ligar();
+
+  /* O batimento: a ficha do CRM mostra "o leitor está desligado" quando ele
+     passa de 45 s sem bater, em vez de deixar o pedido esperando calado. */
+  const dono = process.env.CRM_OWNER_ID;
+  const bater = async () => {
+    if (dono) await supabase.from("crm_leitor_sinal").upsert({ owner_id: dono, visto_em: new Date().toISOString() });
+  };
+  await bater();
+  setInterval(() => void bater(), 15_000);
+
+  void lacoDasAnalises();
 
   /* O contador de quem não é lead, de hora em hora: dá para ver que o
      filtro está trabalhando sem gravar nada de ninguém. */

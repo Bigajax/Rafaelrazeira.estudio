@@ -84,6 +84,7 @@ import { ModalMensagem } from "./ModalMensagem";
 import { ModalPassagem } from "./ModalPassagem";
 import { Pesquisa } from "./Pesquisa";
 import { SugerirResposta } from "./SugerirResposta";
+import { LeituraDaConversa } from "./LeituraDaConversa";
 import { AvisoDoisRetornos } from "./pecas";
 import { BlocoContrato } from "./BlocoContrato";
 import type { ContratoPainel } from "@/lib/crm/dados";
@@ -309,6 +310,12 @@ export function Ficha({
           nasce com o resumo da última entrada, então registrar antes deixa
           a sugestão meio pronta. */}
       <SugerirResposta lead={lead} interacoes={interacoes} />
+
+      {/* ============ LEITURA DA CONVERSA (01/10) ============
+          O leitor do WhatsApp no PC lê a conversa inteira e sugere etapa,
+          passo e resposta. Logo depois do "Responder com IA", que é a
+          versão de colar à mão. */}
+      <LeituraDaConversa lead={lead} />
 
       {/* ============ 4. O QUE ROLOU ============ */}
       <section className={s.bloco}>

@@ -24,7 +24,9 @@ set ANTHROPIC_API_KEY=
 
 echo Ligando o leitor do WhatsApp. Deixe esta janela aberta (pode minimizar).
 echo.
-call npx tsx scripts/whatsapp-leitor.mts
+rem --codigo: sem sessao salva, o leitor mostra um codigo de 8 letras no navegador
+rem (digitar em Conectar com numero de telefone) em vez do QR. Com sessao, nao faz nada.
+call npx tsx scripts/whatsapp-leitor.mts --codigo=5544991246187
 
 echo.
 echo O leitor parou. Se apareceu um erro acima, mande uma foto dele para o Claude.
