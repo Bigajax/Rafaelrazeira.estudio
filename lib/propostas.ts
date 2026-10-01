@@ -187,6 +187,16 @@ export const PROPOSTAS: Record<string, Proposta> = {
       avista_pix: { label: "Vitrine digital, pagamento único no Pix", valor: 999, metodo: "pix" },
     },
   },
+  /* A VAYLW fecha como a Fardo (01/10/2026): R$ 999, pagamento único no
+     Pix, sem entrada e sem parcelar, no dia da publicação. Sem item de
+     entrada nem de cartão de propósito. Domínio à parte, sem botão. */
+  vaylw: {
+    titulo: "Rafael Razeira Estúdio, Vitrine Digital VAYLW",
+    whatsapp: "5544991246187",
+    itens: {
+      avista_pix: { label: "Vitrine digital, pagamento único no Pix", valor: 999, metodo: "pix" },
+    },
+  },
   /* A Full Time fecha em R$ 799 (28/09): pediu para melhorar o valor
      ("estamos no começo e as vendas não estão fácil, época de eleição").
      Em 29/09 o Rafael mudou a forma: 20% de entrada no Pix, no aceite, e o
