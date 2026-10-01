@@ -188,7 +188,7 @@ export const PROPOSTAS: Record<string, Proposta> = {
     },
   },
   /* A VAYLW fecha como a Fardo (01/10/2026): R$ 999, pagamento único no
-     Pix, sem entrada e sem parcelar, no dia da publicação. Sem item de
+     Pix, sem entrada e sem parcelar; pode pagar já, no aceite. Sem item de
      entrada nem de cartão de propósito. Domínio à parte, sem botão. */
   vaylw: {
     titulo: "Rafael Razeira Estúdio, Vitrine Digital VAYLW",
