@@ -238,13 +238,16 @@ export async function registrarToque(
   });
   if (error) return { ok: false, erro: traduzirErro(error) };
 
+  /* Só o que veio (01/10): o modal de mensagem manda a DATA do próximo
+     retorno sem mexer no passo, e gravar o passo vazio junto apagaria
+     "Cobrar retorno no WhatsApp" de quem só queria empurrar a data. */
   if (dados.proximo_passo || dados.proxima_acao_em) {
+    const agenda: { proximo_passo?: string | null; proxima_acao_em?: string | null } = {};
+    if (dados.proximo_passo !== undefined) agenda.proximo_passo = dados.proximo_passo?.trim() || null;
+    if (dados.proxima_acao_em !== undefined) agenda.proxima_acao_em = dados.proxima_acao_em || null;
     const { error: erroPasso } = await supabase
       .from("crm_leads")
-      .update({
-        proximo_passo: dados.proximo_passo?.trim() || null,
-        proxima_acao_em: dados.proxima_acao_em || null,
-      })
+      .update(agenda)
       .eq("id", leadId);
     if (erroPasso) return { ok: false, erro: traduzirErro(erroPasso) };
   }

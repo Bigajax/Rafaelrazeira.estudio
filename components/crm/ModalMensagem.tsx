@@ -43,8 +43,11 @@ import {
   aplicarSaudacao,
   type DadosOficina,
   degrauDoSilencio,
+  hojeSP,
+  somarDias,
   lacunas,
   linkDirectInstagram,
+  linkInstagram,
   linkWhatsapp,
   renderTemplate,
   templateDaEtapa,
@@ -71,10 +74,14 @@ export function ModalMensagem({
   lead,
   templates,
   aoFechar,
+  saida: saidaPedida,
 }: {
   lead: LeadPainel;
   templates: Template[];
   aoFechar: () => void;
+  /* Por onde a mensagem sai. Sem pedido, o WhatsApp quando há número; o
+     botão "Instagram" da carta e da ficha pede o direct. */
+  saida?: Canal;
 }) {
   const pesquisaOk = lead.dossie?.status === "ok";
   const aAbertura = pesquisaOk ? (lead.dossie?.abertura ?? null) : null;
@@ -144,6 +151,17 @@ export function ModalMensagem({
   const semCategoria = templates.filter((t) => !t.categoria);
   const [copiado, setCopiado] = useState(false);
 
+  /* ---------- A CARTA SAI DA FILA (01/10) ----------
+     Mandar a mensagem registrava o toque e deixava a data do retorno onde
+     estava. Num lead atrasado, a data continuava no passado e a carta
+     continuava no topo da fila depois da mensagem enviada ("a lista não
+     cai"). Agora o mesmo clique marca quando cobrar de novo: +3 dias por
+     padrão, que é o "Retorno 1" da escada do silêncio. Quem já tem retorno
+     marcado no futuro abre em "manter", e a data dele não muda. */
+  const hoje = hojeSP();
+  const temFuturo = Boolean(lead.proxima_acao_em && lead.proxima_acao_em > hoje);
+  const [retorno, setRetorno] = useState<number | null>(temFuturo ? null : 3);
+
   /* O QUE A OFICINA SABE. Os toques da prévia levam o link, a contagem e
      as estreladas da loja vinculada a este card ({link}, {pecas},
      {destaques}, {topo}); isso mora na oficina, não no cadastro, e vem
@@ -176,14 +194,23 @@ export function ModalMensagem({
      vem da view e conta o que ENTROU: zero significa que este lead nunca
      respondeu nada, por nenhum canal. */
   const foraDeOrdem = escolhido === ID_PESQUISA && Boolean(aAbertura) && lead.toques_entrada === 0;
-  const link = linkWhatsapp(lead.whatsapp, texto);
+  const zapPossivel = linkWhatsapp(lead.whatsapp, texto);
+  const instaPossivel = linkDirectInstagram(lead.instagram);
 
-  /* O plano B quando o número não dá link: o direct. Só entra em campo sem
-     WhatsApp, porque duas saídas para a mesma mensagem seriam duas
-     primeiras ações. Foi o caso real do nove3: sem número, o modal não
-     tinha saída nenhuma, a mensagem foi no braço pelo Instagram e o toque
-     ficou sem registro, com o card parado na Lista. */
-  const linkInsta = !link ? linkDirectInstagram(lead.instagram) : null;
+  /* A SAÍDA É UMA SÓ POR VEZ, e o lead com os dois canais escolhe (01/10).
+     Até aqui o direct só existia para quem não tinha número, e o lead com
+     WhatsApp e @ que conversava pelo Instagram ficava sem template: o
+     botão "Instagram" da ficha abria o perfil e a mensagem ia no braço.
+     O caso do nove3 continua valendo: sem número, o direct assume. Com os
+     dois, uma troca no topo do modal diz por onde sai, e o botão do pé
+     continua sendo um só, porque duas saídas para a mesma mensagem seriam
+     duas primeiras ações. */
+  const [saida, setSaida] = useState<Canal>(() =>
+    saidaPedida === "instagram" && instaPossivel ? "instagram" : zapPossivel ? "whatsapp" : "instagram",
+  );
+  const link = saida === "whatsapp" ? zapPossivel : null;
+  const linkInsta = saida === "instagram" ? instaPossivel : null;
+  const perfil = linkInstagram(lead.instagram);
 
   useEffect(() => {
     const aoTeclar = (e: KeyboardEvent) => e.key === "Escape" && aoFechar();
@@ -211,6 +238,7 @@ export function ModalMensagem({
     void registrarToque(lead.id, {
       canal,
       direcao: "saida",
+      proxima_acao_em: retorno === null ? undefined : somarDias(hoje, retorno),
       resumo:
         escolhido === ID_ABERTURA
           ? "Abertura da pesquisa (primeiro toque)"
@@ -226,6 +254,22 @@ export function ModalMensagem({
       <div className={s.modal} role="dialog" aria-modal="true" aria-labelledby="msg-titulo">
         <p className={s.modalRot}>Mandar mensagem</p>
         <h2 id="msg-titulo">{lead.nome}</h2>
+
+        {zapPossivel && instaPossivel ? (
+          <div className={s.filtros} role="group" aria-label="Por onde a mensagem sai">
+            {(["whatsapp", "instagram"] as const).map((c) => (
+              <button
+                key={c}
+                type="button"
+                className={`${s.vezMonte} ${saida === c ? s.vezMonteAtivo : ""}`}
+                onClick={() => setSaida(c)}
+                aria-pressed={saida === c}
+              >
+                {c === "whatsapp" ? "WhatsApp" : "Direct do Instagram"}
+              </button>
+            ))}
+          </div>
+        ) : null}
 
         {templates.length === 0 && !daPesquisa && !aAbertura ? (
           <p>
@@ -311,6 +355,16 @@ export function ModalMensagem({
               </p>
             ) : null}
 
+            {/* O colchete escrito no próprio template é coisa que só quem
+                manda sabe (o motivo do desconto, o link da proposta): o
+                texto sai com ele, para ser trocado no WhatsApp antes de
+                enviar. Dito aqui para não ir "[o motivo]" para o cliente. */}
+            {template && /\[[^\]]+\]/.test(template.conteudo) ? (
+              <p className={s.erro}>
+                Troque o que está entre colchetes antes de enviar: {template.conteudo.match(/\[[^\]]+\]/g)?.join(", ")}
+              </p>
+            ) : null}
+
             {faltando.length ? (
               <p className={s.erro}>
                 Sem {faltando.join(", ")}
@@ -322,10 +376,18 @@ export function ModalMensagem({
           </>
         )}
 
-        {!link && linkInsta ? (
+        {linkInsta ? (
           <p className={s.nota}>
-            Sem WhatsApp no cadastro: a saída deste lead é o direct. O texto vai copiado no clique,
-            é só colar na conversa.
+            {zapPossivel ? "Saindo pelo direct." : "Sem WhatsApp no cadastro: a saída deste lead é o direct."} O
+            texto vai copiado no clique, é só colar na conversa.
+            {perfil ? (
+              <>
+                {" "}
+                <a href={perfil} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "underline" }}>
+                  Ver o perfil
+                </a>
+              </>
+            ) : null}
           </p>
         ) : null}
         {!link && !linkInsta ? (
@@ -334,6 +396,33 @@ export function ModalMensagem({
               ? "O WhatsApp cadastrado não tem número suficiente."
               : "Este lead não tem WhatsApp nem Instagram no cadastro. Preencha um dos dois em Ver todos os dados."}
           </p>
+        ) : null}
+
+        {link || linkInsta ? (
+          <div className={s.filtros} role="group" aria-label="Quando cobrar de novo">
+            <span className={s.campoRot}>Me cobre de novo</span>
+            {temFuturo ? (
+              <button
+                type="button"
+                className={`${s.vezMonte} ${retorno === null ? s.vezMonteAtivo : ""}`}
+                onClick={() => setRetorno(null)}
+                aria-pressed={retorno === null}
+              >
+                Manter {lead.proxima_acao_em?.split("-").reverse().slice(0, 2).join("/")}
+              </button>
+            ) : null}
+            {[1, 3, 7].map((d) => (
+              <button
+                key={d}
+                type="button"
+                className={`${s.vezMonte} ${retorno === d ? s.vezMonteAtivo : ""}`}
+                onClick={() => setRetorno(d)}
+                aria-pressed={retorno === d}
+              >
+                {d === 1 ? "Amanhã" : `Em ${d} dias`}
+              </button>
+            ))}
+          </div>
         ) : null}
 
         <div className={s.modalPe}>
@@ -381,7 +470,7 @@ export function ModalMensagem({
         {link || linkInsta ? (
           <p className={s.nota}>
             {link ? "Abrir no WhatsApp" : "Copiar e abrir no direct"} registra o toque na linha do
-            tempo
+            tempo e tira o lead da fila de hoje
           </p>
         ) : null}
       </div>

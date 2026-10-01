@@ -22,7 +22,7 @@
 
 import { useState } from "react";
 import { registrarToque } from "@/app/(pt)/crm/acoes";
-import { aplicarSaudacao, linkDirectInstagram, linkWhatsapp } from "@/lib/crm/regras";
+import { aplicarSaudacao, hojeSP, linkDirectInstagram, linkWhatsapp, somarDias } from "@/lib/crm/regras";
 import type { Canal, Interacao, LeadPainel } from "@/lib/crm/tipos";
 import s from "@/app/(pt)/crm/crm.module.css";
 
@@ -40,6 +40,13 @@ export function SugerirResposta({
   const [pensando, setPensando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [copiado, setCopiado] = useState(false);
+
+  /* Quando cobrar de novo, pela mesma regra do ModalMensagem (01/10): sem
+     a data, a resposta mandada deixava o lead atrasado no topo da fila do
+     dia. Padrão de 3 dias, ou "manter" quem já tem retorno no futuro. */
+  const hoje = hojeSP();
+  const temFuturo = Boolean(lead.proxima_acao_em && lead.proxima_acao_em > hoje);
+  const [retorno, setRetorno] = useState<number | null>(temFuturo ? null : 3);
 
   /* A resposta sai pelo canal da CONVERSA, não pelo canal padrão: o último
      toque de entrada diz por onde o cliente falou, e sem entrada registrada
@@ -118,6 +125,7 @@ export function SugerirResposta({
         canal,
         direcao: "saida",
         resumo: "Resposta sugerida pela IA",
+        proxima_acao_em: retorno === null ? undefined : somarDias(hoje, retorno),
       });
     })();
   };
@@ -167,6 +175,32 @@ export function SugerirResposta({
       {sugestao ? (
         <>
           <p className={s.previa}>{sugestao}</p>
+          {link || direct ? (
+            <div className={s.filtros} role="group" aria-label="Quando cobrar de novo">
+              <span className={s.campoRot}>Me cobre de novo</span>
+              {temFuturo ? (
+                <button
+                  type="button"
+                  className={`${s.vezMonte} ${retorno === null ? s.vezMonteAtivo : ""}`}
+                  onClick={() => setRetorno(null)}
+                  aria-pressed={retorno === null}
+                >
+                  Manter {lead.proxima_acao_em?.split("-").reverse().slice(0, 2).join("/")}
+                </button>
+              ) : null}
+              {[1, 3, 7].map((d) => (
+                <button
+                  key={d}
+                  type="button"
+                  className={`${s.vezMonte} ${retorno === d ? s.vezMonteAtivo : ""}`}
+                  onClick={() => setRetorno(d)}
+                  aria-pressed={retorno === d}
+                >
+                  {d === 1 ? "Amanhã" : `Em ${d} dias`}
+                </button>
+              ))}
+            </div>
+          ) : null}
           <div className={s.dossiePe}>
             <button type="button" className={s.btnMini} onClick={copiar}>
               {copiado ? "Copiado" : "Copiar"}
@@ -203,7 +237,7 @@ export function SugerirResposta({
           {link || direct ? (
             <p className={s.nota}>
               {link ? "Abrir no WhatsApp" : "Copiar e abrir no direct"} registra o toque na linha
-              do tempo
+              do tempo e marca o próximo retorno
             </p>
           ) : null}
         </>

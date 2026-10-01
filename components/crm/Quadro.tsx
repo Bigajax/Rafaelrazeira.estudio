@@ -353,6 +353,18 @@ export function Quadro({
             lead novo: tudo o mais nesta tela mexe em negócio que já existe.
             É o único botão rosa do CRM inteiro, e ele é o mesmo em todas as
             telas onde aparece. */}
+        {/* A busca mora na linha da manchete desde 01/10: era uma linha
+            inteira só para ela, com meia linha de papel vazio ao lado do
+            título, e o quadro nascia meia janela abaixo do topo. */}
+        <label className={`${s.buscaLinha} ${s.pipeBusca}`}>
+          <span className={s.buscaRot}>Buscar</span>
+          <input
+            type="search"
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+            placeholder="nome, empresa, nicho ou próximo passo"
+          />
+        </label>
         <button type="button" className={s.btnAcao} onClick={() => setNovo(true)}>
           Anotar lead
         </button>
@@ -414,16 +426,6 @@ export function Quadro({
           ficha, aplicado ao controle em vez de ao dado.
           ============================================================ */}
       <div className={s.impresso}>
-        <label className={s.buscaLinha}>
-          <span className={s.buscaRot}>Buscar</span>
-          <input
-            type="search"
-            value={busca}
-            onChange={(e) => setBusca(e.target.value)}
-            placeholder="nome, empresa, nicho ou próximo passo"
-          />
-        </label>
-
         <div className={s.filtros}>
           {pediram ? (
             <button

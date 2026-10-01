@@ -135,6 +135,11 @@ function nomeDaTecla(l: LeadPainel): string {
   return `${l.nome} · @${arroba}`;
 }
 
+/* O nicho é texto livre do cadastro, e "Moda Masculina" e "moda masculina"
+   viravam dois montes de um lead cada. A chave é em minúscula; a tela põe
+   a maiúscula de volta no CSS (::first-letter). */
+const chaveDoNicho = (nicho: string | null) => nicho?.trim().toLocaleLowerCase("pt-BR") || "";
+
 const plural = (n: number, um: string, muitos: string) => `${n} ${n === 1 ? um : muitos}`;
 
 /* A urgência do lead da vez, pintada na banda do topo da folha. É a mesma
@@ -149,7 +154,7 @@ const FOLHA: Record<string, string> = {
 };
 
 export function Hoje({ painel, templates, posts = [] }: { painel: Painel; templates: Template[]; posts?: Peca[] }) {
-  const [mensagem, setMensagem] = useState<LeadPainel | null>(null);
+  const [mensagem, setMensagem] = useState<{ lead: LeadPainel; saida?: "whatsapp" | "instagram" } | null>(null);
   const [toque, setToque] = useState<LeadPainel | null>(null);
   const [novo, setNovo] = useState(false);
   const [segmento, setSegmento] = useState<string | null>(null);
@@ -239,7 +244,7 @@ export function Hoje({ painel, templates, posts = [] }: { painel: Painel; templa
     const conta = new Map<string, number>();
     for (const l of filaDia) {
       if (procurouOEstudio(l)) continue;
-      const chave = l.nicho?.trim() || "";
+      const chave = chaveDoNicho(l.nicho);
       conta.set(chave, (conta.get(chave) ?? 0) + 1);
     }
     return [...conta.entries()]
@@ -253,11 +258,21 @@ export function Hoje({ painel, templates, posts = [] }: { painel: Painel; templa
         ? true
         : chave === PEDIRAM
           ? procurouOEstudio(l)
-          : !procurouOEstudio(l) && (l.nicho?.trim() || "") === chave,
+          : !procurouOEstudio(l) && chaveDoNicho(l.nicho) === chave,
     [],
   );
 
   const fila = useMemo(() => filaDia.filter((l) => pertence(l, segmento)), [filaDia, segmento, pertence]);
+
+  /* A linha mostra os montes que couberem INTEIROS (o CSS esconde a
+     segunda linha), do maior para o menor; o resto mora no índice. O
+     monte ligado vem logo depois de "Anúncio e site", senão um filtro
+     escolhido pelo índice ficaria escondido. */
+  const [indiceAberto, setIndiceAberto] = useState(false);
+  const visiveis = useMemo(() => {
+    const escolhido = segmentos.find((x) => x.chave === segmento);
+    return escolhido ? [escolhido, ...segmentos.filter((x) => x !== escolhido)] : segmentos;
+  }, [segmentos, segmento]);
 
   /* Riscou o último do segmento, o baralho volta sozinho para o monte
      inteiro: um filtro apontando para uma fila vazia seria a tela dizendo
@@ -394,65 +409,121 @@ export function Hoje({ painel, templates, posts = [] }: { painel: Painel; templa
         </div>
       </div>
 
-      {/* ---------- os segmentos: um monte por sentada ----------
-          A fileira mora no PAPEL, com a pergunta, porque ela decide QUAL
-          fila a folha vai mostrar: é controle da tela, não medida do dia
-          (a régua lá dentro continua contando o dia inteiro). Ela só
-          existe com dois segmentos ou mais: filtro de uma opção é ruído.
+      {/* ============================================================
+          A LINHA DE CONTROLE (01/10): a busca e os montes juntos
 
-          A forma é a da linha impressa da casa: nada de caixinhas, cada
-          monte é ESCRITO SOBRE UM FILETE. O escolhido fica com o filete
-          em tinta cheia e o texto em preto; os em repouso, filete claro e
-          voz cinza. Dá para ver qual está ligado sem ler nada.
+          A busca morava sozinha no canto de cima, acima do "Anotar lead",
+          longe da fila que ela procura ("tá muito para cima, teria que
+          estar mais junto"). Agora ela abre a linha dos montes: as duas
+          coisas respondem "qual carta eu quero ver", então moram juntas,
+          em cima da folha.
 
-          E a conta segue a regra das duas réguas: até nove leads são
-          MARCAS CONTÁVEIS (a régua do dia em miniatura, cinco tatuagens
-          são cinco decisões), de dez para cima vira número, porque aí é
-          volume. O monte some quando zera: é a fileira dizendo "este
-          acabou". */}
-      {segmentos.length + (pediram ? 1 : 0) > 1 ? (
-        <div className={s.vezSegmentos} role="group" aria-label="Varrer a fila por segmento">
+          E os montes pararam de rolar de lado. Com 26 segmentos, a
+          fileira que rolava cortava na borda e o resto sumia sem aviso:
+          "loja de iPhone" existia e não dava para ver. Agora a linha
+          mostra os cinco maiores e termina no ÍNDICE: um botão que abre
+          todos os segmentos em ordem alfabética, com o número na ponta de
+          um pontilhado, como o índice remissivo de um livro. Dá para achar
+          pelo nome, que é como se procura um segmento.
+          ============================================================ */}
+      <div className={s.vezControle}>
+        <BuscaDaFila
+          fila={filaDia}
+          riscados={riscados}
+          aoEscolher={(l) => {
+            if (!pertence(l, segmento)) setSegmento(null);
+            trazerParaCima(l.id);
+          }}
+        />
+
+        {segmentos.length + (pediram ? 1 : 0) > 1 ? (
+          <div className={s.vezSegmentos} role="group" aria-label="Varrer a fila por segmento">
+            <button
+              type="button"
+              className={`${s.vezMonte} ${segmento === null ? s.vezMonteAtivo : ""}`}
+              onClick={() => escolherSegmento(null)}
+              aria-pressed={segmento === null}
+              aria-label={`Todos os segmentos, ${filaDia.length} na fila`}
+            >
+              Todos<b className={s.vezMonteNum}>{filaDia.length}</b>
+            </button>
+            {/* O monte de quem pediu vem primeiro e fala em ROSA: tem gente
+                esperando. Os nichos são trabalho que eu escolho; este é
+                trabalho que me escolheu. */}
+            {pediram ? (
+              <button
+                type="button"
+                className={`${s.vezMonte} ${s.vezMontePediram} ${segmento === PEDIRAM ? s.vezMonteAtivo : ""}`}
+                onClick={() => escolherSegmento(segmento === PEDIRAM ? null : PEDIRAM)}
+                aria-pressed={segmento === PEDIRAM}
+                aria-label={`Anúncio e site, ${pediram} na fila`}
+              >
+                Anúncio e site<b className={s.vezMonteNum}>{pediram}</b>
+              </button>
+            ) : null}
+            {visiveis.map(({ chave, n }) => (
+              <button
+                key={chave || "__sem"}
+                type="button"
+                className={`${s.vezMonte} ${segmento === chave ? s.vezMonteAtivo : ""}`}
+                onClick={() => escolherSegmento(segmento === chave ? null : chave)}
+                aria-pressed={segmento === chave}
+                aria-label={`${chave || "sem segmento"}, ${n} na fila`}
+              >
+                {chave || "sem segmento"}
+                <b className={s.vezMonteNum}>{n}</b>
+              </button>
+            ))}
+          </div>
+        ) : null}
+
+        {segmentos.length > 1 ? (
           <button
-            type="button"
-            className={`${s.vezMonte} ${segmento === null ? s.vezMonteAtivo : ""}`}
-            onClick={() => escolherSegmento(null)}
-            aria-pressed={segmento === null}
-            aria-label={`Todos os segmentos, ${filaDia.length} na fila`}
-          >
-            Todos<b className={s.vezMonteNum}>{filaDia.length}</b>
+              type="button"
+              className={`${s.vezIndiceBotao} ${indiceAberto ? s.vezIndiceBotaoAberto : ""}`}
+              onClick={() => setIndiceAberto((v) => !v)}
+              aria-expanded={indiceAberto}
+            >
+              Todos os segmentos<b>{segmentos.length}</b>
+            <i aria-hidden="true">{indiceAberto ? "↑" : "↓"}</i>
           </button>
-          {/* O monte de quem pediu vem primeiro e fala em ROSA: é a mesma
-              cor do contador do Hoje no trilho, e diz a mesma coisa, tem
-              gente esperando. Os nichos são trabalho que eu escolho; este
-              é trabalho que me escolheu. */}
-          {pediram ? (
-            <button
-              type="button"
-              className={`${s.vezMonte} ${s.vezMontePediram} ${segmento === PEDIRAM ? s.vezMonteAtivo : ""}`}
-              onClick={() => escolherSegmento(segmento === PEDIRAM ? null : PEDIRAM)}
-              aria-pressed={segmento === PEDIRAM}
-              aria-label={`Anúncio e site, ${pediram} na fila`}
-            >
-              Anúncio e site<b className={s.vezMonteNum}>{pediram}</b>
-            </button>
-          ) : null}
-          {segmentos.map(({ chave, n }) => (
-            <button
-              key={chave || "__sem"}
-              type="button"
-              className={`${s.vezMonte} ${segmento === chave ? s.vezMonteAtivo : ""}`}
-              onClick={() => escolherSegmento(segmento === chave ? null : chave)}
-              aria-pressed={segmento === chave}
-              aria-label={`${chave || "sem segmento"}, ${n} na fila`}
-            >
-              {/* Sempre número (21/09): as marquinhas contáveis até nove
-                  eram uma segunda régua dentro da fileira, e com 25 montes
-                  em três linhas a fileira virou a coisa mais cheia da
-                  tela. Um monte é um nome e um número. */}
-              {chave || "sem segmento"}
-              <b className={s.vezMonteNum}>{n}</b>
-            </button>
-          ))}
+        ) : null}
+      </div>
+
+      {indiceAberto ? (
+        <div
+          className={s.vezIndice}
+          role="dialog"
+          aria-label="Todos os segmentos"
+          onKeyDown={(e) => e.key === "Escape" && setIndiceAberto(false)}
+        >
+          <p className={s.vezIndiceTitulo}>
+            <b>
+              Índice<i className={s.ponto}>.</i>
+            </b>
+            <span>{segmentos.length} segmentos, de A a Z</span>
+          </p>
+          <ul className={s.vezIndiceLista}>
+            {[...segmentos]
+              .sort((a, b) => (a.chave || "~").localeCompare(b.chave || "~", "pt-BR"))
+              .map(({ chave, n }) => (
+                <li key={chave || "__sem"}>
+                  <button
+                    type="button"
+                    className={`${s.vezIndiceItem} ${segmento === chave ? s.vezIndiceItemAtivo : ""}`}
+                    onClick={() => {
+                      escolherSegmento(chave);
+                      setIndiceAberto(false);
+                    }}
+                    aria-pressed={segmento === chave}
+                  >
+                    <span>{chave || "sem segmento"}</span>
+                    <i aria-hidden="true" />
+                    <b>{n}</b>
+                  </button>
+                </li>
+              ))}
+          </ul>
         </div>
       ) : null}
 
@@ -474,7 +545,7 @@ export function Hoje({ painel, templates, posts = [] }: { painel: Painel; templa
               key={atual.id}
               lead={atual}
               hoje={painel.hoje}
-              aoMandarMensagem={setMensagem}
+              aoMandarMensagem={(lead, saida) => setMensagem({ lead, saida })}
               aoRegistrarToque={setToque}
             />
           </div>
@@ -558,7 +629,7 @@ export function Hoje({ painel, templates, posts = [] }: { painel: Painel; templa
       ) : null}
 
       {mensagem ? (
-        <ModalMensagem lead={mensagem} templates={templates} aoFechar={() => setMensagem(null)} />
+        <ModalMensagem lead={mensagem.lead} saida={mensagem.saida} templates={templates} aoFechar={() => setMensagem(null)} />
       ) : null}
       {toque ? <ModalToque lead={toque} aoFechar={() => setToque(null)} /> : null}
       {novo ? <ModalNovoLead aoFechar={() => setNovo(false)} /> : null}
@@ -902,6 +973,145 @@ function DiaLimpo({ painel, aoAnotar }: { painel: Painel; aoAnotar: () => void }
       <button type="button" className={s.btn} onClick={aoAnotar}>
         Anotar lead
       </button>
+    </div>
+  );
+}
+
+/* ============================================================
+   A PESQUISA DA FILA (01/10)
+
+   Com 454 nomes no baralho, achar "aquele da Imperium" era apertar a seta
+   até ele aparecer. A pesquisa responde pelo que se lembra na hora: nome,
+   empresa, @, nicho, cidade, o número do WhatsApp ou a frase do passo.
+
+   Escolher um resultado da fila NÃO abre a ficha: traz a carta para cima,
+   que é o gesto da régua, e derruba o monte se ele escondia o nome. Quem
+   já foi riscado hoje não tem carta, então o resultado dele leva à ficha.
+
+   Ela procura só no que esta tela carrega (a fila e os riscados do dia).
+   Lead com retorno marcado para outro dia não está aqui, e a resposta
+   vazia diz isso e aponta o quadro, em vez de fingir que ele não existe.
+   ============================================================ */
+const semAcento = (t: string) =>
+  t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLocaleLowerCase("pt-BR");
+
+function casa(l: LeadPainel, termo: string, digitos: string) {
+  const campos = [l.nome, l.empresa, l.instagram, l.nicho, l.cidade, l.proximo_passo].filter(Boolean) as string[];
+  if (campos.some((c) => semAcento(c).includes(termo))) return true;
+  return digitos.length >= 4 && (l.whatsapp ?? "").replace(/\D/g, "").includes(digitos);
+}
+
+function BuscaDaFila({
+  fila,
+  riscados,
+  aoEscolher,
+}: {
+  fila: LeadPainel[];
+  riscados: LeadPainel[];
+  aoEscolher: (l: LeadPainel) => void;
+}) {
+  const [termo, setTermo] = useState("");
+  const [aberta, setAberta] = useState(false);
+  const [foco, setFoco] = useState(0);
+
+  const t = semAcento(termo.trim().replace(/^@+/, ""));
+  const digitos = termo.replace(/\D/g, "");
+  const resultados = useMemo(() => {
+    if (!t) return [];
+    const daFila = fila.filter((l) => casa(l, t, digitos)).map((l) => ({ l, riscado: false }));
+    const jaFoi = riscados.filter((l) => casa(l, t, digitos)).map((l) => ({ l, riscado: true }));
+    return [...daFila, ...jaFoi].slice(0, 8);
+  }, [fila, riscados, t, digitos]);
+
+  const limpar = () => {
+    setTermo("");
+    setAberta(false);
+    setFoco(0);
+  };
+  const escolher = (l: LeadPainel) => {
+    aoEscolher(l);
+    limpar();
+  };
+
+  return (
+    <div className={s.vezBusca}>
+      <label className={s.buscaLinha}>
+        <span className={s.buscaRot}>Buscar</span>
+        <input
+          type="search"
+          value={termo}
+          onChange={(e) => {
+            setTermo(e.target.value);
+            setAberta(true);
+            setFoco(0);
+          }}
+          onFocus={() => setAberta(true)}
+          onBlur={() => setTimeout(() => setAberta(false), 150)}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") return limpar();
+            if (e.key === "ArrowDown") { e.preventDefault(); setFoco((f) => Math.min(f + 1, resultados.length - 1)); }
+            if (e.key === "ArrowUp") { e.preventDefault(); setFoco((f) => Math.max(f - 1, 0)); }
+            if (e.key === "Enter") {
+              const r = resultados[foco];
+              if (!r) return;
+              e.preventDefault();
+              if (r.riscado) window.location.href = `/crm/lead/${r.l.id}`;
+              else escolher(r.l);
+            }
+          }}
+          placeholder="nome, @ ou nicho"
+          aria-label="Buscar um lead na fila de hoje"
+        />
+      </label>
+
+      {aberta && t ? (
+        <ul className={s.vezBuscaLista} role="listbox">
+          {resultados.length ? (
+            resultados.map(({ l, riscado }, i) => {
+              const conteudo = (
+                <>
+                  <b>{nomeDaTecla(l)}</b>
+                  <span>
+                    {riscado ? "já falei hoje" : NOME_ESTAGIO[l.estagio]}
+                    {l.nicho ? ` · ${l.nicho}` : ""}
+                  </span>
+                </>
+              );
+              return (
+                <li key={l.id} role="option" aria-selected={i === foco}>
+                  {riscado ? (
+                    <Link
+                      href={`/crm/lead/${l.id}`}
+                      className={`${s.vezBuscaItem} ${i === foco ? s.vezBuscaFoco : ""}`}
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={limpar}
+                    >
+                      {conteudo}
+                    </Link>
+                  ) : (
+                    <button
+                      type="button"
+                      className={`${s.vezBuscaItem} ${i === foco ? s.vezBuscaFoco : ""}`}
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => escolher(l)}
+                    >
+                      {conteudo}
+                    </button>
+                  )}
+                </li>
+              );
+            })
+          ) : (
+            <li className={s.vezBuscaVazio}>
+              Ninguém na fila de hoje com isso. Quem tem retorno marcado para outro dia está no{" "}
+              <Link href="/crm/pipeline" onMouseDown={(e) => e.preventDefault()}>
+                quadro
+              </Link>
+              .
+            </li>
+          )}
+        </ul>
+      ) : null}
     </div>
   );
 }

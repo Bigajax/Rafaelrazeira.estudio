@@ -3441,3 +3441,181 @@
   .trilho .trilhoLink b { font-size: 11px; font-stretch: 84%; gap: 3px }
   .trilho .trilhoCont, .trilho .trilhoCobra { font-size: 11px }
 }
+
+/* ---------- a pesquisa da fila (01/10) ----------
+   A mesma linha impressa do quadro (`.buscaLinha`), na margem de papel ao
+   lado do "Anotar lead". Os resultados caem por cima da folha, num papel
+   com o filete de tinta e a sombra dura da casa: é um menu, não uma lista
+   nova na tela. */
+.vezBusca { position: relative; width: min(340px, 100%) }
+.vezBuscaLista {
+  position: absolute; z-index: 30; top: calc(100% + 6px); left: 0; right: 0;
+  margin: 0; padding: 4px 0; list-style: none;
+  background: var(--paper, #f3efe6); border: 1.5px solid var(--ink); box-shadow: 4px 4px 0 var(--ink);
+  max-height: 360px; overflow-y: auto;
+}
+.app button.vezBuscaItem, .vezBuscaItem {
+  display: flex; flex-direction: column; gap: 2px; width: 100%; text-align: left;
+  padding: 8px 12px; background: none; border: 0; cursor: pointer; color: var(--ink); text-decoration: none;
+  font: 500 13px var(--body); text-transform: none; letter-spacing: 0;
+}
+.vezBuscaItem b { font: 700 14px var(--body) }
+.vezBuscaItem span { color: var(--ink-fraco); font-size: 12px }
+.app button.vezBuscaItem:hover, .vezBuscaItem:hover, .app button.vezBuscaFoco, .vezBuscaFoco { background: var(--line) }
+.vezBuscaVazio { padding: 10px 12px; font: 500 13px/1.45 var(--body); color: var(--ink-soft) }
+.vezBuscaVazio a { color: var(--ink); text-decoration: underline }
+@media (max-width: 720px) { .vezBusca { width: 100% } }
+
+/* ============================================================
+   O PIPELINE CABE NA JANELA (01/10/2026)
+
+   "Parece que está tudo muito pequeno, eu tenho que scrollar para baixo."
+   O quadro tinha altura de janela, mas nascia meia janela abaixo do topo:
+   manchete, faixa, busca, DOIS andares de filtro (cada select esticava a
+   100% e empurrava o vizinho para a linha de baixo) e a silhueta do funil
+   somavam ~400px antes do primeiro card. O pé da página ainda somava 90px
+   de papel. Resultado: rolar a página para achar o quadro, e depois rolar
+   a coluna, com colunas de 238px e letra de 11px.
+
+   Agora, no computador:
+   1. a tela é uma coluna que mede a janela, e o quadro é quem estica até
+      o fim dela: nada de rolar a página para chegar no quadro;
+   2. busca e filtros dividem UMA linha, com o select do tamanho do texto;
+   3. a faixa e a silhueta emagrecem (a silhueta continua: é o desenho do
+      funil, só não precisa de 64px para dizer isso);
+   4. colunas mais largas e letra maior nos cards.
+   O celular (até 860px) não muda: lá o quadro é uma coluna por vez.
+   ============================================================ */
+@media (min-width: 861px) {
+  .main:has(.pipe) { padding-bottom: 14px }
+  .pipe {
+    --colW: clamp(236px, 17vw, 300px);
+    --placasW: clamp(160px, 12vw, 190px);
+    display: flex; flex-direction: column;
+    /* ALTURA, não altura mínima: com mínima, a coluna flex mede o conteúdo
+       e o quadro crescia até o último dos 287 cards, com a página rolando
+       no lugar das colunas. Só quando a lista de Ganho/Perdido/Geladeira
+       está aberta embaixo do quadro a página volta a crescer. */
+    height: calc(100dvh - clamp(20px, 2.6vw, 34px) - 14px);
+  }
+  .pipe:has(.saidaLista) { height: auto }
+  .pipe > .tituloLinha { align-items: center }
+  .pipe > .faixa { margin-top: 12px; min-height: 40px; padding-top: 6px; padding-bottom: 6px }
+
+  .pipe .impresso {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 8px 26px;
+    margin-top: 12px; padding: 10px 0 0;
+  }
+  .pipe .pipeBusca { flex: 0 1 520px; min-width: 260px; margin-left: auto }
+  /* a silhueta do funil sai do computador: espremida para caber, ela
+     virava um retângulo preto solto; o número grande de cada coluna já
+     desenha o funil */
+  .pipe .perfil { display: none }
+  .pipe .impresso .filtros { flex: 0 1 auto; padding: 0; gap: 8px 20px; align-items: center }
+  .app .pipe .filtro select { width: auto; max-width: 190px }
+  .pipe .placarBusca { margin-left: 0 }
+
+  .pipe .quadroCaixa { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; margin-top: 12px }
+  .pipe .quadro { flex: 1 1 0; height: auto; min-height: 360px; margin-top: 0; padding-top: 8px }
+
+  /* os cards: o mesmo desenho, um corpo acima */
+  .pipe .colunaCab { padding: 12px 14px 10px }
+  .pipe .colunaCont, .pipe .colunaPedindo { font-size: 30px }
+  .pipe .colunaNome { font-size: 15px }
+  .pipe .colunaNota { font-size: 12.5px }
+  .pipe .colunaLista { padding: 8px 8px 12px }
+  .pipe .ficha { padding: 12px 13px 12px 14px }
+  .pipe .ficha + .ficha { margin-top: 8px }
+  .pipe .fichaNome { font-size: 16px }
+  .pipe .fichaValor { font-size: 13.5px }
+  .pipe .fichaContexto { font-size: 12.5px }
+  .pipe .fichaPasso { font-size: 14px; line-height: 1.38 }
+  .pipe .sinal { font-size: 12px }
+}
+
+/* ============================================================
+   A LINHA DE CONTROLE DA FILA E O ÍNDICE (01/10/2026)
+
+   A busca desceu do canto de cima para abrir a linha dos montes, e a
+   linha parou de rolar de lado: os cinco maiores, e o resto num ÍNDICE
+   que abre ali mesmo, como gaveta (o gesto das gavetas da carta), em
+   ordem alfabética e com o número na ponta de um pontilhado. É a página
+   de índice de um livro, que é a forma impressa de "achar pelo nome".
+   ============================================================ */
+.vezControle {
+  flex: none; display: flex; align-items: flex-end; flex-wrap: wrap;
+  gap: 12px 30px; margin-top: 16px;
+  box-shadow: inset 0 -1.5px 0 var(--line);
+}
+.vezControle .vezBusca { flex: 0 0 300px; padding-bottom: 6px }
+.wrapVez .vezControle .vezSegmentos {
+  flex: 1 1 0; min-width: 0; margin-top: 0; flex-wrap: wrap; overflow: visible;
+  gap: 4px 22px; box-shadow: none;
+}
+
+.app button.vezIndiceBotao {
+  display: inline-flex; align-items: baseline; gap: 7px; flex: none;
+  background: none; border: 0; border-bottom: 2px solid transparent;
+  padding: 2px 1px 8px; cursor: pointer; white-space: nowrap;
+  font: 700 12.5px var(--body); color: var(--ink);
+  text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 4px;
+}
+.vezIndiceBotao b {
+  font-family: var(--display); font-stretch: 118%; font-weight: 800; font-size: 14px;
+  text-decoration: none; font-variant-numeric: tabular-nums;
+}
+.vezIndiceBotao i { font-style: normal; font-weight: 800 }
+.app button.vezIndiceBotao:hover, .app button.vezIndiceBotaoAberto { border-bottom-color: var(--ink); text-decoration: none }
+
+.vezIndice {
+  flex: none; margin-top: 10px; padding: 18px 22px 20px;
+  background: var(--paper-alto, #fbf9f4);
+  border-top: 3px solid var(--ink); box-shadow: inset 0 -1.5px 0 var(--line);
+  animation: indiceAbre .18s cubic-bezier(.2, .7, .2, 1) both;
+}
+@keyframes indiceAbre { from { opacity: 0; transform: translateY(-6px) } to { opacity: 1; transform: none } }
+@media (prefers-reduced-motion: reduce) { .vezIndice { animation: none } }
+.vezIndiceTitulo {
+  display: flex; align-items: baseline; gap: 14px; margin: 0 0 12px;
+  font-family: var(--display); font-stretch: 88%; font-weight: 900;
+  font-size: 22px; text-transform: uppercase; letter-spacing: .01em; color: var(--ink);
+}
+.vezIndiceTitulo span { font: 500 12.5px var(--body); text-transform: none; letter-spacing: 0; color: var(--ink-fraco) }
+.vezIndiceLista { list-style: none; margin: 0; padding: 0; column-width: 230px; column-gap: 34px }
+.vezIndiceLista li { break-inside: avoid }
+.app button.vezIndiceItem {
+  display: flex; align-items: baseline; gap: 6px; width: 100%;
+  background: none; border: 0; padding: 5px 0; cursor: pointer; text-align: left;
+  font: 500 14px var(--body); color: var(--ink-soft); text-transform: none; letter-spacing: 0;
+}
+.vezIndiceItem span::first-letter { text-transform: uppercase }
+/* o pontilhado que leva o olho do nome ao número, como num índice */
+.vezIndiceItem i { flex: 1 1 auto; min-width: 12px; border-bottom: 1.5px dotted var(--line-dark); transform: translateY(-3px) }
+.vezIndiceItem b {
+  font-family: var(--display); font-stretch: 118%; font-weight: 800;
+  font-size: 14px; font-variant-numeric: tabular-nums; color: var(--ink);
+}
+.app button.vezIndiceItem:hover { color: var(--ink) }
+.app button.vezIndiceItem:hover i { border-bottom-color: var(--ink) }
+.app button.vezIndiceItemAtivo { color: var(--ink); font-weight: 700 }
+.app button.vezIndiceItemAtivo b { color: var(--rosa) }
+
+/* ---------- AS TECLAS DO PÉ DO TAMANHO DO NOME (01/10) ----------
+   A largura fixa de 320px (21/09) segurava a tecla no lugar, mas deixava
+   um vão de papel sem escrita quando o nome era curto ("isso me
+   incomoda"). Agora a tecla abraça o nome, e o lugar continua fixo pelo
+   lado que importa: cada uma é ancorada na sua borda (o pé é
+   space-between), e a SETA, que é onde a mão aperta, mora justamente na
+   borda de fora. Muda o tamanho, não muda o ponto do clique. */
+@media (min-width: 861px) {
+  .app .vezSeta { width: auto; min-width: 190px; max-width: min(380px, 34vw) }
+}
+@media (max-width: 860px) {
+  .vezControle .vezBusca { flex: 1 1 100% }
+}
+/* Uma linha só, de altura fixa: o monte que não cabe quebra para a
+   segunda linha e some INTEIRO (nunca cortado no meio da palavra). Todos
+   continuam a um clique, no índice da ponta. */
+.wrapVez .vezControle .vezSegmentos { flex-wrap: wrap; height: 32px; overflow: hidden; align-self: flex-end }
+.vezControle .vezIndiceBotao { margin-left: auto }
+.vezIndiceTitulo b { font: inherit }

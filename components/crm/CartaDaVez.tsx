@@ -90,7 +90,7 @@ export function CartaDaVez({
 }: {
   lead: LeadPainel;
   hoje: string;
-  aoMandarMensagem: (lead: LeadPainel) => void;
+  aoMandarMensagem: (lead: LeadPainel, saida?: "whatsapp" | "instagram") => void;
   aoRegistrarToque: (lead: LeadPainel) => void;
 }) {
   const [salvando, comecar] = useTransition();
@@ -102,6 +102,7 @@ export function CartaDaVez({
   const [zap, setZap] = useState(lead.whatsapp ?? "");
 
   const temZap = Boolean(linkWhatsapp(lead.whatsapp));
+  const temInsta = Boolean(arrobaDe(lead.instagram));
   const temRetorno = Boolean(lead.proxima_acao_em);
   const sinal = sinalDaFicha(lead, hoje);
 
@@ -290,6 +291,14 @@ export function CartaDaVez({
               Anotar WhatsApp
             </button>
           )}
+
+          {/* O direct com os mesmos templates (01/10). Escuro sempre: o rosa
+              da carta continua sendo um só. */}
+          {temInsta ? (
+            <button type="button" className={s.btnEscuro} onClick={() => aoMandarMensagem(lead, "instagram")}>
+              Instagram
+            </button>
+          ) : null}
 
           {/* O "Recebi" só existe quando há o que receber, e ele fica ao
               lado do WhatsApp de propósito: a sequência real é chamar,

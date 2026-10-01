@@ -110,7 +110,8 @@ export function Ficha({
   contratos,
   hoje,
 }: DadosFicha) {
-  const [mensagem, setMensagem] = useState(false);
+  /* false fechado; o canal diz por onde a mensagem sai. */
+  const [mensagem, setMensagem] = useState<false | Canal>(false);
   const [abrirDados, setAbrirDados] = useState(false);
   const [pendente, setPendente] = useState<{ estagio: Estagio; falta: CampoExigido[] } | null>(null);
   const [erro, setErro] = useState<string | null>(null);
@@ -169,14 +170,17 @@ export function Ficha({
               saída (WhatsApp com número, direct sem). Antes ele exigia o
               número, e lead só de Instagram ficava sem porta de mensagem. */}
           {zap || insta ? (
-            <button type="button" className={s.btnAcao} onClick={() => setMensagem(true)}>
+            <button type="button" className={s.btnAcao} onClick={() => setMensagem("whatsapp")}>
               Mandar mensagem
             </button>
           ) : null}
+          {/* O "Instagram" abre o MESMO modal, saindo pelo direct (01/10):
+              ele abria só o perfil, e a mensagem do direct ia sem template
+              e sem registro. O perfil continua a um clique, dentro do modal. */}
           {insta ? (
-            <a className={s.btnEscuro} href={insta} target="_blank" rel="noopener noreferrer">
+            <button type="button" className={s.btnEscuro} onClick={() => setMensagem("instagram")}>
               Instagram
-            </a>
+            </button>
           ) : null}
           <span className={s.fichaCabOrigem}>
             {NOME_ORIGEM[lead.origem]}
@@ -294,7 +298,7 @@ export function Ficha({
           Entre "o que fazer" e "o que fiz" de propósito: o dossiê é o que
           informa a primeira mexida. Ele dispara sozinho quando o lead nasce
           pelo modal, então aqui ele costuma chegar já rodando. */}
-      <Pesquisa lead={lead} aoMandarMensagem={() => setMensagem(true)} />
+      <Pesquisa lead={lead} aoMandarMensagem={() => setMensagem("whatsapp")} />
 
       {/* ============ 3. O QUE FIZ ============ */}
       <FormToque lead={lead} hoje={hoje} />
@@ -453,7 +457,7 @@ export function Ficha({
       <ApagarLead lead={lead} />
 
       {mensagem ? (
-        <ModalMensagem lead={lead} templates={templates} aoFechar={() => setMensagem(false)} />
+        <ModalMensagem lead={lead} templates={templates} saida={mensagem} aoFechar={() => setMensagem(false)} />
       ) : null}
 
       {pendente ? (
