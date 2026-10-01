@@ -37,6 +37,25 @@ export async function calendario(inicio: string, fim: string) {
   };
 }
 
+/* A aba Criar (01/10): as pautas que esperam data, o último pedido de
+   pautas (para dizer onde ele está), a fila inteira (para dizer quantos
+   estão na frente) e o batimento do time. */
+export async function criacao() {
+  const supabase = await clienteServidor();
+  const [{ data: semData }, { data: pautas }, { data: fila }, { data: sinal }] = await Promise.all([
+    supabase.from("mkt_pecas").select("*").is("posta_em", null).order("criado_em", { ascending: false }).returns<Peca[]>(),
+    supabase.from("mkt_pedidos").select("*").eq("agente", "pautas").order("criado_em", { ascending: false }).limit(1).returns<Pedido[]>(),
+    supabase.from("mkt_pedidos").select("*").in("status", ["na_fila", "rodando"]).order("criado_em").returns<Pedido[]>(),
+    supabase.from("mkt_sinal").select("visto_em").maybeSingle<{ visto_em: string }>(),
+  ]);
+  return {
+    semData: semData ?? [],
+    ultimoPautas: pautas?.[0] ?? null,
+    fila: fila ?? [],
+    vistoEm: sinal?.visto_em ?? null,
+  };
+}
+
 /* O que o painel Hoje mostra: as peças marcadas para hoje que ainda não
    foram postadas. Postada sai da vista, igual lead riscado. */
 export async function postsDoDia(hoje: string) {

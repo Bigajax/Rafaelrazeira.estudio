@@ -33,6 +33,7 @@ import {
   salvarCampo,
   salvarEstilo,
   salvarFormato,
+  salvarCategoria,
   salvarPilar,
   salvarSlides,
 } from "@/app/(pt)/crm/acoes-marketing";
@@ -41,6 +42,7 @@ import { coresDaImagem } from "@/lib/marketing/paleta";
 import {
   AGENTES,
   BUCKET,
+  CATEGORIAS,
   CODIGOS,
   ESTILO_PADRAO,
   DIRECOES,
@@ -48,6 +50,7 @@ import {
   PILARES,
   TIPOS,
   TIPOS_SLIDE,
+  TIPOGRAFIAS,
   LAYOUTS,
   composicaoDe,
   promptComMolde,
@@ -63,6 +66,7 @@ import {
   corDe,
   urlFundo,
   type Agente,
+  type Categoria,
   type Codigo,
   type Estilo,
   type Direcao,
@@ -78,9 +82,11 @@ import {
   type StatusPeca,
   type TipoPeca,
   type TipoSlide,
+  type Tipografia,
 } from "@/lib/marketing/tipos";
 import { SlidePost, tipoDoSlide } from "./SlidePost";
-import { nomePedido } from "./SinalTime";
+import { LigarTime, nomePedido } from "./SinalTime";
+import { NumerosDoPost } from "./NumerosDoPost";
 import s from "@/app/(pt)/crm/crm.module.css";
 import m from "@/app/(pt)/crm/marketing.module.css";
 
@@ -162,7 +168,7 @@ function useLargura(max: number, proporcao: number) {
   return [ref, w] as const;
 }
 
-export function EditorPeca({ peca, pedidos, vistoEm }: { peca: Peca; pedidos: Pedido[]; vistoEm: string | null }) {
+export function EditorPeca({ peca, pedidos, vistoEm, hoje }: { peca: Peca; pedidos: Pedido[]; vistoEm: string | null; hoje: string }) {
   const router = useRouter();
   const [pendente, comecar] = useTransition();
   const [aviso, setAviso] = useState<{ ok: boolean; txt: string } | null>(null);
@@ -578,6 +584,7 @@ export function EditorPeca({ peca, pedidos, vistoEm }: { peca: Peca; pedidos: Pe
           {/[?!]$/.test(campos.gancho.trim()) ? null : <i className={s.ponto}>.</i>}
         </h1>
         <div className={m.pecaMeta}>
+          {peca.categoria ? <span className={m.pilarSelo}>{CATEGORIAS[peca.categoria].nome}</span> : null}
           {peca.pilar ? <span className={m.pilarSelo}>{PILARES[peca.pilar].nome}</span> : null}
           <label className={m.metaItem}>
             <span>Posta em</span>
@@ -609,6 +616,22 @@ export function EditorPeca({ peca, pedidos, vistoEm }: { peca: Peca; pedidos: Pe
           </span>
         </div>
       </header>
+
+      {/* 01/10: "os prompts algumas vezes não estão sendo gerados". O worker
+          estava desligado desde a véspera, com três pedidos parados, e o aviso
+          só aparecia na aba Texto. Agora ele fica acima da mesa, em toda aba. */}
+      {aberto && !vivo ? (
+        <p className={m.faixaTime} role="alert">
+          <b>O time está desligado, e o pedido não vai andar.</b> {nomePedido(aberto)}: na fila desde {quando(aberto.criado_em)}. <LigarTime />
+        </p>
+      ) : !aberto && ultimo?.status === "erro" ? (
+        <p className={m.faixaTime} role="alert">
+          <b>O último pedido falhou</b> ({quando(ultimo.terminado_em)}): {ultimo.erro}
+        </p>
+      ) : null}
+
+      {/* 01/10: postado, o post pede os números dele (ver NumerosDoPost) */}
+      {peca.status === "postada" ? <NumerosDoPost peca={peca} hoje={hoje} /> : null}
 
       <div className={m.mesaCriar}>
         {/* ============ a tira dos slides ============ */}
@@ -1479,6 +1502,33 @@ export function EditorPeca({ peca, pedidos, vistoEm }: { peca: Peca; pedidos: Pe
               </div>
 
               <div className={s.campo}>
+                <span className={s.campoRot}>Tipografia do título</span>
+                <div className={m.letras} role="radiogroup" aria-label="Tipografia do título">
+                  {(Object.keys(TIPOGRAFIAS) as Tipografia[]).map((k) => {
+                    const tg = TIPOGRAFIAS[k];
+                    const ativa = (estilo.tipografia ?? "casa") === k;
+                    return (
+                      <button
+                        key={k}
+                        type="button"
+                        role="radio"
+                        aria-checked={ativa}
+                        className={`${m.letraCartao} ${ativa ? m.direcaoAtiva : ""}`}
+                        onClick={() => mudarEstilo({ tipografia: k === "casa" ? undefined : k })}
+                      >
+                        <span className={m.letraAmostra} aria-hidden>
+                          <i style={{ fontFamily: `var(${tg.serif})` }}>Páginas</i>
+                          <b style={{ fontFamily: `var(${tg.display})` }}>QUE VENDEM</b>
+                        </span>
+                        <b>{tg.nome}</b>
+                        <span>{tg.faz}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className={s.campo}>
                 <span className={s.campoRot}>A foto</span>
                 <div className={m.segmento} role="radiogroup" aria-label="Tratamento da foto">
                   {(
@@ -1500,6 +1550,23 @@ export function EditorPeca({ peca, pedidos, vistoEm }: { peca: Peca; pedidos: Pe
                   ))}
                 </div>
               </div>
+
+              <label className={s.campo}>
+                <span className={s.campoRot}>Categoria</span>
+                <select
+                  value={peca.categoria ?? ""}
+                  onChange={(e) =>
+                    comecar(async () => avisar(await salvarCategoria(peca.id, (e.target.value || null) as Categoria | null), "Categoria salva"))
+                  }
+                >
+                  <option value="">Sem categoria</option>
+                  {(Object.keys(CATEGORIAS) as Categoria[]).map((c) => (
+                    <option key={c} value={c}>
+                      {CATEGORIAS[c].nome}: {CATEGORIAS[c].faz}
+                    </option>
+                  ))}
+                </select>
+              </label>
 
               <div className={s.dupla}>
                 <label className={s.campo}>
@@ -1573,7 +1640,7 @@ export function EditorPeca({ peca, pedidos, vistoEm }: { peca: Peca; pedidos: Pe
                 </div>
                 {!vivo ? (
                   <p className={m.timeDorme}>
-                    O worker está desligado. Os pedidos esperam até você rodar no PC <code>npx tsx scripts/marketing-agentes.ts</code>
+                    O time está desligado. Os pedidos esperam até ele ligar. <LigarTime />
                   </p>
                 ) : null}
                 {aberto ? (

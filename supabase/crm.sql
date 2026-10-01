@@ -1383,3 +1383,25 @@ select t.owner_id, 'Disse que ia fazer e sumiu: um dado, sem Pix', 'whatsapp', '
  where not exists (
    select 1 from public.crm_templates x
     where x.owner_id = t.owner_id and x.titulo = 'Disse que ia fazer e sumiu: um dado, sem Pix');
+
+-- ============================================================
+-- 01/10/2026: LOJA DE CELULAR, DIRETO NA PRÉVIA
+-- As 40 lojas de celular do garimpo (Cascavel, Google Maps, quase
+-- nenhuma com @) recebiam a abertura fria de sempre: fingia ser cliente
+-- que "entrou no perfil", e a prévia só aparecia no terceiro toque. O
+-- Rafael pediu direto: quem sou, a prévia grátis já na primeira
+-- mensagem, sem preço e sem prazo, e UM dado que vira o destaque da
+-- prévia (o aparelho que mais sai). A escada escolhe este texto pelo
+-- título (TITULO_LOJA_DE_CELULAR em lib/crm/regras.ts) quando o nicho
+-- fala de celular. Ordem 2: não mexe no índice 0 da abertura fria, que
+-- é o das outras lojas. Já aplicado no banco por script; o bloco fica de
+-- registro.
+-- ============================================================
+insert into public.crm_templates (owner_id, titulo, canal, categoria, conteudo, ordem)
+select t.owner_id, 'Loja de celular: direto na prévia', 'whatsapp', 'abertura_fria',
+       E'Oi, {saudacao}! Aqui é o Rafael, eu faço vitrine digital pra loja.\nAchei a {empresa} no Google e quero montar uma prévia de graça pra vocês: os aparelhos com foto e preço, e o pedido caindo direto no WhatsApp da loja. Sem compromisso.\n\nQual aparelho mais sai aí? Começo por ele.',
+       2
+  from (select distinct owner_id from public.crm_templates) t
+ where not exists (
+   select 1 from public.crm_templates x
+    where x.owner_id = t.owner_id and x.titulo = 'Loja de celular: direto na prévia');

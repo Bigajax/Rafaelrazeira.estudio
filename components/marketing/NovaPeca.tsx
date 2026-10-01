@@ -1,25 +1,58 @@
 "use client";
 
-/* A escolha do pilar, do formato e o briefing. "Começar" abre o editor com
-   o esqueleto de slides do pilar; com "o time escreve" marcado, a linha
-   inteira (Paula, Caetano, Dora, Vera) já vai para a fila, e você abre o
-   editor para diagramar enquanto eles escrevem. */
+/* A escolha da categoria, do pilar, do formato e o briefing. "Começar" abre
+   o editor com o esqueleto de slides do pilar; com "o time escreve" marcado,
+   a linha inteira (Paula, Caetano, Dora, Vera) já vai para a fila, e você
+   abre o editor para diagramar enquanto eles escrevem.
+
+   A categoria vem primeiro (01/10): é o assunto que equilibra o feed. A tela
+   já abre na que está mais atrás da fatia dela no mês, e escolher uma
+   categoria sugere o pilar que mais combina com ela, sem travar os outros. */
 import { useState, useTransition } from "react";
 import { criarPeca } from "@/app/(pt)/crm/acoes-marketing";
-import { PAPEIS, PILARES, TIPOS, TIPOS_SLIDE, type Pilar, type TipoPeca } from "@/lib/marketing/tipos";
+import { CATEGORIAS, PAPEIS, PILARES, TIPOS, TIPOS_SLIDE, type Categoria, type Pilar, type TipoPeca } from "@/lib/marketing/tipos";
 import s from "@/app/(pt)/crm/crm.module.css";
 import m from "@/app/(pt)/crm/marketing.module.css";
 
-export function NovaPeca({ data, vendaAlta }: { data: string; vendaAlta: boolean }) {
-  const [pilar, setPilar] = useState<Pilar>("conceito");
+const NOMES_CATEGORIA = Object.keys(CATEGORIAS) as Categoria[];
+
+/* a categoria mais atrás da meta dela neste mês */
+function maisAtrasada(porCategoria: Record<Categoria, number>): Categoria {
+  const total = NOMES_CATEGORIA.reduce((a, c) => a + (porCategoria[c] ?? 0), 0);
+  const falta = (c: Categoria) => (CATEGORIAS[c].meta / 100) * (total + 1) - (porCategoria[c] ?? 0);
+  return NOMES_CATEGORIA.reduce((a, c) => (falta(c) > falta(a) ? c : a));
+}
+
+export function NovaPeca({
+  data,
+  vendaAlta,
+  porCategoria,
+}: {
+  data: string;
+  vendaAlta: boolean;
+  porCategoria: Record<Categoria, number>;
+}) {
+  const [categoria, setCategoria] = useState<Categoria>(() => maisAtrasada(porCategoria));
+  const [pilar, setPilar] = useState<Pilar>(() => CATEGORIAS[maisAtrasada(porCategoria)].pilares[0]);
   const [tipo, setTipo] = useState<TipoPeca>("carrossel");
   const [briefing, setBriefing] = useState("");
   const [time, setTime] = useState(false);
   const [erro, setErro] = useState("");
   const [pendente, comecar] = useTransition();
 
+  const totalMes = NOMES_CATEGORIA.reduce((a, c) => a + (porCategoria[c] ?? 0), 0);
+  const combinam = CATEGORIAS[categoria].pilares;
+  /* os pilares que combinam com a categoria vêm primeiro, na ordem dela */
+  const pilares = [...combinam, ...(Object.keys(PILARES) as Pilar[]).filter((p) => !combinam.includes(p))];
+
+  function escolherCategoria(c: Categoria) {
+    setCategoria(c);
+    if (!CATEGORIAS[c].pilares.includes(pilar)) setPilar(CATEGORIAS[c].pilares[0]);
+  }
+
   function criar() {
     const f = new FormData();
+    f.set("categoria", categoria);
     f.set("pilar", pilar);
     f.set("tipo", tipo);
     f.set("briefing", briefing);
@@ -35,8 +68,38 @@ export function NovaPeca({ data, vendaAlta }: { data: string; vendaAlta: boolean
 
   return (
     <div className={m.nova}>
+      <h3 className={m.novaPergunta}>
+        Do que este post fala<i className={s.ponto}>?</i>
+      </h3>
+      <div className={m.categorias} role="radiogroup" aria-label="Categoria do post">
+        {NOMES_CATEGORIA.map((c) => {
+          const n = porCategoria[c] ?? 0;
+          const pct = totalMes ? Math.round((n / totalMes) * 100) : 0;
+          return (
+            <button
+              key={c}
+              type="button"
+              role="radio"
+              aria-checked={categoria === c}
+              className={`${m.pilarCartao} ${categoria === c ? m.pilarAtivo : ""}`}
+              onClick={() => escolherCategoria(c)}
+            >
+              <b>{CATEGORIAS[c].nome}</b>
+              <span>{CATEGORIAS[c].faz}</span>
+              <span className={m.categoriaExemplo}>Ex.: {CATEGORIAS[c].exemplo}</span>
+              <em className={m.categoriaConta}>
+                {n} no mês{totalMes ? ` (${pct}%)` : ""}, meta {CATEGORIAS[c].meta}%
+              </em>
+            </button>
+          );
+        })}
+      </div>
+
+      <h3 className={m.novaPergunta}>
+        E o que ele entrega<i className={s.ponto}>?</i>
+      </h3>
       <div className={m.pilares} role="radiogroup" aria-label="Pilar do post">
-        {(Object.keys(PILARES) as Pilar[]).map((p) => (
+        {pilares.map((p) => (
           <button
             key={p}
             type="button"
@@ -47,6 +110,7 @@ export function NovaPeca({ data, vendaAlta }: { data: string; vendaAlta: boolean
           >
             <b>{PILARES[p].nome}</b>
             <span>{PILARES[p].faz}</span>
+            {combinam.includes(p) ? <em className={m.combina}>Combina com {CATEGORIAS[categoria].nome}</em> : null}
             {!PILARES[p].valor ? <em>{vendaAlta ? "Venda: o mês já passou dos 20%" : "Venda: 1 em cada 5"}</em> : null}
           </button>
         ))}

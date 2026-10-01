@@ -101,6 +101,60 @@ export const PILARES: Record<Pilar, { nome: string; faz: string; roteiro: Passo[
 })();
 
 /* ============================================================
+   AS CATEGORIAS: do que o feed fala (01/10/2026)
+
+   O pilar diz COMO o post entrega (o roteiro dos slides); a categoria diz
+   DO QUE ele fala. São dois eixos: "Ruim × bom" cabe em E-commerce e em
+   Design e marca, e o feed só fica equilibrado quando se olha o assunto.
+   O Rafael pediu as editorias pensando no Instagram dele: quem segue é quem
+   vende pela internet ou quer vender, e a voz é de estúdio de design. Daí
+   as cinco, cada uma com a fatia do mês (`meta`, em %), e a única que pode
+   vender é Vitrines: é ela que carrega a oferta dos 80/20.
+
+   `pilares` são os formatos que funcionam melhor naquela categoria, na
+   ordem; a tela sugere o primeiro, mas não trava.
+   ============================================================ */
+export type Categoria = "tendencia" | "design" | "ecommerce" | "educacional" | "vitrines";
+
+export const CATEGORIAS: Record<Categoria, { nome: string; faz: string; exemplo: string; meta: number; pilares: Pilar[] }> = {
+  tendencia: {
+    nome: "Tendência",
+    faz: "o que está mudando no consumo, na IA e no design, e o que quem vende faz com isso",
+    exemplo: "1 em cada 3 clientes pergunta ao ChatGPT antes de comprar",
+    meta: 25,
+    pilares: ["tendencia", "opiniao", "curadoria"],
+  },
+  design: {
+    nome: "Design e marca",
+    faz: "o olhar de designer aplicado à marca: foto, cor, letra, o que faz parecer cara ou confiável",
+    exemplo: "Por que a mesma camisa parece mais cara no fundo certo",
+    meta: 20,
+    pilares: ["comparacao", "conceito", "curadoria"],
+  },
+  ecommerce: {
+    nome: "E-commerce",
+    faz: "vender pela internet na prática: página da peça, preço, frete, WhatsApp, confiança",
+    exemplo: "Os 4 sinais que fazem a sua loja parecer golpe",
+    meta: 20,
+    pilares: ["conceito", "comparacao", "opiniao"],
+  },
+  educacional: {
+    nome: "Educacional",
+    faz: "a aula rápida: um passo a passo, uma ferramenta ou um fluxo que a pessoa aplica hoje",
+    exemplo: "Como tirar a foto da peça com o celular em 3 passos",
+    meta: 20,
+    pilares: ["conceito", "curadoria", "comparacao"],
+  },
+  vitrines: {
+    nome: "Vitrines",
+    faz: "o trabalho do estúdio: o case, o bastidor, o antes e depois, e a oferta",
+    exemplo: "Do Instagram à vitrine: as 68 peças da Japa",
+    meta: 15,
+    pilares: ["case", "bastidor", "oferta"],
+  },
+};
+
+/* ============================================================
    O PAPEL DA IMAGEM EM CADA SLIDE
    ============================================================ */
 export type PapelImagem = "abertura" | "zoom" | "respiro" | "contraste" | "prova" | "resposta" | "fecho" | "voce";
@@ -335,6 +389,34 @@ export const DIRECOES: Record<Direcao, { nome: string; faz: string; paleta: Cor[
   },
 };
 
+/* ============================================================
+   AS TIPOGRAFIAS (01/10/2026)
+
+   "A tipografia, eu poderia trocar quando eu quisesse para testar." Cada
+   combinação troca as duas vozes do título: a serifa (voz 1) e a condensada
+   em caixa alta (voz 2). O mono do rótulo e do arroba fica, é a assinatura.
+
+   A voz 2 é SEMPRE condensada: o tamanho do título é calculado a ~0,5em por
+   maiúscula (ver `escala()` no SlidePost), e uma letra larga vazaria a
+   coluna. `largura` é quanto cada condensada gasta em relação à Archivo;
+   a conta divide por ela. As fontes carregam no layout do CRM
+   (`app/(pt)/crm/layout.tsx`); a variável CSS de cada uma está aqui.
+   ============================================================ */
+export type Tipografia = "casa" | "cartaz" | "revista" | "manchete" | "industrial";
+
+export const TIPOGRAFIAS: Record<Tipografia, { nome: string; faz: string; display: string; serif: string; largura: number }> = {
+  casa: { nome: "Da casa", faz: "Archivo condensada e Instrument Serif", display: "--font-display", serif: "--font-serif", largura: 1 },
+  cartaz: { nome: "Cartaz", faz: "Anton e DM Serif Display", display: "--font-anton", serif: "--font-dmserif", largura: 0.94 },
+  revista: { nome: "Revista", faz: "Oswald e Playfair Display", display: "--font-oswald", serif: "--font-playfair", largura: 1.08 },
+  manchete: { nome: "Manchete", faz: "Bebas Neue e Fraunces", display: "--font-bebas", serif: "--font-fraunces", largura: 0.84 },
+  industrial: { nome: "Industrial", faz: "Big Shoulders e Bodoni Moda", display: "--font-shoulders", serif: "--font-bodoni", largura: 0.9 },
+};
+
+export function tipografiaDe(estilo?: Estilo) {
+  const t = estilo?.tipografia;
+  return TIPOGRAFIAS[t && t in TIPOGRAFIAS ? t : "casa"];
+}
+
 /* ---------- as cores que saem da imagem ----------
    O storyboard de 30/09 mostrou que o carrossel conversa quando as cores
    dele saem da própria foto (o verde, o cobalto e o laranja da mulher no
@@ -390,6 +472,8 @@ export type Estilo = {
   /* As cores extraídas da imagem 1, e se o carrossel usa elas. */
   paleta?: string[];
   usarPaleta?: boolean;
+  /* A combinação de fontes do título (01/10). Vazio = a da casa. */
+  tipografia?: Tipografia;
   /* Legado da v2. */
   familia?: string;
   veu?: number;
@@ -402,6 +486,8 @@ export type Peca = {
   tipo: TipoPeca;
   codigo: Codigo | null;
   pilar: Pilar | null;
+  /* Sem a coluna (supabase/marketing-categorias.sql) vem undefined. */
+  categoria?: Categoria | null;
   estilo: Estilo;
   briefing: string;
   gancho: string;
@@ -416,10 +502,66 @@ export type Peca = {
   opcoes_gancho: string[];
   veredito: Veredito | null;
   posta_em: string | null;
+  /* Os números do post, tirados do Insights 7 dias depois (01/10). Sem a
+     coluna (supabase/marketing-metricas.sql) vem undefined. */
+  metricas?: Metricas | null;
   status: StatusPeca;
   criado_em: string;
   atualizado_em: string;
 };
+
+/* ============================================================
+   OS NÚMEROS DO POST (01/10/2026)
+
+   "A gente não está tendo referência do que está dando certo e do que não
+   está." O time criava às cegas: a peça ia para Postada e nenhum número
+   voltava. Agora cada post postado ganha os números do Insights, anotados
+   7 dias depois, e a aba Resultados e a Paula leem isso.
+
+   A ordem de MEDIDAS é a de importância. Encaminhamento vem primeiro porque
+   é a métrica que o posicionamento escolheu (seção 5): "o cliente do estúdio
+   não curte e não comenta, ele encaminha". `leads` é quantos chegaram no
+   WhatsApp por causa do post, contado por quem atendeu.
+   ============================================================ */
+export type Medida = "encaminhamentos" | "salvamentos" | "alcance" | "visitas" | "seguidores" | "leads";
+
+export const MEDIDAS: Record<Medida, { nome: string; ajuda: string }> = {
+  encaminhamentos: { nome: "Encaminhamentos", ajuda: "o aviãozinho: quantas vezes mandaram para alguém" },
+  salvamentos: { nome: "Salvamentos", ajuda: "quantos guardaram para ver depois" },
+  alcance: { nome: "Alcance", ajuda: "contas alcançadas" },
+  visitas: { nome: "Visitas ao perfil", ajuda: "quantos foram do post para o perfil" },
+  seguidores: { nome: "Seguidores", ajuda: "quantos começaram a seguir por ele" },
+  leads: { nome: "Leads", ajuda: "quantos chegaram no WhatsApp por causa dele" },
+};
+
+export type Metricas = Partial<Record<Medida, number>> & { medido_em?: string };
+
+/* Quantos dias depois de postar os números já dizem alguma coisa. */
+export const DIAS_PARA_MEDIR = 7;
+
+/* A medida que diz se cada categoria cumpriu o papel dela: tendência
+   existe para circular, educacional para ser guardado, vitrines para
+   trazer conversa. */
+export const MEDIDA_DA_CATEGORIA: Record<Categoria, Medida> = {
+  tendencia: "encaminhamentos",
+  design: "salvamentos",
+  ecommerce: "encaminhamentos",
+  educacional: "salvamentos",
+  vitrines: "leads",
+};
+
+/* Encaminhamento e salvamento por mil contas alcançadas: post com alcance
+   maior não ganha só por ter aparecido mais. Sem alcance, vale o bruto. */
+export function porMil(m: Metricas | null | undefined, medida: Medida) {
+  const v = m?.[medida];
+  if (v == null) return null;
+  if (medida === "alcance" || medida === "seguidores" || medida === "leads" || medida === "visitas") return v;
+  return m?.alcance ? (v / m.alcance) * 1000 : v;
+}
+
+export function medida(p: Pick<Peca, "metricas">) {
+  return Boolean(p.metricas && (p.metricas.encaminhamentos != null || p.metricas.salvamentos != null || p.metricas.alcance != null));
+}
 
 export type Veredito = {
   status: "APPROVE" | "CONDITIONAL" | "REJECT";

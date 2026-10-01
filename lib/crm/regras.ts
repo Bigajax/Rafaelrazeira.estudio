@@ -280,9 +280,17 @@ export const TITULO_CHEGOU_PELO_ANUNCIO = "Chegou pelo anúncio:";
 export const TITULO_ARROBA_NAO_ABRIU = "Chegou pelo anúncio, mas o @ não abriu";
 export const arrobaNaoConferido = (lead: Pick<LeadPainel, "notas">) =>
   /NÃO CONFERIDO NA META/i.test(lead.notas ?? "");
+/* A abertura das lojas de celular do garimpo (01/10/2026). As 40 de
+   Cascavel vieram do Google Maps, quase nenhuma com @, e a abertura fria
+   de sempre fingia ser cliente que "entrou no perfil", com a prévia só no
+   terceiro toque. O Rafael pediu direto: quem sou, a prévia grátis já na
+   primeira mensagem, e a pergunta do aparelho que mais sai. */
+export const TITULO_LOJA_DE_CELULAR = "Loja de celular:";
+const ehLojaDeCelular = (lead: Pick<LeadPainel, "nicho">) =>
+  /celular|iphone/i.test(lead.nicho ?? "");
 
 export function degrauDoSilencio(
-  lead: Pick<LeadPainel, "toques" | "toques_entrada" | "saidas_seguidas" | "origem" | "notas">,
+  lead: Pick<LeadPainel, "toques" | "toques_entrada" | "saidas_seguidas" | "origem" | "notas" | "nicho">,
 ): Degrau | null {
   /* ---------- o formulário não é resposta (21/09/2026) ----------
      O card que nasce do anúncio já nasce com UM toque de entrada: a
@@ -319,6 +327,14 @@ export function degrauDoSilencio(
 
   const n = lead.saidas_seguidas;
   if (n === 0) {
+    if (ehLojaDeCelular(lead)) {
+      return {
+        categoria: "abertura_fria",
+        indice: 0,
+        titulo: TITULO_LOJA_DE_CELULAR,
+        porque: "Loja de celular que ninguém chamou ainda: a prévia grátis já na primeira mensagem",
+      };
+    }
     return { categoria: "abertura_fria", indice: 0, porque: "Ninguém falou com este lead ainda" };
   }
   if (n === 1) {
@@ -763,7 +779,9 @@ function valoresDe(lead: DadosTemplate, paraRender: boolean): Record<string, str
   const nome = nomeDeGente(lead.nome, arroba);
   return {
     nome: nome ? (paraRender ? primeiroNome(nome) : nome) : null,
-    empresa: lead.empresa,
+    /* O nome do Google Maps traz o slogan junto ("Eletrotok | Especialista
+       em Celulares e Acessórios"); na mensagem vai só o nome da loja. */
+    empresa: lead.empresa ? lead.empresa.split(" | ")[0].trim() : null,
     nicho: lead.nicho,
     cidade: lead.cidade,
     instagram: arroba ? `@${arroba}` : null,

@@ -15,6 +15,19 @@ export function nomePedido(p: Pick<Pedido, "agente" | "etapa">) {
   return `${AGENTES[quem].nome} escrevendo ${AGENTES[quem].faz}`;
 }
 
+/* O botão que liga o time (01/10). O site está na Vercel e não abre programa
+   no PC; o link rr-marketing:// é que o Windows entrega ao
+   scripts/ligar-time-marketing.cmd (registrado uma vez pelo
+   scripts/registrar-botao-time.cmd). Só funciona no PC do estúdio. Na
+   primeira vez o Chrome pergunta se pode abrir: marcar "sempre permitir". */
+export function LigarTime() {
+  return (
+    <a className={m.ligarTime} href="rr-marketing://ligar" title="Abre a janela do time no PC. Não funciona pelo celular.">
+      Ligar o time
+    </a>
+  );
+}
+
 export function SinalTime({ vistoEm, abertos }: { vistoEm: string | null; abertos: Pedido[] }) {
   const router = useRouter();
   const [agora, setAgora] = useState(() => Date.now());
@@ -41,10 +54,10 @@ export function SinalTime({ vistoEm, abertos }: { vistoEm: string | null; aberto
         </span>
       ) : (
         <span>
-          O time está dormindo{abertos.length ? ` com ${abertos.length} pedido${abertos.length > 1 ? "s" : ""} esperando` : ""}. No PC:{" "}
-          <code>npx tsx scripts/marketing-agentes.ts</code>
+          O time está desligado{abertos.length ? `, com ${abertos.length} pedido${abertos.length > 1 ? "s" : ""} esperando` : ""}.
         </span>
       )}
+      {vivo ? null : <LigarTime />}
     </div>
   );
 }

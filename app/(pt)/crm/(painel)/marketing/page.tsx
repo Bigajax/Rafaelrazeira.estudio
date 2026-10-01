@@ -8,21 +8,15 @@
    ============================================================ */
 
 import type { Metadata } from "next";
-import Link from "next/link";
 import { calendario } from "@/lib/marketing/dados";
 import { hojeSP } from "@/lib/crm/regras";
 import { Calendario } from "@/components/marketing/Calendario";
 import { SinalTime } from "@/components/marketing/SinalTime";
 import { AbasMarketing } from "@/components/marketing/AbasMarketing";
-import s from "@/app/(pt)/crm/crm.module.css";
+import { CabecaMes } from "@/components/marketing/CabecaMes";
 import m from "@/app/(pt)/crm/marketing.module.css";
 
 export const metadata: Metadata = { title: "Marketing" };
-
-const MESES = [
-  "janeiro", "fevereiro", "março", "abril", "maio", "junho",
-  "julho", "agosto", "setembro", "outubro", "novembro", "dezembro",
-];
 
 function chaveMes(ano: number, mes: number) {
   const d = new Date(ano, mes - 1, 1);
@@ -40,36 +34,16 @@ export default async function PaginaMarketing({ searchParams }: { searchParams: 
   const fim = `${chaveMes(ano, mes)}-${String(new Date(ano, mes, 0).getDate()).padStart(2, "0")}`;
   const { noMes, semData, vistoEm, fila } = await calendario(inicio, fim);
 
-  const prontas = noMes.filter((p) => p.status !== "rascunho").length;
-
   return (
     <div className={m.tela}>
       <AbasMarketing ativa="calendario" />
-      <header className={m.cabeca}>
-        <div>
-          <h1>
-            {MESES[mes - 1]}
-            <i className={s.ponto}>.</i>
-          </h1>
-          <p className={m.placar}>
-            {noMes.length === 0
-              ? "Nenhuma peça no mês ainda."
-              : `${noMes.length} ${noMes.length === 1 ? "peça" : "peças"} no mês, ${prontas} ${prontas === 1 ? "pronta" : "prontas"}.`}
-          </p>
-        </div>
-        <nav className={m.meses} aria-label="Trocar de mês">
-          <Link href={`/crm/marketing?mes=${chaveMes(ano, mes - 1)}`} className={s.btnMini}>
-            {MESES[(mes + 10) % 12]}
-          </Link>
-          <Link href="/crm/marketing" className={s.btnMini}>
-            Hoje
-          </Link>
-          <Link href={`/crm/marketing?mes=${chaveMes(ano, mes + 1)}`} className={s.btnMini}>
-            {MESES[mes % 12]}
-          </Link>
-        </nav>
-        <SinalTime vistoEm={vistoEm} abertos={fila} />
-      </header>
+      <CabecaMes
+        ano={ano}
+        mes={mes}
+        mesDeHoje={chaveMes(ano, mes) === hoje.slice(0, 7)}
+        noMes={noMes}
+        rodape={<SinalTime vistoEm={vistoEm} abertos={fila} />}
+      />
 
       <Calendario ano={ano} mes={mes} hoje={hoje} noMes={noMes} semData={semData} />
     </div>

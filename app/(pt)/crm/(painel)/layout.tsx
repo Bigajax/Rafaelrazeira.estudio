@@ -35,7 +35,7 @@ export default async function LayoutPainel({
           no trilho e este bloco não existe. */}
       <form action={sair} className={s.sairNoPe}>
         <button type="submit" className={s.btnMini}>
-          Sair do CRM
+          Sair do estúdio
         </button>
       </form>
     </div>

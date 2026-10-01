@@ -14,17 +14,23 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { clienteServidor, usuarioAtual } from "@/lib/crm/supabase";
 import {
+  CATEGORIAS,
   CODIGOS,
   DIRECOES,
   PILARES,
   TIPOS,
   TIPOS_SLIDE,
+  TIPOGRAFIAS,
   LAYOUTS,
   LEITURAS,
+  MEDIDAS,
   PAPEIS,
   RESPIROS,
+  type Categoria,
   type Codigo,
   type Estilo,
+  type Medida,
+  type Metricas,
   type Pilar,
   type Peca,
   type Slide,
@@ -32,6 +38,7 @@ import {
   type TipoPeca,
   type TipoPedido,
 } from "@/lib/marketing/tipos";
+import { REFERENCIAS_INICIAIS, type TipoReferencia } from "@/lib/marketing/referencias-iniciais";
 
 export type Feito =
   | { ok: true; versao?: string; defasada?: boolean }
@@ -81,6 +88,18 @@ function atualizar(id?: string) {
 
 const DATA = /^\d{4}-\d{2}-\d{2}$/;
 
+/* A categoria mora numa coluna própria (supabase/marketing-categorias.sql,
+   01/10). Sem ela o banco recusa, e o recado diz o que rodar. */
+export async function salvarCategoria(id: string, categoria: Categoria | null): Promise<Feito> {
+  const s = await sessao();
+  if (!s) return { ok: false, erro: "Sessão expirada. Entre de novo." };
+  if (categoria && !(categoria in CATEGORIAS)) return { ok: false, erro: "Categoria desconhecida." };
+  const { error } = await s.supabase.from("mkt_pecas").update({ categoria }).eq("id", id);
+  if (error) return { ok: false, erro: "Não salvei a categoria. Rode o supabase/marketing-categorias.sql no SQL Editor." };
+  atualizar(id);
+  return { ok: true };
+}
+
 export async function criarPeca(form: FormData): Promise<Feito> {
   const s = await sessao();
   if (!s) return { ok: false, erro: "Sessão expirada. Entre de novo." };
@@ -93,6 +112,8 @@ export async function criarPeca(form: FormData): Promise<Feito> {
   const data = String(form.get("posta_em") || "");
   const pilarBruto = String(form.get("pilar") || "");
   const pilar = pilarBruto in PILARES ? (pilarBruto as Pilar) : null;
+  const categoriaBruta = String(form.get("categoria") || "");
+  const categoria = categoriaBruta in CATEGORIAS ? (categoriaBruta as Categoria) : null;
   /* A peça nasce com o esqueleto do pilar: a sequência de slides vazios que
      aquele tipo de conteúdo pede. Post único e anúncio ficam só com a capa. */
   /* A peça nasce com o roteiro do pilar: o tipo de cada slide E o papel da
@@ -113,6 +134,7 @@ export async function criarPeca(form: FormData): Promise<Feito> {
     posta_em: DATA.test(data) ? data : null,
   };
   if (pilar) linha.pilar = pilar;
+  if (categoria) linha.categoria = categoria;
   /* O feed alterna as duas direções: a peça nova nasce na oposta à da
      última criada. Trocar no editor continua a um clique. */
   const { data: ultima } = await s.supabase
@@ -131,7 +153,12 @@ export async function criarPeca(form: FormData): Promise<Feito> {
   if (error || !nova) {
     /* 42703 = coluna que não existe: a migração do pilar (30/09) não rodou. */
     if (error?.code === "42703" || error?.code === "PGRST204") {
-      return { ok: false, erro: "Falta rodar de novo o supabase/marketing.sql no SQL Editor (as colunas pilar e estilo)." };
+      return {
+        ok: false,
+        erro: categoria
+          ? "Falta a coluna da categoria: rode o supabase/marketing-categorias.sql no SQL Editor."
+          : "Falta rodar de novo o supabase/marketing.sql no SQL Editor (as colunas pilar e estilo).",
+      };
     }
     return { ok: false, erro: "Não criei a peça. Tente de novo." };
   }
@@ -257,6 +284,7 @@ export async function salvarEstilo(id: string, estilo: Estilo, versao?: string):
     paleta: Array.isArray(estilo.paleta) ? estilo.paleta.filter((h) => /^#[0-9A-F]{6}$/i.test(h)).slice(0, 6) : undefined,
     usarPaleta: typeof estilo.usarPaleta === "boolean" ? estilo.usarPaleta : undefined,
     biblia: typeof estilo.biblia === "string" ? estilo.biblia.slice(0, 4000) : undefined,
+    tipografia: estilo.tipografia && estilo.tipografia in TIPOGRAFIAS ? estilo.tipografia : undefined,
   };
   const r = await gravarComVersao(s.supabase, id, { estilo: limpo }, versao);
   if (r.ok) atualizar(id);
@@ -290,6 +318,26 @@ export async function marcarStatus(id: string, status: StatusPeca): Promise<Feit
   const { error } = await s.supabase.from("mkt_pecas").update({ status }).eq("id", id);
   if (error) return { ok: false, erro: "Não mudei o estado." };
   atualizar(id);
+  return { ok: true };
+}
+
+/* Os números do post (01/10). Campo vazio é "não anotei", e não zero: um
+   zero inventado puxaria a média do post para baixo sem ninguém ver. */
+export async function salvarMetricas(id: string, valores: Partial<Record<Medida, string>>): Promise<Feito> {
+  const s = await sessao();
+  if (!s) return { ok: false, erro: "Sessão expirada. Entre de novo." };
+  const metricas: Metricas = {};
+  for (const k of Object.keys(MEDIDAS) as Medida[]) {
+    const bruto = String(valores[k] ?? "").replace(/D/g, "");
+    if (bruto) metricas[k] = Math.min(Number(bruto), 100_000_000);
+  }
+  metricas.medido_em = new Date().toISOString().slice(0, 10);
+  const { error } = await s.supabase.from("mkt_pecas").update({ metricas }).eq("id", id);
+  if (error) {
+    return { ok: false, erro: "Não salvei os números. Rode o supabase/marketing-metricas.sql no SQL Editor." };
+  }
+  atualizar(id);
+  revalidatePath("/crm/marketing/resultados");
   return { ok: true };
 }
 
@@ -435,4 +483,61 @@ export async function apagarPeca(id: string): Promise<Feito> {
   if (p?.fundo) await s.supabase.storage.from("marketing").remove([p.fundo]);
   revalidatePath("/crm/marketing");
   redirect("/crm/marketing");
+}
+
+/* ============================================================
+   O BANCO DE REFERÊNCIAS (01/10/2026)
+   Ver supabase/marketing-referencias.sql e lib/marketing/referencias-iniciais.ts.
+   ============================================================ */
+const SEM_TABELA_REF = "Falta a tabela: rode o supabase/marketing-referencias.sql no SQL Editor.";
+
+/* A primeira carga, uma vez: com a tabela já tendo linhas, não duplica. */
+export async function carregarReferenciasIniciais(): Promise<Feito> {
+  const s = await sessao();
+  if (!s) return { ok: false, erro: "Sessão expirada. Entre de novo." };
+  const { count, error: erroConta } = await s.supabase.from("mkt_referencias").select("id", { count: "exact", head: true });
+  if (erroConta) return { ok: false, erro: SEM_TABELA_REF };
+  if (count) return { ok: false, erro: "O banco já tem referências; a carga inicial não entra de novo." };
+  const { error } = await s.supabase.from("mkt_referencias").insert(REFERENCIAS_INICIAIS.map((r) => ({ ...r, owner_id: s.usuario.id })));
+  if (error) return { ok: false, erro: `Não carreguei: ${error.message}` };
+  revalidatePath("/crm/marketing/referencias");
+  return { ok: true };
+}
+
+export async function salvarReferencia(form: FormData): Promise<Feito> {
+  const s = await sessao();
+  if (!s) return { ok: false, erro: "Sessão expirada. Entre de novo." };
+  const txt = (k: string, max = 600) => String(form.get(k) ?? "").replace(/\s*—\s*/g, ", ").trim().slice(0, max);
+  const tipo = txt("tipo") as TipoReferencia;
+  if (!["perfil", "formato", "evitar"].includes(tipo)) return { ok: false, erro: "Tipo desconhecido." };
+  const cat = txt("categoria");
+  const nome = txt("nome", 120);
+  if (!nome) return { ok: false, erro: "Falta o nome ou o @." };
+  let link = txt("link", 400);
+  if (/^@?[\w.]+$/.test(nome) && !link && tipo === "perfil") link = `https://www.instagram.com/${nome.replace(/^@/, "")}/`;
+  if (link && !/^https?:\/\//.test(link)) return { ok: false, erro: "O link precisa começar com https://" };
+  const linha = {
+    tipo,
+    categoria: cat in CATEGORIAS ? cat : null,
+    nome: tipo === "perfil" && /^[\w.]+$/.test(nome) ? `@${nome}` : nome,
+    link,
+    por_que: txt("por_que"),
+    copiar: txt("copiar"),
+    nao_copiar: txt("nao_copiar"),
+    evidencia: txt("evidencia"),
+  };
+  const { error } = await s.supabase.from("mkt_referencias").insert(linha);
+  if (error) return { ok: false, erro: /relation|does not exist/.test(error.message) ? SEM_TABELA_REF : "Não guardei a referência." };
+  revalidatePath("/crm/marketing/referencias");
+  return { ok: true };
+}
+
+/* Tirar não apaga: a referência sai do que o time lê e fica guardada. */
+export async function arquivarReferencia(id: string, ativo: boolean): Promise<Feito> {
+  const s = await sessao();
+  if (!s) return { ok: false, erro: "Sessão expirada. Entre de novo." };
+  const { error } = await s.supabase.from("mkt_referencias").update({ ativo }).eq("id", id);
+  if (error) return { ok: false, erro: "Não mudei a referência." };
+  revalidatePath("/crm/marketing/referencias");
+  return { ok: true };
 }

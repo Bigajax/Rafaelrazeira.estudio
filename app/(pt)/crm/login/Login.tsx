@@ -10,9 +10,9 @@ export function Login({ destino }: { destino: string }) {
   return (
     <form action={agir} className={s.loginCartao}>
       <h1>
-        Entrar no CRM<i className={s.ponto}>.</i>
+        Entrar no estúdio<i className={s.ponto}>.</i>
       </h1>
-      <p>A área de prospecção do estúdio. Só você entra aqui.</p>
+      <p>Da primeira conversa com o lead ao dinheiro no caixa, tudo num lugar só. Só você entra aqui.</p>
 
       <input type="hidden" name="destino" value={destino} />
 

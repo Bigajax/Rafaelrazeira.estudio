@@ -32,6 +32,7 @@ import { createClient } from "@supabase/supabase-js";
 import marca from "../lib/marketing/marca.json";
 import {
   AGENTES,
+  CATEGORIAS,
   CODIGOS,
   PAPEIS,
   LAYOUTS,
@@ -45,6 +46,7 @@ import {
   TIPOS,
   TIPOS_SLIDE,
   type Agente,
+  type Categoria,
   type Codigo,
   type Peca,
   type Pedido,
@@ -52,6 +54,8 @@ import {
   type Slide,
   type TipoPeca,
 } from "../lib/marketing/tipos";
+import { resumoParaPaula } from "../lib/marketing/resultados";
+import type { Referencia } from "../lib/marketing/referencias-iniciais";
 
 function carregarEnv() {
   const arquivo = path.resolve(process.cwd(), ".env.local");
@@ -223,6 +227,7 @@ function descreverSlide(s: Slide, i: number, estilo?: Peca["estilo"]) {
 
 function descreverPeca(p: Peca) {
   const l = [`Formato: ${TIPOS[p.tipo].nome} (${TIPOS[p.tipo].w}x${TIPOS[p.tipo].h})`];
+  if (p.categoria && p.categoria in CATEGORIAS) l.push(`Categoria (o assunto): ${CATEGORIAS[p.categoria].nome}, ${CATEGORIAS[p.categoria].faz}`);
   if (p.pilar) l.push(`Pilar: ${PILARES[p.pilar].nome}`);
   if (p.codigo) l.push(`Tipo de post (tabela mestra): ${p.codigo} ${CODIGOS[p.codigo].nome}`);
   l.push(`Briefing: ${p.briefing || "(vazio)"}`);
@@ -246,9 +251,67 @@ const TIPOS_DE_SLIDE =
   "comparacao (o MESMO objeto dos dois jeitos: ruim e bom, cada um em até 14 palavras), lista (3 a 6 itens curtos, em ordem), citacao (uma tese em uma frase; apoio = a fonte, se houver), " +
   "tela (um print de página real que o Rafael vai subir: escreva o título e o apoio do que a pessoa deve notar no print), numero (um número REAL + título), fecho (o que fazer agora)";
 
+/* as categorias do feed (01/10), como a Paula lê */
+const LISTA_CATEGORIAS = (Object.keys(CATEGORIAS) as Categoria[])
+  .map((k) => `${k} = ${CATEGORIAS[k].nome}: ${CATEGORIAS[k].faz}, ${CATEGORIAS[k].meta}% do mês`)
+  .join("; ");
+
+/* ============================================================
+   O QUE O FEED JÁ MOSTROU (01/10/2026)
+   Os números de cada post postado, lidos pela mesma conta da aba
+   Resultados (lib/marketing/resultados.ts). Lidos de novo a cada pedido,
+   porque o Rafael anota números entre um pedido e outro. Vazio com menos
+   de 3 posts medidos: com dois, a lição seria sorte.
+   ============================================================ */
+let licao = "";
+async function lerLicao() {
+  const { data } = await supabase.from("mkt_pecas").select("*").eq("status", "postada");
+  const hoje = new Date().toLocaleDateString("sv-SE", { timeZone: "America/Sao_Paulo" });
+  return resumoParaPaula((data ?? []) as Peca[], hoje);
+}
+const SECAO_LICAO = () =>
+  licao
+    ? "## O que o feed já mostrou (números do Insights do Rafael)\n\n" +
+      "Puxe para o que deu certo (a categoria, o pilar, o tipo de gancho e de assunto) e fuja do que não deu. " +
+      "Não copie o gancho de um post que deu certo: a regra da pauta inédita continua valendo. Use a lição, não o texto.\n\n" +
+      licao
+    : "";
+
+/* ============================================================
+   AS REFERÊNCIAS DE FORA (01/10/2026)
+   O banco da aba Referências (mkt_referencias): os formatos que se repetem
+   nos perfis que funcionam, o que evitar, e os perfis por categoria. A
+   Paula lê tudo (filtrado pela categoria do pedido, se houver); o Caetano lê
+   os formatos, o que evitar e os perfis da categoria da peça. Sem a tabela,
+   fica vazio e o time segue como antes.
+   ============================================================ */
+let referencias: Referencia[] = [];
+async function lerReferencias() {
+  const { data, error } = await supabase.from("mkt_referencias").select("*").eq("ativo", true).order("criado_em");
+  return error ? [] : ((data ?? []) as Referencia[]);
+}
+function secaoReferencias(categoria: Categoria | null, perfis: boolean) {
+  if (!referencias.length) return "";
+  const gerais = referencias.filter((r) => r.tipo !== "perfil");
+  const deles = perfis ? referencias.filter((r) => r.tipo === "perfil" && (!categoria || r.categoria === categoria)) : [];
+  const linha = (r: Referencia) =>
+    `- ${r.nome}${r.categoria && r.tipo === "perfil" ? ` (${CATEGORIAS[r.categoria].nome})` : ""}: ${r.por_que}. Copiar: ${r.copiar}. Não copiar: ${r.nao_copiar}.`;
+  const partes = [
+    "## Referências de fora (o banco do Rafael)\n\n" +
+      "Use o MECANISMO destas referências (o formato, o tipo de gancho, a estrutura), nunca o texto nem o assunto de outro perfil. Seguidor não prova que funciona; quando o feed do Rafael já mostrou o contrário, vale o feed.",
+  ];
+  const formatos = gerais.filter((r) => r.tipo === "formato");
+  const evitar = gerais.filter((r) => r.tipo === "evitar");
+  if (formatos.length) partes.push(`Formatos que se repetem nos perfis que funcionam:\n${formatos.map(linha).join("\n")}`);
+  if (evitar.length) partes.push(`O que evitar:\n${evitar.map(linha).join("\n")}`);
+  if (deles.length) partes.push(`Perfis de referência${categoria ? ` em ${CATEGORIAS[categoria].nome}` : ""}:\n${deles.map(linha).join("\n")}`);
+  return partes.join("\n\n");
+}
+
 const TAREFA: Record<Agente, string> = {
   estrategista:
     "Proponha a melhor pauta para esta peça a partir do briefing: o ângulo, a persona, a ideia central e o que a pessoa leva. " +
+    "Se a peça ainda não tem categoria, escolha uma em `categoria` (" + LISTA_CATEGORIAS + "). " +
     "Se a peça ainda não tem pilar, recomende um em `pilar` (tendencia, conceito, comparacao, curadoria, bastidor, opiniao, case ou oferta), lembrando que 4 de cada 5 posts são de valor. " +
     "Escreva QUATRO opções de gancho em `opcoes_gancho`, com abordagens diferentes (pergunta, afirmação que confronta, imagem concreta do dia a dia da loja, dado real). " +
     "Em `gancho` repita a que você recomenda. O raciocínio vai em `notas`, curto.",
@@ -271,10 +334,9 @@ const TAREFA: Record<Agente, string> = {
        imagem; nem todos vão precisar, mas alguns vão, para não ficar
        repetitivo". A Dora decide SLIDE A SLIDE. */
     "Escreva os prompts que o Rafael vai colar no ChatGPT, SLIDE A SLIDE, seguindo À RISCA a régua da imagem que está neste prompt (ela é do Rafael e vence qualquer instrução da sua definição de agente). " +
-    "Leia o roteiro (o tipo e o papel da imagem de cada slide) e decida, para cada slide, uma de três coisas: " +
-    "(a) GERAÇÃO PRÓPRIA: o slide ganha uma imagem nova, uma cena diferente das outras (outro ângulo, outro momento, outro personagem ou objeto), no mesmo mundo, paleta e luz da série; " +
-    "(b) REAPROVEITA: só o slide de papel \"fecho\" (a capa voltando menor) usa a imagem de outro slide, e ele não entra na lista; " +
-    "(c) SEM IMAGEM: slide de respiro de cor, lista ou número, que também não entra na lista. " +
+    "Leia o roteiro (o tipo e o papel da imagem de cada slide). No fim deste prompt vem a lista dos SLIDES QUE LEVAM IMAGEM: escreva um prompt para CADA um deles, nenhum a menos (01/10: slide sem prompt é o Rafael parado na frente do ChatGPT sem saber o que pedir). " +
+    "Cada um é uma GERAÇÃO PRÓPRIA, uma cena diferente das outras (outro ângulo, outro momento, outro personagem ou objeto), no mesmo mundo, paleta e luz da série. " +
+    "Os slides fora da lista não entram: o fecho reaproveita a capa, e o print de página o Rafael sobe. Um slide de respiro, lista ou número que está na lista ganha uma imagem que acompanha o texto dele. " +
     "Regra do Rafael (30/09): CADA SLIDE COM IMAGEM TEM A SUA GERAÇÃO, com um prompt específico para aquele slide; o molde é fixo e as imagens entram nele, sem um slide herdar a imagem do outro. Zoom e contraste também ganham geração própria (o zoom é um close fotografado do detalhe; o contraste é uma cena que funciona apagada e viva). Cada imagem nova é uma cena diferente (outro ângulo, momento, personagem ou objeto) no mesmo mundo, paleta e luz. A imagem do slide 1 mostra o ASSUNTO do post (se o post é sobre uma ferramenta, a capa é a ferramenta, representada como objeto ou personagem, sem logo nem marca registrada). Declare em `respiro` onde a imagem do slide 1 deixa espaço para o título (topo-esquerda, topo-direita, topo ou base). " +
     "Se o slide tem papel \"voce\" (só em Bastidor, Opinião e Oferta), o prompt dele começa por \"Using the attached photo of me as the face reference,\" e mostra o Rafael no mesmo mundo. " +
     "Em `slide` vai o NÚMERO do slide (1, 2, 3...). Cada prompt em INGLÊS, um parágrafo específico: assunto, composição, ângulo de câmera, luz, paleta com cores nomeadas, material, época, começando pela abertura fixa da régua. " +
@@ -291,7 +353,7 @@ const TAREFA: Record<Agente, string> = {
 
 const SCHEMA: Record<Agente, string> = {
   estrategista:
-    '{"notas": "string", "pilar": "conceito", "opcoes_gancho": ["string","string","string","string"], "gancho": "string"}',
+    '{"notas": "string", "categoria": "design", "pilar": "conceito", "opcoes_gancho": ["string","string","string","string"], "gancho": "string"}',
   copywriter:
     '{"notas": "string", "slides": [{"tipo": "capa", "rotulo": "string", "manchete": "string", "batida": "string", "destaque": "string", "apoio": "string", "numero": "string", "itens": ["string"], "ruim": "string", "bom": "string"}], "gancho": "string", "cta": "string", "hashtags": "string", "legenda": "string"}',
   "diretor-arte":
@@ -312,6 +374,12 @@ function montarPrompt(agente: Agente, p: Peca, anteriores: string[] = []) {
   if (pos) secoes.push(`## Posicionamento (ALICERCE: obedeça o teste da 2.5 e o "nunca entra" da 3.4)\n\n${pos}`);
   const bp = bestPractices(p.tipo, agente);
   if (bp) secoes.push(`## Best practices do formato\n\n${bp}`);
+  if (agente === "estrategista" && SECAO_LICAO()) secoes.push(SECAO_LICAO());
+  if (agente === "estrategista" || agente === "copywriter") {
+    const cat = p.categoria && p.categoria in CATEGORIAS ? p.categoria : null;
+    const refs = secaoReferencias(cat, true);
+    if (refs) secoes.push(refs);
+  }
   secoes.push(`## Peça atual\n\n${descreverPeca(p)}`);
   secoes.push(`## Regras duras DESTA peça (acima de qualquer template da sua definição)\n\n${espec(p)}`);
   if (agente === "copywriter" && p.veredito && p.veredito.status !== "APPROVE") {
@@ -351,7 +419,7 @@ function formatoSaida(schema: string) {
   );
 }
 
-function montarPromptPautas(n: number, tipo: TipoPeca | null, jaFeitas: string[]) {
+function montarPromptPautas(n: number, tipo: TipoPeca | null, jaFeitas: string[], categoria: Categoria | null = null) {
   const secoes = [
     "Você é Paula, estrategista de conteúdo do Rafael Razeira Estúdio. Incorpore a definição abaixo. Não use ferramentas.",
     `## Contexto da marca\n\n${blocoMarca("pautas")}`,
@@ -369,20 +437,28 @@ function montarPromptPautas(n: number, tipo: TipoPeca | null, jaFeitas: string[]
         jaFeitas.map((x) => `- ${x}`).join("\n"),
     );
   }
+  if (SECAO_LICAO()) secoes.push(SECAO_LICAO());
+  const refs = secaoReferencias(categoria, true);
+  if (refs) secoes.push(refs);
   const pilares = (Object.keys(PILARES) as Pilar[]).map((k) => `${k} (${PILARES[k].nome}: ${PILARES[k].faz})`).join("; ");
-  const nVenda = Math.max(0, Math.round(n / 5));
+  /* com categoria escolhida (01/10), a venda só existe se ela for Vitrines */
+  const nVenda = categoria && categoria !== "vitrines" ? 0 : Math.max(0, Math.round(n / 5));
+  const regraCategoria = categoria
+    ? `TODAS as ${n} pautas são da categoria ${CATEGORIAS[categoria].nome} (${CATEGORIAS[categoria].faz}): o Rafael escolheu este assunto, e isso vence qualquer proporção de temas escrita abaixo. Varie o ângulo dentro dele, e prefira os pilares ${CATEGORIAS[categoria].pilares.join(", ")}. Em \`categoria\` vai sempre "${categoria}". `
+    : `Cada pauta também tem uma CATEGORIA, o assunto (01/10): ${LISTA_CATEGORIAS}. Espalhe as pautas pelas categorias seguindo essas fatias; a oferta só cabe em vitrines. `;
   secoes.push(
     "## Sua tarefa\n\n" +
       `Proponha ${n} pautas para o Instagram do estúdio. A regra é 80/20: ${n - nVenda} de VALOR e ${nVenda} de venda (pilar oferta). ` +
       `Pilares: ${pilares}. Varie os pilares de valor; não repita o mesmo pilar mais de duas vezes. ` +
+      regraCategoria +
       "Conteúdo de valor mostra um estúdio de design olhando o mundo: tendências (IA, ferramentas novas, design, marca, internet), como melhorar workflows e processo, bastidores de decisões de design, opiniões sobre o mercado criativo e digital. Vitrine e loja são só UM dos temas possíveis, no máximo 1 a cada 5 pautas. " +
       "Pauta de valor não cita a vitrine nem o preço do estúdio. " +
       (tipo ? `Todas no formato ${TIPOS[tipo].nome}. ` : "Formato: carrossel na maioria; post único para tese curta; story para bastidor. ") +
-      "Cada pauta: `pilar`, `tipo` (carrossel|post_feed|story), `briefing` (2 a 4 frases: o tema, o ângulo, o exemplo concreto e o que a pessoa leva) e `gancho` (a primeira frase). " +
+      "Cada pauta: `categoria`, `pilar`, `tipo` (carrossel|post_feed|story), `briefing` (2 a 4 frases: o tema, o ângulo, o exemplo concreto e o que a pessoa leva) e `gancho` (a primeira frase). " +
       "Número só se estiver nas provas da marca ou na memória com fonte.",
   );
   secoes.push(
-    formatoSaida('{"notas": "string", "pautas": [{"pilar": "conceito", "tipo": "carrossel", "briefing": "string", "gancho": "string"}]}'),
+    formatoSaida('{"notas": "string", "pautas": [{"categoria": "tendencia", "pilar": "conceito", "tipo": "carrossel", "briefing": "string", "gancho": "string"}]}'),
   );
   return secoes.join("\n\n---\n\n");
 }
@@ -500,21 +576,35 @@ async function gravar(id: string, campos: Partial<Peca>) {
   if (error) throw new Error(`Não gravei a peça: ${error.message}`);
 }
 
-/* os slides (numerados a partir de 1) que podem ter imagem e ainda não têm
-   prompt: todos, menos o "só texto" e os que levam print (prova, tela,
-   comparação) */
-function slidesSemPrompt(p: Peca) {
-  const extras = p.estilo?.extras ?? [];
+/* os slides (numerados a partir de 1) que levam imagem gerada: todos, menos
+   o molde "só texto", o print (prova ou tela sem molde: quem sobe é o
+   Rafael), a comparação com as duas imagens já subidas e o fecho que
+   reaproveita a capa. Era a Dora quem decidia isso, e ela pulava o respiro,
+   a lista e o número; em 01/10 o Rafael leu como "os prompts às vezes não
+   são gerados". Agora a lista é calculada aqui e vai escrita no prompt. */
+function slidesComImagem(p: Peca) {
   return p.slides
     .map((s, i) => {
       const papel = s.papel ?? (s.tipo ? papelDe(s, s.tipo) : null);
-      if (s.layout === "so-texto" || papel === "prova" || s.tipo === "tela" || s.tipo === "comparacao") return 0;
-      if (i === 0) return p.prompt_capa.trim() ? 0 : 1;
-      const idx = s.imagem ?? 0;
-      const doSlide = idx > 0 ? extras[idx - 1] : extras.find((x) => x.slide === i + 1);
-      return doSlide?.prompt?.trim() ? 0 : i + 1;
+      if (s.layout === "so-texto") return 0;
+      if (!s.layout && (papel === "prova" || s.tipo === "tela")) return 0;
+      if (s.tipo === "comparacao" && s.img && s.img2) return 0;
+      if (i > 0 && papel === "fecho" && !(s.imagem && s.imagem > 0)) return 0;
+      return i + 1;
     })
     .filter(Boolean);
+}
+
+/* desses, os que ainda não têm prompt */
+function slidesSemPrompt(p: Peca) {
+  const extras = p.estilo?.extras ?? [];
+  return slidesComImagem(p).filter((n) => {
+    if (n === 1) return !p.prompt_capa.trim();
+    const s = p.slides[n - 1];
+    const idx = s.imagem ?? 0;
+    const doSlide = idx > 0 ? extras[idx - 1] : extras.find((x) => x.slide === n);
+    return !doSlide?.prompt?.trim();
+  });
 }
 
 /* o slide passa a apontar para a sua imagem; o respiro de cor não desenha
@@ -599,6 +689,15 @@ async function rodarAgente(agente: Agente, pecaId: string, entrada: Record<strin
       "Depois reescreva os prompts dos OUTROS slides com imagem para continuar ESTA imagem: os mesmos personagens, iguais, e o mesmo mundo. NÃO devolva o slide 1 na lista (a capa já existe). " +
       "Não leia nenhum outro arquivo.";
   }
+  if (agente === "diretor-arte" && entrada.modo !== "slide" && entrada.modo !== "faltantes") {
+    const levam = slidesComImagem(p).filter((n) => !(continuar && n === 1));
+    if (levam.length) {
+      continuar +=
+        (continuar ? "\n\n" : "") +
+        `## OS SLIDES QUE LEVAM IMAGEM: ${levam.join(", ")}\n\n` +
+        `Devolva \`imagens\` com UM item para cada um destes slides, e só deles: ${levam.join(", ")}. Nenhum pode faltar.`;
+    }
+  }
   const prompt = montarPrompt(agente, p, anteriores) + (continuar ? `\n\n---\n\n${continuar}` : "");
   let r: Record<string, unknown>;
   try {
@@ -617,8 +716,11 @@ async function rodarAgente(agente: Agente, pecaId: string, entrada: Record<strin
       opcoes_gancho: Array.isArray(r.opcoes_gancho) ? r.opcoes_gancho.map(texto).filter(Boolean) : [],
       codigo: p.codigo ?? codigo,
     };
-    /* A coluna pilar só existe depois da migração de 30/09. */
+    /* A coluna pilar só existe depois da migração de 30/09, e a categoria
+       depois da de 01/10 (supabase/marketing-categorias.sql). */
     if (!p.pilar && pilar && "pilar" in p) campos.pilar = pilar;
+    const categoria = typeof r.categoria === "string" && r.categoria in CATEGORIAS ? (r.categoria as Categoria) : null;
+    if (!p.categoria && categoria && "categoria" in p) campos.categoria = categoria;
     await gravar(pecaId, campos);
   } else if (agente === "copywriter") {
     const lista = (v: unknown) => (Array.isArray(v) ? v.map(texto).filter(Boolean).slice(0, 6) : undefined);
@@ -757,7 +859,7 @@ async function rodarAgente(agente: Agente, pecaId: string, entrada: Record<strin
     if (primeira.respiro && primeira.respiro in RESPIROS) estilo.respiro = primeira.respiro as Peca["estilo"]["respiro"];
     if (typeof r.biblia === "string" && r.biblia.trim()) estilo.biblia = r.biblia.trim();
     const antigas = p.estilo?.extras ?? [];
-    estilo.extras = resto.map((x) => ({
+    const extras: NonNullable<Peca["estilo"]["extras"]> = resto.map((x) => ({
       prompt: x.prompt,
       papel: x.papel,
       slide: x.slide,
@@ -765,14 +867,35 @@ async function rodarAgente(agente: Agente, pecaId: string, entrada: Record<strin
     }));
 
     /* cada slide com geração própria aponta para ela; um slide de respiro
-       que ganhou imagem vira "imagem própria" (a imagem ao lado do texto) */
+       que ganhou imagem vira "imagem própria" (a imagem ao lado do texto).
+       01/10: o slide que a Dora deixava de fora continuava apontando para o
+       índice ANTIGO, que na lista refeita era a imagem de outro slide (ou
+       nada). Agora ele leva junto a imagem e o prompt que já tinha; sem
+       nenhum dos dois, fica sem ponteiro. */
     const slides = p.slides.map((s, i) => {
       const k = resto.findIndex((x) => x.slide === i + 1);
-      if (k < 0) return s;
-      const papel = !s.papel || s.papel === "respiro" || s.papel === "prova" ? "resposta" : s.papel;
-      return { ...s, imagem: k + 1, papel };
+      if (k >= 0) {
+        const papel = !s.papel || s.papel === "respiro" || s.papel === "prova" ? "resposta" : s.papel;
+        return { ...s, imagem: k + 1, papel };
+      }
+      const velha = s.imagem && s.imagem > 0 ? antigas[s.imagem - 1] : undefined;
+      if (velha && (velha.caminho || velha.prompt?.trim())) {
+        extras.push({ ...velha, slide: i + 1 });
+        return { ...s, imagem: extras.length };
+      }
+      return s.imagem && s.imagem > 0 ? { ...s, imagem: undefined } : s;
     });
+    estilo.extras = extras;
     await gravar(pecaId, { notas, prompt_capa: primeira.prompt, estilo, slides });
+
+    /* A repescagem (01/10): mesmo com a lista no prompt, a Dora pode devolver
+       menos imagens do que pediu. Os que faltaram vão numa segunda chamada,
+       só deles, uma vez. */
+    const faltam = slidesSemPrompt(await lerPeca(pecaId));
+    if (faltam.length && !entrada.repescagem) {
+      console.log(`  A Dora deixou sem prompt os slides ${faltam.join(", ")}. Pedindo só esses.`);
+      await rodarAgente("diretor-arte", pecaId, { modo: "faltantes", repescagem: true });
+    }
   } else {
     const v = r.veredito as Peca["veredito"];
     if (!v?.status) throw new Error("A Vera devolveu sem veredito.");
@@ -831,6 +954,9 @@ function parecida(a: string, b: string) {
 async function rodarPautas(pedido: Pedido) {
   const n = Math.min(Math.max(Number(pedido.entrada.n) || 5, 1), 10);
   const tipo = (pedido.entrada.tipo as TipoPeca) || null;
+  const escolhida = typeof pedido.entrada.categoria === "string" && pedido.entrada.categoria in CATEGORIAS
+    ? (pedido.entrada.categoria as Categoria)
+    : null;
   /* TODAS as pautas que já existem, e não as últimas 40: pauta usada não
      volta (regra de 30/09), e uma de agosto conta tanto quanto a de ontem. */
   const { data: existentes } = await supabase
@@ -843,7 +969,7 @@ async function rodarPautas(pedido: Pedido) {
     .filter(Boolean);
 
   console.log(`  Paula propondo ${n} pautas…`);
-  const r = await rodarClaude(montarPromptPautas(n, tipo, jaFeitas));
+  const r = await rodarClaude(montarPromptPautas(n, tipo, jaFeitas, escolhida));
   /* A trava não confia só no prompt: pauta parecida demais com uma que já
      existe é descartada aqui, a menos que venha declarada como progressão. */
   const pautas = (Array.isArray(r.pautas) ? r.pautas : []).filter((x: Record<string, unknown>) => {
@@ -867,6 +993,8 @@ async function rodarPautas(pedido: Pedido) {
     .map((x: Record<string, unknown>, k: number) => {
       const formato = (["carrossel", "post_feed", "story"].includes(String(x.tipo)) ? x.tipo : tipo ?? "carrossel") as TipoPeca;
       const pilar = typeof x.pilar === "string" && x.pilar in PILARES ? (x.pilar as Pilar) : null;
+      /* a categoria que o Rafael escolheu vale para todas, diga a Paula o que disser */
+      const categoria = escolhida ?? (typeof x.categoria === "string" && x.categoria in CATEGORIAS ? (x.categoria as Categoria) : null);
       /* A pauta nasce com o roteiro do pilar (tipo e papel da imagem), igual
          à peça criada à mão. */
       const roteiro = pilar ? (formato === "post_feed" ? [["capa", "abertura"] as const] : PILARES[pilar].roteiro) : [];
@@ -874,6 +1002,7 @@ async function rodarPautas(pedido: Pedido) {
         owner_id: dono,
         tipo: formato,
         pilar,
+        categoria,
         estilo: { direcao: (k + comeca) % 2 === 0 ? "acido" : "colagem", foto: "cor" },
         slides: roteiro.map(([t, papel], i) => ({ tipo: t, papel, ...(i === 0 ? tituloProvisorio(texto(x.gancho)) : { manchete: "" }) })),
         briefing: texto(x.progressao_de)
@@ -886,9 +1015,13 @@ async function rodarPautas(pedido: Pedido) {
     .filter((x: { briefing: string }) => x.briefing);
   if (!linhas.length) throw new Error("A Paula não devolveu nenhuma pauta.");
   let { error } = await supabase.from("mkt_pecas").insert(linhas);
+  /* Sem a migração de 01/10 a coluna categoria não existe: grava sem ela. */
+  if (error && /categoria/.test(error.message)) {
+    ({ error } = await supabase.from("mkt_pecas").insert(linhas.map(({ categoria: _c, ...resto }: { categoria: unknown }) => resto)));
+  }
   /* Sem a migração de 30/09 as colunas pilar e estilo não existem: grava sem elas. */
   if (error && /pilar|estilo/.test(error.message)) {
-    ({ error } = await supabase.from("mkt_pecas").insert(linhas.map(({ pilar: _p, estilo: _e, ...resto }: { pilar: unknown; estilo: unknown }) => resto)));
+    ({ error } = await supabase.from("mkt_pecas").insert(linhas.map(({ pilar: _p, estilo: _e, categoria: _c, ...resto }: { pilar: unknown; estilo: unknown; categoria: unknown }) => resto)));
   }
   if (error) throw new Error(`Não gravei as pautas: ${error.message}`);
 }
@@ -926,6 +1059,12 @@ async function processar(pedido: Pedido) {
   const nome = pedido.agente === "tudo" ? "a linha inteira" : pedido.agente === "pautas" ? "pautas" : AGENTES[pedido.agente].nome;
   console.log(`\n▸ ${new Date().toLocaleTimeString("pt-BR")} pedido: ${nome}`);
   try {
+    if (pedido.agente === "pautas" || pedido.agente === "estrategista" || pedido.agente === "copywriter" || pedido.agente === "tudo") {
+      licao = await lerLicao().catch(() => "");
+      referencias = await lerReferencias().catch(() => []);
+      if (referencias.length) console.log(`  o time lê ${referencias.length} referências`);
+      if (licao) console.log("  a Paula lê o que o feed já mostrou");
+    }
     if (pedido.agente === "pautas") await rodarPautas(pedido);
     else if (pedido.agente === "tudo") await rodarTudo(pedido);
     else await rodarAgente(pedido.agente, pedido.peca_id!, pedido.entrada ?? {});

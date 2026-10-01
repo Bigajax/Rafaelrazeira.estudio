@@ -40,3 +40,8 @@ catalogo-*.txt
 catalogo-*.json
 
 catalogo-*/
+
+# A sessão do leitor do WhatsApp (scripts/whatsapp-leitor.ts): é a CHAVE do
+# WhatsApp do estúdio, quem tem esta pasta lê as conversas. Nunca versionar.
+.whatsapp-sessao/
+whatsapp-leitor.log

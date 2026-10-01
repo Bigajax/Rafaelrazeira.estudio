@@ -260,7 +260,7 @@
    lavado sobre papel. É a mesma armadilha registrada no portfólio e na
    /e-commerce, e a terceira vez que ela aparece neste arquivo. */
 .app .trilhoMarca {
-  display: block; margin: 0 14px 26px; padding: 13px 14px 12px;
+  display: block; margin: 0 14px 20px; padding: 13px 14px 12px;
   background: var(--paper); color: var(--ink);
   transition: background .15s ease;
 }
@@ -276,12 +276,46 @@
 
 .trilhoLista { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column }
 
+/* ============================================================
+   OS MOMENTOS (01/10/2026)
+   Vender, Fazer, Dinheiro, Crescer: o título de cada grupo é uma BALDEAÇÃO
+   do trilho. Um traço curto atravessa a linha no x dela (21px), como o
+   desvio de uma ferrovia, e o nome do momento corre em mono ao lado. É o
+   mesmo vocabulário da estação acesa (quadrado verde sobre a linha), em
+   tom baixo: o momento organiza, quem fala alto continua sendo a rota.
+
+   Com os quatro títulos, as dez rotas apertaram 6px em cima e embaixo (medido
+   num notebook com 746px de janela: o Plano sumia embaixo), e a
+   lista rola por dentro se a tela for baixa (notebook de 720px): o trilho
+   nunca empurra o "Sair" para fora.
+   ============================================================ */
+.trilhoMomento {
+  position: relative; z-index: 1;
+  padding: 11px 20px 3px 40px;
+  font: 700 9.5px var(--mono); letter-spacing: .24em; text-transform: uppercase;
+  color: var(--sobre-ink-fraco);
+}
+.trilhoMomento:first-child { padding-top: 0 }
+.trilhoMomento::before {
+  content: ""; position: absolute; left: 15px; width: 14px; height: 2px;
+  bottom: 9px; background: var(--sobre-ink-fraco);
+}
+.trilhoLista { overflow-y: auto; scrollbar-width: none }
+.trilhoLista::-webkit-scrollbar { display: none }
+/* Tela baixa (notebook, janela de 730px em 01/10: o Plano sumia embaixo,
+   faltando 90px): a nota de duas palavras sai, como já sai no celular. O
+   nome e o número ficam; a nota é ajuda para quem ainda não decorou. */
+@media (max-height: 860px) {
+  .app .trilhoLink span { display: none }
+  .app .trilho .trilhoAtivo::before { top: 12px }
+}
+
 /* O nome recua para depois da linha. `position: relative` porque a estação
    do item aceso é um pseudo-elemento dele, e ela precisa se posicionar pela
    própria rota para acompanhar a altura da linha. */
 .trilhoLink {
   display: block; position: relative; z-index: 1;
-  padding: 13px 20px 13px 40px;
+  padding: 7px 20px 7px 40px;
   transition: background .15s ease;
 }
 /* A ESTAÇÃO. Quadrado cheio, sem raio, sentado em cima da linha: é o mesmo
@@ -290,7 +324,7 @@
    nela em vez de encostado. */
 .app .trilhoAtivo::before {
   content: ""; position: absolute;
-  left: 16px; top: 14px; width: 12px; height: 12px;
+  left: 16px; top: 9px; width: 12px; height: 12px;
   background: var(--green-live);
 }
 /* ---------- A CONDENSADA NÃO SERVE AQUI ----------
@@ -337,7 +371,7 @@
 /* A nota em duas palavras: "Hoje" e "Pipeline" são nomes que só significam
    alguma coisa para quem já usou a ferramenta. Ela vivia em 9px sobre 2,8:1
    de contraste, ou seja: existia no HTML e não existia na tela. */
-.trilhoLink span { display: block; font: 500 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--sobre-ink-fraco); margin-top: 5px }
+.trilhoLink span { display: block; font: 500 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--sobre-ink-fraco); margin-top: 3px }
 
 @media (hover: hover) and (pointer: fine) {
   .trilhoLink:hover { background: #ffffff0d }
@@ -634,6 +668,12 @@
 }
 
 .app .btn:disabled, .app .btnAcao:disabled, .app .btnMini:disabled { opacity: .4; cursor: not-allowed }
+
+/* O que só funciona no PC do estúdio (o link rr-whatsapp:// do leitor):
+   no celular o toque não faria nada, então o botão nem aparece. */
+@media (hover: none) and (pointer: coarse) {
+  .app .soNoPc { display: none }
+}
 
 /* ============================================================
    RÓTULO DE SEÇÃO
@@ -2616,11 +2656,55 @@
 /* ============================================================
    LOGIN
    ============================================================ */
-.login { min-height: 100dvh; display: grid; place-items: center; padding: 24px var(--pad) }
-.loginCartao { width: min(100%, 380px); background: var(--paper-alto); border: 1.5px solid var(--ink); box-shadow: 6px 6px 0 var(--ink); padding: clamp(22px, 4vw, 32px) }
-.loginCartao h1 { font-size: clamp(24px, 5vw, 30px); margin-bottom: 6px }
-.loginCartao p { font-size: 13px; margin-bottom: 20px }
-.loginCartao .btnAcao { width: 100%; min-height: 48px; margin-top: 4px }
+/* ---------- o login: o estúdio inteiro antes da porta ----------
+   Até 01/10/2026 era um cartão no meio da tela vazia, o layout de modelo
+   pronto que o Rafael recusa, e o texto ainda dizia "área de prospecção".
+   Agora a tela se divide: à esquerda, em grafite, as quatro frentes do
+   sistema em tamanho de cartaz; à direita, no papel, o formulário solto,
+   sem caixa. O grande é o que tem dentro; a porta é pequena.
+   `.app` na frente de tudo: `.app h1` e `.app p` vêm antes e empatariam. */
+.app .login { min-height: 100dvh; display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(320px, 1fr) }
+.app .loginMapa {
+  background: var(--ink); color: var(--paper);
+  padding: clamp(28px, 4vw, 56px) clamp(24px, 4.5vw, 72px);
+  display: flex; flex-direction: column; justify-content: space-between; gap: 48px;
+}
+.app .loginAssina {
+  font-family: var(--display); font-weight: 900; font-stretch: 78%; text-transform: uppercase;
+  font-size: 15px; letter-spacing: .02em; color: var(--paper); line-height: 1;
+}
+.app .loginAssina .ponto { color: var(--rosa-live) }
+.app .loginFrentes { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line-dark) }
+.app .loginFrentes li {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 24px;
+  border-bottom: 1px solid var(--line-dark); padding-block: clamp(6px, 1vh, 12px);
+}
+.app .loginFrente {
+  font-family: var(--display); font-weight: 900; font-stretch: 62%; text-transform: uppercase;
+  font-size: clamp(56px, 9.2vw, 148px); line-height: .84; letter-spacing: -.01em; color: var(--paper);
+}
+.app .loginAbas { font-size: 13px; color: var(--sobre-ink-fraco); text-align: right; max-width: 16ch; line-height: 1.35 }
+
+.app .loginCartao {
+  align-self: center; justify-self: center; width: min(100% - 2 * var(--pad), 360px);
+  padding-block: 48px;
+}
+.app .loginCartao h1 { font-size: clamp(30px, 3vw, 40px); margin-bottom: 10px }
+.app .loginCartao p { font-size: 14px; margin-bottom: 28px; max-width: 34ch }
+.app .loginCartao .btnAcao { width: 100%; min-height: 50px; margin-top: 8px }
+
+/* No celular as frentes deitam numa faixa de cima, menores, e o formulário
+   vem logo embaixo, sem precisar rolar até ele. As abas saem: em 390px elas
+   viram ruído em cima do que a pessoa veio fazer, que é entrar. */
+@media (max-width: 860px) {
+  .app .login { grid-template-columns: 1fr; grid-template-rows: auto 1fr }
+  .app .loginMapa { gap: 20px; padding: 20px var(--pad) 18px }
+  .app .loginFrentes { display: flex; flex-wrap: wrap; gap: 0 14px; border: 0 }
+  .app .loginFrentes li { border: 0; padding: 0 }
+  .app .loginFrente { font-size: clamp(30px, 10.5vw, 52px) }
+  .app .loginAbas { display: none }
+  .app .loginCartao { align-self: start; padding-block: 32px 40px }
+}
 
 /* ============================================================
    CELULAR — o critério de aceite é 390px sem rolagem horizontal
@@ -2648,6 +2732,9 @@
      de uma barra horizontal não é trilho, é sujeira. A estação some junto,
      e quem marca a rota aqui volta a ser o filete de cima. */
   .trilhoLista::before { display: none }
+  /* os momentos não deitam: na barra cada rota tem a largura do nome, e um
+     título entre elas seria uma rota falsa que não leva a lugar nenhum */
+  .trilhoMomento { display: none }
   .app .trilhoAtivo::before { display: none }
   /* ---------- a nona rota (30/09) ----------
      Com o Plano, cada célula caía para 43px e "Templates" não cabe em 43px:
@@ -2657,7 +2744,7 @@
      abrir. A página continua sem rolagem horizontal; só a barra rola. */
   .trilhoLista {
     flex-direction: row; flex: 1; min-width: 0;
-    overflow-x: auto; scrollbar-width: none; overscroll-behavior-x: contain;
+    overflow-x: auto; overflow-y: hidden; scrollbar-width: none; overscroll-behavior-x: contain;
   }
   .trilhoLista::-webkit-scrollbar { display: none }
   .trilhoLista li { flex: 1 0 auto; min-width: 72px }
@@ -2669,7 +2756,7 @@
      `space-between` jogaria o nome e o número contra as bordas da célula,
      com um vão no meio maior que as duas palavras. */
   .trilhoLink b { font-size: 12px; justify-content: center; gap: 6px }
-  .trilhoLink span { display: none }
+  .app .trilhoLink span { display: none }
   /* ---------- o aperto da quinta rota (20/08) ----------
      Com quatro rotas cada célula tinha 97px e "TEMPLATES" já usava quase
      todos. O Caixa entrou e a conta caiu para 78px, então alguma coisa

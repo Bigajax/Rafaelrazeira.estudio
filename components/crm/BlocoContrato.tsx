@@ -58,7 +58,7 @@ export function BlocoContrato({
           <h2>O dinheiro</h2>
         </div>
         <p className={s.blocoNota}>
-          Este projeto foi ganho e ainda não tem plano de pagamento. Sem ele, o CRM sabe que você
+          Este projeto foi ganho e ainda não tem plano de pagamento. Sem ele, o sistema sabe que você
           vendeu e não sabe se recebeu.
         </p>
         <button type="button" className={s.btnAcao} onClick={() => setMontando(true)}>

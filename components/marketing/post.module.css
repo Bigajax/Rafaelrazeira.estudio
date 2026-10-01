@@ -33,6 +33,9 @@
   background: var(--bg);
   color: var(--fg);
   font-family: var(--font-body), Arial, sans-serif;
+  /* as combinações de título têm fontes de um peso só (Anton, Bebas): o
+     navegador não inventa negrito em cima delas */
+  font-synthesis: none;
   box-sizing: border-box;
 }
 .prancha * { box-sizing: border-box; margin: 0 }

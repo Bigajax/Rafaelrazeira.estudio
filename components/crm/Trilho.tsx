@@ -62,43 +62,114 @@ import { useEffect, useRef } from "react";
 import type { Contagens } from "@/lib/crm/dados";
 import s from "@/app/(pt)/crm/crm.module.css";
 
-/* A ordem é a do dia de trabalho, não a alfabética: abre em Hoje, arrasta
-   no Pipeline, escreve nos Templates, confere nas Métricas. */
-const ROTAS = [
-  { href: "/crm", rotulo: "Hoje", nota: "a fila", conta: "fila" },
-  { href: "/crm/pipeline", rotulo: "Pipeline", nota: "o quadro", conta: "ativos" },
-  /* A oficina fica entre o quadro e o caixa porque é isso que ela é no
-     dia: o card sai do Pipeline, passa por aqui para virar prévia, e só
-     depois vira dinheiro. Sem contagem: o número que importaria (lojas
-     esperando revisão) só existe depois de você olhar, e um contador que
-     pede atenção sem ter cobrança é ruído no trilho. */
-  { href: "/crm/producao", rotulo: "Produção", nota: "a oficina", conta: null },
-  /* Projetos vem logo depois da oficina porque é a continuação dela: a
-     prévia vira contrato e o contrato vira loja entregue. Sem número pelo
-     mesmo motivo da Produção: o que cobra dinheiro já conta no Caixa. */
-  { href: "/crm/projetos", rotulo: "Projetos", nota: "as entregas", conta: null },
-  /* "Caixa" e não "Financeiro" por duas razões que apontam para o mesmo
-     lado: é a palavra exata do que a tela responde (quanto entrou, quem me
-     deve), e cinco letras cabem na barra do celular, onde cada rota tem
-     78px com cinco itens. "Financeiro" é o nome do departamento de uma
-     empresa que este estúdio não é. */
-  { href: "/crm/caixa", rotulo: "Caixa", nota: "o dinheiro", conta: "cobrar" },
-  /* O Financeiro vem colado no Caixa porque é a outra metade da mesma
-     pergunta (30/09): o Caixa diz quem deve e o que entrou; o Financeiro diz
-     o que saiu e se sobrou. Sem número: o resultado do mês tem contexto só
-     dentro da tela. */
-  { href: "/crm/financeiro", rotulo: "Financeiro", nota: "o resultado", conta: null },
-  { href: "/crm/templates", rotulo: "Templates", nota: "as mensagens", conta: "templates" },
-  /* O marketing olha para fora do funil: é o que traz o próximo lead, não o
-     que trabalha o atual. Por isso vem depois das mensagens, e sem número:
-     peça sem data não é cobrança. */
-  { href: "/crm/marketing", rotulo: "Marketing", nota: "os posts", conta: null },
-  { href: "/crm/metricas", rotulo: "Métricas", nota: "os números", conta: null },
-  /* O plano fecha o trilho porque é o que dá sentido ao resto: as métricas
-     dizem como o mês foi, o plano diz para onde o ano vai (30/09). Sem
-     número: a nota do painel mora na própria tela, onde ela tem contexto. */
-  { href: "/crm/plano", rotulo: "Plano", nota: "o rumo", conta: null },
-] as const;
+/* ============================================================
+   OS QUATRO MOMENTOS (01/10/2026)
+
+   Eram dez rotas numa lista só, e "Prospecção" embaixo do nome. A
+   plataforma cresceu para o estúdio inteiro e o Rafael pediu personalidade
+   no trilho: as rotas passaram a morar no momento do trabalho a que servem.
+   VENDER é falar com quem pode comprar; FAZER é a prévia e a entrega;
+   DINHEIRO é o que entra e o que sobra; CRESCER é o que traz o próximo lead
+   e diz para onde o ano vai. Dentro de cada momento vale a ordem do dia.
+
+   Templates subiu para Vender: as mensagens são a voz da abordagem, e o
+   lugar delas é colado no Pipeline, não depois do Financeiro.
+
+   No celular os títulos dos momentos somem (a barra deita e cada rota tem
+   a largura do nome); a ordem das rotas fica a mesma.
+   ============================================================ */
+type Rota = {
+  href: string;
+  rotulo: string;
+  nota: string;
+  conta: keyof Contagens | null;
+};
+
+const MOMENTOS: { nome: string; rotas: Rota[] }[] = [
+  {
+    nome: "Vender",
+    rotas: [
+      { href: "/crm", rotulo: "Hoje", nota: "a fila", conta: "fila" },
+      {
+        href: "/crm/pipeline",
+        rotulo: "Pipeline",
+        nota: "o quadro",
+        conta: "ativos",
+      },
+      {
+        href: "/crm/templates",
+        rotulo: "Templates",
+        nota: "as mensagens",
+        conta: "templates",
+      },
+    ],
+  },
+  {
+    /* A oficina vem antes dos Projetos porque é isso que ela é no dia: o
+       card sai do Pipeline, vira prévia aqui, e a prévia vira contrato e
+       loja entregue. Sem número nas duas: o número que importaria (lojas
+       esperando revisão) só existe depois de você olhar, e o que cobra
+       dinheiro já conta no Caixa. */
+    nome: "Fazer",
+    rotas: [
+      {
+        href: "/crm/producao",
+        rotulo: "Produção",
+        nota: "a oficina",
+        conta: null,
+      },
+      {
+        href: "/crm/projetos",
+        rotulo: "Projetos",
+        nota: "as entregas",
+        conta: null,
+      },
+    ],
+  },
+  {
+    /* "Caixa" é a palavra exata do que a tela responde (quanto entrou, quem
+       me deve) e cabe na barra do celular. O Financeiro é a outra metade da
+       mesma pergunta (30/09): o que saiu e se sobrou. Sem número: o
+       resultado do mês tem contexto só dentro da tela. */
+    nome: "Dinheiro",
+    rotas: [
+      {
+        href: "/crm/caixa",
+        rotulo: "Caixa",
+        nota: "o dinheiro",
+        conta: "cobrar",
+      },
+      {
+        href: "/crm/financeiro",
+        rotulo: "Financeiro",
+        nota: "o resultado",
+        conta: null,
+      },
+    ],
+  },
+  {
+    /* O marketing olha para fora do funil: é o que traz o próximo lead. As
+       métricas dizem como o mês foi, e o plano fecha o trilho porque dá
+       sentido ao resto (30/09). Nenhum conta: peça sem data não é cobrança,
+       e a nota do plano mora na tela dele. */
+    nome: "Crescer",
+    rotas: [
+      {
+        href: "/crm/marketing",
+        rotulo: "Marketing",
+        nota: "os posts",
+        conta: null,
+      },
+      {
+        href: "/crm/metricas",
+        rotulo: "Métricas",
+        nota: "os números",
+        conta: null,
+      },
+      { href: "/crm/plano", rotulo: "Plano", nota: "o rumo", conta: null },
+    ],
+  },
+];
 
 /* Quais números falam alto. A regra já estava escrita neste arquivo ("no
    trilho inteiro, quem fala é quem vai te cobrar") e até 20/08 só Hoje
@@ -121,7 +192,7 @@ export function Trilho({ sair, contagens }: { sair: () => void; contagens: Conta
   }, [caminho]);
 
   return (
-    <nav className={s.trilho} aria-label="Seções do CRM">
+    <nav className={s.trilho} aria-label="Seções do estúdio">
       {/* O ponto final rosa é a assinatura da casa, e ela vale em toda
           manchete. Esta é a única marca da ferramenta, e era a única voz de
           display do CRM sem ele. */}
@@ -129,50 +200,46 @@ export function Trilho({ sair, contagens }: { sair: () => void; contagens: Conta
         <b>
           RAFAEL RAZEIRA<i className={s.ponto}>.</i>
         </b>
-        <span>PROSPECÇÃO</span>
+        {/* era "PROSPECÇÃO": a plataforma virou o estúdio inteiro (01/10) */}
+        <span>ESTÚDIO</span>
       </Link>
 
       <ul className={s.trilhoLista} ref={lista}>
-        {ROTAS.map(({ href, rotulo, nota, conta }) => {
-          /* "/crm" só acende em si mesmo; as outras acendem também nas
+        {MOMENTOS.flatMap(({ nome, rotas }) => [
+          <li key={nome} className={s.trilhoMomento} aria-hidden>
+            {nome}
+          </li>,
+          ...rotas.map(({ href, rotulo, nota, conta }) => {
+            /* "/crm" só acende em si mesmo; as outras acendem também nas
              telas que nascem delas, como /crm/lead/[id], filha do pipeline. */
-          const ativo = href === "/crm" ? caminho === "/crm" : caminho.startsWith(href);
-          const n = conta ? contagens[conta] : null;
+            const ativo = href === "/crm" ? caminho === "/crm" : caminho.startsWith(href);
+            const n = conta ? contagens[conta] : null;
 
-          return (
-            <li key={href}>
-              <Link
-                href={href}
-                className={`${s.trilhoLink} ${ativo ? s.trilhoAtivo : ""}`}
-                aria-current={ativo ? "page" : undefined}
-              >
-                <b>
-                  {rotulo}
-                  {/* Só quem cobra tem cor, e a cor tem três estados como a
+            return (
+              <li key={href}>
+                <Link href={href} className={`${s.trilhoLink} ${ativo ? s.trilhoAtivo : ""}`} aria-current={ativo ? "page" : undefined}>
+                  <b>
+                    {rotulo}
+                    {/* Só quem cobra tem cor, e a cor tem três estados como a
                       contagem da coluna do quadro: rosa é "tem gente
                       esperando", esmeralda é "acabou", cinza é o resto do
                       inventário. No trilho inteiro, quem fala é quem vai te
                       cobrar — e é essa mesma frase que decide, na barra do
                       celular, quais números sobrevivem ao aperto. */}
-                  {n !== null ? (
-                    <i
-                      className={`${s.trilhoCont} ${
-                        conta && COBRAM.includes(conta) ? (n ? s.trilhoCobra : s.trilhoEmDia) : ""
-                      }`}
-                    >
-                      {n}
-                    </i>
-                  ) : null}
-                </b>
-                {/* A nota diz o que a tela É, em duas palavras. Ela existe
+                    {n !== null ? (
+                      <i className={`${s.trilhoCont} ${conta && COBRAM.includes(conta) ? (n ? s.trilhoCobra : s.trilhoEmDia) : ""}`}>{n}</i>
+                    ) : null}
+                  </b>
+                  {/* A nota diz o que a tela É, em duas palavras. Ela existe
                     porque "Hoje" e "Pipeline" são nomes que só significam
                     alguma coisa para quem já usou. Some no celular, onde
                     não há espaço e onde a barra é sempre a mesma. */}
-                <span>{nota}</span>
-              </Link>
-            </li>
-          );
-        })}
+                  <span>{nota}</span>
+                </Link>
+              </li>
+            );
+          }),
+        ])}
       </ul>
 
       {/* Sair é um formulário e não um link: sair é uma escrita (encerra a

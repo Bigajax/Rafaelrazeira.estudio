@@ -135,7 +135,7 @@ export function ModalContrato({
       <div className={s.modal} role="dialog" aria-modal="true" aria-labelledby="contrato-titulo">
         <p className={s.modalRot}>Montar contrato</p>
         <h2 id="contrato-titulo">{lead.nome}</h2>
-        <p>O plano de pagamento é o que faz o CRM saber se você recebeu, e não só se vendeu.</p>
+        <p>O plano de pagamento é o que faz o sistema saber se você recebeu, e não só se vendeu.</p>
 
         <form onSubmit={enviar}>
           <fieldset className={s.grupo}>

@@ -14,6 +14,7 @@ import {
   corDe,
   papelDe,
   tipoDe,
+  tipografiaDe,
   urlFundo,
   LAYOUTS,
   type LayoutId,
@@ -105,6 +106,9 @@ export const SlidePost = forwardRef<HTMLDivElement, PropsSlide>(function SlidePo
   const papel = papelDe(slide, tipo);
   const story = formato === "story";
   const duo = estilo.foto === "duotone";
+  /* a combinação de fontes do título (01/10); a conta do tamanho divide
+     pela largura dela, para uma condensada mais larga não vazar a coluna */
+  const letra = tipografiaDe(estilo);
 
   /* A série: a imagem 1 é o fundo (a do slide 1), as outras são as extras.
      CADA SLIDE TEM A SUA (decisão de 30/09: "cada slide tem que ser uma
@@ -150,7 +154,7 @@ export const SlidePost = forwardRef<HTMLDivElement, PropsSlide>(function SlidePo
   /* na abertura dividida o título mora só na metade de cima: um tom menor */
   const dividida = papel === "abertura" && slide.leitura === "dividida";
   const livre = slide.texto;
-  const largura = livre ? Math.max(0.3, livre.w / 86) : estreito ? 0.44 : 1;
+  const largura = (livre ? Math.max(0.3, livre.w / 86) : estreito ? 0.44 : 1) / letra.largura;
   const t = Math.round(base * escala(v1, v2, largura) * (slide.escala ?? 1) * (story ? 1.05 : 1) * (dividida ? 0.86 : 1));
 
   const bola = cor.bg.toUpperCase() === "#1C3FFF" ? "#FF3B2F" : "#1C3FFF";
@@ -163,6 +167,7 @@ export const SlidePost = forwardRef<HTMLDivElement, PropsSlide>(function SlidePo
     "--bola": bola,
     "--bolaFg": "#FFFFFF",
     "--t": `${t}px`,
+    ...(letra.display !== "--font-display" ? { "--font-display": `var(${letra.display})`, "--font-serif": `var(${letra.serif})` } : {}),
   } as CSSProperties;
 
   const titulo =
@@ -549,8 +554,8 @@ export const SlidePost = forwardRef<HTMLDivElement, PropsSlide>(function SlidePo
        real da coluna: a Archivo condensada gasta ~0,5em por maiúscula */
     const maiorPalavra = Math.max(1, ...v2.split(/\s+/).map((p) => p.length));
     const tam = (base: number, fracao: number, colunaPx?: number) => {
-      let t = base * escala(v1, v2, fracao) * (story ? 1.05 : 1);
-      if (colunaPx) t = Math.min(t, colunaPx / (maiorPalavra * 0.5));
+      let t = base * escala(v1, v2, fracao / letra.largura) * (story ? 1.05 : 1);
+      if (colunaPx) t = Math.min(t, colunaPx / (maiorPalavra * 0.5 * letra.largura));
       return `${Math.round(t * (slide.escala ?? 1))}px`;
     };
     /* texto sobre imagem inteira: letra clara e sombra, sempre */

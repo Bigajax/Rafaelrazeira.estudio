@@ -8,15 +8,21 @@
    carrossel, terça"); este responde de relance a pergunta que importa para
    quem posta todo dia: como o meu feed vai ficar esta semana?
 
-   Agendar é arrastar a capa da bandeja para o dia. No celular, onde
-   arrastar é ruim, toca em "Agendar" na peça e depois no dia.
+   Agendar é arrastar a capa da faixa "sem dia" para o dia. No celular,
+   onde arrastar é ruim, toca na capa da faixa e depois no dia.
+
+   01/10: a bandeja lateral (300px, com o pedido à Paula dentro) saiu. "O
+   calendário está ocupando muito espaço; a criação devia ter uma aba." O
+   pedido e as pautas com o estado delas foram para a aba Criar, e aqui
+   ficou só uma faixa fina com as capas sem dia, que é o que o calendário
+   precisa para agendar: a grade ganhou a largura inteira.
    ============================================================ */
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { agendar, pedir } from "@/app/(pt)/crm/acoes-marketing";
-import { CODIGOS, TIPOS, urlFundo, type Peca, type TipoPeca } from "@/lib/marketing/tipos";
+import { agendar } from "@/app/(pt)/crm/acoes-marketing";
+import { urlFundo, type Peca } from "@/lib/marketing/tipos";
 import { Miniatura } from "./Miniatura";
 import m from "@/app/(pt)/crm/marketing.module.css";
 import s from "@/app/(pt)/crm/crm.module.css";
@@ -66,8 +72,6 @@ export function Calendario({
   const [pegando, setPegando] = useState<string | null>(null);
   const [alvo, setAlvo] = useState<string | null>(null);
   const [erro, setErro] = useState("");
-  const [n, setN] = useState(5);
-  const [tipoPautas, setTipoPautas] = useState<"" | TipoPeca>("");
 
   const porDia = new Map<string, Peca[]>();
   for (const p of noMes) {
@@ -89,14 +93,6 @@ export function Calendario({
      como um carrossel vazio. */
   function novaNoDia(data: string) {
     router.push(`/crm/marketing/criar?data=${data}`);
-  }
-
-  function pedirPautas() {
-    comecar(async () => {
-      const r = await pedir(null, "pautas", { n, tipo: tipoPautas || null });
-      if (!r.ok) setErro(r.erro);
-      router.refresh();
-    });
   }
 
   const arrastavel = (p: Peca) => ({
@@ -124,6 +120,38 @@ export function Calendario({
 
   return (
     <div className={`${m.calendario} ${pendente ? m.ocupado : ""}`}>
+      <div className={`${m.semDia} ${alvo === "bandeja" ? m.semDiaAlvo : ""}`} {...soltavel(null, "bandeja")}>
+        <div className={m.semDiaCab}>
+          <b>
+            Sem dia <span>{semData.length}</span>
+          </b>
+          <p>{pegando ? "Agora toque no dia." : "Arraste uma capa para o dia, ou toque nela e depois no dia. Solte aqui para tirar do calendário."}</p>
+          <Link href="/crm/marketing/criar" className={s.btnMini}>
+            Pedir pautas
+          </Link>
+        </div>
+        {semData.length ? (
+          <ul className={m.semDiaLista}>
+            {semData.map((p) => (
+              <li key={p.id}>
+                <button
+                  type="button"
+                  className={`${m.capinha} ${estadoDe(p, hoje)} ${pegando === p.id ? m.capinhaPega : ""}`}
+                  title={p.gancho || p.briefing}
+                  aria-pressed={pegando === p.id}
+                  aria-label={`Agendar: ${p.gancho || "pauta"}`}
+                  {...arrastavel(p)}
+                  onClick={() => setPegando(pegando === p.id ? null : p.id)}
+                >
+                  <Miniatura peca={p} largura={52} fundo={urlFundo(p.fundo)} />
+                </button>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+      </div>
+      {erro ? <p className={s.erro}>{erro}</p> : null}
+
       <div className={m.grade} role="grid" aria-label="Peças por dia">
         {SEMANA.map((d) => (
           <div key={d} className={m.semanaNome} role="columnheader">
@@ -187,75 +215,6 @@ export function Calendario({
         })}
       </div>
 
-      <aside className={`${m.bandeja} ${alvo === "bandeja" ? m.bandejaAlvo : ""}`} {...soltavel(null, "bandeja")}>
-        <h2>
-          <span>
-            Sem data<i className={s.ponto}>.</i>
-          </span>
-          <span className={m.cont}>{semData.length}</span>
-        </h2>
-        <p className={m.bandejaNota}>Arraste a capa para um dia. Solte aqui para tirar do calendário.</p>
-
-        <div className={m.pautas}>
-          <label className={m.pautasLinha}>
-            <span>Pedir</span>
-            <select value={n} onChange={(e) => setN(Number(e.target.value))} aria-label="Quantas pautas">
-              {[3, 5, 7, 10].map((x) => (
-                <option key={x} value={x}>
-                  {x}
-                </option>
-              ))}
-            </select>
-            <span>pautas de</span>
-            <select value={tipoPautas} onChange={(e) => setTipoPautas(e.target.value as TipoPeca | "")} aria-label="Formato">
-              <option value="">qualquer formato</option>
-              {(["carrossel", "post_feed", "story"] as TipoPeca[]).map((t) => (
-                <option key={t} value={t}>
-                  {TIPOS[t].nome.toLowerCase()}
-                </option>
-              ))}
-            </select>
-          </label>
-          <button type="button" className={s.btn} onClick={pedirPautas} disabled={pendente}>
-            Pedir à Paula
-          </button>
-        </div>
-
-        {erro ? <p className={s.erro}>{erro}</p> : null}
-
-        {semData.length === 0 ? (
-          <div className={m.bandejaVazia}>
-            <b>Nada esperando data.</b>
-            <p>Peça pautas à Paula, ou toque no + de um dia para começar uma peça ali.</p>
-          </div>
-        ) : (
-          <ul className={m.bandejaLista}>
-            {semData.map((p) => (
-              <li key={p.id} className={pegando === p.id ? m.pegando : ""}>
-                <Link href={`/crm/marketing/${p.id}`} className={`${m.capinha} ${estadoDe(p, hoje)}`} {...arrastavel(p)}>
-                  <Miniatura peca={p} largura={72} fundo={urlFundo(p.fundo)} />
-                </Link>
-                <div className={m.bandejaTexto}>
-                  <span className={m.bandejaCod}>
-                    {p.codigo ? <b>{p.codigo}</b> : null} {p.codigo ? CODIGOS[p.codigo].nome : TIPOS[p.tipo].nome}
-                  </span>
-                  <Link href={`/crm/marketing/${p.id}`} className={m.bandejaGancho}>
-                    {p.gancho || p.briefing || "Peça sem briefing"}
-                  </Link>
-                  <button
-                    type="button"
-                    className={s.btnMini}
-                    onClick={() => setPegando(pegando === p.id ? null : p.id)}
-                    aria-pressed={pegando === p.id}
-                  >
-                    {pegando === p.id ? "Toque num dia" : "Agendar"}
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </aside>
     </div>
   );
 }

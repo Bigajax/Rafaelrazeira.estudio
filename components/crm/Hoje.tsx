@@ -403,6 +403,19 @@ export function Hoje({ painel, templates, posts = [] }: { painel: Painel; templa
             há post marcado para hoje. */}
         <div style={{ display: "flex", alignItems: "center", gap: 18, flexWrap: "wrap" }}>
           <PostDoDia posts={posts} />
+          {/* O leitor do WhatsApp (01/10): mesmo caminho do "Ligar o time"
+              do Marketing. O site não abre programa no PC; o link
+              rr-whatsapp:// é que o Windows entrega ao
+              scripts/ligar-leitor-whatsapp.cmd (registrado uma vez pelo
+              scripts/registrar-botao-leitor.cmd). Ligado em outra janela,
+              a nova avisa e fecha. Some no celular, onde não faz nada. */}
+          <a
+            className={`${s.btn} ${s.soNoPc}`}
+            href="rr-whatsapp://ligar"
+            title="Abre no PC a janela que lê as conversas com leads. Não envia nada."
+          >
+            Ligar o leitor do WhatsApp
+          </a>
           <button type="button" className={s.btnAcao} onClick={() => setNovo(true)}>
             Anotar lead
           </button>

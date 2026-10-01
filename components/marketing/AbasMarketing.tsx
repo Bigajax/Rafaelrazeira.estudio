@@ -4,7 +4,7 @@
 import Link from "next/link";
 import m from "@/app/(pt)/crm/marketing.module.css";
 
-export function AbasMarketing({ ativa }: { ativa: "calendario" | "producao" | "criar" }) {
+export function AbasMarketing({ ativa }: { ativa: "calendario" | "producao" | "criar" | "resultados" | "referencias" }) {
   return (
     <nav className={m.abasMkt} aria-label="Marketing">
       <Link href="/crm/marketing" className={ativa === "calendario" ? m.abaMktAtiva : ""} aria-current={ativa === "calendario" ? "page" : undefined}>
@@ -15,6 +15,14 @@ export function AbasMarketing({ ativa }: { ativa: "calendario" | "producao" | "c
       </Link>
       <Link href="/crm/marketing/criar" className={ativa === "criar" ? m.abaMktAtiva : ""} aria-current={ativa === "criar" ? "page" : undefined}>
         Criar
+      </Link>
+      {/* 01/10: o que deu certo e o que não deu, pelos números de cada post */}
+      <Link href="/crm/marketing/resultados" className={ativa === "resultados" ? m.abaMktAtiva : ""} aria-current={ativa === "resultados" ? "page" : undefined}>
+        Resultados
+      </Link>
+      {/* 01/10: o que o time lê de fora antes de criar */}
+      <Link href="/crm/marketing/referencias" className={ativa === "referencias" ? m.abaMktAtiva : ""} aria-current={ativa === "referencias" ? "page" : undefined}>
+        Referências
       </Link>
     </nav>
   );
