@@ -45,3 +45,6 @@ catalogo-*/
 # WhatsApp do estúdio, quem tem esta pasta lê as conversas. Nunca versionar.
 .whatsapp-sessao/
 whatsapp-leitor.log
+
+# O build de conferência ao lado do dev (NEXT_DIST_DIR, ver next.config.ts).
+.next-build/
