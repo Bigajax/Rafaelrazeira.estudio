@@ -177,6 +177,19 @@ export const PROPOSTAS: Record<string, Proposta> = {
       saldo_card: { label: "Saldo na entrega, no cartão em até 4x", valor: 800, metodo: "card", maxParcelas: 4 },
     },
   },
+  /* A segunda proposta da Japa (02/10/2026): o painel de visitas, uma
+     aba nova no painel que ele já usa. A vitrine está paga. R$ 499 uma
+     vez só, sem mensalidade (decisão do Rafael), pago no dia em que a
+     aba entra no ar: no cartão em até 4x com os juros do Mercado Pago, ou
+     no Pix. Um recebimento só nos dois casos. */
+  "japa-modas-painel": {
+    titulo: "Rafael Razeira Estúdio, painel de visitas Japa Modas",
+    whatsapp: "5544991246187",
+    itens: {
+      avista_card: { label: "Painel de visitas, no cartão em até 4x", valor: 499, metodo: "card", maxParcelas: 4 },
+      avista_pix: { label: "Painel de visitas, pagamento único no Pix", valor: 499, metodo: "pix" },
+    },
+  },
   /* A Fardo fecha como a Minas: pagamento único no Pix, sem entrada e
      sem parcelar (condição passada à Valeria em 24/09). O domínio, R$ 40
      por 1 ano, é cobrado à parte e não tem botão aqui. */

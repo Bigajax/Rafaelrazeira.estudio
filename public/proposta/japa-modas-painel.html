@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Proposta do painel de visitas Japa Modas · Rafael Razeira Estúdio</title>
+
+<!-- O cartao do link: a logo RR no preview do WhatsApp (URL absoluta de proposito) -->
+<meta property="og:image" content="https://rafaelrazeira.com.br/assets/og-rr.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Monograma RR do Rafael Razeira Estudio" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Rafael Razeira Estúdio" />
+<meta property="og:title" content="Proposta do painel de visitas · Japa Modas" />
+<meta property="og:description" content="Rafael Razeira Estúdio: o que a aba Visitas mostra, o investimento e o prazo." />
+<meta property="og:url" content="https://rafaelrazeira.com.br/proposta/japa-modas-painel.html" />
+
+<!-- ============================================================
+     PROPOSTA · JAPA MODAS · PAINEL DE VISITAS (02/10/2026)
+     A segunda proposta da Japa: a vitrine esta paga e no ar em
+     japamodasurf.com.br. O Japa perguntou se dava para ver quem entrou no
+     site e ter relatorio mensal; esta e a resposta: uma aba Visitas no
+     painel que ele ja usa. Ficha no cofre: 3 Clientes/vitrine-japa-modas.md.
+
+     Duplicada do template.html (25/09). A diferenca: a aba ainda NAO
+     existe, entao no lugar das capturas vai a aba desenhada aqui mesmo, no
+     estilo do painel dele (painel.css da vitrine: gelo, tinta, o vermelho
+     do sol, o botao carimbo, Oxanium e Zen Kaku): o celular da capa e a
+     janela inteira com 12 marcacoes. O Rafael pediu GRAFICOS ("tem que ser
+     visual"), entao sao SVG desenhados pelo script do fim, todos a partir
+     do objeto DADOS: os totais sao contados, nunca escritos a mao. As pecas
+     e as fotos sao as reais do catalogo; OS NUMEROS SAO DE EXEMPLO e a
+     pagina diz isso em cada tela. Nunca tirar o selo: proposta com dado
+     inventado vira promessa.
+
+     Preco em lib/propostas.ts, chave "japa-modas-painel": avista_card
+     R$ 499 (ate 4x com os juros do MP) e avista_pix R$ 499. Uma vez so,
+     sem mensalidade, pago no dia em que a aba entra no ar.
+     ============================================================ -->
+
+<link rel="icon" type="image/png" href="/assets/favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&family=Oxanium:wght@600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet" />
+
+<link rel="stylesheet" href="/css/proposta-checkout.css" />
+<script src="/js/proposta-checkout.js" defer></script>
+
+<style>
+:root{
+  --emerald:#10B981;
+  --emerald-dark:#065F46;
+  --emerald-light:#D1FAE5;
+  --off-white:#FAFAF7;
+  --black:#0A0A0A;
+  --ink-70:rgba(10,10,10,.70);
+  --ink-55:rgba(10,10,10,.55);
+  --line:rgba(10,10,10,.12);
+  --maxw:1160px;
+  --pad:clamp(16px,5vw,64px);
+  --font-display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --font-body:"Inter",system-ui,-apple-system,sans-serif;
+  --font-mono:"Space Mono",ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--font-body);background:var(--off-white);color:var(--black);line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+b{font-weight:600;color:var(--black)}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--emerald-dark);outline-offset:3px}
+img{display:block;max-width:100%}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--pad)}
+
+/* Cabeçalho */
+.topo{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding-block:24px;border-bottom:1px solid var(--line)}
+.marca{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(15px,4vw,19px);letter-spacing:-.01em;white-space:nowrap}
+.marca small{font-size:1em;font-weight:800;color:var(--ink-55)}
+.topo time{font-family:var(--font-mono);font-size:13px;color:var(--ink-55)}
+
+/* Capa */
+.capa{display:grid;gap:clamp(40px,6vw,72px);padding-block:clamp(40px,8vw,88px) clamp(56px,8vw,96px);align-items:center}
+@media(min-width:900px){.capa{grid-template-columns:minmax(0,1.15fr) auto}}
+.capa-para{font-family:var(--font-mono);font-size:14px;color:var(--ink-70)}
+.capa h1{
+  margin-top:20px;font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(2.6rem,9vw,6.4rem);line-height:.96;letter-spacing:-.04em;max-width:10ch;
+}
+.ficha{margin-top:clamp(32px,5vw,48px);border-top:2px solid var(--black);max-width:520px}
+.ficha div{display:grid;grid-template-columns:130px 1fr;gap:16px;padding-block:13px;border-bottom:1px solid var(--line)}
+.ficha dt{font-family:var(--font-mono);font-size:13px;color:var(--ink-55);padding-top:2px}
+.ficha dd{font-size:clamp(1rem,3.8vw,1.08rem);line-height:1.45}
+.ficha dd a{text-decoration:underline;text-decoration-color:var(--emerald);text-underline-offset:3px;text-decoration-thickness:2px}
+@media(max-width:420px){.ficha div{grid-template-columns:1fr;gap:2px}}
+
+/* O celular: a tela tem 390x844 e é escalada. Desktop 0.8, celular 0.66. */
+.aparelho{position:relative;justify-self:center}
+.celular{
+  width:calc(390px * .8 + 20px);height:calc(844px * .8 + 20px);
+  border:10px solid var(--black);border-radius:48px;overflow:hidden;background:var(--black);
+  box-shadow:0 40px 80px -40px rgba(10,10,10,.45);
+}
+.celular .tela{width:390px;height:844px;transform:scale(.8);transform-origin:0 0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
+.celular .tela::-webkit-scrollbar{display:none}
+.aparelho-nota{display:flex;gap:10px;align-items:flex-start;margin-top:18px;max-width:330px;font-size:.95rem;color:var(--ink-70);line-height:1.45}
+@media(max-width:899px){
+  .celular{width:calc(390px * .66 + 16px);height:calc(844px * .66 + 16px);border-width:8px;border-radius:38px}
+  .celular .tela{transform:scale(.66)}
+}
+/* No toque, rolar dentro do celular prende a página: fica parado no topo. */
+.so-toque{display:none}
+@media(hover:none){.celular .tela{overflow:hidden}.so-mouse{display:none}.so-toque{display:inline}}
+
+/* O marcador: a anotação do estúdio */
+.pin{
+  display:inline-grid;place-items:center;flex:none;
+  width:28px;height:28px;border-radius:50%;
+  background:var(--emerald);color:var(--black);
+  font-family:var(--font-mono);font-weight:700;font-size:13px;line-height:1;
+  box-shadow:0 0 0 3px var(--off-white);
+  transition:transform .2s ease-out,background-color .2s;
+}
+.pin.acende{transform:scale(1.3);background:var(--black);color:var(--off-white)}
+@media(prefers-reduced-motion:reduce){.pin{transition:none}}
+
+/* Seções */
+.sec{padding-block:clamp(56px,9vw,112px);border-top:1px solid var(--line)}
+.sec h2{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.9rem,6.5vw,3.4rem);line-height:.95;letter-spacing:-.03em;max-width:16ch}
+.sec-intro{margin-top:18px;max-width:58ch;font-size:clamp(1rem,3.9vw,1.15rem);color:var(--ink-70)}
+
+/* As pranchas */
+.prancha{margin-top:clamp(48px,7vw,80px);display:grid;gap:clamp(20px,3vw,40px);align-items:start}
+@media(min-width:900px){.prancha{grid-template-columns:minmax(0,1.7fr) minmax(0,1fr)}}
+.prancha figure{position:relative;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:#fff}
+.prancha figure .pin{position:absolute;transform:translate(-50%,-50%);z-index:2}
+.prancha figure .pin.acende{transform:translate(-50%,-50%) scale(1.3)}
+.prancha-titulo{font-family:var(--font-mono);font-size:13px;color:var(--ink-55)}
+.prancha-titulo b{font-family:var(--font-display);font-weight:900;font-size:1.35rem;text-transform:uppercase;letter-spacing:-.02em;display:block;color:var(--black);margin-top:4px}
+.notas{list-style:none;margin-top:18px;border-top:2px solid var(--black)}
+.notas li{display:flex;gap:14px;align-items:flex-start;padding-block:14px;border-bottom:1px solid var(--line);font-size:clamp(.98rem,3.8vw,1.04rem);color:var(--ink-70);line-height:1.5;cursor:default}
+@media(min-width:900px){
+  .prancha--inv{grid-template-columns:minmax(0,1fr) minmax(0,1.7fr)}
+  .prancha--inv figure{order:2}
+}
+
+.fora-da-tela{margin-top:clamp(56px,8vw,88px);display:grid;gap:clamp(20px,4vw,48px)}
+@media(min-width:900px){.fora-da-tela{grid-template-columns:minmax(0,1fr) minmax(0,1.7fr)}}
+.fora-da-tela h3{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.3rem,4.6vw,1.7rem);line-height:1;letter-spacing:-.02em}
+.fora-da-tela ul{list-style:none;columns:2 280px;column-gap:40px;border-top:2px solid var(--black)}
+.fora-da-tela li{break-inside:avoid;padding-block:12px;border-bottom:1px solid var(--line);color:var(--ink-70)}
+
+/* Investimento */
+.valor{padding-block:clamp(72px,12vw,140px)}
+.valor-numero{font-family:var(--font-display);font-weight:900;letter-spacing:-.05em;line-height:.85;font-size:clamp(5rem,24vw,15rem);margin-top:clamp(24px,4vw,40px);white-space:nowrap}
+.valor-numero small{font-size:.28em;letter-spacing:-.02em;vertical-align:.95em;margin-right:.08em}
+.cota{position:relative;margin-top:22px;height:14px;border-bottom:2px solid var(--emerald)}
+.cota::before,.cota::after{content:"";position:absolute;bottom:-8px;width:2px;height:16px;background:var(--emerald)}
+.cota::before{left:0}.cota::after{right:0}
+.cota-legenda{margin-top:14px;font-family:var(--font-mono);font-size:clamp(12px,3.4vw,14px);color:var(--emerald-dark)}
+.valor-grade{margin-top:clamp(40px,6vw,64px);display:grid;gap:clamp(28px,4vw,56px)}
+@media(min-width:900px){.valor-grade{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}}
+.valor-grade p{font-size:clamp(1rem,3.9vw,1.12rem);color:var(--ink-70);max-width:52ch}
+.valor-grade p + p{margin-top:14px}
+.garantia{margin-top:24px;padding:20px 22px;border-left:3px solid var(--emerald);background:var(--emerald-light)}
+.garantia p{color:rgba(10,10,10,.78)}
+.pagar{border:2px solid var(--black);border-radius:6px;padding:clamp(20px,4vw,28px);background:#fff;align-self:start}
+.pagar-titulo{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:1.25rem;letter-spacing:-.01em}
+.pagar ul{list-style:none;margin:14px 0 20px}
+.pagar li{padding-block:9px;border-top:1px solid var(--line);font-size:.96rem;color:var(--ink-70)}
+.btn-pay{
+  width:100%;border:none;border-radius:999px;background:var(--emerald);color:var(--black);
+  padding:15px 20px;cursor:pointer;font-family:var(--font-display);font-weight:900;font-size:15px;
+  letter-spacing:.02em;text-transform:uppercase;transition:background-color .2s;
+}
+.btn-pay:hover{background:#0ea371}
+.btn-pay--ghost{margin-top:10px;background:#fff;border:1.5px solid var(--black)}
+.btn-pay--ghost:hover{background:var(--line)}
+.pagar-rodape{margin-top:12px;font-family:var(--font-mono);font-size:12px;color:var(--ink-55)}
+
+/* Prazo e passos */
+.prazo{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.6rem,6vw,2.6rem);letter-spacing:-.025em;line-height:1;margin-top:clamp(24px,4vw,36px)}
+.passos{list-style:none;counter-reset:p;margin-top:clamp(28px,4vw,40px);border-top:2px solid var(--black);max-width:760px}
+.passos li{counter-increment:p;display:flex;gap:16px;padding-block:16px;border-bottom:1px solid var(--line);color:var(--ink-70);font-size:clamp(1rem,3.9vw,1.1rem)}
+.passos li::before{content:counter(p);font-family:var(--font-display);font-weight:900;font-size:1.4rem;line-height:1.1;color:var(--black);min-width:1.2em}
+
+/* Não incluso */
+.rodape-nota{padding-block:clamp(40px,6vw,64px);border-top:1px solid var(--line);display:grid;gap:16px}
+@media(min-width:900px){.rodape-nota{grid-template-columns:minmax(0,1fr) minmax(0,1.7fr)}}
+.rodape-nota h2{font-family:var(--font-mono);font-weight:700;font-size:14px;color:var(--ink-55)}
+.rodape-nota ul{list-style:none}
+.rodape-nota li{padding-block:8px;border-bottom:1px solid var(--line);font-size:.95rem;color:var(--ink-70)}
+
+/* Fecho */
+.fecho{padding-block:clamp(64px,10vw,120px);border-top:1px solid var(--line)}
+.fecho h2{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(2.2rem,8vw,4.6rem);line-height:.92;letter-spacing:-.04em;max-width:12ch}
+.fecho a{display:inline-block;margin-top:28px;font-weight:600;font-size:1.1rem;text-decoration:underline;text-decoration-color:var(--emerald);text-decoration-thickness:2px;text-underline-offset:4px}
+.assinatura{padding-block:28px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px 28px;font-family:var(--font-mono);font-size:12px;color:var(--ink-55)}
+
+/* ============================================================
+   A TELA DO PAINEL DA JAPA (o que a proposta vende)
+   As cores e as fontes do painel.css da vitrine dela, tudo sob .jp
+   para não vazar. Os gráficos seguem a régua de dataviz: uma série
+   por gráfico; o vermelho do sol só no que importa (a chamada no
+   WhatsApp, o post, o destaque) e a tinta como contexto; a tinta e o
+   cinza reprovaram como paleta de categorias no validador, então nada
+   aqui pinta categoria por cor. Marcas finas, grade em fio sólido, a
+   ponta da barra arredondada e a base reta.
+   ============================================================ */
+.jp{
+  --gelo:#f5f4f1;--papel:#fff;--tinta:#141210;--nevoa:#5f5b55;--fio:#dedad3;--fio-claro:#ece9e4;
+  --sol:#d7261e;--sol-escuro:#b01d16;--verde:#1f7a45;
+  --jp-display:"Oxanium",system-ui,sans-serif;
+  --jp-corpo:"Zen Kaku Gothic New",system-ui,sans-serif;
+  background:var(--gelo);color:var(--tinta);font-family:var(--jp-corpo);line-height:1.4;
+}
+.jp b{color:inherit;font-weight:700}
+.jp svg{display:block;overflow:visible}
+.jp svg text{font-family:var(--jp-corpo);font-size:11px;fill:var(--nevoa);font-variant-numeric:tabular-nums}
+.jp-exemplo{
+  display:inline-block;font-family:var(--jp-display);font-weight:700;font-size:11px;letter-spacing:.08em;
+  text-transform:uppercase;background:var(--tinta);color:#fff;padding:4px 9px;
+}
+.jp-card{position:relative;background:var(--papel);border:1px solid var(--fio);padding:16px;min-width:0}
+.jp-card h4{font-family:var(--jp-display);font-weight:700;font-size:15px;line-height:1.2}
+.jp-card .sub{font-size:12.5px;color:var(--nevoa);margin-top:2px}
+.jp-frase{font-family:var(--jp-display);font-weight:700;font-size:clamp(19px,2.4vw,26px);line-height:1.18}
+.jp-frase em{font-style:normal;color:var(--sol)}
+.jp-delta{margin-top:8px;font-size:13px;color:var(--verde);font-weight:700}
+
+/* Os quatro números, cada um com o seu minigráfico */
+.jp-kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--fio);border:1px solid var(--fio)}
+@media(min-width:700px){.jp-janela .jp-kpis{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.jp-kpi{background:var(--papel);padding:12px 14px 10px;min-width:0}
+.jp-kpi .rot{font-size:12.5px;color:var(--nevoa);line-height:1.25;min-height:2.5em}
+.jp-kpi .val{font-family:var(--jp-display);font-weight:700;font-size:28px;line-height:1.05;margin-top:4px}
+.jp-kpi.destaque .val{color:var(--sol)}
+.jp-kpi .dif{font-size:12px;font-weight:700;color:var(--verde);margin-top:2px}
+.jp-kpi svg{margin-top:8px;width:100%;height:28px}
+
+/* Barras deitadas em HTML (o caminho, os posts, a origem) */
+.jp-barras{list-style:none;margin-top:12px}
+.jp-barras li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px 10px;align-items:baseline;padding-block:6px;cursor:default}
+.jp-barras .nome{font-size:13px;line-height:1.25}
+.jp-barras .num{font-family:var(--jp-display);font-weight:700;font-size:16px;white-space:nowrap}
+.jp-barras .num small{font-family:var(--jp-corpo);font-weight:400;font-size:12px;color:var(--nevoa);margin-left:4px}
+.jp-barras .trilho{grid-column:1 / -1;height:14px;background:var(--fio-claro)}
+.jp-barras .trilho i{display:block;height:100%;background:var(--tinta);border-radius:0 4px 4px 0;transition:opacity .15s}
+.jp-barras li.sol .trilho i{background:var(--sol)}
+.jp-barras li:hover .trilho i,.jp-barras li:focus .trilho i{opacity:.75}
+.jp-barras .passo{grid-column:1 / -1;font-size:12px;color:var(--nevoa);padding-left:10px;border-left:2px solid var(--fio);margin:2px 0 0 4px}
+
+/* O botão carimbo do painel */
+.jp-carimbo{display:inline-block;filter:drop-shadow(3px 3px 0 var(--tinta))}
+.jp-carimbo span{
+  display:inline-flex;align-items:center;min-height:36px;padding:0 14px;background:var(--sol);color:#fff;
+  font-family:var(--jp-display);font-weight:700;font-size:13px;
+  clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));
+}
+.jp-cabeca{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+
+/* A grade de horários */
+.jp-grade{display:grid;grid-template-columns:30px repeat(7,minmax(0,1fr));gap:2px;margin-top:12px;font-size:11px;color:var(--nevoa)}
+.jp-grade span{display:grid;place-items:center;font-variant-numeric:tabular-nums}
+.jp-grade i{height:24px;display:block;cursor:default}
+.jp-grade i:hover,.jp-grade i:focus{outline:2px solid var(--tinta);outline-offset:-2px}
+.jp-escala{display:flex;align-items:center;gap:3px;margin-top:10px;font-size:11px;color:var(--nevoa)}
+.jp-escala i{width:16px;height:9px;display:block}
+.jp-escala span:first-child{margin-right:4px}.jp-escala span:last-child{margin-left:4px}
+
+/* A dica flutuante dos gráficos: o valor na frente, o rótulo atrás */
+.jp-dica{
+  position:fixed;z-index:50;pointer-events:none;min-width:120px;max-width:240px;
+  background:#141210;color:#fff;padding:8px 10px;font-family:"Zen Kaku Gothic New",system-ui,sans-serif;font-size:12px;line-height:1.35;
+  box-shadow:3px 3px 0 rgba(20,18,16,.25);opacity:0;transition:opacity .12s;
+}
+.jp-dica.on{opacity:1}
+.jp-dica b{display:block;font-family:"Oxanium",system-ui,sans-serif;font-size:15px}
+.jp-dica span{display:block;color:#cfcac2}
+.jp-dica .linha{display:flex;align-items:center;gap:6px}
+.jp-dica .linha::before{content:"";width:10px;height:2px;background:var(--k,#fff)}
+
+/* A janela: a aba inteira no computador, a peça central da proposta */
+.jp-janela{border:1px solid var(--fio);border-radius:8px;overflow:hidden;box-shadow:0 30px 60px -40px rgba(10,10,10,.45)}
+.jp-barra-nav{display:flex;align-items:center;gap:12px;padding:10px 14px;background:#fff;border-bottom:1px solid var(--fio)}
+.jp-barra-nav .bolas{display:flex;gap:6px}.jp-barra-nav .bolas i{width:10px;height:10px;border-radius:50%;background:var(--fio)}
+.jp-barra-nav .end{flex:1;min-width:0;background:var(--gelo);border-radius:999px;padding:5px 12px;font-size:12px;color:var(--nevoa);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.jp-janela-topo{display:flex;align-items:center;gap:12px;padding:12px clamp(12px,2vw,20px);background:#fff;border-bottom:1px solid var(--fio);font-family:var(--jp-display);font-weight:700}
+.jp-janela-topo img{width:30px;height:30px;border-radius:50%}
+.jp-janela-topo nav{display:flex;gap:18px;margin-left:auto;font-size:13px;color:var(--nevoa)}
+.jp-janela-topo nav span.ativa{color:var(--sol);box-shadow:inset 0 -2px 0 var(--sol)}
+@media(max-width:640px){.jp-janela-topo nav span:not(.ativa){display:none}}
+.jp-miolo{padding:clamp(12px,2vw,22px)}
+.jp-titulo{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:12px 0 14px}
+.jp-titulo h3{font-family:var(--jp-display);font-weight:700;font-size:28px;line-height:1}
+.jp-periodo{display:flex;border:1px solid var(--tinta);font-size:12px;font-weight:700;background:#fff}
+.jp-periodo span{padding:6px 10px}
+.jp-periodo span.ativo{background:var(--tinta);color:#fff}
+.jp-grid{display:grid;gap:12px;grid-template-columns:minmax(0,1fr)}
+@media(min-width:860px){
+  .jp-grid{grid-template-columns:repeat(12,minmax(0,1fr))}
+  .jp-c12{grid-column:span 12}.jp-c8{grid-column:span 8}.jp-c7{grid-column:span 7}
+  .jp-c5{grid-column:span 5}.jp-c4{grid-column:span 4}
+}
+.jp-card .pin{position:absolute;left:100%;top:0;transform:translate(-50%,-50%);z-index:3}
+.jp-card .pin.acende{transform:translate(-50%,-50%) scale(1.3)}
+.jp-grafico{margin-top:10px}
+.jp-sep{height:1px;background:var(--fio-claro);margin:12px 0 10px}
+
+/* As notas da janela, em duas colunas embaixo dela */
+.notas--duas{margin-top:clamp(24px,4vw,40px)}
+@media(min-width:900px){.notas--duas{columns:2;column-gap:48px}.notas--duas li{break-inside:avoid}}
+
+/* O celular da capa: o painel como o Japa vê */
+.jp-cel{min-height:844px;padding-bottom:20px}
+.jp-cel-topo{display:flex;align-items:center;gap:10px;height:62px;padding:0 16px;background:var(--papel);border-bottom:1px solid var(--fio);font-family:var(--jp-display);font-weight:700;font-size:16px;position:sticky;top:0;z-index:3}
+.jp-cel-topo img{width:34px;height:34px;border-radius:50%}
+.jp-cel-miolo{padding:14px 14px 0}
+.jp-cel-miolo > * + *{margin-top:12px}
+.jp-cel .jp-titulo{margin:10px 0 0}
+.jp-cel-abas{position:sticky;bottom:0;display:grid;grid-template-columns:repeat(4,1fr);margin-top:16px;background:var(--papel);border-top:1px solid var(--fio);font-size:12px;text-align:center;z-index:3}
+.jp-cel-abas span{padding:14px 0 18px;color:var(--nevoa)}
+.jp-cel-abas span.ativa{color:var(--sol);font-weight:700;box-shadow:inset 0 3px 0 var(--sol)}
+
+@page{size:A4;margin:14mm}
+@media print{
+  .aparelho,.btn-pay,.fecho a{display:none}
+  .capa{grid-template-columns:1fr}
+  .sec,.valor{padding-block:28px}
+  .prancha{break-inside:avoid}
+  .pin,.garantia,.jp *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body data-proposta="japa-modas-painel">
+
+<div class="wrap">
+
+  <header class="topo">
+    <div class="marca">Rafael Razeira <small>Estúdio</small></div>
+    <time datetime="2026-10-02">02/10/2026</time>
+  </header>
+
+  <!-- CAPA -->
+  <section class="capa">
+    <div>
+      <p class="capa-para">Proposta para a Japa Modas</p>
+      <h1>Quem olhou. Quem chamou.</h1>
+      <dl class="ficha">
+        <div><dt>O que é</dt><dd>Uma aba nova no seu painel, a <b>Visitas</b>, com os números do <a href="https://japamodasurf.com.br" target="_blank" rel="noopener">japamodasurf.com.br</a></dd></div>
+        <div><dt>Onde fica</dt><dd>No mesmo painel em que você cadastra as peças, no celular</dd></div>
+        <div><dt>Investimento</dt><dd><b>R$ 499</b>, uma vez só, sem mensalidade</dd></div>
+        <div><dt>No ar em</dt><dd>Até 7 dias úteis depois do aceite</dd></div>
+      </dl>
+    </div>
+
+    <div class="aparelho">
+      <div class="celular">
+        <div class="tela jp" aria-label="Prévia da aba Visitas no painel da Japa Modas, com números de exemplo">
+          <div class="jp-cel">
+            <div class="jp-cel-topo"><img src="/assets/proposta/japa-modas-painel/japa.webp" alt="" width="34" height="34" />Japa Modas</div>
+            <div class="jp-cel-miolo">
+              <span class="jp-exemplo">Números de exemplo</span>
+              <div class="jp-titulo">
+                <h3>Visitas</h3>
+                <div class="jp-periodo"><span>7 dias</span><span class="ativo">30 dias</span></div>
+              </div>
+              <div class="jp-card">
+                <p class="jp-frase" data-frase></p>
+                <p class="jp-delta" data-frase-delta></p>
+              </div>
+              <div class="jp-kpis" data-kpis></div>
+              <div class="jp-card">
+                <h4>Pessoas por dia</h4>
+                <p class="sub">Os picos marcados são os seus posts</p>
+                <div class="jp-grafico" data-linha></div>
+              </div>
+              <div class="jp-card">
+                <h4>As suas peças</h4>
+                <p class="sub">Cada foto é uma peça: quanto mais à direita, mais gente viu</p>
+                <div class="jp-grafico" data-pecas></div>
+              </div>
+              <div class="jp-card">
+                <h4>Procuraram e não acharam</h4>
+                <p class="sub">A sua lista de compras</p>
+                <ol class="jp-barras" data-buscas></ol>
+              </div>
+            </div>
+            <div class="jp-cel-abas"><span>Peças</span><span>Seções</span><span class="ativa">Visitas</span><span>Loja</span></div>
+          </div>
+        </div>
+      </div>
+      <p class="aparelho-nota"><span class="pin" aria-hidden="true">↕</span><span><span class="so-mouse">Assim fica a aba no seu celular: role aí dentro.</span><span class="so-toque">Assim fica a aba no seu celular.</span> As peças são as suas; os números são de exemplo, os de verdade começam a contar no dia em que ela entra no ar.</span></p>
+    </div>
+  </section>
+
+  <!-- A ABA INTEIRA: a janela do painel com as marcações, e as notas embaixo -->
+  <section class="sec">
+    <h2>O que você vê, apontado na tela</h2>
+    <p class="sec-intro">A aba inteira, como ela abre no computador. Cada gráfico responde uma pergunta da loja e aponta uma coisa para fazer. Passe o mouse nos gráficos para ver cada número, e numa nota para acender o número dela na tela.</p>
+
+    <div data-prancha style="margin-top:clamp(40px,6vw,64px)">
+      <figure class="jp jp-janela" aria-label="A aba Visitas do painel da Japa Modas, com números de exemplo">
+        <div class="jp-barra-nav"><span class="bolas"><i></i><i></i><i></i></span><span class="end">japamodasurf.com.br/painel/visitas</span><span class="jp-exemplo">Números de exemplo</span></div>
+        <div class="jp-janela-topo"><img src="/assets/proposta/japa-modas-painel/japa.webp" alt="" width="30" height="30" />Japa Modas<nav><span>Peças</span><span>Seções</span><span>Banners</span><span class="ativa">Visitas</span><span>Loja</span></nav></div>
+        <div class="jp-miolo">
+          <div class="jp-titulo">
+            <h3>Visitas</h3>
+            <div class="jp-periodo"><span>7 dias</span><span class="ativo">30 dias</span><span>90 dias</span></div>
+          </div>
+
+          <div class="jp-grid">
+            <div class="jp-card jp-c12">
+              <span class="pin" data-n="1">1</span>
+              <p class="jp-frase" data-frase></p>
+              <p class="jp-delta" data-frase-delta></p>
+            </div>
+
+            <div class="jp-c12" style="position:relative">
+              <span class="pin" data-n="2" style="position:absolute;left:100%;top:0;transform:translate(-50%,-50%);z-index:3">2</span>
+              <div class="jp-kpis" data-kpis></div>
+            </div>
+
+            <div class="jp-card jp-c8">
+              <span class="pin" data-n="3">3</span>
+              <h4>Pessoas por dia</h4>
+              <p class="sub">Os picos marcados em vermelho são os seus posts</p>
+              <div class="jp-grafico" data-linha></div>
+              <div class="jp-sep"></div>
+              <h4>Chamaram no WhatsApp, por dia</h4>
+              <div class="jp-grafico" data-colunas></div>
+            </div>
+
+            <div class="jp-card jp-c4">
+              <span class="pin" data-n="4">4</span>
+              <h4>O caminho</h4>
+              <p class="sub">Onde as pessoas desistem</p>
+              <ol class="jp-barras" data-caminho></ol>
+            </div>
+
+            <div class="jp-card jp-c7">
+              <span class="pin" data-n="5">5</span>
+              <h4>As suas peças</h4>
+              <p class="sub">Cada foto é uma peça: quanto mais à direita, mais gente viu; quanto mais alto, mais gente chamou</p>
+              <div class="jp-grafico" data-pecas></div>
+            </div>
+
+            <div class="jp-card jp-c5">
+              <span class="pin" data-n="6">6</span>
+              <div class="jp-cabeca">
+                <div><h4>Qual post trouxe gente</h4><p class="sub">Pelo link que o painel gera para cada post</p></div>
+                <span class="jp-carimbo"><span>Gerar link</span></span>
+              </div>
+              <ol class="jp-barras" data-posts></ol>
+            </div>
+
+            <div class="jp-card jp-c4">
+              <span class="pin" data-n="7">7</span>
+              <h4>De onde vieram</h4>
+              <ol class="jp-barras" data-origem></ol>
+            </div>
+
+            <div class="jp-card jp-c8">
+              <span class="pin" data-n="8">8</span>
+              <h4>Quando o seu público entra</h4>
+              <p class="sub" data-grade-frase></p>
+              <div class="jp-grade" data-grade></div>
+              <div class="jp-escala" aria-hidden="true"><span>menos</span><i style="background:#fbe4e2"></i><i style="background:#f3b5b0"></i><i style="background:#e8746c"></i><i style="background:#d7261e"></i><i style="background:#8f1913"></i><span>mais gente</span></div>
+            </div>
+
+            <div class="jp-card jp-c7">
+              <span class="pin" data-n="9">9</span>
+              <h4>Procuraram e não acharam</h4>
+              <p class="sub">O que as pessoas buscaram na vitrine e não tinha: a sua lista de compras</p>
+              <ol class="jp-barras" data-buscas></ol>
+            </div>
+
+            <div class="jp-card jp-c5">
+              <span class="pin" data-n="10">10</span>
+              <h4>Os números mais pedidos</h4>
+              <p class="sub" data-grade-peca></p>
+              <div class="jp-grafico" data-numeros></div>
+            </div>
+
+            <div class="jp-card jp-c5">
+              <span class="pin" data-n="11">11</span>
+              <h4>Queriam um número que acabou</h4>
+              <p class="sub">Tocaram num número riscado: venda que ficou na mesa</p>
+              <ol class="jp-barras" data-esgotados></ol>
+            </div>
+
+            <div class="jp-card jp-c7">
+              <span class="pin" data-n="12">12</span>
+              <h4>Quem voltou</h4>
+              <p class="sub" data-volta-frase></p>
+              <ol class="jp-barras" data-volta></ol>
+            </div>
+          </div>
+        </div>
+      </figure>
+
+      <ol class="notas notas--duas">
+        <li data-n="1"><span class="pin">1</span><span>O mês numa frase. O número que importa é <b>quem chamou no WhatsApp</b>, não quem só passou, e a seta diz se foi melhor ou pior que o mês anterior.</span></li>
+        <li data-n="2"><span class="pin">2</span><span>Os quatro números da loja, cada um com o desenho dos 30 dias embaixo. De cada 100 pessoas que entram, quantas chamam: esse é o termômetro da vitrine.</span></li>
+        <li data-n="3"><span class="pin">3</span><span>As visitas dia a dia, com os <b>seus posts marcados nos picos</b>. Você vê na hora qual post fez a loja encher, e quantas chamadas vieram junto.</span></li>
+        <li data-n="4"><span class="pin">4</span><span>O caminho em três degraus: quantos entraram, quantos abriram uma peça e quantos chamaram. Mostra em que degrau as pessoas desistem.</span></li>
+        <li data-n="5"><span class="pin">5</span><span>O mapa das peças, com a foto de cada uma. <b>Vendem</b>: tenha no estoque. <b>Olham e não chamam</b>: reveja o preço ou a foto. <b>Esquecidas</b>: ponha no banner ou poste.</span></li>
+        <li data-n="6"><span class="pin">6</span><span>Antes de postar, você dá um nome ao post e o painel gera um link só dele. Depois mostra quantas pessoas cada post trouxe e quantas chamaram.</span></li>
+        <li data-n="7"><span class="pin">7</span><span>De onde veio cada pessoa: do Instagram, do Google ou de alguém que mandou o link.</span></li>
+        <li data-n="8"><span class="pin">8</span><span>Os dias e horários em que mais gente entra, no vermelho mais forte, e a resposta numa frase: é a hora certa de postar.</span></li>
+        <li data-n="9"><span class="pin">9</span><span><b>O que buscaram e não acharam.</b> Cada busca sem resultado vira uma linha, com quantas pessoas procuraram. É o pedido ao fornecedor pronto.</span></li>
+        <li data-n="10"><span class="pin">10</span><span>Como o cliente escolhe o número antes de chamar, o painel mostra <b>a grade que sai de cada peça</b>. Você repõe o 41 e o 42 sem encalhar o 38.</span></li>
+        <li data-n="11"><span class="pin">11</span><span>Quem tocou num número que acabou. É <b>venda perdida, contada</b>: a peça e o número que valem repor primeiro.</span></li>
+        <li data-n="12"><span class="pin">12</span><span>Quantas pessoas voltaram mais de uma vez, e quanto mais elas chamam que as novas. Mostra se a vitrine está virando hábito.</span></li>
+      </ol>
+    </div>
+
+    <div class="fora-da-tela">
+      <h3>E o que não aparece na tela</h3>
+      <ul>
+        <li><b>Ninguém é vigiado:</b> o painel conta pessoas, sem guardar nome, telefone ou endereço de ninguém. Quem chama no WhatsApp você já vê no seu celular</li>
+        <li><b>Só você vê:</b> a aba fica atrás do login do painel</li>
+        <li><b>Robôs ficam de fora:</b> o Google e o Facebook visitam o site o tempo todo e não entram na conta</li>
+        <li><b>Ninguém infla os números:</b> o site só conta peça que existe, e quem tenta forçar é ignorado</li>
+        <li><b>Semana e mês</b>, sempre comparados com o período anterior</li>
+        <li><b>O site continua igual</b> para quem compra: nada muda na vitrine</li>
+        <li><b>A explicação de cada número</b> no Ajuda do painel, como as outras telas</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- INVESTIMENTO -->
+  <section class="sec valor">
+    <h2>O investimento</h2>
+    <p class="valor-numero"><small>R$</small>499</p>
+    <div class="cota" aria-hidden="true"></div>
+    <p class="cota-legenda">Uma vez só, no dia em que a aba entrar no ar. Sem mensalidade.</p>
+
+    <div class="valor-grade">
+      <div>
+        <p>A sua vitrine já está paga e continua igual. Este valor é só da <b>aba Visitas</b>: a contagem no site, a tela no painel, as travas de segurança e a explicação no Ajuda.</p>
+        <p>Não tem mensalidade: depois de instalada, a contagem roda sozinha no seu site, sem depender de mim.</p>
+        <div class="garantia">
+          <p>Você paga <b>depois</b> de ver a aba funcionando no seu painel, com as visitas de verdade. Se ela não for o que está nesta página, você não paga nada.</p>
+        </div>
+      </div>
+      <div class="pagar">
+        <p class="pagar-titulo">Pagar no dia em que entrar no ar</p>
+        <ul>
+          <li>No cartão em até 4x: em 1x sai R$ 499, e parcelado tem os juros do Mercado Pago</li>
+          <li>Você vê o valor de cada parcela, e o total, antes de confirmar</li>
+          <li>Ou no Pix, com o QR code aqui na página</li>
+        </ul>
+        <!-- Um botão por item de lib/propostas.ts; o valor NUNCA vem daqui -->
+        <button class="btn-pay" type="button" data-checkout-item="avista_card">Pagar R$ 499 no cartão</button>
+        <button class="btn-pay btn-pay--ghost" type="button" data-checkout-item="avista_pix">Prefiro pagar no Pix</button>
+        <p class="pagar-rodape">Processado pelo Mercado Pago, sem sair desta página.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRAZO E PASSOS -->
+  <section class="sec">
+    <h2>Como a gente segue</h2>
+    <p class="prazo">No ar em até 7 dias úteis depois do aceite</p>
+    <ol class="passos">
+      <li><span>Você confirma o <b>aceite</b> pelo WhatsApp. Nada a pagar neste passo.</span></li>
+      <li><span>Eu ligo a contagem no seu site e monto a aba <b>Visitas</b> no seu painel.</span></li>
+      <li><span>A contagem começa do zero no dia em que entra no ar. A primeira semana completa aparece <b>7 dias depois</b>.</span></li>
+      <li><span>Você confere a aba no seu painel e só então paga, no cartão ou no Pix.</span></li>
+    </ol>
+  </section>
+
+  <!-- NÃO INCLUSO -->
+  <section class="rodape-nota">
+    <h2>O que não está incluso</h2>
+    <ul>
+      <li>O nome e o telefone de quem visita: nenhum site sabe isso sem a pessoa dizer</li>
+      <li>As visitas de antes da instalação: a contagem começa no dia em que a aba entra no ar</li>
+      <li>Os números do Instagram (curtidas, alcance, seguidores): esses o próprio Instagram mostra</li>
+      <li>Uma leitura dos números feita por mim todo mês: se um dia quiser, é à parte</li>
+      <li>Anúncio pago e gestão de tráfego</li>
+    </ul>
+  </section>
+
+  <section class="fecho">
+    <h2>Agora a Japa sabe o que vende.</h2>
+    <a href="https://wa.me/5544991246187?text=Ol%C3%A1%20Rafael%2C%20tenho%20uma%20d%C3%BAvida%20sobre%20a%20proposta%20do%20painel%20de%20visitas%20da%20Japa%20Modas." target="_blank" rel="noopener">Ficou com dúvida? Me chama no WhatsApp</a>
+  </section>
+
+  <footer class="assinatura">
+    <span>Rafael Razeira Estúdio</span>
+    <span>rafael.rbarbon@gmail.com</span>
+    <span>(44) 99124-6187</span>
+    <span>@rafaelrazeira.estudio</span>
+  </footer>
+
+</div>
+
+<script>
+/* ============================================================
+   OS GRÁFICOS DA ABA VISITAS (números de exemplo)
+   Tudo sai deste objeto: a frase, os quatro números, os gráficos do
+   celular e os da janela. Os totais são CONTADOS aqui, nunca escritos à
+   mão, para a frase e os gráficos nunca discordarem.
+   ============================================================ */
+var DADOS = {
+  inicio: new Date(2026, 8, 3),
+  pessoas:  [96,104,88,92,118,126,131, 214,168,122,98,94,109,121, 128,117,101,97,106,119,176, 142,124,112,99,103,127,133,138,121],
+  chamaram: [4,5,3,4,6,7,6, 15,11,6,4,3,5,6, 7,6,4,4,5,6,12, 9,7,5,4,5,7,8,8,6],
+  posts: { 7: "Story do Flack II", 20: "Reels da calça jogador" },
+  antes: { pessoas: 3265, olharam: 2027, chamaram: 153 },
+  pecas: [
+    { nome: "Tênis Oakley Flack II branco e cinza", foto: "flack-ii", viram: 720, chamaram: 52 },
+    { nome: "Calça jeans jogador preta", foto: "calca-preta", viram: 460, chamaram: 31 },
+    { nome: "Chinelo Oakley Slide Titan preto e vermelho", foto: "slide-titan", viram: 300, chamaram: 22 },
+    { nome: "Tênis Nike Big Low preto e branco", foto: "big-low", viram: 230, chamaram: 13 },
+    { nome: "Tênis Nike Air Max Fire azul-marinho", foto: "air-max-fire", viram: 650, chamaram: 9 },
+    { nome: "Tênis Oakley Teeth Bomber", foto: "teeth-bomber", viram: 480, chamaram: 6 },
+    { nome: "Slide Mizuno Enerzy Wave preto e dourado", foto: "mizuno-dourado", viram: 28, chamaram: 1 },
+    { nome: "Short Oakley Evolution Curve preto e vermelho", foto: "short-evolution", viram: 19, chamaram: 0 }
+  ],
+  links: [
+    { nome: "Link da bio", pessoas: 620, chamaram: 38 },
+    { nome: "Story do Flack II", pessoas: 410, chamaram: 27 },
+    { nome: "Reels da calça jogador", pessoas: 290, chamaram: 15 },
+    { nome: "Story do Teeth Bomber", pessoas: 120, chamaram: 2 }
+  ],
+  origem: [["Instagram", 0.68], ["Google", 0.21], ["Link direto", 0.11]],
+  buscas: [["polo Lacoste branca", 23], ["tênis Nike Dunk", 17], ["bermuda Oakley", 12], ["camiseta Aeropostale", 8], ["boné New Era", 6]],
+  numeros: { peca: "Tênis Oakley Flack II", grade: [["38", 3], ["39", 6], ["40", 9], ["41", 15], ["42", 13], ["43", 5], ["44", 1]] },
+  esgotados: [["Tênis Nike Air Max Fire", "42", 9], ["Tênis Oakley Flack II", "40", 5], ["Tênis Oakley Teeth Bomber", "41", 4]],
+  volta: { voltaram: 0.31, taxaNovos: 3.1, taxaVoltaram: 9.8 },
+  horas: ["10h", "12h", "14h", "16h", "18h", "20h", "22h"],
+  grade: [
+    ["Seg", [1, 1, 2, 2, 3, 4, 3]], ["Ter", [1, 2, 2, 2, 3, 5, 5]], ["Qua", [1, 1, 2, 3, 4, 5, 5]],
+    ["Qui", [1, 2, 2, 3, 4, 5, 4]], ["Sex", [2, 2, 3, 3, 3, 4, 3]], ["Sáb", [3, 4, 3, 2, 2, 2, 1]],
+    ["Dom", [2, 2, 1, 1, 2, 3, 2]]
+  ]
+};
+
+(function () {
+  var NS = "http://www.w3.org/2000/svg";
+  var COR = { tinta: "#141210", sol: "#d7261e", nevoa: "#5f5b55", fio: "#dedad3", fioClaro: "#ece9e4", papel: "#ffffff", verde: "#1f7a45" };
+  var ESCALA = ["#fbe4e2", "#f3b5b0", "#e8746c", "#d7261e", "#8f1913"];
+  var MESES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+  var D = DADOS;
+  var n = D.pessoas.length;
+
+  function soma(a) { return a.reduce(function (s, v) { return s + v; }, 0); }
+  function br(v) { return v.toLocaleString("pt-BR"); }
+  function pct(v, casas) { return v.toLocaleString("pt-BR", { minimumFractionDigits: casas, maximumFractionDigits: casas }) + "%"; }
+  function dia(i) { var d = new Date(D.inicio); d.setDate(d.getDate() + i); return d.getDate() + " " + MESES[d.getMonth()]; }
+  function s(tag, at, pai) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in at) e.setAttribute(k, at[k]);
+    if (pai) pai.appendChild(e);
+    return e;
+  }
+  function texto(at, conteudo, pai) { var t = s("text", at, pai); t.textContent = conteudo; return t; }
+
+  var olharamDia = D.pessoas.map(function (p) { return Math.round(p * 0.61); });
+  var T = { pessoas: soma(D.pessoas), olharam: soma(olharamDia), chamaram: soma(D.chamaram) };
+  var taxa = T.chamaram / T.pessoas * 100;
+  var taxaAntes = D.antes.chamaram / D.antes.pessoas * 100;
+  function cresceu(agora, antes) { return Math.round((agora / antes - 1) * 100); }
+
+  /* ---------- a dica flutuante: o valor na frente, o rótulo atrás ---------- */
+  var dica = document.createElement("div");
+  dica.className = "jp-dica";
+  dica.setAttribute("role", "status");
+  document.body.appendChild(dica);
+  function mostra(linhas, x, y) {
+    dica.replaceChildren();
+    linhas.forEach(function (l, i) {
+      var e = document.createElement(i === 0 ? "b" : "span");
+      if (l && typeof l === "object") { e.textContent = l.t; e.className = "linha"; e.style.setProperty("--k", l.k); }
+      else e.textContent = l;
+      dica.appendChild(e);
+    });
+    dica.classList.add("on");
+    var w = dica.offsetWidth, h = dica.offsetHeight;
+    var px = x + 14, py = y - h - 12;
+    if (px + w > innerWidth - 8) px = x - w - 14;
+    if (py < 8) py = y + 16;
+    dica.style.left = px + "px";
+    dica.style.top = py + "px";
+  }
+  function esconde() { dica.classList.remove("on"); }
+  function comDica(el, linhas) {
+    el.setAttribute("tabindex", "0");
+    el.addEventListener("pointermove", function (e) { mostra(linhas, e.clientX, e.clientY); });
+    el.addEventListener("pointerleave", esconde);
+    el.addEventListener("focus", function () { var r = el.getBoundingClientRect(); mostra(linhas, r.left + r.width / 2, r.top); });
+    el.addEventListener("blur", esconde);
+  }
+
+  /* ---------- a frase e os quatro números ---------- */
+  function frase() {
+    document.querySelectorAll("[data-frase]").forEach(function (el) {
+      el.replaceChildren(document.createTextNode("Em 30 dias, "));
+      var em = document.createElement("em"); em.textContent = br(T.chamaram) + " pessoas";
+      el.appendChild(em);
+      el.appendChild(document.createTextNode(" chamaram você no WhatsApp pela vitrine."));
+    });
+    document.querySelectorAll("[data-frase-delta]").forEach(function (el) {
+      el.textContent = "▲ " + cresceu(T.chamaram, D.antes.chamaram) + "% a mais que nos 30 dias anteriores";
+    });
+  }
+
+  function mini(svg, serie) {
+    var w = 100, h = 28, max = Math.max.apply(null, serie), min = Math.min.apply(null, serie);
+    svg.setAttribute("viewBox", "0 0 " + w + " " + h);
+    svg.setAttribute("preserveAspectRatio", "none");
+    var pts = serie.map(function (v, i) { return [i * w / (serie.length - 1), h - 3 - (v - min) / (max - min || 1) * (h - 6)]; });
+    s("polyline", { points: pts.map(function (p) { return p.join(","); }).join(" "), fill: "none", stroke: "#b9b4ac", "stroke-width": 1.5, "vector-effect": "non-scaling-stroke", "stroke-linejoin": "round" }, svg);
+  }
+
+  function kpis() {
+    var taxaDia = D.chamaram.map(function (c, i) { return c / D.pessoas[i]; });
+    var itens = [
+      { rot: "Chamaram no WhatsApp", val: br(T.chamaram), dif: "▲ " + cresceu(T.chamaram, D.antes.chamaram) + "%", serie: D.chamaram, destaque: true },
+      { rot: "Pessoas na vitrine", val: br(T.pessoas), dif: "▲ " + cresceu(T.pessoas, D.antes.pessoas) + "%", serie: D.pessoas },
+      { rot: "Olharam uma peça", val: br(T.olharam), dif: "▲ " + cresceu(T.olharam, D.antes.olharam) + "%", serie: olharamDia },
+      { rot: "De cada 100 que entram, chamam", val: pct(taxa, 1), dif: "▲ " + (taxa - taxaAntes).toLocaleString("pt-BR", { maximumFractionDigits: 1 }) + " ponto", serie: taxaDia }
+    ];
+    document.querySelectorAll("[data-kpis]").forEach(function (box) {
+      box.replaceChildren();
+      itens.forEach(function (k) {
+        var d = document.createElement("div");
+        d.className = "jp-kpi" + (k.destaque ? " destaque" : "");
+        var r = document.createElement("p"); r.className = "rot"; r.textContent = k.rot;
+        var v = document.createElement("p"); v.className = "val"; v.textContent = k.val;
+        var f = document.createElement("p"); f.className = "dif"; f.textContent = k.dif + " no mês";
+        var g = s("svg", { "aria-hidden": "true" });
+        mini(g, k.serie);
+        d.append(r, v, f, g);
+        box.appendChild(d);
+      });
+    });
+  }
+
+  /* ---------- pessoas por dia: linha com o lavado, e os posts nos picos ---------- */
+  function eixoX(W, m) { var passo = (W - m.l - m.r) / (n - 1); return function (i) { return m.l + i * passo; }; }
+
+  function linha(box) {
+    var compacto = box.closest(".jp-cel") !== null;
+    var W = box.clientWidth, H = compacto ? 150 : 190, m = { l: 30, r: 12, t: 30, b: 22 };
+    var max = 250, x = eixoX(W, m);
+    var y = function (v) { return m.t + (1 - v / max) * (H - m.t - m.b); };
+    var svg = s("svg", { width: W, height: H, role: "img", "aria-label": "Pessoas por dia nos últimos 30 dias. Picos no " + Object.values(D.posts).join(" e no ") });
+    [0, 100, 200].forEach(function (t) {
+      s("line", { x1: m.l, x2: W - m.r, y1: y(t), y2: y(t), stroke: t ? COR.fioClaro : COR.fio, "stroke-width": 1 }, svg);
+      texto({ x: m.l - 6, y: y(t) + 4, "text-anchor": "end" }, String(t), svg);
+    });
+    [0, 7, 14, 21, 28].forEach(function (i) { texto({ x: x(i), y: H - 6, "text-anchor": "middle" }, dia(i), svg); });
+    var pts = D.pessoas.map(function (v, i) { return x(i) + "," + y(v); });
+    s("path", { d: "M" + x(0) + "," + y(0) + " L" + pts.join(" L") + " L" + x(n - 1) + "," + y(0) + " Z", fill: COR.tinta, "fill-opacity": 0.08 }, svg);
+    s("polyline", { points: pts.join(" "), fill: "none", stroke: COR.tinta, "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
+    Object.keys(D.posts).forEach(function (k) {
+      var i = +k, cx = x(i), cy = y(D.pessoas[i]);
+      var ancora = cx < W * 0.25 ? "start" : cx > W * 0.75 ? "end" : "middle";
+      texto({ x: cx, y: cy - 12, "text-anchor": ancora, style: "fill:" + COR.tinta + ";font-weight:700" }, D.posts[k], svg);
+      s("circle", { cx: cx, cy: cy, r: 5, fill: COR.sol, stroke: COR.papel, "stroke-width": 2 }, svg);
+    });
+    var guia = s("line", { y1: m.t - 4, y2: H - m.b, stroke: COR.tinta, "stroke-width": 1, opacity: 0 }, svg);
+    var ponto = s("circle", { r: 4.5, fill: COR.tinta, stroke: COR.papel, "stroke-width": 2, opacity: 0 }, svg);
+    var capa = s("rect", { x: m.l, y: 0, width: W - m.l - m.r, height: H, fill: "transparent", tabindex: 0 }, svg);
+    function marca(i, cx, cy) {
+      var X = x(i);
+      guia.setAttribute("x1", X); guia.setAttribute("x2", X); guia.setAttribute("opacity", 1);
+      ponto.setAttribute("cx", X); ponto.setAttribute("cy", y(D.pessoas[i])); ponto.setAttribute("opacity", 1);
+      var linhas = [br(D.pessoas[i]) + " pessoas", { t: D.chamaram[i] + " chamaram no WhatsApp", k: COR.sol }, dia(i) + (D.posts[i] ? " · " + D.posts[i] : "")];
+      mostra(linhas, cx, cy);
+    }
+    var foco = n - 1;
+    capa.addEventListener("pointermove", function (e) {
+      var r = svg.getBoundingClientRect(), esc = r.width / W;
+      var i = Math.max(0, Math.min(n - 1, Math.round(((e.clientX - r.left) / esc - m.l) / ((W - m.l - m.r) / (n - 1)))));
+      marca(i, e.clientX, e.clientY);
+    });
+    capa.addEventListener("pointerleave", function () { guia.setAttribute("opacity", 0); ponto.setAttribute("opacity", 0); esconde(); });
+    capa.addEventListener("focus", function () { var r = svg.getBoundingClientRect(); marca(foco, r.right - 20, r.top + 20); });
+    capa.addEventListener("keydown", function (e) {
+      if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+      e.preventDefault();
+      foco = Math.max(0, Math.min(n - 1, foco + (e.key === "ArrowRight" ? 1 : -1)));
+      var r = svg.getBoundingClientRect(); marca(foco, r.left + x(foco) * r.width / W, r.top + 20);
+    });
+    capa.addEventListener("blur", function () { guia.setAttribute("opacity", 0); ponto.setAttribute("opacity", 0); esconde(); });
+    box.replaceChildren(svg);
+  }
+
+  /* ---------- chamaram por dia: colunas no mesmo eixo de dias ---------- */
+  function colunas(box) {
+    var W = box.clientWidth, H = 86, m = { l: 30, r: 12, t: 16, b: 4 };
+    var max = 16, x = eixoX(W, m), base = H - m.b;
+    var passo = (W - m.l - m.r) / (n - 1), bw = Math.max(3, Math.min(24, passo - 4));
+    var y = function (v) { return m.t + (1 - v / max) * (H - m.t - m.b); };
+    var svg = s("svg", { width: W, height: H, role: "img", "aria-label": "Chamadas no WhatsApp por dia, " + T.chamaram + " no total" });
+    s("line", { x1: m.l, x2: W - m.r, y1: base, y2: base, stroke: COR.fio }, svg);
+    var maior = D.chamaram.indexOf(Math.max.apply(null, D.chamaram));
+    D.chamaram.forEach(function (v, i) {
+      var x0 = x(i) - bw / 2, x1 = x0 + bw, top = y(v), r = Math.min(4, bw / 2, base - top);
+      s("path", { d: "M" + x0 + "," + base + " V" + (top + r) + " Q" + x0 + "," + top + " " + (x0 + r) + "," + top + " H" + (x1 - r) + " Q" + x1 + "," + top + " " + x1 + "," + (top + r) + " V" + base + " Z", fill: COR.sol, "fill-opacity": D.posts[i] ? 1 : 0.55 }, svg);
+      if (i === maior) texto({ x: x(i), y: top - 4, "text-anchor": "middle", style: "fill:" + COR.tinta + ";font-weight:700" }, String(v), svg);
+      var alvo = s("rect", { x: x(i) - passo / 2, y: 0, width: passo, height: H, fill: "transparent" }, svg);
+      comDica(alvo, [v + " chamaram", dia(i) + (D.posts[i] ? " · " + D.posts[i] : "")]);
+    });
+    box.replaceChildren(svg);
+  }
+
+  /* ---------- o mapa das peças: as fotos nos três grupos ---------- */
+  function pecas(box) {
+    var compacto = box.closest(".jp-cel") !== null;
+    var W = box.clientWidth, H = compacto ? 250 : 300, m = { l: 30, r: 16, t: 22, b: 34 };
+    var xmax = 800, ymax = 9, ymin = -1, xCorte = 150, yCorte = 4, raio = compacto ? 14 : 20;
+    var x = function (v) { return m.l + v / xmax * (W - m.l - m.r); };
+    var y = function (v) { return m.t + (ymax - v) / (ymax - ymin) * (H - m.t - m.b); };
+    var id = "p" + Math.random().toString(36).slice(2, 7);
+    var svg = s("svg", { width: W, height: H, role: "img", "aria-label": "As peças em três grupos: as que vendem, as que olham e não chamam, e as esquecidas" });
+    var defs = s("defs", {}, svg);
+    s("rect", { x: x(0), y: y(ymax), width: x(xCorte) - x(0), height: y(ymin) - y(ymax), fill: COR.fio, "fill-opacity": 0.35 }, svg);
+    s("rect", { x: x(xCorte), y: y(ymax), width: x(xmax) - x(xCorte), height: y(yCorte) - y(ymax), fill: COR.verde, "fill-opacity": 0.07 }, svg);
+    s("rect", { x: x(xCorte), y: y(yCorte), width: x(xmax) - x(xCorte), height: y(ymin) - y(yCorte), fill: COR.sol, "fill-opacity": 0.07 }, svg);
+    var forte = "fill:" + COR.tinta + ";font-weight:700;font-size:12px";
+    texto({ x: x(xCorte) + 8, y: y(ymax) + 15, style: forte }, "Vendem", svg);
+    texto({ x: x(xCorte) + 8, y: y(ymin) - 8, style: forte }, "Olham e não chamam", svg);
+    /* Faixa estreita (celular): "Esquecidas" deitado encostaria no "Vendem", então fica em pé. */
+    if (x(xCorte) - x(0) >= 90) texto({ x: x(0) + 6, y: y(ymax) + 15, style: forte }, "Esquecidas", svg);
+    else texto({ x: 0, y: 0, "text-anchor": "end", transform: "translate(" + (x(xCorte) / 2 + x(0) / 2 + 4) + "," + (y(ymax) + 6) + ") rotate(-90)", style: forte }, "Esquecidas", svg);
+    [0, 3, 6, 9].forEach(function (t) { texto({ x: m.l - 6, y: y(t) + 4, "text-anchor": "end" }, t + "%", svg); });
+    [0, 200, 400, 600, 800].forEach(function (t) { texto({ x: x(t), y: H - m.b + 15, "text-anchor": "middle" }, String(t), svg); });
+    s("line", { x1: m.l, x2: W - m.r, y1: y(ymin), y2: y(ymin), stroke: COR.fio }, svg);
+    texto({ x: W - m.r, y: H - 3, "text-anchor": "end" }, "pessoas que viram a peça →", svg);
+    texto({ x: m.l - 6, y: 9 }, "de cada 100, quantas chamaram", svg);
+    D.pecas.forEach(function (p, i) {
+      var t = p.chamaram / p.viram * 100, cx = x(p.viram), cy = y(Math.min(t, ymax));
+      var cp = s("clipPath", { id: id + i }, defs);
+      s("circle", { cx: cx, cy: cy, r: raio }, cp);
+      var g = s("g", { "aria-label": p.nome }, svg);
+      s("circle", { cx: cx, cy: cy, r: raio + 2, fill: COR.papel, stroke: COR.fio }, g);
+      s("image", { href: "/assets/proposta/japa-modas-painel/" + p.foto + ".webp", x: cx - raio, y: cy - raio, width: raio * 2, height: raio * 2, preserveAspectRatio: "xMidYMid slice", "clip-path": "url(#" + id + i + ")" }, g);
+      var alvo = s("circle", { cx: cx, cy: cy, r: Math.max(raio + 4, 14), fill: "transparent" }, g);
+      comDica(alvo, [p.chamaram + (p.chamaram === 1 ? " chamou" : " chamaram") + " (" + pct(t, 1) + ")", br(p.viram) + " viram", p.nome]);
+    });
+    box.replaceChildren(svg);
+  }
+
+  /* ---------- as barras deitadas: o caminho, os posts, a origem ---------- */
+  function barra(lista, nome, valor, sufixo, fracao, sol, linhas) {
+    var li = document.createElement("li");
+    if (sol) li.className = "sol";
+    var a = document.createElement("span"); a.className = "nome"; a.textContent = nome;
+    var b = document.createElement("span"); b.className = "num"; b.textContent = valor;
+    if (sufixo) { var sm = document.createElement("small"); sm.textContent = sufixo; b.appendChild(sm); }
+    var tr = document.createElement("span"); tr.className = "trilho";
+    var i = document.createElement("i"); i.style.width = Math.max(1.5, fracao * 100) + "%"; tr.appendChild(i);
+    li.append(a, b, tr);
+    lista.appendChild(li);
+    if (linhas) comDica(li, linhas);
+    return li;
+  }
+  function barras() {
+    document.querySelectorAll("[data-caminho]").forEach(function (ol) {
+      ol.replaceChildren();
+      barra(ol, "Entraram na vitrine", br(T.pessoas), "", 1, false, [br(T.pessoas) + " pessoas", "entraram na vitrine em 30 dias"]);
+      var p1 = document.createElement("li"); p1.className = "passo"; p1.style.display = "block"; p1.textContent = pct(T.olharam / T.pessoas * 100, 0) + " abriram uma peça";
+      ol.appendChild(p1);
+      barra(ol, "Olharam uma peça", br(T.olharam), "", T.olharam / T.pessoas, false, [br(T.olharam) + " pessoas", "abriram pelo menos uma peça"]);
+      var p2 = document.createElement("li"); p2.className = "passo"; p2.style.display = "block"; p2.textContent = pct(T.chamaram / T.olharam * 100, 1) + " de quem olhou chamou";
+      ol.appendChild(p2);
+      barra(ol, "Chamaram no WhatsApp", br(T.chamaram), "", T.chamaram / T.pessoas, true, [br(T.chamaram) + " pessoas", "chamaram no WhatsApp"]);
+    });
+    document.querySelectorAll("[data-posts]").forEach(function (ol) {
+      ol.replaceChildren();
+      var max = D.links[0].pessoas;
+      D.links.forEach(function (l) {
+        barra(ol, l.nome, br(l.pessoas), "· " + l.chamaram + " chamaram", l.pessoas / max, false, [br(l.pessoas) + " pessoas", { t: l.chamaram + " chamaram no WhatsApp", k: COR.sol }, l.nome]);
+      });
+    });
+    document.querySelectorAll("[data-origem]").forEach(function (ol) {
+      ol.replaceChildren();
+      D.origem.forEach(function (o) {
+        var qtd = Math.round(T.pessoas * o[1]);
+        barra(ol, o[0], pct(o[1] * 100, 0), "", o[1] / D.origem[0][1], false, [br(qtd) + " pessoas", "vieram do " + o[0]]);
+      });
+    });
+  }
+
+
+  /* ---------- procuraram e não acharam, o número que acabou, quem voltou ---------- */
+  function listas() {
+    document.querySelectorAll("[data-buscas]").forEach(function (ol) {
+      ol.replaceChildren();
+      var max = D.buscas[0][1];
+      D.buscas.forEach(function (b, i) {
+        barra(ol, "\u201c" + b[0] + "\u201d", String(b[1]), "pessoas", b[1] / max, i === 0, [b[1] + " pessoas buscaram", "\u201c" + b[0] + "\u201d, e não tinha na vitrine"]);
+      });
+    });
+    document.querySelectorAll("[data-esgotados]").forEach(function (ol) {
+      ol.replaceChildren();
+      var max = D.esgotados[0][2];
+      D.esgotados.forEach(function (e, i) {
+        barra(ol, e[0] + ", número " + e[1], String(e[2]), "pessoas", e[2] / max, i === 0, [e[2] + " pessoas queriam o " + e[1], e[0] + ": o número acabou"]);
+      });
+    });
+    var v = D.volta;
+    document.querySelectorAll("[data-volta-frase]").forEach(function (el) {
+      el.textContent = pct(v.voltaram * 100, 0) + " das pessoas entraram mais de uma vez no mês, e quem volta chama " + Math.round(v.taxaVoltaram / v.taxaNovos) + " vezes mais.";
+    });
+    document.querySelectorAll("[data-volta]").forEach(function (ol) {
+      ol.replaceChildren();
+      barra(ol, "Novas: de cada 100, chamaram", pct(v.taxaNovos, 1), "", v.taxaNovos / v.taxaVoltaram, false, [pct(v.taxaNovos, 1) + " chamaram", "pessoas que entraram pela primeira vez"]);
+      barra(ol, "Voltaram: de cada 100, chamaram", pct(v.taxaVoltaram, 1), "", 1, true, [pct(v.taxaVoltaram, 1) + " chamaram", "pessoas que já tinham entrado antes no mês"]);
+    });
+  }
+
+  /* ---------- os números mais pedidos: colunas, os dois maiores no sol ---------- */
+  function numeros(box) {
+    var g = D.numeros.grade, total = g.reduce(function (a, x) { return a + x[1]; }, 0);
+    var W = box.clientWidth, H = 170, m = { l: 6, r: 6, t: 20, b: 22 };
+    var max = Math.max.apply(null, g.map(function (x) { return x[1]; }));
+    var ordem = g.map(function (x) { return x[1]; }).sort(function (a, b) { return b - a; });
+    var passo = (W - m.l - m.r) / g.length, bw = Math.min(24, passo - 6), base = H - m.b;
+    var y = function (val) { return m.t + (1 - val / max) * (H - m.t - m.b); };
+    var svg = s("svg", { width: W, height: H, role: "img", "aria-label": "Os números mais pedidos do " + D.numeros.peca });
+    s("line", { x1: m.l, x2: W - m.r, y1: base, y2: base, stroke: COR.fio }, svg);
+    g.forEach(function (x, i) {
+      var cx = m.l + passo * (i + 0.5), x0 = cx - bw / 2, x1 = cx + bw / 2, top = y(x[1]), r = Math.min(4, bw / 2, base - top);
+      var forte = x[1] >= ordem[1];
+      s("path", { d: "M" + x0 + "," + base + " V" + (top + r) + " Q" + x0 + "," + top + " " + (x0 + r) + "," + top + " H" + (x1 - r) + " Q" + x1 + "," + top + " " + x1 + "," + (top + r) + " V" + base + " Z", fill: forte ? COR.sol : COR.tinta, "fill-opacity": forte ? 1 : 0.8 }, svg);
+      if (forte) texto({ x: cx, y: top - 5, "text-anchor": "middle", style: "fill:" + COR.tinta + ";font-weight:700" }, pct(x[1] / total * 100, 0), svg);
+      texto({ x: cx, y: H - 6, "text-anchor": "middle", style: "fill:" + COR.tinta }, x[0], svg);
+      var alvo = s("rect", { x: cx - passo / 2, y: 0, width: passo, height: H, fill: "transparent" }, svg);
+      comDica(alvo, [x[1] + " pedidos do " + x[0], pct(x[1] / total * 100, 0) + " dos pedidos do " + D.numeros.peca]);
+    });
+    box.replaceChildren(svg);
+    var doisMaiores = g.filter(function (x) { return x[1] >= ordem[1]; });
+    var soma2 = doisMaiores.reduce(function (a, x) { return a + x[1]; }, 0);
+    document.querySelectorAll("[data-grade-peca]").forEach(function (el) {
+      el.textContent = "No " + D.numeros.peca + ", o " + doisMaiores.map(function (x) { return x[0]; }).join(" e o ") + " são " + pct(soma2 / total * 100, 0) + " dos pedidos";
+    });
+  }
+
+  /* ---------- a grade de dias e horários ---------- */
+  function grade() {
+    document.querySelectorAll("[data-grade]").forEach(function (box) {
+      box.replaceChildren(document.createElement("span"));
+      D.horas.forEach(function (h) { var sp = document.createElement("span"); sp.textContent = h; box.appendChild(sp); });
+      D.grade.forEach(function (d) {
+        var sp = document.createElement("span"); sp.textContent = d[0]; box.appendChild(sp);
+        d[1].forEach(function (v, j) {
+          var i = document.createElement("i"); i.style.background = ESCALA[v - 1];
+          box.appendChild(i);
+          var rotulo = ["bem pouca gente", "pouca gente", "movimento médio", "muita gente", "o pico da semana"][v - 1];
+          comDica(i, [rotulo, d[0] + ", " + D.horas[j] + " às " + (parseInt(D.horas[j], 10) + 2) + "h"]);
+        });
+      });
+    });
+    document.querySelectorAll("[data-grade-frase]").forEach(function (el) { el.textContent = "Seu público entra mais de terça a quinta, das 20h à meia-noite. É a hora de postar."; });
+  }
+
+  function tudo() {
+    frase(); kpis(); barras(); grade(); listas();
+    document.querySelectorAll("[data-numeros]").forEach(numeros);
+    document.querySelectorAll("[data-linha]").forEach(linha);
+    document.querySelectorAll("[data-colunas]").forEach(colunas);
+    document.querySelectorAll("[data-pecas]").forEach(pecas);
+  }
+  tudo();
+  var espera;
+  addEventListener("resize", function () { clearTimeout(espera); espera = setTimeout(function () {
+    document.querySelectorAll("[data-linha]").forEach(linha);
+    document.querySelectorAll("[data-colunas]").forEach(colunas);
+    document.querySelectorAll("[data-pecas]").forEach(pecas);
+    document.querySelectorAll("[data-numeros]").forEach(numeros);
+  }, 150); });
+  if (document.fonts) document.fonts.ready.then(tudo);
+})();
+
+/* A nota acende o número dela na tela (mouse, foco ou toque). */
+document.querySelectorAll("[data-prancha]").forEach(function (prancha) {
+  prancha.querySelectorAll(".notas li").forEach(function (li) {
+    li.tabIndex = 0;
+    var alvo = prancha.querySelector('figure .pin[data-n="' + li.dataset.n + '"]');
+    if (!alvo) return;
+    var liga = function () { alvo.classList.add("acende"); };
+    var desliga = function () { alvo.classList.remove("acende"); };
+    li.addEventListener("mouseenter", liga);
+    li.addEventListener("mouseleave", desliga);
+    li.addEventListener("focus", liga);
+    li.addEventListener("blur", desliga);
+  });
+});
+</script>
+</body>
+</html>
