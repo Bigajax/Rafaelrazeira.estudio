@@ -27,8 +27,8 @@ ou comida tem que deslizar.
 
 | Loja | O que é | Onde está | Número real |
 |---|---|---|---|
-| SacraZen (@sacrazen) | Loja esotérica de Uberaba: velas, cristais, incensos, atendimentos | Prévia em `~/Desktop/sacrazen` (porta 3010), portal claro | **297 peças** no catálogo, montadas em 24h a partir do @ e do Kyte da loja |
-| Velas Mogi (@velas.mogi) | Fábrica de velas artesanais em Mogi Mirim, varejo e atacado | Prévia em `~/Desktop/velas-mogi` (porta 3020) | 40 produtos; o link da bio era grupo de WhatsApp e a loja antiga (Loja Integrada) está apagada |
+| SacraZen (@sacrazen) | Loja esotérica de Uberaba: velas, cristais, incensos, atendimentos | Prévia em `~/Desktop/vitrines/sacrazen` (porta 3010), portal claro | **297 peças** no catálogo, montadas em 24h a partir do @ e do Kyte da loja |
+| Velas Mogi (@velas.mogi) | Fábrica de velas artesanais em Mogi Mirim, varejo e atacado | Prévia em `~/Desktop/vitrines/velas-mogi` (porta 3020) | 40 produtos; o link da bio era grupo de WhatsApp e a loja antiga (Loja Integrada) está apagada |
 
 As duas são PRÉVIAS, ainda não clientes, e não estão na Vercel. Para
 gravar a tela no celular de verdade: subir o dev server, abrir pelo IP da

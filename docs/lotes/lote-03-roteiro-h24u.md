@@ -29,7 +29,7 @@ grafite, peças únicas ("nothing repeats"). A vitrine está no ar em
 `/pecas` com filtro por categoria e status, página de cada peça com
 galeria, ficha técnica (medida, preço) e botão de WhatsApp, e painel
 `/admin` onde o dono cadastra peça e marca "vendida" com um toque.
-Projeto em `C:\Users\Rafael\Desktop\Vérit.lab`.
+Projeto em `C:\Users\Rafael\Desktop\vitrines\Vérit.lab`.
 
 É o case certo por três motivos: (1) foi montada antes de ele pagar, que é
 a oferta inteira dita como fato consumado (o ângulo do H18U, o mais forte

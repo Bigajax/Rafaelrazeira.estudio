@@ -18,8 +18,8 @@
    Dependência sob demanda: npm i --no-save sharp
 
    USO:
-     npx tsx scripts/exportar-vitrine.ts sacrazen ~/Desktop/sacrazen
-     npx tsx scripts/exportar-vitrine.ts velas.mogi ~/Desktop/velas-mogi --ordem "Velas de 7 dias,Velas palito,..."
+     npx tsx scripts/exportar-vitrine.ts sacrazen ~/Desktop/vitrines/sacrazen
+     npx tsx scripts/exportar-vitrine.ts velas.mogi ~/Desktop/vitrines/velas-mogi --ordem "Velas de 7 dias,Velas palito,..."
 
    Sem --ordem, a lista CATEGORIAS abaixo (a da SacraZen) manda, e o que
    não estiver nela vai para o fim em ordem alfabética.

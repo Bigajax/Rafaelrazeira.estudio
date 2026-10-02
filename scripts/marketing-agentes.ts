@@ -80,7 +80,7 @@ if (!url || !chave || !dono) {
 const supabase = createClient(url, chave, { auth: { persistSession: false } });
 
 const SQUAD_RAIZ =
-  process.env.MKT_SQUAD_DIR || path.join(os.homedir(), "Desktop", "Time Agentes Marketing");
+  process.env.MKT_SQUAD_DIR || path.join(os.homedir(), "Desktop", "Estúdio", "Time Agentes Marketing");
 const SQUAD = path.join(SQUAD_RAIZ, "squads", "rafaelrazeira-estudio");
 const BP_DIR = path.join(SQUAD_RAIZ, "_opensquad", "core", "best-practices");
 if (!fs.existsSync(path.join(SQUAD, "agents"))) {

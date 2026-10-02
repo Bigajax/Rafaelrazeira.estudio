@@ -116,7 +116,7 @@ pessoa nem lembra qual era.
 
 **Nome:** `17 · pip-h28u-story-some` · utm_content `pip-h28u-story-some`
 
-**Publicado em 18/09/2026** (id 120251278791960201), ligado no conjunto da vitrine ao lado de 01, 07 e 15. Saiu com 52 s (as falas gravadas são mais longas que o texto; encurtar é regravar). Render e LEIA-ME em `Desktop/Time Agentes Marketing/squads/rafaelrazeira-estudio/output/2026-09-17-ugc-solo-urb/`.
+**Publicado em 18/09/2026** (id 120251278791960201), ligado no conjunto da vitrine ao lado de 01, 07 e 15. Saiu com 52 s (as falas gravadas são mais longas que o texto; encurtar é regravar). Render e LEIA-ME em `Desktop/Estúdio/Time Agentes Marketing/squads/rafaelrazeira-estudio/output/2026-09-17-ugc-solo-urb/`.
 
 **Quem fala:** a colaboradora, como no vídeo da Star Point. Ela apresenta
 a loja e o serviço, mas quem monta é o Rafael, então a fala é "a gente

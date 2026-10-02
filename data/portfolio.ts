@@ -57,7 +57,7 @@ export const projetos: Projeto[] = [
      deploy da Vercel. É vitrine e não e-commerce: o próprio README do
      projeto registra que não existe carrinho nem checkout, e o WhatsApp é
      o único mecanismo de conversão. Repositório em
-     C:\Users\Rafael\Desktop\Vérit.lab (Next 16 + Supabase, com painel
+     C:\Users\Rafael\Desktop\vitrines\Vérit.lab (Next 16 + Supabase, com painel
      admin próprio para a dona cadastrar peça e marcar vendida). */
   { nome: "vérít.lab", slug: "verit-lab", tipo: "Vitrine Digital", ramo: "Espelhos, quadros e objetos feitos à mão.", ramoEn: "Handmade mirrors, frames and objects.", destaque: true, url: "https://verit-lab.vercel.app" },
   { nome: "PR Grife", slug: "pr-grife", tipo: "Vitrine Digital", ramo: "Multimarcas com loja física em Maringá.", ramoEn: "Multi-brand store with a physical shop in Maringá.", url: "https://pr-grife.vercel.app" },

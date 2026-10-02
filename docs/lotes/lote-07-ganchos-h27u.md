@@ -49,7 +49,7 @@ nenhum vídeo ganha bloco de preço.
 ## Feito em 01/10: três versões sem gravar nada
 
 O Rafael pediu "3 versões sem regravar, aproveitando". O material do h27u está todo
-em `Desktop/Time Agentes Marketing/squads/rafaelrazeira-estudio/output/2026-09-16-ugc-star-point/`
+em `Desktop/Estúdio/Time Agentes Marketing/squads/rafaelrazeira-estudio/output/2026-09-16-ugc-star-point/`
 (os clipes já tratados, as capturas da loja quadro a quadro e o `master.html` que monta o
 vídeo). As versões saíram de uma cópia dele em `.../output/2026-10-01-h27u-ganchos/`
 (LEIA-ME lá dentro). As três mantêm o corpo, o fecho e a duração (25,7 s) do original;
