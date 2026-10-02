@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Proposta do sistema de cobrança World Strong · Rafael Razeira Estúdio</title>
+
+<!-- O cartao do link: a logo RR no preview do WhatsApp (URL absoluta de proposito) -->
+<meta property="og:image" content="https://rafaelrazeira.com.br/assets/og-rr.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Monograma RR do Rafael Razeira Estudio" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Rafael Razeira Estúdio" />
+<meta property="og:title" content="Proposta do sistema de cobrança · World Strong" />
+<meta property="og:description" content="Rafael Razeira Estúdio: quem pagou, quem está atrasado, as camisetas e a graduação, num painel só." />
+<meta property="og:url" content="https://rafaelrazeira.com.br/proposta/world-strong.html" />
+
+<!-- ============================================================
+     PROPOSTA · WORLD STRONG · SISTEMA DE COBRANCA (02/10/2026)
+     Academia de Muay Thai do Andre, indicada pelo Anderson da Full
+     Time. Nao e vitrine: e o controle de quem pagou, com tres tipos de
+     cobranca (mensalidade, camiseta adiantada, taxa da graduacao) e o
+     aviso de atraso no WhatsApp. 60 alunos, ate 80 no verao.
+     Ficha no cofre: 3 Clientes/projeto-world-strong-pg.md.
+
+     Duplicada da japa-modas-painel.html: o sistema ainda NAO existe,
+     entao o painel e desenhado aqui, a partir do objeto DADOS do fim.
+     Os totais sao contados, nunca escritos a mao. NOMES, VALORES E A
+     ESCADA DE PRAJIED SAO DE EXEMPLO e o selo diz isso em cada tela: a
+     ordem das cores do prajied muda de federacao para federacao, e a
+     mensalidade da academia nao foi publicada. Nunca tirar o selo.
+
+     Preco em lib/propostas.ts, chave "world-strong": entrada_pix R$ 497,
+     saldo_pix e saldo_card R$ 1.500. Uma vez so, sem mensalidade.
+     ============================================================ -->
+
+<link rel="icon" type="image/png" href="/assets/favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet" />
+
+<link rel="stylesheet" href="/css/proposta-checkout.css" />
+<script src="/js/proposta-checkout.js" defer></script>
+
+<style>
+:root{
+  --emerald:#10B981;
+  --emerald-dark:#065F46;
+  --emerald-light:#D1FAE5;
+  --off-white:#FAFAF7;
+  --black:#0A0A0A;
+  --ink-70:rgba(10,10,10,.70);
+  --ink-55:rgba(10,10,10,.55);
+  --line:rgba(10,10,10,.12);
+  --maxw:1160px;
+  --pad:clamp(16px,5vw,64px);
+  --font-display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --font-body:"Inter",system-ui,-apple-system,sans-serif;
+  --font-mono:"Space Mono",ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--font-body);background:var(--off-white);color:var(--black);line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+b{font-weight:600;color:var(--black)}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--emerald-dark);outline-offset:3px}
+img{display:block;max-width:100%}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--pad)}
+
+/* Cabeçalho */
+.topo{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding-block:24px;border-bottom:1px solid var(--line)}
+.marca{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(15px,4vw,19px);letter-spacing:-.01em;white-space:nowrap}
+.marca small{font-size:1em;font-weight:800;color:var(--ink-55)}
+.topo time{font-family:var(--font-mono);font-size:13px;color:var(--ink-55)}
+
+/* Capa */
+.capa{display:grid;gap:clamp(40px,6vw,72px);padding-block:clamp(40px,8vw,88px) clamp(56px,8vw,96px);align-items:center}
+@media(min-width:900px){.capa{grid-template-columns:minmax(0,1.15fr) auto}}
+.capa-para{font-family:var(--font-mono);font-size:14px;color:var(--ink-70)}
+.capa h1{
+  margin-top:20px;font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(2.6rem,9vw,6.4rem);line-height:.96;letter-spacing:-.04em;max-width:10ch;
+}
+.ficha{margin-top:clamp(32px,5vw,48px);border-top:2px solid var(--black);max-width:520px}
+.ficha div{display:grid;grid-template-columns:130px 1fr;gap:16px;padding-block:13px;border-bottom:1px solid var(--line)}
+.ficha dt{font-family:var(--font-mono);font-size:13px;color:var(--ink-55);padding-top:2px}
+.ficha dd{font-size:clamp(1rem,3.8vw,1.08rem);line-height:1.45}
+@media(max-width:420px){.ficha div{grid-template-columns:1fr;gap:2px}}
+
+/* O celular: a tela tem 390x844 e é escalada. Desktop 0.8, celular 0.66. */
+.aparelho{position:relative;justify-self:center}
+.celular{
+  width:calc(390px * .8 + 20px);height:calc(844px * .8 + 20px);
+  border:10px solid var(--black);border-radius:48px;overflow:hidden;background:var(--black);
+  box-shadow:0 40px 80px -40px rgba(10,10,10,.45);
+}
+.celular .tela{width:390px;height:844px;transform:scale(.8);transform-origin:0 0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
+.celular .tela::-webkit-scrollbar{display:none}
+.aparelho-nota{display:flex;gap:10px;align-items:flex-start;margin-top:18px;max-width:330px;font-size:.95rem;color:var(--ink-70);line-height:1.45}
+@media(max-width:899px){
+  .celular{width:calc(390px * .66 + 16px);height:calc(844px * .66 + 16px);border-width:8px;border-radius:38px}
+  .celular .tela{transform:scale(.66)}
+}
+.so-toque{display:none}
+@media(hover:none){.celular .tela{overflow:hidden}.so-mouse{display:none}.so-toque{display:inline}}
+
+/* O marcador: a anotação do estúdio */
+.pin{
+  display:inline-grid;place-items:center;flex:none;
+  width:28px;height:28px;border-radius:50%;
+  background:var(--emerald);color:var(--black);
+  font-family:var(--font-mono);font-weight:700;font-size:13px;line-height:1;
+  box-shadow:0 0 0 3px var(--off-white);
+  transition:transform .2s ease-out,background-color .2s;
+}
+.pin.acende{transform:scale(1.3);background:var(--black);color:var(--off-white)}
+@media(prefers-reduced-motion:reduce){.pin{transition:none}}
+
+/* Seções */
+.sec{padding-block:clamp(56px,9vw,112px);border-top:1px solid var(--line)}
+.sec h2{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.9rem,6.5vw,3.4rem);line-height:.95;letter-spacing:-.03em;max-width:16ch}
+.sec-intro{margin-top:18px;max-width:58ch;font-size:clamp(1rem,3.9vw,1.15rem);color:var(--ink-70)}
+
+.notas{list-style:none;margin-top:18px;border-top:2px solid var(--black)}
+.notas li{display:flex;gap:14px;align-items:flex-start;padding-block:14px;border-bottom:1px solid var(--line);font-size:clamp(.98rem,3.8vw,1.04rem);color:var(--ink-70);line-height:1.5;cursor:default}
+.notas--duas{margin-top:clamp(24px,4vw,40px)}
+@media(min-width:900px){.notas--duas{columns:2;column-gap:48px}.notas--duas li{break-inside:avoid}}
+
+.fora-da-tela{margin-top:clamp(56px,8vw,88px);display:grid;gap:clamp(20px,4vw,48px)}
+@media(min-width:900px){.fora-da-tela{grid-template-columns:minmax(0,1fr) minmax(0,1.7fr)}}
+.fora-da-tela h3{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.3rem,4.6vw,1.7rem);line-height:1;letter-spacing:-.02em}
+.fora-da-tela ul{list-style:none;columns:2 280px;column-gap:40px;border-top:2px solid var(--black)}
+.fora-da-tela li{break-inside:avoid;padding-block:12px;border-bottom:1px solid var(--line);color:var(--ink-70)}
+
+/* O lado do aluno: a mensagem e o link, lado a lado */
+.aluno{margin-top:clamp(40px,6vw,64px);display:grid;gap:clamp(28px,4vw,48px);align-items:start}
+@media(min-width:900px){.aluno{grid-template-columns:auto minmax(0,1fr)}}
+.aluno-telas{display:flex;flex-wrap:wrap;gap:20px;justify-content:center}
+
+/* Investimento */
+.valor{padding-block:clamp(72px,12vw,140px)}
+.valor-numero{font-family:var(--font-display);font-weight:900;letter-spacing:-.05em;line-height:.85;font-size:clamp(4.4rem,21vw,13rem);margin-top:clamp(24px,4vw,40px);white-space:nowrap}
+.valor-numero small{font-size:.28em;letter-spacing:-.02em;vertical-align:.95em;margin-right:.08em}
+.cota{position:relative;margin-top:22px;height:14px;border-bottom:2px solid var(--emerald)}
+.cota::before,.cota::after{content:"";position:absolute;bottom:-8px;width:2px;height:16px;background:var(--emerald)}
+.cota::before{left:0}.cota::after{right:0}
+.cota-legenda{margin-top:14px;font-family:var(--font-mono);font-size:clamp(12px,3.4vw,14px);color:var(--emerald-dark)}
+.valor-grade{margin-top:clamp(40px,6vw,64px);display:grid;gap:clamp(28px,4vw,56px)}
+@media(min-width:900px){.valor-grade{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}}
+.valor-grade p{font-size:clamp(1rem,3.9vw,1.12rem);color:var(--ink-70);max-width:52ch}
+.valor-grade p + p{margin-top:14px}
+.garantia{margin-top:24px;padding:20px 22px;border-left:3px solid var(--emerald);background:var(--emerald-light)}
+.garantia p{color:rgba(10,10,10,.78)}
+.pagar{border:2px solid var(--black);border-radius:6px;padding:clamp(20px,4vw,28px);background:#fff;align-self:start}
+.pagar-titulo{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:1.25rem;letter-spacing:-.01em}
+.pagar ul{list-style:none;margin:14px 0 20px}
+.pagar li{padding-block:9px;border-top:1px solid var(--line);font-size:.96rem;color:var(--ink-70)}
+.btn-pay{
+  width:100%;border:none;border-radius:999px;background:var(--emerald);color:var(--black);
+  padding:15px 20px;cursor:pointer;font-family:var(--font-display);font-weight:900;font-size:15px;
+  letter-spacing:.02em;text-transform:uppercase;transition:background-color .2s;
+}
+.btn-pay:hover{background:#0ea371}
+.btn-pay--ghost{margin-top:10px;background:#fff;border:1.5px solid var(--black)}
+.btn-pay--ghost:hover{background:var(--line)}
+.pagar-rodape{margin-top:12px;font-family:var(--font-mono);font-size:12px;color:var(--ink-55)}
+.pagar-depois{margin-top:22px;padding-top:18px;border-top:1px dashed var(--line)}
+.pagar-depois .pagar-titulo{font-size:1.05rem}
+.pagar-depois p{margin-top:6px;font-size:.94rem;color:var(--ink-70)}
+.saldo-titulo{margin-top:clamp(48px,7vw,72px);font-family:var(--font-mono);font-size:14px;color:var(--ink-55)}
+
+/* Prazo e passos */
+.prazo{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.6rem,6vw,2.6rem);letter-spacing:-.025em;line-height:1;margin-top:clamp(24px,4vw,36px)}
+.passos{list-style:none;counter-reset:p;margin-top:clamp(28px,4vw,40px);border-top:2px solid var(--black);max-width:760px}
+.saldo-titulo + .passos{margin-top:14px}
+.passos li{counter-increment:p;display:flex;gap:16px;padding-block:16px;border-bottom:1px solid var(--line);color:var(--ink-70);font-size:clamp(1rem,3.9vw,1.1rem)}
+.passos li::before{content:counter(p);font-family:var(--font-display);font-weight:900;font-size:1.4rem;line-height:1.1;color:var(--black);min-width:1.2em}
+
+/* Não incluso */
+.rodape-nota{padding-block:clamp(40px,6vw,64px);border-top:1px solid var(--line);display:grid;gap:16px}
+@media(min-width:900px){.rodape-nota{grid-template-columns:minmax(0,1fr) minmax(0,1.7fr)}}
+.rodape-nota h2{font-family:var(--font-mono);font-weight:700;font-size:14px;color:var(--ink-55)}
+.rodape-nota ul{list-style:none}
+.rodape-nota li{padding-block:8px;border-bottom:1px solid var(--line);font-size:.95rem;color:var(--ink-70)}
+
+/* Fecho */
+.fecho{padding-block:clamp(64px,10vw,120px);border-top:1px solid var(--line)}
+.fecho h2{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(2.2rem,8vw,4.6rem);line-height:.92;letter-spacing:-.04em;max-width:13ch}
+.fecho a{display:inline-block;margin-top:28px;font-weight:600;font-size:1.1rem;text-decoration:underline;text-decoration-color:var(--emerald);text-decoration-thickness:2px;text-underline-offset:4px}
+.assinatura{padding-block:28px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px 28px;font-family:var(--font-mono);font-size:12px;color:var(--ink-55)}
+
+/* ============================================================
+   O PAINEL DA WORLD STRONG (o que a proposta vende)
+   Tudo sob .ws para não vazar. Ringue e fita: papel branco, a tinta
+   quase preta da luva, e a condensada dos cartazes de luta. As cores
+   de estado são reservadas e sempre vêm com palavra junto: vermelho
+   "Atrasado", âmbar "Vence", verde "Em dia". Nos gráficos, uma série
+   por gráfico, em tinta; o mês corrente mais claro, com rótulo. As
+   cores do prajied são identidade da faixa (a braçadeira), com o nome
+   escrito ao lado, nunca cor sozinha.
+   ============================================================ */
+.ws{
+  --fundo:#f1f0ec;--papel:#fff;--tinta:#171512;--nevoa:#625e57;--fio:#dcd8d0;--fio-claro:#ebe8e2;
+  --atraso:#c0261c;--atraso-claro:#fbe9e7;--vence:#a35f00;--vence-claro:#fdf1de;--emdia:#1d7444;--emdia-claro:#e3f2e8;
+  --ws-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --ws-corpo:"Inter",system-ui,sans-serif;
+  background:var(--fundo);color:var(--tinta);font-family:var(--ws-corpo);line-height:1.4;font-size:14px;
+}
+.ws b{color:inherit;font-weight:700}
+.ws svg{display:block;overflow:visible}
+.ws svg text{font-family:var(--ws-corpo);font-size:11px;fill:var(--nevoa);font-variant-numeric:tabular-nums}
+.ws-exemplo{
+  display:inline-block;font-family:var(--ws-display);font-weight:700;font-size:12px;letter-spacing:.06em;
+  text-transform:uppercase;background:var(--tinta);color:#fff;padding:3px 9px;
+}
+.ws-card{position:relative;background:var(--papel);border:1px solid var(--fio);padding:16px;min-width:0}
+.ws-card h4{font-family:var(--ws-display);font-weight:700;font-size:19px;line-height:1.1;text-transform:uppercase;letter-spacing:.01em}
+.ws-card .sub{font-size:12.5px;color:var(--nevoa);margin-top:2px}
+.ws-frase{font-family:var(--ws-display);font-weight:700;font-size:clamp(22px,2.7vw,30px);line-height:1.08;text-transform:uppercase}
+.ws-frase em{font-style:normal;color:var(--atraso)}
+.ws-frase-sub{margin-top:8px;font-size:13px;color:var(--nevoa)}
+
+/* Os quatro números */
+.ws-kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--fio);border:1px solid var(--fio)}
+@media(min-width:700px){.ws-janela .ws-kpis{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.ws-kpi{background:var(--papel);padding:12px 14px;min-width:0}
+.ws-kpi .rot{font-size:12.5px;color:var(--nevoa);line-height:1.25}
+.ws-kpi .val{font-family:var(--ws-display);font-weight:800;font-size:34px;line-height:1;margin-top:6px}
+.ws-kpi.atraso .val{color:var(--atraso)}
+
+/* O selo de estado: cor + palavra, nunca só cor */
+.ws-estado{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;padding:2px 8px 2px 6px;border-radius:999px;white-space:nowrap}
+.ws-estado::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.ws-estado.atraso{color:var(--atraso);background:var(--atraso-claro)}
+.ws-estado.vence{color:var(--vence);background:var(--vence-claro)}
+.ws-estado.emdia{color:var(--emdia);background:var(--emdia-claro)}
+
+/* A lista de quem deve */
+.ws-lista{list-style:none;margin-top:10px}
+.ws-lista li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;align-items:center;padding-block:10px;border-top:1px solid var(--fio-claro)}
+.ws-lista li:first-child{border-top:0}
+.ws-lista .quem{font-weight:700;font-size:14px;line-height:1.2}
+.ws-lista .oque{font-size:12.5px;color:var(--nevoa);display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:3px}
+.ws-lista .quanto{font-family:var(--ws-display);font-weight:700;font-size:19px;text-align:right;white-space:nowrap}
+
+/* O botão do painel: o de avisar no WhatsApp */
+.ws-avisar{
+  display:inline-flex;align-items:center;gap:6px;margin-top:6px;justify-self:end;grid-column:2;
+  background:var(--tinta);color:#fff;font-weight:700;font-size:12px;padding:6px 11px;border-radius:4px;white-space:nowrap;
+}
+.ws-avisar svg{width:14px;height:14px}
+.ws-avisar--grande{font-size:14px;padding:11px 16px;margin-top:14px;width:100%;justify-content:center}
+
+/* Barras deitadas em HTML (a turma por faixa) */
+.ws-barras{list-style:none;margin-top:12px}
+.ws-barras li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:baseline;padding-block:5px;cursor:default}
+.ws-barras .nome{font-size:13px;display:flex;align-items:center;gap:8px}
+.ws-barras .nome i{width:22px;height:9px;border-radius:2px;box-shadow:inset 0 0 0 1px rgba(23,21,18,.25)}
+.ws-barras .num{font-family:var(--ws-display);font-weight:700;font-size:18px;white-space:nowrap}
+.ws-barras .num small{font-family:var(--ws-corpo);font-weight:400;font-size:12px;color:var(--nevoa);margin-left:4px}
+.ws-barras .trilho{grid-column:1 / -1;height:12px;background:var(--fio-claro)}
+.ws-barras .trilho i{display:block;height:100%;background:var(--tinta);border-radius:0 4px 4px 0;transition:opacity .15s}
+.ws-barras li:hover .trilho i,.ws-barras li:focus .trilho i{opacity:.72}
+
+/* A barra de progresso (camiseta e graduação) */
+.ws-progresso{margin-top:12px}
+.ws-progresso .conta{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:13px;color:var(--nevoa)}
+.ws-progresso .conta b{font-family:var(--ws-display);font-size:24px;color:var(--tinta)}
+.ws-progresso .trilho{height:14px;background:var(--fio-claro);margin-top:6px;display:flex;gap:2px}
+.ws-progresso .trilho i{display:block;height:100%;background:var(--tinta);border-radius:0 4px 4px 0}
+.ws-data{display:flex;gap:12px;align-items:stretch;margin-top:12px}
+.ws-data .dia{display:grid;place-items:center;min-width:64px;background:var(--tinta);color:#fff;padding:6px 8px;font-family:var(--ws-display);font-weight:800;line-height:1;text-transform:uppercase}
+.ws-data .dia b{font-size:30px;display:block}
+.ws-data .dia span{font-size:13px;letter-spacing:.06em}
+.ws-data .info{font-size:13px;color:var(--nevoa);align-self:center}
+.ws-data .info b{display:block;font-size:15px;color:var(--tinta)}
+
+/* A dica flutuante dos gráficos */
+.ws-dica{
+  position:fixed;z-index:50;pointer-events:none;min-width:110px;max-width:240px;
+  background:#171512;color:#fff;padding:8px 10px;font-family:"Inter",system-ui,sans-serif;font-size:12px;line-height:1.35;
+  box-shadow:3px 3px 0 rgba(23,21,18,.25);opacity:0;transition:opacity .12s;
+}
+.ws-dica.on{opacity:1}
+.ws-dica b{display:block;font-family:"Barlow Condensed",system-ui,sans-serif;font-size:18px}
+.ws-dica span{display:block;color:#d2cdc4}
+
+/* A janela: o painel inteiro no computador */
+.ws-janela{border:1px solid var(--fio);border-radius:8px;overflow:hidden;box-shadow:0 30px 60px -40px rgba(10,10,10,.45)}
+.ws-barra-nav{display:flex;align-items:center;gap:12px;padding:10px 14px;background:#fff;border-bottom:1px solid var(--fio)}
+.ws-barra-nav .bolas{display:flex;gap:6px}.ws-barra-nav .bolas i{width:10px;height:10px;border-radius:50%;background:var(--fio)}
+.ws-barra-nav .end{flex:1;min-width:0;background:var(--fundo);border-radius:999px;padding:5px 12px;font-size:12px;color:var(--nevoa);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ws-janela-topo{display:flex;align-items:center;gap:12px;padding:12px clamp(12px,2vw,20px);background:var(--tinta);color:#fff;font-family:var(--ws-display);font-weight:800;font-size:20px;text-transform:uppercase;letter-spacing:.02em}
+.ws-janela-topo nav{display:flex;gap:20px;margin-left:auto;font-size:15px;font-weight:700;color:#a9a39a}
+.ws-janela-topo nav span.ativa{color:#fff;box-shadow:inset 0 -2px 0 #fff}
+@media(max-width:640px){.ws-janela-topo nav span:not(.ativa){display:none}}
+.ws-miolo{padding:clamp(12px,2vw,22px)}
+.ws-titulo{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:6px 0 14px}
+.ws-titulo h3{font-family:var(--ws-display);font-weight:800;font-size:34px;line-height:1;text-transform:uppercase}
+.ws-grid{display:grid;gap:12px;grid-template-columns:minmax(0,1fr)}
+@media(min-width:860px){
+  .ws-grid{grid-template-columns:repeat(12,minmax(0,1fr))}
+  .ws-c12{grid-column:span 12}.ws-c8{grid-column:span 8}.ws-c7{grid-column:span 7}
+  .ws-c6{grid-column:span 6}.ws-c5{grid-column:span 5}.ws-c4{grid-column:span 4}
+}
+.ws-card > .pin,.ws-pin-canto{position:absolute;left:100%;top:0;transform:translate(-50%,-50%);z-index:3}
+.ws-card > .pin.acende,.ws-pin-canto.acende{transform:translate(-50%,-50%) scale(1.3)}
+.ws-grafico{margin-top:10px}
+
+/* O celular da capa: o painel como o André vê */
+.ws-cel{min-height:844px;display:flex;flex-direction:column}
+.ws-cel-topo{display:flex;align-items:center;justify-content:space-between;height:60px;padding:0 16px;background:var(--tinta);color:#fff;font-family:var(--ws-display);font-weight:800;font-size:21px;text-transform:uppercase;letter-spacing:.02em;position:sticky;top:0;z-index:3}
+.ws-cel-miolo{padding:14px 14px 0;flex:1}
+.ws-cel-miolo > * + *{margin-top:12px}
+.ws-cel .ws-titulo{margin:10px 0 0}
+.ws-cel-abas{position:sticky;bottom:0;display:grid;grid-template-columns:repeat(4,1fr);margin-top:16px;background:var(--papel);border-top:1px solid var(--fio);font-size:12px;text-align:center;z-index:3}
+.ws-cel-abas span{padding:14px 0 18px;color:var(--nevoa)}
+.ws-cel-abas span.ativa{color:var(--tinta);font-weight:700;box-shadow:inset 0 3px 0 var(--tinta)}
+
+/* As duas telas do aluno: a conversa e o link dele */
+.ws-mini{width:300px;max-width:100%;border:8px solid var(--black);border-radius:34px;overflow:hidden;background:var(--black);box-shadow:0 30px 60px -36px rgba(10,10,10,.45);position:relative}
+.ws-mini > .pin{position:absolute;right:12px;top:12px;z-index:4}
+.ws-mini .dentro{height:470px;overflow:hidden}
+.ws-zap{background:#e9e4dc;display:flex;flex-direction:column}
+.ws-zap-topo{background:#1f2c33;color:#fff;padding:14px 16px;font-weight:600;font-size:14px;font-family:var(--ws-corpo)}
+.ws-zap-topo small{display:block;font-weight:400;color:#a9b4ba;font-size:11.5px}
+.ws-zap-corpo{padding:18px 14px;display:flex;flex-direction:column;gap:8px}
+.ws-bolha{align-self:flex-end;max-width:88%;background:#d9fdd3;padding:8px 10px 6px;border-radius:8px 0 8px 8px;font-size:13.5px;line-height:1.4;color:#111b21;box-shadow:0 1px 0 rgba(0,0,0,.08)}
+.ws-bolha a{color:#027eb5;text-decoration:none;word-break:break-all}
+.ws-bolha .hora{display:block;text-align:right;font-size:10.5px;color:#667781;margin-top:2px}
+.ws-link{background:var(--fundo);padding:18px 16px}
+.ws-link .ola{font-family:var(--ws-display);font-weight:800;font-size:28px;line-height:1;text-transform:uppercase}
+.ws-link .ola-sub{font-size:13px;color:var(--nevoa);margin-top:6px}
+.ws-link .ws-card{margin-top:14px}
+.ws-pix{display:flex;justify-content:center;width:100%;margin-top:14px;background:var(--emdia);color:#fff;font-weight:700;font-size:14px;padding:12px;border-radius:4px}
+.ws-link .rodape{font-size:11.5px;color:var(--nevoa);margin-top:12px;text-align:center}
+
+/* O app do aluno: quatro telas lado a lado (duas no tablet, uma no celular) */
+/* Em pares, com as notas ao lado. A tela tem 300x590 e é escalada (0.94; 0.82 no celular). */
+.app-par{margin-top:clamp(40px,6vw,64px);display:grid;gap:clamp(24px,4vw,48px);align-items:center}
+@media(min-width:900px){.app-par{grid-template-columns:auto minmax(0,1fr)}}
+.app-telas{display:flex;flex-wrap:wrap;gap:20px;justify-content:center}
+.app-telas .ws-mini{--k:.94;width:calc(300px * var(--k) + 16px);height:calc(590px * var(--k) + 16px)}
+.app-telas .ws-mini .dentro{width:300px;height:590px;transform:scale(var(--k));transform-origin:0 0}
+.app-telas .ws-mini > .pin{right:auto;left:100%;top:0;transform:translate(-60%,-40%)}
+.app-telas .ws-mini > .pin.acende{transform:translate(-60%,-40%) scale(1.3)}
+@media(max-width:640px){.app-telas .ws-mini{--k:.82}}
+.app-telas .ws-mini{overflow:visible}
+.app-telas .ws-mini .dentro{border-radius:26px}
+.ws-mini--baixo .dentro{height:330px}
+.aluno .ws-mini--baixo{width:300px}
+.ws-app{display:flex;flex-direction:column;font-size:13px}
+.ws-app-topo{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:14px 14px 12px;background:var(--tinta);color:#fff;font-family:var(--ws-display);font-weight:800;font-size:19px;text-transform:uppercase;letter-spacing:.02em}
+.ws-app-topo .ws-exemplo{font-size:11px}
+.ws-app-miolo{flex:1;overflow:hidden;padding:14px 12px 0}
+.ws-app-miolo > * + *{margin-top:10px}
+.ws-app .ola{font-family:var(--ws-display);font-weight:800;font-size:28px;line-height:1;text-transform:uppercase}
+.ws-app .rot{font-size:11.5px;color:var(--nevoa);font-weight:600}
+.ws-app .forte{font-family:var(--ws-display);font-weight:700;font-size:19px;line-height:1.1;text-transform:uppercase}
+.ws-app .sub{font-size:12px;color:var(--nevoa);margin-top:4px}
+.ws-app .ws-card{padding:12px}
+.ws-app .ws-lista li{padding-block:8px}
+.ws-app .ws-lista .quem{font-size:13px}
+.ws-app .ws-lista .quanto{font-size:17px}
+.ws-lista--pago .quanto{color:var(--nevoa)}
+.ws-app .ws-pix{margin-top:10px;font-size:13px;padding:10px}
+.ws-app .rodape{font-size:11.5px;color:var(--nevoa);text-align:center;margin-top:8px}
+.ws-alerta{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center;background:var(--atraso-claro);border-left:3px solid var(--atraso);padding:12px}
+.ws-alerta p{font-size:12.5px;color:var(--atraso)}
+.ws-alerta p b{color:var(--tinta);font-size:13px}
+.ws-alerta .quanto{font-family:var(--ws-display);font-weight:700;font-size:20px;color:var(--tinta)}
+.ws-alerta .ws-pix{grid-column:1 / -1}
+.ws-prajied{display:flex;align-items:center;gap:10px;margin-top:6px}
+.ws-prajied i,.ws-jornada i{flex:none;width:34px;height:12px;border-radius:3px;box-shadow:inset 0 0 0 1px rgba(23,21,18,.3)}
+.ws-prajied b,.ws-jornada b{display:block;font-family:var(--ws-display);font-size:18px;line-height:1;text-transform:uppercase}
+.ws-prajied span,.ws-jornada span{font-size:12px;color:var(--nevoa)}
+.ws-aviso{border-left:3px solid var(--tinta)}
+.ws-aviso p + p{margin-top:4px;font-size:12.5px}
+.ws-indicado{border:2px solid var(--tinta)}
+.ws-jornada{list-style:none;position:relative;padding-left:2px}
+.ws-jornada li{display:flex;align-items:center;gap:12px;padding-block:7px;opacity:.45}
+.ws-jornada li.feito,.ws-jornada li.proximo{opacity:1}
+.ws-jornada li.atual b::after{content:"Agora";font-family:var(--ws-corpo);font-size:10.5px;font-weight:700;letter-spacing:0;text-transform:none;margin-left:8px;padding:1px 7px;border-radius:999px;background:var(--tinta);color:#fff;vertical-align:3px}
+.ws-jornada li.proximo i{outline:2px dashed var(--tinta);outline-offset:2px}
+.ws-camiseta{position:relative;display:grid;place-items:center;height:150px;background:var(--papel);border:1px solid var(--fio)}
+.ws-camiseta svg{width:96px}
+.ws-camiseta span{position:absolute;bottom:8px;font-size:11px;color:var(--nevoa)}
+.ws-tamanhos{display:flex;gap:6px;margin-top:6px}
+.ws-tamanhos span{flex:1;text-align:center;padding:8px 0;border:1px solid var(--fio);background:var(--papel);font-weight:700}
+.ws-tamanhos span.ativo{background:var(--tinta);color:#fff;border-color:var(--tinta)}
+.ws-app-abas{display:grid;grid-template-columns:repeat(4,1fr);background:var(--papel);border-top:1px solid var(--fio);font-size:10.5px;text-align:center}
+.ws-app-abas span{padding:11px 0 13px;color:var(--nevoa)}
+.ws-app-abas span.ativa{color:var(--tinta);font-weight:700;box-shadow:inset 0 3px 0 var(--tinta)}
+
+/* ============================================================
+   A PELE DA WORLD STRONG PG (02/10, o Rafael: "melhore este dashboard
+   personalizado", com o @worldstrong_pg e o @world_strong_oficial_).
+   Tirada dos cartazes de planos do André (04/02/2026): fundo preto do
+   tatame, o VERMELHO dos cartões de preço, o AMARELO do "por mês fica",
+   título branco pesado em itálico condensado, e o selo real "World
+   Strong Fight Team, Prof André Néo" (recortado do cartaz, em
+   /assets/proposta/world-strong/selo.webp). O vermelho da marca é a
+   ação (os botões); o atraso continua vermelho, mas sempre com a
+   palavra "Atrasado" junto, nunca cor sozinha.
+   ============================================================ */
+.ws{
+  --fundo:#0c0c0d;--papel:#18181a;--tinta:#f5f4f1;--nevoa:#a29e97;--fio:#2c2c30;--fio-claro:#232326;
+  --preto:#000;--vermelho:#e3302f;--vermelho-escuro:#b9201f;--ouro:#f6c400;
+  --atraso:#ff6a5e;--atraso-claro:rgba(227,48,47,.16);--vence:#f6c400;--vence-claro:rgba(246,196,0,.13);--emdia:#4cc982;--emdia-claro:rgba(76,201,130,.14);
+  --ws-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+}
+.ws-card h4,.ws-frase,.ws-titulo h3,.ws-app .ola,.ws-app .forte,.ws-janela-topo,.ws-cel-topo,.ws-app-topo{font-style:italic;font-weight:800}
+.ws-frase em{color:var(--ouro);padding:0 .06em 0 .1em}
+.ws-kpi.atraso .val{color:var(--atraso)}
+.ws-kpi.ouro .val{color:var(--ouro)}
+.ws-exemplo{background:var(--ouro);color:#000;font-style:normal}
+.ws-avisar{background:var(--vermelho);color:#fff}
+.ws-pix{background:var(--vermelho);color:#fff;font-style:italic;font-family:var(--ws-display);font-weight:800;font-size:17px;letter-spacing:.02em;text-transform:uppercase}
+.ws-app .ws-pix{font-size:16px}
+.ws-data .dia{background:var(--vermelho)}
+.ws-progresso .trilho i,.ws-barras .trilho i{background:var(--tinta)}
+.ws-janela-topo,.ws-cel-topo,.ws-app-topo{background:var(--preto);border-bottom:3px solid var(--vermelho)}
+.ws-selo{width:34px;height:34px;border-radius:50%;flex:none}
+.ws-janela-topo{gap:12px}
+.ws-janela-topo small,.ws-cel-topo small,.ws-app-topo small{display:block;font-family:var(--ws-corpo);font-style:normal;font-weight:500;font-size:11px;letter-spacing:0;text-transform:none;color:#a29e97;margin-top:1px}
+.ws-cel-topo{justify-content:flex-start;gap:10px;height:64px}
+.ws-cel-topo .ws-exemplo{margin-left:auto}
+.ws-janela-topo nav span.ativa{box-shadow:inset 0 -2px 0 var(--vermelho)}
+.ws-cel-abas,.ws-app-abas{background:var(--preto);border-top-color:var(--fio)}
+.ws-cel-abas span.ativa,.ws-app-abas span.ativa{color:#fff;box-shadow:inset 0 3px 0 var(--vermelho)}
+.ws-tamanhos span{background:var(--papel);color:var(--tinta)}
+.ws-tamanhos span.ativo{background:var(--vermelho);border-color:var(--vermelho);color:#fff}
+.ws-jornada li.atual b::after{background:var(--vermelho);color:#fff}
+.ws-jornada li.proximo i{outline-color:var(--ouro)}
+.ws-indicado{border:2px solid var(--vermelho)}
+.ws-aviso{border-left:3px solid var(--ouro)}
+.ws-alerta{border-left-color:var(--vermelho)}
+.ws-alerta p b,.ws-alerta .quanto{color:var(--tinta)}
+.ws-camiseta{background:#e9e7e2;border-color:#e9e7e2}
+.ws-camiseta span{color:#55524c}
+.ws-lista li{border-top-color:var(--fio)}
+.ws-prajied i,.ws-jornada i,.ws-barras .nome i{box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
+
+/* As abas de modalidade (Muay Thai, Kickboxing) */
+.ws-modos{display:flex;gap:4px;margin-top:10px}
+.ws-modos span{font-size:12px;font-weight:700;padding:5px 10px;border:1px solid var(--fio);color:var(--nevoa)}
+.ws-modos span.ativo{background:var(--tinta);color:#000;border-color:var(--tinta)}
+
+/* O plano do aluno, no app: a cara do cartaz de planos */
+.ws-plano{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center;background:var(--vermelho);color:#fff;padding:12px}
+.ws-plano .rot{color:rgba(255,255,255,.8)}
+.ws-plano .forte{font-size:22px}
+.ws-plano .preco{font-family:var(--ws-display);font-weight:800;font-style:italic;font-size:26px;line-height:1}
+.ws-plano .sub{grid-column:1 / -1;color:rgba(255,255,255,.85)}
+.ws-troca{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center;background:var(--preto);border:1px solid var(--fio);padding:12px}
+.ws-troca .preco{font-family:var(--ws-display);font-weight:800;font-style:italic;font-size:26px;line-height:1;color:var(--ouro)}
+.ws-troca .preco small{font-size:13px;color:var(--nevoa);font-style:normal}
+.ws-foto{position:relative;height:150px;margin:-14px -12px 0;background:#000 center/cover no-repeat}
+.ws-foto::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05) 30%,rgba(12,12,13,.96))}
+.ws-foto .ola{position:absolute;left:12px;bottom:10px;z-index:1;color:#fff}
+
+@page{size:A4;margin:14mm}
+@media print{
+  .aparelho,.btn-pay,.fecho a{display:none}
+  .capa{grid-template-columns:1fr}
+  .sec,.valor{padding-block:28px}
+  .pin,.garantia,.ws *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
+/* ============================================================
+   O PAINEL V3 (02/10, o Rafael: "achei muito genérico"). Na língua
+   da academia de luta, não de software de academia: o caixa como o
+   cartaz de preço dele, o córner (quem deve), o Cinturão do mês (os
+   atletas dele posam de cinturão), prontos para graduar, sumidos,
+   renovações dos planos longos e o funil da aula experimental que ele
+   anuncia. Ideias tiradas da pesquisa de 02/10 (Gymdesk, Kicksite,
+   Martialytics, Next Fit, Tecnofit) e traduzidas para a World Strong.
+   ============================================================ */
+.ws-caixa{position:relative;background:var(--vermelho);color:#fff;padding:18px 18px 16px;overflow:hidden}
+.ws-caixa::after{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:url(/assets/proposta/world-strong/selo.webp) center/cover;opacity:.13;filter:grayscale(1)}
+.ws-caixa .rot{font-size:12.5px;font-weight:600;color:rgba(255,255,255,.85)}
+.ws-caixa .grande{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;margin-top:4px;position:relative;z-index:1}
+.ws-caixa .grande b{font-family:var(--ws-display);font-style:italic;font-weight:800;font-size:clamp(44px,5.4vw,64px);line-height:.9;letter-spacing:-.01em}
+.ws-caixa .grande span{font-size:14px;color:rgba(255,255,255,.9)}
+.ws-caixa .frase{position:relative;z-index:1;margin-top:8px;font-size:13.5px;max-width:62ch;color:rgba(255,255,255,.95)}
+.ws-caixa .frase b{color:var(--ouro)}
+.ws-pilha{position:relative;z-index:1;display:flex;gap:2px;height:16px;margin-top:14px;background:rgba(0,0,0,.25)}
+.ws-pilha i{display:block;height:100%}
+.ws-pilha i:first-child{border-radius:0}
+.ws-pilha .pago{background:#fff}
+.ws-pilha .auto{background:repeating-linear-gradient(135deg,rgba(255,255,255,.55) 0 4px,rgba(255,255,255,.18) 4px 8px)}
+.ws-pilha .deve{background:#000;border-radius:0 4px 4px 0}
+.ws-leg{position:relative;z-index:1;display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:10px;font-size:12.5px;color:rgba(255,255,255,.95)}
+.ws-leg span{display:inline-flex;align-items:center;gap:7px}
+.ws-leg i{width:14px;height:10px;display:block}
+.ws-leg b{font-family:var(--ws-display);font-style:italic;font-size:17px}
+.ws-turma{position:relative;z-index:1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;margin-top:14px;background:rgba(0,0,0,.25)}
+.ws-turma div{background:var(--vermelho-escuro);padding:9px 10px}
+.ws-turma p{font-size:11.5px;color:rgba(255,255,255,.85);line-height:1.2}
+.ws-turma b{display:block;font-family:var(--ws-display);font-style:italic;font-weight:800;font-size:26px;line-height:1;margin-top:3px;color:#fff}
+@media(max-width:640px){.ws-turma{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.ws-cel .ws-turma{grid-template-columns:repeat(2,minmax(0,1fr))}
+
+.ws-cabeca{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.ws-cabeca .ws-estado{margin-top:2px}
+
+/* O Cinturão do mês */
+.ws-cinturao{list-style:none;margin-top:10px;counter-reset:r}
+.ws-cinturao li{counter-increment:r;display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:2px 10px;align-items:center;padding-block:7px;border-top:1px solid var(--fio)}
+.ws-cinturao li:first-child{border-top:0}
+.ws-cinturao li::before{content:counter(r);font-family:var(--ws-display);font-style:italic;font-weight:800;font-size:22px;color:var(--nevoa);text-align:center}
+.ws-cinturao li.campeao::before{content:"";width:30px;height:18px;background:var(--ouro);-webkit-mask:var(--cinto) center/contain no-repeat;mask:var(--cinto) center/contain no-repeat}
+.ws-cinturao .quem{font-weight:700;font-size:14px}
+.ws-cinturao .trilho{grid-column:2 / 3;height:6px;background:var(--fio-claro)}
+.ws-cinturao .trilho i{display:block;height:100%;background:var(--tinta);border-radius:0 3px 3px 0}
+.ws-cinturao li.campeao .trilho i{background:var(--ouro)}
+.ws-cinturao .n{grid-row:1 / 3;grid-column:3;font-family:var(--ws-display);font-style:italic;font-weight:800;font-size:22px;text-align:right}
+.ws-cinturao .n small{display:block;font-family:var(--ws-corpo);font-style:normal;font-weight:400;font-size:11px;color:var(--nevoa)}
+.ws{--cinto:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 36'%3E%3Cpath d='M0 12h14l4-8h24l4 8h14v12H46l-4 8H18l-4-8H0z'/%3E%3C/svg%3E")}
+
+/* Prontos para graduar */
+.ws-prontos{list-style:none;margin-top:10px}
+.ws-prontos li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;padding-block:10px;border-top:1px solid var(--fio)}
+.ws-prontos li:first-child{border-top:0}
+.ws-prontos .quem{font-weight:700;font-size:14px}
+.ws-prontos .de{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--nevoa);margin-top:3px}
+.ws-prontos .de i{width:22px;height:8px;border-radius:2px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
+.ws-prontos .meta{grid-column:1 / -1;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;font-size:12px;color:var(--nevoa)}
+.ws-prontos .meta .trilho{height:6px;background:var(--fio-claro)}
+.ws-prontos .meta .trilho i{display:block;height:100%;background:var(--emdia);border-radius:0 3px 3px 0}
+.ws-prontos li.quase .meta .trilho i{background:var(--tinta)}
+.ws-indicar{display:inline-flex;align-items:center;font-weight:700;font-size:12px;padding:6px 11px;border:1px solid var(--tinta);color:var(--tinta);white-space:nowrap}
+.ws-evento{display:flex;gap:12px;align-items:center;background:var(--preto);border:1px solid var(--fio);padding:10px;margin-top:10px}
+.ws-evento .dia{display:grid;place-items:center;min-width:52px;background:var(--vermelho);color:#fff;padding:5px;font-family:var(--ws-display);font-style:italic;font-weight:800;line-height:1;text-transform:uppercase}
+.ws-evento .dia b{font-size:24px;display:block}
+.ws-evento .dia span{font-size:11px}
+.ws-evento p{font-size:12.5px;color:var(--nevoa)}
+.ws-evento p b{display:block;font-size:13.5px;color:var(--tinta)}
+
+/* As turmas mais cheias (seg a sex, 10h, 14h e 19h15) */
+.ws-turmas{display:grid;grid-template-columns:52px repeat(5,minmax(0,1fr));gap:3px;margin-top:12px;font-size:12px;color:var(--nevoa)}
+.ws-turmas span{display:grid;place-items:center;font-variant-numeric:tabular-nums}
+.ws-turmas i{display:grid;place-items:center;height:40px;font-style:normal;font-family:var(--ws-display);font-weight:800;font-size:17px;color:#fff;cursor:default}
+.ws-turmas i.claro{color:#000}
+.ws-turmas i:hover,.ws-turmas i:focus{outline:2px solid #fff;outline-offset:-2px}
+
+/* O funil da aula experimental */
+.ws-funil{list-style:none;margin-top:12px}
+.ws-funil li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:baseline;padding-block:6px}
+.ws-funil .nome{font-size:13px}
+.ws-funil .num{font-family:var(--ws-display);font-style:italic;font-weight:800;font-size:22px}
+.ws-funil .trilho{grid-column:1 / -1;height:22px;background:var(--fio-claro)}
+.ws-funil .trilho i{display:block;height:100%;background:var(--tinta);border-radius:0 4px 4px 0}
+.ws-funil li.fim .trilho i{background:var(--ouro)}
+.ws-funil .passo{grid-column:1 / -1;font-size:11.5px;color:var(--nevoa);padding-left:9px;border-left:2px solid var(--fio)}
+
+/* O app: o botão do treino e o Pix Automático */
+.ws-treinei{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;align-items:center;background:var(--vermelho);color:#fff;padding:12px 14px}
+.ws-treinei svg{grid-row:1 / 3;width:34px;height:34px}
+.ws-treinei b{font-family:var(--ws-display);font-style:italic;font-weight:800;font-size:24px;line-height:1;text-transform:uppercase}
+.ws-treinei span{font-size:12px;color:rgba(255,255,255,.85)}
+.ws-mes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--fio)}
+.ws-mes div{background:var(--papel);padding:10px 12px}
+.ws-mes p{font-size:11.5px;color:var(--nevoa)}
+.ws-mes b{display:block;font-family:var(--ws-display);font-style:italic;font-weight:800;font-size:26px;line-height:1;margin-top:3px}
+.ws-mes b.ouro{color:var(--ouro)}
+.ws-auto{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center;border:1px dashed var(--ouro);padding:11px 12px}
+.ws-auto .forte{color:var(--ouro)}
+.ws-auto .sub{grid-column:1 / -1}
+.ws-auto .ws-pix{grid-column:1 / -1;background:var(--ouro);color:#000}
+.ws-aulas{margin-top:8px}
+.ws-aulas .conta{display:flex;justify-content:space-between;font-size:12px;color:var(--nevoa)}
+.ws-aulas .conta b{font-family:var(--ws-display);font-style:italic;font-size:20px;color:var(--tinta)}
+.ws-aulas .trilho{height:8px;background:var(--fio-claro);margin-top:4px}
+.ws-aulas .trilho i{display:block;height:100%;background:var(--ouro);border-radius:0 4px 4px 0}
+</style>
+</head>
+<body data-proposta="world-strong">
+
+<div class="wrap">
+
+  <header class="topo">
+    <div class="marca">Rafael Razeira <small>Estúdio</small></div>
+    <time datetime="2026-10-02">02/10/2026</time>
+  </header>
+
+  <!-- CAPA -->
+  <section class="capa">
+    <div>
+      <p class="capa-para">Proposta para a World Strong PG, do Prof André Néo</p>
+      <h1>Menos cobrança. Mais tatame.</h1>
+      <dl class="ficha">
+        <div><dt>O que é</dt><dd>O <b>painel da academia</b> para você e o <b>app do aluno</b> para a turma: o caixa, quem deve, quem sumiu, quem está pronto para graduar e o Cinturão do mês</dd></div>
+        <div><dt>Onde fica</dt><dd>No celular. O app vira um ícone na tela, sem baixar nada na loja de aplicativos</dd></div>
+        <div><dt>Investimento</dt><dd><b>R$ 1.997</b>, uma vez só, sem mensalidade</dd></div>
+        <div><dt>No ar em</dt><dd>Até 15 dias úteis depois da lista de alunos</dd></div>
+      </dl>
+    </div>
+
+    <div class="aparelho">
+      <div class="celular">
+        <div class="tela ws" aria-label="Prévia do painel da World Strong no celular, com nomes e valores de exemplo">
+          <div class="ws-cel">
+            <div class="ws-cel-topo"><img class="ws-selo" src="/assets/proposta/world-strong/selo.webp" alt="" width="34" height="34" /><span>World Strong PG<small>Prof André Néo</small></span><span class="ws-exemplo">Exemplo</span></div>
+            <div class="ws-cel-miolo">
+              <div class="ws-titulo"><h3>Hoje</h3></div>
+              <div data-caixa></div>
+              <div class="ws-card">
+                <h4>No córner</h4>
+                <p class="sub">Quem deve. O Avisar já sai escrito</p>
+                <ul class="ws-lista" data-corner></ul>
+              </div>
+              <div class="ws-card">
+                <h4>Cinturão de outubro</h4>
+                <p class="sub">Quem mais treinou no mês</p>
+                <ol class="ws-cinturao" data-cinturao></ol>
+              </div>
+            </div>
+            <div class="ws-cel-abas"><span class="ativa">Hoje</span><span>Alunos</span><span>Caixa</span><span>Graduação</span></div>
+          </div>
+        </div>
+      </div>
+      <p class="aparelho-nota"><span class="pin" aria-hidden="true">↕</span><span><span class="so-mouse">Assim fica o painel no seu celular: role aí dentro.</span><span class="so-toque">Assim fica o painel no seu celular.</span> Os planos e os horários são os seus; nomes e valores do caixa são de exemplo.</span></p>
+    </div>
+  </section>
+
+  <!-- O PAINEL INTEIRO -->
+  <section class="sec">
+    <h2>O painel do André, apontado na tela</h2>
+    <p class="sec-intro">O painel inteiro, como ele abre no computador. Tudo responde uma pergunta de dono de academia de luta: quanto entrou, quem deve, quem sumiu, quem está pronto para graduar e quem está treinando mais. Passe o mouse nos gráficos para ver cada número, e numa nota para acender o número dela na tela.</p>
+
+    <div data-prancha style="margin-top:clamp(40px,6vw,64px)">
+      <figure class="ws ws-janela" aria-label="O painel da World Strong no computador, com nomes e valores de exemplo">
+        <div class="ws-barra-nav"><span class="bolas"><i></i><i></i><i></i></span><span class="end">painel da World Strong PG</span><span class="ws-exemplo">Nomes e valores de exemplo</span></div>
+        <div class="ws-janela-topo"><img class="ws-selo" src="/assets/proposta/world-strong/selo.webp" alt="" width="34" height="34" /><span>World Strong PG<small>Fight Team, Prof André Néo</small></span><nav><span class="ativa">Hoje</span><span>Alunos</span><span>Caixa</span><span>Graduação</span><span>Loja</span></nav></div>
+        <div class="ws-miolo">
+          <div class="ws-titulo"><h3>Hoje</h3><span class="ws-estado emdia">Sexta, 02 de outubro</span></div>
+
+          <div class="ws-grid">
+            <div class="ws-c12" style="position:relative">
+              <span class="pin ws-pin-canto" data-n="1">1</span>
+              <div data-caixa></div>
+            </div>
+
+            <div class="ws-card ws-c7">
+              <span class="pin" data-n="2">2</span>
+              <h4>No córner</h4>
+              <p class="sub">Quem deve, o quê e há quantos dias. O botão abre o WhatsApp do aluno com a mensagem pronta</p>
+              <ul class="ws-lista" data-corner></ul>
+            </div>
+
+            <div class="ws-card ws-c5">
+              <span class="pin" data-n="3">3</span>
+              <h4>Renovações do mês</h4>
+              <p class="sub">Trimestral e semestral que acabam em outubro. Renove antes de virar saída</p>
+              <ul class="ws-lista" data-renovam></ul>
+            </div>
+
+            <div class="ws-card ws-c5">
+              <span class="pin" data-n="4">4</span>
+              <div class="ws-cabeca"><h4>Sumiram do tatame</h4><span class="ws-estado vence" data-sumidos-n></span></div>
+              <p class="sub">Mais de 10 dias sem marcar treino. Quem some primeiro é quem sai depois</p>
+              <ul class="ws-lista" data-sumidos></ul>
+            </div>
+
+            <div class="ws-card ws-c7">
+              <span class="pin" data-n="5">5</span>
+              <div class="ws-cabeca"><h4>Cinturão de outubro</h4><span class="ws-estado emdia">Aparece no app de todos</span></div>
+              <p class="sub">Quem mais treinou no mês, pelo "Treinei hoje" do app</p>
+              <ol class="ws-cinturao" data-cinturao></ol>
+            </div>
+
+            <div class="ws-card ws-c7">
+              <span class="pin" data-n="6">6</span>
+              <h4>Prontos para graduar</h4>
+              <p class="sub">Pela regra que você escolhe: aqui, 40 aulas e 6 meses no mesmo grau ou faixa</p>
+              <ul class="ws-prontos" data-prontos></ul>
+              <div data-evento></div>
+            </div>
+
+            <div class="ws-card ws-c5">
+              <span class="pin" data-n="7">7</span>
+              <h4>Aula experimental</h4>
+              <p class="sub">A aula grátis que você anuncia, do agendamento à matrícula</p>
+              <ol class="ws-funil" data-funil></ol>
+            </div>
+
+            <div class="ws-card ws-c7">
+              <span class="pin" data-n="8">8</span>
+              <h4>As turmas mais cheias</h4>
+              <p class="sub" data-turmas-frase></p>
+              <div class="ws-turmas" data-turmas></div>
+            </div>
+
+            <div class="ws-card ws-c5">
+              <span class="pin" data-n="9">9</span>
+              <h4>Camiseta 2026</h4>
+              <p class="sub">Encomendas por tamanho, pagas antes de mandar fazer</p>
+              <div class="ws-grafico" data-camisetas></div>
+              <div data-camisetas-pagas></div>
+            </div>
+
+            <div class="ws-card ws-c12">
+              <span class="pin" data-n="10">10</span>
+              <h4>O caixa, mês a mês</h4>
+              <p class="sub">Mensalidades, planos, personal, camisetas e graduação, somados</p>
+              <div class="ws-grafico" data-meses></div>
+            </div>
+          </div>
+        </div>
+      </figure>
+
+      <ol class="notas notas--duas">
+        <li data-n="1"><span class="pin">1</span><span><b>O caixa do mês</b>, no vermelho do seu cartaz: o que já entrou, o que vai cair sozinho no <b>Pix Automático</b> e o pouco que depende de você. Embaixo, a turma: ativos, novos, quem saiu e quantos já estão no automático.</span></li>
+        <li data-n="2"><span class="pin">2</span><span><b>O córner</b>: quem deve, o quê e há quantos dias. Mensalidade, plano, camiseta e taxa de graduação na mesma lista. O botão <b>Avisar</b> abre o WhatsApp do aluno com a mensagem escrita: você só aperta enviar.</span></li>
+        <li data-n="3"><span class="pin">3</span><span>Os planos longos são o seu melhor dinheiro: R$&nbsp;594 de uma vez. O painel avisa <b>quem do trimestral e do semestral acaba no mês</b>, para você renovar antes de o aluno pensar em parar.</span></li>
+        <li data-n="4"><span class="pin">4</span><span><b>Quem sumiu do tatame.</b> Aluno que para de treinar costuma sair no mês seguinte. Uma mensagem sua agora ("sentimos sua falta no treino") segura mais aluno que qualquer promoção.</span></li>
+        <li data-n="5"><span class="pin">5</span><span><b>O Cinturão do mês</b>: o ranking de quem mais treinou, no painel e no app de todos. Quem está em primeiro leva o cinturão dourado. É o que faz o aluno abrir o app todo dia e voltar para o treino.</span></li>
+        <li data-n="6"><span class="pin">6</span><span><b>Prontos para graduar</b>, pela regra que você define (aulas e tempo no grau ou na faixa), em Muay Thai e Kickboxing. Um toque em <b>Indicar</b> e o aluno recebe o convite no app para a Graduação anual World Strong.</span></li>
+        <li data-n="7"><span class="pin">7</span><span>A aula experimental grátis que você já anuncia, contada: <b>quantos agendaram, quantos vieram e quantos viraram aluno</b>. Mostra se o post de aula grátis está dando resultado.</span></li>
+        <li data-n="8"><span class="pin">8</span><span>As suas turmas de verdade, <b>segunda a sexta, 10h, 14h e 19h15</b>, pela média de alunos que marcam treino em cada uma. Mostra onde cabe mais gente e onde abrir horário.</span></li>
+        <li data-n="9"><span class="pin">9</span><span>A camiseta é encomenda paga adiantada: o aluno escolhe o tamanho no app e paga, e você vê <b>quantas de cada tamanho mandar fazer</b> e quem ainda não pagou.</span></li>
+        <li data-n="10"><span class="pin">10</span><span>O caixa de cada mês, para ver se o verão encheu a academia e se o atraso caiu depois do Pix Automático.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- O APP DO ALUNO -->
+  <section class="sec">
+    <h2>E o aluno tem o app dele</h2>
+    <p class="sec-intro">Cada aluno entra com o número do celular e uma senha. O app fica como um ícone na tela, ao lado do WhatsApp, sem loja de aplicativos. Lá ele marca o treino, disputa o Cinturão do mês, vê quantas aulas faltam para graduar, paga e encomenda a camiseta.</p>
+
+    <div class="app-par" data-prancha>
+      <div class="app-telas">
+        <figure class="ws-mini" aria-label="A tela de início do app do aluno, de exemplo">
+          <span class="pin" data-n="11">11</span>
+          <div class="dentro ws ws-app">
+            <div class="ws-app-topo"><span style="display:flex;align-items:center;gap:8px"><img class="ws-selo" src="/assets/proposta/world-strong/selo.webp" alt="" width="34" height="34" />World Strong</span><span class="ws-exemplo">Exemplo</span></div>
+            <div class="ws-app-miolo">
+              <div class="ws-foto" style="background-image:url(/assets/proposta/world-strong/turma.webp)"><p class="ola">Bora, Lucas</p></div>
+              <div class="ws-treinei">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5 10 17 19 7"/></svg>
+                <b>Treinei hoje</b><span>Turma das 19h15</span>
+              </div>
+              <div class="ws-mes">
+                <div><p>Treinos em outubro</p><b>14</b></div>
+                <div><p>No Cinturão do mês</p><b class="ouro">3º lugar</b></div>
+              </div>
+              <div class="ws-alerta">
+                <p><b>Mensalidade de setembro</b><br />Em aberto há 12 dias</p>
+                <p class="quanto">R$&nbsp;129</p>
+                <span class="ws-pix">Pagar no Pix</span>
+              </div>
+              <div class="ws-card ws-aviso">
+                <p class="rot">Aviso da academia</p>
+                <p>Aula experimental grátis: traga seus amigos e familiares para treinar junto.</p>
+              </div>
+            </div>
+            <div class="ws-app-abas"><span class="ativa">Início</span><span>Pagamentos</span><span>Graduação</span><span>Loja</span></div>
+          </div>
+        </figure>
+
+        <figure class="ws-mini" aria-label="A tela de pagamentos do app do aluno, de exemplo">
+          <span class="pin" data-n="12">12</span>
+          <div class="dentro ws ws-app">
+            <div class="ws-app-topo">Pagamentos<span class="ws-exemplo">Exemplo</span></div>
+            <div class="ws-app-miolo">
+              <div class="ws-plano"><div><p class="rot">O seu plano</p><p class="forte">Mensal</p></div><p class="preco">R$&nbsp;129</p><p class="sub">Treine quantas vezes quiser, de segunda a sexta.</p></div>
+              <div class="ws-auto">
+                <div><p class="rot">Pix Automático</p><p class="forte">Nunca mais atrase</p></div>
+                <p class="sub">Você autoriza uma vez no seu banco, e a mensalidade sai sozinha todo dia 20. Cancela quando quiser.</p>
+                <span class="ws-pix">Ligar o Pix Automático</span>
+              </div>
+              <div class="ws-troca"><div><p class="rot">No semestral, por mês fica</p><p class="sub">R$&nbsp;594 de uma vez</p></div><p class="preco">R$&nbsp;99<small>/mês</small></p></div>
+              <p class="rot">Em aberto</p>
+              <div class="ws-card">
+                <ul class="ws-lista">
+                  <li><div><p class="quem">Mensalidade de setembro</p><p class="oque"><span class="ws-estado atraso">Atrasado há 12 dias</span></p></div><p class="quanto">R$&nbsp;129</p></li>
+                </ul>
+              </div>
+            </div>
+            <div class="ws-app-abas"><span>Início</span><span class="ativa">Pagamentos</span><span>Graduação</span><span>Loja</span></div>
+          </div>
+        </figure>
+      </div>
+      <ol class="notas">
+        <li data-n="11"><span class="pin">11</span><span><b>Treinei hoje</b>: um toque quando chega no treino. Não é catraca nem QR na porta: é o que conta os treinos dele, a posição no <b>Cinturão do mês</b> e as aulas para graduar. Para você, vira a lista de quem sumiu e o mapa das turmas.</span></li>
+        <li data-n="12"><span class="pin">12</span><span>O plano dele, com os <b>mesmos planos do seu cartaz</b>, o convite para ligar o <b>Pix Automático</b> (autoriza uma vez e a mensalidade sai sozinha) e a conta de quanto sai por mês no semestral, para ele trocar sozinho. O dinheiro cai na conta da academia, e ninguém precisa mandar comprovante.</span></li>
+      </ol>
+    </div>
+
+    <div class="app-par" data-prancha>
+      <div class="app-telas">
+        <figure class="ws-mini" aria-label="A tela de graduação do app do aluno, de exemplo">
+          <span class="pin" data-n="13">13</span>
+          <div class="dentro ws ws-app">
+            <div class="ws-app-topo">Graduação<span class="ws-exemplo">Exemplo</span></div>
+            <div class="ws-app-miolo">
+              <div class="ws-card">
+                <p class="rot">O seu grau no Muay Thai</p>
+                <div class="ws-prajied"><i style="background:#f2c230"></i><span><b>Amarelo</b>desde fevereiro de 2026</span></div>
+                <div class="ws-aulas">
+                  <div class="conta"><span><b>34</b> de 40 aulas</span><span>faltam 6</span></div>
+                  <div class="trilho"><i style="width:85%"></i></div>
+                </div>
+                <p class="sub" style="margin-top:8px">Com 40 aulas e 6 meses no amarelo, o professor pode te indicar para o laranja.</p>
+              </div>
+              <div class="ws-card ws-indicado">
+                <p class="rot">Graduação anual World Strong</p>
+                <p class="forte">14 de novembro</p>
+                <p class="sub">Quando o professor te indicar, você confirma e paga a taxa por aqui.</p>
+              </div>
+              <p class="rot">A sua jornada</p>
+              <ol class="ws-jornada">
+                <li class="feito"><i style="background:#ffffff"></i><span><b>Branco</b>março de 2025</span></li>
+                <li class="feito atual"><i style="background:#f2c230"></i><span><b>Amarelo</b>fevereiro de 2026</span></li>
+                <li class="proximo"><i style="background:#e9822b"></i><span><b>Laranja</b>faltam 6 aulas</span></li>
+                <li><i style="background:#2f8a4a"></i><span><b>Verde</b></span></li>
+              </ol>
+            </div>
+            <div class="ws-app-abas"><span>Início</span><span>Pagamentos</span><span class="ativa">Graduação</span><span>Loja</span></div>
+          </div>
+        </figure>
+
+        <figure class="ws-mini" aria-label="A tela da loja do app do aluno, de exemplo">
+          <span class="pin" data-n="14">14</span>
+          <div class="dentro ws ws-app">
+            <div class="ws-app-topo">Loja<span class="ws-exemplo">Exemplo</span></div>
+            <div class="ws-app-miolo">
+              <div class="ws-camiseta" aria-hidden="true">
+                <svg viewBox="0 0 120 110"><path d="M38 6 22 12 4 32l14 14 10-8v66h64V38l10 8 14-14-18-20-16-6c-2 8-10 13-22 13S40 14 38 6Z" fill="#171512"/></svg>
+                <span>A foto da camiseta entra aqui</span>
+              </div>
+              <p class="forte" style="margin-top:12px">Camiseta World Strong 2026</p>
+              <p class="sub">Encomenda paga adiantada. Você recebe na academia quando o lote chegar.</p>
+              <p class="rot" style="margin-top:12px">Tamanho</p>
+              <div class="ws-tamanhos"><span>P</span><span class="ativo">M</span><span>G</span><span>GG</span></div>
+              <span class="ws-pix">Encomendar e pagar R$&nbsp;70</span>
+              <p class="rodape">Encomendas até 31/10</p>
+            </div>
+            <div class="ws-app-abas"><span>Início</span><span>Pagamentos</span><span>Graduação</span><span class="ativa">Loja</span></div>
+          </div>
+        </figure>
+      </div>
+      <ol class="notas">
+        <li data-n="13"><span class="pin">13</span><span>A jornada dele no Muay Thai ou no Kickboxing, cor por cor, e <b>quantas aulas faltam para poder graduar</b>. Aluno que vê o laranja a 6 aulas de distância não falta no treino. Quando você indica, ele confirma e paga a taxa ali mesmo.</span></li>
+        <li data-n="14"><span class="pin">14</span><span>A camiseta vira encomenda: ele escolhe o tamanho e paga adiantado, e no painel você vê <b>quantas de cada tamanho mandar fazer</b>, já pagas.</span></li>
+      </ol>
+    </div>
+
+    <div class="aluno" data-prancha>
+      <figure class="ws-mini ws-mini--baixo" aria-label="A mensagem de aviso no WhatsApp do aluno, de exemplo">
+        <span class="pin" data-n="15">15</span>
+        <div class="dentro ws-zap">
+          <div class="ws-zap-topo">World Strong<small>mensagem de exemplo</small></div>
+          <div class="ws-zap-corpo">
+            <p class="ws-bolha" data-mensagem></p>
+          </div>
+        </div>
+      </figure>
+      <ol class="notas">
+        <li data-n="15"><span class="pin">15</span><span>E quem não abre o app recebe o lembrete no WhatsApp, pelo botão <b>Avisar</b> do painel: sai do <b>seu número</b>, com o nome do aluno, o que venceu e o link do app. Educado e curto: é lembrete, não cobrança. O texto você escolhe uma vez e vale para todos.</span></li>
+      </ol>
+    </div>
+
+
+    <div class="fora-da-tela">
+      <h3>E o que não aparece na tela</h3>
+      <ul>
+        <li><b>Cobrança gerada sozinha</b> todo mês, no plano de cada aluno: mensal, trimestral, semestral ou personal</li>
+        <li><b>Aluno novo em um minuto:</b> nome, WhatsApp, plano, modalidade e graduação</li>
+        <li><b>Trancou ou parou:</b> o aluno fica pausado e não gera cobrança, com o histórico guardado</li>
+        <li><b>Pagou em dinheiro?</b> Um toque dá a baixa à mão, e fica anotado</li>
+        <li><b>O Cinturão vira o mês sozinho:</b> no dia 1 o ranking zera, e o campeão do mês fica guardado no histórico</li>
+        <li><b>O histórico de cada aluno:</b> tudo o que pagou, quando e de quê</li>
+        <li><b>Cada um vê o seu:</b> você entra no painel com a sua senha, e cada aluno vê só o que é dele</li>
+        <li><b>Sem mensalidade:</b> roda num banco de dados gratuito, que para 80 alunos sobra espaço por anos</li>
+        <li><b>30 dias de ajustes</b> depois da entrega, e o manual dentro do painel</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- INVESTIMENTO -->
+  <section class="sec valor">
+    <h2>O investimento</h2>
+    <p class="valor-numero"><small>R$</small>1.997</p>
+    <div class="cota" aria-hidden="true"></div>
+    <p class="cota-legenda">R$ 497 para começar e R$ 1.500 na entrega. Uma vez só, sem mensalidade.</p>
+
+    <div class="valor-grade">
+      <div>
+        <p>O valor cobre o sistema inteiro: o painel da academia, o app do aluno com o Treinei hoje e o Cinturão do mês, o Pix com baixa automática e o Pix Automático, as camisetas, a graduação, o cadastro da sua lista de alunos, o treinamento e os 30 dias de ajustes.</p>
+        <p>Depois de pronto, <b>não tem mensalidade</b>. O sistema é da academia e roda sozinho.</p>
+        <div class="garantia">
+          <p>Você testa com dois ou três alunos antes do saldo. Se o painel entregue não fizer o que está nesta página, <b>os R$&nbsp;497 da entrada voltam inteiros</b>.</p>
+        </div>
+      </div>
+      <div class="pagar">
+        <p class="pagar-titulo">Para começar: R$ 497</p>
+        <ul>
+          <li>No Pix, com o QR code aqui na página e a confirmação na hora</li>
+          <li>É a única coisa que sai agora</li>
+        </ul>
+        <!-- Um botão por item de lib/propostas.ts; o valor NUNCA vem daqui -->
+        <button class="btn-pay" type="button" data-checkout-item="entrada_pix">Pagar a entrada no Pix</button>
+        <div class="pagar-depois">
+          <p class="pagar-titulo">Na entrega: R$ 1.500</p>
+          <p>No Pix, ou no cartão em até 4x. Em 1x sai R$ 1.500; parcelado tem os juros do Mercado Pago, e você vê cada parcela e o total antes de confirmar.</p>
+          <button class="btn-pay btn-pay--ghost" type="button" data-checkout-item="saldo_pix">Saldo no Pix</button>
+          <button class="btn-pay btn-pay--ghost" type="button" data-checkout-item="saldo_card">Saldo no cartão</button>
+        </div>
+        <p class="pagar-rodape">Processado pelo Mercado Pago, sem sair desta página.</p>
+      </div>
+    </div>
+
+    <p class="saldo-titulo">Quando cada dinheiro sai</p>
+    <ol class="passos">
+      <li><span><b>Hoje</b> sai só a entrada de R$ 497.</span></li>
+      <li><span>Eu monto o painel com os seus alunos e ligo o Pix na conta da academia.</span></li>
+      <li><span>Você testa com dois ou três alunos de verdade: o aviso chega, eles pagam, a baixa acontece.</span></li>
+      <li><span><b>Só então</b> existe o saldo de R$ 1.500, no Pix ou no cartão.</span></li>
+      <li><span>E acabou: sem mensalidade. Fora a taxa que o banco de pagamentos cobra em cada Pix recebido, direto na conta da academia.</span></li>
+    </ol>
+  </section>
+
+  <!-- PRAZO E PASSOS -->
+  <section class="sec">
+    <h2>Como a gente segue</h2>
+    <p class="prazo">No ar em até 15 dias úteis depois da lista de alunos</p>
+    <ol class="passos">
+      <li><span>Você confirma o <b>aceite</b> pelo WhatsApp e paga a entrada.</span></li>
+      <li><span>Você me manda a <b>lista de alunos</b>: nome, WhatsApp, plano, dia de vencimento, modalidade e graduação de cada um. Pode ser uma foto da planilha ou do caderno.</span></li>
+      <li><span>Você me passa <b>a ordem das cores</b> dos graus do Muay Thai e das faixas do Kickboxing, o valor da camiseta e a data da próxima graduação.</span></li>
+      <li><span>A academia precisa de uma <b>conta no Asaas</b>, que faz o Pix e o Pix Automático pelo sistema. Eu te ajudo a abrir.</span></li>
+      <li><span>Eu monto, cadastro os alunos, testo com você e te mostro como usar numa chamada curta.</span></li>
+    </ol>
+  </section>
+
+  <!-- NÃO INCLUSO -->
+  <section class="rodape-nota">
+    <h2>O que não está incluso</h2>
+    <ul>
+      <li>Catraca, fechadura ou qualquer aparelho na porta: o painel controla o pagamento, não a entrada</li>
+      <li>O envio automático do WhatsApp, sem tocar no botão: exige a conta oficial do WhatsApp para empresas, que cobra por mensagem. Se um dia quiser, é à parte</li>
+      <li>A taxa do Asaas em cada pagamento, descontada na conta da academia</li>
+      <li>Nota fiscal, contabilidade e aplicativo nas lojas da Apple e do Google</li>
+      <li>Um endereço com o nome da academia (cerca de R$ 40 por ano no Registro.br, no seu nome): sem ele, o painel funciona num endereço do estúdio</li>
+    </ul>
+  </section>
+
+  <section class="fecho">
+    <h2>Treino é no tatame. Cobrança é no painel.</h2>
+    <a href="https://wa.me/5544991246187?text=Ol%C3%A1%20Rafael%2C%20tenho%20uma%20d%C3%BAvida%20sobre%20a%20proposta%20do%20sistema%20da%20World%20Strong." target="_blank" rel="noopener">Ficou com dúvida? Me chama no WhatsApp</a>
+  </section>
+
+  <footer class="assinatura">
+    <span>Rafael Razeira Estúdio</span>
+    <span>rafael.rbarbon@gmail.com</span>
+    <span>(44) 99124-6187</span>
+    <span>@rafaelrazeira.estudio</span>
+  </footer>
+
+</div>
+
+<script>
+/* ============================================================
+   O PAINEL DA WORLD STRONG (nomes e valores do caixa de exemplo;
+   planos, preços e horários são os publicados por ele)
+   Tudo sai deste objeto. Os totais são CONTADOS aqui, nunca escritos
+   à mão, para a frase, a barra e as listas nunca discordarem.
+   ============================================================ */
+var DADOS = {
+  ativos: 64, novos: 4, sairam: 1, automatico: 41,
+  recebido: 6120, automaticoACair: 1548,
+  corner: [
+    { nome: "Lucas Martins", oque: "Mensalidade de setembro", valor: 129, dias: 12 },
+    { nome: "Bruna Souza", oque: "Plano trimestral, set a nov", valor: 327, dias: 6 },
+    { nome: "Diego Ramos", oque: "Camiseta 2026, tamanho M", valor: 70, dias: 4 }
+  ],
+  renovam: [
+    { nome: "Marcos Vieira", plano: "Semestral", valor: 594, dia: "15/10" },
+    { nome: "Paula Reis", plano: "Trimestral", valor: 327, dia: "22/10" },
+    { nome: "Thiago Lopes", plano: "Semestral", valor: 594, dia: "28/10" }
+  ],
+  sumidos: [
+    { nome: "Gustavo Nunes", dias: 16, ultimo: "16/09, turma das 19h15" },
+    { nome: "Larissa Prado", dias: 12, ultimo: "20/09, turma das 10h" },
+    { nome: "Henrique Dias", dias: 11, ultimo: "21/09, turma das 19h15" }
+  ],
+  cinturao: [["Caio Teixeira", 18], ["Júlia Castro", 16], ["Lucas Martins", 14], ["Pedro Alves", 13], ["Ana Lima", 12]],
+  prontos: [
+    { nome: "Ana Lima", modo: "Muay Thai", de: ["Amarelo", "#f2c230"], para: ["Laranja", "#e9822b"], aulas: 48, meses: 9 },
+    { nome: "Pedro Alves", modo: "Kickboxing", de: ["Branca", "#ffffff"], para: ["Amarela", "#f2c230"], aulas: 41, meses: 7 },
+    { nome: "Lucas Martins", modo: "Muay Thai", de: ["Amarelo", "#f2c230"], para: ["Laranja", "#e9822b"], aulas: 34, meses: 8 }
+  ],
+  regra: { aulas: 40, meses: 6 },
+  graduacao: { dia: 14, mes: "nov", prazo: "07/11", indicados: 18, pagaram: 11 },
+  funil: [["Agendaram a aula grátis", 11], ["Vieram treinar", 8], ["Viraram aluno", 4]],
+  dias: ["Seg", "Ter", "Qua", "Qui", "Sex"],
+  turmas: [["10h", [6, 5, 7, 5, 4]], ["14h", [3, 2, 4, 3, 2]], ["19h15", [22, 25, 21, 24, 15]]],
+  meses: [["mai", 6240], ["jun", 6890], ["jul", 7150], ["ago", 7280], ["set", 7930], ["out", 6120]],
+  camisetas: { tamanhos: [["P", 6, 6], ["M", 14, 13], ["G", 11, 10], ["GG", 4, 3]] }
+};
+
+(function () {
+  var NS = "http://www.w3.org/2000/svg";
+  var COR = { tinta: "#f5f4f1", clara: "#5d5a55", fio: "#2c2c30" };
+  var ESCALA = ["#3a1413", "#6b1d1b", "#a52623", "#e3302f", "#ff7a6e"];
+  var D = DADOS;
+
+  function soma(a, f) { return a.reduce(function (s, v) { return s + f(v); }, 0); }
+  function real(v) { return "R$ " + v.toLocaleString("pt-BR"); }
+  function s(tag, at, pai) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in at) e.setAttribute(k, at[k]);
+    if (pai) pai.appendChild(e);
+    return e;
+  }
+  function texto(at, conteudo, pai) { var t = s("text", at, pai); t.textContent = conteudo; return t; }
+  function el(tag, cls, txt, pai) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (txt != null) e.textContent = txt;
+    if (pai) pai.appendChild(e);
+    return e;
+  }
+  function todos(sel, f) { document.querySelectorAll(sel).forEach(f); }
+
+  var deve = soma(D.corner, function (a) { return a.valor; });
+  var previsto = D.recebido + D.automaticoACair + deve;
+
+  /* ---------- a dica flutuante ---------- */
+  var dica = el("div", "ws-dica");
+  dica.setAttribute("role", "status");
+  document.body.appendChild(dica);
+  function mostra(linhas, x, y) {
+    dica.replaceChildren();
+    linhas.forEach(function (l, i) { el(i === 0 ? "b" : "span", "", l, dica); });
+    dica.classList.add("on");
+    var w = dica.offsetWidth, h = dica.offsetHeight;
+    var px = x + 14, py = y - h - 12;
+    if (px + w > innerWidth - 8) px = x - w - 14;
+    if (py < 8) py = y + 16;
+    dica.style.left = px + "px";
+    dica.style.top = py + "px";
+  }
+  function esconde() { dica.classList.remove("on"); }
+  function comDica(alvo, linhas) {
+    alvo.setAttribute("tabindex", "0");
+    alvo.addEventListener("pointermove", function (e) { mostra(linhas, e.clientX, e.clientY); });
+    alvo.addEventListener("pointerleave", esconde);
+    alvo.addEventListener("focus", function () { var r = alvo.getBoundingClientRect(); mostra(linhas, r.left + r.width / 2, r.top); });
+    alvo.addEventListener("blur", esconde);
+  }
+
+  var ZAP = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-3.3-.8-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.3 0 .5l-.4.5-.3.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.5.1.6-.1l.9-1.1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.8-.1 1.4Z"/></svg>';
+  function botao(pai, rotulo, cls) {
+    var b = el("span", cls || "ws-avisar", null, pai);
+    b.innerHTML = ZAP + rotulo;
+    return b;
+  }
+
+  /* ---------- 1. o caixa do mês, no vermelho do cartaz ---------- */
+  function caixa() {
+    todos("[data-caixa]", function (box) {
+      box.replaceChildren();
+      var c = el("div", "ws-caixa", null, box);
+      el("p", "rot", "O caixa de outubro", c);
+      var g = el("p", "grande", null, c);
+      el("b", "", real(D.recebido), g);
+      el("span", "", "já entraram, de " + real(previsto) + " previstos", g);
+      var f = el("p", "frase", null, c);
+      f.appendChild(document.createTextNode("Mais " + real(D.automaticoACair) + " caem sozinhos no Pix Automático. Só "));
+      el("b", "", real(deve), f);
+      f.appendChild(document.createTextNode(" dependem de você: estão no córner."));
+      var p = el("div", "ws-pilha", null, c);
+      [["pago", D.recebido, "Já entrou"], ["auto", D.automaticoACair, "Vai cair no automático"], ["deve", deve, "No córner, atrasado"]].forEach(function (x) {
+        var i = el("i", x[0], null, p);
+        i.style.width = (x[1] / previsto * 100) + "%";
+        comDica(i, [real(x[1]), x[2]]);
+      });
+      var leg = el("div", "ws-leg", null, c);
+      [["pago", "Entrou", D.recebido], ["auto", "No automático", D.automaticoACair], ["deve", "No córner", deve]].forEach(function (x) {
+        var sp = el("span", "", null, leg);
+        el("i", x[0], null, sp).className = x[0];
+        sp.querySelector("i").style.cssText = x[0] === "pago" ? "background:#fff" : x[0] === "auto" ? "background:repeating-linear-gradient(135deg,rgba(255,255,255,.7) 0 3px,rgba(255,255,255,.2) 3px 6px)" : "background:#000";
+        sp.appendChild(document.createTextNode(x[1] + " "));
+        el("b", "", real(x[2]), sp);
+      });
+      var t = el("div", "ws-turma", null, c);
+      [["Alunos ativos", D.ativos], ["Novos em outubro", "+" + D.novos], ["Saíram", D.sairam], ["No Pix Automático", D.automatico + " de " + D.ativos]].forEach(function (k) {
+        var d = el("div", "", null, t);
+        el("p", "", k[0], d);
+        el("b", "", String(k[1]), d);
+      });
+    });
+  }
+
+  /* ---------- 2 a 4. as listas ---------- */
+  function listas() {
+    todos("[data-corner]", function (box) {
+      box.replaceChildren();
+      D.corner.forEach(function (a) {
+        var li = el("li", "", null, box);
+        var esq = el("div", "", null, li);
+        el("p", "quem", a.nome, esq);
+        var oq = el("p", "oque", null, esq);
+        el("span", "ws-estado atraso", "Atrasado há " + a.dias + " dias", oq);
+        el("span", "", a.oque, oq);
+        el("p", "quanto", real(a.valor), li);
+        botao(li, "Avisar");
+      });
+    });
+    todos("[data-renovam]", function (box) {
+      box.replaceChildren();
+      D.renovam.forEach(function (r) {
+        var li = el("li", "", null, box);
+        var esq = el("div", "", null, li);
+        el("p", "quem", r.nome, esq);
+        var oq = el("p", "oque", null, esq);
+        el("span", "ws-estado vence", "Acaba " + r.dia, oq);
+        el("span", "", r.plano, oq);
+        el("p", "quanto", real(r.valor), li);
+        botao(li, "Renovar");
+      });
+    });
+    todos("[data-sumidos-n]", function (box) { box.textContent = D.sumidos.length + " alunos"; });
+    todos("[data-sumidos]", function (box) {
+      box.replaceChildren();
+      D.sumidos.forEach(function (a) {
+        var li = el("li", "", null, box);
+        var esq = el("div", "", null, li);
+        el("p", "quem", a.nome, esq);
+        var oq = el("p", "oque", null, esq);
+        el("span", "", "Último treino " + a.ultimo, oq);
+        el("p", "quanto", a.dias + " dias", li);
+        botao(li, "Chamar");
+      });
+    });
+  }
+
+  /* ---------- 5. o Cinturão do mês ---------- */
+  function cinturao() {
+    var max = D.cinturao[0][1];
+    todos("[data-cinturao]", function (box) {
+      var curto = !!box.closest(".ws-cel");
+      box.replaceChildren();
+      D.cinturao.slice(0, curto ? 3 : 5).forEach(function (c, i) {
+        var li = el("li", i === 0 ? "campeao" : "", null, box);
+        el("p", "quem", c[0] + (i === 0 ? ", com o cinturão" : ""), li);
+        var n = el("p", "n", String(c[1]), li);
+        el("small", "", "treinos", n);
+        var tr = el("span", "trilho", null, li);
+        el("i", "", null, tr).style.width = (c[1] / max * 100) + "%";
+        comDica(li, [c[1] + " treinos em outubro", (i + 1) + "º lugar no Cinturão"]);
+      });
+    });
+  }
+
+  /* ---------- 6. prontos para graduar ---------- */
+  function prontos() {
+    var R = D.regra;
+    todos("[data-prontos]", function (box) {
+      box.replaceChildren();
+      D.prontos.forEach(function (p) {
+        var pronto = p.aulas >= R.aulas && p.meses >= R.meses;
+        var li = el("li", pronto ? "" : "quase", null, box);
+        var esq = el("div", "", null, li);
+        el("p", "quem", p.nome, esq);
+        var de = el("p", "de", null, esq);
+        de.appendChild(document.createTextNode(p.modo + ": "));
+        el("i", "", null, de).style.background = p.de[1];
+        de.appendChild(document.createTextNode(p.de[0] + " para "));
+        el("i", "", null, de).style.background = p.para[1];
+        de.appendChild(document.createTextNode(p.para[0]));
+        if (pronto) el("span", "ws-indicar", "Indicar", li);
+        else el("span", "ws-estado vence", "Faltam " + (R.aulas - p.aulas) + " aulas", li);
+        var meta = el("div", "meta", null, li);
+        var tr = el("span", "trilho", null, meta);
+        el("i", "", null, tr).style.width = Math.min(100, p.aulas / R.aulas * 100) + "%";
+        el("span", "", p.aulas + " aulas, " + p.meses + " meses no grau", meta);
+      });
+    });
+    var G = D.graduacao;
+    todos("[data-evento]", function (box) {
+      box.replaceChildren();
+      var ev = el("div", "ws-evento", null, box);
+      var dia = el("div", "dia", null, ev);
+      el("b", "", String(G.dia), dia); el("span", "", G.mes, dia);
+      var p = el("p", "", null, ev);
+      el("b", "", "Graduação anual World Strong", p);
+      p.appendChild(document.createTextNode(G.indicados + " indicados, " + G.pagaram + " já pagaram a taxa. Prazo " + G.prazo + "."));
+    });
+  }
+
+  /* ---------- 7. o funil da aula experimental ---------- */
+  function funil() {
+    var topo = D.funil[0][1];
+    todos("[data-funil]", function (box) {
+      box.replaceChildren();
+      D.funil.forEach(function (f, i) {
+        var li = el("li", i === D.funil.length - 1 ? "fim" : "", null, box);
+        el("span", "nome", f[0], li);
+        el("span", "num", String(f[1]), li);
+        var tr = el("span", "trilho", null, li);
+        el("i", "", null, tr).style.width = (f[1] / topo * 100) + "%";
+        if (i > 0) el("span", "passo", Math.round(f[1] / D.funil[i - 1][1] * 100) + "% do passo anterior", li);
+        comDica(li, [f[1] + " pessoas", f[0]]);
+      });
+    });
+  }
+
+  /* ---------- 8. as turmas (seg a sex, 10h, 14h, 19h15) ---------- */
+  function turmas() {
+    var max = 0, cheia = null;
+    D.turmas.forEach(function (t) { t[1].forEach(function (v, j) { if (v > max) { max = v; cheia = [D.dias[j], t[0]]; } }); });
+    todos("[data-turmas]", function (box) {
+      box.replaceChildren();
+      el("span", "", "", box);
+      D.dias.forEach(function (d) { el("span", "", d, box); });
+      D.turmas.forEach(function (t) {
+        el("span", "", t[0], box);
+        t[1].forEach(function (v, j) {
+          var nivel = Math.min(4, Math.floor(v / max * 4.999));
+          var i = el("i", nivel === 4 ? "claro" : "", String(v), box);
+          i.style.background = ESCALA[nivel];
+          comDica(i, [v + " alunos em média", D.dias[j] + ", turma das " + t[0]]);
+        });
+      });
+    });
+    todos("[data-turmas-frase]", function (box) {
+      box.textContent = "A média de alunos por turma. A das 19h15 lota, com " + max + " na " + {Seg:"segunda",Ter:"terça",Qua:"quarta",Qui:"quinta",Sex:"sexta"}[cheia[0]] + "; a das 14h tem espaço sobrando.";
+    });
+  }
+
+  /* ---------- 9. as camisetas ---------- */
+  function camisetas(box) {
+    box.replaceChildren();
+    var T = D.camisetas.tamanhos;
+    var W = Math.max(box.clientWidth, 220), H = 130, base = H - 22, topo = 20;
+    var max = Math.max.apply(null, T.map(function (t) { return t[1]; }));
+    var svg = s("svg", { width: W, height: H, viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": "Camisetas encomendadas por tamanho" }, box);
+    s("line", { x1: 0, x2: W, y1: base, y2: base, stroke: COR.fio, "stroke-width": 1 }, svg);
+    var passo = W / T.length, larg = Math.min(46, passo * .55);
+    T.forEach(function (t, i) {
+      var x = i * passo + (passo - larg) / 2, h = t[1] / max * (base - topo), y = base - h, r = Math.min(4, h / 2);
+      var d = "M" + x + "," + base + "V" + (y + r) + "Q" + x + "," + y + " " + (x + r) + "," + y + "H" + (x + larg - r) + "Q" + (x + larg) + "," + y + " " + (x + larg) + "," + (y + r) + "V" + base + "Z";
+      var g = s("g", {}, svg);
+      s("path", { d: d, fill: COR.tinta }, g);
+      s("rect", { x: x - 4, y: 0, width: larg + 8, height: base, fill: "transparent" }, g);
+      var n = texto({ x: x + larg / 2, y: y - 6, "text-anchor": "middle" }, String(t[1]), svg);
+      n.style.fill = COR.tinta; n.style.fontWeight = "700";
+      texto({ x: x + larg / 2, y: H - 6, "text-anchor": "middle" }, t[0], svg);
+      comDica(g, [t[1] + " no " + t[0], t[2] + " pagas, " + (t[1] - t[2]) + " falta pagar"]);
+    });
+  }
+  function camisetasPagas() {
+    var T = D.camisetas.tamanhos;
+    var pedidas = soma(T, function (t) { return t[1]; }), pagas = soma(T, function (t) { return t[2]; });
+    todos("[data-camisetas-pagas]", function (box) {
+      box.replaceChildren();
+      var pr = el("div", "ws-progresso", null, box);
+      var conta = el("div", "conta", null, pr);
+      var esq = el("span", "", null, conta);
+      el("b", "", String(pagas), esq);
+      esq.appendChild(document.createTextNode(" de " + pedidas + " pagas"));
+      el("span", "ws-estado vence", "Faltam " + (pedidas - pagas), conta);
+      var tr = el("div", "trilho", null, pr);
+      el("i", "", null, tr).style.width = (pagas / pedidas * 100) + "%";
+    });
+  }
+
+  /* ---------- 10. o caixa, mês a mês (colunas, uma série) ---------- */
+  function meses(box) {
+    box.replaceChildren();
+    var W = Math.max(box.clientWidth, 260), H = 170, base = H - 22, topo = 18;
+    var max = Math.max.apply(null, D.meses.map(function (m) { return m[1]; }));
+    var teto = Math.ceil(max / 2000) * 2000;
+    var svg = s("svg", { width: W, height: H, viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": "O caixa de cada mês, de maio a outubro" }, box);
+    [0, teto / 2, teto].forEach(function (v) {
+      var y = base - v / teto * (base - topo);
+      s("line", { x1: 40, x2: W, y1: y, y2: y, stroke: COR.fio, "stroke-width": 1 }, svg);
+      texto({ x: 34, y: y + 4, "text-anchor": "end" }, v === 0 ? "0" : (v / 1000) + " mil", svg);
+    });
+    var passo = (W - 48) / D.meses.length, larg = Math.min(56, passo * .5);
+    D.meses.forEach(function (m, i) {
+      var atual = i === D.meses.length - 1;
+      var x = 48 + i * passo + (passo - larg) / 2, h = m[1] / teto * (base - topo), y = base - h;
+      var r = Math.min(4, h / 2);
+      var d = "M" + x + "," + base + "V" + (y + r) + "Q" + x + "," + y + " " + (x + r) + "," + y + "H" + (x + larg - r) + "Q" + (x + larg) + "," + y + " " + (x + larg) + "," + (y + r) + "V" + base + "Z";
+      var g = s("g", {}, svg);
+      s("path", { d: d, fill: atual ? COR.clara : COR.tinta }, g);
+      s("rect", { x: x - 4, y: topo, width: larg + 8, height: base - topo, fill: "transparent" }, g);
+      texto({ x: x + larg / 2, y: H - 6, "text-anchor": "middle" }, m[0], svg);
+      if (atual) texto({ x: x + larg / 2, y: y - 6, "text-anchor": "middle" }, "até hoje", svg);
+      comDica(g, [real(m[1]), atual ? "Outubro, até hoje" : "Em " + m[0]]);
+    });
+  }
+
+  /* ---------- a mensagem do WhatsApp ---------- */
+  function mensagem() {
+    var A = D.corner[0], primeiro = A.nome.split(" ")[0];
+    todos("[data-mensagem]", function (box) {
+      box.replaceChildren();
+      box.appendChild(document.createTextNode("Oi, " + primeiro + "! Aqui é o André, da World Strong. A sua " + A.oque.toLowerCase() + " está em aberto, " + real(A.valor) + ". Pra pagar no Pix, é só abrir o "));
+      el("a", "", "app da World Strong", box);
+      box.appendChild(document.createTextNode(". Te espero no treino!"));
+      el("span", "hora", "18:42", box);
+    });
+  }
+
+  function graficos() {
+    todos("[data-meses]", meses);
+    todos("[data-camisetas]", camisetas);
+  }
+  caixa(); listas(); cinturao(); prontos(); funil(); turmas(); camisetasPagas(); mensagem(); graficos();
+  var espera;
+  addEventListener("resize", function () { clearTimeout(espera); espera = setTimeout(graficos, 150); });
+  if (document.fonts) document.fonts.ready.then(graficos);
+})();
+
+/* A nota acende o número dela na tela (mouse, foco ou toque). */
+document.querySelectorAll("[data-prancha]").forEach(function (prancha) {
+  prancha.querySelectorAll(".notas li").forEach(function (li) {
+    li.tabIndex = 0;
+    var alvo = prancha.querySelector('figure .pin[data-n="' + li.dataset.n + '"]');
+    if (!alvo) return;
+    var liga = function () { alvo.classList.add("acende"); };
+    var desliga = function () { alvo.classList.remove("acende"); };
+    li.addEventListener("mouseenter", liga);
+    li.addEventListener("mouseleave", desliga);
+    li.addEventListener("focus", liga);
+    li.addEventListener("blur", desliga);
+  });
+});
+</script>
+</body>
+</html>

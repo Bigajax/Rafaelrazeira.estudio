@@ -190,6 +190,20 @@ export const PROPOSTAS: Record<string, Proposta> = {
       avista_pix: { label: "Painel de visitas, pagamento único no Pix", valor: 499, metodo: "pix" },
     },
   },
+  /* World Strong (02/10/2026): não é vitrine, é o sistema de cobrança da
+     academia de Muay Thai do André (mensalidade, camiseta e graduação, com
+     aviso de atraso). R$ 1.997 uma vez só, sem mensalidade, decisão do
+     Rafael. Entrada + saldo na entrega, como as vitrines: dois
+     recebimentos. Ficha: 3 Clientes/projeto-world-strong-pg.md. */
+  "world-strong": {
+    titulo: "Rafael Razeira Estúdio, sistema de cobrança World Strong",
+    whatsapp: "5544991246187",
+    itens: {
+      entrada_pix: { label: "Entrada para início do projeto", valor: 497, metodo: "pix" },
+      saldo_pix: { label: "Saldo na entrega, no Pix", valor: 1500, metodo: "pix" },
+      saldo_card: { label: "Saldo na entrega, no cartão em até 4x", valor: 1500, metodo: "card", maxParcelas: 4 },
+    },
+  },
   /* A Fardo fecha como a Minas: pagamento único no Pix, sem entrada e
      sem parcelar (condição passada à Valeria em 24/09). O domínio, R$ 40
      por 1 ano, é cobrado à parte e não tem botão aqui. */
