@@ -16,7 +16,7 @@ export const pt = {
   lang: "pt" as Lang,
   meta: {
     title: "Portfólio",
-    description: "Projetos entregues pelo estúdio: vitrines digitais, e-commerce e sites para negócios reais. Todos no ar, e todos abrem no seu celular.",
+    description: "Projetos feitos pelo estúdio: vitrines digitais, e-commerce e sites para negócios reais. Todos no ar, e todos abrem no seu celular.",
   },
   header: { status: "RESPOSTA NO MESMO DIA", cta: "QUERO A MINHA ↓", logoHref: "/estudio/" },
   hero: {
@@ -25,7 +25,7 @@ export const pt = {
     projetos: "projetos",
     faixa: "Todos abrem agora",
     placar: "{n} de {m} no ar",
-    lead: "Vitrines, e-commerce e sites feitos neste estúdio. Toque em qualquer capa: o site abre no seu celular, com produto e preço reais.",
+    lead: "Vitrines, e-commerce e sites feitos neste estúdio. Toque em qualquer capa: o site abre no seu celular, com os produtos reais da loja.",
   },
   numeros: ["zero", "um", "dois", "três", "quatro", "cinco", "seis", "sete", "oito", "nove", "dez", "onze", "doze", "treze", "quatorze", "quinze", "dezesseis", "dezessete", "dezoito", "dezenove", "vinte"],
   tipos: {

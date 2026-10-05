@@ -8,7 +8,7 @@ export const en: PortfolioMessages = {
   lang: "en",
   meta: {
     title: "Portfolio",
-    description: "Projects delivered by the studio: digital storefronts, e-commerce and websites for real businesses. All live, all open on your phone.",
+    description: "Projects made by the studio: digital storefronts, e-commerce and websites for real businesses. All live, all open on your phone.",
   },
   header: { status: "SAME-DAY REPLY", cta: "I WANT MINE ↓", logoHref: "/en/portfolio" },
   hero: {
@@ -16,7 +16,7 @@ export const en: PortfolioMessages = {
     projetos: "projects",
     faixa: "All open right now",
     placar: "{n} of {m} live",
-    lead: "Storefronts, e-commerce and websites made in this studio. Tap any cover: the site opens on your phone, with real products and prices.",
+    lead: "Storefronts, e-commerce and websites made in this studio. Tap any cover: the site opens on your phone, with the store's real products.",
   },
   numeros: ["zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen", "Twenty"],
   tipos: {

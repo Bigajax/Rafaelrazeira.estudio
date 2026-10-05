@@ -38,6 +38,33 @@ const temCapa = (slug: string) => existsSync(path.join(process.cwd(), "public", 
    faixa passa a dizer "10 de 11 no ar" sozinha, que é a verdade. */
 const noAr = projetos.filter(p => p.url).length;
 
+/* ---------- a última fileira fecha sozinha (05/10/2026) ----------
+   Com dez projetos a conta da grade era feita à mão (os dois destaques na
+   1ª e na 4ª posição fechavam 2+1 / 1+2 / 3 / 3). Com todas as vitrines
+   dentro a lista passou de cem e muda toda semana, então a conta é feita
+   aqui: percorre a grade como o navegador faz (destaque ocupa duas
+   colunas, e se não couber na fileira ele desce e deixa o buraco) e diz
+   quantas células sobram vazias na última fileira.
+   Sobrou UMA: o último card estica para duas colunas naquela largura
+   (`.fecha2` / `.fecha3` no CSS). Sobraram duas em três colunas: fica o
+   buraco, porque esticar um card para a largura toda viraria um terceiro
+   tamanho na grade. */
+function sobra(colunas: number) {
+  let col = 0;
+  for (const p of projetos) {
+    const span = p.destaque ? 2 : 1;
+    if (col + span > colunas) col = 0;
+    col = (col + span) % colunas;
+  }
+  return col === 0 ? 0 : colunas - col;
+}
+const fechaUltimo = [sobra(2) === 1 && s.fecha2, sobra(3) === 1 && s.fecha3].filter(Boolean).join(" ");
+
+/* A tira anda na mesma velocidade qualquer que seja o tamanho da lista:
+   eram 34s para dez nomes, então 3,4s por nome. Com duração fixa, cem
+   nomes passariam a quase 500px por segundo, ilegíveis. */
+const tiraDuracao = `${projetos.length * 3.4}s`;
+
 export function PortfolioPage({ lang, t }: { lang: Lang; t: PortfolioMessages }) {
   const ptHref = "/portfolio";
   const enHref = PARES["/portfolio"];
@@ -106,7 +133,7 @@ export function PortfolioPage({ lang, t }: { lang: Lang; t: PortfolioMessages })
           A tira leva todos os nomes, na ordem do dado. `aria-hidden`
           porque os mesmos nomes estão logo abaixo, em h3, com endereço. */}
       <div className={s.tira} aria-hidden>
-        <div className={s.tiraTrack}>
+        <div className={s.tiraTrack} style={{ animationDuration: tiraDuracao }}>
           {[...projetos, ...projetos].map((p, i) => <span key={i}>{p.nome}</span>)}
         </div>
       </div>
@@ -114,7 +141,7 @@ export function PortfolioPage({ lang, t }: { lang: Lang; t: PortfolioMessages })
           fundo com o papel da página. */}
       <section className={`${s.section} ${s.dark}`} id="projetos">
         <div className={`${s.wrap} ${s.grade}`}>
-          {projetos.map((p, i) => <ProjectCard key={p.slug} projeto={p} lang={lang} t={t} temCapa={temCapa(p.slug)} prioridade={i === 0} />)}
+          {projetos.map((p, i) => <ProjectCard key={p.slug} projeto={p} lang={lang} t={t} temCapa={temCapa(p.slug)} prioridade={i === 0} classeExtra={i === projetos.length - 1 ? fechaUltimo : undefined} />)}
         </div>
       </section>
       {/* O único lugar da página que abre conversa, depois da prova inteira. */}

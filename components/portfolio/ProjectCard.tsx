@@ -31,12 +31,12 @@ import s from "@/app/(pt)/portfolio/portfolio.module.css";
    Em 11/09/2026 os textos (chip, alt, aria-label, tipo) passaram a vir
    do dicionário da página, e o ramo vem de `ramo`/`ramoEn` conforme o
    idioma. Nome e endereço não traduzem. */
-export function ProjectCard({ projeto, lang, t, temCapa, prioridade = false }: { projeto: Projeto; lang: Lang; t: PortfolioMessages; temCapa: boolean; prioridade?: boolean }) {
+export function ProjectCard({ projeto, lang, t, temCapa, prioridade = false, classeExtra }: { projeto: Projeto; lang: Lang; t: PortfolioMessages; temCapa: boolean; prioridade?: boolean; classeExtra?: string }) {
   const { nome, slug, tipo, destaque, url } = projeto;
   const ramo = lang === "en" ? projeto.ramoEn : projeto.ramo;
   const rotuloTipo = t.tipos[tipo].toUpperCase();
   const dominio = url ? new URL(url).host : "";
-  const classe = destaque ? `${s.card} ${s.destaque}` : s.card;
+  const classe = [s.card, destaque && s.destaque, classeExtra].filter(Boolean).join(" ");
 
   const miolo = <>
     <div className={s.janela}>

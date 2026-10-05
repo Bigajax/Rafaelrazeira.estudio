@@ -12,29 +12,25 @@ const OUT = path.join(__dir, "..", "public", "portfolio");
 const CHROME = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
-const SITES = {
-  "xaviers-sports": "https://xavier-s-sports.vercel.app",
-  "pr-grife": "https://pr-grife.vercel.app",
-  "pr-gold": "https://prgold.vercel.app",
-  "filato-bene": "https://filato-bene.vercel.app",
-  "solo-urb": "https://s-lo-urb.vercel.app",
-  "lancellotti": "https://lancellotti-tattoo-clinic.vercel.app",
-  "baixudos": "https://baixudos.vercel.app",
-  "star-point": "https://star-point-wheat.vercel.app",
-  "bella-black": "https://bella-black-three.vercel.app",
-  // veritlab.com.br não resolve DNS; o deploy da Vercel é o endereço válido
-  "verit-lab": "https://verit-lab.vercel.app",
-};
+/* A lista vem de data/portfolio.ts, a mesma que a página lê: até 05/10 o
+   script tinha um mapa próprio, e com 109 projetos duas listas iam divergir.
+   Lê slug e url de cada linha por regex (o arquivo é TS e isto é .mjs). */
+const DADOS = fs.readFileSync(path.join(__dir, "..", "data", "portfolio.ts"), "utf8");
+const SITES = Object.fromEntries(
+  [...DADOS.matchAll(/slug: "([^"]+)"[^\n]*?url: "([^"]+)"/g)].map((m) => [m[1], m[2]]),
+);
 
 // slug=url na linha de comando entra na lista (ou substitui a URL padrão)
 const alvos = { ...SITES };
-for (const arg of process.argv.slice(2)) {
+for (const arg of process.argv.slice(2).filter((a) => a.includes("="))) {
   const [slug, ...resto] = arg.split("=");
   alvos[slug] = resto.join("=");
 }
-// com argumentos, captura só o que foi pedido; sem, captura a lista inteira
-const soPedidos = process.argv.length > 2;
-const lista = soPedidos ? process.argv.slice(2).map((a) => a.split("=")[0]) : Object.keys(alvos);
+// com argumentos, captura só o que foi pedido; sem, captura a lista inteira.
+// --faltam captura só os projetos que ainda não têm capa
+const args = process.argv.slice(2).filter((a) => a !== "--faltam");
+const lista = (args.length ? args.map((a) => a.split("=")[0]) : Object.keys(alvos))
+  .filter((slug) => !process.argv.includes("--faltam") || !fs.existsSync(path.join(OUT, `${slug}.webp`)));
 
 fs.mkdirSync(OUT, { recursive: true });
 const browser = await puppeteer.launch({

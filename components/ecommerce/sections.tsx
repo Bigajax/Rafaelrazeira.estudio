@@ -418,7 +418,7 @@ export function QuemFaz() {
       <p className={s.olho}>QUEM FAZ</p>
       <h2>Uma pessoa.<br />Não uma <em>agência.</em></h2>
       <p>Eu sou o Rafael. Desenho, desenvolvo e publico cada loja, e é comigo que você fala no WhatsApp, do primeiro oi até o e-commerce no ar. Sem fila de atendimento, sem gerente de conta, sem telefone que ninguém atende.</p>
-      <p>As duas lojas desta página? Feitas nesta mesa, junto com os outros sete projetos do portfólio.</p>
+      <p>As duas lojas desta página? Feitas nesta mesa, junto com os outros {NO_AR - 2} projetos do portfólio.</p>
       <ul className={s.quemFacts}>
         {["MARINGÁ · PR", `${NO_AR} PROJETOS NO AR`, "RESPOSTA NO MESMO DIA"].map(x => <li key={x}>{x}</li>)}
       </ul>

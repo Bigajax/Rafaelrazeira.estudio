@@ -336,8 +336,9 @@ html:has(.site) { scroll-behavior: smooth }
    contrário de deixar o trabalho falar.
 
    ---------- por que exatamente dois, e naquelas posições ----------
-   São dez itens em três colunas. Com os destaques na 1ª e na 4ª posição, a
-   conta fecha em quatro fileiras cheias, sem buraco:
+   Os destaques ficam na 1ª e na 4ª posição, e as duas primeiras fileiras
+   fecham sempre assim (o resto é card simples, e a última fileira quem
+   fecha é o `.fecha2` / `.fecha3`, desde 05/10/2026):
 
        2+1  |  1+2  |  3  |  3
 
@@ -367,6 +368,18 @@ html:has(.site) { scroll-behavior: smooth }
   .destaque .tela { aspect-ratio: 21 / 9 }
 }
 @media (min-width: 1080px) { .grade { grid-template-columns: 1fr 1fr 1fr } }
+/* O último card estica para fechar a fileira quando sobraria UMA célula
+   vazia naquela largura. Quem decide é a conta do PortfolioPage (`sobra`),
+   não o CSS: a sobra depende de quantos destaques há e onde. Ele usa o
+   mesmo corte 21/9 do destaque, pelo mesmo motivo. */
+@media (min-width: 700px) and (max-width: 1079.98px) {
+  .fecha2 { grid-column: span 2 }
+  .fecha2 .tela { aspect-ratio: 21 / 9 }
+}
+@media (min-width: 1080px) {
+  .fecha3 { grid-column: span 2 }
+  .fecha3 .tela { aspect-ratio: 21 / 9 }
+}
 
 /* ---------- o card ----------
    O card inteiro é o link (ver ProjectCard.tsx). `display: grid` com
