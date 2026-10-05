@@ -69,7 +69,9 @@ try {
   await new Promise((r) => setTimeout(r, 800));
 
   const mapa = await p.evaluate(() =>
-    [...document.querySelectorAll("main > section, main > div")].map((e) => {
+    /* o nav entra desde 05/10: os atalhos de categoria da SneakerSpot são um
+       <nav> e ficavam fora do mapa */
+    [...document.querySelectorAll("main > section, main > div, main > nav")].map((e) => {
       const r = e.getBoundingClientRect();
       return {
         id: e.id,

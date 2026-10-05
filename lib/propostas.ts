@@ -228,6 +228,20 @@ export const PROPOSTAS: Record<string, Proposta> = {
       avista_pix: { label: "Vitrine digital, pagamento único no Pix", valor: 999, metodo: "pix" },
     },
   },
+  /* A SneakerSpot (05/10/2026), decisão do Rafael: R$ 997 À VISTA no Pix,
+     com a opção de parcelar no cartão em até 12x COM os juros do Mercado
+     Pago. O valor do cartão é o mesmo R$ 997 (nada somado); o Brick
+     calcula cada parcela na hora. Consultado na conta em 05/10: só o 1x
+     sai a R$ 997 cravados, e de 2x em diante o juro é do comprador (12x =
+     R$ 1.217,44). Sem entrada, como a VAYLW. Domínio à parte, sem botão. */
+  sneakerspot: {
+    titulo: "Rafael Razeira Estúdio, Vitrine Digital SneakerSpot",
+    whatsapp: "5544991246187",
+    itens: {
+      avista_pix: { label: "Vitrine digital, à vista no Pix", valor: 997, metodo: "pix" },
+      avista_card: { label: "Vitrine digital, no cartão em até 12x", valor: 997, metodo: "card", maxParcelas: 12 },
+    },
+  },
   /* A Full Time fecha em R$ 799 (28/09): pediu para melhorar o valor
      ("estamos no começo e as vendas não estão fácil, época de eleição").
      Em 29/09 o Rafael mudou a forma: 20% de entrada no Pix, no aceite, e o
