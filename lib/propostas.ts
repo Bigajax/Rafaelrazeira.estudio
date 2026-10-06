@@ -442,4 +442,20 @@ export const PROPOSTAS: Record<string, Proposta> = {
       mes1_escala: { label: "Primeiro mês do plano Escala, com a instalação da medição", valor: 997, metodo: "pix" },
     },
   },
+  /* A HG Surf Wear (06/10/2026), decisão do Rafael: duas formas na mesma
+     página. À vista no Pix, R$ 899, um recebimento só (o desconto de pagar
+     de uma vez, sem bloco de condição especial). Ou os R$ 999 de tabela em
+     duas partes: entrada de R$ 199 no Pix no aceite e saldo de R$ 800 na
+     entrega, no Pix ou no cartão em até 4x COM os juros do Mercado Pago
+     (o Brick calcula; nada somado aqui). Domínio à parte, sem botão. */
+  "hg-surf-wear": {
+    titulo: "Rafael Razeira Estúdio, Vitrine Digital HG Surf Wear",
+    whatsapp: "5544991246187",
+    itens: {
+      avista_pix: { label: "À vista no Pix", valor: 899, metodo: "pix" },
+      entrada_pix: { label: "Entrada para início do projeto", valor: 199, metodo: "pix" },
+      saldo_pix: { label: "Saldo na entrega, no Pix", valor: 800, metodo: "pix" },
+      saldo_card: { label: "Saldo na entrega, no cartão em até 4x", valor: 800, metodo: "card", maxParcelas: 4 },
+    },
+  },
 };
