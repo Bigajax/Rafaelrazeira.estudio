@@ -55,7 +55,7 @@ const EXEMPLO: Metricas = {
   respostas: { responderam: 18, contatados: 29 },
   cicloMedio: 19,
   pipelineAberto: 27400,
-  faturamento: 8400,
+  vendido: 8400,
   ganhos: 3,
   motivos: [
     ["sem_resposta", 4],
@@ -137,9 +137,9 @@ export default async function PaginaMetricas({
           fraca é ausência de dado. */}
       <section className={s.placar}>
         <div className={s.placarCel}>
-          <span>Pipeline aberto</span>
+          <span>Funil aberto</span>
           <b className={s.placarNum}>{dinheiro(m.pipelineAberto) || "R$ 0"}</b>
-          <small>soma dos tickets estimados nos estágios ativos, hoje</small>
+          <small>soma dos tickets estimados de quem está no funil hoje, sem a geladeira</small>
         </div>
 
         {/* "Vendas fechadas" e não "faturamento", desde que o Caixa existe
@@ -150,9 +150,9 @@ export default async function PaginaMetricas({
             número só teria que mentir sobre um dos dois meses. A palavra
             "faturamento" prometia a segunda coisa e entregava a primeira. */}
         <div className={s.placarCel}>
-          <span>Vendas fechadas</span>
-          <b className={`${s.placarNum} ${m.faturamento ? s.placarGanho : ""}`}>
-            {dinheiro(m.faturamento) || "R$ 0"}
+          <span>Vendido no período</span>
+          <b className={`${s.placarNum} ${m.vendido ? s.placarGanho : ""}`}>
+            {dinheiro(m.vendido) || "R$ 0"}
           </b>
           <small>
             {m.ganhos} {m.ganhos === 1 ? "projeto ganho" : "projetos ganhos"} no período. O que

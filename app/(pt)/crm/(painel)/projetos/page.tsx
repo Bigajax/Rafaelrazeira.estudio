@@ -58,7 +58,7 @@ export default async function PaginaProjetos() {
 
       {lista.length === 0 ? (
         <p className={p.vazio}>
-          Quando um card do Pipeline for para <b>ganho</b>, ele aparece aqui como projeto.
+          Quando um card do Funil for para <b>ganho</b>, ele aparece aqui como projeto.
         </p>
       ) : (
         <ol className={p.lista}>

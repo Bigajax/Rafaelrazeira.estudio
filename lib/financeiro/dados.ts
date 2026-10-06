@@ -22,7 +22,9 @@ export async function financeiro(ano: number) {
   const supabase = await clienteServidor();
   const [custos, recebimentos, dolar, ganhos, ciclo] = await Promise.all([
     supabase.from("fin_custos").select("*").order("inicio").order("created_at").returns<Custo[]>(),
-    supabase.from("crm_recebimentos").select("valor, valor_liquido, recebido_em").order("recebido_em").returns<Recebimento[]>(),
+    /* `estornado_em` nulo: o estorno já saía do Caixa e continuava no DRE
+       (06/10). A mesma régua do Caixa, `contaNoCaixa`, no banco. */
+    supabase.from("crm_recebimentos").select("valor, valor_liquido, recebido_em").is("estornado_em", null).order("recebido_em").returns<Recebimento[]>(),
     cotacaoDolar(),
     /* as vendas fechadas: o ticket médio real e quantas por mês */
     supabase.from("crm_leads").select("valor_fechado, fechado_em").eq("estagio", "ganho").returns<{ valor_fechado: number | null; fechado_em: string | null }[]>(),

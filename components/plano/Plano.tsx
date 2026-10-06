@@ -65,12 +65,13 @@ type Props = {
   valores: Valores;
   rmrs: Rmr[];
   recebido: Partial<Record<number, number>>;
+  vendido?: Partial<Record<number, number>>;
 };
 
 const ORDEM_P: Record<Prioridade, number> = { P1: 0, P2: 1, P3: 2 };
 const FAIXA_CLASSE = { bateu: p.fBateu, perto: p.fPerto, atencao: p.fAtencao, fora: p.fFora, sem: p.fSem };
 
-export function Plano({ ano, ate, ciclo, projetos, metas, valores, rmrs, recebido }: Props) {
+export function Plano({ ano, ate, ciclo, projetos, metas, valores, rmrs, recebido, vendido = {} }: Props) {
   const router = useRouter();
   const [pendente, comecar] = useTransition();
   const [aviso, setAviso] = useState<string | null>(null);
@@ -130,7 +131,7 @@ export function Plano({ ano, ate, ciclo, projetos, metas, valores, rmrs, recebid
       {aviso ? <p className={p.erro}>{aviso}</p> : null}
 
       {/* ---------- a subida: o placar que se vê de longe ---------- */}
-      <Subida ano={ano} ate={ate} degraus={ciclo?.premios ?? []} recebido={recebido} visao={ciclo?.visao ?? null} horizonte={ciclo?.horizonte ?? null} />
+      <Subida ano={ano} ate={ate} degraus={ciclo?.premios ?? []} recebido={recebido} vendido={vendido}visao={ciclo?.visao ?? null} horizonte={ciclo?.horizonte ?? null} />
 
       <div className={p.placar} aria-label="Placar do ano">
         <div className={FAIXA_CLASSE[faixa(nota)]}>
@@ -331,7 +332,7 @@ function EditarPremios({ ano, ciclo, rodar, fechar }: { ano: number; ciclo: Cicl
           <div key={i} className={p.degrauEdita}>
             <input value={d.nome} onChange={(e) => mudar(i, { nome: e.target.value })} placeholder="O prêmio" maxLength={80} aria-label="Prêmio" />
             <label>
-              R$ <input type="number" min={1} value={d.patamar || ""} onChange={(e) => mudar(i, { patamar: Number(e.target.value) })} aria-label="Faturamento no mês" /> no mês
+              R$ <input type="number" min={1} value={d.patamar || ""} onChange={(e) => mudar(i, { patamar: Number(e.target.value) })} aria-label="Entrou no Caixa no mês" /> no mês
             </label>
             <label>
               por <input type="number" min={1} max={12} value={d.meses} onChange={(e) => mudar(i, { meses: Number(e.target.value) || 1 })} aria-label="Meses seguidos" />

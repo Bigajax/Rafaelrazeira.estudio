@@ -19,8 +19,10 @@ import { useState, useTransition } from "react";
 import {
   adiarCobranca,
   apagarRecebimento,
+  cancelarContrato,
   cancelarParcela,
   estornarRecebimento,
+  gerarProximasMensalidades,
   reativarParcela,
 } from "@/app/(pt)/crm/acoes";
 import { BaixaRapida } from "./BaixaRapida";
@@ -65,7 +67,7 @@ export function BlocoContrato({
           Montar contrato
         </button>
         {montando ? (
-          <ModalContrato lead={lead} hoje={hoje} aoFechar={() => setMontando(false)} />
+          <ModalContrato lead={lead} hoje={hoje} ganhar aoFechar={() => setMontando(false)} />
         ) : null}
       </section>
     );
@@ -91,11 +93,15 @@ export function BlocoContrato({
 function Contrato({ contrato, hoje }: { contrato: ContratoPainel; hoje: string }) {
   const q = quitacaoDoContrato(contrato, contrato.parcelas);
   const vivas = contrato.parcelas.filter((p) => !p.cancelada_em);
+  const cancelado = contrato.status === "cancelado";
 
   return (
     <section className={s.bloco}>
       <div className={s.contratoCab}>
-        <h2>{contrato.titulo}</h2>
+        <h2>
+          {contrato.titulo}
+          {cancelado ? <span className={s.parcelaSinal}> · cancelado</span> : null}
+        </h2>
         <b className={s.contratoTotal}>{dinheiroExato(q.total)}</b>
       </div>
 
@@ -106,10 +112,14 @@ function Contrato({ contrato, hoje }: { contrato: ContratoPainel; hoje: string }
         />
       </span>
       <p className={s.blocoNota}>
-        {q.quitado
-          ? `Quitado: entraram ${dinheiroExato(q.pago)}.`
-          : `Entraram ${dinheiroExato(q.pago)} de ${dinheiroExato(q.total)}. Faltam ${dinheiroExato(q.saldo)}.`}
-        {q.semParcela > 0.005
+        {cancelado
+          ? /* contrato morto não deve, não cobra e não tem "furo no plano":
+               as parcelas que deviam foram canceladas junto */
+            `Cancelado. Entraram ${dinheiroExato(q.pago)} antes de cancelar, e isso fica no histórico.`
+          : q.quitado
+            ? `Quitado: entraram ${dinheiroExato(q.pago)}.`
+            : `Entraram ${dinheiroExato(q.pago)} de ${dinheiroExato(q.total)}. Faltam ${dinheiroExato(q.saldo)}.`}
+        {!cancelado && q.semParcela > 0.005
           ? ` Atenção: ${dinheiroExato(q.semParcela)} do total não têm parcela nenhuma cobrindo.`
           : ""}
       </p>
@@ -124,6 +134,14 @@ function Contrato({ contrato, hoje }: { contrato: ContratoPainel; hoje: string }
         <p className={s.blocoNota}>Todas as parcelas deste contrato foram canceladas.</p>
       ) : null}
 
+      {contrato.tipo === "recorrencia" && !cancelado ? <MaisMensalidades contratoId={contrato.id} /> : null}
+
+      {/* CANCELAR (06/10): a venda que não aconteceu. Deixa o histórico, tira
+          as parcelas que ainda deviam da cobrança e refaz o valor do lead.
+          Só aparece com dívida de pé: cancelar contrato quitado não quer
+          dizer nada. */}
+      {!cancelado && !q.quitado ? <CancelarContrato contratoId={contrato.id} titulo={contrato.titulo} saldo={q.saldo} /> : null}
+
       {contrato.avulsos.length ? (
         <>
           <p className={`${s.blocoNota} ${s.notaAlerta}`}>
@@ -135,6 +153,79 @@ function Contrato({ contrato, hoje }: { contrato: ContratoPainel; hoje: string }
         </>
       ) : null}
     </section>
+  );
+}
+
+function CancelarContrato({ contratoId, titulo, saldo }: { contratoId: string; titulo: string; saldo: number }) {
+  const [aberto, setAberto] = useState(false);
+  const [erro, setErro] = useState<string | null>(null);
+  const [salvando, comecar] = useTransition();
+  const confirmar = () =>
+    comecar(async () => {
+      setErro(null);
+      const r = await cancelarContrato(contratoId);
+      if (r.ok) setAberto(false);
+      else setErro("erro" in r ? r.erro : "Não deu para cancelar.");
+    });
+  return (
+    <div className={s.acaoIsolada}>
+      {aberto ? (
+        <div className={`${s.gavetaFila} ${s.gavetaRisco}`}>
+          <p className={s.gavetaTitulo}>Cancelar {titulo}?</p>
+          <p className={s.gavetaTexto}>
+            As parcelas que ainda deviam ({dinheiroExato(saldo)}) saem da cobrança. O que já entrou fica no histórico. O
+            valor vendido do lead é refeito sem este contrato.
+          </p>
+          {erro ? (
+            <p role="alert" className={s.erro}>
+              {erro}
+            </p>
+          ) : null}
+          <div className={s.gavetaPe}>
+            <button type="button" className={s.btnMini} onClick={() => setAberto(false)}>
+              Voltar
+            </button>
+            <button type="button" className={`${s.btnMini} ${s.btnMiniForte}`} onClick={confirmar} disabled={salvando}>
+              {salvando ? "Cancelando…" : "Cancelar o contrato"}
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button type="button" className={s.btnMini} onClick={() => setAberto(true)} title="A venda não aconteceu">
+          Cancelar contrato
+        </button>
+      )}
+    </div>
+  );
+}
+
+/* A mensalidade nasce com três parcelas e cresce daqui: mais três a partir
+   da última, no mesmo dia e no mesmo valor. */
+function MaisMensalidades({ contratoId }: { contratoId: string }) {
+  const [erro, setErro] = useState<string | null>(null);
+  const [salvando, comecar] = useTransition();
+  return (
+    <div className={s.acaoIsolada}>
+      <button
+        type="button"
+        className={s.btnMini}
+        disabled={salvando}
+        onClick={() => {
+          setErro(null);
+          comecar(async () => {
+            const r = await gerarProximasMensalidades(contratoId, 3);
+            if (!r.ok) setErro("erro" in r ? r.erro : "Não deu para gerar as mensalidades.");
+          });
+        }}
+      >
+        {salvando ? "Gerando…" : "Gerar mais 3 meses"}
+      </button>
+      {erro ? (
+        <p role="alert" className={s.erro}>
+          {erro}
+        </p>
+      ) : null}
+    </div>
   );
 }
 

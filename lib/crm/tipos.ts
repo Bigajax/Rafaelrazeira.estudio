@@ -143,7 +143,10 @@ export const NOME_ORIGEM: Record<Origem, string> = {
   prospeccao: "Prospecção",
   indicacao: "Indicação",
   trafego_pago: "Tráfego pago",
-  inbound: "Formulário do site",
+  /* Era "Formulário do site" (06/10): quem escreve direto pela bio, pelo
+     direct ou pelo botão do site também me procurou, e anotado como
+     Prospecção caía no fim da fila. O valor no banco continua `inbound`. */
+  inbound: "Me procurou (site, bio, direct)",
   evento: "Evento",
 };
 
@@ -230,7 +233,11 @@ export const NOME_MOTIVO: Record<MotivoPerda, string> = {
   preco: "Preço",
   sem_interesse: "Não tem interesse",
   sem_resposta: "Sumiu, sem resposta",
-  timing: "Não é a hora",
+  /* Era "Não é a hora" (06/10), a mesma frase da resposta `depois`, que leva
+     à Geladeira e VOLTA. Perdido por timing não volta: adiou e não marcou
+     data. A mesma frase para destinos opostos era a confusão mais grave do
+     vocabulário. */
+  timing: "Adiou sem data",
   fechou_com_outro: "Fechou com outro",
   fora_do_perfil: "Fora do perfil",
   desistiu: "Desistiu do projeto",
@@ -291,6 +298,24 @@ export const NOME_CATEGORIA: Record<CategoriaTemplate, string> = {
    A separação entre as duas últimas é o que deixa o webhook do Mercado
    Pago gravar primeiro e entender depois. Ver a nota longa na migração de
    20/08 em supabase/crm.sql.
+
+   ---------- OS QUATRO NÚMEROS (06/10) ----------
+   Toda tela que fala de dinheiro fala de UM destes quatro, e cada um tem
+   uma fonte só. Dois nomes para o mesmo número, ou o mesmo nome para dois
+   números, foi o que fez o Rafael olhar o Caixa, o Financeiro e o Plano e
+   achar que estavam "desintegrados".
+
+     FUNIL ABERTO .. `ticket_estimado` dos leads ativos sem a geladeira
+                     (ESTAGIOS_NO_PIPELINE). Hoje, Funil e Métricas.
+     VENDIDO ....... `valor_fechado` por `fechado_em`: o espelho dos
+                     contratos de projeto ATIVOS do lead (soma dos totais,
+                     data do primeiro). Métricas, Financeiro "vendido",
+                     Subida do Plano. Nunca "faturamento".
+     RECEBIDO ...... `crm_recebimentos` sem `estornado_em`, por
+                     `recebido_em`. Caixa "entrou", DRE do Financeiro,
+                     degraus do prêmio.
+     A RECEBER ..... saldo das parcelas vivas de contratos ativos. "Para
+                     cobrar" é a fatia dele cujo dia chegou (`cobravel`).
    ============================================================ */
 
 export const METODOS = ["pix", "cartao", "boleto", "transferencia", "dinheiro", "permuta"] as const;
@@ -536,3 +561,39 @@ export type Template = {
 };
 
 export type Meta = { id: string; toques_semana: number };
+
+/* ============================================================
+   PERFORMANCE: a contagem das vitrines, no banco do estúdio (06/10/2026)
+   Ver supabase/performance.sql. Uma linha por loja; a chave em si nunca
+   fica guardada, só o hash e o começo dela.
+   ============================================================ */
+export type PerfLoja = {
+  id: string;
+  owner_id: string;
+  lead_id: string | null;
+  prod_loja_id: string | null;
+  contrato_id: string | null;
+  nome: string;
+  slug: string;
+  dominio: string | null;
+  chave_prefixo: string | null;
+  liberado_ate: string | null;
+  para_sempre: boolean;
+  ativa: boolean;
+  fuso: string;
+  criado_em: string;
+  updated_at: string;
+};
+
+/* O que perf_resumo_lojas() devolve por loja. */
+export type PerfResumo = {
+  loja_id: string;
+  ultimo_evento_em: string | null;
+  pessoas_7d: number;
+  chamaram_7d: number;
+  /** o gancho da venda: nos últimos 30 dias, quantas pessoas procuraram o que a loja não tem */
+  buscas_30d: number;
+  /** e quantas tocaram num número que acabou */
+  esgotados_30d: number;
+  eventos_total: number;
+};

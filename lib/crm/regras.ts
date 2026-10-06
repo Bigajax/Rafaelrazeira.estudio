@@ -76,6 +76,19 @@ export function somarDias(iso: string, dias: number): string {
   return `${dt.getUTCFullYear()}-${String(dt.getUTCMonth() + 1).padStart(2, "0")}-${String(dt.getUTCDate()).padStart(2, "0")}`;
 }
 
+/**
+ * N meses à frente, no MESMO dia do mês. Dia 31 em mês de 30 cai no 30, e
+ * fevereiro segura o que couber: uma mensalidade que "pula" um mês porque o
+ * dia não existe é pior do que uma que vence dois dias antes.
+ */
+export function somarMeses(iso: string, meses: number): string {
+  const [a, m, d] = iso.split("-").map(Number);
+  const alvo = new Date(Date.UTC(a, m - 1 + meses, 1, 12));
+  const ultimo = new Date(Date.UTC(alvo.getUTCFullYear(), alvo.getUTCMonth() + 1, 0, 12)).getUTCDate();
+  const dia = Math.min(d, ultimo);
+  return `${alvo.getUTCFullYear()}-${String(alvo.getUTCMonth() + 1).padStart(2, "0")}-${String(dia).padStart(2, "0")}`;
+}
+
 /** Dias inteiros entre duas datas ISO. Positivo quando `fim` é depois. */
 export function diasEntre(inicio: string, fim: string): number {
   const p = (iso: string) => {
@@ -183,6 +196,32 @@ export type Urgencia = "atrasado" | "hoje" | "agendado" | "sem_passo";
    morna, mas ninguém preencheu nada. */
 export const procurouOEstudio = (lead: Pick<Lead, "origem">): boolean =>
   lead.origem === "trafego_pago" || lead.origem === "inbound";
+
+/* ---------- CONTATO QUENTE (06/10/2026) ----------
+   Quem está esperando EU falar, e por isso abre a fila do dia. Dois casos:
+     1. a última palavra da conversa é da pessoa: escreveu no WhatsApp,
+        preencheu o formulário de novo, respondeu o garimpo. Vale para
+        qualquer origem, porque quem responde deixou de ser garimpo;
+     2. procurou o estúdio e ainda não recebeu nada meu (zero saídas).
+   O caso que pediu a regra: quem chega pela bio, pelo site ou pela
+   landing e escreve direto no WhatsApp não vira card sozinho (o leitor
+   ignora número que não é lead), é anotado à mão, e o "Anotar lead"
+   nascia como Prospecção: o card caía na metade do garimpo, que anda do
+   mais parado para o mais novo, então o recém-chegado ia para o FIM da
+   fila de 500. Em 06/10 havia ainda 50 cards do formulário sem nenhuma
+   mensagem minha, atrás de quem eu já estava cobrando.
+   O que nunca fazer: usar a data de cadastro para ordenar quem é quente.
+   Um card de agosto que me escreveu hoje é o mais quente da fila. */
+export const contatoQuente = (
+  lead: Pick<LeadPainel, "origem" | "toques" | "toques_entrada" | "saidas_seguidas">,
+): boolean =>
+  (lead.toques_entrada > 0 && lead.saidas_seguidas === 0) ||
+  (procurouOEstudio(lead) && lead.toques === lead.toques_entrada);
+
+/* Quando a pessoa chegou: o último toque (que, no quente, é dela) ou o
+   cadastro, para o card anotado sem toque nenhum. */
+export const momentoDoContato = (lead: Pick<Lead, "ultimo_toque_em" | "created_at">): string =>
+  lead.ultimo_toque_em ?? lead.created_at;
 
 export function urgencia(lead: Pick<Lead, "estagio" | "proxima_acao_em">, hoje = hojeSP()): Urgencia {
   if (!ehAtivo(lead.estagio)) return "agendado";

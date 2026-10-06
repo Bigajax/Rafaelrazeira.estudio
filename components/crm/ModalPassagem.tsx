@@ -43,7 +43,7 @@ import s from "@/app/(pt)/crm/crm.module.css";
 const CHAMADA: Partial<Record<Estagio, string>> = {
   perdido: "Perder faz parte, mas perder sem saber por quê custa o aprendizado inteiro.",
   ganho: "Fechou. Registre o valor para o faturamento do mês bater.",
-  proposta: "Proposta sem ticket estimado deixa a soma do pipeline mentindo.",
+  proposta: "Proposta sem ticket estimado deixa a soma do funil mentindo.",
   /* A geladeira sai do quadro e por isso a data é a única corda presa
      nela: sem ela, guardar um lead é o mesmo que perdê-lo. */
   geladeira: "Ele sai do quadro e volta sozinho na fila do dia, na data que você marcar.",

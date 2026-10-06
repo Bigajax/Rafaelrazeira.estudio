@@ -47,11 +47,21 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { arrobaDe, diasEntre, dinheiroCurto, JANELA_HORIZONTE, procurouOEstudio, urgencia } from "@/lib/crm/regras";
+import {
+  arrobaDe,
+  contatoQuente,
+  diasEntre,
+  dinheiroCurto,
+  JANELA_HORIZONTE,
+  momentoDoContato,
+  procurouOEstudio,
+  urgencia,
+} from "@/lib/crm/regras";
 import { NOME_ESTAGIO, type LeadPainel, type Template } from "@/lib/crm/tipos";
 import { CartaDaVez } from "./CartaDaVez";
 import { ModalMensagem } from "./ModalMensagem";
 import { ModalNovoLead } from "./ModalNovoLead";
+import { ModalContrato } from "./ModalContrato";
 import { ModalToque } from "./ModalToque";
 import { PostDoDia } from "@/components/marketing/PostDoDia";
 import type { Peca } from "@/lib/marketing/tipos";
@@ -156,6 +166,7 @@ const FOLHA: Record<string, string> = {
 export function Hoje({ painel, templates, posts = [] }: { painel: Painel; templates: Template[]; posts?: Peca[] }) {
   const [mensagem, setMensagem] = useState<{ lead: LeadPainel; saida?: "whatsapp" | "instagram" } | null>(null);
   const [toque, setToque] = useState<LeadPainel | null>(null);
+  const [fechando, setFechando] = useState<LeadPainel | null>(null);
   const [novo, setNovo] = useState(false);
   const [segmento, setSegmento] = useState<string | null>(null);
 
@@ -214,13 +225,25 @@ export function Hoje({ painel, templates, posts = [] }: { painel: Painel; templa
      de qualquer grupo, do cadastro MAIS NOVO para o mais antigo (quem
      preencheu há uma hora ainda está com o telefone na mão); depois o
      garimpo na ordem de sempre dos três grupos. */
+  /* ---------- O CONTATO QUENTE ABRE A FILA (06/10) ----------
+     Antes de quem pediu, quem está esperando EU falar (`contatoQuente`):
+     escreveu por último, ou procurou e nunca recebeu nada meu. Do contato
+     MAIS RECENTE para o mais antigo, pela hora do contato e não do
+     cadastro: o card de agosto que me escreveu hoje vem antes do
+     formulário de ontem. Quem eu já estou cobrando desce para a metade
+     de quem pediu ("ele se perde no final da lista ou vai para o meio"). */
   const filaDia = useMemo(() => {
     const todos = [...semPasso, ...atrasados, ...paraHoje];
+    const quentes = todos.filter(contatoQuente);
+    const resto = todos.filter((l) => !contatoQuente(l));
     return [
-      ...todos
+      ...quentes.sort(
+        (a, b) => momentoDoContato(b).localeCompare(momentoDoContato(a)) || a.id.localeCompare(b.id),
+      ),
+      ...resto
         .filter(procurouOEstudio)
         .sort((a, b) => b.created_at.localeCompare(a.created_at) || a.id.localeCompare(b.id)),
-      ...todos.filter((l) => !procurouOEstudio(l)),
+      ...resto.filter((l) => !procurouOEstudio(l)),
     ];
   }, [atrasados, paraHoje, semPasso]);
 
@@ -560,6 +583,7 @@ export function Hoje({ painel, templates, posts = [] }: { painel: Painel; templa
               hoje={painel.hoje}
               aoMandarMensagem={(lead, saida) => setMensagem({ lead, saida })}
               aoRegistrarToque={setToque}
+              aoFecharVenda={setFechando}
             />
           </div>
         </div>
@@ -645,6 +669,7 @@ export function Hoje({ painel, templates, posts = [] }: { painel: Painel; templa
         <ModalMensagem lead={mensagem.lead} saida={mensagem.saida} templates={templates} aoFechar={() => setMensagem(null)} />
       ) : null}
       {toque ? <ModalToque lead={toque} aoFechar={() => setToque(null)} /> : null}
+      {fechando ? <ModalContrato lead={fechando} hoje={painel.hoje} ganhar aoFechar={() => setFechando(null)} /> : null}
       {novo ? <ModalNovoLead aoFechar={() => setNovo(false)} /> : null}
     </div>
   );
@@ -892,7 +917,7 @@ function ReguaDoDia({
       </span>
 
       <span className={s.faixaItem}>
-        Pipeline aberto
+        Funil aberto
         <b className={s.faixaNum}>{dinheiroCurto(painel.pipelineAberto) || "R$ 0"}</b>
       </span>
     </div>
@@ -919,7 +944,7 @@ function DiaLimpo({ painel, aoAnotar }: { painel: Painel; aoAnotar: () => void }
       <div className={s.diaLimpo}>
         <b>Quadro vazio.</b>
         <p>
-          Nenhum lead ativo no pipeline. Anote o primeiro nome e ele passa a te cobrar sozinho,
+          Nenhum lead ativo no funil. Anote o primeiro nome e ele passa a te cobrar sozinho,
           nesta mesma tela.
         </p>
         <button type="button" className={s.btnAcao} onClick={aoAnotar}>

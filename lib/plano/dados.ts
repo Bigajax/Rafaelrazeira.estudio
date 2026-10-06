@@ -47,11 +47,31 @@ export async function plano(ano: number, ate: number) {
   };
 
   const tarefas: PromiseLike<void>[] = [];
+  /* VENDIDO AO LADO DO RECEBIDO (06/10): o valor dos ganhos por mês do
+     fechamento. Só se mostra na Subida; os degraus continuam pelo Caixa,
+     porque prêmio se paga com dinheiro que caiu. */
+  const vendido: Partial<Record<number, number>> = {};
+  tarefas.push(
+    supabase
+      .from("crm_leads")
+      .select("valor_fechado, fechado_em")
+      .eq("estagio", "ganho")
+      .gte("fechado_em", ini)
+      .lte("fechado_em", fim)
+      .then(({ data }) => {
+        for (const r of data ?? []) {
+          const mes = Number(String(r.fechado_em).slice(5, 7));
+          vendido[mes] = (vendido[mes] ?? 0) + Number(r.valor_fechado ?? 0);
+        }
+      }),
+  );
   if (usadas.has("recebido")) {
     tarefas.push(
       supabase
         .from("crm_recebimentos")
         .select("valor, recebido_em")
+        /* estorno fora: o prêmio se paga com dinheiro que ficou (06/10) */
+        .is("estornado_em", null)
         .gte("recebido_em", ini)
         .lte("recebido_em", fim)
         .then(({ data }) => {
@@ -128,6 +148,7 @@ export async function plano(ano: number, ate: number) {
     valores,
     rmrs: (rmrs.data ?? []).map((r) => ({ ...r, nota: r.nota === null ? null : Number(r.nota) })),
     recebido: auto.recebido ?? {},
+    vendido,
   };
 }
 

@@ -65,6 +65,8 @@ export function Financeiro({ mes, hoje, custos, recebimentos, dolar, vendas, esc
   }
 
   const r = resultadoDoMes(mes, recebimentos, custos, cotacao);
+  const vendidasMes = vendas.filter((v) => v.quando?.slice(0, 7) === mes);
+  const vendidoNoMes = { n: vendidasMes.length, valor: vendidasMes.reduce((s, v) => s + v.valor, 0) };
   const saiu = r.taxas + r.custos;
   const temDolar = custos.some((c) => c.moeda === "USD");
   /* o custo fixo de um mês de hoje: o que a virada tem que pagar */
@@ -120,6 +122,15 @@ export function Financeiro({ mes, hoje, custos, recebimentos, dolar, vendas, esc
                 : `Faltaram ${reais(-r.resultado)}: o mês fechou no vermelho.`}
           </p>
           {mes === hoje ? <p className={f.nota}>O mês ainda está correndo: o que entrar até o dia 30 muda a conta.</p> : null}
+          {/* VENDIDO AO LADO DO RECEBIDO (06/10): o ganho do mês, que só
+              vira "entrou" quando o dinheiro cai. Fora do cupom de propósito:
+              o DRE soma o que caiu, e vendido não é dinheiro na conta. */}
+          {vendidoNoMes.n ? (
+            <p className={f.nota}>
+              Vendido em {nomeDoMes(mes)}: <b>{reais(vendidoNoMes.valor)}</b> em {vendidoNoMes.n}{" "}
+              {vendidoNoMes.n === 1 ? "venda" : "vendas"}. Conta acima quando cai no Caixa.
+            </p>
+          ) : null}
 
           {r.entrou > 0 && partes.length ? (
             <div className={f.cem}>

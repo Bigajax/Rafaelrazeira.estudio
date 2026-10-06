@@ -11,7 +11,7 @@ export const metadata: Metadata = { title: "Entrar" };
    Em 01/10/2026 o Rafael pediu personalidade e lembrou que "hoje não é apenas
    CRM": a tela mostra o estúdio inteiro antes de abrir a porta. */
 const FRENTES = [
-  { nome: "Vender", abas: "Hoje, Pipeline, Templates" },
+  { nome: "Vender", abas: "Hoje, Funil, Templates" },
   { nome: "Fazer", abas: "Produção, Projetos" },
   { nome: "Dinheiro", abas: "Caixa, Financeiro" },
   { nome: "Crescer", abas: "Marketing, Métricas, Plano" },

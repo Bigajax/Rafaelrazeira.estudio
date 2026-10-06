@@ -123,6 +123,28 @@ export function situacaoDaParcela(
 export const deveAinda = (s: SituacaoParcela) =>
   s === "atrasada" || s === "hoje" || s === "aberta" || s === "parcial";
 
+/* ---------- PARA COBRAR: a régua única (06/10) ----------
+   Três telas respondiam "quem me deve" com três contas: o badge do trilho
+   contava PARCELAS com data até hoje, o Hoje uma parcela por LEAD com a
+   mesma data, e o Caixa só a "atrasada", com data ANTES de hoje. A parcela
+   que vence hoje aparecia em duas e sumia da terceira, e nenhuma olhava se
+   o contrato ainda estava de pé. Agora as três passam por aqui:
+     viva (não cancelada), de contrato ativo, ainda devendo, e com o dia de
+     cobrar (`cobrar_em`, senão `vence_em`) já chegado.
+   O que nunca fazer: derivar "quem me deve" de um recorte por período. O
+   pago de uma parcela é a soma de TODOS os recebimentos dela. */
+export function cobravel(
+  p: Pick<ParcelaPainel, "valor" | "vence_em" | "cobrar_em" | "cancelada_em" | "recebido"> & {
+    contrato_status?: string | null;
+  },
+  hoje = hojeSP(),
+): boolean {
+  if (p.cancelada_em) return false;
+  if (p.contrato_status && p.contrato_status !== "ativo") return false;
+  if (quitado(centavos(p.valor - (p.recebido || 0)))) return false;
+  return (p.cobrar_em || p.vence_em) <= hoje;
+}
+
 /* O rótulo curto da situação, para a etiqueta da linha. Frase e não palavra
    em "atrasada" porque o número de dias É a informação: "atrasada" sozinho
    não diz se é de ontem ou de três semanas. */
@@ -294,6 +316,47 @@ export function gerarParcelas({
   }
 
   return parcelas;
+}
+
+/* ---------- as mensalidades ----------
+   O gerador da recorrência (06/10/2026, o Performance): N meses iguais, a
+   partir do primeiro vencimento, no mesmo dia de cada mês. `de` fica nulo
+   de propósito, porque "2 de 3" mentiria: a mensalidade não acaba na
+   terceira, só a leva de parcelas geradas acaba. O rótulo diz o mês, que
+   é o que se lê na hora de cobrar. `numero` continua a partir do que o
+   contrato já tem, para "gerar mais 3" não repetir o 1. */
+const MESES_LONGOS = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+
+export function gerarMensalidades({
+  valor,
+  meses,
+  primeiro,
+  aPartirDe = 1,
+  item_slug = null,
+  somarMeses,
+}: {
+  valor: number;
+  meses: number;
+  primeiro: string;
+  aPartirDe?: number;
+  item_slug?: string | null;
+  somarMeses: (iso: string, meses: number) => string;
+}): NovaParcela[] {
+  const quantas = Math.max(1, Math.floor(meses));
+  const fatia = centavos(valor);
+  return Array.from({ length: quantas }, (_, i) => {
+    const vence = somarMeses(primeiro, i);
+    const mes = MESES_LONGOS[Number(vence.slice(5, 7)) - 1];
+    return {
+      numero: aPartirDe + i,
+      de: null,
+      rotulo: `Mensalidade de ${mes}`,
+      valor: fatia,
+      vence_em: vence,
+      item_slug,
+      metodo_previsto: "pix",
+    };
+  });
 }
 
 /* ============================================================

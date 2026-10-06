@@ -23,6 +23,7 @@ import {
 } from "./regras";
 import {
   centavos,
+  cobravel,
   deveAinda,
   mesDe,
   mesesAFrente,
@@ -294,7 +295,7 @@ export async function contagens() {
        JavaScript logo abaixo. São poucas dezenas de linhas. */
     supabase
       .from("crm_parcelas")
-      .select("id, valor, vence_em, cobrar_em, cancelada_em, crm_recebimentos(valor, estornado_em)")
+      .select("id, lead_id, valor, vence_em, cobrar_em, cancelada_em, crm_contratos(status), crm_recebimentos(valor, estornado_em)")
       .is("cancelada_em", null)
       .lte("vence_em", hoje)
       .returns<ParcelaComRecebimentos[]>(),
@@ -309,15 +310,22 @@ export async function contagens() {
     fila: lista.filter((l) => !l.proxima_acao_em || l.proxima_acao_em <= hoje).length,
     ativos: lista.length,
     templates: templates ?? 0,
-    /* Parcelas vivas cujo dia de cobrança já chegou e que ainda devem. Ela
-       ganha cor no trilho pela regra que o próprio Trilho.tsx já escreve,
-       "no trilho inteiro, quem fala é quem vai te cobrar": parcela vencida
-       é literalmente cobrança. */
-    cobrar: (cobrancas ?? []).filter((p) => {
-      const quando = p.cobrar_em || p.vence_em;
-      if (quando > hoje) return false;
-      return !quitado(centavos(Number(p.valor) - recebidoDaParcela(p)));
-    }).length,
+    /* Quem está para cobrar, pela MESMA régua do Hoje e do Caixa
+       (`cobravel`, 06/10), e contando LEADS e não parcelas: o Hoje mostra
+       uma carta por cliente, e o trilho dizendo "3" com duas cartas na
+       tela é pior do que não dizer nada. Ela ganha cor no trilho pela
+       regra que o próprio Trilho.tsx já escreve, "no trilho inteiro, quem
+       fala é quem vai te cobrar". */
+    cobrar: new Set(
+      (cobrancas ?? [])
+        .filter((p) =>
+          cobravel(
+            { ...p, valor: Number(p.valor), recebido: recebidoDaParcela(p), contrato_status: p.crm_contratos?.status ?? null },
+            hoje,
+          ),
+        )
+        .map((p) => p.lead_id),
+    ).size,
   };
 }
 
@@ -325,10 +333,12 @@ export async function contagens() {
    junto. `crm_recebimentos` vem como array embutido pelo relacionamento. */
 type ParcelaComRecebimentos = {
   id: string;
+  lead_id: string;
   valor: number;
   vence_em: string;
   cobrar_em: string | null;
   cancelada_em: string | null;
+  crm_contratos: { status: string } | null;
   crm_recebimentos: { valor: number; estornado_em: string | null }[] | null;
 };
 
@@ -677,7 +687,10 @@ export async function metricas(dias: 7 | 30 | 90) {
     pipelineAberto: todos
       .filter((l) => NO_PIPELINE.includes(l.estagio))
       .reduce((s, l) => s + (l.ticket_estimado ?? 0), 0),
-    faturamento: ganhosNoPeriodo.reduce((s, l) => s + (l.valor_fechado ?? 0), 0),
+    /* VENDIDO, e não "faturamento" (06/10): é o espelho dos contratos de
+       projeto, o que foi combinado no período. O que entrou é o RECEBIDO,
+       e mora no Caixa. Os quatro números estão em tipos.ts, "O DINHEIRO". */
+    vendido: ganhosNoPeriodo.reduce((s, l) => s + (l.valor_fechado ?? 0), 0),
     ganhos: ganhosNoPeriodo.length,
     motivos: [...porMotivo.entries()].sort((a, b) => b[1] - a[1]),
     perdidos: perdidosNoPeriodo.length,
@@ -721,11 +734,14 @@ export async function caixa(ano: number) {
         .select("*")
         .order("vence_em", { ascending: true })
         .returns<Parcela[]>(),
+      /* TODOS os anos, de propósito (06/10). O recorte pelo ano escolhido
+         ficava aqui, e o pago de cada parcela saía só do que entrou NAQUELE
+         ano: em janeiro, toda parcela paga no ano anterior voltava como
+         devida em "para cobrar", "a receber" e na régua dos contratos. O
+         ano vale só para o gráfico dos doze meses, que já filtra sozinho. */
       supabase
         .from("crm_recebimentos")
         .select("*")
-        .gte("recebido_em", inicio)
-        .lte("recebido_em", fim)
         .order("recebido_em", { ascending: false })
         .returns<Recebimento[]>(),
       supabase
@@ -758,7 +774,11 @@ export async function caixa(ano: number) {
   };
 
   const todasParcelas = (parcelas ?? []).map(enriquecida);
-  const vivas = todasParcelas.filter((p) => !p.cancelada_em);
+  /* Viva é não cancelada E de contrato de pé: a parcela de um contrato
+     cancelado não é dívida de ninguém. */
+  const vivas = todasParcelas.filter(
+    (p) => !p.cancelada_em && porContrato.get(p.contrato_id)?.status !== "cancelado",
+  );
 
   /* ---------- 1. o mês ----------
      Previsto é o que VENCE no mês, recebido é o que ENTROU no mês, e os
@@ -771,14 +791,16 @@ export async function caixa(ano: number) {
     (r) => !r.estornado_em && mesDe(r.recebido_em) === mesAtual,
   );
 
-  /* ---------- 2. quem está devendo ----------
-     Só o que já venceu, do maior atraso para o menor: a fila do dinheiro
-     tem a mesma ordem da fila do dia, e pelo mesmo motivo (quem espera há
-     mais tempo é quem corre mais risco de nunca pagar). */
+  /* ---------- 2. para cobrar ----------
+     A régua única do dinheiro (`cobravel`, 06/10): o que já chegou no dia
+     de cobrar, inclusive HOJE, que antes caía em "a vencer" aqui enquanto
+     o Hoje e o trilho já mandavam cobrar. Do maior atraso para o menor: a
+     fila do dinheiro tem a mesma ordem da fila do dia, e pelo mesmo motivo
+     (quem espera há mais tempo é quem corre mais risco de nunca pagar). */
   const devendo = vivas
+    .filter((p) => cobravel(p, hoje))
     .map((p) => ({ parcela: p, s: situacaoDaParcela(p, hoje) }))
-    .filter((x) => x.s.situacao === "atrasada")
-    .sort((a, b) => b.s.atraso - a.s.atraso);
+    .sort((a, b) => b.s.atraso - a.s.atraso || a.s.quando.localeCompare(b.s.quando));
 
   const aReceber = vivas
     .map((p) => ({ parcela: p, s: situacaoDaParcela(p, hoje) }))
@@ -798,7 +820,7 @@ export async function caixa(ano: number) {
      até ela estar em cima. */
   const limite = somarDias(hoje, 30);
   const aVencer = aReceber
-    .filter((x) => x.s.situacao !== "atrasada" && x.s.quando <= limite)
+    .filter((x) => !cobravel(x.parcela, hoje) && x.s.quando <= limite)
     .sort((a, b) => a.s.quando.localeCompare(b.s.quando));
 
   /* A projeção por mês: altura fixa, seis colunas, sempre. O vencido cai no
@@ -854,7 +876,8 @@ export async function caixa(ano: number) {
 
   /* ---------- 5. o dinheiro sem dono ----------
      O que o webhook gravou e não conseguiu amarrar. Fica em rosa na tela
-     porque é a única coisa ali que pede uma decisão. */
+     porque é a única coisa ali que pede uma decisão, e de qualquer ano: o
+     órfão de dezembro continua pedindo decisão em janeiro. */
   const semDono = (recebimentos ?? []).filter((r) => !r.parcela_id && !r.estornado_em);
 
   /* ---------- 6. o que não fecha ----------
@@ -917,8 +940,8 @@ async function cobrancasAbertas(
   const { data } = await supabase
     .from("crm_parcelas")
     .select(
-      "id, lead_id, rotulo, valor, vence_em, cobrar_em, metodo_previsto, " +
-        "crm_contratos(titulo), crm_recebimentos(valor, estornado_em)",
+      "id, lead_id, rotulo, valor, vence_em, cobrar_em, cancelada_em, metodo_previsto, " +
+        "crm_contratos(titulo, status), crm_recebimentos(valor, estornado_em)",
     )
     .is("cancelada_em", null)
     .lte("vence_em", hoje)
@@ -929,15 +952,14 @@ async function cobrancasAbertas(
 
   for (const p of data ?? []) {
     const quando = p.cobrar_em || p.vence_em;
-    /* Adiada para depois de hoje sai da fila: é para isso que servem os
-       botões +3d e +7d, e o vencimento continua intacto no banco. */
-    if (quando > hoje) continue;
-
     const recebido = somar(
       (p.crm_recebimentos ?? []).filter((r) => !r.estornado_em).map((r) => Number(r.valor)),
     );
     const saldo = centavos(Number(p.valor) - recebido);
-    if (quitado(saldo)) continue;
+    /* A régua única (`cobravel`, 06/10): adiada para depois de hoje sai da
+       fila (é para isso que servem +3d e +7d, e o vencimento continua
+       intacto no banco), quitada sai, e parcela de contrato cancelado sai. */
+    if (!cobravel({ ...p, valor: Number(p.valor), recebido, contrato_status: p.crm_contratos?.status ?? null }, hoje)) continue;
 
     /* A primeira que aparece é a mais antiga (a consulta vem ordenada), e é
        ela que fica: `has` em vez de `set` incondicional. */
@@ -966,7 +988,8 @@ type ParcelaDaFila = {
   valor: number;
   vence_em: string;
   cobrar_em: string | null;
+  cancelada_em: string | null;
   metodo_previsto: string | null;
-  crm_contratos: { titulo: string } | null;
+  crm_contratos: { titulo: string; status: string } | null;
   crm_recebimentos: { valor: number; estornado_em: string | null }[] | null;
 };

@@ -71,6 +71,7 @@ import {
   type LeadPainel,
 } from "@/lib/crm/tipos";
 import { CardLead, CardVoando } from "./CardLead";
+import { ModalContrato } from "./ModalContrato";
 import { ModalNovoLead } from "./ModalNovoLead";
 import { ModalPassagem } from "./ModalPassagem";
 import { PesquisaLote } from "./PesquisaLote";
@@ -125,6 +126,7 @@ export function Quadro({
      movimentação pegou é reconhecer o nome no lugar novo. */
   const [assentando, setAssentando] = useState<string | null>(null);
   const [pendente, setPendente] = useState<Pendente | null>(null);
+  const [fechando, setFechando] = useState<LeadPainel | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [novo, setNovo] = useState(false);
   const [salvando, comecar] = useTransition();
@@ -306,6 +308,13 @@ export function Quadro({
     const { lead, estagio, posicao } = destino;
     if (lead.estagio === estagio && lead.posicao === posicao) return;
 
+    /* Ganho passa pelo "Fechou" (06/10): o plano de pagamento nasce junto,
+       senão a venda não chega no Caixa. */
+    if (estagio === "ganho" && lead.estagio !== "ganho") {
+      setFechando(lead);
+      return;
+    }
+
     const falta = oQueFalta(estagio, lead);
     if (falta.length) {
       setPendente({ lead, estagio, posicao, falta });
@@ -321,6 +330,11 @@ export function Quadro({
     if (estagio === lead.estagio) return;
     const alvo = porColuna[estagio].filter((l) => l.id !== lead.id);
     const posicao = posicaoEntre(alvo[alvo.length - 1]?.posicao ?? null, null);
+
+    if (estagio === "ganho") {
+      setFechando(lead);
+      return;
+    }
 
     const falta = oQueFalta(estagio, lead);
     if (falta.length) {
@@ -345,7 +359,7 @@ export function Quadro({
     <div className={`${s.wrapLargo} ${s.pipe}`}>
       <div className={s.tituloLinha}>
         <h1>
-          Pipeline<i className={s.ponto}>.</i>
+          Funil<i className={s.ponto}>.</i>
         </h1>
         {/* ---------- por que ESTE botão é rosa ----------
             Regra da casa: o rosa é a cor do que ABRE alguma coisa. Numa
@@ -515,7 +529,7 @@ export function Quadro({
           Ganho, perdido e geladeira ficam de fora: eles não são coluna nem
           aqui nem no computador, são as três placas do fim do quadro, e
           elas continuam visíveis e clicáveis logo abaixo. */}
-      <div className={s.chips} role="tablist" aria-label="Etapa do pipeline">
+      <div className={s.chips} role="tablist" aria-label="Etapa do funil">
         {ESTAGIOS_DO_QUADRO.map((e) => (
           <button
             key={e}
@@ -683,6 +697,8 @@ export function Quadro({
           }
         />
       ) : null}
+
+      {fechando ? <ModalContrato lead={fechando} hoje={hoje} ganhar aoFechar={() => setFechando(null)} /> : null}
 
       {novo ? <ModalNovoLead aoFechar={() => setNovo(false)} /> : null}
     </div>

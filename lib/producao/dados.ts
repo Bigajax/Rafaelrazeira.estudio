@@ -109,7 +109,10 @@ export async function leadsParaVincular(): Promise<{ id: string; nome: string; e
     .from("crm_leads")
     .select("id,nome,empresa,instagram,estagio")
     .not("estagio", "in", '("ganho","perdido")')
-    .order("criado_em", { ascending: false })
+    /* `created_at`, não `criado_em`: as tabelas `crm_` nasceram em inglês e
+       as `prod_`/`perf_` em português. Com a coluna errada a consulta
+       falhava em silêncio e a lista de leads saía vazia (06/10). */
+    .order("created_at", { ascending: false })
     .limit(80);
 
   return ((data as { id: string; nome: string; empresa: string | null; instagram: string | null }[]) ?? []).map(

@@ -57,6 +57,7 @@ export function Subida({
   ate,
   degraus,
   recebido,
+  vendido = {},
   visao,
   horizonte,
 }: {
@@ -64,6 +65,8 @@ export function Subida({
   ate: number;
   degraus: Degrau[];
   recebido: Partial<Record<number, number>>;
+  /* o ganho do mês (06/10): só leitura, os degraus seguem o Caixa */
+  vendido?: Partial<Record<number, number>>;
   visao: string | null;
   horizonte: number | null;
 }) {
@@ -127,11 +130,12 @@ export function Subida({
           {ate ? (
             <>
               Em {MESES_LONGOS[ate - 1]} entraram <b>{formatar(doMes, "R$")}</b> no Caixa
-              {melhor > doMes ? <>; o seu melhor mês do ano foi de {formatar(melhor, "R$")}</> : null}. A altitude é o faturamento do mês, e cada
-              prêmio destrava quando um mês passa do patamar dele.
+              {vendido[ate] ? <> e foram vendidos <b>{formatar(vendido[ate] ?? 0, "R$")}</b></> : null}
+              {melhor > doMes ? <>; o seu melhor mês do ano foi de {formatar(melhor, "R$")}</> : null}. A altitude é o que entrou no Caixa no
+              mês, e cada prêmio destrava quando um mês passa do patamar dele.
             </>
           ) : (
-            <>O ano ainda não começou. A altitude é o faturamento do mês, e cada prêmio destrava quando um mês passa do patamar dele.</>
+            <>O ano ainda não começou. A altitude é o que entrou no Caixa no mês, e cada prêmio destrava quando um mês passa do patamar dele.</>
           )}
         </p>
       </div>

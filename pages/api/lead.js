@@ -308,10 +308,26 @@ async function sincronizarCRM(linha, utm, { emIngles = false, faixa = "", naoCon
     }).catch(() => {});
   };
 
+  /* ---------- quem voltou a procurar vem para hoje (06/10/2026) ----------
+     A mesma regra do leitor do WhatsApp (`efeitoDoToque`): entrada traz o
+     card para a fila do dia. Sem isto, o card com "cobrar em 7 dias"
+     marcado continuava fora da fila depois de a pessoa preencher de novo,
+     e o contato mais quente do dia só aparecia uma semana depois. Só
+     mexe em data FUTURA de card ativo: vencida ou vazia já está na fila. */
+  const trazerParaHoje = async (leadId) => {
+    const hoje = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(new Date());
+    await crmREST(
+      url,
+      chave,
+      `crm_leads?id=eq.${leadId}&proxima_acao_em=gt.${hoje}&estagio=not.in.(ganho,perdido)`,
+      { method: "PATCH", body: JSON.stringify({ proxima_acao_em: hoje }) },
+    ).catch(() => {});
+  };
+
   try {
     const existente = await procurar();
     if (existente) {
-      await Promise.all([registrarInteracao(existente), completarAtribuicao(existente)]);
+      await Promise.all([registrarInteracao(existente), completarAtribuicao(existente), trazerParaHoje(existente)]);
       return { ok: true, novo: false, id: existente };
     }
 
@@ -385,7 +401,7 @@ async function sincronizarCRM(linha, utm, { emIngles = false, faixa = "", naoCon
       if (corpo?.code === "23505") {
         const agora = await procurar();
         if (agora) {
-          await registrarInteracao(agora);
+          await Promise.all([registrarInteracao(agora), trazerParaHoje(agora)]);
           return { ok: true, novo: false, id: agora };
         }
       }

@@ -80,6 +80,7 @@ import {
   type Template,
 } from "@/lib/crm/tipos";
 import { CampoInline, NotaInline } from "./CampoInline";
+import { ModalContrato } from "./ModalContrato";
 import { ModalMensagem } from "./ModalMensagem";
 import { ModalPassagem } from "./ModalPassagem";
 import { Pesquisa } from "./Pesquisa";
@@ -115,6 +116,7 @@ export function Ficha({
   const [mensagem, setMensagem] = useState<false | Canal>(false);
   const [abrirDados, setAbrirDados] = useState(false);
   const [pendente, setPendente] = useState<{ estagio: Estagio; falta: CampoExigido[] } | null>(null);
+  const [fechando, setFechando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [salvando, comecar] = useTransition();
 
@@ -128,6 +130,12 @@ export function Ficha({
   function trocarEstagio(estagio: Estagio, passagem: Passagem = {}) {
     if (estagio === lead.estagio && !Object.keys(passagem).length) return;
     setErro(null);
+
+    /* Ganho passa pelo "Fechou" (06/10): o plano de pagamento nasce junto. */
+    if (estagio === "ganho") {
+      setFechando(true);
+      return;
+    }
 
     const falta = oQueFalta(estagio, lead, passagem);
     if (falta.length) {
@@ -477,6 +485,8 @@ export function Ficha({
           aoConfirmar={(passagem) => trocarEstagio(pendente.estagio, passagem)}
         />
       ) : null}
+
+      {fechando ? <ModalContrato lead={lead} hoje={hoje} ganhar aoFechar={() => setFechando(false)} /> : null}
     </>
   );
 }

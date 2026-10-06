@@ -92,7 +92,9 @@ const MOMENTOS: { nome: string; rotas: Rota[] }[] = [
       { href: "/crm", rotulo: "Hoje", nota: "a fila", conta: "fila" },
       {
         href: "/crm/pipeline",
-        rotulo: "Pipeline",
+        /* "Funil" desde 06/10: pipeline é palavra de programador. A URL
+           fica, por causa de links e favoritos. */
+        rotulo: "Funil",
         nota: "o quadro",
         conta: "ativos",
       },
@@ -122,6 +124,15 @@ const MOMENTOS: { nome: string; rotas: Rota[] }[] = [
         href: "/crm/projetos",
         rotulo: "Projetos",
         nota: "as entregas",
+        conta: null,
+      },
+      /* A contagem das vitrines (06/10): onde a chave de cada loja nasce e
+         a trava da aba Desempenho se mexe. Sem número: o que importa aqui
+         é "o último evento chegou?", e isso só se lê dentro da tela. */
+      {
+        href: "/crm/performance",
+        rotulo: "Performance",
+        nota: "a contagem",
         conta: null,
       },
     ],

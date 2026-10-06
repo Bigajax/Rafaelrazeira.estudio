@@ -23,7 +23,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { clienteServidor, usuarioAtual } from "@/lib/crm/supabase";
-import { centavos } from "@/lib/crm/financeiro";
+import { centavos, gerarMensalidades, somar } from "@/lib/crm/financeiro";
 import {
   destinoDoToque,
   emailNormal,
@@ -33,6 +33,7 @@ import {
   posicaoEntre,
   soDigitos,
   somarDias,
+  somarMeses,
   type Passagem,
 } from "@/lib/crm/regras";
 import type { CampoExigido } from "@/lib/crm/regras";
@@ -579,6 +580,14 @@ export async function fecharContrato(
     proposta_slug?: string | null;
     assinado_em?: string | null;
     notas?: string | null;
+    /* A recorrência (06/10, o Performance): `valor_ciclo` por mês, o dia do
+       vencimento, e a loja do Performance que este contrato libera. O
+       `valor_total` de uma recorrência é NULO no banco: o total é a soma
+       das mensalidades que existirem, e cresce a cada "gerar mais 3". */
+    tipo?: "projeto" | "recorrencia";
+    valor_ciclo?: number | null;
+    dia_vencimento?: number | null;
+    perf_loja_id?: string | null;
     parcelas: {
       numero: number;
       de: number | null;
@@ -596,8 +605,12 @@ export async function fecharContrato(
   const titulo = String(dados.titulo || "").trim();
   if (!titulo) return { ok: false, erro: "O contrato precisa de um título." };
 
+  const recorrencia = dados.tipo === "recorrencia";
   const total = Number(dados.valor_total);
-  if (!Number.isFinite(total) || total <= 0) {
+  const ciclo = Number(dados.valor_ciclo);
+  if (recorrencia) {
+    if (!Number.isFinite(ciclo) || ciclo <= 0) return { ok: false, erro: "A mensalidade precisa de um valor por mês maior que zero." };
+  } else if (!Number.isFinite(total) || total <= 0) {
     return { ok: false, erro: "O valor do contrato precisa ser maior que zero." };
   }
   if (!dados.parcelas?.length) {
@@ -611,8 +624,11 @@ export async function fecharContrato(
       lead_id: leadId,
       titulo,
       proposta_slug: dados.proposta_slug || null,
-      tipo: "projeto",
-      valor_total: centavos(total),
+      tipo: recorrencia ? "recorrencia" : "projeto",
+      valor_total: recorrencia ? null : centavos(total),
+      valor_ciclo: recorrencia ? centavos(ciclo) : null,
+      ciclo: recorrencia ? "mensal" : null,
+      dia_vencimento: recorrencia ? Math.min(28, Math.max(1, Number(dados.dia_vencimento) || Number(dados.parcelas[0].vence_em.slice(8, 10)) || 1)) : null,
       assinado_em: dados.assinado_em || hojeSP(),
       notas: dados.notas?.trim() || null,
     })
@@ -620,6 +636,12 @@ export async function fecharContrato(
     .single();
 
   if (error || !contrato) return { ok: false, erro: traduzirErro(error) };
+
+  /* A loja do Performance passa a ser deste contrato: é por aqui que o
+     recebimento da mensalidade libera a aba (trigger perf_ao_receber). */
+  if (recorrencia && dados.perf_loja_id) {
+    await supabase.from("perf_lojas").update({ contrato_id: contrato.id }).eq("id", dados.perf_loja_id);
+  }
 
   const { error: erroParcelas } = await supabase.from("crm_parcelas").insert(
     dados.parcelas.map((p) => ({
@@ -646,17 +668,248 @@ export async function fecharContrato(
 
   /* O espelho. Não passa pelo `moverLead` de propósito: mover para ganho é
      decisão de funil e pode já ter acontecido; aqui só se carimba o valor
-     do que foi combinado, sem mexer em estágio nenhum. E o `.eq("estagio",
-     "ganho")` é a guarda que impede um contrato assinado de carimbar valor
-     num lead que ainda está em negociação. */
-  await supabase
-    .from("crm_leads")
-    .update({ valor_fechado: centavos(total), fechado_em: dados.assinado_em || hojeSP() })
-    .eq("id", leadId)
-    .eq("estagio", "ganho");
+     do que foi combinado, sem mexer em estágio nenhum. */
+  if (!recorrencia) await espelharVendaNoLead(supabase, leadId);
 
   atualizarTelas();
   return { ok: true, id: contrato.id as string };
+}
+
+/* ---------- O ESPELHO SOMA, NÃO SOBRESCREVE (06/10) ----------
+   `valor_fechado` e `fechado_em` do lead são o espelho dos contratos de
+   projeto ATIVOS dele: a soma dos totais, e a data do primeiro. Até aqui o
+   segundo contrato do mesmo cliente sobrescrevia os dois, e a venda
+   anterior mudava de mês e de valor em Métricas, Financeiro e Plano.
+   Cancelar ou apagar um contrato passa por aqui também, então o espelho
+   nunca fica apontando para um contrato que não existe mais.
+   O `.eq("estagio", "ganho")` é a guarda que impede um contrato de
+   carimbar valor num lead que ainda está em negociação. */
+type Supa = Awaited<ReturnType<typeof clienteServidor>>;
+async function espelharVendaNoLead(supabase: Supa, leadId: string) {
+  const { data } = await supabase
+    .from("crm_contratos")
+    .select("valor_total, assinado_em")
+    .eq("lead_id", leadId)
+    .eq("status", "ativo")
+    .eq("tipo", "projeto")
+    .returns<{ valor_total: number | null; assinado_em: string | null }[]>();
+  const ativos = data ?? [];
+  const total = somar(ativos.map((c) => Number(c.valor_total ?? 0)));
+  const primeiro = ativos.map((c) => c.assinado_em).filter((d): d is string => Boolean(d)).sort()[0] ?? null;
+  await supabase
+    .from("crm_leads")
+    .update(
+      ativos.length
+        ? { valor_fechado: total, fechado_em: primeiro ?? hojeSP() }
+        : { valor_fechado: null, fechado_em: null },
+    )
+    .eq("id", leadId)
+    .eq("estagio", "ganho");
+}
+
+/* Os contratos de projeto ainda de pé de um lead: é o que o "Fechou" lê
+   antes de montar outro. */
+export async function contratosAtivosDoLead(
+  leadId: string,
+): Promise<{ id: string; titulo: string; valor_total: number | null }[]> {
+  await exigirSessao();
+  const supabase = await clienteServidor();
+  const { data } = await supabase
+    .from("crm_contratos")
+    .select("id, titulo, valor_total")
+    .eq("lead_id", leadId)
+    .eq("status", "ativo")
+    .eq("tipo", "projeto")
+    .order("assinado_em")
+    .returns<{ id: string; titulo: string; valor_total: number | null }[]>();
+  return (data ?? []).map((c) => ({ ...c, valor_total: c.valor_total == null ? null : Number(c.valor_total) }));
+}
+
+/* ---------- VOLTAR PARA GANHO SEM CONTRATO NOVO (06/10) ----------
+   O lead que saiu de Ganho por engano e volta já tem contrato. Criar outro
+   dobrava o "Contratado" e as parcelas. Aqui o ganho volta e o espelho
+   recarimba o valor dos contratos que já existem. */
+export async function voltarParaGanho(leadId: string): Promise<Resultado> {
+  await exigirSessao();
+  const supabase = await clienteServidor();
+  const ativos = await contratosAtivosDoLead(leadId);
+  if (!ativos.length) return { ok: false, erro: "Este lead não tem contrato de pé. Monte o plano para fechar." };
+  const r = await moverLead(leadId, "ganho", null, {
+    valor_fechado: somar(ativos.map((c) => c.valor_total ?? 0)),
+    fechado_em: hojeSP(),
+  });
+  if (!r.ok) return r;
+  await espelharVendaNoLead(supabase, leadId);
+  atualizarTelas();
+  return { ok: true };
+}
+
+/* ---------- CANCELAR O CONTRATO (06/10) ----------
+   A ação que `apagarContrato` mandava usar e não existia. Cancelar deixa o
+   histórico: o contrato vira `cancelado`, as parcelas que ainda deviam
+   ganham `cancelada_em`, as já pagas ficam como estão (dinheiro que entrou
+   é fato), e o espelho do lead é refeito. Nenhuma tela de cobrança lê mais
+   parcela de contrato cancelado (`cobravel`). */
+export async function cancelarContrato(id: string): Promise<Resultado> {
+  await exigirSessao();
+  const supabase = await clienteServidor();
+
+  const { data: contrato } = await supabase
+    .from("crm_contratos")
+    .select("lead_id, status")
+    .eq("id", id)
+    .maybeSingle<{ lead_id: string; status: string }>();
+  if (!contrato) return { ok: false, erro: "Contrato não encontrado." };
+  if (contrato.status === "cancelado") return { ok: true };
+
+  const { data: parcelas } = await supabase
+    .from("crm_parcelas")
+    .select("id, valor, cancelada_em, crm_recebimentos(valor, estornado_em)")
+    .eq("contrato_id", id)
+    .returns<{ id: string; valor: number; cancelada_em: string | null; crm_recebimentos: { valor: number; estornado_em: string | null }[] | null }[]>();
+  const devendo = (parcelas ?? []).filter((p) => {
+    if (p.cancelada_em) return false;
+    const pago = somar((p.crm_recebimentos ?? []).filter((r) => !r.estornado_em).map((r) => Number(r.valor)));
+    return pago < Number(p.valor) - 0.005;
+  });
+  if (devendo.length) {
+    const { error } = await supabase
+      .from("crm_parcelas")
+      .update({ cancelada_em: hojeSP() })
+      .in("id", devendo.map((p) => p.id));
+    if (error) return { ok: false, erro: traduzirErro(error) };
+  }
+
+  const { error } = await supabase.from("crm_contratos").update({ status: "cancelado" }).eq("id", id);
+  if (error) return { ok: false, erro: traduzirErro(error) };
+
+  await espelharVendaNoLead(supabase, contrato.lead_id);
+  atualizarTelas();
+  return { ok: true };
+}
+
+/* ---------- FECHOU: GANHO, CONTRATO E O QUE JÁ CAIU, NUM PASSO (06/10) ----------
+   O ganho parava no card. A SneakerSpot fechou em 06/10, foi para Ganho com
+   R$ 1.000, e Caixa, Financeiro e Plano não viram nada: os três leem
+   contrato, parcela e recebimento, e cada um era um passo à parte (o
+   contrato escondido na ficha, a baixa noutra tela). Agora "Fechou" faz os
+   três, nesta ordem:
+     1. o ganho, com o valor do plano. Primeiro porque o espelho do valor
+        em `fecharContrato` só carimba lead que JÁ está em ganho;
+     2. o contrato e as parcelas;
+     3. a baixa das parcelas marcadas como "já recebi", pelo número.
+   Contrato que falha deixa o lead em ganho, e a ficha continua oferecendo
+   "Montar contrato" (o mesmo modal). Nunca marcar ganho sem plano. */
+export async function fecharVenda(
+  leadId: string,
+  contrato: Parameters<typeof fecharContrato>[1],
+  pagas: { numero: number; recebido_em: string; metodo: string }[],
+): Promise<Resultado> {
+  await exigirSessao();
+  const supabase = await clienteServidor();
+
+  const { data: lead } = await supabase.from("crm_leads").select("estagio").eq("id", leadId).maybeSingle<{ estagio: Estagio }>();
+  if (!lead) return { ok: false, erro: "Lead não encontrado." };
+
+  const valor =
+    contrato.tipo === "recorrencia"
+      ? Number(contrato.valor_ciclo)
+      : Number(contrato.valor_total);
+  const fechado_em = contrato.assinado_em || hojeSP();
+
+  /* Já tem contrato de projeto de pé: não nasce outro (06/10). O modal já
+     avisa e troca o botão por "Voltar para Ganho"; esta guarda é para a
+     aba velha que mandou o plano mesmo assim. */
+  if (contrato.tipo !== "recorrencia") {
+    const ativos = await contratosAtivosDoLead(leadId);
+    if (ativos.length) return voltarParaGanho(leadId);
+  }
+
+  if (lead.estagio !== "ganho") {
+    const r = await moverLead(leadId, "ganho", null, { valor_fechado: valor, fechado_em });
+    if (!r.ok) return r;
+  }
+
+  const c = await fecharContrato(leadId, { ...contrato, assinado_em: fechado_em });
+  if (!c.ok) return c;
+
+  if (pagas.length) {
+    const { data: parcelas } = await supabase
+      .from("crm_parcelas")
+      .select("id, numero, valor")
+      .eq("contrato_id", c.id)
+      .returns<{ id: string; numero: number; valor: number }[]>();
+    for (const paga of pagas) {
+      const parcela = parcelas?.find((p) => p.numero === paga.numero);
+      if (!parcela) continue;
+      const r = await lancarRecebimento({
+        parcela_id: parcela.id,
+        valor: Number(parcela.valor),
+        recebido_em: paga.recebido_em,
+        metodo: paga.metodo,
+      });
+      if (!r.ok) return { ok: false, erro: `O contrato entrou, mas a baixa da parcela ${paga.numero} não: ${"erro" in r ? r.erro : ""}` };
+    }
+  }
+
+  atualizarTelas();
+  return { ok: true };
+}
+
+/* ---------- MAIS MENSALIDADES ----------
+   A recorrência nasce com poucas parcelas (três) de propósito: cancelar
+   doze depois é doze cliques. Quando as geradas estão acabando, este botão
+   gera mais N a partir da última, no mesmo dia do mês e no mesmo valor
+   (`valor_ciclo`). Não mexe em parcela existente. */
+export async function gerarProximasMensalidades(contratoId: string, meses = 3): Promise<Resultado> {
+  const usuario = await exigirSessao();
+  const supabase = await clienteServidor();
+  const quantas = Math.max(1, Math.min(12, Math.floor(Number(meses) || 3)));
+
+  const { data: c } = await supabase
+    .from("crm_contratos")
+    .select("id, lead_id, tipo, valor_ciclo, status")
+    .eq("id", contratoId)
+    .maybeSingle<{ id: string; lead_id: string; tipo: string; valor_ciclo: number | null; status: string }>();
+  if (!c) return { ok: false, erro: "Contrato não encontrado." };
+  if (c.tipo !== "recorrencia" || !c.valor_ciclo) return { ok: false, erro: "Este contrato não é uma mensalidade." };
+  if (c.status !== "ativo") return { ok: false, erro: "Este contrato está cancelado." };
+
+  const { data: ultimas } = await supabase
+    .from("crm_parcelas")
+    .select("numero, vence_em")
+    .eq("contrato_id", contratoId)
+    .order("vence_em", { ascending: false })
+    .limit(1)
+    .returns<{ numero: number; vence_em: string }[]>();
+  const ultima = ultimas?.[0];
+  if (!ultima) return { ok: false, erro: "A mensalidade não tem parcela nenhuma para continuar." };
+
+  const novas = gerarMensalidades({
+    valor: Number(c.valor_ciclo),
+    meses: quantas,
+    primeiro: somarMeses(ultima.vence_em, 1),
+    aPartirDe: ultima.numero + 1,
+    somarMeses,
+  });
+
+  const { error } = await supabase.from("crm_parcelas").insert(
+    novas.map((p) => ({
+      owner_id: usuario.id,
+      contrato_id: contratoId,
+      lead_id: c.lead_id,
+      numero: p.numero,
+      de: null,
+      rotulo: p.rotulo,
+      valor: p.valor,
+      vence_em: p.vence_em,
+      item_slug: p.item_slug,
+      metodo_previsto: p.metodo_previsto ?? "pix",
+    })),
+  );
+  if (error) return { ok: false, erro: traduzirErro(error) };
+  atualizarTelas();
+  return { ok: true };
 }
 
 /* ---------- DAR BAIXA ----------
@@ -837,8 +1090,11 @@ export async function apagarContrato(id: string): Promise<Resultado> {
     }
   }
 
+  const { data: dono } = await supabase.from("crm_contratos").select("lead_id").eq("id", id).maybeSingle<{ lead_id: string }>();
   const { error } = await supabase.from("crm_contratos").delete().eq("id", id);
   if (error) return { ok: false, erro: traduzirErro(error) };
+  /* o espelho do lead não pode apontar para um contrato que sumiu */
+  if (dono) await espelharVendaNoLead(supabase, dono.lead_id);
   atualizarTelas();
   return { ok: true };
 }

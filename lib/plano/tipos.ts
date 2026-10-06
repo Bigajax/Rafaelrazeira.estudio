@@ -39,7 +39,7 @@ export const HORIZONTES: Record<Horizonte, string> = {
 export const FONTES: Record<Fonte, { nome: string; unidade: Unidade | null; ajuda: string }> = {
   manual: { nome: "Eu digito na RMR", unidade: null, ajuda: "você lança o número do mês na reunião mensal" },
   recebido: { nome: "Caixa: o que entrou", unidade: "R$", ajuda: "a soma dos recebimentos do mês no Caixa" },
-  fechados: { nome: "Pipeline: fechamentos", unidade: "un", ajuda: "leads que viraram ganho no mês" },
+  fechados: { nome: "Funil: fechamentos", unidade: "un", ajuda: "leads que viraram ganho no mês" },
   toques: { nome: "Toques enviados", unidade: "un", ajuda: "mensagens que você mandou no mês (as de saída)" },
   posts: { nome: "Marketing: posts", unidade: "un", ajuda: "peças marcadas como postadas no mês" },
 };

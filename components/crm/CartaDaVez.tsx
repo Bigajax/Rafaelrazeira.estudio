@@ -42,11 +42,13 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import { adiar, apagarLead, definirPasso, salvarLead } from "@/app/(pt)/crm/acoes";
+import { adiar, apagarLead, definirPasso, moverLead, salvarLead } from "@/app/(pt)/crm/acoes";
 import {
+  contatoQuente,
   diasDesde,
   dinheiro,
   linkWhatsapp,
+  momentoDoContato,
   procurouOEstudio,
   sinalDaFicha,
   somarDias,
@@ -54,11 +56,11 @@ import {
   urgencia,
 } from "@/lib/crm/regras";
 import { arrobaDe } from "@/lib/crm/regras";
-import { NOME_ESTAGIO, NOME_TIPO, type LeadPainel } from "@/lib/crm/tipos";
+import { MOTIVOS_PERDA, NOME_ESTAGIO, NOME_MOTIVO, NOME_TIPO, type LeadPainel, type MotivoPerda } from "@/lib/crm/tipos";
 import { BaixaRapida } from "./BaixaRapida";
 import s from "@/app/(pt)/crm/crm.module.css";
 
-type Gaveta = "passo" | "zap" | "apagar" | null;
+type Gaveta = "passo" | "zap" | "perdido" | "apagar" | null;
 
 /* Os três prazos que cobrem quase toda decisão de prospecção, e o campo de
    data ao lado para o resto. "Hoje" é o primeiro de propósito: o passo mais
@@ -82,16 +84,28 @@ const TOM: Record<string, string> = {
 
 const plural = (n: number, um: string, muitos: string) => `${n} ${n === 1 ? um : muitos}`;
 
+/* "Contato quente, chegou hoje": o dia do último contato da pessoa. */
+function chegou(momento: string, hoje: string): string {
+  const dias = diasDesde(momento, hoje);
+  if (dias <= 0) return "Contato quente, chegou hoje";
+  if (dias === 1) return "Contato quente, chegou ontem";
+  return `Contato quente, chegou há ${dias} dias`;
+}
+
 export function CartaDaVez({
   lead,
   hoje,
   aoMandarMensagem,
   aoRegistrarToque,
+  aoFecharVenda,
 }: {
   lead: LeadPainel;
   hoje: string;
   aoMandarMensagem: (lead: LeadPainel, saida?: "whatsapp" | "instagram") => void;
   aoRegistrarToque: (lead: LeadPainel) => void;
+  /* O "Fechou" abre o modal no Hoje, fora da carta: dentro dela o modal
+     herdava as cores de tinta e o título sumia. */
+  aoFecharVenda: (lead: LeadPainel) => void;
 }) {
   const [salvando, comecar] = useTransition();
   const [gaveta, setGaveta] = useState<Gaveta>(null);
@@ -100,6 +114,7 @@ export function CartaDaVez({
   const [passo, setPasso] = useState(lead.proximo_passo ?? "");
   const [data, setData] = useState(() => somarDias(hoje, 3));
   const [zap, setZap] = useState(lead.whatsapp ?? "");
+  const [motivo, setMotivo] = useState<MotivoPerda>("sem_interesse");
 
   const temZap = Boolean(linkWhatsapp(lead.whatsapp));
   const temInsta = Boolean(arrobaDe(lead.instagram));
@@ -162,6 +177,16 @@ export function CartaDaVez({
   /* Sem `fechar()` no sucesso: a carta inteira é trocada pela próxima na
      revalidação, e mexer no estado de um componente que está saindo da
      árvore é trabalho para ninguém ver. */
+  /* Sem `fechar()` no sucesso, pelo mesmo motivo do apagar: a carta sai. */
+  const salvarPerdido = (e: React.FormEvent) => {
+    e.preventDefault();
+    setErro(null);
+    comecar(async () => {
+      const r = await moverLead(lead.id, "perdido", null, { motivo_perda: motivo });
+      if (!r.ok) setErro("erro" in r ? r.erro : "Escolha o motivo.");
+    });
+  };
+
   const confirmarApagar = () => {
     setErro(null);
     comecar(async () => {
@@ -186,6 +211,9 @@ export function CartaDaVez({
               A carta diz isso na primeira linha, com o anúncio em mono
               (o nome literal do Gerenciador), na voz rosa do "tem gente
               esperando". Sem anúncio no clique, diz só que veio do site. */}
+          {/* O CONTATO QUENTE (06/10) diz por que a carta abriu a fila:
+              a pessoa está esperando eu falar, desde quando. */}
+          {contatoQuente(lead) ? <span className={s.vezVeioDe}>{chegou(momentoDoContato(lead), hoje)}</span> : null}
           {procurouOEstudio(lead) ? (
             <span className={s.vezVeioDe}>
               {lead.anuncio ? (
@@ -193,7 +221,7 @@ export function CartaDaVez({
                   Veio do anúncio <code>{lead.anuncio}</code>
                 </>
               ) : (
-                "Veio pelo site"
+                "Me procurou"
               )}
             </span>
           ) : null}
@@ -346,6 +374,24 @@ export function CartaDaVez({
             </button>
           )}
 
+          {/* ---------- O FIM DA CONVERSA, NA PRÓPRIA CARTA (06/10) ----------
+              Fechar ou descartar exigia sair da fila e achar o card no
+              quadro. "Fechou" abre o mesmo modal da ficha (ganho, contrato
+              e o que já caiu, num passo); "Não rolou" pede só o motivo. Os
+              dois tiram a carta da fila, porque ganho e perdido saem da
+              agenda. */}
+          <button type="button" className={s.btnEscuro} onClick={() => aoFecharVenda(lead)}>
+            Fechou
+          </button>
+          <button
+            type="button"
+            className={s.btnEscuro}
+            onClick={() => abrir("perdido")}
+            aria-expanded={gaveta === "perdido"}
+          >
+            Não rolou
+          </button>
+
           {/* Na ponta oposta da fileira: é a única ação da tela sem volta, e
               encostada no "+7d" ela seria um alvo irreversível a seis pixels
               de um alvo que a mão aperta vinte vezes por dia. */}
@@ -462,6 +508,45 @@ export function CartaDaVez({
           </form>
         ) : null}
 
+        {gaveta === "perdido" ? (
+          <form
+            className={s.gavetaFila}
+            onSubmit={salvarPerdido}
+            onKeyDown={(e) => e.key === "Escape" && fechar()}
+          >
+            <p className={s.gavetaTitulo}>Por que não rolou?</p>
+
+            <select
+              className={s.gavetaCampo}
+              value={motivo}
+              onChange={(e) => setMotivo(e.target.value as MotivoPerda)}
+              aria-label={`Motivo da perda de ${lead.nome}`}
+              autoFocus
+            >
+              {MOTIVOS_PERDA.map((m) => (
+                <option key={m} value={m}>
+                  {NOME_MOTIVO[m]}
+                </option>
+              ))}
+            </select>
+
+            {erro ? (
+              <p role="alert" className={s.erro}>
+                {erro}
+              </p>
+            ) : null}
+
+            <div className={s.gavetaPe}>
+              <button type="button" className={s.btnMini} onClick={fechar}>
+                Cancelar
+              </button>
+              <button type="submit" className={`${s.btnMini} ${s.btnMiniForte}`} disabled={salvando}>
+                {salvando ? "Salvando…" : "Marcar como perdido"}
+              </button>
+            </div>
+          </form>
+        ) : null}
+
         {/* Filete rosa e não esmeralda: nesta ferramenta o rosa quer dizer
             "olhe para cá agora", e esta é a única ação sem volta. O texto diz
             o que some E qual é o caminho de quem quis dizer outra coisa. */}
@@ -470,8 +555,8 @@ export function CartaDaVez({
             <p className={s.gavetaTitulo}>Apagar {lead.nome}?</p>
             <p className={s.gavetaTexto}>
               Some do banco com a linha do tempo inteira, e não dá para desfazer. Se a conversa
-              aconteceu e não foi para frente, o caminho é marcar como perdido no quadro, que guarda
-              o motivo.
+              aconteceu e não foi para frente, o caminho é o &ldquo;Não rolou&rdquo;, que guarda o
+              motivo.
             </p>
 
             {erro ? (

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Quadro } from "@/components/crm/Quadro";
 import { quadro } from "@/lib/crm/dados";
 
-export const metadata: Metadata = { title: "Pipeline" };
+export const metadata: Metadata = { title: "Funil" };
 
 export default async function PaginaPipeline() {
   const { leads, nichos, anuncios, hoje } = await quadro();

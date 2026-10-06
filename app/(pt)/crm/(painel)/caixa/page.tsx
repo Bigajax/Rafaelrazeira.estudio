@@ -242,14 +242,14 @@ export default async function PaginaCaixa({
                 mesma ordem, para o olho não procurar. */}
             <aside className={s.vezDossie}>
               <div className={s.vezFato}>
-                <span className={s.vezFatoRot}>Em atraso</span>
+                <span className={s.vezFatoRot}>Para cobrar</span>
                 <b className={`${s.vezFatoVal} ${c.emAtraso ? s.caixaDeve : s.caixaEmDia}`}>
                   {dinheiroExato(c.emAtraso)}
                 </b>
                 <span className={s.vezFatoNota}>
                   {c.devendo.length
-                    ? `${c.devendo.length} ${c.devendo.length === 1 ? "parcela venceu" : "parcelas venceram"}`
-                    : "ninguém devendo"}
+                    ? `${c.devendo.length} ${c.devendo.length === 1 ? "parcela chegou no dia" : "parcelas chegaram no dia"}`
+                    : "ninguém para cobrar"}
                 </span>
               </div>
 
@@ -277,14 +277,16 @@ export default async function PaginaCaixa({
         )}
       </section>
 
-      {/* ---------- quem está me devendo ----------
+      {/* ---------- para cobrar ----------
           Só existe quando existe. Sem devedor, o "em atraso R$ 0" em
           esmeralda na folha já disse, e um cartão dizendo "ninguém está
-          atrasado" seria a mesma notícia pela segunda vez. */}
+          atrasado" seria a mesma notícia pela segunda vez. "Para cobrar" e
+          não "quem está me devendo" (06/10): a lista inclui o que vence
+          hoje, pela mesma régua do Hoje e do trilho. */}
       {c.devendo.length ? (
         <>
           <h2 className={`${s.rotulo} ${s.rotuloAlerta}`}>
-            Quem está me devendo
+            Para cobrar
             <span className={s.rotuloCont}>{c.devendo.length}</span>
           </h2>
           <section className={`${s.bloco} ${s.blocoDivida}`}>
