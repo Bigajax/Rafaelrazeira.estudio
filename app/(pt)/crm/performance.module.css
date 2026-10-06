@@ -1,0 +1,50 @@
+/* ============================================================
+   PERFORMANCE: a lista das lojas que contam (06/10/2026)
+   Mesma régua do CRM: papel, fio, mono para os números.
+   ============================================================ */
+
+.tela { max-width: 1360px; margin: 0 auto }
+.cabeca { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap }
+.placar { font: 12px var(--mono); letter-spacing: .06em; color: var(--ink-fraco); margin-top: 10px }
+.aviso { margin: 24px 0 0; padding: 14px 16px; border: 1px dashed var(--ink-fraco); font-size: 14.5px; line-height: 1.5 }
+.aviso code { font: 12.5px var(--mono) }
+.vazio { margin-top: 28px; color: var(--ink-soft); line-height: 1.5 }
+
+/* ---------- a lista ---------- */
+.lista { list-style: none; margin: 24px 0 0; padding: 0 }
+.linha { border-bottom: 1px solid var(--line); padding: 16px 0 14px; display: grid; gap: 10px }
+.linhaTopo { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) auto; gap: 16px; align-items: start }
+.linhaNome h2 { font-size: 17px; margin: 0; line-height: 1.2 }
+.linhaNome span { display: block; font: 12px var(--mono); letter-spacing: .04em; color: var(--ink-fraco); margin-top: 5px }
+.linhaNome a { color: inherit }
+.linhaInativa { opacity: .55 }
+
+.numeros { display: flex; gap: 18px; flex-wrap: wrap }
+.numero { display: grid; gap: 2px }
+.numero b { font: 600 18px var(--mono); letter-spacing: -.01em }
+.numero span { font: 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-fraco) }
+.semEvento { color: var(--rosa) }
+
+/* ---------- a situação ---------- */
+.situacao { display: inline-flex; align-items: center; gap: 7px; font: 700 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; padding: 5px 9px; border: 1px solid var(--line); white-space: nowrap }
+.situacao i { width: 7px; height: 7px; border-radius: 50%; background: var(--ink-fraco); display: inline-block }
+.sitLiberada i, .sitSempre i { background: var(--green) }
+.sitTravada i { background: var(--rosa) }
+.sitSemChave { border-style: dashed }
+
+/* ---------- os botões ---------- */
+.acoes { display: flex; gap: 6px; flex-wrap: wrap; align-items: center }
+.chaveNova { margin: 4px 0 0; padding: 12px 14px; background: var(--paper-alto); border: 1px solid var(--green); display: grid; gap: 8px }
+.chaveNova p { margin: 0; font-size: 13.5px; line-height: 1.45 }
+.chaveTexto { font: 13px var(--mono); word-break: break-all; padding: 8px 10px; background: var(--paper); border: 1px solid var(--line); user-select: all }
+.erro { color: var(--rosa); font-weight: 600; margin: 0; font-size: 14px }
+
+/* ---------- criar loja ---------- */
+.nova { margin-top: 28px; padding: 18px; background: var(--paper-alto); border: 1px solid var(--line); display: grid; gap: 12px }
+.nova h2 { margin: 0; font-size: 16px }
+.novaCampos { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px }
+.novaNota { font-size: 13px; color: var(--ink-soft); margin: 0; line-height: 1.5 }
+
+@media (max-width: 720px) {
+  .linhaTopo { grid-template-columns: 1fr }
+}

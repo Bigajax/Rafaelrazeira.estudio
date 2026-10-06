@@ -59,6 +59,7 @@ export const MOLDE_VITRINE: ItemChecklist[] = [
   i("painel", "painel-imagens", "images.remotePatterns no next.config"),
   i("painel", "painel-teste", "Painel testado no ar: login, peça com foto, apagar a de teste"),
   i("painel", "painel-login", "Login com o e-mail dele e senha nova"),
+  i("painel", "painel-performance", "Loja criada em Performance e PERF_CHAVE (com PERF_URL e PERF_ANON) na Vercel"),
 
   i("cadastro", "cadastro-saiu", "Peças que saíram, tiradas"),
   i("cadastro", "cadastro-novas", "Peças novas cadastradas"),
@@ -126,6 +127,8 @@ export type Projeto = {
   entregue_em: string | null;
   caixa: Caixa;
   auto: Record<ItemAuto, boolean>;
+  /* A loja no Performance (a contagem da vitrine), se já foi criada. */
+  performance: { id: string; nome: string; slug: string; chave_prefixo: string | null; liberado_ate: string | null; para_sempre: boolean; ativa: boolean } | null;
 };
 
 export type SituacaoEtapa = { feitos: number; total: number; pronta: boolean };

@@ -18,6 +18,7 @@ import { Regua } from "@/components/projetos/Regua";
 import { Checklist } from "@/components/projetos/Checklist";
 import { ChecklistCliente } from "@/components/projetos/ChecklistCliente";
 import { BotaoEntregue, Campos } from "@/components/projetos/Campos";
+import { BlocoPerformance } from "@/components/performance/BlocoPerformance";
 import s from "@/app/(pt)/crm/crm.module.css";
 import p from "@/app/(pt)/crm/projetos.module.css";
 
@@ -115,6 +116,13 @@ export default async function PaginaProjeto({ params }: { params: Promise<{ id: 
               notas={x.notas}
             />
             <BotaoEntregue leadId={x.lead_id} entregue={!!x.entregue_em} tudoPronto={tudoPronto} />
+          </section>
+
+          {/* A contagem da vitrine (06/10): a loja no Performance, com a
+              trava. Nasce e se mexe na aba Performance; aqui só se lê. */}
+          <section className={p.painel}>
+            <h2 className={p.painelTitulo}>Performance</h2>
+            <BlocoPerformance leadId={x.lead_id} nome={x.nome} loja={x.performance} />
           </section>
         </aside>
       </div>

@@ -111,17 +111,24 @@ async function ler(leadId?: string): Promise<{ projetos: Projeto[]; semTabela: b
   const ids = leads.map((l) => l.id);
   if (!ids.length) return { projetos: [], semTabela: false };
 
-  const [contratos, parcelas, recebimentos, projetos, lojas] = await Promise.all([
+  const [contratos, parcelas, recebimentos, projetos, lojas, performance] = await Promise.all([
     supabase.from("crm_contratos").select("*").in("lead_id", ids).returns<Contrato[]>(),
     supabase.from("crm_parcelas").select("*").in("lead_id", ids).returns<Parcela[]>(),
     supabase.from("crm_recebimentos").select("*").in("lead_id", ids).returns<Recebimento[]>(),
     supabase.from("crm_projetos").select("id, lead_id, checklist, site, dominio, repo, material, notas, entregue_em").in("lead_id", ids).returns<LinhaProjeto[]>(),
     supabase.from("prod_lojas").select("lead_id, previa_url").in("lead_id", ids).returns<{ lead_id: string; previa_url: string | null }[]>(),
+    /* a contagem da vitrine: pode não existir ainda (performance.sql não rodado), e aí é só null */
+    supabase
+      .from("perf_lojas")
+      .select("id, lead_id, nome, slug, chave_prefixo, liberado_ate, para_sempre, ativa")
+      .in("lead_id", ids)
+      .returns<(NonNullable<Projeto["performance"]> & { lead_id: string })[]>(),
   ]);
 
   const semTabela = !!projetos.error;
   const porLead = new Map((projetos.data ?? []).map((p) => [p.lead_id, p]));
   const previa = new Map((lojas.data ?? []).filter((l) => l.previa_url).map((l) => [l.lead_id, l.previa_url]));
+  const perfPorLead = new Map((performance.data ?? []).map(({ lead_id, ...resto }) => [lead_id, resto]));
 
   return {
     semTabela,
@@ -145,6 +152,7 @@ async function ler(leadId?: string): Promise<{ projetos: Projeto[]; semTabela: b
         entregue_em: p?.entregue_em ?? null,
         caixa,
         auto: { contrato: caixa.contrato, entrada: caixa.entrada || primeiroPagamento.has(l.id), saldo: caixa.saldo, checklist: !!p?.material },
+        performance: perfPorLead.get(l.id) ?? null,
       };
     }),
   };
