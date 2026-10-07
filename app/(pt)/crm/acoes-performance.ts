@@ -165,3 +165,53 @@ export async function apagarLojaPerformance(lojaId: string): Promise<Resultado> 
   atualizar();
   return { ok: true };
 }
+
+/* ============================================================
+   O RELATÓRIO DO MÊS (06/10/2026)
+
+   Uma linha em perf_relatorios por loja e por mês. Criar devolve o id (ou
+   o do relatório que já existia naquele mês: um por mês). O texto que o
+   Rafael escreve, a leitura e o que foi feito, é o que faz do relatório
+   um serviço e não só números: o resto sai sozinho do banco.
+   ============================================================ */
+
+export async function criarRelatorio(lojaId: string, mes: string): Promise<{ ok: true; id: string } | { ok: false; erro: string }> {
+  const usuario = await exigirSessao();
+  const supabase = await clienteServidor();
+  if (!/^\d{4}-\d{2}$/.test(mes)) return { ok: false, erro: "Mês inválido." };
+  const primeiro = `${mes}-01`;
+  const { data: existe } = await supabase.from("perf_relatorios").select("id").eq("loja_id", lojaId).eq("mes", primeiro).maybeSingle();
+  if (existe?.id) return { ok: true, id: existe.id as string };
+  const { data, error } = await supabase
+    .from("perf_relatorios")
+    .insert({ owner_id: usuario.id, loja_id: lojaId, mes: primeiro })
+    .select("id")
+    .single();
+  if (error || !data) {
+    if (error?.code === "42P01") return { ok: false, erro: "A tabela dos relatórios ainda não existe. Rode a seção 10 do supabase/performance.sql." };
+    return { ok: false, erro: traduzir(error) };
+  }
+  atualizar();
+  return { ok: true, id: data.id as string };
+}
+
+export async function salvarRelatorio(id: string, dados: { leitura: string; feito: string }): Promise<Resultado> {
+  await exigirSessao();
+  const supabase = await clienteServidor();
+  const { error } = await supabase
+    .from("perf_relatorios")
+    .update({ leitura: dados.leitura.trim() || null, feito: dados.feito.trim() || null })
+    .eq("id", id);
+  if (error) return { ok: false, erro: traduzir(error) };
+  atualizar();
+  return { ok: true };
+}
+
+export async function apagarRelatorio(id: string): Promise<Resultado> {
+  await exigirSessao();
+  const supabase = await clienteServidor();
+  const { error } = await supabase.from("perf_relatorios").delete().eq("id", id);
+  if (error) return { ok: false, erro: traduzir(error) };
+  atualizar();
+  return { ok: true };
+}

@@ -7,7 +7,7 @@ export default function robots(): MetadataRoute.Robots {
        as de entrega ainda carregam a senha inicial do painel do cliente.
        O noindex de cada página impede o Google de indexar; isto impede o
        robô de passar por lá. Nenhum dos dois torna a página privada. */
-    rules: { userAgent: "*", allow: "/", disallow: ["/crm", "/proposta", "/entrega", "/checklist", "/registrar-venda", "/api"] },
+    rules: { userAgent: "*", allow: "/", disallow: ["/crm", "/proposta", "/entrega", "/relatorio", "/assinar", "/upgrade", "/checklist", "/registrar-venda", "/api"] },
     sitemap: `${SITE}/sitemap.xml`,
   };
 }

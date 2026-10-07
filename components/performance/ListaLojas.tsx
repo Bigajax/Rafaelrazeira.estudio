@@ -21,6 +21,7 @@ import {
 import type { LojaPerformance } from "@/lib/performance/dados";
 import s from "@/app/(pt)/crm/crm.module.css";
 import p from "@/app/(pt)/crm/performance.module.css";
+import { Selo } from "@/components/performance/Selo";
 
 type LeadCurto = { id: string; nome: string };
 
@@ -122,7 +123,7 @@ function Loja({ loja }: { loja: LojaPerformance }) {
         </div>
 
         <span className={`${p.situacao} ${sit.classe}`}>
-          <i aria-hidden />
+          <Selo tamanho={14} apagado={loja.situacao !== "liberada" && loja.situacao !== "para_sempre"} rotulo={sit.rotulo} />
           {sit.rotulo}
           {loja.situacao === "liberada" && loja.liberado_ate ? ` até ${DATA.format(new Date(loja.liberado_ate))}` : ""}
         </span>
@@ -169,6 +170,9 @@ function Loja({ loja }: { loja: LojaPerformance }) {
         >
           {loja.chave_prefixo ? "Gerar chave nova" : "Gerar a chave"}
         </button>
+        <Link className={s.btnMini} href={`/crm/performance/${loja.id}`}>
+          Relatórios do mês
+        </Link>
         <button type="button" className={s.btnMini} disabled={ocupado} onClick={() => rodar(() => ligarLojaPerformance(loja.id, !loja.ativa))}>
           {loja.ativa ? "Desligar" : "Religar"}
         </button>

@@ -1,0 +1,651 @@
+/* ============================================================
+   O RELATÓRIO DO MÊS, na gramática da casa (07/10/2026).
+   docs/design-estudio.md: papel e tinta; Archivo condensada na
+   manchete e nos números; Inter no corpo; mono em caixa alta nos
+   rótulos; filete de 1,5px de tinta; filete duplo nos títulos de
+   seção; UMA sombra dura (a ficha da leitura, 8px 8px 0 esmeralda);
+   o rosa só na única ação (responder ao estúdio). Quina reta.
+   Imprime em A4: o papel vira branco, o botão some, nada quebra no meio.
+   ============================================================ */
+.pagina {
+  --paper: #f2efe6;
+  --paper-2: #eae6d9;
+  --ficha: #fbf9f3;
+  --ink: #14181a;
+  --ink-soft: #3a4144;
+  --green: #0c9159;
+  --green-dark: #076b42;
+  --rosa: #e31b62;
+  --rosa-dark: #b81250;
+  --linha: #d8d3c4;
+  --vermelho: #b3261e;
+  min-height: 100vh;
+  padding: clamp(1.5rem, 4vw, 3.5rem) clamp(1rem, 4vw, 2.5rem) 4rem;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body), Inter, system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+.folha {
+  max-width: 64rem;
+  margin: 0 auto;
+}
+
+/* ── o cabeçalho ───────────────────────────────────────────── */
+.topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding-bottom: 1.5rem;
+  /* o filete duplo da régua de tipografia impressa */
+  box-shadow: 0 1.5px 0 var(--ink), 0 4.5px 0 var(--linha);
+}
+.topo__texto {
+  min-width: 0;
+  max-width: 44rem;
+}
+.kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--green-dark);
+}
+.titulo {
+  margin-top: 0.75rem;
+  font-family: var(--font-display), "Arial Narrow", sans-serif;
+  font-variation-settings: "wdth" 62;
+  font-weight: 900;
+  font-size: clamp(3rem, 9vw, 5.75rem);
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.lead {
+  margin-top: 1rem;
+  font-size: 1.0625rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  max-width: 48ch;
+}
+.lead b {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* ── os quatro números: um placar, filetes verticais, sem caixa ── */
+.numeros {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 1.5rem;
+  border-bottom: 1.5px solid var(--ink);
+}
+@media (min-width: 760px) {
+  .numeros {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+.numero {
+  display: grid;
+  gap: 0.4rem;
+  align-content: start;
+  padding: 1.1rem 1.25rem 1.25rem 1rem;
+  border-left: 1.5px solid var(--linha);
+}
+.numero:first-child {
+  border-left: 0;
+  padding-left: 0;
+}
+@media (max-width: 759px) {
+  .numero:nth-child(3) {
+    border-left: 0;
+    padding-left: 0;
+  }
+  .numero:nth-child(n + 3) {
+    border-top: 1px solid var(--linha);
+  }
+}
+.rot {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--green-dark);
+}
+.val {
+  font-family: var(--font-display), "Arial Narrow", sans-serif;
+  font-variation-settings: "wdth" 75;
+  font-weight: 800;
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+.dif {
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--ink-soft);
+}
+.sobe {
+  color: var(--green-dark);
+  font-weight: 600;
+}
+.desce {
+  color: var(--vermelho);
+  font-weight: 600;
+}
+
+/* ── a leitura do estúdio: a ficha, o único objeto com sombra ── */
+.leitura {
+  position: relative;
+  margin-top: 2.5rem;
+  padding: 1.75rem clamp(1.25rem, 4vw, 2.5rem) 1.75rem;
+  background: var(--ficha);
+  border: 1.5px solid var(--ink);
+  box-shadow: 8px 8px 0 var(--green);
+}
+.leitura__rotulo {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--green-dark);
+}
+.leitura__texto {
+  margin-top: 1rem;
+  max-width: 62ch;
+}
+.leitura__texto p {
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--ink);
+}
+.leitura__texto p + p {
+  margin-top: 0.9rem;
+}
+.leitura__texto p:first-child {
+  font-size: 1.1875rem;
+  line-height: 1.5;
+}
+.assina {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1.5px solid var(--linha);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.assina b {
+  font-family: var(--font-display), "Arial Narrow", sans-serif;
+  font-variation-settings: "wdth" 70;
+  font-weight: 800;
+  font-size: 1.5rem;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.assina span {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+/* ── as seções: duas colunas, um filete vertical entre elas ── */
+.duas {
+  display: grid;
+  gap: 2.5rem;
+  margin-top: 3rem;
+}
+@media (min-width: 760px) {
+  .duas {
+    grid-template-columns: minmax(0, 1fr) 1.5px minmax(0, 1fr);
+    gap: 0 2.5rem;
+  }
+  .duas::before {
+    content: "";
+    grid-column: 2;
+    grid-row: 1;
+    background: var(--linha);
+  }
+  .duas > :first-child {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .duas > :last-child {
+    grid-column: 3;
+    grid-row: 1;
+  }
+}
+.secao {
+  min-width: 0;
+}
+.secao h2 {
+  padding-bottom: 0.6rem;
+  font-family: var(--font-display), "Arial Narrow", sans-serif;
+  font-variation-settings: "wdth" 80;
+  font-weight: 700;
+  font-size: 1.375rem;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  box-shadow: 0 1.5px 0 var(--ink), 0 4.5px 0 var(--linha);
+}
+.secao h2::first-letter {
+  text-transform: uppercase;
+}
+.sub {
+  margin-top: 1.25rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1.5px solid var(--linha);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--green-dark);
+}
+.vazio {
+  margin-top: 1rem;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+.nota {
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+/* o que fazer: o rótulo em mono, a frase com verbo, o porquê */
+.fazer {
+  list-style: none;
+  padding: 0;
+  margin-top: 0.5rem;
+}
+.fazer li {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.9rem 0;
+  border-top: 1px solid var(--linha);
+}
+.fazer li:first-child {
+  border-top: 0;
+}
+.sub + .fazer {
+  margin-top: 0;
+}
+.tipo {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--green-dark);
+}
+.fazer b {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--ink);
+}
+.porque {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+/* o que foi feito: a régua de conferência, o tique na margem direita */
+.feito {
+  list-style: none;
+  padding: 0;
+  margin-top: 0.5rem;
+}
+.feito li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem 0;
+  border-top: 1px solid var(--linha);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.feito li:first-child {
+  border-top: 0;
+}
+.feito li::after {
+  content: "✓";
+  flex: none;
+  font-weight: 700;
+  color: var(--green);
+}
+
+/* a tabela das peças */
+.tabela {
+  width: 100%;
+  margin-top: 0.5rem;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+.tabela th,
+.tabela td {
+  padding: 0.6rem 0;
+  border-top: 1px solid var(--linha);
+  text-align: right;
+  vertical-align: middle;
+}
+.tabela thead th {
+  border-top: 0;
+  padding-top: 0.75rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.5625rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.tabela th:first-child {
+  text-align: left;
+  padding-right: 0.75rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+.tabela tbody th {
+  font-weight: 500;
+}
+.tabela thead th:not(:first-child) {
+  padding-left: 0.9rem;
+}
+.tabela td {
+  padding-left: 0.9rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+.tabela td.forte {
+  font-weight: 700;
+  color: var(--green-dark);
+}
+
+/* de onde vieram: nome, a parte em mono grande, a barra de tinta */
+.origem {
+  list-style: none;
+  padding: 0;
+  margin-top: 0.5rem;
+}
+.origem li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.2rem 1rem;
+  padding: 0.8rem 0;
+  border-top: 1px solid var(--linha);
+}
+.origem li:first-child {
+  border-top: 0;
+}
+.origem b {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.origem__num {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.origem small {
+  grid-column: 1 / -1;
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+.origem > li > i {
+  grid-column: 1 / -1;
+  display: block;
+  height: 6px;
+  margin-top: 0.3rem;
+  background: var(--paper-2);
+}
+.origem > li > i > i {
+  display: block;
+  height: 100%;
+  background: var(--ink);
+}
+.origem > li:first-child > i > i {
+  background: var(--green);
+}
+
+/* as listas de linha: o que procuraram, os números, os posts */
+.lista {
+  list-style: none;
+  padding: 0;
+  margin-top: 0.5rem;
+}
+.lista li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.6rem 0;
+  border-top: 1px solid var(--linha);
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  color: var(--ink);
+}
+.lista li:first-child {
+  border-top: 0;
+}
+.lista b {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-weight: 700;
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+.lista small {
+  font-family: var(--font-body), Inter, sans-serif;
+  font-weight: 400;
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+}
+
+/* o movimento */
+.grafico {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: 1rem;
+}
+.col {
+  fill: var(--green);
+  opacity: 0.55;
+}
+.colHoje {
+  fill: var(--ficha);
+  stroke: var(--green);
+  stroke-width: 1.25;
+  stroke-dasharray: 3 2;
+}
+.mediaLinha {
+  stroke: var(--ink);
+}
+.eixoLinha {
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+.eixo {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 10px;
+  fill: var(--ink-soft);
+}
+
+/* ── o botão de imprimir: carimbo de contorno, LEVA ── */
+.baixar {
+  display: grid;
+  justify-items: end;
+  gap: 0.4rem;
+}
+.baixar small {
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+}
+.imprimir {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0 1.1rem;
+  border: 1.5px solid var(--ink);
+  background: var(--ficha);
+  color: var(--ink);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  box-shadow: 4px 4px 0 var(--ink);
+  cursor: pointer;
+  transition: transform 80ms ease-out, box-shadow 80ms ease-out;
+}
+.imprimir svg {
+  width: 1rem;
+  height: 1rem;
+}
+@media (hover: hover) and (pointer: fine) {
+  .imprimir:hover {
+    background: var(--paper-2);
+  }
+}
+.imprimir:active {
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 var(--ink);
+}
+.imprimir:focus-visible {
+  outline: 2.5px solid var(--green);
+  outline-offset: 3px;
+}
+
+/* ── o rodapé: filete duplo em cima, a assinatura e a ação ── */
+.rodape {
+  margin-top: 3.5rem;
+  padding-top: 1.5rem;
+  box-shadow: 0 -1.5px 0 var(--ink), 0 -4.5px 0 var(--linha);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+.rodape__texto {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem 0.6rem;
+  flex-wrap: wrap;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.rodape__texto span {
+  font-weight: 400;
+  color: var(--ink-soft);
+}
+.responder {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0 1.25rem;
+  background: var(--rosa);
+  color: #fff;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-decoration: none;
+  box-shadow: 4px 4px 0 var(--rosa-dark);
+  transition: transform 80ms ease-out, box-shadow 80ms ease-out;
+}
+@media (hover: hover) and (pointer: fine) {
+  .responder:hover {
+    background: var(--rosa-dark);
+  }
+}
+.responder:active {
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 var(--rosa-dark);
+}
+.responder:focus-visible {
+  outline: 2.5px solid var(--ink);
+  outline-offset: 3px;
+}
+
+/* ── a impressão: A4, papel branco, sem botão, nada quebra no meio ── */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm 12mm;
+  }
+  .pagina {
+    padding: 0;
+    background: #fff;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .folha {
+    max-width: none;
+  }
+  .baixar,
+  .responder {
+    display: none;
+  }
+  .titulo {
+    font-size: 3.25rem;
+  }
+  .numeros {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .duas {
+    grid-template-columns: minmax(0, 1fr) 1.5px minmax(0, 1fr);
+    gap: 0 2rem;
+    margin-top: 2rem;
+  }
+  .duas::before {
+    content: "";
+    grid-column: 2;
+    grid-row: 1;
+    background: var(--linha);
+  }
+  .duas > :first-child {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .duas > :last-child {
+    grid-column: 3;
+    grid-row: 1;
+  }
+  .leitura {
+    background: #fff;
+    box-shadow: 6px 6px 0 var(--green);
+  }
+  .leitura,
+  .numeros,
+  .secao {
+    break-inside: avoid;
+  }
+}

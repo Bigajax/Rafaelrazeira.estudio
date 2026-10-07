@@ -49,6 +49,7 @@
 
 import crypto from "crypto";
 import { donoDoCRM, supabaseREST, supabaseSelect } from "@/lib/supabase-rest";
+import { DEGRAUS, PLANOS_PERFORMANCE, UPGRADES } from "@/lib/oferta-performance";
 
 const MP_API = "https://api.mercadopago.com/v1/payments";
 /* Notificação com mais de dez minutos é replay: o Mercado Pago entrega em
@@ -248,6 +249,136 @@ async function ganharSozinho(dono, parcela, valorPago) {
 }
 
 /* ============================================================
+   O PERFORMANCE (07/10/2026)
+
+   O pagamento do plano pelo próprio painel tem referência
+   `perf:<loja>:<plano>:<uuid>` e NÃO tem parcela: quem soma os dias é a
+   função perf_registrar_pagamento, que trava a repetição pelo id do
+   pagamento (o mesmo aviso cinco vezes soma uma). O dinheiro também entra
+   no Caixa, como recebimento com o lead da loja e sem parcela, porque a
+   regra 2 vale aqui: nunca descartar dinheiro.
+
+   A assinatura do cartão mensal chega por dois avisos além do payment:
+   `subscription_authorized_payment` (uma cobrança do mês) e
+   `subscription_preapproval` (a assinatura mudou: pausada, cancelada).
+   ============================================================ */
+function lerPerf(ref) {
+  const texto = String(ref || "");
+  if (!texto.startsWith("perf:")) return null;
+  const [, loja, plano] = texto.split(":");
+  return loja && plano && (PLANOS_PERFORMANCE[plano] || UPGRADES[plano]) ? { loja, plano } : null;
+}
+
+async function registrarPerf(dono, ref, pagamento) {
+  const upgrade = UPGRADES[ref.plano] || null;
+  const plano = upgrade || PLANOS_PERFORMANCE[ref.plano];
+  const valor = Number(pagamento.transaction_amount) || 0;
+  /* pagamento menor que o plano não libera: só entra no Caixa */
+  const vale = valor + 0.005 >= plano.valor;
+
+  let resultado = { novo: false };
+  if (vale && upgrade) {
+    /* (07/10) o upgrade não soma dias: marca o degrau na loja, uma vez */
+    const r = await supabaseREST("rpc/perf_registrar_upgrade", {
+      method: "POST",
+      body: JSON.stringify({ p_loja: ref.loja, p_degrau: upgrade.degrau, p_payment: String(pagamento.id), p_valor: valor }),
+    });
+    if (!r.ok) throw new Error(`perf_registrar_upgrade ${r.status}`);
+    resultado = await r.json().catch(() => ({ novo: false }));
+  } else if (vale) {
+    const r = await supabaseREST("rpc/perf_registrar_pagamento", {
+      method: "POST",
+      body: JSON.stringify({ p_loja: ref.loja, p_plano: ref.plano, p_payment: String(pagamento.id), p_valor: valor, p_dias: plano.dias }),
+    });
+    if (!r.ok) throw new Error(`perf_registrar_pagamento ${r.status}`);
+    resultado = await r.json().catch(() => ({ novo: false }));
+  } else {
+    console.error("mp_webhook_perf_valor_menor", { id: String(pagamento.id), valor, plano: ref.plano });
+  }
+
+  const lojas = await supabaseSelect(`perf_lojas?id=eq.${encodeURIComponent(ref.loja)}&select=lead_id`);
+  const liquido =
+    pagamento.transaction_details && pagamento.transaction_details.net_received_amount != null
+      ? Number(pagamento.transaction_details.net_received_amount)
+      : null;
+  const ins = await supabaseREST("crm_recebimentos", {
+    method: "POST",
+    headers: { Prefer: "resolution=ignore-duplicates,return=minimal" },
+    body: JSON.stringify({
+      owner_id: dono,
+      parcela_id: null,
+      lead_id: (lojas[0] && lojas[0].lead_id) || null,
+      valor,
+      valor_liquido: liquido,
+      recebido_em: diaEmSP(pagamento.date_approved),
+      metodo: pagamento.payment_method_id === "pix" ? "pix" : "cartao",
+      origem: "mercadopago",
+      mp_payment_id: String(pagamento.id),
+      mp_status: pagamento.status,
+      mp_external_reference: pagamento.external_reference || null,
+      bruto: pagamento,
+    }),
+  });
+  if (!ins.ok) console.error("mp_webhook_perf_caixa", ins.status);
+
+  /* o upgrade pago vira linha do tempo no lead: é o sinal para começar */
+  if (upgrade && resultado.novo && lojas[0] && lojas[0].lead_id) {
+    await supabaseREST("crm_interacoes", {
+      method: "POST",
+      headers: { Prefer: "return=minimal" },
+      body: JSON.stringify({
+        owner_id: dono,
+        lead_id: lojas[0].lead_id,
+        canal: "proposta",
+        direcao: "entrada",
+        resumo: `Pagou o upgrade ${DEGRAUS[upgrade.degrau].nome}: R$ ${valor.toLocaleString("pt-BR")}. Começar o projeto.`,
+      }),
+    }).catch((e) => console.error("mp_webhook_upgrade_timeline", e && e.message));
+  }
+  return resultado;
+}
+
+async function mpGet(caminho) {
+  const r = await fetch(`https://api.mercadopago.com${caminho}`, {
+    headers: { Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}` },
+  });
+  return { ok: r.ok, status: r.status, corpo: await r.json().catch(() => ({})) };
+}
+
+/* uma cobrança da assinatura: o aviso traz o id da cobrança; a referência
+   mora na assinatura, e o pagamento de verdade, dentro da cobrança */
+async function cobrancaDaAssinatura(dono, id) {
+  const cob = await mpGet(`/authorized_payments/${encodeURIComponent(id)}`);
+  if (!cob.ok) return { ignorado: "cobrança não encontrada" };
+  const pid = cob.corpo.payment && cob.corpo.payment.id;
+  if (!pid) return { ignorado: cob.corpo.status || "sem pagamento" };
+  const pg = await mpGet(`/v1/payments/${pid}`);
+  if (!pg.ok || pg.corpo.status !== "approved") return { ignorado: (pg.corpo && pg.corpo.status) || "pagamento não aprovado" };
+  let ref = lerPerf(pg.corpo.external_reference);
+  if (!ref && cob.corpo.preapproval_id) {
+    const ass = await mpGet(`/preapproval/${encodeURIComponent(cob.corpo.preapproval_id)}`);
+    ref = ass.ok ? lerPerf(ass.corpo.external_reference) : null;
+  }
+  if (!ref) return { ignorado: "não é do Performance" };
+  return registrarPerf(dono, ref, pg.corpo);
+}
+
+/* a assinatura mudou de estado: o painel deixa de dizer "renova sozinho"
+   quando ela é pausada ou cancelada, e passa a contar os dias */
+async function estadoDaAssinatura(id) {
+  const ass = await mpGet(`/preapproval/${encodeURIComponent(id)}`);
+  if (!ass.ok) return { ignorado: "assinatura não encontrada" };
+  const ref = lerPerf(ass.corpo.external_reference);
+  if (!ref) return { ignorado: "não é do Performance" };
+  await supabaseREST(`perf_lojas?id=eq.${encodeURIComponent(ref.loja)}`, {
+    method: "PATCH",
+    headers: { Prefer: "return=minimal" },
+    body: JSON.stringify({ mp_assinatura_id: String(ass.corpo.id), assinatura_status: ass.corpo.status || null }),
+  });
+  return { assinatura: ass.corpo.status };
+}
+
+/* ============================================================
    A ROTA
    ============================================================ */
 export default async function handler(req, res) {
@@ -263,6 +394,24 @@ export default async function handler(req, res) {
      chata de diagnosticar, que é o webhook "funcionando" e ignorando tudo. */
   const tipo = b.type || q.type || q.topic;
   const dataId = (b.data && b.data.id) || q["data.id"] || q.id;
+
+  /* a assinatura do Performance (07/10): cobrança do mês e mudança de estado */
+  if ((tipo === "subscription_authorized_payment" || tipo === "subscription_preapproval") && dataId) {
+    if (!assinaturaConfere(req, dataId)) {
+      console.error("mp_webhook_assinatura_invalida", { id: String(dataId), tipo });
+      return responder(res, 401, { erro: "assinatura inválida" });
+    }
+    const donoA = donoDoCRM();
+    if (!donoA) return responder(res, 500, { erro: "CRM_OWNER_ID ausente" });
+    try {
+      const r = tipo === "subscription_authorized_payment" ? await cobrancaDaAssinatura(donoA, String(dataId)) : await estadoDaAssinatura(String(dataId));
+      console.log("mp_webhook_perf_assinatura", { tipo, id: String(dataId), ...r });
+      return responder(res, 200, { ok: true, ...r });
+    } catch (e) {
+      console.error("mp_webhook_perf_assinatura_falhou", e && e.message);
+      return responder(res, 500, { erro: "não foi possível gravar" });
+    }
+  }
 
   /* Tudo que não é pagamento sai com 200: 4xx faria o MP reenviar para
      sempre um aviso que a gente nunca vai querer. */
@@ -316,6 +465,19 @@ export default async function handler(req, res) {
 
   if (pg.status !== "approved") {
     return responder(res, 200, { ok: true, ignorado: pg.status || "sem status" });
+  }
+
+  /* ---------- o Performance (07/10): sem parcela, soma os dias ---------- */
+  const perf = lerPerf(pg.external_reference);
+  if (perf) {
+    try {
+      const r = await registrarPerf(dono, perf, pg);
+      console.log("mp_webhook_perf_ok", { id: String(pg.id), loja: perf.loja, plano: perf.plano, ...r });
+      return responder(res, 200, { ok: true, performance: true, ...r });
+    } catch (e) {
+      console.error("mp_webhook_perf_falhou", e && e.message);
+      return responder(res, 500, { erro: "não foi possível gravar" });
+    }
   }
 
   /* ---------- amarrar, se der ----------

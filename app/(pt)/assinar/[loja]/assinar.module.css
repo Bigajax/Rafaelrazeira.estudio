@@ -1,0 +1,91 @@
+/* ============================================================
+   ASSINAR O PERFORMANCE, na gramática da casa (07/10/2026).
+   Papel e tinta; Archivo condensada no título e nos preços; Inter no
+   corpo; mono em caixa alta nos rótulos; filete de 1,5px; os três jeitos
+   de pagar como fichas que se escolhem (a escolhida em tinta, com a
+   sombra dura verde); o rosa só na ação (gerar o Pix, pagar). Quina reta.
+   ============================================================ */
+.pagina {
+  --paper: #f2efe6;
+  --paper-2: #eae6d9;
+  --ficha: #fbf9f3;
+  --ink: #14181a;
+  --ink-soft: #3a4144;
+  --green: #0c9159;
+  --green-live: #1fbf7a;
+  --rosa: #e31b62;
+  --rosa-dark: #b81250;
+  --linha: #d8d3c4;
+  --vermelho: #b3261e;
+  min-height: 100vh;
+  padding: clamp(1.5rem, 4vw, 3.5rem) 1rem 4rem;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body), Inter, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.folha { max-width: 52rem; margin: 0 auto; }
+
+.topo { padding-bottom: 1.25rem; box-shadow: 0 1.5px 0 var(--ink), 0 4.5px 0 var(--linha); }
+.rotulo { display: inline-flex; align-items: center; gap: 0.5rem; font-family: var(--font-mono), monospace; font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--green); }
+.titulo { margin-top: 0.5rem; font-family: var(--font-display), "Arial Narrow", sans-serif; font-variation-settings: "wdth" 62; font-weight: 800; font-size: clamp(2.5rem, 8vw, 4.5rem); line-height: 0.9; text-transform: uppercase; letter-spacing: -0.005em; }
+.situacao { margin-top: 0.9rem; max-width: 46ch; font-size: 1rem; line-height: 1.5; color: var(--ink-soft); }
+
+.checkout { margin-top: 2rem; display: grid; gap: 1.5rem; }
+.planos { display: grid; gap: 0.9rem; }
+@media (min-width: 760px) { .planos { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.plano { position: relative; display: grid; align-content: start; gap: 0.4rem; padding: 1.1rem 1.1rem 1.2rem; text-align: left; background: var(--ficha); color: var(--ink); border: 1.5px solid var(--ink); cursor: pointer; font: inherit; transition: transform 80ms ease-out, box-shadow 80ms ease-out, background-color 100ms ease-out; }
+@media (hover: hover) and (pointer: fine) { .plano:hover { background: #fff; } }
+.plano[aria-checked="true"] { background: var(--ink); color: var(--paper); box-shadow: 6px 6px 0 var(--green); }
+.planoNome { font-family: var(--font-mono), monospace; font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+.plano[aria-checked="true"] .planoNome { color: var(--green-live); }
+.planoPreco { font-family: var(--font-display), "Arial Narrow", sans-serif; font-variation-settings: "wdth" 72; font-weight: 800; font-size: 1.875rem; line-height: 1; letter-spacing: -0.02em; }
+.planoDiz { font-size: 0.875rem; line-height: 1.45; color: var(--ink-soft); }
+.plano[aria-checked="true"] .planoDiz { color: #dedad0; }
+.selo { position: absolute; top: -0.75rem; right: 0.9rem; padding: 0.25rem 0.55rem; background: var(--rosa); color: #fff; font-family: var(--font-mono), monospace; font-size: 0.5625rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+
+.fluxo { display: grid; gap: 0.9rem; padding: 1.25rem; background: var(--ficha); border: 1.5px solid var(--ink); }
+.passo { font-family: var(--font-mono), monospace; font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft); padding-bottom: 0.6rem; border-bottom: 1.5px solid var(--linha); }
+.campos { display: grid; gap: 0.9rem; }
+@media (min-width: 700px) { .campos { grid-template-columns: 1.4fr 1.4fr 1fr; } }
+.campos label { display: grid; gap: 0.35rem; }
+.campos span { font-family: var(--font-mono), monospace; font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
+.campos input { min-height: 3rem; padding: 0 0.9rem; font: inherit; font-size: 1rem; color: var(--ink); background: #fff; border: 1.5px solid #b8b2a2; border-radius: 0; }
+.campos input:focus { outline: none; border-color: var(--ink); box-shadow: 4px 4px 0 var(--green); }
+
+.carimbo { justify-self: start; min-height: 3rem; padding: 0 1.4rem; background: var(--rosa); color: #fff; border: 0; box-shadow: 4px 4px 0 var(--rosa-dark); font-family: var(--font-mono), monospace; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; transition: transform 80ms ease-out, box-shadow 80ms ease-out, background-color 100ms ease-out; }
+@media (hover: hover) and (pointer: fine) { .carimbo:hover:not(:disabled) { background: var(--rosa-dark); } }
+.carimbo:active { transform: translate(4px, 4px); box-shadow: 0 0 0 var(--rosa-dark); }
+.carimbo:disabled { background: var(--paper-2); color: var(--ink-soft); box-shadow: none; cursor: default; }
+.botaoLinha { min-height: 2.5rem; padding: 0 1rem; background: var(--ficha); color: var(--ink); border: 1.5px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); font-family: var(--font-mono), monospace; font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; }
+.botaoLinha:active { transform: translate(3px, 3px); box-shadow: none; }
+
+.qr { display: grid; gap: 1.25rem; align-items: center; }
+@media (min-width: 640px) { .qr { grid-template-columns: auto minmax(0, 1fr); } }
+.qr img { display: block; width: 220px; height: 220px; border: 1.5px solid var(--ink); background: #fff; }
+.qr > div { display: grid; gap: 0.8rem; justify-items: start; }
+.espera { font-size: 0.875rem; color: var(--ink-soft); }
+.nota { font-size: 0.875rem; color: var(--ink-soft); }
+.erro { padding: 0.7rem 0.9rem; border-left: 4px solid var(--vermelho); background: #f5e2df; font-size: 0.9375rem; font-weight: 600; color: var(--vermelho); }
+.aviso { padding: 1rem 1.1rem; border-left: 4px solid var(--green); background: var(--ficha); font-weight: 600; }
+.brick { min-height: 3rem; }
+
+.pago { border-color: var(--green); box-shadow: 8px 8px 0 var(--green); }
+.pago h2 { font-family: var(--font-display), "Arial Narrow", sans-serif; font-variation-settings: "wdth" 72; font-weight: 800; font-size: 2rem; line-height: 1; }
+.pago .passo { color: var(--green); }
+
+.rodape { margin-top: 2rem; font-size: 0.875rem; color: var(--ink-soft); }
+.rodape a { font-weight: 600; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+
+/* EMBUTIDA NO PAINEL (07/10/2026): sem margem de página, sem título; a
+   situação numa linha, e o resto igual. O desconto do anual: o cheio
+   riscado em cima, a economia em verde embaixo do preço. */
+.embutida { min-height: 0; padding: 0.25rem 0.25rem 1rem; }
+.embutida .checkout { margin-top: 1rem; }
+.situacaoEmbutida { font-size: 0.9375rem; line-height: 1.45; color: var(--ink-soft); }
+.planoCheio { font-family: var(--font-display), "Arial Narrow", sans-serif; font-variation-settings: "wdth" 72; font-weight: 700; font-size: 1rem; line-height: 1; color: var(--ink-soft); text-decoration-thickness: 1.5px; }
+.plano[aria-checked="true"] .planoCheio { color: #b9b5aa; }
+.planoEconomia { font-size: 0.8125rem; font-weight: 700; line-height: 1.35; color: var(--green); }
+.plano[aria-checked="true"] .planoEconomia { color: var(--green-live); }
+/* a margem da embutida alinha com o topo do modal do painel (1,1rem) */
+.embutida { padding: 0.9rem 1.1rem 1.25rem; }
