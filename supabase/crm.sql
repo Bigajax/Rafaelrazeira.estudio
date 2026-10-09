@@ -1405,3 +1405,25 @@ select t.owner_id, 'Loja de celular: direto na prévia', 'whatsapp', 'abertura_f
  where not exists (
    select 1 from public.crm_templates x
     where x.owner_id = t.owner_id and x.titulo = 'Loja de celular: direto na prévia');
+
+-- ============================================================
+-- 09/10/2026: AMOSTRA PRONTA, CONDIÇÃO ÚNICA DE R$ 899
+-- Havia cerca de 46 vitrines de amostra no ar na Vercel, com o card
+-- parado em Prévia, Contatado ou Follow-up. O Rafael decidiu voltar a
+-- todas UMA vez, com uma proposta só, e tirar do ar quem não seguir.
+-- O motivo do desconto é verdadeiro e vale para todas: a vitrine já
+-- está montada. É o degrau de 10% (R$ 899); o piso de R$ 799 fica
+-- guardado para quem travar. O cartão entra a pedido do Rafael, com
+-- "com os juros do cartão" para o 12x não ler como sem juros. Termina
+-- numa escolha entre duas respostas ("fecho ou tiro do ar?"): as duas
+-- contam como resposta, e nenhuma tem prazo. Já aplicado no banco por
+-- script; o bloco fica de registro.
+-- ============================================================
+insert into public.crm_templates (owner_id, titulo, canal, categoria, conteudo, ordem)
+select t.owner_id, 'Amostra pronta: condição única R$ 899', 'whatsapp', 'previa',
+       E'Oi, {nome}! A vitrine da {instagram} que eu montei continua no ar:\n\n{link}\n\nComo ela já está pronta, fiz uma condição só pra quem tem a amostra montada: R$ 899 em vez de R$ 999. Dá pra fazer R$ 199 pra começar e o resto na entrega, ou parcelar no cartão em até 12x (com os juros do cartão). Eu ligo no WhatsApp da loja, coloco no nome de vocês e entrego um painel pra cadastrar as peças sozinhos. Sem mensalidade.\n\nFecho a de vocês, ou posso tirar do ar?',
+       13
+  from (select distinct owner_id from public.crm_templates) t
+ where not exists (
+   select 1 from public.crm_templates x
+    where x.owner_id = t.owner_id and x.titulo = 'Amostra pronta: condição única R$ 899');

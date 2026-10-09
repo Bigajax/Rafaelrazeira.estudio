@@ -75,6 +75,7 @@ export function ModalMensagem({
   templates,
   aoFechar,
   saida: saidaPedida,
+  sugestao,
 }: {
   lead: LeadPainel;
   templates: Template[];
@@ -82,6 +83,11 @@ export function ModalMensagem({
   /* Por onde a mensagem sai. Sem pedido, o WhatsApp quando há número; o
      botão "Instagram" da carta e da ficha pede o direct. */
   saida?: Canal;
+  /* Quem abre o modal pode pedir o template da vez pelo começo do título,
+     e o pedido passa na frente da etapa e da escada. É o monte "Amostra
+     no ar" do Hoje (09/10) pedindo a condição única. Sem achar o título,
+     vale a escolha de sempre. */
+  sugestao?: { titulo: string; porque: string };
 }) {
   const pesquisaOk = lead.dossie?.status === "ok";
   const aAbertura = pesquisaOk ? (lead.dossie?.abertura ?? null) : null;
@@ -114,8 +120,9 @@ export function ModalMensagem({
         naEscada[degrau.indice] ??
         null)
       : null;
-  const sugerido = sugeridoEtapa ?? sugeridoEscada;
-  const motivoDaSugestao = sugeridoEtapa ? daEtapa?.porque : degrau?.porque;
+  const sugeridoPedido = sugestao ? (templates.find((t) => t.titulo.startsWith(sugestao.titulo)) ?? null) : null;
+  const sugerido = sugeridoPedido ?? sugeridoEtapa ?? sugeridoEscada;
+  const motivoDaSugestao = sugeridoPedido ? sugestao?.porque : sugeridoEtapa ? daEtapa?.porque : degrau?.porque;
 
   /* A ORDEM DA ESCOLHA DE PARTIDA, do mais específico para o mais genérico:
      (1) de Prévia em diante, o template da etapa; (2) quem já respondeu
@@ -124,6 +131,7 @@ export function ModalMensagem({
      (4) quem está no meio da escada abre no degrau dela; (5) o resto cai
      no primeiro template, que é como era antes. */
   const dePartida = () => {
+    if (sugeridoPedido) return sugeridoPedido.id;
     if (sugeridoEtapa) return sugeridoEtapa.id;
     if (lead.toques_entrada > 0 && daPesquisa) return ID_PESQUISA;
     if (degrau?.categoria === "abertura_fria" && aAbertura) return ID_ABERTURA;

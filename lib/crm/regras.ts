@@ -218,6 +218,24 @@ export const contatoQuente = (
   (lead.toques_entrada > 0 && lead.saidas_seguidas === 0) ||
   (procurouOEstudio(lead) && lead.toques === lead.toques_entrada);
 
+/* ---------- A AMOSTRA PARADA (09/10/2026) ----------
+   Quem tem uma vitrine de amostra no ar (`prod_lojas.previa_url`) e está
+   em silêncio: a última palavra é minha (`saidas_seguidas` de 1 para
+   cima). Em 09/10 eram cerca de 46 vitrines prontas na Vercel com o card
+   parado em Prévia, Contatado, Follow-up e Lista, e o Rafael decidiu voltar
+   a cada uma UMA vez com a condição única de R$ 899 e tirar do ar quem não
+   seguir. É o monte "Amostra no ar" do Hoje, e o modal abre neste
+   template quando o monte está escolhido.
+   Ficam de fora Proposta e Negociação, que já viram preço (a condição
+   única por cima de uma proposta aberta seria desconto em cima de
+   desconto), e quem respondeu por último, que está esperando EU falar. */
+export const TITULO_AMOSTRA_PRONTA = "Amostra pronta: condição única";
+
+const ETAPAS_DA_AMOSTRA = new Set(["lista", "contatado", "follow_up", "previa"]);
+
+export const amostraParada = (lead: Pick<LeadPainel, "estagio" | "previa_url" | "saidas_seguidas">): boolean =>
+  Boolean(lead.previa_url) && ETAPAS_DA_AMOSTRA.has(lead.estagio) && lead.saidas_seguidas > 0;
+
 /* Quando a pessoa chegou: o último toque (que, no quente, é dela) ou o
    cadastro, para o card anotado sem toque nenhum. */
 export const momentoDoContato = (lead: Pick<Lead, "ultimo_toque_em" | "created_at">): string =>

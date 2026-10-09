@@ -115,8 +115,20 @@ export async function painelHoje() {
         .returns<LeadPainel[]>()
     : { data: [] as LeadPainel[] };
 
+  /* A amostra no ar de cada lead (09/10): o monte "Amostra no ar" do Hoje
+     precisa saber quem tem vitrine pronta na Vercel. Mora na oficina, não
+     no card, então vem numa consulta à parte, como a cobrança. */
+  const { data: amostras } = await supabase
+    .from("prod_lojas")
+    .select("lead_id, previa_url")
+    .not("previa_url", "is", null)
+    .not("lead_id", "is", null)
+    .returns<{ lead_id: string; previa_url: string }[]>();
+  const amostraPorLead = new Map((amostras ?? []).map((a) => [a.lead_id, a.previa_url]));
+
   const lista = [...(leads ?? []), ...(ganhosQueDevem ?? [])].map((l) => ({
     ...l,
+    previa_url: amostraPorLead.get(l.id) ?? null,
     cobranca: cobrancasPorLead.get(l.id) ?? null,
   }));
 

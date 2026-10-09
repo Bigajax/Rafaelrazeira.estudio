@@ -48,6 +48,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
+  amostraParada,
   arrobaDe,
   contatoQuente,
   diasEntre,
@@ -55,6 +56,7 @@ import {
   JANELA_HORIZONTE,
   momentoDoContato,
   procurouOEstudio,
+  TITULO_AMOSTRA_PRONTA,
   urgencia,
 } from "@/lib/crm/regras";
 import { NOME_ESTAGIO, type LeadPainel, type Template } from "@/lib/crm/tipos";
@@ -112,6 +114,11 @@ const dataCurta = (iso: string) => DATA_CURTA.format(aoMeioDia(iso)).replace("."
 /* A chave do monte de quem pediu. Nicho é texto livre do cadastro, então
    a sentinela leva um caractere que nenhum nicho digitado teria. */
 const PEDIRAM = "\u0000pediram";
+
+/* A chave do monte da amostra parada (09/10): quem tem vitrine de amostra
+   no ar e está em silêncio (`amostraParada`). Corta a fila de lado, como o
+   de quem pediu: um lead do anúncio com amostra está nos dois. */
+const AMOSTRA = "\u0000amostra";
 
 /* O baralho do dia no sessionStorage, uma chave por lista e por data:
    amanhã é outra fila. Tudo em try/catch porque navegador embutido e
@@ -262,6 +269,7 @@ export function Hoje({ painel, templates, posts = [] }: { painel: Painel; templa
      que faltava: "cadê os de anúncio" não tinha resposta na tela. A
      chave é um sentinela que nenhum nicho pode ser. */
   const pediram = useMemo(() => filaDia.filter(procurouOEstudio).length, [filaDia]);
+  const amostras = useMemo(() => filaDia.filter(amostraParada).length, [filaDia]);
 
   const segmentos = useMemo(() => {
     const conta = new Map<string, number>();
@@ -281,7 +289,9 @@ export function Hoje({ painel, templates, posts = [] }: { painel: Painel; templa
         ? true
         : chave === PEDIRAM
           ? procurouOEstudio(l)
-          : !procurouOEstudio(l) && chaveDoNicho(l.nicho) === chave,
+          : chave === AMOSTRA
+            ? amostraParada(l)
+            : !procurouOEstudio(l) && chaveDoNicho(l.nicho) === chave,
     [],
   );
 
@@ -472,7 +482,7 @@ export function Hoje({ painel, templates, posts = [] }: { painel: Painel; templa
           }}
         />
 
-        {segmentos.length + (pediram ? 1 : 0) > 1 ? (
+        {segmentos.length + (pediram ? 1 : 0) + (amostras ? 1 : 0) > 1 ? (
           <div className={s.vezSegmentos} role="group" aria-label="Varrer a fila por segmento">
             <button
               type="button"
@@ -495,6 +505,20 @@ export function Hoje({ painel, templates, posts = [] }: { painel: Painel; templa
                 aria-label={`Anúncio e site, ${pediram} na fila`}
               >
                 Anúncio e site<b className={s.vezMonteNum}>{pediram}</b>
+              </button>
+            ) : null}
+            {/* A amostra parada também fala em rosa: é a vitrine pronta na
+                Vercel esperando uma resposta, o trabalho mais perto do
+                dinheiro que a fila tem. */}
+            {amostras ? (
+              <button
+                type="button"
+                className={`${s.vezMonte} ${s.vezMontePediram} ${segmento === AMOSTRA ? s.vezMonteAtivo : ""}`}
+                onClick={() => escolherSegmento(segmento === AMOSTRA ? null : AMOSTRA)}
+                aria-pressed={segmento === AMOSTRA}
+                aria-label={`Amostra no ar, ${amostras} na fila`}
+              >
+                Amostra no ar<b className={s.vezMonteNum}>{amostras}</b>
               </button>
             ) : null}
             {visiveis.map(({ chave, n }) => (
@@ -642,7 +666,13 @@ export function Hoje({ painel, templates, posts = [] }: { painel: Painel; templa
           <span className={s.vezMeio}>
             <span className={s.vezPosicao}>
               <b>{indice + 1}</b> de {fila.length}{" "}
-              {segmento === null ? "na fila" : segmento === PEDIRAM ? "de anúncio e site" : `em ${segmento || "sem segmento"}`}
+              {segmento === null
+                ? "na fila"
+                : segmento === PEDIRAM
+                  ? "de anúncio e site"
+                  : segmento === AMOSTRA
+                    ? "com amostra no ar"
+                    : `em ${segmento || "sem segmento"}`}
             </span>
             {riscados.length ? <RiscadosDoPe riscados={riscados} /> : null}
           </span>
@@ -666,7 +696,19 @@ export function Hoje({ painel, templates, posts = [] }: { painel: Painel; templa
       ) : null}
 
       {mensagem ? (
-        <ModalMensagem lead={mensagem.lead} saida={mensagem.saida} templates={templates} aoFechar={() => setMensagem(null)} />
+        <ModalMensagem
+          lead={mensagem.lead}
+          saida={mensagem.saida}
+          templates={templates}
+          aoFechar={() => setMensagem(null)}
+          /* Varrendo o monte da amostra, a mensagem da vez é a condição
+             única, não o degrau da escada nem o template da etapa. */
+          sugestao={
+            segmento === AMOSTRA && amostraParada(mensagem.lead)
+              ? { titulo: TITULO_AMOSTRA_PRONTA, porque: "Amostra no ar e sem resposta: a condição única, uma vez só" }
+              : undefined
+          }
+        />
       ) : null}
       {toque ? <ModalToque lead={toque} aoFechar={() => setToque(null)} /> : null}
       {fechando ? <ModalContrato lead={fechando} hoje={painel.hoje} ganhar aoFechar={() => setFechando(null)} /> : null}

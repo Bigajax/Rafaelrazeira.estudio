@@ -520,6 +520,10 @@ export type LeadPainel = Lead & {
   toques: number;
   toques_entrada: number;
   saidas_seguidas: number;
+  /* A vitrine de amostra no ar (`prod_lojas.previa_url`), montada em
+     memória por `painelHoje()`, como a cobrança logo abaixo. Só o Hoje a
+     preenche: é ela que faz o monte "Amostra no ar". */
+  previa_url?: string | null;
   /* ---------- A COBRANÇA QUE VIAJA COM O LEAD (20/08) ----------
      A parcela vencida deste cliente, quando existe. Ela NÃO vem da view
      `crm_leads_painel` (view congela a lista de colunas no create, e a nota
