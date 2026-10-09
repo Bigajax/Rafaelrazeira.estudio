@@ -28,7 +28,7 @@ export const en: VitrineMessages = {
   marca: { nome: "RAFAEL RAZEIRA", sufixo: "STUDIO" },
   header: {
     cta: "SEE MY STORE ↓",
-    insta: { handle: "@rafaelrazeira.estudio", linha: "the designer who shows the numbers", aria: "Open the studio Instagram, @rafaelrazeira.estudio" },
+    insta: { handle: "@rafaelrazeira.estudio", linha: "Instagram", aria: "Open the studio Instagram, @rafaelrazeira.estudio" },
   },
 
   hero: {

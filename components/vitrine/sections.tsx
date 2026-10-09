@@ -214,23 +214,30 @@ const ChatStrip = ({ label, note, children }: { label: string; note?: string; ch
    (porta 02, oferta, final). */
 /* ---------- o Instagram do estúdio no topo (09/10/2026) ----------
    Mora no vão entre a logo e o botão, onde ficava o "RESPOSTA NO MESMO
-   DIA" (o Rafael pediu para tirar). A forma é a de um story: a foto
-   dele num círculo com o anel, que no Instagram quer dizer "tem gente
-   aqui, toque". O anel vem nas cores da casa (esmeralda até o rosa), não
-   no degradê do Instagram, para não virar logo de outra marca no meio da
-   página. No celular sobra só o círculo, que já se lê sozinho; o @ e a
-   linha voltam a partir de 900px. Abre em outra aba: quem veio do
-   anúncio não perde a página. */
+   DIA" (o Rafael pediu para tirar). A foto dele num círculo com o
+   filete de tinta do próprio header, o @ e, embaixo, o símbolo e a
+   palavra "Instagram": é a palavra que diz o que o link é.
+   A primeira versão, do mesmo dia, tinha anel de story em degradê
+   esmeralda até o rosa, giro no hover e o slogan "o designer que mostra
+   o número" no lugar da palavra. O Rafael pediu "mais profissional": cor,
+   giro e slogan saíram. No celular sobra a foto com um selo grafite do
+   Instagram no canto, que faz o papel da palavra. Abre em outra aba:
+   quem veio do anúncio não perde a página. */
+const GlifoInstagram = () => <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden focusable="false">
+  <rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="1.1" fill="currentColor" stroke="none" />
+</svg>;
+
 export function InstaDoEstudio() {
   const { insta } = useVit().header;
   const url = `https://www.instagram.com/${insta.handle.replace(/^@/, "")}/`;
   return <a className={s.insta} href={url} target="_blank" rel="noopener" aria-label={insta.aria} data-cta="instagram_header" data-cta-dest="instagram">
     <span className={s.instaAnel} aria-hidden>
       <Image src="/assets/rafael-avatar.webp" width={64} height={64} alt="" />
+      <i className={s.instaSelo}><GlifoInstagram /></i>
     </span>
     <span className={s.instaTexto} aria-hidden>
       <b>{insta.handle}</b>
-      <span>{insta.linha}</span>
+      <span><GlifoInstagram />{insta.linha}</span>
     </span>
   </a>;
 }

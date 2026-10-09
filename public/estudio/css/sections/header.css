@@ -85,30 +85,25 @@
 .lang a:focus-visible{outline:2px solid var(--rosa);outline-offset:2px}
 
 /* ---------- o Instagram do estúdio (09/10/2026) ----------
-   O story da /vitrine-digital em CSS plano (ver `.insta` em
+   O topo da /vitrine-digital em CSS plano (ver `.insta` em
    app/(pt)/vitrine-digital/vitrine.module.css, onde mora a razão de cada
-   escolha): a foto no anel esmeralda até o rosa, o @ em minúscula na
-   Archivo de largura natural, a linha embaixo. O anel gira uma volta
-   quando o mouse chega, e só. No celular sobra o círculo. Só existe onde o
-   brand traz `instagram` (hoje, a LP). */
+   escolha e a primeira versão, com anel colorido, que saiu por "mais
+   profissional"). Só existe onde o brand traz `instagram` (hoje, a LP). */
 .insta{display:inline-flex;align-items:center;gap:11px;flex:none;text-decoration:none;color:var(--ink)}
-.insta-anel{position:relative;flex:none;width:42px;height:42px;border-radius:50%;padding:2.5px}
-.insta-anel::before{
-  content:"";position:absolute;inset:0;border-radius:50%;
-  background:conic-gradient(from 200deg,var(--green),var(--green-live) 30%,var(--rosa) 70%,var(--green));
-  transition:transform .8s cubic-bezier(.2,.8,.2,1);
-}
-.insta-anel img{position:relative;display:block;width:100%;height:100%;border-radius:50%;border:2px solid var(--paper);object-fit:cover}
-.insta-texto{display:flex;flex-direction:column;gap:4px;line-height:1;white-space:nowrap}
-.insta-texto b{font-family:var(--font-display);font-weight:800;font-size:15px;letter-spacing:-.01em}
-.insta-texto span{font-family:var(--font-body);font-size:12px;color:var(--ink-soft)}
+.insta-anel{position:relative;flex:none;width:40px;height:40px;border-radius:50%;padding:2px;border:1.5px solid var(--ink)}
+.insta-anel img{display:block;width:100%;height:100%;border-radius:50%;object-fit:cover}
+.insta-selo{display:none}
+.insta-texto{display:flex;flex-direction:column;gap:5px;line-height:1;white-space:nowrap}
+.insta-texto b{font-family:var(--font-body);font-weight:600;font-size:14px;letter-spacing:-.005em}
+.insta-texto span{display:inline-flex;align-items:center;gap:5px;font-family:var(--font-body);font-size:11.5px;color:var(--ink-soft)}
+.insta-texto svg{flex:none}
 @media(hover:hover) and (pointer:fine){
-  .insta:hover .insta-anel::before{transform:rotate(1turn)}
-  .insta:hover .insta-texto b{text-decoration:underline 2px var(--rosa);text-underline-offset:3px}
+  .insta:hover .insta-texto b{text-decoration:underline 1.5px var(--ink);text-underline-offset:3px}
 }
 .insta:focus-visible{outline:2px solid var(--rosa);outline-offset:4px;border-radius:999px}
-@media(prefers-reduced-motion:reduce){.insta-anel::before{transition:none}}
 @media(max-width:900px){
   .insta-texto{display:none}
   .insta-anel{width:38px;height:38px}
+  .insta-selo{position:absolute;right:-4px;bottom:-4px;width:17px;height:17px;border-radius:50%;display:grid;place-items:center;background:var(--ink);color:#fff;border:1.5px solid var(--paper)}
+  .insta-selo svg{width:9px;height:9px}
 }

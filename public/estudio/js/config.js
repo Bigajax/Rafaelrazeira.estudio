@@ -291,7 +291,7 @@ const CONFIG_LP = {
     navCta: "QUERO VER A MINHA PRONTA",
     /* O Instagram do estúdio no topo (09/10/2026): só na LP, a /estudio
        segue sem. O header.js desenha quando o campo existe. */
-    instagram: { handle: "@rafaelrazeira.estudio", linha: "o designer que mostra o número", aria: "Abrir o Instagram do estúdio, @rafaelrazeira.estudio" },
+    instagram: { handle: "@rafaelrazeira.estudio", linha: "Instagram", aria: "Abrir o Instagram do estúdio, @rafaelrazeira.estudio" },
   },
 
   /* ---------- a oferta mudou de natureza (02/09) ----------
@@ -724,7 +724,7 @@ const EMAIL_ESTUDIO = "rafael.rbarbon@gmail.com";
 const CONFIG_LP_EN = {
   brand: {
     name: "RAFAEL RAZEIRA", suffix: "STUDIO", navCta: "I WANT TO SEE MINE",
-    instagram: { handle: "@rafaelrazeira.estudio", linha: "the designer who shows the numbers", aria: "Open the studio Instagram, @rafaelrazeira.estudio" },
+    instagram: { handle: "@rafaelrazeira.estudio", linha: "Instagram", aria: "Open the studio Instagram, @rafaelrazeira.estudio" },
   },
 
   hero: {

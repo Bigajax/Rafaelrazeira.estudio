@@ -35,7 +35,7 @@ export const pt = {
   marca: { nome: "RAFAEL RAZEIRA", sufixo: "ESTÚDIO" },
   header: {
     cta: "VER A MINHA LOJA ↓",
-    insta: { handle: "@rafaelrazeira.estudio", linha: "o designer que mostra o número", aria: "Abrir o Instagram do estúdio, @rafaelrazeira.estudio" },
+    insta: { handle: "@rafaelrazeira.estudio", linha: "Instagram", aria: "Abrir o Instagram do estúdio, @rafaelrazeira.estudio" },
   },
 
   hero: {

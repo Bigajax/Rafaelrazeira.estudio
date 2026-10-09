@@ -22,16 +22,18 @@ function seletorIdioma(){
 }
 
 /* ---------- o Instagram do estúdio (09/10/2026) ----------
-   O mesmo story da /vitrine-digital (InstaDoEstudio em
-   components/vitrine/sections.tsx): a foto no anel esmeralda até o rosa,
-   o @ e a linha. Só onde o brand traz `instagram`, que hoje é só a LP: a
+   O mesmo do topo da /vitrine-digital (InstaDoEstudio em
+   components/vitrine/sections.tsx): a foto no filete de tinta, o @ e a
+   palavra "Instagram" com o símbolo; no celular, a foto com o selo
+   grafite. Só onde o brand traz `instagram`, que hoje é só a LP: a
    /estudio usa este mesmo header e segue sem. */
+const GLIFO_IG = `<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.1" fill="currentColor" stroke="none"/></svg>`;
 function instagram(ig){
   if (!ig) return "";
   const url = `https://www.instagram.com/${ig.handle.replace(/^@/, "")}/`;
   return `<a class="insta" href="${url}" target="_blank" rel="noopener" aria-label="${ig.aria}" data-cta="instagram_header" data-cta-dest="instagram">
-        <span class="insta-anel" aria-hidden="true"><img src="/assets/rafael-avatar.webp" width="64" height="64" alt="" /></span>
-        <span class="insta-texto" aria-hidden="true"><b>${ig.handle}</b><span>${ig.linha}</span></span>
+        <span class="insta-anel" aria-hidden="true"><img src="/assets/rafael-avatar.webp" width="64" height="64" alt="" /><i class="insta-selo">${GLIFO_IG}</i></span>
+        <span class="insta-texto" aria-hidden="true"><b>${ig.handle}</b><span>${GLIFO_IG}${ig.linha}</span></span>
       </a>`;
 }
 
