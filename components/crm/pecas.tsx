@@ -120,19 +120,22 @@ export function ContextoDaFicha({ lead }: { lead: LeadPainel }) {
 
   return (
     <span className={s.fichaContexto}>
+      {/* Cada parte é um bloco que não se parte (09/10): no cartão de 189px
+          do Funil a linha quebrava no meio da cidade ("Cornélio / Procópio").
+          Agora ela só quebra entre as partes, e o ponto fica no fim da linha
+          de cima. */}
       {partes.map((p, i) => (
         <Fragment key={i}>
-          {i ? <i className={s.pontoVerde}>·</i> : null}
-          {p}
+          <span className={s.contextoParte}>
+            {p}
+            {i < partes.length - 1 || lead.anuncio ? <i className={s.pontoVerde}>·</i> : null}
+          </span>{" "}
         </Fragment>
       ))}
       {lead.anuncio ? (
-        <>
-          {partes.length ? <i className={s.pontoVerde}>·</i> : null}
-          <code className={s.fichaAnuncio} title={lead.campanha ? `Campanha ${lead.campanha}` : undefined}>
-            {lead.anuncio}
-          </code>
-        </>
+        <code className={s.fichaAnuncio} title={lead.campanha ? `Campanha ${lead.campanha}` : undefined}>
+          {lead.anuncio}
+        </code>
       ) : null}
     </span>
   );

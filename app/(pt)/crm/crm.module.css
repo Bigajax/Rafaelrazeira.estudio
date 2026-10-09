@@ -625,14 +625,19 @@
    .btnMini  a versão de 24px de altura, para a linha da ficha, onde três
              botões dividem espaço com o nome do lead.
    ============================================================ */
+/* Altura de linha e altura mínima iguais para os três (09/10): o `.btn` tem
+   borda e o `.btnAcao` não, e o <a> herdava outra altura de linha que o
+   <button>. Lado a lado ("Ligar o leitor" e "Anotar lead", os botões da
+   ficha) davam 34 e 37px e ficavam tortos. */
 .btn, .btnAcao, .btnMini {
   display: inline-flex; align-items: center; justify-content: center; gap: 7px;
   font-family: var(--mono); font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  line-height: 1.2; box-sizing: border-box;
   cursor: pointer; white-space: nowrap;
   transition: background .15s ease, color .15s ease, transform .1s ease, box-shadow .1s ease;
 }
 .app .btn {
-  font-size: 10.5px; padding: 10px 14px;
+  font-size: 10.5px; padding: 10px 14px; min-height: 38px;
   background: transparent; color: var(--ink); border: 1.5px solid var(--ink);
 }
 @media (hover: hover) and (pointer: fine) {
@@ -653,7 +658,7 @@
    de elemento, e uma classe simples perderia o branco em cima do rosa. É a
    mesma armadilha registrada no portfólio e na /e-commerce. */
 .app .btnAcao {
-  font-size: 10.5px; padding: 11px 16px;
+  font-size: 10.5px; padding: 11px 16px; min-height: 38px;
   background: var(--rosa); color: #fff; border: 0;
   box-shadow: 3px 3px 0 var(--ink);
 }
@@ -800,6 +805,10 @@
   margin-top: 3px; overflow-wrap: anywhere;
 }
 .pontoVerde { font-style: normal; color: var(--green); padding: 0 5px; font-weight: 700 }
+/* inline-block: a parte inteira desce para a linha de baixo em vez de se
+   partir no meio; só uma parte maior que o cartão inteiro quebra por dentro */
+.contextoParte { display: inline-block; max-width: 100% }
+.contextoParte .pontoVerde { padding-right: 0 }
 /* O anúncio de onde o lead veio (18/09): código em mono na mesma linha do
    contexto, sem caixa alta porque é o nome literal do Gerenciador
    ("pip-h27u-loja-fisica") e a busca lá é sensível a isso. 11px é o piso
@@ -2568,6 +2577,17 @@
 .funilNum { font: 700 13px var(--mono); color: var(--ink); text-align: right; min-width: 26px }
 .funilPct { font: 700 10.5px var(--mono); letter-spacing: .06em; color: var(--ink-soft); text-align: right }
 .funilQueda { color: var(--rosa) }
+/* O arquivo de clientes do Caixa usa a mesma régua, mas com nome de gente
+   ou de loja no lugar de "Lista" e "Proposta" (09/10): na coluna de 86 a
+   122px o nome quebrava em duas linhas. Coluna mais larga, uma linha só,
+   e o nome inteiro no title. */
+.funilClientes .funilEtapa { grid-template-columns: minmax(120px, 240px) minmax(0, 1fr) auto minmax(44px, auto) }
+.funilClientes .funilNome { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; overflow-wrap: normal }
+.funilClientes .funilNome a { color: inherit; text-decoration: none }
+@media (max-width: 560px) {
+  .funilClientes .funilEtapa { grid-template-columns: minmax(0, 1fr) auto auto; row-gap: 6px }
+  .funilClientes .funilTrilho { grid-column: 1 / -1; order: 3 }
+}
 
 /* o campo da meta, dentro do cabeçalho do bloco de atividade */
 .metaCampo { display: flex; align-items: center; gap: 8px; margin-left: auto }
@@ -2697,7 +2717,7 @@
    vem logo embaixo, sem precisar rolar até ele. As abas saem: em 390px elas
    viram ruído em cima do que a pessoa veio fazer, que é entrar. */
 @media (max-width: 860px) {
-  .app .login { grid-template-columns: 1fr; grid-template-rows: auto 1fr }
+  .app .login { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1fr }
   .app .loginMapa { gap: 20px; padding: 20px var(--pad) 18px }
   .app .loginFrentes { display: flex; flex-wrap: wrap; gap: 0 14px; border: 0 }
   .app .loginFrentes li { border: 0; padding: 0 }
@@ -2799,7 +2819,7 @@
   .placas > * { flex: 1 }
   .placaNum { font-size: 28px }
   .moverNoCelular { display: block }
-  .dupla { grid-template-columns: 1fr }
+  .dupla { grid-template-columns: minmax(0, 1fr) }
 }
 
 @media (max-width: 560px) {
@@ -2989,7 +3009,9 @@
 .dividaAcoes { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end }
 
 @media (max-width: 720px) {
-  .divida { grid-template-columns: 1fr auto }
+  .divida { grid-template-columns: minmax(0, 1fr) auto }
+  /* a linha já desmontou: o contexto pode quebrar em vez de ser cortado (09/10) */
+  .dividaCtx { white-space: normal; overflow: visible }
   .dividaSinal { grid-column: 1 }
   .dividaAcoes { grid-column: 1 / -1; justify-content: flex-start; margin-top: 4px }
 }
@@ -3283,6 +3305,8 @@
   .anuncioLinha { grid-template-columns: minmax(0, 1fr) 36px 44px 52px 68px }
   .anuncioLinha > .barraTrilho { display: none }
   .anuncioCab > span:nth-child(2) { display: none }
+  /* "PROPOSTA" passava 4px da coluna de 52px com o espaçamento largo (09/10) */
+  .anuncioCab b { letter-spacing: .02em }
 }
 
 /* ---------- Hoje: quem pediu (18/09) ----------

@@ -151,7 +151,10 @@ function guardarBaralho(hoje: string, lista: ListaGuardada, ids: string[]) {
 function nomeDaTecla(l: LeadPainel): string {
   const arroba = arrobaDe(l.instagram);
   if (!arroba || l.nome.trim().replace(/^@+/, "").toLocaleLowerCase("pt-BR") === arroba.toLocaleLowerCase("pt-BR")) return l.nome;
-  return `${l.nome} · @${arroba}`;
+  /* Só o primeiro nome junto do @ (09/10): "Amanda da Fonseca Gonçalves ·
+     @estilomod" perdia 101px nas reticências da tecla, e o sobrenome não
+     ajuda a achar ninguém; o @ é que diz qual loja. */
+  return `${l.nome.trim().split(/\s+/)[0]} · @${arroba}`;
 }
 
 /* O nicho é texto livre do cadastro, e "Moda Masculina" e "moda masculina"
@@ -661,7 +664,7 @@ export function Hoje({ painel, templates, posts = [] }: { painel: Painel; templa
             </i>
             <span className={s.vezSetaTexto}>
               <span className={s.vezSetaRot}>Anterior</span>
-              <b className={s.vezSetaNome}>{anterior ? nomeDaTecla(anterior) : "Começo da fila"}</b>
+              <b className={s.vezSetaNome}>{anterior ? nomeDaTecla(anterior) : "Início"}</b>
             </span>
           </button>
 

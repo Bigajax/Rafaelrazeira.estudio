@@ -46,5 +46,5 @@
 .novaNota { font-size: 13px; color: var(--ink-soft); margin: 0; line-height: 1.5 }
 
 @media (max-width: 720px) {
-  .linhaTopo { grid-template-columns: 1fr }
+  .linhaTopo { grid-template-columns: minmax(0, 1fr) }
 }

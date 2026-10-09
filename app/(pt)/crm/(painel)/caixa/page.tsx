@@ -450,11 +450,11 @@ export default async function PaginaCaixa({
             <i className={s.arquivoAbre}>ver todos</i>
           </summary>
           <section className={s.bloco}>
-            <div className={s.funil}>
+            <div className={`${s.funil} ${s.funilClientes}`}>
               {c.clientes.map(({ contrato, lead, q }) => (
                 <div key={contrato.id} className={s.funilEtapa}>
                   <span className={s.funilNome}>
-                    <Link href={`/crm/lead/${contrato.lead_id}`}>
+                    <Link href={`/crm/lead/${contrato.lead_id}`} title={lead?.nome ?? contrato.titulo}>
                       {lead?.nome ?? contrato.titulo}
                     </Link>
                   </span>

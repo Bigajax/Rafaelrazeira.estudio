@@ -41,6 +41,14 @@ function idade(dias: number): string {
   return `colhida há ${Math.floor(dias / 7)} semanas`;
 }
 
+/* O nome vem do Instagram com o slogan colado ("Be Bless Store | Vestuário
+   e Calçado"), e o cartão cortava os dois com reticências (20 lojas em
+   09/10). Fica o nome até o primeiro separador que o Instagram costuma ter
+   ("|", "/", "-", o "l" no lugar da barra, um emoji) ou quebra de linha; o
+   nome inteiro continua no title, para quem passar o mouse. */
+const SEPARADOR_DE_SLOGAN = new RegExp("\\s+[|/\\-–l]\\s+|\\n|\\s*\\p{Extended_Pictographic}", "u");
+const nomeSemSlogan = (nome: string | null) => (nome ?? "").split(SEPARADOR_DE_SLOGAN)[0].trim();
+
 export function Lojas({ lojas, leads }: { lojas: LojaNaLista[]; leads: Lead[] }) {
   const [erro, setErro] = useState("");
   const [enviando, comEnvio] = useTransition();
@@ -140,7 +148,7 @@ export function Lojas({ lojas, leads }: { lojas: LojaNaLista[]; leads: Lead[] })
                     )}
                   </span>
                   <span className={p.fichaNome}>
-                    <b>{l.nome || `@${l.arroba}`}</b>
+                    <b title={l.nome || undefined}>{nomeSemSlogan(l.nome) || `@${l.arroba}`}</b>
                     <small>
                       @{l.arroba}
                       {/* A idade do material fica colada no arroba porque as

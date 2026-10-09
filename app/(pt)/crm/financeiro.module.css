@@ -24,7 +24,7 @@
 .vermelho { color: var(--vermelho) }
 
 .cabeca {
-  display: grid; grid-template-columns: 1fr auto; gap: 10px 20px; align-items: end;
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px 20px; align-items: end;
   padding-bottom: 18px; border-bottom: 3px solid var(--ink); margin-bottom: 24px;
 }
 .cabeca h1 { font-size: clamp(34px, 5vw, 64px); line-height: .86 }
@@ -111,7 +111,7 @@
 .miudos { list-style: none; margin: 0 0 4px; padding: 0 0 0 12px; display: grid; gap: 1px; font-size: 12px; color: var(--ink-soft) }
 .miudos li { display: flex; justify-content: space-between; gap: 10px }
 .final {
-  display: grid; grid-template-columns: 1fr auto; align-items: baseline; gap: 10px;
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: 10px;
   margin-top: 12px; padding-top: 10px; border-top: 3px double var(--ink);
 }
 .final span { font-weight: 700; color: var(--ink) }
@@ -165,11 +165,11 @@
    CELULAR
    ============================================================ */
 @media (max-width: 1000px) {
-  .topo { grid-template-columns: 1fr }
+  .topo { grid-template-columns: minmax(0, 1fr) }
   .cupom { transform: none; max-width: 520px }
 }
 @media (max-width: 560px) {
-  .cabeca { grid-template-columns: 1fr }
+  .cabeca { grid-template-columns: minmax(0, 1fr) }
   .form { grid-template-columns: 1fr 1fr }
   .form .largo { grid-column: 1 / -1 }
   .tabela thead { display: none }
@@ -235,5 +235,5 @@
 .tela .linhaViva .celValor input[type] { width: 6.5em; text-align: right; font-variant-numeric: tabular-nums }
 
 @media (max-width: 900px) {
-  .viradaPerguntas, .viradaNumeros { grid-template-columns: 1fr }
+  .viradaPerguntas, .viradaNumeros { grid-template-columns: minmax(0, 1fr) }
 }

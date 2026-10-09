@@ -19,7 +19,7 @@
 
 /* ---------- o cabeçalho ---------- */
 .tela .cabeca {
-  display: grid; grid-template-columns: 1fr auto; gap: 10px 20px; align-items: end;
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px 20px; align-items: end;
   padding-bottom: 18px; border-bottom: 3px solid var(--ink); margin-bottom: 20px;
 }
 .tela .cabeca h1 { font-size: clamp(34px, 5vw, 64px); line-height: .86 }
@@ -374,7 +374,7 @@
 
 .tela .familias { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px }
 .tela .familia {
-  display: grid; grid-template-columns: 1fr; gap: 0; background: none; border: 1.5px solid var(--line);
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; background: none; border: 1.5px solid var(--line);
   padding: 0; cursor: pointer; text-align: left; position: relative;
 }
 .tela .familia i { display: block; height: 42px }
@@ -547,14 +547,14 @@
 .tela .letraAmostra { display: grid; line-height: .95; color: var(--ink); overflow: hidden }
 .tela .letraAmostra i { font-size: 19px; font-style: italic; font-weight: 400 }
 .tela .letraAmostra b { font-size: 26px; font-weight: 900; font-stretch: 62%; white-space: nowrap; font-synthesis: none }
-@media (max-width: 520px) { .tela .letras { grid-template-columns: 1fr } }
+@media (max-width: 520px) { .tela .letras { grid-template-columns: minmax(0, 1fr) } }
 
 /* CRIAR: a categoria vem antes do pilar (01/10). A conta do mês fica em
    tinta, não em rosa: rosa no cartão é só o da venda. */
 .tela .categorias { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px }
 @media (max-width: 1100px) { .tela .categorias { grid-template-columns: repeat(3, minmax(0, 1fr)) } }
 @media (max-width: 640px) { .tela .categorias { grid-template-columns: repeat(2, minmax(0, 1fr)) } }
-@media (max-width: 420px) { .tela .categorias { grid-template-columns: 1fr } }
+@media (max-width: 420px) { .tela .categorias { grid-template-columns: minmax(0, 1fr) } }
 .tela .pilarCartao .categoriaExemplo { font-style: italic; color: var(--ink-fraco) }
 .tela .pilarCartao .categoriaConta, .tela .pilarCartao .combina { color: var(--ink-soft) }
 .tela .novaPergunta { font: 900 clamp(18px, 2vw, 24px) var(--display); font-stretch: 88%; text-transform: uppercase; margin: 6px 0 -8px }

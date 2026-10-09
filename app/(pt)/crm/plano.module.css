@@ -15,7 +15,7 @@
 .ocupado { opacity: .7; transition: opacity .15s }
 
 .cabeca {
-  display: grid; grid-template-columns: 1fr auto; gap: 10px 20px; align-items: end;
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px 20px; align-items: end;
   padding-bottom: 18px; border-bottom: 3px solid var(--ink); margin-bottom: 20px;
 }
 .cabeca h1 { font-size: clamp(34px, 5vw, 64px); line-height: .86 }
@@ -320,21 +320,21 @@
    CELULAR
    ============================================================ */
 @media (max-width: 1100px) {
-  .subida { grid-template-columns: 1fr }
+  .subida { grid-template-columns: minmax(0, 1fr) }
   .montanha { min-height: 0; aspect-ratio: 640 / 400 }
-  .guia { grid-template-columns: 1fr }
+  .guia { grid-template-columns: minmax(0, 1fr) }
   .placar { grid-template-columns: 1fr 1fr }
   .degrauEdita { grid-template-columns: 1fr 1fr }
   .degrauEdita input:first-child { grid-column: 1 / -1 }
   .placar > button { margin: 10px 16px }
-  .estrategico { grid-template-columns: 1fr }
+  .estrategico { grid-template-columns: minmax(0, 1fr) }
   .formMeta { grid-template-columns: 1fr 1fr }
   .formMeta input[name="titulo"] { grid-column: 1 / -1 }
 }
 @media (max-width: 560px) {
-  .cabeca { grid-template-columns: 1fr }
+  .cabeca { grid-template-columns: minmax(0, 1fr) }
   .anos { justify-content: flex-start }
-  .placar { grid-template-columns: 1fr }
+  .placar { grid-template-columns: minmax(0, 1fr) }
   .placar > div { border-right: 0; border-bottom: 1px solid var(--line) }
   .como ol { grid-template-columns: 1fr 1fr }
   .como li:nth-child(3) { border-left: 0 }
@@ -349,7 +349,10 @@
   .camposLista .rotuloProximo span { color: var(--ink-soft) }
   .rmrLinha { grid-template-columns: 14px minmax(0, 1fr) 64px }
   .rmrValor, .rmrAuto { grid-column: 2 / -1 }
-  .fechar { grid-template-columns: 1fr }
+  /* a régua desceu para a linha de baixo; sem posição fixa, a porcentagem
+     caía na coluna de 14px da bolinha e vazava 16px (09/10) */
+  .rmrPct { grid-column: 3; grid-row: 1 }
+  .fechar { grid-template-columns: minmax(0, 1fr) }
   .historico li { grid-template-columns: 80px 52px }
   .historico em { grid-column: 1 / -1 }
 }

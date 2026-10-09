@@ -89,7 +89,7 @@
 .linhaEntregue { opacity: .62 }
 
 @media (max-width: 860px) {
-  .linhaLink { grid-template-columns: 1fr; gap: 12px }
+  .linhaLink { grid-template-columns: minmax(0, 1fr); gap: 12px }
   .linhaDinheiro { text-align: left }
 }
 
@@ -180,7 +180,8 @@
 
 .entregueBloco { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line) }
 .btnEntregue, .btnSecundario {
-  padding: 10px 14px; font: 700 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; cursor: pointer;
+  padding: 10px 14px; font: 700 12px/1.2 var(--mono); letter-spacing: .08em; text-transform: uppercase; cursor: pointer;
+  box-sizing: border-box; min-height: 40px; display: inline-flex; align-items: center;
   border: 2px solid var(--ink);
 }
 .btnEntregue { background: var(--ink); color: #fff }
@@ -197,7 +198,7 @@
 .linkCliente { display: grid; gap: 10px; margin-bottom: 14px }
 .linkUrl { font: 13px var(--mono); color: var(--green-dark); overflow-wrap: anywhere }
 .linkAcoes { display: flex; gap: 8px; flex-wrap: wrap; align-items: center }
-.linkAcoes a { text-decoration: none; display: inline-block }
+.linkAcoes a { text-decoration: none; display: inline-flex }
 .btnLeve {
   background: none; border: 0; padding: 8px 2px; cursor: pointer;
   font: 700 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-fraco);
