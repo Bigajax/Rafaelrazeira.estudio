@@ -237,7 +237,7 @@ const CONFIG_ESTUDIO = {
   footer: {
     name: "RAFAEL RAZEIRA ESTÚDIO",
     email: "rafael.rbarbon@gmail.com",
-    instagram: { handle:"@rafaelrazeira", url:"https://instagram.com/rafaelrazeira" },
+    instagram: { handle:"@rafaelrazeira.estudio", url:"https://www.instagram.com/rafaelrazeira.estudio/" },
     whatsapp: { display:"(44) 99124-6187", url:`https://wa.me/${WHATSAPP_NUMBER}` },
     location: "ESTAMOS NO BRASIL",   // ⬅ troque pela sua cidade (ex.: "ESTAMOS EM CAMPINAS, SP")
     legal: [
@@ -289,6 +289,9 @@ const CONFIG_LP = {
        antes de pagar"). Vale para o topo, o pill, os projetos, o quem faz
        e o formulário do fim. */
     navCta: "QUERO VER A MINHA PRONTA",
+    /* O Instagram do estúdio no topo (09/10/2026): só na LP, a /estudio
+       segue sem. O header.js desenha quando o campo existe. */
+    instagram: { handle: "@rafaelrazeira.estudio", linha: "o designer que mostra o número", aria: "Abrir o Instagram do estúdio, @rafaelrazeira.estudio" },
   },
 
   /* ---------- a oferta mudou de natureza (02/09) ----------
@@ -670,7 +673,7 @@ const CONFIG_LP = {
   footer: {
     name: "RAFAEL RAZEIRA ESTÚDIO",
     email: "rafael.rbarbon@gmail.com",
-    instagram: { handle:"@rafaelrazeira", url:"https://instagram.com/rafaelrazeira" },
+    instagram: { handle:"@rafaelrazeira.estudio", url:"https://www.instagram.com/rafaelrazeira.estudio/" },
     whatsapp: { display:"(44) 99124-6187", url:`https://wa.me/${WHATSAPP_NUMBER}` },
     location: "MARINGÁ · PR · ATENDO O BRASIL INTEIRO",
     legal: [
@@ -719,7 +722,10 @@ const CONFIG_LP = {
    ============================================================ */
 const EMAIL_ESTUDIO = "rafael.rbarbon@gmail.com";
 const CONFIG_LP_EN = {
-  brand: { name: "RAFAEL RAZEIRA", suffix: "STUDIO", navCta: "I WANT TO SEE MINE" },
+  brand: {
+    name: "RAFAEL RAZEIRA", suffix: "STUDIO", navCta: "I WANT TO SEE MINE",
+    instagram: { handle: "@rafaelrazeira.estudio", linha: "the designer who shows the numbers", aria: "Open the studio Instagram, @rafaelrazeira.estudio" },
+  },
 
   hero: {
     ...CONFIG_LP.hero,

@@ -299,21 +299,42 @@ html:has(.site) { scroll-behavior: smooth }
 .brand b, .brand span { display: block }
 .brand span { font: 400 8.5px var(--mono); letter-spacing: .42em; color: var(--green-dark); margin-top: 3px }
 
-/* ---------- o sinal de vida ----------
-   Ocupa o vão morto entre a logo e o botão, que no desktop tem quase mil
-   pixels de nada. Não é enfeite: é a pergunta que um visitante de anúncio
-   frio faz antes de qualquer outra, "tem alguém do outro lado?".
+/* ---------- o Instagram do estúdio (09/10/2026) ----------
+   No vão entre a logo e o botão, onde morava o "RESPOSTA NO MESMO DIA"
+   (o Rafael pediu para tirar). A forma é a de um story: a foto num
+   círculo com o anel. O anel é o único ponto de cor do header e vem nas
+   cores da casa, esmeralda até o rosa; o degradê do Instagram aqui viraria
+   a logo de outra marca. Ele mora num ::before para poder girar sem girar
+   a foto: uma volta quando o mouse chega, e só (nada de girar sozinho, a
+   página já tem o rolo do aparelho se mexendo).
 
-   A frase é a MESMA que a seção Quem Faz já lista como fato ("RESPOSTA NO
-   MESMO DIA"), então o header não inventa promessa nova, só antecipa uma
-   que a página cumpre mais abaixo. E o ponto pulsante reaproveita o
-   keyframe `livePulse` do chip "NO AR" do aparelho: é vocabulário que a
-   página já tinha, não um efeito novo.
-
-   Some abaixo de 900px: lá o vão não existe, e logo mais botão já ocupam
-   os 350px úteis inteiros. */
-.headStatus { display: inline-flex; align-items: center; gap: 8px; font: 700 9.5px var(--mono); letter-spacing: .16em; color: var(--ink-soft); white-space: nowrap }
-.headStatus i { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: livePulse 1.6s infinite }
+   O @ vai em minúscula, na mesma Archivo da logo mas na largura natural:
+   ao lado do lockup condensado em caixa alta, é a voz da pessoa ao lado
+   da voz da marca. No celular sobra só o círculo, que já se lê sozinho. */
+.insta { display: inline-flex; align-items: center; gap: 11px; flex: none }
+.instaAnel { position: relative; flex: none; width: 42px; height: 42px; border-radius: 50%; padding: 2.5px }
+.instaAnel::before {
+  content: ""; position: absolute; inset: 0; border-radius: 50%;
+  background: conic-gradient(from 200deg, var(--green), var(--green-live) 30%, var(--rosa) 70%, var(--green));
+  transition: transform .8s cubic-bezier(.2, .8, .2, 1);
+}
+.instaAnel img {
+  position: relative; display: block; width: 100%; height: 100%;
+  border-radius: 50%; border: 2px solid var(--paper); object-fit: cover;
+}
+.instaTexto { display: flex; flex-direction: column; gap: 4px; line-height: 1; white-space: nowrap }
+.instaTexto b { font: 800 15px var(--display); letter-spacing: -.01em; color: var(--ink) }
+.instaTexto span { font: 400 12px var(--body); color: var(--ink-soft) }
+@media (hover: hover) and (pointer: fine) {
+  .insta:hover .instaAnel::before { transform: rotate(1turn) }
+  .insta:hover .instaTexto b { text-decoration: underline 2px var(--rosa); text-underline-offset: 3px }
+}
+.site .insta:focus-visible { outline: 2px solid var(--rosa); outline-offset: 4px; border-radius: 999px }
+@media (prefers-reduced-motion: reduce) { .instaAnel::before { transition: none } }
+@media (max-width: 900px) {
+  .instaTexto { display: none }
+  .instaAnel { width: 38px; height: 38px }
+}
 /* grafite, não rosa: este botão só ROLA até a etiqueta, e o rosa está
    reservado para o envio. Ver a nota de 60/30/10 no topo do arquivo. */
 .site .headCta { font: 700 11px var(--mono); letter-spacing: .06em; background: var(--ink); color: #fff; padding: 11px 16px; transition: background .15s ease }
@@ -2120,10 +2141,6 @@ html:has(.site) { scroll-behavior: smooth }
      filho absoluto precisa de largura declarada. */
   .quemPhoto { width: 100%; max-width: 300px; margin-inline: auto; margin-bottom: 6px }
   .bar { display: flex }
-  /* no celular não existe vão entre a logo e o botão: os dois já ocupam
-     os ~350px úteis, e o sinal de vida empurraria os dois para duas
-     linhas cada um */
-  .headStatus { display: none }
   /* sem quebra, PRIVACIDADE saía da tela no celular */
   .footer nav { flex-wrap: wrap; gap: 14px 18px }
   /* a barra já sai de cena no CTA final (logo antes do rodapé), então o
@@ -2294,8 +2311,12 @@ html:has(.site) { scroll-behavior: smooth }
 /* Abaixo de 380px (iPhone SE, Android pequeno) logo, pill e CTA não cabem
    numa linha de 320px úteis. O CTA do topo sai: a barra fixa do rodapé já
    carrega a mesma ação nesses aparelhos, e o pill fica visível, que é o
-   que o gringo precisa achar. */
-@media (max-width: 380px) {
+   que o gringo precisa achar.
+   Desde 09/10/2026 o corte é em 520px: o Instagram do estúdio entrou no
+   meio do header, e em 390 logo, círculo, pill e CTA somavam 386px numa
+   linha de 350 (o círculo era espremido a 1px e a logo quebrava). É o
+   mesmo raciocínio da /landing-page, que já tira o CTA do topo até 820. */
+@media (max-width: 520px) {
   .site .headCta { display: none }
 }
 

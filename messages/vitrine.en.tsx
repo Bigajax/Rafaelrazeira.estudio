@@ -26,7 +26,10 @@ export const en: VitrineMessages = {
     description: `I design your storefront before you pay. Catalog with photo, price and size, orders arriving ready on WhatsApp, full project for ${R(v.total)}.`,
   },
   marca: { nome: "RAFAEL RAZEIRA", sufixo: "STUDIO" },
-  header: { status: "SAME-DAY REPLY", cta: "SEE MY STORE ↓" },
+  header: {
+    cta: "SEE MY STORE ↓",
+    insta: { handle: "@rafaelrazeira.estudio", linha: "the designer who shows the numbers", aria: "Open the studio Instagram, @rafaelrazeira.estudio" },
+  },
 
   hero: {
     eyebrow: "FOR INSTAGRAM AND WHATSAPP SHOPS",

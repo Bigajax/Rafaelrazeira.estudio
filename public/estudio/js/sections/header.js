@@ -21,12 +21,27 @@ function seletorIdioma(){
   return `<nav class="lang" aria-label="Idioma / Language">${item("pt", `${pt}?lang=pt`, "PT", "Português", "pt-BR")}${item("en", `${en}?lang=en`, "EN", "English", "en")}</nav>`;
 }
 
+/* ---------- o Instagram do estúdio (09/10/2026) ----------
+   O mesmo story da /vitrine-digital (InstaDoEstudio em
+   components/vitrine/sections.tsx): a foto no anel esmeralda até o rosa,
+   o @ e a linha. Só onde o brand traz `instagram`, que hoje é só a LP: a
+   /estudio usa este mesmo header e segue sem. */
+function instagram(ig){
+  if (!ig) return "";
+  const url = `https://www.instagram.com/${ig.handle.replace(/^@/, "")}/`;
+  return `<a class="insta" href="${url}" target="_blank" rel="noopener" aria-label="${ig.aria}" data-cta="instagram_header" data-cta-dest="instagram">
+        <span class="insta-anel" aria-hidden="true"><img src="/assets/rafael-avatar.webp" width="64" height="64" alt="" /></span>
+        <span class="insta-texto" aria-hidden="true"><b>${ig.handle}</b><span>${ig.linha}</span></span>
+      </a>`;
+}
+
 export function header(){
   const b = CONFIG.brand;
   return `
   <header class="site-header">
     <div class="wrap">
       <a href="#top" class="logo"><b>${b.name}</b> <span class="suffix">${b.suffix}</span></a>
+      ${instagram(b.instagram)}
       <nav class="header-actions" aria-label="${T.navAria}">
         ${seletorIdioma()}
         <a href="/servicos" class="nav-product">SERVIÇOS</a>

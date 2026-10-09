@@ -212,16 +212,36 @@ const ChatStrip = ({ label, note, children }: { label: string; note?: string; ch
    página. Agora ele desce para o formulário do hero, que é o Contact pelo
    qual a campanha otimiza; o WhatsApp continua nos CTAs de quem já rolou
    (porta 02, oferta, final). */
+/* ---------- o Instagram do estúdio no topo (09/10/2026) ----------
+   Mora no vão entre a logo e o botão, onde ficava o "RESPOSTA NO MESMO
+   DIA" (o Rafael pediu para tirar). A forma é a de um story: a foto
+   dele num círculo com o anel, que no Instagram quer dizer "tem gente
+   aqui, toque". O anel vem nas cores da casa (esmeralda até o rosa), não
+   no degradê do Instagram, para não virar logo de outra marca no meio da
+   página. No celular sobra só o círculo, que já se lê sozinho; o @ e a
+   linha voltam a partir de 900px. Abre em outra aba: quem veio do
+   anúncio não perde a página. */
+export function InstaDoEstudio() {
+  const { insta } = useVit().header;
+  const url = `https://www.instagram.com/${insta.handle.replace(/^@/, "")}/`;
+  return <a className={s.insta} href={url} target="_blank" rel="noopener" aria-label={insta.aria} data-cta="instagram_header" data-cta-dest="instagram">
+    <span className={s.instaAnel} aria-hidden>
+      <Image src="/assets/rafael-avatar.webp" width={64} height={64} alt="" />
+    </span>
+    <span className={s.instaTexto} aria-hidden>
+      <b>{insta.handle}</b>
+      <span>{insta.linha}</span>
+    </span>
+  </a>;
+}
+
 export function Header() {
   const t = useVit();
   return <header className={s.header}>
     {/* a logo volta ao hero desta página, não para /estudio: quem chega do
         anúncio e toca no topo quer recomeçar a leitura, não trocar de site */}
     <a className={s.brand} href="#topo"><b>{t.marca.nome}</b><span>{t.marca.sufixo}</span></a>
-    {/* a mesma frase que o Quem Faz lista como fato, antecipada para o
-        topo: é a pergunta que tráfego frio faz antes de qualquer outra.
-        Ver a nota em `.headStatus`, no CSS. */}
-    <span className={s.headStatus}><i aria-hidden /> {t.header.status}</span>
+    <InstaDoEstudio />
     {/* O seletor de idioma e o CTA andam juntos (11/09/2026): à esquerda
         do botão, onde todo site põe, e visível também no celular, senão
         quem não fala português nunca acha. Ver components/idioma. */}

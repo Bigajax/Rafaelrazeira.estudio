@@ -33,7 +33,10 @@ export const pt = {
     description: "Eu desenho a sua vitrine antes de você pagar. Catálogo com foto, preço e tamanho, pedido pronto no WhatsApp, projeto completo por R$999.",
   },
   marca: { nome: "RAFAEL RAZEIRA", sufixo: "ESTÚDIO" },
-  header: { status: "RESPOSTA NO MESMO DIA", cta: "VER A MINHA LOJA ↓" },
+  header: {
+    cta: "VER A MINHA LOJA ↓",
+    insta: { handle: "@rafaelrazeira.estudio", linha: "o designer que mostra o número", aria: "Abrir o Instagram do estúdio, @rafaelrazeira.estudio" },
+  },
 
   hero: {
     eyebrow: "PARA LOJAS DO INSTAGRAM E WHATSAPP",
