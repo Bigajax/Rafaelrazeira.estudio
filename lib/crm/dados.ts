@@ -12,6 +12,7 @@
 
 import { clienteServidor } from "./supabase";
 import {
+  amostraNoLote,
   diaEmSP,
   diasEntre,
   hojeSP,
@@ -249,6 +250,13 @@ export async function painelHoje() {
     /* Na ordem em que foram riscados: a pilha do dia se lê de cima para
        baixo, como a folha foi sendo preenchida. */
     riscados,
+    /* O monte "Amostra no ar" (09/10): toda amostra parada do funil, com ou
+       sem retorno marcado, e não só a fatia que caiu na fila de hoje. Sai de
+       `lista`, que já veio inteira. Do toque mais antigo para o mais novo:
+       quem espera há mais tempo esfria primeiro. */
+    amostras: lista
+      .filter((l) => ehAtivo(l.estagio) && amostraNoLote(l))
+      .sort((a, b) => (a.ultimo_toque_em ?? "").localeCompare(b.ultimo_toque_em ?? "") || porId(a, b)),
     /* Os dentes da linha: só o que cabe na janela. */
     horizonte: futuros.filter((d) => d.data <= limite),
     /* E o próximo retorno inteiro, caia ele onde cair. É ele que impede a

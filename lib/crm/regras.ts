@@ -233,8 +233,29 @@ export const TITULO_AMOSTRA_PRONTA = "Amostra pronta: condição única";
 
 const ETAPAS_DA_AMOSTRA = new Set(["lista", "contatado", "follow_up", "previa"]);
 
-export const amostraParada = (lead: Pick<LeadPainel, "estagio" | "previa_url" | "saidas_seguidas">): boolean =>
-  Boolean(lead.previa_url) && ETAPAS_DA_AMOSTRA.has(lead.estagio) && lead.saidas_seguidas > 0;
+/* E o card sem histórico NENHUM (zero toques, nem o formulário) também
+   entra: é a vitrine feita fora do CRM que o `ligar-vitrines.ts` ganhou
+   card em 09/10 (Sejanous, Princess...). O CRM não sabe o que já foi dito,
+   e o Rafael decidiu que elas vão no lote. Quem só preencheu o formulário
+   (toque de entrada, nenhuma saída) continua fora: esse pede a entrega. */
+export const amostraParada = (
+  lead: Pick<LeadPainel, "estagio" | "previa_url" | "saidas_seguidas" | "toques">,
+): boolean =>
+  Boolean(lead.previa_url) && ETAPAS_DA_AMOSTRA.has(lead.estagio) && (lead.saidas_seguidas > 0 || lead.toques === 0);
+
+/* ---------- o lote da condição única (09/10/2026) ----------
+   O monte "Amostra no ar" mostra TODA amostra parada, com ou sem retorno
+   marcado (o Rafael: "o CRM não está puxando a maioria"). Mas a condição
+   sai uma vez só, e quem acabou de recebê-la continua "sem resposta":
+   sem este corte, o card voltaria ao monte no dia seguinte, pedindo a
+   mesma mensagem de novo. Quem teve toque desde o começo do lote já
+   recebeu, e sai. Para um lote novo, mudar a data. */
+export const INICIO_DO_LOTE_DA_AMOSTRA = "2026-10-09";
+
+export const amostraNoLote = (
+  lead: Pick<LeadPainel, "estagio" | "previa_url" | "saidas_seguidas" | "toques" | "ultimo_toque_em">,
+): boolean =>
+  amostraParada(lead) && !(lead.ultimo_toque_em && diaEmSP(lead.ultimo_toque_em) >= INICIO_DO_LOTE_DA_AMOSTRA);
 
 /* Quando a pessoa chegou: o último toque (que, no quente, é dela) ou o
    cadastro, para o card anotado sem toque nenhum. */

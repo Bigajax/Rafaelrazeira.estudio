@@ -77,6 +77,8 @@ type Painel = {
   paraHoje: LeadPainel[];
   semPasso: LeadPainel[];
   riscados: LeadPainel[];
+  /* toda amostra parada do lote, com ou sem retorno marcado (09/10) */
+  amostras: LeadPainel[];
   horizonte: Dia[];
   proximoRetorno: Dia | null;
   toquesSemana: number;
@@ -269,7 +271,10 @@ export function Hoje({ painel, templates, posts = [] }: { painel: Painel; templa
      que faltava: "cadê os de anúncio" não tinha resposta na tela. A
      chave é um sentinela que nenhum nicho pode ser. */
   const pediram = useMemo(() => filaDia.filter(procurouOEstudio).length, [filaDia]);
-  const amostras = useMemo(() => filaDia.filter(amostraParada).length, [filaDia]);
+  /* O monte da amostra não sai da fila do dia: vem pronto do servidor, com
+     quem tem retorno marcado para outro dia também (ver `amostras` em
+     painelHoje). */
+  const amostras = painel.amostras.length;
 
   const segmentos = useMemo(() => {
     const conta = new Map<string, number>();
@@ -295,7 +300,10 @@ export function Hoje({ painel, templates, posts = [] }: { painel: Painel; templa
     [],
   );
 
-  const fila = useMemo(() => filaDia.filter((l) => pertence(l, segmento)), [filaDia, segmento, pertence]);
+  const fila = useMemo(
+    () => (segmento === AMOSTRA ? painel.amostras : filaDia.filter((l) => pertence(l, segmento))),
+    [filaDia, segmento, pertence, painel.amostras],
+  );
 
   /* A linha mostra os montes que couberem INTEIROS (o CSS esconde a
      segunda linha), do maior para o menor; o resto mora no índice. O
@@ -311,10 +319,10 @@ export function Hoje({ painel, templates, posts = [] }: { painel: Painel; templa
      inteiro: um filtro apontando para uma fila vazia seria a tela dizendo
      "acabou" com trabalho ainda na mesa. */
   useEffect(() => {
-    if (segmento !== null && !filaDia.some((l) => pertence(l, segmento))) {
+    if (segmento !== null && !(segmento === AMOSTRA ? painel.amostras.length : filaDia.some((l) => pertence(l, segmento)))) {
       setSegmento(null);
     }
-  }, [filaDia, segmento, pertence]);
+  }, [filaDia, segmento, pertence, painel.amostras]);
 
   /* Trocar de monte não mexe no baralho: o que foi pulado num segmento
      continua no fundo quando o monte inteiro volta. */
