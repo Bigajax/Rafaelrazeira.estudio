@@ -15,6 +15,7 @@ import type { Metadata } from "next";
 import { lojasPerformance } from "@/lib/performance/dados";
 import { clienteServidor } from "@/lib/crm/supabase";
 import { ListaLojas } from "@/components/performance/ListaLojas";
+import { FilaDaSemana } from "@/components/performance/FilaDaSemana";
 import s from "@/app/(pt)/crm/crm.module.css";
 import p from "@/app/(pt)/crm/performance.module.css";
 
@@ -62,6 +63,9 @@ export default async function PaginaPerformance() {
         leads={(leads ?? []).map((l) => ({ id: l.id, nome: l.empresa || l.nome }))}
         semTabela={semTabela}
       />
+
+      {/* a fila de segunda (09/10/2026): o resumo da semana de cada loja liberada */}
+      {semTabela ? null : <FilaDaSemana />}
     </div>
   );
 }

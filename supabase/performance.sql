@@ -135,6 +135,10 @@ create table if not exists public.perf_eventos (
 alter table public.perf_eventos add column if not exists cidade text check (cidade is null or length(cidade) <= 60);
 create index if not exists perf_eventos_loja_quando on public.perf_eventos (loja_id, criado_em);
 create index if not exists perf_eventos_loja_quem on public.perf_eventos (loja_id, visitante, criado_em);
+-- (09/10/2026) o teto do estúdio inteiro em perf_registrar_evento ("3000 por
+-- minuto") conta sem loja: sem este índice, cada evento de cada vitrine
+-- varria a tabela de todas
+create index if not exists perf_eventos_quando on public.perf_eventos (criado_em);
 
 alter table public.perf_eventos enable row level security;
 -- sem policy nenhuma: só as funções abaixo tocam nesta tabela
@@ -895,6 +899,84 @@ end;
 $$;
 revoke all on function public.perf_registrar_upgrade(uuid, text, text, numeric) from public;
 grant execute on function public.perf_registrar_upgrade(uuid, text, text, numeric) to service_role;
+
+
+-- ============================================================
+-- 14. A SEMANA DA LOJA (09/10/2026)
+-- ============================================================
+-- O resumo de segunda: os últimos 7 dias contra os 7 de antes, a peça que
+-- mais levou gente ao WhatsApp, o que procuraram e a loja não tem, e o
+-- tamanho que acabou e pediram. Sai em duas portas, com a mesma conta:
+--   perf_resumo_semana(chave)   o cartão "Sua semana" na Início da loja
+--   perf_resumos_da_semana()    a fila de segunda no CRM (só o estúdio)
+-- A frase é montada no código (a régua da casa: o número com a conclusão).
+create or replace function public.perf_semana_de(v_loja public.perf_lojas)
+returns jsonb
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  with ev as (
+    select * from public.perf_eventos
+     where loja_id = v_loja.id and criado_em > now() - interval '7 days'
+  ), ant as (
+    select * from public.perf_eventos
+     where loja_id = v_loja.id and criado_em > now() - interval '14 days' and criado_em <= now() - interval '7 days'
+  ), pecas as (
+    select peca, count(distinct visitante) c from ev
+     where tipo = 'whatsapp' and peca is not null group by 1 order by 2 desc limit 1
+  )
+  select jsonb_build_object(
+    'pessoas', (select count(distinct visitante) from ev),
+    'chamaram', (select count(distinct visitante) from ev where tipo = 'whatsapp'),
+    'pessoas_antes', (select count(distinct visitante) from ant),
+    'chamaram_antes', (select count(distinct visitante) from ant where tipo = 'whatsapp'),
+    'peca', (select peca from pecas),
+    'peca_chamaram', (select c from pecas),
+    'buscas', coalesce((select jsonb_agg(busca) from (
+        select busca from ev where tipo = 'busca' and coalesce(resultados, 0) = 0
+         group by 1 order by count(distinct visitante) desc limit 3) x), '[]'::jsonb),
+    'esgotados', coalesce((select jsonb_agg(jsonb_build_object('produto', peca, 'tamanho', tamanho, 'pessoas', p)) from (
+        select peca, tamanho, count(distinct visitante) p from ev
+         where tipo = 'esgotado' and peca is not null group by 1, 2 order by 3 desc limit 3) x), '[]'::jsonb),
+    'contagem_desde', (select min(criado_em) from public.perf_eventos where loja_id = v_loja.id));
+$$;
+revoke all on function public.perf_semana_de(public.perf_lojas) from public, anon, authenticated;
+
+create or replace function public.perf_resumo_semana(chave text)
+returns jsonb
+language plpgsql
+stable
+security definer
+set search_path = public
+as $$
+declare
+  v_loja public.perf_lojas;
+begin
+  v_loja := public.perf_loja_da_chave(chave);
+  if v_loja.id is null then return null; end if;
+  return public.perf_semana_de(v_loja);
+end;
+$$;
+revoke all on function public.perf_resumo_semana(text) from public;
+grant execute on function public.perf_resumo_semana(text) to anon, authenticated;
+
+-- a fila de segunda no CRM: as lojas do estúdio com o Performance liberado
+create or replace function public.perf_resumos_da_semana()
+returns table (loja_id uuid, nome text, slug text, lead_id uuid, semana jsonb)
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select l.id, l.nome, l.slug, l.lead_id, public.perf_semana_de(l)
+    from public.perf_lojas l
+   where l.owner_id = auth.uid() and l.ativa and public.perf_liberada(l)
+   order by l.nome;
+$$;
+revoke all on function public.perf_resumos_da_semana() from public, anon;
+grant execute on function public.perf_resumos_da_semana() to authenticated;
 
 
 -- ============================================================
