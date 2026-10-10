@@ -443,6 +443,27 @@ export const PROPOSTAS: Record<string, Proposta> = {
       mes1_escala: { label: "Primeiro mês do plano Escala, com a instalação da medição", valor: 997, metodo: "pix" },
     },
   },
+  /* A vitrine V2 (05/10/2026): o TESTE da landing nova com VSL e compra
+     direta, sem prévia e sem conversa obrigatória. Não substitui a oferta
+     de sempre (999, entrada 199, em lib/oferta.ts), que segue no ar.
+     Decisão do Rafael: R$ 997 no Pix à vista, ou no cartão em até 12x
+     COM o juro do comprador, no padrão da conta, como na Arena e na
+     VAYLW: o valor é o mesmo R$ 997 (nada somado aqui) e o Brick calcula
+     cada parcela na hora. O juro NÃO é do estúdio: nunca ligar o
+     parcelado vendedor por causa desta oferta.
+
+     O "12x de R$ 97,90" da página é o que o Rafael espera ver no
+     checkout; o número que vale é o do Brick. Conferir no checkout de
+     verdade antes de imprimir a parcela na página, e se a taxa da conta
+     mudar, a página muda junto. */
+  "vitrine-v2": {
+    titulo: "Rafael Razeira Estúdio, Vitrine Digital",
+    whatsapp: "5544991246187",
+    itens: {
+      avista_pix: { label: "Vitrine digital, à vista no Pix", valor: 997, metodo: "pix" },
+      avista_card: { label: "Vitrine digital, no cartão em até 12x", valor: 997, metodo: "card", maxParcelas: 12 },
+    },
+  },
   /* A HG Surf Wear (06/10/2026), decisão do Rafael: duas formas na mesma
      página. À vista no Pix, R$ 899, um recebimento só (o desconto de pagar
      de uma vez, sem bloco de condição especial). Ou os R$ 999 de tabela em

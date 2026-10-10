@@ -1,0 +1,907 @@
+/* ============================================================
+   O DESENHO DA /vitrine-v2 (05/10/2026)
+
+   Os tokens (--ink, --paper, --rosa, --green...) vêm do `.site` da
+   /vitrine-digital, que envolve esta página: nada aqui redefine cor. O
+   que é daqui é o LAYOUT de cada parte do roteiro.
+
+   ESPECIFICIDADE: o CSS da vitrine tem `.dark p { color }` e
+   `.site h1/h2 {...}` com um seletor de elemento (0,1,1). Toda regra
+   daqui que mexe em <p>, <h1> ou <h2> usa DUAS classes (0,2,0), senão
+   perde, e a ordem entre os dois arquivos não é garantida.
+   ============================================================ */
+
+/* ---------- 1. HERO ----------
+   Quatro áreas: topo (rótulo, manchete, lead), ação (botão, parcela,
+   risco), resto (selos, quem faz, prova social) e o celular. No desktop
+   o celular ocupa a coluna da direita; no celular ele vai para o lado do
+   botão, pequeno (ver o fim do arquivo). */
+.hero .heroGrid {
+  display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
+  grid-template-areas: "topo fone" "acao fone" "resto fone";
+  column-gap: clamp(28px, 5vw, 80px); align-items: start;
+  max-width: 1360px; margin: auto;
+}
+.heroTopo { grid-area: topo }
+.heroAcao { grid-area: acao; margin-top: 28px; max-width: 460px }
+.heroResto { grid-area: resto; margin-top: 18px; display: grid; gap: 14px; justify-items: start }
+.heroFoneArea { grid-area: fone; align-self: center; justify-self: center; margin: 0; display: grid; justify-items: center; gap: 22px }
+.hero .heroH1 { font-size: clamp(40px, 5.6vw, 80px); line-height: .94; max-width: 13ch }
+/* a batida da régua de duas larguras: o fim da frase na largura natural */
+.hero .heroH1 em { font-stretch: 100%; font-size: .9em }
+.hero .heroLead { max-width: 520px; margin: 20px 0 0; font-size: clamp(16px, 1.35vw, 19px); line-height: 1.55; color: var(--ink-soft) }
+.hero .heroCta { width: 100%; padding: 21px 26px; font-size: 13px }
+.heroAcao p.heroParcela { margin: 12px 0 0; font-size: 14.5px; font-weight: 600; color: var(--ink) }
+.heroAcao p.heroRisco { margin: 6px 0 0; padding-left: 22px; position: relative; font-size: 13.5px; line-height: 1.45; color: var(--ink-soft) }
+.heroRisco::before { content: "✓"; position: absolute; left: 0; color: var(--green); font-weight: 800 }
+.micro { list-style: none; display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0; padding: 0; font: 700 11px var(--mono); letter-spacing: .06em; color: var(--ink) }
+.micro li::before { content: "✓"; color: var(--green); margin-right: 7px }
+.heroQuem { display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--ink-soft) }
+.heroQuem img { width: 46px; height: 46px; border-radius: 50%; flex: none; box-shadow: 0 0 0 2px var(--paper), 0 0 0 3.5px var(--green) }
+.heroQuem b { color: var(--ink) }
+.hero .linkDuvida { display: block; width: fit-content; margin-top: 2px; font-weight: 600; color: var(--ink); border-bottom: 1.5px solid var(--rosa) }
+.heroResto p.heroProva { margin: 0; display: flex; flex-wrap: wrap; gap: 4px 8px; font-size: 13px; color: var(--ink-soft) }
+.heroProva b { color: var(--ink); font-weight: 700 }
+.heroLegenda { display: inline-flex; align-items: center; gap: 8px; font: 700 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft) }
+.heroLegenda i { width: 8px; height: 8px; border-radius: 50%; background: var(--rosa); animation: aoVivo 1.4s ease-in-out infinite }
+
+/* ---------- a VSL ----------
+   Faixa escura de ponta a ponta, título centrado (é a única seção
+   centrada da página: o player é o centro, o texto só o apresenta). */
+.vsl .vslWrap { max-width: 1040px; margin: auto; text-align: center }
+.vsl .vslTitulo { font-size: clamp(26px, 3.4vw, 46px); max-width: 22ch; margin: 0 auto; text-transform: none; font-stretch: 100%; font-weight: 800; letter-spacing: -.02em; line-height: 1.05 }
+.player { margin: 36px 0 0 }
+.player video, .playerVazio {
+  display: block; width: 100%; aspect-ratio: 16 / 9;
+  background: #000; border: 1.5px solid var(--paper);
+  box-shadow: 12px 14px 0 var(--green);
+}
+.playerVazio {
+  display: grid; place-content: center; justify-items: center; gap: 18px;
+  background: repeating-linear-gradient(135deg, #1A2023 0 14px, #161B1E 14px 28px);
+}
+.play { width: 84px; height: 84px; border-radius: 50%; background: var(--rosa); position: relative; box-shadow: 4px 4px 0 var(--paper) }
+.play::after { content: ""; position: absolute; left: 34px; top: 26px; border-left: 24px solid #fff; border-top: 16px solid transparent; border-bottom: 16px solid transparent }
+.playerVazio b { font: 700 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: #C9CDC6 }
+.player figcaption { margin-top: 22px; font-size: 14px; color: #9BA6A0 }
+.player figcaption span { font: 700 11px var(--mono); letter-spacing: .1em; color: var(--green-live); margin-right: 8px }
+
+/* ---------- 2. NÃO É SÓ UM SITE: a equação ----------
+   Três cartões e o resultado numa linha só no desktop, com os sinais
+   grandes entre eles; no celular empilham, e os sinais ficam entre um e
+   outro. Cada cartão gira para um lado (fichas soltas), o carimbo gira
+   mais: é a única peça rosa da seção e a única que não é cartão. */
+.equacao {
+  display: grid; align-items: center; gap: 18px;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 200px);
+  margin: 52px 0 0;
+}
+.parcela {
+  position: relative; align-self: stretch;
+  display: flex; flex-direction: column; gap: 16px;
+  background: #fff; border: 1.5px solid var(--ink);
+  box-shadow: 8px 10px 0 var(--ink);
+  padding: 20px 18px 18px;
+}
+.pDesign { transform: rotate(-1.4deg) }
+.pCro { transform: rotate(.9deg) translateY(10px) }
+.pWhats { transform: rotate(-.7deg) }
+.parcela .parcelaNome {
+  font: 900 clamp(34px, 3.4vw, 50px)/.9 var(--display); font-stretch: 62%;
+  text-transform: uppercase; letter-spacing: -.01em; color: var(--ink);
+}
+.parcela .parcelaDiz { margin: auto 0 0; font-size: 14.5px; line-height: 1.45; color: var(--ink-soft) }
+.sinal { font: 900 clamp(44px, 4.4vw, 64px)/1 var(--display); font-stretch: 100%; color: var(--green); text-align: center }
+
+/* os visuais das três parcelas têm a MESMA altura, para o texto de
+   baixo alinhar nos três cartões */
+.leque, .croVisual, .whatsVisual { position: relative; height: 230px }
+
+/* design: as três lojas em leque, uma por cima da outra */
+.lequeTela { position: absolute; width: 66%; margin: 0; display: flex; flex-direction: column-reverse; background: #fff; border: 1.5px solid var(--ink); box-shadow: 4px 5px 0 var(--ink) }
+.lequeTela img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; object-position: top }
+.lequeTela figcaption { padding: 4px 7px; font: 700 9.5px var(--mono); letter-spacing: .08em; text-transform: uppercase; background: var(--ink); color: #fff }
+.lequeTela:nth-child(1) { left: 0; top: 8px; transform: rotate(-7deg) }
+.lequeTela:nth-child(2) { left: 17%; top: 52px; transform: rotate(2deg); z-index: 1 }
+.lequeTela:nth-child(3) { left: 34%; top: 102px; transform: rotate(-3deg); z-index: 2 }
+
+/* CRO e WhatsApp: o celular pequeno com a tela real */
+.miniFone { position: absolute; top: 0; height: 230px; aspect-ratio: 400 / 722; background: #000; border: 1.5px solid var(--ink); border-radius: 16px; padding: 4px; box-shadow: 4px 5px 0 var(--ink) }
+.miniFone img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 12px }
+.croVisual .miniFone { left: 4px }
+/* o caminho: três etiquetas à direita do celular, na altura do que marcam */
+.caminhoCro { list-style: none; counter-reset: c; margin: 0; padding: 0; position: absolute; left: 150px; right: 0; top: 4px; bottom: 4px }
+.caminhoCro li {
+  counter-increment: c; position: absolute; left: 0; transform: translateY(-50%);
+  display: flex; align-items: center; gap: 7px;
+  font: 700 11.5px var(--mono); letter-spacing: .04em; color: var(--ink);
+}
+.caminhoCro li::before { content: counter(c); width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: var(--green); color: #fff; font-size: 11px }
+/* a linha que liga a etiqueta ao celular */
+.caminhoCro li::after { content: ""; position: absolute; right: 100%; width: 22px; margin-right: 4px; border-top: 2px dashed var(--green) }
+.caminhoCro li:last-child { color: var(--rosa) }
+.caminhoCro li:last-child::before { background: var(--rosa) }
+.caminhoCro li:last-child::after { border-color: var(--rosa) }
+/* o dedo no botão de pedir */
+.toque { position: absolute; left: 50%; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%; background: rgba(255, 255, 255, .55); border: 2px solid var(--rosa); animation: toque 1.6s ease-out infinite }
+@keyframes toque { 0%, 60% { box-shadow: 0 0 0 0 rgba(227, 27, 98, .55) } 100% { box-shadow: 0 0 0 14px rgba(227, 27, 98, 0) } }
+@media (prefers-reduced-motion: reduce) { .toque { animation: none } }
+
+/* WhatsApp: o celular e a notificação chegando por cima */
+.whatsVisual .miniFone { right: 4px }
+.notificacao {
+  position: absolute; left: 0; top: 34px; width: 74%; z-index: 1;
+  display: grid; gap: 2px; padding: 9px 11px;
+  background: rgba(255, 255, 255, .97); border: 1.5px solid var(--ink); border-radius: 14px;
+  box-shadow: 4px 5px 0 var(--green); font-size: 12px; line-height: 1.3; color: var(--ink);
+}
+.notifTopo { display: flex; align-items: center; gap: 6px; font-size: 10.5px; color: var(--ink-soft) }
+.notifTopo i { width: 14px; height: 14px; border-radius: 4px; background: #25D366 }
+.notificacao b { font-size: 12.5px }
+
+.oQueE summary { cursor: pointer; font: 700 11px var(--mono); letter-spacing: .06em; color: var(--green-dark); list-style: none }
+.oQueE summary::-webkit-details-marker { display: none }
+.oQueE summary::after { content: " +"; }
+.oQueE[open] summary::after { content: " −"; }
+.oQueE p { margin: 8px 0 0; font-size: 13.5px; line-height: 1.5; color: var(--ink-soft) }
+
+
+/* o resultado: o carimbo rosa e a nota embaixo */
+.resultado { justify-self: center; display: grid; justify-items: center; gap: 12px }
+.resultado small { font: 700 10.5px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); text-align: center; max-width: 18ch }
+.equacao .carimbo {
+  margin: 0; transform: rotate(-6deg);
+  padding: 16px 14px; border: 3px solid var(--rosa); color: var(--rosa);
+  font: 900 clamp(24px, 2.2vw, 32px)/.95 var(--display); font-stretch: 78%;
+  text-transform: uppercase; text-align: center; letter-spacing: .01em;
+  box-shadow: inset 0 0 0 3px var(--paper), inset 0 0 0 5px var(--rosa);
+}
+
+@media (max-width: 1100px) {
+  .equacao { grid-template-columns: minmax(0, 1fr) }
+  .parcela { max-width: 420px; width: 100% }
+  .pCro { justify-self: end; transform: rotate(.9deg) }
+  .sinal { line-height: .8 }
+  .equacao .carimbo { margin-top: 4px }
+}
+
+/* ---------- 3. A DOR ---------- */
+.dorGrid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 420px); gap: clamp(32px, 6vw, 96px); align-items: center }
+/* A caixa do WhatsApp: um celular na lista de conversas, no tema escuro
+   do próprio app (o vernáculo é a prova: o lojista reconhece a tela antes
+   de ler). Verde do WhatsApp só nos sinais de não lida, como no app. O
+   aparelho leva a sombra dura esmeralda da casa e um grau de giro, como
+   um objeto pousado, não um print. */
+.inbox {
+  justify-self: end; width: 100%; max-width: 380px;
+  background: #0B141A; color: #E9EDEF;
+  border: 1.5px solid var(--paper); border-radius: 34px;
+  box-shadow: 12px 14px 0 var(--green);
+  padding: 22px 16px 18px;
+  transform: rotate(1.2deg);
+}
+.inboxTopo { display: flex; align-items: center; justify-content: space-between; padding: 0 6px 14px }
+.inboxTopo > b { font: 700 22px/1 var(--body); letter-spacing: -.01em; color: #E9EDEF }
+/* a câmera e os três pontinhos do topo do app, em traço */
+.inboxIcones { display: flex; gap: 18px; align-items: center }
+.inboxIcones i:first-child { width: 22px; height: 16px; border: 2px solid #AEBAC1; border-radius: 4px; position: relative }
+.inboxIcones i:first-child::after { content: ""; position: absolute; left: 5px; top: 2px; width: 6px; height: 6px; border: 2px solid #AEBAC1; border-radius: 50% }
+.inboxIcones i:last-child { width: 4px; height: 4px; border-radius: 50%; background: #AEBAC1; box-shadow: 0 -7px 0 #AEBAC1, 0 7px 0 #AEBAC1 }
+.filtros { list-style: none; margin: 0 0 8px; padding: 0 2px; display: flex; gap: 6px; overflow: hidden }
+.filtros li { flex: none; padding: 6px 12px; border-radius: 16px; background: #202C33; color: #8696A0; font-size: 13px; font-weight: 600; display: flex; gap: 6px; align-items: center }
+.filtros .filtroAtivo { background: #103529; color: #D9FDD3 }
+.filtroAtivo b { font-weight: 700; color: #21C063 }
+.conversas { list-style: none; margin: 0; padding: 0; display: grid }
+.conversas li { display: grid; grid-template-columns: 50px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 6px }
+.avatar {
+  width: 50px; height: 50px; border-radius: 50%;
+  display: grid; place-items: center;
+  font: 600 19px/1 var(--body); color: #E9EDEF; background: #2A3942;
+}
+.conversas li:nth-child(3n + 2) .avatar { background: #3B4A54 }
+.conversas li:nth-child(3n) .avatar { background: #233138 }
+.conversa { min-width: 0; display: grid; gap: 3px; font-size: 15px; line-height: 1.25; padding-bottom: 10px; border-bottom: 1px solid #1F2C33 }
+.conversa b { font-weight: 600; color: #E9EDEF }
+.conversa > span { color: #D1D7DB; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.conversas li:last-child .conversa { border-bottom: 0 }
+/* não lida: o horário em verde e o contador verde, como no app */
+.horaQtd { display: grid; justify-items: end; gap: 6px; align-self: start; padding-top: 4px }
+.horaQtd small { font-size: 12px; color: #21C063 }
+.horaQtd i { min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px; display: grid; place-items: center; background: #21C063; color: #0B141A; font: 700 11.5px/1 var(--body); font-style: normal }
+.inbox .inboxRodape {
+  margin: 12px 6px 0; padding-top: 14px; border-top: 1px solid #1F2C33;
+  font: 700 10.5px/1.5 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: #8696A0;
+}
+
+/* ---------- a chegada: o único movimento da seção ----------
+   `esperando` é posto pelo JS só quando dá para animar; até a seção
+   entrar na tela as conversas ficam escondidas. `chegando` solta uma a
+   uma, da mais antiga (embaixo) à mais nova (em cima), 260ms entre elas,
+   e o contador do filtro "Não lidas" carimba no fim. Sem JS ou com "reduzir
+   movimento", nenhuma das duas classes existe e a caixa já está cheia. */
+.esperando .conversas li, .esperando .filtroAtivo b { opacity: 0 }
+.chegando .conversas li { animation: chega .42s cubic-bezier(.22, 1, .36, 1) both; animation-delay: calc(var(--ordem) * 260ms) }
+.chegando .filtroAtivo b { display: inline-block; animation: carimba .28s cubic-bezier(.22, 1, .36, 1) 1.6s both }
+@keyframes chega { from { opacity: 0; transform: translateY(16px) } to { opacity: 1; transform: none } }
+@keyframes carimba { from { opacity: 0; transform: scale(1.8) } to { opacity: 1; transform: none } }
+
+/* ---------- 4. A TRANSFORMAÇÃO: os dois caminhos ----------
+   HOJE é torto de propósito: a linha tracejada ondula por trás, as fichas
+   sobem e descem e giram um pouco, as esperas são placas no meio do
+   caminho, e o fim some. COM A VITRINE é o oposto em tudo: faixa escura,
+   trilho verde reto, fichas alinhadas na mesma altura, fim em verde. */
+.caminhos { display: grid; gap: 34px; margin: 48px 0 0 }
+.caminhoCabeca { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 24px }
+.caminhos p.caminhoRotulo { margin: 0; font: 900 clamp(24px, 2.4vw, 34px)/1 var(--display); font-stretch: 62%; letter-spacing: .02em; text-transform: uppercase }
+.caminhos p.caminhoConta { margin: 0; display: flex; gap: 8px; flex-wrap: wrap }
+.caminhoConta span { font: 700 10.5px var(--mono); letter-spacing: .12em; text-transform: uppercase; padding: 5px 9px; border: 1.5px solid currentColor }
+
+.caminhoTorto { color: var(--ink) }
+.caminhoTorto .caminhoConta span { color: var(--rosa) }
+.caminhoTorto ol {
+  list-style: none; margin: 14px 0 0; padding: 30px 0;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 22px 12px;
+  background: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22120%22%20height%3D%2248%22%3E%3Cpath%20d%3D%22M0%2024%20Q30%202%2060%2024%20T120%2024%22%20fill%3D%22none%22%20stroke%3D%22%238B908A%22%20stroke-width%3D%222%22%20stroke-dasharray%3D%226%207%22%2F%3E%3C%2Fsvg%3E") repeat-x left center;
+}
+.ficha {
+  padding: 9px 15px; background: #fff; border: 1.5px solid var(--ink-soft); border-radius: 22px;
+  font-size: 15px; font-weight: 600; color: var(--ink-soft);
+}
+.caminhoTorto li:nth-child(odd) { transform: translateY(-13px) rotate(-2.5deg) }
+.caminhoTorto li:nth-child(even) { transform: translateY(12px) rotate(2deg) }
+.parada {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 12px; background: var(--paper-2); border: 1.5px dashed var(--ink-soft);
+  font: 700 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft);
+}
+/* o relógio: um círculo com dois ponteiros */
+.relogio { position: relative; width: 16px; height: 16px; border: 2px solid var(--rosa); border-radius: 50% }
+.relogio::before, .relogio::after { content: ""; position: absolute; left: 50%; top: 50%; width: 2px; background: var(--rosa); transform-origin: top center }
+.relogio::before { height: 5px; transform: translate(-50%, -100%) }
+.relogio::after { height: 4px; transform: translate(-50%, 0) rotate(-120deg) }
+.talvez { display: inline-flex; align-items: center; gap: 6px; padding: 9px 4px; font-size: 15px; font-style: italic; color: var(--ink-soft); opacity: .6; text-decoration: line-through; text-decoration-color: var(--rosa); text-decoration-thickness: 2px }
+.talvez b { font: 900 34px/1 var(--display); font-style: normal; color: var(--rosa); text-decoration: none; display: inline-block }
+
+.caminhoReto {
+  background: var(--ink); color: #fff;
+  padding: 26px clamp(18px, 3vw, 32px) 30px;
+  box-shadow: 10px 12px 0 var(--green);
+}
+.caminhoReto .caminhoConta span { color: var(--green-live) }
+.caminhoReto p.caminhoRotulo { color: #fff }
+.caminhoReto ol {
+  list-style: none; margin: 26px 0 0; padding: 0; position: relative;
+  display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; align-items: center;
+}
+/* o trilho: uma linha verde reta atrás das fichas */
+.caminhoReto ol::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 3px; margin-top: -1.5px; background: var(--green-live) }
+.caminhoReto li {
+  position: relative; justify-self: center; text-align: center;
+  padding: 9px 14px; background: var(--paper); color: var(--ink); border-radius: 22px;
+  font-size: 15px; font-weight: 700;
+}
+.caminhoReto li.chegou { background: var(--green-live); color: var(--ink); font-size: 17px; font-weight: 800; padding: 11px 18px; display: inline-flex; gap: 8px; align-items: center }
+
+.fraseGrande.fraseGrande {
+  margin: 56px 0 0; max-width: 26ch;
+  font: 900 clamp(34px, 5vw, 72px)/.95 var(--display); font-stretch: 78%;
+  text-transform: uppercase; color: var(--ink);
+}
+.fraseGrande span { display: block }
+.fraseGrande em { display: block; font-stretch: 100%; font-size: .9em }
+
+/* ---------- 5. A DEMONSTRAÇÃO: quatro celulares em escada ----------
+   Cada passo desce 40px em relação ao anterior: o olho lê o caminho
+   descendo até o pedido. A seta verde entre eles fica na altura do meio
+   do aparelho. Os aparelhos são pretos com a sombra dura esmeralda, a
+   mesma gramática do celular do hero. */
+.passosTelas { list-style: none; margin: 48px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 40px }
+.passosTelas li { position: relative; display: grid; gap: 18px; align-content: start }
+.passosTelas li:nth-child(2) { margin-top: 40px }
+.passosTelas li:nth-child(3) { margin-top: 80px }
+.passosTelas li:nth-child(4) { margin-top: 120px }
+.passosTelas li + li::before {
+  content: "→"; position: absolute; left: -32px; top: 62%;
+  font: 900 30px/1 var(--display); font-stretch: 100%; color: var(--green-live);
+}
+.passoTexto { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 12px; align-items: baseline }
+.passoNum { grid-row: span 2; font: 900 48px/.85 var(--display); font-stretch: 100%; color: var(--green-live) }
+.passoTexto h3 { color: #fff }
+.passoTexto p.passoTexto, .passosTelas .passoTexto p { margin: 4px 0 0; font-size: 14.5px; line-height: 1.45; color: #C9CDC6 }
+.miniCel {
+  max-width: 230px; width: 100%;
+  background: #000; border: 1.5px solid #3A4144; border-radius: 28px; padding: 8px;
+  box-shadow: 8px 10px 0 var(--green);
+}
+.miniCel img { display: block; width: 100%; height: auto; border-radius: 20px }
+
+/* a tela 1: o perfil real do Instagram, no tema claro, como ele aparece */
+.insta { aspect-ratio: 400 / 722; border-radius: 20px; background: #fff; color: #000; padding: 12px 11px 0; display: flex; flex-direction: column; gap: 9px; overflow: hidden; font-family: var(--body) }
+.instaTopo b { font-size: 14px; font-weight: 700 }
+.instaPerfil { display: grid; grid-template-columns: 46px minmax(0, 1fr); gap: 9px; align-items: center }
+.insta .instaAvatar { width: 46px; height: 46px; border-radius: 50%; box-shadow: 0 0 0 2px #fff, 0 0 0 4px #DD2A7B }
+.instaNumeros > b { display: block; font-size: 10.5px; font-weight: 500; letter-spacing: .02em }
+.instaNumeros > span { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px; margin-top: 5px; font-size: 8.5px; color: #000; text-align: center }
+.instaNumeros > span > span { display: grid; line-height: 1.2 }
+.instaNumeros > span b { font-weight: 700; font-size: 1.25em }
+.instaBio { display: grid; gap: 1px; font-size: 9.5px; line-height: 1.3 }
+.instaLink { position: relative; display: inline-block; justify-self: start; margin-top: 3px; font-weight: 700; color: #00376B }
+/* o dedo tocando no link */
+.dedo { position: absolute; left: 55%; top: 50%; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; background: rgba(0, 0, 0, .18); border: 2px solid rgba(0, 0, 0, .35) }
+.instaBotoes { display: grid; grid-template-columns: 1fr 1fr; gap: 6px }
+.instaBotoes span { text-align: center; padding: 6px 0; border-radius: 7px; background: #EFEFEF; font-size: 10px; font-weight: 600 }
+.instaBotoes span:first-child { background: #4A5DF9; color: #fff }
+.insta .instaFeed { display: block; width: calc(100% + 22px); height: auto; margin: 2px -11px 0 }
+
+/* ---------- 6. CRO: a prancha anotada ----------
+   O celular fica no centro (300px) e as anotações em volta, posicionadas
+   pela altura (--y, em % da prancha). Cada anotação tem uma linha
+   tracejada rosa até a borda do aparelho; o número dela é o mesmo do
+   marcador rosa na tela. No celular a prancha vira o aparelho com os
+   pontos e, embaixo, a lista das anotações. */
+.prancha { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 300px minmax(0, 1fr); margin: 56px 0 0; min-height: 560px }
+.pranchaCel {
+  grid-column: 2; align-self: start; position: relative; z-index: 1;
+  background: #000; border: 1.5px solid var(--ink); border-radius: 34px; padding: 9px;
+  box-shadow: 12px 14px 0 var(--ink);
+}
+.pranchaTela { position: relative; border-radius: 26px; overflow: hidden }
+.pranchaTela img { display: block; width: 100%; height: auto }
+/* o retângulo de marcação: traço rosa em volta do elemento, número na quina */
+.marca { position: absolute; border: 2px solid var(--rosa); border-radius: 4px; background: rgba(227, 27, 98, .08) }
+.marca b {
+  position: absolute; top: -9px; left: -9px;
+  width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--rosa); color: #fff; font: 800 11px/1 var(--body);
+}
+.notas { list-style: none; margin: 0; padding: 0 }
+.notas li { position: absolute; top: calc(var(--y) * 1%); transform: translateY(-50%); width: calc(50% - 150px - 56px); display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 12px }
+.notaEsq { left: 0; text-align: right }
+/* duas classes: `.notas li` (0,1,1) trocava a ordem das colunas e o número saía da caixa */
+.notas .notaEsq { grid-template-columns: minmax(0, 1fr) auto }
+.notaDir { right: 0 }
+.notas .notaEsq .notaNum { grid-column: 2; grid-row: 1 / span 2 }
+.notas .notaEsq h3, .notas .notaEsq p { grid-column: 1 }
+.notaNum {
+  width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; align-self: start;
+  border: 2px solid var(--rosa); color: var(--rosa); font: 800 14px/1 var(--body); grid-row: 1 / span 2;
+}
+.notas li p { margin: 4px 0 0; font-size: 14.5px; line-height: 1.45; color: var(--ink-soft) }
+/* a linha tracejada até o aparelho */
+.notas li::after { content: ""; position: absolute; top: 15px; width: 48px; border-top: 2px dashed var(--rosa) }
+.notaEsq::after { left: 100%; margin-left: 8px }
+.notaDir::after { right: 100%; margin-right: 8px }
+
+@media (max-width: 900px) {
+  .prancha { display: block; min-height: 0 }
+  .pranchaCel { max-width: 270px; margin: 0 auto; box-shadow: 8px 10px 0 var(--ink) }
+  .notas { display: grid; gap: 18px; margin: 40px 0 0 }
+  .notas li, .notaEsq, .notaDir { position: static; transform: none; width: auto; text-align: left; grid-template-columns: auto minmax(0, 1fr) }
+  .notas .notaEsq .notaNum { grid-column: 1 }
+  .notas .notaEsq h3, .notas .notaEsq p { grid-column: 2 }
+  .notas li::after { display: none }
+}
+
+.croFecho.croFecho { max-width: 640px; margin: 18px 0 0; padding-left: 14px; border-left: 3px solid var(--green); font-size: 15px; line-height: 1.6; color: var(--ink) }
+
+/* ---------- 7. NÃO É TEMPLATE ---------- */
+.lojas { list-style: none; margin: 44px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px }
+.lojaTela { border: 1.5px solid var(--paper); box-shadow: 8px 10px 0 var(--green); overflow: hidden; aspect-ratio: 16 / 10 }
+.lojaTela img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top }
+.lojas h3 { margin-top: 24px }
+.lojas li p { margin: 4px 0 0; font-size: 14.5px }
+
+/* ---------- 8. ESCALA: a fila contra a multidão ----------
+   A pessoa é um objeto só: cabeça e ombros em CSS (um círculo e um meio
+   círculo). No direct ela é cinza e espera; na vitrine ela é verde e
+   navega. */
+.cenas { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 22px; margin: 44px 0 0 }
+.cenas figure { margin: 0; position: relative; display: grid; align-content: start; gap: 22px; padding: 22px; min-height: 340px }
+.cenas figcaption { display: grid; gap: 4px }
+.cenas figcaption b { font: 900 clamp(26px, 2.6vw, 36px)/1 var(--display); font-stretch: 62%; text-transform: uppercase; letter-spacing: .02em }
+.cenas figcaption span { font-size: 15px; line-height: 1.4 }
+.cenaDirect { background: var(--paper-2); border: 1.5px dashed var(--ink-soft); color: var(--ink) }
+.cenaDirect figcaption span { color: var(--ink-soft) }
+.cenaVitrine { background: var(--ink); color: #fff; border: 1.5px solid var(--ink); box-shadow: 12px 14px 0 var(--green) }
+.cenaVitrine figcaption span { color: #C9CDC6 }
+
+.pessoa { position: relative; display: inline-block; width: 28px; height: 34px; flex: none }
+.pessoa::before { content: ""; position: absolute; left: 8px; top: 0; width: 12px; height: 12px; border-radius: 50%; background: currentColor }
+.pessoa::after { content: ""; position: absolute; left: 2px; bottom: 0; width: 24px; height: 18px; border-radius: 12px 12px 4px 4px; background: currentColor }
+
+/* no direct: você, a pessoa atendida e a fila */
+.atendimento { display: flex; align-items: center; gap: 10px }
+.voce { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; background: var(--ink); color: #fff; font: 800 13px/1 var(--body); flex: none }
+.respondendo { padding: 7px 11px; border-radius: 10px 10px 10px 0; background: #fff; font-size: 13px; font-style: italic; color: var(--ink-soft); box-shadow: 0 1px .5px rgba(11, 20, 26, .13) }
+.pessoaAtendida { color: var(--ink) }
+.fila { display: flex; flex-wrap: wrap; gap: 10px 8px; padding-top: 14px; border-top: 1px dashed var(--ink-soft) }
+.fila .pessoa { color: #8B908A; opacity: calc(1 - var(--i) * .05) }
+.relogioMini { position: absolute; right: -6px; top: -6px; width: 14px; height: 14px; border-radius: 50%; background: #fff; border: 2px solid var(--rosa); z-index: 1 }
+.relogioMini::after { content: ""; position: absolute; left: 4px; top: 1px; width: 2px; height: 5px; background: var(--rosa); box-shadow: 2px 3px 0 -0px var(--rosa) }
+.cenas p.cenaLegenda { margin: -10px 0 0; font: 700 10.5px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--rosa) }
+
+/* na vitrine: a multidão navegando */
+.aoVivo { position: absolute; top: 22px; right: 22px; display: inline-flex; align-items: center; gap: 7px; font: 700 10.5px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--green-live) }
+.aoVivo i { width: 9px; height: 9px; border-radius: 50%; background: var(--green-live); animation: aoVivo 1.4s ease-in-out infinite }
+@keyframes aoVivo { 50% { opacity: .3 } }
+.multidao { display: grid; grid-template-columns: repeat(7, 34px); justify-content: space-between; row-gap: 22px }
+.multidao .pessoa { color: var(--green-live) }
+.multidao .pessoa:nth-child(3n) { color: #13865A }
+.multidao .pessoa:nth-child(5n) { color: #fff }
+.etiquetaMini {
+  position: absolute; left: 50%; top: -15px; transform: translateX(-30%); z-index: 1;
+  padding: 2px 6px; border-radius: 3px; background: var(--paper); color: var(--ink);
+  font: 700 9.5px/1.3 var(--mono); font-style: normal; white-space: nowrap;
+}
+.etiquetaMini:where(:not(:empty)) { box-shadow: 2px 2px 0 var(--green) }
+
+/* a chegada: a fila devagar, a multidão em cascata rápida */
+.cenas.esperando .fila .pessoa, .cenas.esperando .multidao .pessoa { opacity: 0 }
+.cenas.chegando .fila .pessoa { animation: entraFila .35s ease-out both; animation-delay: calc(.4s + var(--i) * .2s) }
+.cenas.chegando .multidao .pessoa { animation: entraMulti .3s cubic-bezier(.22, 1, .36, 1) both; animation-delay: calc(.4s + var(--i) * .03s) }
+@keyframes entraFila { from { opacity: 0; translate: -10px 0 } }
+@keyframes entraMulti { from { opacity: 0; scale: .4 } }
+@media (prefers-reduced-motion: reduce) { .aoVivo i { animation: none } }
+
+.wrap .escalaFecho, .escalaFecho.escalaFecho {
+  max-width: 24ch; margin: 44px 0 0;
+  font: 900 clamp(26px, 3vw, 42px)/1.02 var(--display); font-stretch: 78%; text-transform: uppercase; color: var(--ink);
+}
+
+/* ---------- o painel de desempenho (dados de exemplo) ----------
+   Em cima, o título e as perguntas que o painel responde. Embaixo, o
+   painel inteiro numa moldura grafite de ponta a ponta do conteúdo, com a
+   sombra dura esmeralda: os quatro números com minigráfico, e uma grade
+   de quatro cartões (gráfico por dia, funil, origem, produtos). Verde
+   vivo é visita e taxa, rosa é contato no WhatsApp, a mesma divisão em
+   todos os gráficos. */
+.dadosTopo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 440px); gap: clamp(32px, 6vw, 96px); align-items: end }
+.perguntas { border-top: 1.5px solid var(--ink) }
+.perguntas p.perguntasTitulo { margin: 14px 0 6px; font: 700 10.5px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--green-dark) }
+.perguntas dl { margin: 0 }
+.perguntas dl div { padding: 12px 0; border-bottom: 1px solid var(--line) }
+.perguntas dt { font: 800 clamp(18px, 1.6vw, 21px)/1.15 var(--display); font-stretch: 100%; color: var(--ink) }
+.perguntas dd { margin: 4px 0 0; font-size: 14.5px; line-height: 1.45; color: var(--ink-soft) }
+
+.painel {
+  margin: 48px 0 0; background: var(--ink); color: #fff;
+  border: 1.5px solid var(--ink); box-shadow: 14px 16px 0 var(--green);
+  padding: clamp(16px, 2.4vw, 28px);
+}
+.painelBarra { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; padding-bottom: 18px; border-bottom: 1px solid var(--line-dark) }
+.painelBarra > b { font: 800 18px/1 var(--display); font-stretch: 100%; margin-right: auto }
+.abas { display: flex; gap: 4px; background: #0E1214; padding: 4px; border-radius: 8px }
+.abas i { font-style: normal; font-size: 12.5px; padding: 6px 11px; border-radius: 6px; color: #9BA6A0 }
+.abas .abaAtiva { background: #2A3134; color: #fff }
+/* o selo é a coisa mais importante da tela: sem ele, número de exemplo
+   vira número inventado */
+.selo { font: 700 10px var(--mono); letter-spacing: .14em; background: var(--paper); color: var(--ink); padding: 6px 9px }
+
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; margin: 18px 0 0; background: var(--line-dark); border: 1px solid var(--line-dark) }
+.kpis > div { background: var(--ink); padding: 16px 16px 14px }
+.kpis dt { font-size: 13px; color: #9BA6A0 }
+.kpis dd { margin: 6px 0 0; display: grid; gap: 8px }
+.kpis dd > b { font: 900 clamp(28px, 3vw, 40px)/1 var(--display); font-stretch: 100% }
+.kpiViva dd > b { color: var(--green-live) }
+.mini { display: block; width: 100%; height: 28px }
+.kpis small { font-size: 11.5px; color: #9BA6A0 }
+.kpis small span { color: var(--green-live); font-weight: 700 }
+
+.painelGrade { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 14px; margin: 14px 0 0 }
+.cartao { background: #1B2124; border: 1px solid var(--line-dark); padding: 16px }
+.cartao p.cartaoTitulo { margin: 0; font-size: 14px; font-weight: 600; color: #fff }
+.cartao p.legenda { margin: 6px 0 10px; font-size: 12px; color: #9BA6A0; display: flex; align-items: center; gap: 6px; flex-wrap: wrap }
+.legV, .legC { display: inline-block; width: 10px; height: 10px; border-radius: 2px }
+.legV { background: var(--green-live) }
+.legC { background: var(--rosa); margin-left: 10px }
+.grafico { display: block; width: 100%; height: 190px }
+
+/* o funil: barras que encolhem da visita ao contato */
+.funil { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 12px }
+.funil li { display: grid; gap: 5px }
+.funilBarra { display: flex; align-items: center; width: var(--w); min-width: 64px; height: 38px; padding: 0 12px; background: var(--green-live); color: var(--ink); border-radius: 3px }
+.funil li:nth-child(2) .funilBarra { background: #13865A; color: #fff }
+.funil li:last-child .funilBarra { background: var(--rosa); color: #fff }
+.funilBarra b { font: 900 19px/1 var(--display); font-stretch: 100% }
+.funilRotulo { font-size: 13px; color: #C9CDC6 }
+.funilRotulo em { font-style: normal; font-weight: 700; color: #fff }
+
+/* a rosca da origem */
+.origem { display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 16px; align-items: center; margin: 12px 0 0 }
+.rosca { width: 130px; height: 130px }
+.roscaTexto { font: 900 20px var(--display); fill: #fff }
+.origem ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px }
+.origem li { display: grid; grid-template-columns: 12px minmax(0, 1fr) auto; gap: 8px; align-items: center; font-size: 13.5px; color: #C9CDC6 }
+.origem li i { width: 12px; height: 12px; border-radius: 3px }
+.origem li b { color: #fff }
+
+/* os produtos que mais geram contato: barra rosa por trás do nome */
+.topoLista { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 8px }
+.topoLista li { position: relative; display: flex; justify-content: space-between; gap: 12px; padding: 9px 10px; font-size: 14px; z-index: 0 }
+.topoLista li i { position: absolute; inset: 0 auto 0 0; background: rgba(227, 27, 98, .28); border-left: 3px solid var(--rosa); z-index: -1 }
+.topoLista b { font-variant-numeric: tabular-nums }
+
+.wrap .dadosNota, .dadosNota.dadosNota { max-width: 640px; margin: 30px 0 0; font-size: 13.5px; line-height: 1.55; color: var(--ink-soft) }
+
+/* ---------- 10. A OFERTA: o cupom e o caixa ----------
+   O cupom é papel de impressora térmica: branco, fonte mono, linhas
+   pontilhadas até o valor, borda serrilhada embaixo (o papel rasgado) e
+   um grau e meio de giro, como um papel jogado no balcão. O caixa ao lado
+   continua sendo a ficha da casa, agora com o carimbo rosa na quina. */
+.ofertaGrid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 420px); gap: 48px clamp(32px, 6vw, 96px); align-items: start }
+.ofertaTexto { grid-column: 1 / -1 }
+.cupom {
+  position: relative; justify-self: center; width: 100%; max-width: 520px;
+  background: #fff; color: var(--ink);
+  padding: 26px 26px 34px; font-family: var(--mono);
+  transform: rotate(-1.5deg);
+  box-shadow: 0 18px 30px -18px rgba(20, 24, 26, .45);
+  /* a borda de baixo serrilhada: o papel rasgado da bobina */
+  -webkit-mask: linear-gradient(#000 0 0) top / 100% calc(100% - 12px) no-repeat, conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / 16px 12px repeat-x;
+          mask: linear-gradient(#000 0 0) top / 100% calc(100% - 12px) no-repeat, conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / 16px 12px repeat-x;
+}
+.cupomCabeca { display: grid; justify-items: center; gap: 3px; padding-bottom: 16px; border-bottom: 2px dashed var(--ink); text-align: center }
+.cupomCabeca span { font-size: 11px; letter-spacing: .12em; color: var(--ink-soft) }
+.cupomCabeca span:first-child { font-weight: 700; color: var(--ink) }
+.cupomCabeca b { margin-top: 10px; font: 900 clamp(22px, 2.2vw, 28px)/1 var(--display); font-stretch: 78%; text-transform: uppercase; letter-spacing: .02em }
+.cupomItens { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 7px }
+/* item, pontilhado que cresce até o valor, valor */
+.cupomItens li, .cupomSoma p { display: grid; grid-template-columns: auto minmax(12px, 1fr) auto; gap: 8px; align-items: baseline; font-size: 12.5px; line-height: 1.35 }
+.cupomItens i, .cupomSoma i { border-bottom: 1.5px dotted #8B908A; transform: translateY(-3px) }
+.cupomItens em { font-style: normal; color: var(--green-dark); font-weight: 700 }
+.cupomItens .cupomBonus em { color: #fff; background: var(--rosa); padding: 1px 6px; text-transform: uppercase; font-size: 10.5px; letter-spacing: .08em }
+.cupomSoma { margin: 16px 0 0; padding-top: 14px; border-top: 2px dashed var(--ink); display: grid; gap: 8px }
+.cupomSoma p { margin: 0; font-size: 14px }
+.cupomSoma b { font-weight: 700 }
+.cupomSoma p.cupomTotal { font-size: 15px; font-weight: 700; text-transform: uppercase }
+.cupomSoma p.cupomTotal b { font: 900 clamp(30px, 3vw, 38px)/1 var(--display); font-stretch: 100%; text-transform: none }
+/* o código de barras: listras de largura variada */
+.barras { display: block; height: 42px; margin: 22px 0 0; background: repeating-linear-gradient(90deg, var(--ink) 0 2px, #fff 2px 4px, var(--ink) 4px 7px, #fff 7px 8px, var(--ink) 8px 9px, #fff 9px 12px, var(--ink) 12px 15px, #fff 15px 16px) }
+.cupom p.cupomRodape { margin: 10px 0 0; text-align: center; font-size: 11.5px; letter-spacing: .06em; color: var(--ink-soft) }
+
+/* o carimbo: DENTRO do caixa, na linha do "pagamento único" (05/10:
+   na quina, por cima da borda e com o anel menta sobre o branco, ficou
+   "desconfigurado"). Borda dupla com o anel interno BRANCO, a cor do
+   cartão, e quatro graus de giro. */
+.caixaLinha { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 10px 0 0 }
+.caixa .caixaLinha .caixaVez { margin: 0 }
+.carimboOferta {
+  flex: none; padding: 7px 10px 6px; transform: rotate(-4deg);
+  border: 2.5px solid var(--rosa); color: var(--rosa); border-radius: 3px;
+  box-shadow: inset 0 0 0 2px #fff, inset 0 0 0 3.5px var(--rosa);
+  font: 900 15px/1 var(--display); font-stretch: 78%; text-transform: uppercase; letter-spacing: .03em; white-space: nowrap;
+}
+.caixa {
+  position: sticky; top: 96px;
+  background: #fff; border: 1.5px solid var(--ink);
+  box-shadow: 12px 14px 0 var(--ink);
+  padding: 26px 24px 22px;
+}
+.caixa .caixaPreco { margin: 0; font: 900 clamp(64px, 8vw, 96px)/.9 var(--display); font-stretch: 100%; letter-spacing: -.03em; color: var(--ink) }
+.caixa .caixaVez { margin: 8px 0 0; font: 700 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--green-dark) }
+.caixa .caixaParcela { margin: 14px 0 0; font-size: 15px; color: var(--ink) }
+.caixaParcela span { display: block; font-size: 12.5px; margin-top: 2px; color: var(--ink-soft) }
+.botoes { display: grid; gap: 14px; margin: 22px 0 0 }
+.botoes > * { width: calc(100% - 4px) }
+.caixa .seguro { margin: 16px 0 0; font-size: 12.5px; line-height: 1.5; color: var(--ink-soft) }
+.caixa .duvida { margin: 18px 0 0; padding-top: 16px; border-top: 1px solid var(--line); font-size: 14.5px; color: var(--ink) }
+.duvida a { border-bottom: 1px solid; font-weight: 600 }
+
+/* ---------- 11. RISCO: a linha do tempo e a conversa ----------
+   À esquerda, os passos numa linha vertical esmeralda com o número na
+   bolinha; à direita, um celular no tema claro do WhatsApp com a conversa
+   do pagamento à loja no ar, com a sombra dura esmeralda da casa. */
+.riscoGrid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 400px); gap: clamp(32px, 6vw, 96px); align-items: center }
+.linhaTempo { list-style: none; counter-reset: passo; margin: 40px 0 0; padding: 0; display: grid; gap: 0 }
+.linhaTempo li { counter-increment: passo; position: relative; padding: 0 0 26px 58px }
+.linhaTempo li::before {
+  content: counter(passo); position: absolute; left: 0; top: -4px;
+  width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--green-live); color: var(--ink); font: 900 18px/1 var(--display); font-stretch: 100%;
+}
+/* o fio que liga um passo ao outro */
+.linhaTempo li:not(:last-child)::after { content: ""; position: absolute; left: 18px; top: 38px; bottom: 0; width: 2px; background: var(--line-dark) }
+.linhaTempo li p { margin: 6px 0 0; font-size: 15px; line-height: 1.55; max-width: 520px }
+
+.conversaCel {
+  justify-self: end; width: 100%; max-width: 380px;
+  background: #EFEAE2; border: 1.5px solid var(--paper); border-radius: 30px; overflow: hidden;
+  box-shadow: 12px 14px 0 var(--green); transform: rotate(-1deg);
+}
+.conversaTopo { display: flex; align-items: center; gap: 10px; padding: 16px 14px 12px; background: #fff; color: #111B21; border-bottom: 1px solid #E9EDEF }
+.conversaAvatar { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: var(--ink); color: var(--green-live); font: 800 13px/1 var(--display); font-stretch: 100% }
+.conversaTopo b { display: block; font-size: 15px }
+.conversaTopo small { font-size: 12px; color: #667781 }
+.conversaCorpo { display: grid; gap: 6px; padding: 14px 12px 18px; background-image: radial-gradient(#D8D2C6 1px, transparent 1px); background-size: 20px 20px }
+.conversaDia { justify-self: center; margin: 6px 0; padding: 4px 10px; border-radius: 7px; background: #fff; color: #54656F; font-size: 11.5px; box-shadow: 0 1px .5px rgba(11, 20, 26, .13) }
+.msg { max-width: 82%; padding: 6px 8px 4px 9px; border-radius: 8px; font-size: 13.5px; line-height: 1.35; color: #111B21; box-shadow: 0 1px .5px rgba(11, 20, 26, .13) }
+.daCliente { justify-self: end; background: #D9FDD3; border-top-right-radius: 0 }
+.doRafael { justify-self: start; background: #fff; border-top-left-radius: 0 }
+.msg .msgHora { display: block; text-align: right; font-size: 10.5px; color: #667781; margin-top: 1px }
+.arquivo { display: flex; align-items: center; gap: 8px; padding: 4px 2px }
+.arquivo i { flex: none; width: 26px; height: 32px; border-radius: 3px; background: #fff; border: 1.5px solid #8696A0; position: relative }
+.arquivo i::after { content: ""; position: absolute; left: 4px; right: 4px; bottom: 6px; height: 2px; background: #8696A0; box-shadow: 0 -5px 0 #8696A0, 0 -10px 0 #8696A0 }
+.arquivo b { display: block; font-size: 13px; font-weight: 600 }
+.arquivo small { font-size: 11px; color: #667781 }
+/* a prévia do link da primeira versão: um retângulo com a cor da vitrine */
+.previa { display: grid; margin: 0 0 6px; border-radius: 6px; overflow: hidden; background: #F0F2F5 }
+.previa i { height: 64px; background: linear-gradient(135deg, var(--ink) 0 60%, var(--green) 60% 100%) }
+.previa b { padding: 6px 8px; font-size: 12px; color: #027EB5; font-weight: 600 }
+
+@media (max-width: 900px) {
+  .hero .heroGrid, .dorGrid, .cenas, .dadosTopo, .ofertaGrid { grid-template-columns: minmax(0, 1fr) }
+  .lojas { grid-template-columns: minmax(0, 1fr) }
+  .riscoGrid { grid-template-columns: minmax(0, 1fr) }
+  .conversaCel { justify-self: center; transform: none; box-shadow: 8px 10px 0 var(--green) }
+  .inbox { justify-self: center; transform: none; box-shadow: 8px 10px 0 var(--green) }
+  .caixa { position: relative; top: auto; box-shadow: 8px 10px 0 var(--ink) }
+  .painel { box-shadow: 8px 10px 0 var(--green) }
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)) }
+  .painelGrade { grid-template-columns: minmax(0, 1fr) }
+  .player video, .playerVazio { box-shadow: 6px 8px 0 var(--green) }
+  .lojaTela { box-shadow: 6px 8px 0 var(--green) }
+}
+@media (max-width: 600px) {
+  .cupom { padding: 22px 16px 30px; transform: rotate(-1deg) }
+  .cupomItens li { font-size: 11.5px }
+    .hero .heroCta { width: calc(100% - 4px); padding: 19px 16px }
+}
+
+/* O texto logo abaixo do título. A `.lead` da vitrine pede 24px de
+   respiro, mas perde para `.site p { margin: 0 }` (0,1,1): aqui a regra
+   tem duas classes para valer. */
+.secLead.secLead { margin-top: 22px }
+
+/* ---------- 9. PROVA: o antes e depois de cada loja ---------- */
+.antesDepois { margin: 12px 0 20px; display: grid; gap: 10px }
+.antesDepois div { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 12px; align-items: baseline }
+.antesDepois dt { font: 700 10.5px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: #9BA6A0 }
+.antesDepois dd { margin: 0; font-size: 15px; line-height: 1.5; color: #C9CDC6 }
+.antesDepois div:last-child dt { color: var(--green-live) }
+.antesDepois div:last-child dd { color: #fff }
+
+/* o vídeo da compra, por cima da capa dentro do aparelho do hero */
+.telaVideo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; display: block }
+
+/* Os dois caminhos no celular. Fica no FIM do arquivo de propósito: as
+   regras base da seção 4 vêm depois dos outros @media, e uma regra de
+   celular escrita antes delas perde na cascata (aconteceu em 05/10). */
+@media (max-width: 760px) {
+  .caminhoTorto ol { gap: 30px 10px; background-size: 90px 36px }
+  .caminhoTorto li:nth-child(odd) { transform: translateY(-6px) rotate(-2deg) }
+  .caminhoTorto li:nth-child(even) { transform: translateY(6px) rotate(1.5deg) }
+  .caminhoReto ol { grid-template-columns: minmax(0, 1fr); justify-items: start; gap: 12px; padding-left: 34px }
+  .caminhoReto ol::before { left: 14px; right: auto; top: 0; bottom: 0; width: 3px; height: auto; margin: 0 0 0 -1.5px }
+  .caminhoReto li { justify-self: start }
+}
+
+/* a demonstração no celular: dois por linha, sem escada nem seta */
+@media (max-width: 760px) {
+  .passosTelas { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 34px 18px }
+  .passosTelas li:nth-child(n) { margin-top: 0 }
+  .passosTelas li:nth-child(even) { margin-top: 30px }
+  .passosTelas li + li::before { display: none }
+  .passoNum { font-size: 36px }
+  .miniCel { border-radius: 22px; padding: 6px; box-shadow: 6px 8px 0 var(--green) }
+  .miniCel img, .insta { border-radius: 16px }
+  /* o perfil tem metade da largura aqui: as letras encolhem junto */
+  .insta { padding: 9px 8px 0; gap: 6px }
+  .instaTopo b { font-size: 11px }
+  .instaPerfil { grid-template-columns: 28px minmax(0, 1fr); gap: 6px }
+  .insta .instaAvatar { width: 28px; height: 28px; box-shadow: 0 0 0 1.5px #fff, 0 0 0 3px #DD2A7B }
+  .instaNumeros > b { font-size: 8px }
+  .instaNumeros > span { gap: 1px; font-size: 6.5px }
+  .instaBio { font-size: 7px }
+  .dedo { width: 20px; height: 20px; margin: -10px 0 0 -10px }
+  .instaBotoes span { font-size: 7.5px; padding: 4px 0 }
+  .insta .instaFeed { width: calc(100% + 16px); margin: 2px -8px 0 }
+}
+
+/* ---------- o FAQ: a conversa das dúvidas ----------
+   À esquerda o título, parado enquanto a conversa rola (sticky). À
+   direita, o papel de parede do WhatsApp num painel com a sombra dura da
+   casa: perguntas em balão branco recebido, respostas em balão verde
+   enviado. */
+.faqGrid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 620px); gap: clamp(32px, 6vw, 96px); align-items: start }
+.faqTexto { position: sticky; top: 110px }
+.faqTexto p.faqOutra { margin: 26px 0 0; font-size: 15.5px; color: var(--ink) }
+.faqOutra a { border-bottom: 1.5px solid var(--rosa); font-weight: 700 }
+.faqChat {
+  display: grid; gap: 10px; padding: 22px 18px;
+  background-color: var(--wa-paper);
+  background-image: radial-gradient(#D8D2C6 1px, transparent 1px); background-size: 22px 22px;
+  border: 1.5px solid var(--ink); box-shadow: 12px 14px 0 var(--ink);
+}
+.faqItem { display: grid; gap: 8px }
+.faqPergunta {
+  list-style: none; cursor: pointer; justify-self: start; max-width: 86%;
+  display: grid; gap: 4px;
+  background: #fff; color: #111B21; padding: 9px 12px 7px; border-radius: 0 10px 10px 10px;
+  box-shadow: 0 1px .5px rgba(11, 20, 26, .13);
+  font-size: 15.5px; font-weight: 600; line-height: 1.35;
+  transition: transform .12s ease;
+}
+.faqPergunta::-webkit-details-marker { display: none }
+.faqPergunta small { font-size: 11.5px; font-weight: 600; color: var(--green-dark) }
+.faqPergunta em { font-style: normal }
+.faqPergunta em::after { content: " ↓" }
+.faqItem[open] .faqAbrir, .faqItem:not([open]) .faqFechar { display: none }
+.faqItem[open] .faqFechar::after { content: " ↑" }
+.faqPergunta:active { transform: scale(.98) }
+.faqPergunta:focus-visible { outline: 2px solid var(--green); outline-offset: 3px }
+@media (hover: hover) and (pointer: fine) {
+  .faqPergunta:hover { box-shadow: 0 0 0 2px var(--green), 0 1px .5px rgba(11, 20, 26, .13) }
+}
+.faqChat .faqResposta {
+  justify-self: end; max-width: 86%; margin: 0;
+  background: var(--wa-bubble); color: #111B21; padding: 9px 12px 6px; border-radius: 10px 0 10px 10px;
+  box-shadow: 0 1px .5px rgba(11, 20, 26, .13);
+  font-size: 15px; line-height: 1.45;
+}
+.faqResposta small { display: block; text-align: right; font-size: 11px; color: var(--wa-tick); margin-top: 3px }
+/* a resposta chega quando a pessoa abre: o único movimento da seção, e
+   é resposta a um toque */
+.faqItem[open] .faqResposta { animation: faqChega .26s cubic-bezier(.22, 1, .36, 1) }
+@keyframes faqChega { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }
+@media (prefers-reduced-motion: reduce) { .faqItem[open] .faqResposta { animation: none } }
+@media (max-width: 900px) {
+  .faqGrid { grid-template-columns: minmax(0, 1fr) }
+  .faqTexto { position: static }
+  .faqChat { padding: 16px 12px; box-shadow: 8px 10px 0 var(--ink) }
+  .faqPergunta, .faqChat .faqResposta { max-width: 92% }
+}
+
+/* a chegada da equação: os cartões entram um por um, os sinais aparecem
+   entre eles, e o carimbo bate por último. Base = estado final. */
+.equacao.esperando > * { opacity: 0 }
+.equacao.chegando > * { animation: chegaEq .45s cubic-bezier(.22, 1, .36, 1) both }
+.equacao.chegando > :nth-child(1) { animation-delay: 0s }
+.equacao.chegando > :nth-child(2) { animation-delay: .25s }
+.equacao.chegando > :nth-child(3) { animation-delay: .4s }
+.equacao.chegando > :nth-child(4) { animation-delay: .65s }
+.equacao.chegando > :nth-child(5) { animation-delay: .8s }
+.equacao.chegando > :nth-child(6) { animation-delay: 1.05s }
+.equacao.chegando > .resultado { animation: bate .32s cubic-bezier(.22, 1, .36, 1) 1.25s both }
+@keyframes bate { from { opacity: 0; scale: 1.7 } to { opacity: 1; scale: 1 } }
+/* translate e scale separados, e não transform: os cartões já usam transform para girar, e a animação apagaria o giro */
+@keyframes chegaEq { from { opacity: 0; translate: 0 18px } to { opacity: 1; translate: 0 0 } }
+
+/* a equação empilhada: o cartão fica largo, as telas do leque crescem
+   junto, e os 230px de altura não bastam mais (cobria o texto) */
+@media (max-width: 1100px) {
+  .leque { height: 280px }
+}
+
+/* a multidão no celular: 6 por linha e a etiqueta "ao vivo" embaixo do título */
+@media (max-width: 600px) {
+  .multidao { grid-template-columns: repeat(6, 32px) }
+  .aoVivo { position: static }
+  .cenas figure { min-height: 0; padding: 18px }
+}
+
+/* ---------- O PAINEL DA LOJA: o painel que se testa ----------
+   O painel é claro e neutro, como o do molde (ele não herda as cores da
+   vitrine); o cartão é o da vérít.lab, escuro e laranja, dentro de um
+   celular. Entre os dois, a seta verde: o que se salva de um lado
+   aparece do outro. */
+.adminGrid { display: grid; grid-template-columns: minmax(0, 560px) auto minmax(0, 290px); justify-content: center; gap: clamp(24px, 4vw, 56px); align-items: center; margin: 48px 0 0 }
+.admin { background: #fff; color: #1C1F21; border-radius: 14px; padding: 18px; box-shadow: 12px 14px 0 var(--green); font-family: var(--body); max-width: 560px }
+.adminTopo { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding-bottom: 14px; border-bottom: 1px solid #E6E8EA }
+.adminTopo > b { font-size: 15px; font-style: italic; font-family: Georgia, serif }
+.adminAbas { display: flex; gap: 2px; flex-wrap: wrap }
+.adminAbas i { font-style: normal; font-size: 12.5px; padding: 6px 10px; border-radius: 7px; color: #5F666B }
+.adminAbas .adminAbaAtiva { background: #1C1F21; color: #fff }
+.adminPeca { display: flex; align-items: center; gap: 12px; padding: 14px 0 }
+.adminPeca img { width: 56px; height: 70px; object-fit: cover; border-radius: 8px }
+.adminPeca b { display: block; font-size: 15px }
+.adminPeca small { font-size: 12.5px; color: #5F666B }
+.adminCampo { display: grid; gap: 7px; margin: 0 0 14px; font-size: 12.5px; font-weight: 600; color: #5F666B }
+.adminPreco { display: flex; align-items: center; gap: 6px; border: 1.5px solid #D5D9DC; border-radius: 9px; padding: 0 12px; background: #fff }
+.adminPreco:focus-within { border-color: var(--green) }
+.admin .adminPreco em { font-style: normal; font-weight: 700; color: #1C1F21 }
+.adminPreco input { border: 0; outline: 0; width: 100%; padding: 11px 0; font: 700 18px var(--body); color: #1C1F21; background: transparent }
+.adminEstados { display: flex; flex-wrap: wrap; gap: 6px }
+.adminEstados button { cursor: pointer; padding: 8px 12px; border-radius: 999px; border: 1.5px solid #D5D9DC; background: #fff; color: #1C1F21; font: 600 13px var(--body) }
+.adminEstados button:focus-visible { outline: 2px solid var(--green); outline-offset: 2px }
+.adminEstados .adminEstadoAtivo { background: #1C1F21; border-color: #1C1F21; color: #fff }
+.admin button.adminSalvar { width: calc(100% - 4px); margin-top: 4px }
+.admin button.adminSalvar:disabled { opacity: .45; cursor: default; box-shadow: none; transform: none }
+.admin p.adminAviso { min-height: 20px; margin: 10px 0 0; font-size: 13px; font-weight: 600; color: var(--green-dark) }
+.adminSeta { font: 900 42px/1 var(--display); font-stretch: 100%; color: var(--green-live) }
+
+/* a vitrine: o cartão da peça no estilo da vérít.lab */
+.adminVitrine { position: relative; justify-self: center; width: 100%; max-width: 280px; background: #000; border: 1.5px solid var(--paper); border-radius: 30px; padding: 12px; box-shadow: 10px 12px 0 var(--green) }
+.cardPeca { display: grid; gap: 4px; background: #14110F; border-radius: 20px; padding: 10px 10px 14px; color: #F2EFE6; transition: box-shadow .3s ease }
+.cardFoto { position: relative; border-radius: 12px; overflow: hidden }
+.cardFoto img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; transition: filter .3s ease }
+.cardSelo { position: absolute; left: 8px; top: 8px; padding: 4px 8px; background: #E28B2C; color: #14110F; font: 700 10px var(--mono); letter-spacing: .1em; text-transform: uppercase }
+.cardNome { margin-top: 8px; font: 900 18px/1.1 var(--display); font-stretch: 100%; text-transform: uppercase }
+.cardDetalhe { font-size: 12px; color: #A9A397 }
+.cardPreco { font: 800 20px/1.2 var(--display); font-stretch: 100%; color: #E28B2C }
+.cardPedir { margin-top: 8px; padding: 9px; text-align: center; background: #E28B2C; color: #14110F; font: 700 11px var(--mono); letter-spacing: .12em; text-transform: uppercase }
+.cardEsgotado .cardFoto img { filter: grayscale(1) brightness(.55) }
+.cardEsgotado .cardSelo { background: #F2EFE6 }
+.cardEsgotado .cardPreco { color: #A9A397; text-decoration: line-through }
+.cardEsgotado .cardPedir { background: #2A2622; color: #A9A397 }
+/* o cartão acende quando muda: a resposta ao Salvar */
+.cardPiscou { box-shadow: 0 0 0 3px var(--green-live) }
+.agora {
+  position: absolute; left: 50%; top: -14px; translate: -50% 0;
+  display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px; border-radius: 999px;
+  background: var(--green-live); color: var(--ink); font: 700 11px var(--mono); letter-spacing: .08em; white-space: nowrap;
+  opacity: 0; transition: opacity .2s ease, translate .2s ease;
+}
+.agora i { width: 7px; height: 7px; border-radius: 50%; background: var(--ink) }
+.agoraVisivel { opacity: 1; translate: -50% -4px }
+
+.adminProvas { list-style: none; margin: 44px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0 24px }
+.adminProvas li { padding-top: 14px; border-top: 1px solid var(--line-dark); font-size: 15px; line-height: 1.45; color: #C9CDC6 }
+.adminProvas li::before { content: "✓"; display: block; margin-bottom: 8px; color: var(--green-live); font-weight: 800 }
+.wrap .adminClaim, .adminClaim.adminClaim { display: inline-block; margin: 26px 0 0; padding: 9px 14px; background: var(--mint); color: var(--ink); font: 700 12px var(--mono); letter-spacing: .04em }
+
+@media (max-width: 900px) {
+  .adminGrid { grid-template-columns: minmax(0, 1fr) }
+  .admin { max-width: none; box-shadow: 8px 10px 0 var(--green) }
+  .adminSeta { justify-self: center; rotate: 90deg }
+  .adminProvas { grid-template-columns: minmax(0, 1fr) 1fr; gap: 18px 18px }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cardPeca, .cardFoto img, .agora { transition: none }
+}
+
+/* ================= o corte de 05/10 (9 seções) ================= */
+
+/* a demonstração ganhou o fecho da escala */
+.wrap .demoFecho, .demoFecho.demoFecho { max-width: 26ch; margin: 64px 0 0; font: 900 clamp(24px, 2.8vw, 38px)/1.04 var(--display); font-stretch: 78%; text-transform: uppercase; color: #fff }
+
+/* a prova em três colunas */
+.provaTres { grid-template-columns: repeat(3, minmax(0, 1fr)) }
+@media (max-width: 1100px) { .provaTres { grid-template-columns: minmax(0, 1fr) } }
+
+/* o painel da loja no papel: o que era claro sobre grafite vira tinta */
+.adminSec .adminSeta { color: var(--green) }
+.adminSec .adminVitrine { border-color: var(--ink) }
+.adminSec .adminProvas li { border-top-color: var(--line); color: var(--ink-soft) }
+.adminSec .adminProvas li::before { color: var(--green) }
+.adminSec .admin { border: 1.5px solid var(--ink) }
+
+/* a faixa do bônus */
+.bonusFaixa {
+  position: relative; display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 24px; align-items: center;
+  margin: 48px 0 0; padding: 22px 24px; background: var(--ink); color: #fff;
+  box-shadow: 10px 12px 0 var(--green);
+}
+.bonusTexto { display: grid; gap: 6px }
+.bonusRotulo { justify-self: start; padding: 3px 8px; background: var(--rosa); color: #fff; font: 700 10.5px var(--mono); letter-spacing: .14em }
+.bonusTexto b { font: 900 22px/1.05 var(--display); font-stretch: 78%; text-transform: uppercase }
+.bonusFaixa .bonusTexto p { margin: 0; font-size: 13.5px; line-height: 1.45; color: #C9CDC6 }
+.bonusKpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; margin: 0; background: var(--line-dark); border: 1px solid var(--line-dark) }
+.bonusKpis > div { background: var(--ink); padding: 12px 12px 10px }
+.bonusKpis dt { font-size: 12px; color: #9BA6A0 }
+.bonusKpis dd { margin: 4px 0 0; display: grid; gap: 6px }
+.bonusKpis dd > b { font: 900 clamp(22px, 2.2vw, 30px)/1 var(--display); font-stretch: 100% }
+.bonusKpis .kpiViva dd > b { color: var(--green-live) }
+.bonusFaixa .selo { position: absolute; top: -12px; right: 18px }
+@media (max-width: 900px) {
+  .bonusFaixa { grid-template-columns: minmax(0, 1fr); box-shadow: 8px 10px 0 var(--green) }
+  .bonusKpis { grid-template-columns: repeat(2, minmax(0, 1fr)) }
+}
+
+/* o hero no celular: o vídeo da compra sobe para a primeira tela, num
+   aparelho pequeno ao lado do botão (05/10). As duas classes vencem o
+   .phone da vitrine (0,1,0), que fixa 200x360 nesta largura. */
+@media (max-width: 900px) {
+  .hero .heroGrid {
+    grid-template-columns: 112px minmax(0, 1fr);
+    grid-template-areas: "topo topo" "fone acao" "resto resto";
+    column-gap: 16px;
+  }
+  .heroAcao { margin-top: 22px; max-width: none }
+  .heroFoneArea { align-self: start; margin-top: 22px; gap: 8px }
+  .hero .heroFone { width: 112px; height: 200px; border-width: 5px; border-radius: 18px; box-shadow: 5px 6px 0 var(--paper-2), 5px 6px 0 1.5px var(--ink) }
+  .heroLegenda { font-size: 8.5px; letter-spacing: .04em; text-align: center; gap: 5px; line-height: 1.3 }
+  .hero .heroCta { padding: 17px 10px; font-size: 12px }
+  .hero .heroH1 { font-size: 36px }
+  .heroResto { margin-top: 22px }
+}
+@media (prefers-reduced-motion: reduce) { .heroLegenda i { animation: none } }
