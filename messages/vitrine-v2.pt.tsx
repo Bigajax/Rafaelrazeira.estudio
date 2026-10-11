@@ -32,6 +32,7 @@ import { PROPOSTAS } from "@/lib/propostas";
 
 const itens = PROPOSTAS["vitrine-v2"].itens;
 export const PRECO_PIX = itens.avista_pix.valor;   // 997
+export const PRECO_CARTAO = itens.avista_card.valor;
 export const MAX_PARCELAS = itens.avista_card.maxParcelas ?? 1;
 
 /* A parcela de 12x COM o juro do cliente, decidida pelo Rafael em

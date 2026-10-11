@@ -1,13 +1,12 @@
-/* O UPGRADE DA VITRINE (07/10/2026): o que entra como régua de conferência
-   (o ✓ na margem direita, o gesto da casa), o preço cheio riscado ao lado
-   do preço abatido, e o prazo numa linha. Papel e tinta; rosa só na ação. */
-.preco { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.4rem 0.8rem; margin-top: 0.9rem; }
-.preco s { font-family: var(--font-display), "Arial Narrow", sans-serif; font-variation-settings: "wdth" 72; font-weight: 700; font-size: 1.25rem; color: #3a4144; opacity: 0.7; }
-.preco b { font-family: var(--font-display), "Arial Narrow", sans-serif; font-variation-settings: "wdth" 72; font-weight: 800; font-size: 2.5rem; line-height: 1; letter-spacing: -0.02em; color: #14181a; }
-.preco span { font-size: 0.875rem; font-weight: 700; color: #0c9159; }
-.inclui { margin: 1rem 0 0; padding: 0; list-style: none; border-top: 1.5px solid #14181a; max-width: 40rem; }
-.inclui li { position: relative; padding: 0.55rem 1.75rem 0.55rem 0; border-bottom: 1px solid #d8d3c4; font-size: 0.9375rem; line-height: 1.4; }
-.inclui li::after { content: "✓"; position: absolute; right: 0.2rem; top: 0.5rem; color: #0c9159; font-weight: 700; }
-.prazo { margin-top: 0.75rem; font-size: 0.875rem; color: #3a4144; }
+/* Ofertas com a mesma linguagem do painel, sem mudar os valores do serviço. */
+.preco { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem 0.875rem; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid #dedbd1; }
+.preco s { font: 400 0.875rem/1.5 var(--font-body), sans-serif; color: #555d5b; }
+.preco b { font-family: var(--font-display), sans-serif; font-variation-settings: "wdth" 85; font-weight: 750; font-size: 2.5rem; line-height: 1.1; letter-spacing: -0.03em; color: #14181a; }
+.preco span { flex-basis: 100%; font-size: 0.8125rem; color: #076b42; }
+.introducao { max-width: 55ch; margin-top: 0.75rem; font-size: 0.875rem; line-height: 1.65; color: #555d5b; }
+.inclui { margin: 1.25rem 0 0; padding: 0; list-style: none; max-width: 40rem; }
+.inclui li { position: relative; padding: 0.625rem 0 0.625rem 1.5rem; border-bottom: 1px solid #dedbd1; font-size: 0.8125rem; line-height: 1.6; }
+.inclui li::before { content: "✓"; position: absolute; left: 0; color: #076b42; font-weight: 650; }
+.prazo { margin-top: 1rem; padding: 0.875rem 1rem; border-radius: 6px; background: #e6eee3; font-size: 0.8125rem; line-height: 1.6; color: #305d43; }
 .topoEmbutido { padding-bottom: 0.25rem; }
-.tituloEmbutido { margin-top: 0.35rem; font-family: var(--font-display), "Arial Narrow", sans-serif; font-variation-settings: "wdth" 66; font-weight: 800; font-size: 2rem; line-height: 0.95; text-transform: uppercase; color: #14181a; }
+.tituloEmbutido { margin-top: 0.625rem; font-family: var(--font-display), sans-serif; font-variation-settings: "wdth" 85; font-weight: 750; font-size: clamp(1.75rem, 5vw, 2.25rem); line-height: 1.15; letter-spacing: -0.025em; color: #14181a; }

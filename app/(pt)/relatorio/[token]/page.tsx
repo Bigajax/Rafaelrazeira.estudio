@@ -210,14 +210,14 @@ export default async function PaginaRelatorio({ params }: { params: Promise<{ to
 
         <div className={s.duas}>
           <section className={s.secao} aria-labelledby="pecas">
-            <h2 id="pecas">As peças que mais chamaram</h2>
+            <h2 id="pecas">Peças que geraram mais contatos</h2>
             {pecas.length ? (
               <table className={s.tabela}>
                 <thead>
                   <tr>
                     <th>Peça</th>
                     <th>Abriram</th>
-                    <th>Chamaram</th>
+                    <th>Contatos</th>
                     <th>De 100</th>
                   </tr>
                 </thead>
@@ -267,6 +267,11 @@ export default async function PaginaRelatorio({ params }: { params: Promise<{ to
           <section className={s.secao} aria-labelledby="movimento">
             <h2 id="movimento">O movimento de {M.nome}</h2>
             <Movimento dias={R.dias} mes={R.mes} parcial={R.parcial} />
+            <p className={s.legenda}>
+              <span><i className={s.legenda__barra} aria-hidden="true" /> Pessoas por dia</span>
+              <span><i className={s.legenda__linha} aria-hidden="true" /> Média de 7 dias</span>
+              {R.parcial ? <span className={s.legenda__parcial}>Hoje ainda está em andamento.</span> : null}
+            </p>
             <p className={s.nota}>
               {horario ? `O horário mais forte foi ${horario}. ` : ""}
               {R.voltaram ? `${br(R.voltaram)} ${R.voltaram === 1 ? "pessoa voltou" : "pessoas voltaram"} à vitrine em outro dia.` : ""}
@@ -274,7 +279,7 @@ export default async function PaginaRelatorio({ params }: { params: Promise<{ to
           </section>
 
           <section className={s.secao} aria-labelledby="procuraram">
-            <h2 id="procuraram">O que procuraram e os números que acabaram</h2>
+            <h2 id="procuraram">Buscas e tamanhos esgotados</h2>
             {R.buscas.length || R.esgotados.length ? (
               <ul className={s.lista}>
                 {R.buscas.slice(0, 4).map((b) => (

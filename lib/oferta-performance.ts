@@ -38,6 +38,8 @@ export const ehPlano = (v: unknown): v is PlanoPerformance => typeof v === "stri
 export type Degrau = "vender" | "loja";
 export type PlanoUpgrade = "vender_pix" | "vender_cartao" | "loja_pix" | "loja_cartao";
 
+export const MENSALIDADE_ECOMMERCE = 249.9;
+
 export const DEGRAUS: Record<Degrau, { nome: string; cheio: number; vitrine: number; valor: number; prazo: string; mensal: string | null; inclui: string[] }> = {
   vender: {
     nome: "Vender pela vitrine",
@@ -58,7 +60,7 @@ export const DEGRAUS: Record<Degrau, { nome: string; cheio: number; vitrine: num
     vitrine: 999,
     valor: 2500,
     prazo: "15 a 20 dias úteis",
-    mensal: "R$ 249,90 por mês depois da entrega, com o Performance incluído",
+    mensal: `${MENSALIDADE_ECOMMERCE.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })} por mês depois da entrega, com o Performance incluído`,
     inclui: [
       "Sacola com várias peças e pagamento no Pix ou no cartão",
       "Estoque que baixa sozinho a cada venda",

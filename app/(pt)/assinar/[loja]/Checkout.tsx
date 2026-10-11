@@ -51,7 +51,7 @@ function avisarPainel(msg: { tipo: "perf-altura"; h: number } | { tipo: "perf-pa
   }
 }
 
-export function Checkout({ loja, planos, inicial, renovaSozinho, embutida = false }: { loja: string; planos: Plano[]; inicial: Plano["id"]; renovaSozinho: boolean; embutida?: boolean }) {
+export function Checkout({ loja, planos, inicial, renovaSozinho, embutida = false, upgradeNome }: { loja: string; planos: Plano[]; inicial: Plano["id"]; renovaSozinho: boolean; embutida?: boolean; upgradeNome?: string }) {
   const [escolha, setEscolha] = useState<Plano["id"]>(inicial);
   const plano = planos.find((p) => p.id === escolha)!;
   const d = descontoDoAnual(planos);
@@ -68,9 +68,10 @@ export function Checkout({ loja, planos, inicial, renovaSozinho, embutida = fals
 
   return (
     <section className={s.checkout} aria-label="Como pagar">
-      <div className={s.planos} role="radiogroup" aria-label="Jeito de pagar">
+      <div className={s.planos} data-opcoes={planos.length} role="group" aria-label="Jeito de pagar">
         {planos.map((p) => (
-          <button key={p.id} type="button" role="radio" aria-checked={p.id === escolha} className={s.plano} onClick={() => setEscolha(p.id)}>
+          <label key={p.id} className={s.plano} data-selecionado={p.id === escolha || undefined}>
+            <input type="radio" name="plano-pagamento" value={p.id} checked={p.id === escolha} onChange={() => setEscolha(p.id)} />
             {p.id === "cartao_anual" ? <span className={s.selo}>2 meses de presente</span> : null}
             <span className={s.planoNome}>{p.rotulo}</span>
             {p.id === "cartao_anual" && d.economia > 0 ? <s className={s.planoCheio}>{brl(d.cheio)}</s> : null}
@@ -81,16 +82,16 @@ export function Checkout({ loja, planos, inicial, renovaSozinho, embutida = fals
               </span>
             ) : null}
             <span className={s.planoDiz}>{p.diz ?? LINHA[p.id]?.diz}</span>
-          </button>
+          </label>
         ))}
       </div>
 
       {escolha === "cartao_mensal" && renovaSozinho ? (
         <p className={s.aviso}>Esta loja já tem a assinatura no cartão ativa. Ela renova sozinha: não precisa assinar de novo.</p>
       ) : plano.metodo === "pix" ? (
-        <Pix key={plano.id} loja={loja} plano={plano} />
+        <Pix key={plano.id} loja={loja} plano={plano} upgradeNome={upgradeNome} />
       ) : (
-        <Cartao key={plano.id} loja={loja} plano={plano} />
+        <Cartao key={plano.id} loja={loja} plano={plano} upgradeNome={upgradeNome} />
       )}
     </section>
   );
@@ -98,7 +99,7 @@ export function Checkout({ loja, planos, inicial, renovaSozinho, embutida = fals
 
 /* ── o Pix ─────────────────────────────────────────────────── */
 
-function Pix({ loja, plano }: { loja: string; plano: Plano }) {
+function Pix({ loja, plano, upgradeNome }: { loja: string; plano: Plano; upgradeNome?: string }) {
   const [dados, setDados] = useState({ nome: "", email: "", cpf: "" });
   const [estado, setEstado] = useState<"form" | "gerando" | "qr" | "pago" | "erro">("form");
   const [erro, setErro] = useState("");
@@ -119,9 +120,9 @@ function Pix({ loja, plano }: { loja: string; plano: Plano }) {
     e.preventDefault();
     setEstado("gerando");
     setErro("");
-    const r = await fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ loja, plano: plano.id, payer: dados }) });
-    const j = await r.json().catch(() => ({}));
-    if (!r.ok || !j.qr_code) {
+    const r = await fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ loja, plano: plano.id, payer: dados }) }).catch(() => null);
+    const j = r ? await r.json().catch(() => ({})) : {};
+    if (!r?.ok || !j.qr_code) {
       setErro(j.error || "Não foi possível gerar o Pix.");
       setEstado("erro");
       return;
@@ -130,7 +131,7 @@ function Pix({ loja, plano }: { loja: string; plano: Plano }) {
     setEstado("qr");
   }
 
-  if (estado === "pago") return <Pago />;
+  if (estado === "pago") return <Pago upgradeNome={upgradeNome} />;
 
   if (estado === "qr" && qr) {
     return (
@@ -203,7 +204,7 @@ function carregarSdk() {
   return sdk;
 }
 
-function Cartao({ loja, plano }: { loja: string; plano: Plano }) {
+function Cartao({ loja, plano, upgradeNome }: { loja: string; plano: Plano; upgradeNome?: string }) {
   const [estado, setEstado] = useState<"carregando" | "pronto" | "pago" | "analise" | "erro">("carregando");
   const [erro, setErro] = useState("");
   const montado = useRef<{ unmount: () => void } | null>(null);
@@ -225,7 +226,7 @@ function Cartao({ loja, plano }: { loja: string; plano: Plano }) {
             paymentMethods: { minInstallments: 1, maxInstallments: plano.metodo === "assinatura" ? 1 : plano.maxParcelas || 1 },
             visual: {
               texts: { formSubmit: plano.metodo === "assinatura" ? `Assinar por ${brl(plano.valor)} por mês` : `Pagar ${brl(plano.valor)}` },
-              style: { customVariables: { baseColor: "#e31b62", borderRadiusMedium: "0px", borderRadiusLarge: "0px", borderRadiusFull: "0px" } },
+              style: { customVariables: { baseColor: "#076b42", borderRadiusMedium: "5px", borderRadiusLarge: "8px", borderRadiusFull: "8px" } },
             },
           },
           callbacks: {
@@ -267,12 +268,12 @@ function Cartao({ loja, plano }: { loja: string; plano: Plano }) {
     };
   }, [loja, plano, id]);
 
-  if (estado === "pago") return <Pago assinatura={plano.metodo === "assinatura"} />;
+  if (estado === "pago") return <Pago assinatura={plano.metodo === "assinatura"} upgradeNome={upgradeNome} />;
   if (estado === "analise")
     return (
       <div className={s.fluxo}>
         <p className={s.passo}>Pagamento em análise</p>
-        <p>O banco está conferindo a compra. Assim que aprovar, o Performance liga sozinho no seu painel.</p>
+        <p>{upgradeNome ? "O banco está conferindo o pagamento. Assim que aprovar, o estúdio recebe a confirmação para começar o seu upgrade." : "O banco está conferindo a compra. Assim que aprovar, o Performance liga sozinho no seu painel."}</p>
       </div>
     );
 
@@ -291,13 +292,13 @@ function Cartao({ loja, plano }: { loja: string; plano: Plano }) {
   );
 }
 
-function Pago({ assinatura = false }: { assinatura?: boolean }) {
+function Pago({ assinatura = false, upgradeNome }: { assinatura?: boolean; upgradeNome?: string }) {
   useEffect(() => avisarPainel({ tipo: "perf-pago" }), []);
   return (
     <div className={`${s.fluxo} ${s.pago}`}>
       <p className={s.passo}>Pago</p>
-      <h2>O Performance está ligado.</h2>
-      <p>{assinatura ? "A assinatura renova sozinha todo mês. " : ""}Abra a aba Desempenho do seu painel: os números completos já aparecem.</p>
+      <h2>{upgradeNome ? "Pagamento confirmado." : "O Performance está ligado."}</h2>
+      <p>{upgradeNome ? `O estúdio recebeu o pagamento de ${upgradeNome} e avisa no WhatsApp quando estiver pronto.` : <>{assinatura ? "A assinatura renova sozinha todo mês. " : ""}Abra a aba Desempenho do seu painel: os números completos já aparecem.</>}</p>
     </div>
   );
 }

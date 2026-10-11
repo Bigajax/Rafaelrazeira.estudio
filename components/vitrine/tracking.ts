@@ -330,6 +330,10 @@ const NOME_MP: Record<string, string> = {
   /* o passo que passou a existir em 06/08 e é o único que não depende do
      WhatsApp: o lead está gravado no banco. Só Mixpanel, é diagnóstico. */
   LeadSalvo:        "Lead salvo",
+  PropostaSolicitada: "Solicitou proposta da vitrine",
+  DemoVitrine: "Assistiu à demonstração da vitrine",
+  ErroFormularioProposta: "Erro ao preencher a proposta",
+  FalhaFormularioProposta: "Falha ao enviar a proposta",
 };
 
 export function mpTrack(evento: string, props?: Record<string, unknown>) {

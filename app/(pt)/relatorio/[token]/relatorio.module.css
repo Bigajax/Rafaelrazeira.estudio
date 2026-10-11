@@ -595,6 +595,75 @@
   outline-offset: 3px;
 }
 
+/* A leitura acompanha o painel: uma hierarquia clara, com a marca nos títulos. */
+.legenda { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; margin-top: 0.625rem; font-size: 0.75rem; line-height: 1.4; color: var(--ink-soft); }
+.legenda > span { display: inline-flex; align-items: center; gap: 0.4rem; }
+.legenda__barra { width: 0.625rem; height: 0.625rem; border-radius: 2px; background: var(--green); opacity: 0.55; }
+.legenda__linha { width: 0.875rem; height: 2px; background: var(--green-dark); }
+.legenda .legenda__parcial { flex-basis: 100%; }
+.mediaLinha { stroke: var(--green-dark); }
+.desce { color: #85530a; }
+.imprimir, .responder { min-height: 44px; border-radius: 5px; box-shadow: none; font: 600 0.8125rem/1.4 var(--font-body), sans-serif; letter-spacing: 0; text-transform: none; }
+.imprimir { border: 1px solid var(--linha); }
+.imprimir:active, .responder:active { transform: none; box-shadow: none; }
+.responder { background: var(--green-dark); }
+@media (hover: hover) and (pointer: fine) { .responder:hover { background: #055436; } }
+@media screen {
+  .pagina { --linha: #dedbd1; --ink-soft: #555d5b; padding-top: clamp(1.5rem, 4vw, 3rem); }
+  .topo { align-items: start; border-bottom: 1px solid var(--linha); box-shadow: none; }
+  .kicker { font-size: 0.625rem; letter-spacing: 0.1em; }
+  .titulo { margin-top: 0.875rem; font-variation-settings: "wdth" 80; font-size: clamp(2.5rem, 6vw, 4rem); line-height: 1.1; text-transform: none; }
+  .titulo::first-letter { text-transform: uppercase; }
+  .lead { margin-top: 0.875rem; max-width: 58ch; font-size: 0.875rem; line-height: 1.6; }
+  .baixar { justify-items: start; max-width: 14rem; }
+  .baixar small { line-height: 1.5; font-size: 0.6875rem; }
+  .numeros { overflow: hidden; border: 1px solid var(--linha); border-radius: 8px; background: var(--ficha); }
+  .numero, .numero:first-child { padding: 1rem 1.125rem; }
+  .numero { border-left: 1px solid var(--linha); gap: 0.625rem; }
+  .numero:first-child { border-left: 0; }
+  .rot { font: 600 0.75rem/1.4 var(--font-body), sans-serif; letter-spacing: 0; text-transform: none; color: var(--ink-soft); }
+  .val { font-variation-settings: "wdth" 85; font-size: clamp(2rem, 4vw, 2.75rem); line-height: 1.1; }
+  .dif { font-size: 0.75rem; }
+  .leitura { margin-top: 1.5rem; padding: 1.5rem; border: 1px solid var(--linha); border-left: 3px solid var(--green-dark); border-radius: 8px; background: var(--ficha); box-shadow: none; }
+  .leitura__rotulo { font-size: 0.625rem; letter-spacing: 0.1em; }
+  .leitura__texto { max-width: 75ch; }
+  .leitura__texto p, .leitura__texto p:first-child { font-size: 0.9375rem; line-height: 1.7; }
+  .assina { margin-top: 1.25rem; padding-top: 0.875rem; border-top: 1px solid var(--linha); }
+  .assina b { font: 650 0.875rem/1.4 var(--font-body), sans-serif; letter-spacing: 0; }
+  .assina span { font: 400 0.75rem/1.5 var(--font-body), sans-serif; letter-spacing: 0; text-transform: none; }
+  .duas { grid-template-columns: 1fr; gap: 1rem; margin-top: 1rem; }
+  .duas::before { display: none; }
+  .duas > :first-child, .duas > :last-child { grid-column: auto; grid-row: auto; }
+  .secao { padding: 1.25rem; border: 1px solid var(--linha); border-radius: 8px; background: var(--ficha); }
+  .secao h2 { padding-bottom: 0.875rem; border-bottom: 1px solid var(--linha); box-shadow: none; font: 650 1rem/1.4 var(--font-body), sans-serif; letter-spacing: -0.015em; }
+  .sub { margin-top: 1rem; border-bottom: 1px solid var(--linha); font: 600 0.75rem/1.4 var(--font-body), sans-serif; letter-spacing: 0; text-transform: none; }
+  .tipo { font-size: 0.625rem; letter-spacing: 0.08em; }
+  .fazer b { font-size: 0.875rem; line-height: 1.5; }
+  .porque, .feito li, .vazio, .nota, .lista li { font-size: 0.8125rem; line-height: 1.6; }
+  .tabela { table-layout: fixed; font-size: 0.8125rem; }
+  .tabela thead th { font: 500 0.6875rem/1.4 var(--font-body), sans-serif; letter-spacing: 0; text-transform: none; }
+  .tabela th:first-child { width: 44%; overflow-wrap: anywhere; }
+  .tabela td, .tabela thead th:not(:first-child) { padding-left: 0.375rem; font-family: var(--font-body), sans-serif; font-size: 0.75rem; }
+  .origem b, .origem__num { font-size: 0.8125rem; }
+  .origem > li > i, .origem > li > i > i { border-radius: 3px; }
+  .lista li > span { min-width: 0; overflow-wrap: anywhere; }
+  .lista b { flex-shrink: 0; max-width: 50%; white-space: normal; text-align: right; font-size: 0.75rem; }
+  .lista b small { display: block; line-height: 1.5; }
+  .rodape { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--linha); box-shadow: none; }
+  .rodape__texto { font: 500 0.75rem/1.5 var(--font-body), sans-serif; letter-spacing: 0; text-transform: none; }
+}
+@media screen and (min-width: 900px) { .duas { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media screen and (max-width: 759px) {
+  .numero:nth-child(3) { padding-left: 1.125rem; border-left: 0; }
+  .titulo { font-size: 2.5rem; }
+}
+@media screen and (max-width: 399px) {
+  .numero, .numero:first-child, .numero:nth-child(3) { padding: 0.875rem; }
+  .secao, .leitura { padding: 1rem; }
+  .tabela th:first-child { width: 32%; }
+  .tabela td, .tabela thead th:not(:first-child) { padding-left: 0.25rem; font-size: 0.75rem; }
+  .rodape .responder { width: 100%; justify-content: center; padding: 0.75rem; }
+}
 /* ── a impressão: A4, papel branco, sem botão, nada quebra no meio ── */
 @media print {
   @page {
@@ -641,7 +710,9 @@
   }
   .leitura {
     background: #fff;
-    box-shadow: 6px 6px 0 var(--green);
+    border: 1px solid var(--linha);
+    border-left: 3px solid var(--green-dark);
+    box-shadow: none;
   }
   .leitura,
   .numeros,

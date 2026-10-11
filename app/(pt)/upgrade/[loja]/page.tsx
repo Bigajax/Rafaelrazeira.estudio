@@ -13,7 +13,6 @@
 import type { Metadata } from "next";
 import { Archivo, Inter, JetBrains_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
-import { Selo } from "@/components/performance/Selo";
 import { DEGRAUS, UPGRADES, ehDegrau, type PlanoUpgrade } from "@/lib/oferta-performance";
 import { Checkout, type Plano } from "../../assinar/[loja]/Checkout";
 import s from "../../assinar/[loja]/assinar.module.css";
@@ -52,6 +51,7 @@ export default async function PaginaUpgrade({ params, searchParams }: { params: 
   if (!loja) notFound();
   const embutida = embed === "1";
   const degrau = DEGRAUS[d];
+  const nome = d === "vender" ? "Vitrine com pagamento" : "E-commerce";
   const jaPago = loja.upgrade === "loja" || loja.upgrade === d;
 
   const planos: Plano[] = (Object.keys(UPGRADES) as PlanoUpgrade[])
@@ -74,9 +74,10 @@ export default async function PaginaUpgrade({ params, searchParams }: { params: 
       <div className={s.folha}>
         <header className={embutida ? u.topoEmbutido : s.topo}>
           <p className={s.rotulo}>
-            <Selo tamanho={18} /> O próximo passo da {loja.nome}
+            O próximo passo da {loja.nome}
           </p>
-          <h1 className={embutida ? u.tituloEmbutido : s.titulo}>{degrau.nome}</h1>
+          <h1 className={embutida ? u.tituloEmbutido : s.titulo}>{nome}</h1>
+          <p className={u.introducao}>{d === "vender" ? "Sua cliente escolhe a peça e paga na própria vitrine. Você recebe o pedido com os dados para a entrega." : "Uma loja online para vender várias peças no mesmo pedido, com frete, estoque e gestão no painel."}</p>
           <div className={u.preco}>
             <s>{brl(degrau.cheio)}</s>
             <b>{brl(degrau.valor)}</b>
@@ -96,7 +97,7 @@ export default async function PaginaUpgrade({ params, searchParams }: { params: 
         {jaPago ? (
           <p className={s.aviso}>Pago. O estúdio está fazendo o seu {degrau.nome.toLowerCase()}, e avisa no WhatsApp quando estiver pronto.</p>
         ) : (
-          <Checkout loja={loja.id} planos={planos} inicial={planos[0].id} renovaSozinho={false} embutida={embutida} />
+          <Checkout loja={loja.id} planos={planos} inicial={planos[0].id} renovaSozinho={false} embutida={embutida} upgradeNome={nome} />
         )}
 
         {embutida ? null : (

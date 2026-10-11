@@ -1,0 +1,24 @@
+.checkout button:last-of-type{margin-top:12px;width:100%;font-size:13px}
+.checkout button:first-of-type{margin-top:20px}
+.revisao{display:flex;align-items:center;gap:7px;color:#076b43!important;font-size:12px!important;margin-top:20px!important}
+.revisao svg{width:18px;height:18px;flex-shrink:0}
+.vagasHero{display:flex;align-items:center;gap:8px;color:#fff;font-size:12px;font-weight:500;margin-top:16px!important}
+.vagasHero>span{width:6px;height:6px;border:1px solid var(--rosa);background:var(--rosa);flex-shrink:0}
+.vagas{border:1px solid var(--rosa);background:var(--rosa);padding:13px 14px;margin-top:18px;color:#fff}
+.vagas b{display:block;font-size:12px;font-weight:600;line-height:1.5}
+.vagas p{font-size:11px;color:#fff;line-height:1.6;margin-top:4px!important}
+.duvida{display:inline-block;color:#076b43!important;font-size:12px;text-decoration:underline!important;text-underline-offset:4px;margin-top:20px}
+.etapas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:30px;list-style:none;padding:0;margin:0}
+.etapas li{border-top:1px solid #deded3;padding-top:22px}
+.etapas li>span{font-size:12px;color:#076b43;display:block;margin-bottom:14px}
+.etapas h3{font-size:19px}
+.etapas p{font-size:13px;line-height:1.75;color:#5c6861;margin-top:12px}
+.video{width:100%;max-height:620px;background:#19231e;border-radius:10px;display:block;margin-top:24px}
+.checkoutPortal :global(.ck-modal){background:#fbf9f3;border-radius:12px;font-family:var(--font-body),sans-serif;color:#19231e;border:1px solid #d6ddcc}
+.checkoutPortal :global(.ck-title){text-transform:none;font-family:var(--font-display),sans-serif;letter-spacing:-.03em;font-weight:650;line-height:1.2}
+.checkoutPortal :global(.ck-eyebrow){color:#076b43;font-family:var(--font-body),sans-serif;font-weight:500;letter-spacing:.07em}
+.checkoutPortal :global(.ck-btn:not(.ck-btn--ghost)){background:#e31b62;color:white;border-radius:3px}
+.checkoutPortal :global(.ck-btn:not(.ck-btn--ghost):hover){background:#bd104e}
+.checkoutPortal :global(.ck-close){width:44px;height:44px;color:#5c6861}
+.checkoutPortal :global(.ck-modal :focus-visible){outline:3px solid #076b43;outline-offset:3px}
+@media(max-width:600px){.etapas{grid-template-columns:1fr;gap:24px}.etapas h3{font-size:18px}.etapas p{font-size:12px}.checkoutPortal :global(.ck-modal){border-radius:12px 12px 0 0}.checkout button:last-of-type{font-size:12px}}

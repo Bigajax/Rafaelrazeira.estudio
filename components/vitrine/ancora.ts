@@ -62,7 +62,7 @@ function campoDeEntrada(alvo: HTMLElement): HTMLInputElement | null {
 }
 
 export function ligarAncoras() {
-  document.addEventListener("click", (e) => {
+  const aoClicar = (e: MouseEvent) => {
     const a = (e.target as HTMLElement)?.closest?.("a[href]") as HTMLAnchorElement | null;
     if (!a || !a.hash || cliqueModificado(e)) return;
     /* Só âncora desta mesma página. Um link para /portfolio#topo é navegação
@@ -85,5 +85,7 @@ export function ligarAncoras() {
       document.documentElement.style.scrollBehavior = "";
       focarSemContar(campoDeEntrada(alvo));
     }, 0);
-  });
+  };
+  document.addEventListener("click", aoClicar);
+  return () => document.removeEventListener("click", aoClicar);
 }

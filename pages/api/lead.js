@@ -39,6 +39,7 @@ import { whatsappValido } from "../../components/telefone";
 import { emailValido, telefoneInternacionalValido } from "../../components/telefone-intl";
 import { avisarNoCelular } from "../../lib/push";
 import { conferirArroba } from "../../lib/arroba";
+import { perfilParaProposta } from "../../lib/vitrine-proposta";
 
 /* ---------- a janela do envio repetido ----------
    A /vitrine-digital tem dois formulários (o do hero e o da oferta) e a
@@ -124,7 +125,7 @@ async function avisar(lead) {
       </table>
       ${zap ? `<p style="margin:18px 0 0"><a href="https://wa.me/${zap.length > 11 || lead.pagina.endsWith("-en") ? zap : `55${zap}`}" style="background:#10b981;color:#052e21;padding:12px 18px;text-decoration:none;font-weight:700">Chamar no WhatsApp</a></p>` : ""}
       ${!zap && lead.email ? `<p style="margin:18px 0 0"><a href="mailto:${lead.email}" style="background:#111;color:#fff;padding:12px 18px;text-decoration:none;font-weight:700">Responder por e-mail</a></p>` : ""}
-      <p style="margin:18px 0 0;font-size:12px;color:#889">A pessoa viu uma tela dizendo que você chama ainda hoje.</p>
+      <p style="margin:18px 0 0;font-size:12px;color:#889">Responda pelo canal de contato informado no formulário.</p>
     </div>`;
 
   try {
@@ -183,6 +184,7 @@ async function avisar(lead) {
 const TIPO_POR_PAGINA = {
   "e-commerce": "ecommerce",
   "vitrine-digital": "vitrine",
+  "vitrine-v3": "vitrine",
   "landing-page": "landing",
   /* as irmãs em inglês (11/09/2026): mesmo tipo de projeto, outro idioma */
   "vitrine-digital-en": "vitrine",
@@ -484,6 +486,12 @@ export default async function handler(req, res) {
   let suspeito = b.suspeito === "isca" || b.suspeito === "relogio" ? b.suspeito : null;
 
   let canal = texto(b.canal);
+  const pedidoProposta = pagina === "vitrine-v3" && b.objetivo === "proposta";
+  if (pedidoProposta && !suspeito) {
+    const perfil = perfilParaProposta(canal || "");
+    if (!perfil) return erro(res, 400, "Confira o Instagram da loja.");
+    canal = perfil;
+  }
 
   /* ---------- o @ é conferido na porta (10/09/2026) ----------
      Só na vitrine, porque só ela promete montar a loja a partir do @. A
@@ -503,7 +511,7 @@ export default async function handler(req, res) {
   /* a loja encontrada volta para o navegador (12/09): a confirmação mostra o
      @ e os seguidores, para a pessoa conferir que era essa mesmo */
   let lojaAchada = null;
-  if (pagina.startsWith("vitrine-digital") && !suspeito) {
+  if (pagina.startsWith("vitrine-digital") && !suspeito && !pedidoProposta) {
     const c = await conferirArroba(canal || "");
     arroba = c.estado;
     if (c.estado === "invalido") suspeito = "arroba";
@@ -531,7 +539,7 @@ export default async function handler(req, res) {
     vende: texto(b.vende),
     produtos: texto(b.produtos),
     site: texto(b.site),
-    necessidade: texto(b.necessidade, LIMITE),
+    necessidade: pedidoProposta ? "Solicitação de proposta da vitrine digital. Confirmar o perfil e o material da loja na conversa; iniciar o design após a contratação e a confirmação da entrada." : texto(b.necessidade, LIMITE),
     investimento: texto(b.investimento),
     /* só a /vitrine-digital manda: "Entrada de R$199 + R$800 em até 4x"
        ou "À vista no Pix R$899".
