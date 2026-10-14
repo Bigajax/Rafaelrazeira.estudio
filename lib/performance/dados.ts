@@ -1,3 +1,4 @@
+import { tabelaAusente, conferir } from "@/lib/sistema/consultas";
 /* ============================================================
    PERFORMANCE: a leitura (06/10/2026)
 
@@ -25,15 +26,20 @@ export type LojaPerformance = PerfLoja & {
 
 export async function lojasPerformance(): Promise<{ lojas: LojaPerformance[]; semTabela: boolean }> {
   const supabase = await clienteServidor();
-  const [{ data: lojas, error }, { data: resumo }] = await Promise.all([
+  const [{ data: lojas, error }, { data: resumo, error: erroResumo }] = await Promise.all([
     supabase.from("perf_lojas").select("*").order("criado_em", { ascending: false }).returns<PerfLoja[]>(),
     supabase.rpc("perf_resumo_lojas"),
   ]);
-  if (error) return { lojas: [], semTabela: true };
+  if (tabelaAusente(error)) return { lojas: [], semTabela: true };
+  if (error || erroResumo) throw new Error("Não foi possível carregar o Performance. Tente novamente.");
 
   const ids = [...new Set((lojas ?? []).map((l) => l.lead_id).filter((x): x is string => !!x))];
   const { data: leads } = ids.length
-    ? await supabase.from("crm_leads").select("id, nome, empresa").in("id", ids).returns<{ id: string; nome: string; empresa: string | null }[]>()
+    ? await supabase
+        .from("crm_leads")
+        .select("id, nome, empresa")
+        .in("id", ids)
+        .returns<{ id: string; nome: string; empresa: string | null }[]>()
     : { data: [] as { id: string; nome: string; empresa: string | null }[] };
   const nomeDoLead = new Map((leads ?? []).map((l) => [l.id, l.empresa || l.nome]));
   const porLoja = new Map(((resumo as PerfResumo[] | null) ?? []).map((r) => [r.loja_id, r]));
@@ -52,6 +58,11 @@ export async function lojasPerformance(): Promise<{ lojas: LojaPerformance[]; se
 /** A loja Performance de um lead, para a ficha do projeto. Nula se não houver. */
 export async function performanceDoLead(leadId: string): Promise<PerfLoja | null> {
   const supabase = await clienteServidor();
-  const { data } = await supabase.from("perf_lojas").select("*").eq("lead_id", leadId).limit(1).maybeSingle<PerfLoja>();
+  const { data } = await supabase
+    .from("perf_lojas")
+    .select("*")
+    .eq("lead_id", leadId)
+    .limit(1)
+    .maybeSingle<PerfLoja>();
   return data ?? null;
 }

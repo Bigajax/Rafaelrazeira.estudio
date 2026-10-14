@@ -36,9 +36,10 @@ type Rota = {
 
 const MOMENTOS: { nome: string; rotas: Rota[] }[] = [
   {
-    nome: "Vender",
+    nome: "Vendas",
     rotas: [
-      { href: "/crm", rotulo: "Hoje", nota: "a fila", conta: "fila" },
+      { href: "/crm", rotulo: "Hoje", nota: "o estúdio", conta: "fila" },
+      { href: "/crm/clientes", rotulo: "Clientes", nota: "os vínculos", conta: null },
       {
         href: "/crm/pipeline",
         /* "Funil" desde 06/10: pipeline é palavra de programador. A URL
@@ -61,7 +62,7 @@ const MOMENTOS: { nome: string; rotas: Rota[] }[] = [
        loja entregue. Sem número nas duas: o número que importaria (lojas
        esperando revisão) só existe depois de você olhar, e o que cobra
        dinheiro já conta no Caixa. */
-    nome: "Fazer",
+    nome: "Entregas",
     rotas: [
       {
         href: "/crm/producao",
@@ -91,7 +92,7 @@ const MOMENTOS: { nome: string; rotas: Rota[] }[] = [
        me deve) e cabe na barra do celular. O Financeiro é a outra metade da
        mesma pergunta (30/09): o que saiu e se sobrou. Sem número: o
        resultado do mês tem contexto só dentro da tela. */
-    nome: "Dinheiro",
+    nome: "Financeiro",
     rotas: [
       {
         href: "/crm/caixa",
@@ -122,7 +123,7 @@ const MOMENTOS: { nome: string; rotas: Rota[] }[] = [
       },
       {
         href: "/crm/metricas",
-        rotulo: "Métricas",
+        rotulo: "Indicadores",
         nota: "os números",
         conta: null,
       },
@@ -139,10 +140,19 @@ const MOMENTOS: { nome: string; rotas: Rota[] }[] = [
 const COBRAM: readonly string[] = ["fila", "cobrar"];
 
 const ICONES: Record<string, IconePainelNome> = {
-  "/crm": "hoje", "/crm/pipeline": "funil", "/crm/templates": "mensagens",
-  "/crm/producao": "producao", "/crm/projetos": "projetos", "/crm/performance": "performance",
-  "/crm/caixa": "caixa", "/crm/financeiro": "financeiro", "/crm/marketing": "marketing",
-  "/crm/ai-studio": "ai", "/crm/metricas": "metricas", "/crm/plano": "plano",
+  "/crm/clientes": "clientes",
+  "/crm": "hoje",
+  "/crm/pipeline": "funil",
+  "/crm/templates": "mensagens",
+  "/crm/producao": "producao",
+  "/crm/projetos": "projetos",
+  "/crm/performance": "performance",
+  "/crm/caixa": "caixa",
+  "/crm/financeiro": "financeiro",
+  "/crm/marketing": "marketing",
+  "/crm/ai-studio": "ai",
+  "/crm/metricas": "metricas",
+  "/crm/plano": "plano",
 };
 
 const PRINCIPAIS = ["/crm", "/crm/pipeline", "/crm/producao", "/crm/caixa"];
@@ -152,95 +162,163 @@ export function Trilho({ sair, contagens }: { sair: () => void; contagens: Conta
   const [menuAberto, setMenuAberto] = useState(false);
   const botaoMais = useRef<HTMLButtonElement>(null);
   const menu = useRef<HTMLDivElement>(null);
-  useEffect(() => { setMenuAberto(false); }, [caminho]);
+  useEffect(() => {
+    setMenuAberto(false);
+  }, [caminho]);
   useEffect(() => {
     if (!menuAberto) return;
     menu.current?.querySelector<HTMLElement>("[aria-current=page], a")?.focus();
     const aoTeclar = (e: KeyboardEvent) => {
-      if (e.key === "Escape") { setMenuAberto(false); botaoMais.current?.focus(); }
+      if (e.key === "Escape") {
+        setMenuAberto(false);
+        botaoMais.current?.focus();
+      }
     };
     document.addEventListener("keydown", aoTeclar);
     return () => document.removeEventListener("keydown", aoTeclar);
   }, [menuAberto]);
-  const estaAtiva = (href: string) => href === "/crm"
-    ? caminho === "/crm"
-    : caminho === href || caminho.startsWith(`${href}/`) || (href === "/crm/pipeline" && caminho.startsWith("/crm/lead/"));
+  const estaAtiva = (href: string) =>
+    href === "/crm"
+      ? caminho === "/crm"
+      : caminho === href ||
+        caminho.startsWith(`${href}/`) ||
+        (href === "/crm/pipeline" && caminho.startsWith("/crm/lead/"));
   return (
     <>
-    <a href="#crm-principal" className={s.pularConteudo}>Pular para o conteúdo</a>
-    <nav className={s.trilho} aria-label="Seções do estúdio">
-      <div className={s.trilhoPainel}>
+      <a href="#crm-principal" className={s.pularConteudo}>
+        Pular para o conteúdo
+      </a>
+      <nav className={s.trilho} aria-label="Seções do estúdio">
+        <div className={s.trilhoPainel}>
+          <Link href="/crm" className={s.trilhoMarca} aria-label="Rafael Razeira Estúdio, início">
+            <Image src="/marca/rr.webp" alt="" width={36} height={36} className={s.trilhoLogo} priority />
+            <span className={s.trilhoMarcaTexto}>
+              <b>Rafael Razeira</b>
 
-      <Link href="/crm" className={s.trilhoMarca} aria-label="Rafael Razeira Estúdio, início">
-        <Image src="/marca/rr.webp" alt="" width={36} height={36} className={s.trilhoLogo} priority />
-        <span className={s.trilhoMarcaTexto}><b>Rafael Razeira</b>
+              <small>Painel do estúdio</small>
+            </span>
+          </Link>
 
-        <small>Painel do estúdio</small></span>
-      </Link>
-
-      <ul className={s.trilhoLista}>
-        {MOMENTOS.flatMap(({ nome, rotas }) => [
-          <li key={nome} className={s.trilhoMomento} aria-hidden>
-            {nome}
-          </li>,
-          ...rotas.map(({ href, rotulo, nota, conta }) => {
-            /* "/crm" só acende em si mesmo; as outras acendem também nas
+          <ul className={s.trilhoLista}>
+            {MOMENTOS.flatMap(({ nome, rotas }) => [
+              <li key={nome} className={s.trilhoMomento} aria-hidden>
+                {nome}
+              </li>,
+              ...rotas.map(({ href, rotulo, nota, conta }) => {
+                /* "/crm" só acende em si mesmo; as outras acendem também nas
              telas que nascem delas, como /crm/lead/[id], filha do pipeline. */
-            const ativo = estaAtiva(href);
-            const n = conta ? contagens[conta] : null;
+                const ativo = estaAtiva(href);
+                const n = conta ? contagens[conta] : null;
 
-            return (
-              <li key={href}>
-                <Link href={href} className={`${s.trilhoLink} ${ativo ? s.trilhoAtivo : ""}`} aria-current={ativo ? "page" : undefined} aria-label={`${rotulo}${n !== null ? `, ${n} ${nota}` : ""}`} title={rotulo}>
-                  <IconePainel nome={ICONES[href]} className={s.trilhoIcone} />
-                  <div className={s.trilhoTexto}>
-                  <b>
-                    {rotulo}
+                return (
+                  <li key={href}>
+                    <Link
+                      href={href}
+                      className={`${s.trilhoLink} ${ativo ? s.trilhoAtivo : ""}`}
+                      aria-current={ativo ? "page" : undefined}
+                      aria-label={`${rotulo}${n !== null ? `, ${n} ${nota}` : ""}`}
+                      title={rotulo}
+                    >
+                      <IconePainel nome={ICONES[href]} className={s.trilhoIcone} />
+                      <div className={s.trilhoTexto}>
+                        <b>
+                          {rotulo}
 
-                    {n !== null ? (
-                      <i className={`${s.trilhoCont} ${conta && COBRAM.includes(conta) ? (n ? s.trilhoCobra : s.trilhoEmDia) : ""}`}>{n}</i>
-                    ) : null}
-                  </b>
+                          {n !== null ? (
+                            <i
+                              className={`${s.trilhoCont} ${conta && COBRAM.includes(conta) ? (n ? s.trilhoCobra : s.trilhoEmDia) : ""}`}
+                            >
+                              {n}
+                            </i>
+                          ) : null}
+                        </b>
 
-                  <span>{nota}</span>
-                  </div>
-                </Link>
-              </li>
-            );
-          }),
-        ])}
-      </ul>
+                        <span>{nota}</span>
+                      </div>
+                    </Link>
+                  </li>
+                );
+              }),
+            ])}
+          </ul>
 
-
-      <form action={sair} className={s.trilhoPe}>
-        <button type="submit" className={s.trilhoSair}>
-          <IconePainel nome="sair" /><span>Sair do estúdio</span>
+          <form action={sair} className={s.trilhoPe}>
+            <button type="submit" className={s.trilhoSair}>
+              <IconePainel nome="sair" />
+              <span>Sair do estúdio</span>
+            </button>
+          </form>
+        </div>
+      </nav>
+      <nav className={s.barraCelular} aria-label="Navegação do estúdio no celular">
+        {MOMENTOS.flatMap(({ rotas }) => rotas)
+          .filter(({ href }) => PRINCIPAIS.includes(href))
+          .map(({ href, rotulo }) => (
+            <Link key={href} href={href} aria-current={estaAtiva(href) ? "page" : undefined}>
+              <IconePainel nome={ICONES[href]} />
+              <span>{rotulo}</span>
+            </Link>
+          ))}
+        <button
+          type="button"
+          ref={botaoMais}
+          aria-expanded={menuAberto}
+          aria-controls="crm-menu-celular"
+          className={!PRINCIPAIS.some(estaAtiva) || menuAberto ? s.barraMaisAtivo : ""}
+          onClick={() => setMenuAberto((aberto) => !aberto)}
+        >
+          <IconePainel nome="menu" />
+          <span>Mais</span>
         </button>
-      </form>
-      </div>
-    </nav>
-    <nav className={s.barraCelular} aria-label="Navegação do estúdio no celular">
-      {MOMENTOS.flatMap(({ rotas }) => rotas).filter(({ href }) => PRINCIPAIS.includes(href)).map(({ href, rotulo }) => (
-        <Link key={href} href={href} aria-current={estaAtiva(href) ? "page" : undefined}>
-          <IconePainel nome={ICONES[href]} /><span>{rotulo}</span>
-        </Link>
-      ))}
-      <button type="button" ref={botaoMais} aria-expanded={menuAberto} aria-controls="crm-menu-celular" className={!PRINCIPAIS.some(estaAtiva) || menuAberto ? s.barraMaisAtivo : ""} onClick={() => setMenuAberto((aberto) => !aberto)}>
-        <IconePainel nome="menu" /><span>Mais</span>
-      </button>
-    </nav>
-    {menuAberto ? (
-      <div ref={menu} id="crm-menu-celular" role="navigation" className={s.menuCelular} aria-label="Todas as seções do estúdio">
-        <div className={s.menuCelularCab}><b>Seu estúdio</b><button type="button" onClick={() => { setMenuAberto(false); botaoMais.current?.focus(); }}>Fechar</button></div>
-        {MOMENTOS.map(({ nome, rotas }) => (
-          <div key={nome} className={s.menuCelularGrupo}>
-            <p>{nome}</p>
-            {rotas.map(({ href, rotulo, nota, conta }) => <Link key={href} href={href} aria-current={estaAtiva(href) ? "page" : undefined} onClick={() => setMenuAberto(false)}><IconePainel nome={ICONES[href]} /><span>{rotulo}<small>{nota}</small></span>{conta ? <b>{contagens[conta]}</b> : null}</Link>)}
+      </nav>
+      {menuAberto ? (
+        <div
+          ref={menu}
+          id="crm-menu-celular"
+          role="navigation"
+          className={s.menuCelular}
+          aria-label="Todas as seções do estúdio"
+        >
+          <div className={s.menuCelularCab}>
+            <b>Seu estúdio</b>
+            <button
+              type="button"
+              onClick={() => {
+                setMenuAberto(false);
+                botaoMais.current?.focus();
+              }}
+            >
+              Fechar
+            </button>
           </div>
-        ))}
-        <form action={sair}><button type="submit" className={s.menuCelularSair}><IconePainel nome="sair" />Sair do estúdio</button></form>
-      </div>
-    ) : null}
+          {MOMENTOS.map(({ nome, rotas }) => (
+            <div key={nome} className={s.menuCelularGrupo}>
+              <p>{nome}</p>
+              {rotas.map(({ href, rotulo, nota, conta }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  aria-current={estaAtiva(href) ? "page" : undefined}
+                  onClick={() => setMenuAberto(false)}
+                >
+                  <IconePainel nome={ICONES[href]} />
+                  <span>
+                    {rotulo}
+                    <small>{nota}</small>
+                  </span>
+                  {conta ? <b>{contagens[conta]}</b> : null}
+                </Link>
+              ))}
+            </div>
+          ))}
+          <form action={sair}>
+            <button type="submit" className={s.menuCelularSair}>
+              <IconePainel nome="sair" />
+              Sair do estúdio
+            </button>
+          </form>
+        </div>
+      ) : null}
     </>
   );
 }

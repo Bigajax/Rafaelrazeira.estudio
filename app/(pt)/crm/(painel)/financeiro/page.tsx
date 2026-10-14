@@ -8,17 +8,25 @@
 
 import type { Metadata } from "next";
 import { financeiro } from "@/lib/financeiro/dados";
+import { caixa } from "@/lib/crm/dados";
 import { hojeSP } from "@/lib/crm/regras";
 import { Financeiro } from "@/components/financeiro/Financeiro";
 import f from "@/app/(pt)/crm/financeiro.module.css";
 
 export const metadata: Metadata = { title: "Financeiro" };
 
-export default async function PaginaFinanceiro({ searchParams }: { searchParams: Promise<{ mes?: string }> }) {
+export default async function PaginaFinanceiro({
+  searchParams,
+}: {
+  searchParams: Promise<{ mes?: string; aba?: string }>;
+}) {
   const hoje = hojeSP().slice(0, 7);
-  const { mes: pedido } = await searchParams;
+  const { mes: pedido, aba } = await searchParams;
   const mes = /^\d{4}-(0[1-9]|1[0-2])$/.test(pedido ?? "") && pedido! <= hoje ? pedido! : hoje;
-  const dados = await financeiro(Number(mes.slice(0, 4)));
+  const [dados, contas] = await Promise.all([
+    financeiro(Number(mes.slice(0, 4))),
+    caixa(Number(mes.slice(0, 4))),
+  ]);
 
   if (dados.semTabela) {
     return (
@@ -27,8 +35,8 @@ export default async function PaginaFinanceiro({ searchParams }: { searchParams:
         <div className={f.aviso}>
           <b>Falta criar a tabela de custos.</b>
           <p>
-            Cole o arquivo <code>supabase/financeiro.sql</code> inteiro no SQL Editor do Supabase e clique em Run. Depois é só
-            recarregar esta página.
+            Cole o arquivo <code>supabase/financeiro.sql</code> inteiro no SQL Editor do Supabase e clique em
+            Run. Depois é só recarregar esta página.
           </p>
         </div>
       </div>
@@ -44,6 +52,12 @@ export default async function PaginaFinanceiro({ searchParams }: { searchParams:
       dolar={dados.dolar}
       vendas={dados.vendas}
       escolha={dados.escolha}
+      despesas={dados.despesas}
+      devolucoes={dados.devolucoes}
+      movimentosDisponiveis={dados.movimentosDisponiveis}
+      aba={aba}
+      previsao={contas.previsao}
+      vencido={contas.vencidoContratual}
     />
   );
 }

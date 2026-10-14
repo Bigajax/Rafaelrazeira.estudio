@@ -28,15 +28,39 @@ export const metadata: Metadata = { title: "Projeto" };
    leva uns 30 segundos. */
 export const maxDuration = 60;
 
-export default async function PaginaProjeto({ params }: { params: Promise<{ id: string }> }) {
+export default async function PaginaProjeto({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ contrato?: string }>;
+}) {
   const { id } = await params;
-  const { projeto: x, semTabela } = await lerProjeto(id);
+  const { contrato } = await searchParams;
+  const { projeto: x, semTabela, projetos: opcoes } = await lerProjeto(id, contrato);
+  if (!x && opcoes.length > 1 && !contrato)
+    return (
+      <div className={p.tela}>
+        <h1>Escolha a entrega</h1>
+        <p>Este cliente tem mais de um contrato. Cada entrega tem seu checklist e saldo.</p>
+        <ul>
+          {opcoes.map((o) => (
+            <li key={o.contrato_id}>
+              <Link href={"/crm/projetos/" + id + "?contrato=" + o.contrato_id}>{o.contrato_titulo}</Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
   if (!x) notFound();
 
+  const alvo = x.contrato_id ? x.lead_id + ":" + x.contrato_id : x.lead_id;
   const situacoes = situacaoDasEtapas(x);
   const atual = etapaAtual(x);
   const tudoPronto = Object.values(situacoes).every((e) => e.pronta);
-  const whats = x.whatsapp ? `https://wa.me/${x.whatsapp.startsWith("55") ? x.whatsapp : `55${x.whatsapp}`}` : null;
+  const whats = x.whatsapp
+    ? `https://wa.me/${x.whatsapp.startsWith("55") ? x.whatsapp : `55${x.whatsapp}`}`
+    : null;
 
   return (
     <div className={p.tela}>
@@ -51,6 +75,7 @@ export default async function PaginaProjeto({ params }: { params: Promise<{ id: 
             <i className={s.ponto}>.</i>
           </h1>
           <p className={p.placar}>
+            {x.contrato_titulo ? x.contrato_titulo + " · " : ""}
             {x.fechado_em ? `Fechou em ${dataCurta(x.fechado_em)}` : "Fechado"}
             {x.caixa.contrato
               ? x.caixa.saldo
@@ -72,7 +97,12 @@ export default async function PaginaProjeto({ params }: { params: Promise<{ id: 
             </a>
           ) : null}
           {x.site || x.dominio ? (
-            <a href={`${(x.dominio || x.site)!.replace(/\/$/, "")}/painel`} target="_blank" rel="noopener" className={s.btnMini}>
+            <a
+              href={`${(x.dominio || x.site)!.replace(/\/$/, "")}/painel`}
+              target="_blank"
+              rel="noopener"
+              className={s.btnMini}
+            >
               Painel
             </a>
           ) : null}
@@ -89,33 +119,33 @@ export default async function PaginaProjeto({ params }: { params: Promise<{ id: 
 
       {semTabela ? (
         <p className={p.aviso}>
-          A tabela dos projetos ainda não existe no banco. Rode o <code>supabase/projetos.sql</code> no SQL Editor do
-          Supabase: até lá o que você marcar aqui não fica gravado.
+          A tabela dos projetos ainda não existe no banco. Rode o <code>supabase/projetos.sql</code> no SQL
+          Editor do Supabase: até lá o que você marcar aqui não fica gravado.
         </p>
       ) : null}
 
       <Regua situacoes={situacoes} atual={atual} grande />
 
       <div className={p.corpo}>
-        <Checklist leadId={x.lead_id} inicial={x.checklist} auto={x.auto} atual={atual} />
+        <Checklist leadId={alvo} inicial={x.checklist} auto={x.auto} atual={atual} />
 
         <aside className={p.lado}>
           <section className={p.painel}>
             <h2 className={p.painelTitulo}>O checklist do cliente</h2>
-            <ChecklistCliente leadId={x.lead_id} site={x.site} material={x.material} whatsapp={x.whatsapp} />
+            <ChecklistCliente leadId={alvo} site={x.site} material={x.material} whatsapp={x.whatsapp} />
           </section>
 
           <section className={p.painel}>
             <h2 className={p.painelTitulo}>O projeto</h2>
             <Campos
-              leadId={x.lead_id}
+              leadId={alvo}
               site={x.site}
               dominio={x.dominio}
               repo={x.repo}
               material={x.material}
               notas={x.notas}
             />
-            <BotaoEntregue leadId={x.lead_id} entregue={!!x.entregue_em} tudoPronto={tudoPronto} />
+            <BotaoEntregue leadId={alvo} entregue={!!x.entregue_em} tudoPronto={tudoPronto} />
           </section>
 
           {/* A contagem da vitrine (06/10): a loja no Performance, com a

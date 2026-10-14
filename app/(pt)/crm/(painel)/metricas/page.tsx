@@ -1,3 +1,4 @@
+import { diaLocal } from "@/lib/sistema/calendario";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { MetaSemana } from "@/components/crm/MetaSemana";
@@ -22,6 +23,9 @@ const PERIODOS = [7, 30, 90] as const;
 type Metricas = Awaited<ReturnType<typeof metricas>>;
 
 const EXEMPLO: Metricas = {
+  historicoDisponivel: false,
+  baseAproximada: 34,
+  historicoDesde: null,
   dias: 30,
   inicio: "2026-07-18",
   hoje: "2026-08-16",
@@ -48,9 +52,33 @@ const EXEMPLO: Metricas = {
   ],
   baseFunil: 34,
   anuncios: [
-    { anuncio: "pip-h17u-base", campanha: "previa-gratis-2026-08", leads: 21, previa: 9, proposta: 4, ganho: 2, valor: 1998 },
-    { anuncio: "pip-h27u-loja-fisica", campanha: "previa-gratis-2026-08", leads: 15, previa: 3, proposta: 1, ganho: 0, valor: 0 },
-    { anuncio: "punch-h17u-base", campanha: "previa-gratis-2026-08", leads: 4, previa: 0, proposta: 0, ganho: 0, valor: 0 },
+    {
+      anuncio: "pip-h17u-base",
+      campanha: "previa-gratis-2026-08",
+      leads: 21,
+      previa: 9,
+      proposta: 4,
+      ganho: 2,
+      valor: 1998,
+    },
+    {
+      anuncio: "pip-h27u-loja-fisica",
+      campanha: "previa-gratis-2026-08",
+      leads: 15,
+      previa: 3,
+      proposta: 1,
+      ganho: 0,
+      valor: 0,
+    },
+    {
+      anuncio: "punch-h17u-base",
+      campanha: "previa-gratis-2026-08",
+      leads: 4,
+      previa: 0,
+      proposta: 0,
+      ganho: 0,
+      valor: 0,
+    },
   ],
   respostas: { responderam: 18, contatados: 29 },
   cicloMedio: 19,
@@ -91,7 +119,10 @@ export default async function PaginaMetricas({
   const pedido = Number(bruto);
   const dias = (PERIODOS as readonly number[]).includes(pedido) ? (pedido as 7 | 30 | 90) : 30;
 
-  const [m, feed] = await Promise.all([exemplo ? { ...EXEMPLO, dias } : metricas(dias), constancia(hojeSP())]);
+  const [m, feed] = await Promise.all([
+    exemplo ? { ...EXEMPLO, dias } : metricas(dias),
+    constancia(hojeSP()),
+  ]);
   const tetoFeed = Math.max(1, ...feed.semanas.map((x) => x.postadas));
 
   const taxaResposta = m.respostas.contatados
@@ -109,7 +140,7 @@ export default async function PaginaMetricas({
     <div className={s.wrap}>
       <div className={s.tituloLinha}>
         <h1>
-          Métricas<i className={s.ponto}>.</i>
+          Indicadores<i className={s.ponto}>.</i>
         </h1>
         <nav className={s.periodo} aria-label="Período">
           {PERIODOS.map((p) => (
@@ -130,6 +161,30 @@ export default async function PaginaMetricas({
         {exemplo ? " Números de exemplo, só para ver a tela." : ""}
       </p>
 
+      {m.baseAproximada > 0 || !m.historicoDisponivel ? (
+        <p className={s.aviso}>
+          Conversão aproximada para {m.baseAproximada} negócios da base anterior. O histórico registra
+          mudanças a partir da instalação; não reconstrói passagens antigas.
+        </p>
+      ) : null}
+      {m.historicoDesde ? (
+        <p className={s.subtitulo}>
+          Histórico de mudanças desde {dataCurta(diaLocal(m.historicoDesde))}. Perdas anteriores a essa data
+          não têm série completa.
+        </p>
+      ) : null}
+      <details className={s.bloco}>
+        <summary>Como os indicadores são calculados</summary>
+        <p>
+          Funil aberto: posição atual. Contratado: contratos de projeto pela assinatura; ganhos sem contrato
+          usam a data legada. Conversão: negócios criados no intervalo, acompanhados até hoje. Resposta:
+          entrada posterior ao primeiro contato de saída no período. Ciclo: primeiro cadastro até fechamento.
+        </p>
+        <p>
+          Todos os horários usam o calendário de São Paulo. Origem sem gasto associado não permite calcular
+          CAC ou ROAS.
+        </p>
+      </details>
       {/* ---------- a placa de apuração ----------
           Os quatro números do período numa placa de tinta só, sangrando de
           borda a borda: é a linha de status desta rota, o trabalho que a
@@ -150,13 +205,13 @@ export default async function PaginaMetricas({
             número só teria que mentir sobre um dos dois meses. A palavra
             "faturamento" prometia a segunda coisa e entregava a primeira. */}
         <div className={s.placarCel}>
-          <span>Vendido no período</span>
+          <span>Contratado ativo no período</span>
           <b className={`${s.placarNum} ${m.vendido ? s.placarGanho : ""}`}>
             {dinheiro(m.vendido) || "R$ 0"}
           </b>
           <small>
-            {m.ganhos} {m.ganhos === 1 ? "projeto ganho" : "projetos ganhos"} no período. O que
-            entrou de verdade fica no <Link href="/crm/caixa">Caixa</Link>.
+            {m.ganhos} {m.ganhos === 1 ? "contratação de projeto" : "contratações de projeto"} no período. O
+            que entrou de verdade fica no <Link href="/crm/caixa">Caixa</Link>.
           </small>
         </div>
 
@@ -187,9 +242,7 @@ export default async function PaginaMetricas({
 
       <section className={s.bloco}>
         <div className={s.blocoCab}>
-          <span className={s.blocoNota}>
-            Só toques de saída: o que você fez, não o que responderam.
-          </span>
+          <span className={s.blocoNota}>Só toques de saída: o que você fez, não o que responderam.</span>
           <MetaSemana valor={m.metaSemana} />
         </div>
 
@@ -298,7 +351,13 @@ export default async function PaginaMetricas({
                vazio desapareceria. */
             const largura = m.baseFunil ? (etapa.n / m.baseFunil) * 100 : 0;
             return (
-              <div key={etapa.etapa} className={s.funilEtapa}>
+              <Link
+                key={etapa.etapa}
+                className={s.funilEtapa}
+                style={{ color: "inherit", textDecoration: "none" }}
+                href={"/crm/metricas/negocios?de=" + m.inicio + "&ate=" + m.hoje + "&etapa=" + etapa.etapa}
+                aria-label={etapa.nome + ": " + etapa.n + " negócios. Abrir lista."}
+              >
                 <span className={s.funilNome}>{etapa.nome}</span>
                 <span className={s.funilTrilho}>
                   <i
@@ -315,7 +374,7 @@ export default async function PaginaMetricas({
                 <span className={`${s.funilPct} ${pct !== null && pct < 50 ? s.funilQueda : ""}`}>
                   {pct === null ? "" : `${pct}%`}
                 </span>
-              </div>
+              </Link>
             );
           })}
         </div>
@@ -394,8 +453,8 @@ export default async function PaginaMetricas({
       <h2 className={s.rotulo}>
         Constância no Instagram
         <span className={s.rotuloCont}>
-          {feed.proximas} {feed.proximas === 1 ? "agendado" : "agendados"} para os próximos 7 dias, {feed.prontas}{" "}
-          {feed.prontas === 1 ? "pronto" : "prontos"}
+          {feed.proximas} {feed.proximas === 1 ? "agendado" : "agendados"} para os próximos 7 dias,{" "}
+          {feed.prontas} {feed.prontas === 1 ? "pronto" : "prontos"}
         </span>
       </h2>
 
@@ -409,7 +468,9 @@ export default async function PaginaMetricas({
           <div className={s.barras}>
             {feed.semanas.map((w) => (
               <div key={w.inicio} className={s.barra}>
-                <span className={s.barraRot}>{w.atual ? "esta semana" : `semana de ${dataCurta(w.inicio)}`}</span>
+                <span className={s.barraRot}>
+                  {w.atual ? "esta semana" : `semana de ${dataCurta(w.inicio)}`}
+                </span>
                 <span className={s.barraTrilho}>
                   <i className={s.barraFill} style={{ width: `${(w.postadas / tetoFeed) * 100}%` }} />
                 </span>
@@ -419,7 +480,8 @@ export default async function PaginaMetricas({
           </div>
         )}
         <p className={s.blocoNota} style={{ marginTop: 12 }}>
-          Conta a data do post no <Link href="/crm/marketing">calendário do Marketing</Link>, só das peças marcadas como postadas.
+          Conta a data do post no <Link href="/crm/marketing">calendário do Marketing</Link>, só das peças
+          marcadas como postadas.
         </p>
       </section>
 

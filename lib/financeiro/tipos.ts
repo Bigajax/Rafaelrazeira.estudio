@@ -15,6 +15,8 @@
    ao Plano: é o número que o Rafael vê no banco.
    ============================================================ */
 
+import { mesLocal } from "@/lib/sistema/calendario";
+
 export type Categoria = "trafego" | "ferramenta" | "pessoal" | "imposto" | "outro";
 export type Moeda = "BRL" | "USD";
 export type Frequencia = "mensal" | "semanal" | "anual" | "unico";
@@ -55,12 +57,13 @@ export function chaveMes(ano: number, mes: number): ChaveMes {
 }
 
 /* quanto um custo pesa em um mês, em reais */
-export function custoNoMes(c: Custo, mes: ChaveMes, dolar: number | null): number {
+export function custoNoMes(c: Custo, mes: ChaveMes, dolar: number | null): number | null {
   const ini = c.inicio.slice(0, 7);
   const fim = c.fim ? c.fim.slice(0, 7) : null;
   if (mes < ini || (fim && mes > fim)) return 0;
   if (c.frequencia === "unico" && mes !== ini) return 0;
-  const cambio = c.moeda === "USD" ? dolar ?? 0 : 1;
+  if (c.moeda === "USD" && dolar === null) return null;
+  const cambio = c.moeda === "USD" ? dolar! : 1;
   const base = c.valor * cambio;
   if (c.frequencia === "semanal") return (base * 52) / 12;
   if (c.frequencia === "anual") return base / 12;
@@ -68,14 +71,26 @@ export function custoNoMes(c: Custo, mes: ChaveMes, dolar: number | null): numbe
 }
 
 /* o equivalente mensal de um custo (para a tabela), em reais */
-export function porMes(c: Pick<Custo, "valor" | "moeda" | "frequencia">, dolar: number | null): number {
-  const base = c.valor * (c.moeda === "USD" ? dolar ?? 0 : 1);
+export function porMes(
+  c: Pick<Custo, "valor" | "moeda" | "frequencia">,
+  dolar: number | null,
+): number | null {
+  if (c.moeda === "USD" && dolar === null) return null;
+  const base = c.valor * (c.moeda === "USD" ? dolar! : 1);
   if (c.frequencia === "semanal") return (base * 52) / 12;
   if (c.frequencia === "anual") return base / 12;
   return base;
 }
 
-export type Recebimento = { valor: number; valor_liquido: number | null; recebido_em: string };
+export type Recebimento = {
+  id?: string;
+  lead_id?: string | null;
+  parcela_id?: string | null;
+  valor: number;
+  valor_liquido: number | null;
+  recebido_em: string;
+  estornado_em?: string | null;
+};
 
 export type Resultado = {
   mes: ChaveMes;
@@ -84,28 +99,50 @@ export type Resultado = {
   sobrouVendas: number;
   porCategoria: Record<Categoria, number>;
   custos: number;
-  resultado: number;
+  resultado: number | null;
+  custosSemCotacao: number;
+  taxasPendentes: number;
   /* resultado ÷ entrou; null se não entrou nada */
   margem: number | null;
   /* os custos que entraram na conta, para o extrato listar */
   linhas: { custo: Custo; valor: number }[];
 };
 
-export function resultadoDoMes(mes: ChaveMes, recebimentos: Recebimento[], custos: Custo[], dolar: number | null): Resultado {
-  const doMes = recebimentos.filter((r) => r.recebido_em.slice(0, 7) === mes);
+export function resultadoDoMes(
+  mes: ChaveMes,
+  recebimentos: Recebimento[],
+  custos: Custo[],
+  dolar: number | null,
+): Resultado {
+  const doMes = recebimentos.filter((r) => !r.estornado_em && mesLocal(r.recebido_em) === mes);
+  const taxasPendentes = doMes.filter((r) => r.valor_liquido === null).length;
+  let custosSemCotacao = 0;
   const entrou = doMes.reduce((a, r) => a + Number(r.valor), 0);
-  const taxas = doMes.reduce((a, r) => a + (r.valor_liquido === null ? 0 : Math.max(0, Number(r.valor) - Number(r.valor_liquido))), 0);
-  const porCategoria: Record<Categoria, number> = { trafego: 0, ferramenta: 0, pessoal: 0, imposto: 0, outro: 0 };
+  const taxas = doMes.reduce(
+    (a, r) => a + (r.valor_liquido === null ? 0 : Math.max(0, Number(r.valor) - Number(r.valor_liquido))),
+    0,
+  );
+  const porCategoria: Record<Categoria, number> = {
+    trafego: 0,
+    ferramenta: 0,
+    pessoal: 0,
+    imposto: 0,
+    outro: 0,
+  };
   const linhas: Resultado["linhas"] = [];
   for (const c of custos) {
     const v = custoNoMes(c, mes, dolar);
+    if (v === null) {
+      custosSemCotacao++;
+      continue;
+    }
     if (!v) continue;
     porCategoria[c.categoria] += v;
     linhas.push({ custo: c, valor: v });
   }
   const custosTotal = Object.values(porCategoria).reduce((a, b) => a + b, 0);
   const sobrouVendas = entrou - taxas;
-  const resultado = sobrouVendas - custosTotal;
+  const resultado = custosSemCotacao || taxasPendentes ? null : sobrouVendas - custosTotal;
   return {
     mes,
     entrou,
@@ -114,7 +151,9 @@ export function resultadoDoMes(mes: ChaveMes, recebimentos: Recebimento[], custo
     porCategoria,
     custos: custosTotal,
     resultado,
-    margem: entrou > 0 ? resultado / entrou : null,
+    custosSemCotacao,
+    taxasPendentes,
+    margem: entrou > 0 && resultado !== null ? resultado / entrou : null,
     linhas: linhas.sort((a, b) => b.valor - a.valor),
   };
 }
@@ -129,8 +168,18 @@ export function reais(v: number, centavos = false): string {
 }
 
 export const MESES_LONGOS = [
-  "janeiro", "fevereiro", "março", "abril", "maio", "junho",
-  "julho", "agosto", "setembro", "outubro", "novembro", "dezembro",
+  "janeiro",
+  "fevereiro",
+  "março",
+  "abril",
+  "maio",
+  "junho",
+  "julho",
+  "agosto",
+  "setembro",
+  "outubro",
+  "novembro",
+  "dezembro",
 ];
 
 export function nomeDoMes(mes: ChaveMes): string {

@@ -1,4 +1,5 @@
 "use client";
+import { ClienteConectado } from "@/components/sistema/ClienteConectado";
 
 /* ============================================================
    A FICHA DO LEAD
@@ -103,15 +104,7 @@ export type DadosFicha = {
   hoje: string;
 };
 
-export function Ficha({
-  lead,
-  interacoes,
-  indicados,
-  quemIndicou,
-  templates,
-  contratos,
-  hoje,
-}: DadosFicha) {
+export function Ficha({ lead, interacoes, indicados, quemIndicou, templates, contratos, hoje }: DadosFicha) {
   /* false fechado; o canal diz por onde a mensagem sai. */
   const [mensagem, setMensagem] = useState<false | Canal>(false);
   const [abrirDados, setAbrirDados] = useState(false);
@@ -209,6 +202,7 @@ export function Ficha({
         </p>
       ) : null}
 
+      <ClienteConectado leadId={lead.id} />
       {/* ============ 2. O QUE FAZER ============
           Estágio e próximo passo dividem um bloco só, porque são a mesma
           pergunta em dois tempos: em que pé está, e qual é a próxima
@@ -336,8 +330,7 @@ export function Ficha({
 
         {interacoes.length === 0 ? (
           <p className={s.blocoNota}>
-            Nenhum toque ainda. O primeiro registro aparece aqui assim que você falar com esta
-            pessoa.
+            Nenhum toque ainda. O primeiro registro aparece aqui assim que você falar com esta pessoa.
           </p>
         ) : (
           <ul className={s.timeline}>
@@ -472,7 +465,12 @@ export function Ficha({
       <ApagarLead lead={lead} />
 
       {mensagem ? (
-        <ModalMensagem lead={lead} templates={templates} saida={mensagem} aoFechar={() => setMensagem(false)} />
+        <ModalMensagem
+          lead={lead}
+          templates={templates}
+          saida={mensagem}
+          aoFechar={() => setMensagem(false)}
+        />
       ) : null}
 
       {pendente ? (
@@ -547,9 +545,9 @@ function ApagarLead({ lead }: { lead: LeadPainel }) {
   return (
     <div className={`${s.apagarFicha} ${s.apagarAberto}`}>
       <p className={s.gavetaTexto}>
-        <b>{lead.nome}</b> some do banco com a linha do tempo inteira, e não dá para desfazer. Se a
-        conversa aconteceu e não foi para frente, o caminho é mudar o estágio para perdido, que
-        guarda o motivo e continua contando nas métricas.
+        <b>{lead.nome}</b> some do banco com a linha do tempo inteira, e não dá para desfazer. Se a conversa
+        aconteceu e não foi para frente, o caminho é mudar o estágio para perdido, que guarda o motivo e
+        continua contando nas métricas.
       </p>
 
       {erro ? (
@@ -588,9 +586,7 @@ function FormToque({ lead, hoje }: { lead: LeadPainel; hoje: string }) {
   const [direcao, setDirecao] = useState<Direcao>("saida");
   const [resposta, setResposta] = useState<Resposta>("interesse");
   const [motivo, setMotivo] = useState<MotivoPerda>("sem_interesse");
-  const [gelo, setGelo] = useState(() =>
-    somarDias(hojeSP(), PADRAO_DO_DESTINO.geladeira?.dias ?? 60),
-  );
+  const [gelo, setGelo] = useState(() => somarDias(hojeSP(), PADRAO_DO_DESTINO.geladeira?.dias ?? 60));
   /* O canal de partida é o canal que o lead TEM: sem número, a conversa
      real está acontecendo no direct, e nascer em "WhatsApp" é um erro de
      registro esperando um esquecimento. */
@@ -610,8 +606,7 @@ function FormToque({ lead, hoje }: { lead: LeadPainel; hoje: string }) {
   const ehPerda = direcao === "entrada" && resposta === "nao";
   /* Perdido não tem agenda e a geladeira tem a sua própria: a pergunta da
      regra 6 só sobra para o caminho vivo. */
-  const precisaDePasso =
-    !ehGeladeira && !ehPerda && (!lead.proxima_acao_em || lead.proxima_acao_em < hoje);
+  const precisaDePasso = !ehGeladeira && !ehPerda && (!lead.proxima_acao_em || lead.proxima_acao_em < hoje);
 
   const enviar = (e: React.FormEvent) => {
     e.preventDefault();
@@ -725,12 +720,7 @@ function FormToque({ lead, hoje }: { lead: LeadPainel; hoje: string }) {
             <p className={s.perguntaTitulo}>Quando eu volto a chamar?</p>
             <label className={s.campo}>
               <span className={s.campoRot}>Data da reativação</span>
-              <input
-                type="date"
-                value={gelo}
-                min={hoje}
-                onChange={(e) => setGelo(e.target.value)}
-              />
+              <input type="date" value={gelo} min={hoje} onChange={(e) => setGelo(e.target.value)} />
             </label>
           </div>
         ) : null}
@@ -740,11 +730,7 @@ function FormToque({ lead, hoje }: { lead: LeadPainel; hoje: string }) {
             <p className={s.perguntaTitulo}>Por quê?</p>
             <label className={s.campo}>
               <span className={s.campoRot}>Motivo da perda</span>
-              <select
-                value={motivo}
-                onChange={(e) => setMotivo(e.target.value as MotivoPerda)}
-                required
-              >
+              <select value={motivo} onChange={(e) => setMotivo(e.target.value as MotivoPerda)} required>
                 {MOTIVOS_PERDA.map((m) => (
                   <option key={m} value={m}>
                     {NOME_MOTIVO[m]}

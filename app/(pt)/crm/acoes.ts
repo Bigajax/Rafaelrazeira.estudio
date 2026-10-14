@@ -1,4 +1,7 @@
 "use server";
+import { valorRetido } from "@/lib/sistema/indicadores";
+import { validarContrato } from "@/lib/sistema/contratos";
+import { dataValida } from "@/lib/sistema/calendario";
 
 /* ============================================================
    AS AÇÕES — tudo que escreve passa por aqui
@@ -39,10 +42,7 @@ import {
 import type { CampoExigido } from "@/lib/crm/regras";
 import type { Canal, Direcao, Estagio, Lead, MotivoPerda, Resposta } from "@/lib/crm/tipos";
 
-export type Resultado =
-  | { ok: true }
-  | { ok: false; falta: CampoExigido[] }
-  | { ok: false; erro: string };
+export type Resultado = { ok: true } | { ok: false; falta: CampoExigido[] } | { ok: false; erro: string };
 
 /* Toda tela do CRM é derivada das mesmas duas tabelas, e qualquer escrita
    muda pelo menos duas telas ao mesmo tempo (mover um card muda o kanban E o
@@ -148,7 +148,10 @@ export async function moverLead(
      que está viva de novo. Mesma coisa com o valor fechado de um ganho
      revertido, que continuaria somando no faturamento do período. */
   if (estagio !== "perdido") mudanca.motivo_perda = null;
-  if (estagio !== "ganho") { mudanca.valor_fechado = null; mudanca.fechado_em = null; }
+  if (estagio !== "ganho") {
+    mudanca.valor_fechado = null;
+    mudanca.fechado_em = null;
+  }
 
   /* Ganho e perdido saem da agenda. Deixar a data marcada faria o negócio
      fechado reaparecer no painel Hoje como pendência. */
@@ -224,11 +227,7 @@ export async function registrarToque(
   const supabase = await clienteServidor();
 
   /* O lead é lido antes: o trilho precisa saber de onde ele parte. */
-  const { data: lead } = await supabase
-    .from("crm_leads")
-    .select("*")
-    .eq("id", leadId)
-    .single<Lead>();
+  const { data: lead } = await supabase.from("crm_leads").select("*").eq("id", leadId).single<Lead>();
 
   const { error } = await supabase.from("crm_interacoes").insert({
     owner_id: usuario.id,
@@ -246,10 +245,7 @@ export async function registrarToque(
     const agenda: { proximo_passo?: string | null; proxima_acao_em?: string | null } = {};
     if (dados.proximo_passo !== undefined) agenda.proximo_passo = dados.proximo_passo?.trim() || null;
     if (dados.proxima_acao_em !== undefined) agenda.proxima_acao_em = dados.proxima_acao_em || null;
-    const { error: erroPasso } = await supabase
-      .from("crm_leads")
-      .update(agenda)
-      .eq("id", leadId);
+    const { error: erroPasso } = await supabase.from("crm_leads").update(agenda).eq("id", leadId);
     if (erroPasso) return { ok: false, erro: traduzirErro(erroPasso) };
   }
 
@@ -260,7 +256,8 @@ export async function registrarToque(
       /* Escolhido = o Rafael marcou o teor da resposta ou a etapa, e este
          destino é o trabalho que ele pediu. Automático = o trilho
          mecânico, que é cortesia e cala a boca quando não dá. */
-      const escolhido = dados.estagio !== undefined || dados.resposta === "nao" || dados.resposta === "depois";
+      const escolhido =
+        dados.estagio !== undefined || dados.resposta === "nao" || dados.resposta === "depois";
 
       const passagem: Passagem = {};
       if (dados.ticket_estimado !== undefined) passagem.ticket_estimado = dados.ticket_estimado;
@@ -335,11 +332,7 @@ export async function adiar(leadId: string, dias: number): Promise<Resultado> {
    vez de aceitar o que vier. Passo sem data é um lembrete que nunca toca;
    data sem passo é um alarme que não diz o que fazer.
    ============================================================ */
-export async function definirPasso(
-  leadId: string,
-  passo: string,
-  data: string,
-): Promise<Resultado> {
+export async function definirPasso(leadId: string, passo: string, data: string): Promise<Resultado> {
   await exigirSessao();
 
   const texto = String(passo || "").trim();
@@ -366,9 +359,20 @@ export async function definirPasso(
    SALVAR CAMPOS DO LEAD — a edição em linha do detalhe
    ============================================================ */
 const CAMPOS_EDITAVEIS = [
-  "nome", "empresa", "instagram", "whatsapp", "email", "nicho", "cidade",
-  "tipo_projeto", "ticket_estimado", "origem", "indicado_por",
-  "proximo_passo", "proxima_acao_em", "notas",
+  "nome",
+  "empresa",
+  "instagram",
+  "whatsapp",
+  "email",
+  "nicho",
+  "cidade",
+  "tipo_projeto",
+  "ticket_estimado",
+  "origem",
+  "indicado_por",
+  "proximo_passo",
+  "proxima_acao_em",
+  "notas",
 ] as const;
 
 export type CampoEditavel = (typeof CAMPOS_EDITAVEIS)[number];
@@ -430,11 +434,7 @@ export async function criarLead(
     const filtro = [whatsapp ? `whatsapp.eq.${whatsapp}` : "", email ? `email.eq.${email}` : ""]
       .filter(Boolean)
       .join(",");
-    const { data: existente } = await supabase
-      .from("crm_leads")
-      .select("id, nome")
-      .or(filtro)
-      .limit(1);
+    const { data: existente } = await supabase.from("crm_leads").select("id, nome").or(filtro).limit(1);
     if (existente?.length) {
       return { ok: false, erro: `Este contato já está no CRM como "${existente[0].nome}".` };
     }
@@ -473,8 +473,19 @@ export async function apagarLead(id: string): Promise<Resultado> {
     .from("crm_recebimentos")
     .select("valor")
     .eq("lead_id", id)
-    .is("estornado_em", null)
     .returns<{ valor: number }[]>();
+
+  const { count: contratos, error: erroContratos } = await supabase
+    .from("crm_contratos")
+    .select("id", { count: "exact", head: true })
+    .eq("lead_id", id);
+  if (erroContratos)
+    return { ok: false, erro: "Não consegui conferir o histórico. Tente novamente antes de excluir." };
+  if (contratos)
+    return {
+      ok: false,
+      erro: "Este cadastro tem contratos e histórico financeiro. Mantenha a ficha e pause ou encerre o negócio.",
+    };
 
   if (recebimentos?.length) {
     const total = centavos(recebimentos.reduce((s, r) => s + Number(r.valor), 0));
@@ -576,6 +587,7 @@ export async function fecharContrato(
   leadId: string,
   dados: {
     titulo: string;
+    request_id?: string;
     valor_total: number;
     proposta_slug?: string | null;
     assinado_em?: string | null;
@@ -603,19 +615,37 @@ export async function fecharContrato(
   const supabase = await clienteServidor();
 
   const titulo = String(dados.titulo || "").trim();
+  const invalidacao = validarContrato(dados);
+  if (invalidacao) return { ok: false, erro: invalidacao };
   if (!titulo) return { ok: false, erro: "O contrato precisa de um título." };
 
   const recorrencia = dados.tipo === "recorrencia";
   const total = Number(dados.valor_total);
   const ciclo = Number(dados.valor_ciclo);
   if (recorrencia) {
-    if (!Number.isFinite(ciclo) || ciclo <= 0) return { ok: false, erro: "A mensalidade precisa de um valor por mês maior que zero." };
+    if (!Number.isFinite(ciclo) || ciclo <= 0)
+      return { ok: false, erro: "A mensalidade precisa de um valor por mês maior que zero." };
   } else if (!Number.isFinite(total) || total <= 0) {
     return { ok: false, erro: "O valor do contrato precisa ser maior que zero." };
   }
   if (!dados.parcelas?.length) {
     return { ok: false, erro: "Um contrato sem parcela nenhuma não cobra ninguém." };
   }
+
+  const atomico = await supabase.rpc("crm_fechar_contrato", {
+    p_lead: leadId,
+    p_dados: dados,
+    p_request: dados.request_id || crypto.randomUUID(),
+  });
+  if (!atomico.error) {
+    atualizarTelas();
+    return { ok: true, id: String(atomico.data) };
+  }
+  if (atomico.error.code !== "PGRST202")
+    return {
+      ok: false,
+      erro: "Não consegui concluir o contrato. Confira os valores e os vínculos e tente novamente.",
+    };
 
   const { data: contrato, error } = await supabase
     .from("crm_contratos")
@@ -628,7 +658,12 @@ export async function fecharContrato(
       valor_total: recorrencia ? null : centavos(total),
       valor_ciclo: recorrencia ? centavos(ciclo) : null,
       ciclo: recorrencia ? "mensal" : null,
-      dia_vencimento: recorrencia ? Math.min(28, Math.max(1, Number(dados.dia_vencimento) || Number(dados.parcelas[0].vence_em.slice(8, 10)) || 1)) : null,
+      dia_vencimento: recorrencia
+        ? Math.min(
+            28,
+            Math.max(1, Number(dados.dia_vencimento) || Number(dados.parcelas[0].vence_em.slice(8, 10)) || 1),
+          )
+        : null,
       assinado_em: dados.assinado_em || hojeSP(),
       notas: dados.notas?.trim() || null,
     })
@@ -695,7 +730,11 @@ async function espelharVendaNoLead(supabase: Supa, leadId: string) {
     .returns<{ valor_total: number | null; assinado_em: string | null }[]>();
   const ativos = data ?? [];
   const total = somar(ativos.map((c) => Number(c.valor_total ?? 0)));
-  const primeiro = ativos.map((c) => c.assinado_em).filter((d): d is string => Boolean(d)).sort()[0] ?? null;
+  const primeiro =
+    ativos
+      .map((c) => c.assinado_em)
+      .filter((d): d is string => Boolean(d))
+      .sort()[0] ?? null;
   await supabase
     .from("crm_leads")
     .update(
@@ -722,7 +761,10 @@ export async function contratosAtivosDoLead(
     .eq("tipo", "projeto")
     .order("assinado_em")
     .returns<{ id: string; titulo: string; valor_total: number | null }[]>();
-  return (data ?? []).map((c) => ({ ...c, valor_total: c.valor_total == null ? null : Number(c.valor_total) }));
+  return (data ?? []).map((c) => ({
+    ...c,
+    valor_total: c.valor_total == null ? null : Number(c.valor_total),
+  }));
 }
 
 /* ---------- VOLTAR PARA GANHO SEM CONTRATO NOVO (06/10) ----------
@@ -733,7 +775,8 @@ export async function voltarParaGanho(leadId: string): Promise<Resultado> {
   await exigirSessao();
   const supabase = await clienteServidor();
   const ativos = await contratosAtivosDoLead(leadId);
-  if (!ativos.length) return { ok: false, erro: "Este lead não tem contrato de pé. Monte o plano para fechar." };
+  if (!ativos.length)
+    return { ok: false, erro: "Este lead não tem contrato de pé. Monte o plano para fechar." };
   const r = await moverLead(leadId, "ganho", null, {
     valor_fechado: somar(ativos.map((c) => c.valor_total ?? 0)),
     fechado_em: hojeSP(),
@@ -764,19 +807,29 @@ export async function cancelarContrato(id: string): Promise<Resultado> {
 
   const { data: parcelas } = await supabase
     .from("crm_parcelas")
-    .select("id, valor, cancelada_em, crm_recebimentos(valor, estornado_em)")
+    .select("id, valor, cancelada_em, crm_recebimentos(*)")
     .eq("contrato_id", id)
-    .returns<{ id: string; valor: number; cancelada_em: string | null; crm_recebimentos: { valor: number; estornado_em: string | null }[] | null }[]>();
+    .returns<
+      {
+        id: string;
+        valor: number;
+        cancelada_em: string | null;
+        crm_recebimentos: { valor: number; estornado_em: string | null; valor_estornado?: number }[] | null;
+      }[]
+    >();
   const devendo = (parcelas ?? []).filter((p) => {
     if (p.cancelada_em) return false;
-    const pago = somar((p.crm_recebimentos ?? []).filter((r) => !r.estornado_em).map((r) => Number(r.valor)));
+    const pago = somar((p.crm_recebimentos ?? []).map((r) => valorRetido(r)));
     return pago < Number(p.valor) - 0.005;
   });
   if (devendo.length) {
     const { error } = await supabase
       .from("crm_parcelas")
       .update({ cancelada_em: hojeSP() })
-      .in("id", devendo.map((p) => p.id));
+      .in(
+        "id",
+        devendo.map((p) => p.id),
+      );
     if (error) return { ok: false, erro: traduzirErro(error) };
   }
 
@@ -808,13 +861,43 @@ export async function fecharVenda(
   await exigirSessao();
   const supabase = await clienteServidor();
 
-  const { data: lead } = await supabase.from("crm_leads").select("estagio").eq("id", leadId).maybeSingle<{ estagio: Estagio }>();
+  const invalidacao = validarContrato(contrato);
+  if (invalidacao) return { ok: false, erro: invalidacao };
+  if (
+    !Array.isArray(pagas) ||
+    pagas.some(
+      (p) =>
+        !dataValida(p.recebido_em) ||
+        p.recebido_em > hojeSP() ||
+        !contrato.parcelas.some((x) => x.numero === p.numero),
+    ) ||
+    new Set(pagas.map((p) => p.numero)).size !== pagas.length
+  )
+    return { ok: false, erro: "Confira as parcelas recebidas e as datas das baixas." };
+  const atomico = await supabase.rpc("crm_fechar_venda", {
+    p_lead: leadId,
+    p_dados: contrato,
+    p_pagas: pagas,
+    p_request: contrato.request_id || crypto.randomUUID(),
+  });
+  if (!atomico.error) {
+    atualizarTelas();
+    return { ok: true };
+  }
+  if (atomico.error.code !== "PGRST202")
+    return {
+      ok: false,
+      erro: "Não consegui concluir a venda. Nenhuma baixa parcial foi aplicada. Confira os dados e tente novamente.",
+    };
+
+  const { data: lead } = await supabase
+    .from("crm_leads")
+    .select("estagio")
+    .eq("id", leadId)
+    .maybeSingle<{ estagio: Estagio }>();
   if (!lead) return { ok: false, erro: "Lead não encontrado." };
 
-  const valor =
-    contrato.tipo === "recorrencia"
-      ? Number(contrato.valor_ciclo)
-      : Number(contrato.valor_total);
+  const valor = contrato.tipo === "recorrencia" ? Number(contrato.valor_ciclo) : Number(contrato.valor_total);
   const fechado_em = contrato.assinado_em || hojeSP();
 
   /* Já tem contrato de projeto de pé: não nasce outro (06/10). O modal já
@@ -848,7 +931,11 @@ export async function fecharVenda(
         recebido_em: paga.recebido_em,
         metodo: paga.metodo,
       });
-      if (!r.ok) return { ok: false, erro: `O contrato entrou, mas a baixa da parcela ${paga.numero} não: ${"erro" in r ? r.erro : ""}` };
+      if (!r.ok)
+        return {
+          ok: false,
+          erro: `O contrato entrou, mas a baixa da parcela ${paga.numero} não: ${"erro" in r ? r.erro : ""}`,
+        };
     }
   }
 
@@ -872,7 +959,8 @@ export async function gerarProximasMensalidades(contratoId: string, meses = 3): 
     .eq("id", contratoId)
     .maybeSingle<{ id: string; lead_id: string; tipo: string; valor_ciclo: number | null; status: string }>();
   if (!c) return { ok: false, erro: "Contrato não encontrado." };
-  if (c.tipo !== "recorrencia" || !c.valor_ciclo) return { ok: false, erro: "Este contrato não é uma mensalidade." };
+  if (c.tipo !== "recorrencia" || !c.valor_ciclo)
+    return { ok: false, erro: "Este contrato não é uma mensalidade." };
   if (c.status !== "ativo") return { ok: false, erro: "Este contrato está cancelado." };
 
   const { data: ultimas } = await supabase
@@ -933,6 +1021,15 @@ export async function lancarRecebimento(dados: {
   if (!Number.isFinite(valor) || valor <= 0) {
     return { ok: false, erro: "O valor recebido precisa ser maior que zero." };
   }
+  if (dados.recebido_em && (!dataValida(dados.recebido_em) || dados.recebido_em > hojeSP()))
+    return { ok: false, erro: "Confira a data do recebimento." };
+  if (
+    dados.valor_liquido != null &&
+    (!Number.isFinite(Number(dados.valor_liquido)) ||
+      Number(dados.valor_liquido) < 0 ||
+      Number(dados.valor_liquido) > valor)
+  )
+    return { ok: false, erro: "O valor líquido deve estar entre zero e o valor bruto." };
 
   /* O lead vem da parcela quando há parcela: pedir os dois à tela seria
      deixar o dinheiro de um cliente cair na conta de outro por um campo
@@ -989,7 +1086,8 @@ export async function estornarRecebimento(id: string): Promise<Resultado> {
   const { error } = await supabase
     .from("crm_recebimentos")
     .update({ estornado_em: hojeSP() })
-    .eq("id", id);
+    .eq("id", id)
+    .is("estornado_em", null);
   if (error) return { ok: false, erro: traduzirErro(error) };
   atualizarTelas();
   return { ok: true };
@@ -1055,10 +1153,7 @@ export async function cancelarParcela(parcelaId: string): Promise<Resultado> {
 export async function reativarParcela(parcelaId: string): Promise<Resultado> {
   await exigirSessao();
   const supabase = await clienteServidor();
-  const { error } = await supabase
-    .from("crm_parcelas")
-    .update({ cancelada_em: null })
-    .eq("id", parcelaId);
+  const { error } = await supabase.from("crm_parcelas").update({ cancelada_em: null }).eq("id", parcelaId);
   if (error) return { ok: false, erro: traduzirErro(error) };
   atualizarTelas();
   return { ok: true };
@@ -1090,7 +1185,11 @@ export async function apagarContrato(id: string): Promise<Resultado> {
     }
   }
 
-  const { data: dono } = await supabase.from("crm_contratos").select("lead_id").eq("id", id).maybeSingle<{ lead_id: string }>();
+  const { data: dono } = await supabase
+    .from("crm_contratos")
+    .select("lead_id")
+    .eq("id", id)
+    .maybeSingle<{ lead_id: string }>();
   const { error } = await supabase.from("crm_contratos").delete().eq("id", id);
   if (error) return { ok: false, erro: traduzirErro(error) };
   /* o espelho do lead não pode apontar para um contrato que sumiu */

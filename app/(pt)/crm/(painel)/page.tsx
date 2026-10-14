@@ -3,6 +3,7 @@ import { Hoje } from "@/components/crm/Hoje";
 import { listarTemplates, painelHoje } from "@/lib/crm/dados";
 import { hojeSP } from "@/lib/crm/regras";
 import { postsDoDia } from "@/lib/marketing/dados";
+import { Inicio } from "@/components/sistema/Inicio";
 
 export const metadata: Metadata = { title: "Hoje" };
 
@@ -10,7 +11,13 @@ export const metadata: Metadata = { title: "Hoje" };
    junto porque o botão de WhatsApp de cada linha precisa deles na hora do
    clique: buscá-los ao abrir o modal daria meio segundo de tela vazia no
    gesto mais repetido do dia. */
-export default async function PaginaHoje() {
-  const [painel, templates, posts] = await Promise.all([painelHoje(), listarTemplates(), postsDoDia(hojeSP())]);
+export default async function PaginaHoje({ searchParams }: { searchParams: Promise<{ modo?: string }> }) {
+  const { modo } = await searchParams;
+  if (modo !== "fila") return <Inicio />;
+  const [painel, templates, posts] = await Promise.all([
+    painelHoje(),
+    listarTemplates(),
+    postsDoDia(hojeSP()),
+  ]);
   return <Hoje painel={painel} templates={templates} posts={posts} />;
 }

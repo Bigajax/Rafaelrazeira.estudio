@@ -1,3 +1,4 @@
+import { conferir } from "@/lib/sistema/consultas";
 /* A leitura do marketing no servidor. Mesma chave do CRM: anônima + sessão,
    e o RLS decide o que volta. */
 import { clienteServidor } from "@/lib/crm/supabase";
@@ -8,26 +9,32 @@ import type { Peca, Pedido } from "./tipos";
 export async function calendario(inicio: string, fim: string) {
   const supabase = await clienteServidor();
   const [{ data: noMes }, { data: semData }, { data: sinal }, { data: fila }] = await Promise.all([
-    supabase
-      .from("mkt_pecas")
-      .select("*")
-      .gte("posta_em", inicio)
-      .lte("posta_em", fim)
-      .order("posta_em")
-      .returns<Peca[]>(),
-    supabase
-      .from("mkt_pecas")
-      .select("*")
-      .is("posta_em", null)
-      .order("criado_em", { ascending: false })
-      .returns<Peca[]>(),
-    supabase.from("mkt_sinal").select("visto_em").maybeSingle<{ visto_em: string }>(),
-    supabase
-      .from("mkt_pedidos")
-      .select("*")
-      .in("status", ["na_fila", "rodando"])
-      .order("criado_em")
-      .returns<Pedido[]>(),
+    conferir(
+      supabase
+        .from("mkt_pecas")
+        .select("*")
+        .gte("posta_em", inicio)
+        .lte("posta_em", fim)
+        .order("posta_em")
+        .returns<Peca[]>(),
+    ),
+    conferir(
+      supabase
+        .from("mkt_pecas")
+        .select("*")
+        .is("posta_em", null)
+        .order("criado_em", { ascending: false })
+        .returns<Peca[]>(),
+    ),
+    conferir(supabase.from("mkt_sinal").select("visto_em").maybeSingle<{ visto_em: string }>()),
+    conferir(
+      supabase
+        .from("mkt_pedidos")
+        .select("*")
+        .in("status", ["na_fila", "rodando"])
+        .order("criado_em")
+        .returns<Pedido[]>(),
+    ),
   ]);
   return {
     noMes: noMes ?? [],
@@ -43,10 +50,32 @@ export async function calendario(inicio: string, fim: string) {
 export async function criacao() {
   const supabase = await clienteServidor();
   const [{ data: semData }, { data: pautas }, { data: fila }, { data: sinal }] = await Promise.all([
-    supabase.from("mkt_pecas").select("*").is("posta_em", null).order("criado_em", { ascending: false }).returns<Peca[]>(),
-    supabase.from("mkt_pedidos").select("*").eq("agente", "pautas").order("criado_em", { ascending: false }).limit(1).returns<Pedido[]>(),
-    supabase.from("mkt_pedidos").select("*").in("status", ["na_fila", "rodando"]).order("criado_em").returns<Pedido[]>(),
-    supabase.from("mkt_sinal").select("visto_em").maybeSingle<{ visto_em: string }>(),
+    conferir(
+      supabase
+        .from("mkt_pecas")
+        .select("*")
+        .is("posta_em", null)
+        .order("criado_em", { ascending: false })
+        .returns<Peca[]>(),
+    ),
+    conferir(
+      supabase
+        .from("mkt_pedidos")
+        .select("*")
+        .eq("agente", "pautas")
+        .order("criado_em", { ascending: false })
+        .limit(1)
+        .returns<Pedido[]>(),
+    ),
+    conferir(
+      supabase
+        .from("mkt_pedidos")
+        .select("*")
+        .in("status", ["na_fila", "rodando"])
+        .order("criado_em")
+        .returns<Pedido[]>(),
+    ),
+    conferir(supabase.from("mkt_sinal").select("visto_em").maybeSingle<{ visto_em: string }>()),
   ]);
   return {
     semData: semData ?? [],
@@ -60,13 +89,15 @@ export async function criacao() {
    foram postadas. Postada sai da vista, igual lead riscado. */
 export async function postsDoDia(hoje: string) {
   const supabase = await clienteServidor();
-  const { data } = await supabase
-    .from("mkt_pecas")
-    .select("*")
-    .eq("posta_em", hoje)
-    .neq("status", "postada")
-    .order("criado_em")
-    .returns<Peca[]>();
+  const { data } = await conferir(
+    supabase
+      .from("mkt_pecas")
+      .select("*")
+      .eq("posta_em", hoje)
+      .neq("status", "postada")
+      .order("criado_em")
+      .returns<Peca[]>(),
+  );
   return data ?? [];
 }
 
@@ -85,12 +116,14 @@ export async function constancia(hoje: string) {
   fimSemana.setDate(base.getDate() + 7);
   const iso = (d: Date) => d.toISOString().slice(0, 10);
 
-  const { data } = await supabase
-    .from("mkt_pecas")
-    .select("posta_em, status")
-    .gte("posta_em", iso(inicio))
-    .lte("posta_em", iso(fimSemana))
-    .returns<Pick<Peca, "posta_em" | "status">[]>();
+  const { data } = await conferir(
+    supabase
+      .from("mkt_pecas")
+      .select("posta_em, status")
+      .gte("posta_em", iso(inicio))
+      .lte("posta_em", iso(fimSemana))
+      .returns<Pick<Peca, "posta_em" | "status">[]>(),
+  );
   const linhas = data ?? [];
 
   const semanas = Array.from({ length: 8 }, (_, i) => {
@@ -118,32 +151,55 @@ export async function constancia(hoje: string) {
 export async function producao() {
   const supabase = await clienteServidor();
   const [{ data: abertas }, { data: postadas }, { data: fila }, { data: sinal }] = await Promise.all([
-    supabase.from("mkt_pecas").select("*").neq("status", "postada").order("criado_em", { ascending: false }).returns<Peca[]>(),
-    supabase
-      .from("mkt_pecas")
-      .select("*")
-      .eq("status", "postada")
-      .order("posta_em", { ascending: false, nullsFirst: false })
-      .limit(8)
-      .returns<Peca[]>(),
-    supabase.from("mkt_pedidos").select("*").in("status", ["na_fila", "rodando"]).order("criado_em").returns<Pedido[]>(),
-    supabase.from("mkt_sinal").select("visto_em").maybeSingle<{ visto_em: string }>(),
+    conferir(
+      supabase
+        .from("mkt_pecas")
+        .select("*")
+        .neq("status", "postada")
+        .order("criado_em", { ascending: false })
+        .returns<Peca[]>(),
+    ),
+    conferir(
+      supabase
+        .from("mkt_pecas")
+        .select("*")
+        .eq("status", "postada")
+        .order("posta_em", { ascending: false, nullsFirst: false })
+        .limit(8)
+        .returns<Peca[]>(),
+    ),
+    conferir(
+      supabase
+        .from("mkt_pedidos")
+        .select("*")
+        .in("status", ["na_fila", "rodando"])
+        .order("criado_em")
+        .returns<Pedido[]>(),
+    ),
+    conferir(supabase.from("mkt_sinal").select("visto_em").maybeSingle<{ visto_em: string }>()),
   ]);
-  return { abertas: abertas ?? [], postadas: postadas ?? [], fila: fila ?? [], vistoEm: sinal?.visto_em ?? null };
+  return {
+    abertas: abertas ?? [],
+    postadas: postadas ?? [],
+    fila: fila ?? [],
+    vistoEm: sinal?.visto_em ?? null,
+  };
 }
 
 export async function peca(id: string) {
   const supabase = await clienteServidor();
   const [{ data }, { data: pedidos }, { data: sinal }] = await Promise.all([
-    supabase.from("mkt_pecas").select("*").eq("id", id).maybeSingle<Peca>(),
-    supabase
-      .from("mkt_pedidos")
-      .select("*")
-      .eq("peca_id", id)
-      .order("criado_em", { ascending: false })
-      .limit(12)
-      .returns<Pedido[]>(),
-    supabase.from("mkt_sinal").select("visto_em").maybeSingle<{ visto_em: string }>(),
+    conferir(supabase.from("mkt_pecas").select("*").eq("id", id).maybeSingle<Peca>()),
+    conferir(
+      supabase
+        .from("mkt_pedidos")
+        .select("*")
+        .eq("peca_id", id)
+        .order("criado_em", { ascending: false })
+        .limit(12)
+        .returns<Pedido[]>(),
+    ),
+    conferir(supabase.from("mkt_sinal").select("visto_em").maybeSingle<{ visto_em: string }>()),
   ]);
   return { peca: data, pedidos: pedidos ?? [], vistoEm: sinal?.visto_em ?? null };
 }

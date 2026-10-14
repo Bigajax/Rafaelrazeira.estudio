@@ -10,7 +10,17 @@
 
 import { revalidatePath } from "next/cache";
 import { clienteServidor, usuarioAtual } from "@/lib/crm/supabase";
-import { FONTES, HORIZONTES, PRIORIDADES, type Fonte, type Horizonte, type Periodo, type Prioridade, type StatusProjeto, type Unidade } from "@/lib/plano/tipos";
+import {
+  FONTES,
+  HORIZONTES,
+  PRIORIDADES,
+  type Fonte,
+  type Horizonte,
+  type Periodo,
+  type Prioridade,
+  type StatusProjeto,
+  type Unidade,
+} from "@/lib/plano/tipos";
 
 export type Feito = { ok: true; id?: string } | { ok: false; erro: string };
 
@@ -42,7 +52,9 @@ export async function salvarCiclo(ano: number, campos: Record<string, unknown>):
   const linha: Record<string, unknown> = { owner_id: s.usuario.id, ano };
   if ("missao" in campos) linha.missao = texto(campos.missao, 600);
   if ("visao" in campos) linha.visao = texto(campos.visao, 800);
-  if ("horizonte" in campos) linha.horizonte = campos.horizonte === null || campos.horizonte === "" ? null : inteiro(campos.horizonte, 2020, 2100);
+  if ("horizonte" in campos)
+    linha.horizonte =
+      campos.horizonte === null || campos.horizonte === "" ? null : inteiro(campos.horizonte, 2020, 2100);
   if ("premio" in campos) linha.premio = texto(campos.premio, 300);
   if ("premio_corte" in campos) linha.premio_corte = inteiro(campos.premio_corte, 1, 200) ?? 80;
   if ("premios" in campos) {
@@ -59,14 +71,15 @@ export async function salvarCiclo(ano: number, campos: Record<string, unknown>):
     linha.projecoes = lista.slice(0, 10).flatMap((p: Record<string, unknown>) => {
       const a = inteiro(p?.ano, 2020, 2100);
       if (!a) return [];
-      const num = (v: unknown) => (v === null || v === "" || v === undefined ? null : Number.isFinite(Number(v)) ? Number(v) : null);
+      const num = (v: unknown) =>
+        v === null || v === "" || v === undefined ? null : Number.isFinite(Number(v)) ? Number(v) : null;
       return [{ ano: a, faturamento: num(p.faturamento), caixa: num(p.caixa) }];
     });
   }
   const { error } = await s.supabase.from("plano_ciclos").upsert(linha, { onConflict: "owner_id,ano" });
   const erro = falhou(error);
   if (erro) return erro;
-  revalidatePath("/crm/plano");
+  revalidatePath("/crm", "layout");
   return { ok: true };
 }
 
@@ -83,7 +96,7 @@ export async function criarProjeto(nome: string): Promise<Feito> {
     .single<{ id: string }>();
   const erro = falhou(error);
   if (erro) return erro;
-  revalidatePath("/crm/plano");
+  revalidatePath("/crm", "layout");
   return { ok: true, id: data?.id };
 }
 
@@ -97,15 +110,18 @@ export async function salvarProjeto(id: string, campos: Record<string, unknown>)
     linha.nome = n;
   }
   if ("porque" in campos) linha.porque = texto(campos.porque, 400);
-  if ("prioridade" in campos && String(campos.prioridade) in PRIORIDADES) linha.prioridade = campos.prioridade as Prioridade;
-  if ("horizonte" in campos && String(campos.horizonte) in HORIZONTES) linha.horizonte = campos.horizonte as Horizonte;
-  if ("status" in campos && ["ativo", "pausado", "encerrado"].includes(String(campos.status))) linha.status = campos.status as StatusProjeto;
+  if ("prioridade" in campos && String(campos.prioridade) in PRIORIDADES)
+    linha.prioridade = campos.prioridade as Prioridade;
+  if ("horizonte" in campos && String(campos.horizonte) in HORIZONTES)
+    linha.horizonte = campos.horizonte as Horizonte;
+  if ("status" in campos && ["ativo", "pausado", "encerrado"].includes(String(campos.status)))
+    linha.status = campos.status as StatusProjeto;
   if ("motivo_encerrado" in campos) linha.motivo_encerrado = texto(campos.motivo_encerrado, 300);
   if (!Object.keys(linha).length) return { ok: true };
   const { error } = await s.supabase.from("plano_projetos").update(linha).eq("id", id);
   const erro = falhou(error);
   if (erro) return erro;
-  revalidatePath("/crm/plano");
+  revalidatePath("/crm", "layout");
   return { ok: true };
 }
 
@@ -115,20 +131,24 @@ export async function apagarProjeto(id: string): Promise<Feito> {
   const { error } = await s.supabase.from("plano_projetos").delete().eq("id", id);
   const erro = falhou(error);
   if (erro) return erro;
-  revalidatePath("/crm/plano");
+  revalidatePath("/crm", "layout");
   return { ok: true };
 }
 
 /* ---------- as metas ---------- */
 function limparMeta(campos: Record<string, unknown>) {
   const linha: Record<string, unknown> = {};
+  if (campos.direcao === "reduzir") linha.direcao = "reduzir";
+  if (campos.direcao === "aumentar") linha.direcao = "aumentar";
   if ("titulo" in campos) linha.titulo = texto(campos.titulo, 120);
-  if ("unidade" in campos && ["R$", "un", "%"].includes(String(campos.unidade))) linha.unidade = campos.unidade as Unidade;
+  if ("unidade" in campos && ["R$", "un", "%"].includes(String(campos.unidade)))
+    linha.unidade = campos.unidade as Unidade;
   if ("alvo" in campos) {
     const a = Number(campos.alvo);
     if (Number.isFinite(a) && a > 0) linha.alvo = a;
   }
-  if ("periodo" in campos && ["mes", "ano"].includes(String(campos.periodo))) linha.periodo = campos.periodo as Periodo;
+  if ("periodo" in campos && ["mes", "ano"].includes(String(campos.periodo)))
+    linha.periodo = campos.periodo as Periodo;
   if ("peso" in campos) {
     const p = inteiro(campos.peso, 0, 100);
     if (p !== null) linha.peso = p;
@@ -142,7 +162,11 @@ function limparMeta(campos: Record<string, unknown>) {
   return linha;
 }
 
-export async function criarMeta(projetoId: string, ano: number, campos: Record<string, unknown>): Promise<Feito> {
+export async function criarMeta(
+  projetoId: string,
+  ano: number,
+  campos: Record<string, unknown>,
+): Promise<Feito> {
   const s = await sessao();
   if (!s) return { ok: false, erro: "Sessão expirada. Entre de novo." };
   const linha = limparMeta(campos);
@@ -156,7 +180,7 @@ export async function criarMeta(projetoId: string, ano: number, campos: Record<s
     .single<{ id: string }>();
   const erro = falhou(error);
   if (erro) return erro;
-  revalidatePath("/crm/plano");
+  revalidatePath("/crm", "layout");
   return { ok: true, id: data?.id };
 }
 
@@ -170,7 +194,7 @@ export async function salvarMeta(id: string, campos: Record<string, unknown>): P
   const { error } = await s.supabase.from("plano_metas").update(linha).eq("id", id);
   const erro = falhou(error);
   if (erro) return erro;
-  revalidatePath("/crm/plano");
+  revalidatePath("/crm", "layout");
   return { ok: true };
 }
 
@@ -180,7 +204,7 @@ export async function apagarMeta(id: string): Promise<Feito> {
   const { error } = await s.supabase.from("plano_metas").delete().eq("id", id);
   const erro = falhou(error);
   if (erro) return erro;
-  revalidatePath("/crm/plano");
+  revalidatePath("/crm", "layout");
   return { ok: true };
 }
 
@@ -203,11 +227,16 @@ export async function lancar(metaId: string, mes: string, valor: number | null):
     const erro = falhou(error);
     if (erro) return erro;
   }
-  revalidatePath("/crm/plano");
+  revalidatePath("/crm", "layout");
   return { ok: true };
 }
 
-export async function fecharRmr(mes: string, nota: number | null, causa: string, plano: string): Promise<Feito> {
+export async function fecharRmr(
+  mes: string,
+  nota: number | null,
+  causa: string,
+  plano: string,
+): Promise<Feito> {
   const s = await sessao();
   if (!s) return { ok: false, erro: "Sessão expirada. Entre de novo." };
   if (!MES.test(mes)) return { ok: false, erro: "Mês inválido." };
@@ -224,6 +253,6 @@ export async function fecharRmr(mes: string, nota: number | null, causa: string,
   );
   const erro = falhou(error);
   if (erro) return erro;
-  revalidatePath("/crm/plano");
+  revalidatePath("/crm", "layout");
   return { ok: true };
 }

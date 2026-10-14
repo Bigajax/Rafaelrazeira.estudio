@@ -68,9 +68,7 @@ export const ESTAGIOS_DO_QUADRO = ESTAGIOS.filter(
    saídas, e é essa separação que decide quem aparece no painel Hoje e quem
    precisa de próximo passo. A geladeira está DENTRO: um lead dormindo
    continua devendo uma data, e é ela que o traz de volta. */
-export const ESTAGIOS_ATIVOS = ESTAGIOS.filter(
-  (e) => e !== "ganho" && e !== "perdido",
-) as readonly Estagio[];
+export const ESTAGIOS_ATIVOS = ESTAGIOS.filter((e) => e !== "ganho" && e !== "perdido") as readonly Estagio[];
 
 /* O que soma no PIPELINE ABERTO, que é uma pergunta mais estreita que
    "ainda está de pé": dinheiro que pode entrar neste ciclo. O ticket de
@@ -391,6 +389,7 @@ export type Recebimento = {
   mp_status: string | null;
   mp_external_reference: string | null;
   estornado_em: string | null;
+  valor_estornado?: number;
   bruto: unknown;
   notas: string | null;
   created_at: string;

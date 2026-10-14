@@ -1,16 +1,15 @@
-/* A leitura do financeiro no servidor. Mesma chave do CRM: anônima + sessão,
-   e o RLS decide o que volta. */
 import { clienteServidor } from "@/lib/crm/supabase";
+import { lerTodos, tabelaAusente } from "@/lib/sistema/consultas";
+import type { Despesa, Devolucao, Venda } from "@/lib/sistema/indicadores";
 import type { Custo, Recebimento } from "./tipos";
 
-/* O dólar do dia (AwesomeAPI, a mesma cotação do Banco Central com poucos
-   minutos de atraso), guardado por uma hora. Se a API cair, a tela diz que
-   está sem cotação em vez de inventar uma. */
 async function cotacaoDolar(): Promise<{ valor: number; quando: string } | null> {
   try {
-    const r = await fetch("https://economia.awesomeapi.com.br/json/last/USD-BRL", { next: { revalidate: 3600 } });
+    const r = await fetch("https://economia.awesomeapi.com.br/json/last/USD-BRL", {
+      next: { revalidate: 3600 },
+    });
     if (!r.ok) return null;
-    const j = (await r.json()) as { USDBRL?: { bid?: string; create_date?: string } };
+    const j = await r.json();
     const valor = Number(j.USDBRL?.bid);
     return Number.isFinite(valor) && valor > 0 ? { valor, quando: j.USDBRL?.create_date ?? "" } : null;
   } catch {
@@ -19,29 +18,70 @@ async function cotacaoDolar(): Promise<{ valor: number; quando: string } | null>
 }
 
 export async function financeiro(ano: number) {
-  const supabase = await clienteServidor();
-  const [custos, recebimentos, dolar, ganhos, ciclo] = await Promise.all([
-    supabase.from("fin_custos").select("*").order("inicio").order("created_at").returns<Custo[]>(),
-    /* `estornado_em` nulo: o estorno já saía do Caixa e continuava no DRE
-       (06/10). A mesma régua do Caixa, `contaNoCaixa`, no banco. */
-    supabase.from("crm_recebimentos").select("valor, valor_liquido, recebido_em").is("estornado_em", null).order("recebido_em").returns<Recebimento[]>(),
+  const banco = await clienteServidor();
+  const custos = await lerTodos<Custo>(banco, "fin_custos").catch((e) => {
+    if (tabelaAusente(e)) return null;
+    throw e;
+  });
+  if (!custos) return { semTabela: true as const };
+  const [recebimentos, dolar, contratos, ganhos, ciclo, despesas, devolucoes] = await Promise.all([
+    lerTodos<Recebimento>(
+      banco,
+      "crm_recebimentos",
+      "id,lead_id,parcela_id,valor,valor_liquido,recebido_em,estornado_em",
+    ),
     cotacaoDolar(),
-    /* as vendas fechadas: o ticket médio real e quantas por mês */
-    supabase.from("crm_leads").select("valor_fechado, fechado_em").eq("estagio", "ganho").returns<{ valor_fechado: number | null; fechado_em: string | null }[]>(),
-    /* o ticket e a margem escolhidos moram no ciclo do Plano do ano */
-    supabase.from("plano_ciclos").select("*").eq("ano", ano).maybeSingle<{ ticket_medio?: number | null; margem_alvo?: number | null }>(),
+    lerTodos<{
+      id: string;
+      lead_id: string;
+      tipo: string;
+      status: string;
+      valor_total: number | null;
+      assinado_em: string | null;
+    }>(banco, "crm_contratos", "id,lead_id,tipo,status,valor_total,assinado_em"),
+    lerTodos<{ id: string; estagio: string; valor_fechado: number | null; fechado_em: string | null }>(
+      banco,
+      "crm_leads",
+      "id,estagio,valor_fechado,fechado_em",
+    ),
+    banco.from("plano_ciclos").select("ticket_medio,margem_alvo").eq("ano", ano).maybeSingle(),
+    lerTodos<Despesa>(banco, "fin_despesas").catch((e) => {
+      if (tabelaAusente(e)) return null;
+      throw e;
+    }),
+    lerTodos<Devolucao>(banco, "crm_devolucoes").catch((e) => {
+      if (tabelaAusente(e)) return null;
+      throw e;
+    }),
   ]);
-  if (custos.error && /fin_custos|does not exist|schema cache/i.test(custos.error.message)) return { semTabela: true as const };
+  if (ciclo.error) throw new Error("Não foi possível carregar o planejamento financeiro. Tente novamente.");
+  const leadsComContrato = new Set(contratos.filter((c) => c.tipo === "projeto").map((c) => c.lead_id));
+  const vendas: Venda[] = [
+    ...contratos
+      .filter((c) => c.tipo === "projeto" && c.status === "ativo")
+      .map((c) => ({
+        id: c.id,
+        lead_id: c.lead_id,
+        valor: Number(c.valor_total ?? 0),
+        quando: c.assinado_em,
+      })),
+    ...ganhos
+      .filter((l) => l.estagio === "ganho" && !leadsComContrato.has(l.id))
+      .map((l) => ({ id: l.id, lead_id: l.id, valor: Number(l.valor_fechado ?? 0), quando: l.fechado_em })),
+  ];
   return {
     semTabela: false as const,
-    custos: (custos.data ?? []).map((c) => ({ ...c, valor: Number(c.valor) })),
-    recebimentos: (recebimentos.data ?? []).map((r) => ({
+    custos: custos.map((c) => ({ ...c, valor: Number(c.valor) })),
+    recebimentos: recebimentos.map((r) => ({
       ...r,
       valor: Number(r.valor),
-      valor_liquido: r.valor_liquido === null ? null : Number(r.valor_liquido),
+      valor_liquido: r.valor_liquido == null ? null : Number(r.valor_liquido),
     })),
     dolar,
-    vendas: (ganhos.data ?? []).map((g) => ({ valor: Number(g.valor_fechado ?? 0), quando: g.fechado_em })),
+    vendas,
+    despesas: despesas ?? [],
+    devolucoes: devolucoes ?? [],
+    movimentosDisponiveis: despesas !== null && devolucoes !== null,
     escolha: {
       ticket: ciclo.data?.ticket_medio == null ? null : Number(ciclo.data.ticket_medio),
       margem: ciclo.data?.margem_alvo == null ? null : Number(ciclo.data.margem_alvo),

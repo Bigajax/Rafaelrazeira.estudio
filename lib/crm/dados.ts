@@ -1,3 +1,8 @@
+import { conferir } from "@/lib/sistema/consultas";
+import { avancouLead } from "@/lib/sistema/comercial";
+import { lerTodos, tabelaAusente } from "@/lib/sistema/consultas";
+import { diaLocal, mesLocal } from "@/lib/sistema/calendario";
+import { valorRetido, devolucoesComLegado, type Devolucao } from "@/lib/sistema/indicadores";
 /* ============================================================
    AS CONSULTAS
 
@@ -66,30 +71,34 @@ export async function painelHoje() {
   const segunda = inicioDaSemana(hoje);
 
   const [{ data: leads }, { data: meta }, { count: toquesSemana }] = await Promise.all([
-    supabase
-      .from("crm_leads_painel")
-      .select("*")
-      .in("estagio", ATIVOS)
-      .order("proxima_acao_em", { ascending: true, nullsFirst: false })
-      /* Desempate FIXO (21/09): sem ele, os 295 sem passo (todos com
+    conferir(
+      supabase
+        .from("crm_leads_painel")
+        .select("*")
+        .in("estagio", ATIVOS)
+        .order("proxima_acao_em", { ascending: true, nullsFirst: false })
+        /* Desempate FIXO (21/09): sem ele, os 295 sem passo (todos com
          proxima_acao_em nula) voltavam do banco numa ordem qualquer a
          cada refresh, e a fila do dia "embaralhava" a cada mensagem
          registrada. */
-      .order("created_at", { ascending: false })
-      .order("id", { ascending: true })
-      .returns<LeadPainel[]>(),
-    supabase.from("crm_metas").select("id, toques_semana").limit(1).maybeSingle<Meta>(),
+        .order("created_at", { ascending: false })
+        .order("id", { ascending: true })
+        .returns<LeadPainel[]>(),
+    ),
+    conferir(supabase.from("crm_metas").select("id, toques_semana").limit(1).maybeSingle<Meta>()),
     /* `head: true` traz só a contagem, sem uma linha sequer de payload: o
        número da faixa não precisa das interações, precisa de quantas são.
        O `+ 1` no fim do intervalo é o dia seguinte à meia-noite: interações
        são timestamp, e comparar com a data pura deixaria de fora tudo que
        aconteceu depois das 00h do domingo. */
-    supabase
-      .from("crm_interacoes")
-      .select("id", { count: "exact", head: true })
-      .eq("direcao", "saida")
-      .gte("created_at", `${segunda}T00:00:00-03:00`)
-      .lt("created_at", `${somarDias(segunda, 7)}T00:00:00-03:00`),
+    conferir(
+      supabase
+        .from("crm_interacoes")
+        .select("id", { count: "exact", head: true })
+        .eq("direcao", "saida")
+        .gte("created_at", `${segunda}T00:00:00-03:00`)
+        .lt("created_at", `${somarDias(segunda, 7)}T00:00:00-03:00`),
+    ),
   ]);
 
   /* ============================================================
@@ -109,22 +118,22 @@ export async function painelHoje() {
   const devedoresDeFora = [...cobrancasPorLead.keys()].filter((id) => !jaNaLista.has(id));
 
   const { data: ganhosQueDevem } = devedoresDeFora.length
-    ? await supabase
-        .from("crm_leads_painel")
-        .select("*")
-        .in("id", devedoresDeFora)
-        .returns<LeadPainel[]>()
+    ? await conferir(
+        supabase.from("crm_leads_painel").select("*").in("id", devedoresDeFora).returns<LeadPainel[]>(),
+      )
     : { data: [] as LeadPainel[] };
 
   /* A amostra no ar de cada lead (09/10): o monte "Amostra no ar" do Hoje
      precisa saber quem tem vitrine pronta na Vercel. Mora na oficina, não
      no card, então vem numa consulta à parte, como a cobrança. */
-  const { data: amostras } = await supabase
-    .from("prod_lojas")
-    .select("lead_id, previa_url")
-    .not("previa_url", "is", null)
-    .not("lead_id", "is", null)
-    .returns<{ lead_id: string; previa_url: string }[]>();
+  const { data: amostras } = await conferir(
+    supabase
+      .from("prod_lojas")
+      .select("lead_id, previa_url")
+      .not("previa_url", "is", null)
+      .not("lead_id", "is", null)
+      .returns<{ lead_id: string; previa_url: string }[]>(),
+  );
   const amostraPorLead = new Map((amostras ?? []).map((a) => [a.lead_id, a.previa_url]));
 
   const lista = [...(leads ?? []), ...(ganhosQueDevem ?? [])].map((l) => ({
@@ -303,22 +312,28 @@ export async function contagens() {
   const hoje = hojeSP();
 
   const [{ data: leads }, { count: templates }, { data: cobrancas }] = await Promise.all([
-    supabase
-      .from("crm_leads")
-      .select("proxima_acao_em")
-      .in("estagio", ATIVOS)
-      .returns<Pick<Lead, "proxima_acao_em">[]>(),
-    supabase.from("crm_templates").select("id", { count: "exact", head: true }),
+    conferir(
+      supabase
+        .from("crm_leads")
+        .select("proxima_acao_em")
+        .in("estagio", ATIVOS)
+        .returns<Pick<Lead, "proxima_acao_em">[]>(),
+    ),
+    conferir(supabase.from("crm_templates").select("id", { count: "exact", head: true })),
     /* As parcelas vivas que já chegaram no dia de cobrar. Traz as linhas em
        vez de `head: true` porque quitação é soma de recebimentos, e o banco
        não sabe disso sozinho: quem decide se ainda deve é a conta em
        JavaScript logo abaixo. São poucas dezenas de linhas. */
-    supabase
-      .from("crm_parcelas")
-      .select("id, lead_id, valor, vence_em, cobrar_em, cancelada_em, crm_contratos(status), crm_recebimentos(valor, estornado_em)")
-      .is("cancelada_em", null)
-      .lte("vence_em", hoje)
-      .returns<ParcelaComRecebimentos[]>(),
+    conferir(
+      supabase
+        .from("crm_parcelas")
+        .select(
+          "id, lead_id, valor, vence_em, cobrar_em, cancelada_em, crm_contratos(status), crm_recebimentos(*)",
+        )
+        .is("cancelada_em", null)
+        .lte("vence_em", hoje)
+        .returns<ParcelaComRecebimentos[]>(),
+    ),
   ]);
 
   const lista = leads ?? [];
@@ -340,7 +355,12 @@ export async function contagens() {
       (cobrancas ?? [])
         .filter((p) =>
           cobravel(
-            { ...p, valor: Number(p.valor), recebido: recebidoDaParcela(p), contrato_status: p.crm_contratos?.status ?? null },
+            {
+              ...p,
+              valor: Number(p.valor),
+              recebido: recebidoDaParcela(p),
+              contrato_status: p.crm_contratos?.status ?? null,
+            },
             hoje,
           ),
         )
@@ -359,12 +379,12 @@ type ParcelaComRecebimentos = {
   cobrar_em: string | null;
   cancelada_em: string | null;
   crm_contratos: { status: string } | null;
-  crm_recebimentos: { valor: number; estornado_em: string | null }[] | null;
+  crm_recebimentos: { valor: number; estornado_em: string | null; valor_estornado?: number }[] | null;
 };
 
 /** Soma o que entrou numa parcela, ignorando o que foi estornado. */
 const recebidoDaParcela = (p: ParcelaComRecebimentos) =>
-  somar((p.crm_recebimentos ?? []).filter((r) => !r.estornado_em).map((r) => Number(r.valor)));
+  somar((p.crm_recebimentos ?? []).map((r) => valorRetido(r)));
 
 export type Contagens = Awaited<ReturnType<typeof contagens>>;
 
@@ -374,11 +394,13 @@ export type Contagens = Awaited<ReturnType<typeof contagens>>;
 export async function quadro() {
   const supabase = await clienteServidor();
 
-  const { data } = await supabase
-    .from("crm_leads_painel")
-    .select("*")
-    .order("posicao", { ascending: true })
-    .returns<LeadPainel[]>();
+  const { data } = await conferir(
+    supabase
+      .from("crm_leads_painel")
+      .select("*")
+      .order("posicao", { ascending: true })
+      .returns<LeadPainel[]>(),
+  );
 
   const leads = ordenarColuna(data ?? []);
 
@@ -393,8 +415,11 @@ export async function quadro() {
      e mudam a cada lote de criativos. Quem mais trouxe lead vem primeiro,
      porque é dele que se quer ver o funil. */
   const porAnuncio = new Map<string, number>();
-  for (const l of leads) if (l.anuncio?.trim()) porAnuncio.set(l.anuncio, (porAnuncio.get(l.anuncio) ?? 0) + 1);
-  const anuncios = [...porAnuncio.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([a]) => a);
+  for (const l of leads)
+    if (l.anuncio?.trim()) porAnuncio.set(l.anuncio, (porAnuncio.get(l.anuncio) ?? 0) + 1);
+  const anuncios = [...porAnuncio.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .map(([a]) => a);
 
   return { leads, nichos, anuncios, hoje: hojeSP() };
 }
@@ -405,40 +430,42 @@ export async function quadro() {
 export async function leadCompleto(id: string) {
   const supabase = await clienteServidor();
 
-  const { data: lead } = await supabase
-    .from("crm_leads_painel")
-    .select("*")
-    .eq("id", id)
-    .maybeSingle<LeadPainel>();
+  const { data: lead } = await conferir(
+    supabase.from("crm_leads_painel").select("*").eq("id", id).maybeSingle<LeadPainel>(),
+  );
 
   if (!lead) return null;
 
   const [{ data: interacoes }, { data: indicados }, { data: quemIndicou }, { data: templates }] =
     await Promise.all([
-      supabase
-        .from("crm_interacoes")
-        .select("*")
-        .eq("lead_id", id)
-        .order("created_at", { ascending: false })
-        .returns<Interacao[]>(),
-      supabase
-        .from("crm_leads")
-        .select("id, nome, empresa, estagio")
-        .eq("indicado_por", id)
-        .order("created_at", { ascending: false })
-        .returns<Pick<Lead, "id" | "nome" | "empresa" | "estagio">[]>(),
+      conferir(
+        supabase
+          .from("crm_interacoes")
+          .select("*")
+          .eq("lead_id", id)
+          .order("created_at", { ascending: false })
+          .returns<Interacao[]>(),
+      ),
+      conferir(
+        supabase
+          .from("crm_leads")
+          .select("id, nome, empresa, estagio")
+          .eq("indicado_por", id)
+          .order("created_at", { ascending: false })
+          .returns<Pick<Lead, "id" | "nome" | "empresa" | "estagio">[]>(),
+      ),
       lead.indicado_por
-        ? supabase
-            .from("crm_leads")
-            .select("id, nome, empresa, estagio")
-            .eq("id", lead.indicado_por)
-            .maybeSingle<Pick<Lead, "id" | "nome" | "empresa" | "estagio">>()
+        ? conferir(
+            supabase
+              .from("crm_leads")
+              .select("id, nome, empresa, estagio")
+              .eq("id", lead.indicado_por)
+              .maybeSingle<Pick<Lead, "id" | "nome" | "empresa" | "estagio">>(),
+          )
         : Promise.resolve({ data: null }),
-      supabase
-        .from("crm_templates")
-        .select("*")
-        .order("ordem", { ascending: true })
-        .returns<Template[]>(),
+      conferir(
+        supabase.from("crm_templates").select("*").order("ordem", { ascending: true }).returns<Template[]>(),
+      ),
     ]);
 
   return {
@@ -471,30 +498,36 @@ export async function contratosDoLead(leadId: string): Promise<ContratoPainel[]>
   const supabase = await clienteServidor();
 
   const [{ data: contratos }, { data: parcelas }, { data: recebimentos }] = await Promise.all([
-    supabase
-      .from("crm_contratos")
-      .select("*")
-      .eq("lead_id", leadId)
-      .order("created_at", { ascending: false })
-      .returns<Contrato[]>(),
-    supabase
-      .from("crm_parcelas")
-      .select("*")
-      .eq("lead_id", leadId)
-      .order("numero", { ascending: true })
-      .returns<Parcela[]>(),
-    supabase
-      .from("crm_recebimentos")
-      .select("*")
-      .eq("lead_id", leadId)
-      .order("recebido_em", { ascending: false })
-      .returns<Recebimento[]>(),
+    conferir(
+      supabase
+        .from("crm_contratos")
+        .select("*")
+        .eq("lead_id", leadId)
+        .order("created_at", { ascending: false })
+        .returns<Contrato[]>(),
+    ),
+    conferir(
+      supabase
+        .from("crm_parcelas")
+        .select("*")
+        .eq("lead_id", leadId)
+        .order("numero", { ascending: true })
+        .returns<Parcela[]>(),
+    ),
+    conferir(
+      supabase
+        .from("crm_recebimentos")
+        .select("*")
+        .eq("lead_id", leadId)
+        .order("recebido_em", { ascending: false })
+        .returns<Recebimento[]>(),
+    ),
   ]);
 
   const pagoPorParcela = new Map<string, number>();
   for (const r of recebimentos ?? []) {
     if (!r.parcela_id || r.estornado_em) continue;
-    pagoPorParcela.set(r.parcela_id, (pagoPorParcela.get(r.parcela_id) ?? 0) + Number(r.valor));
+    pagoPorParcela.set(r.parcela_id, (pagoPorParcela.get(r.parcela_id) ?? 0) + valorRetido(r));
   }
 
   const avulsos = (recebimentos ?? []).filter((r) => !r.parcela_id);
@@ -523,11 +556,9 @@ export async function contratosDoLead(leadId: string): Promise<ContratoPainel[]>
    ============================================================ */
 export async function listarTemplates() {
   const supabase = await clienteServidor();
-  const { data } = await supabase
-    .from("crm_templates")
-    .select("*")
-    .order("ordem", { ascending: true })
-    .returns<Template[]>();
+  const { data } = await conferir(
+    supabase.from("crm_templates").select("*").order("ordem", { ascending: true }).returns<Template[]>(),
+  );
   return data ?? [];
 }
 
@@ -547,16 +578,33 @@ export async function metricas(dias: 7 | 30 | 90) {
   const hoje = hojeSP();
   const inicio = somarDias(hoje, -(dias - 1));
 
-  const [{ data: interacoes }, { data: leads }, { data: meta }] = await Promise.all([
-    supabase
-      .from("crm_interacoes")
-      .select("id, lead_id, canal, direcao, created_at")
-      .gte("created_at", `${inicio}T00:00:00-03:00`)
-      .order("created_at", { ascending: true })
-      .returns<Interacao[]>(),
-    supabase.from("crm_leads").select("*").returns<Lead[]>(),
-    supabase.from("crm_metas").select("id, toques_semana").limit(1).maybeSingle<Meta>(),
+  const [interacoes, leads, metaConsulta, historico, contratos] = await Promise.all([
+    lerTodos<Interacao>(supabase, "crm_interacoes", "id,lead_id,canal,direcao,created_at", {
+      coluna: "created_at",
+      inicio: inicio + "T00:00:00-03:00",
+      fim: somarDias(hoje, 1) + "T00:00:00-03:00",
+    }),
+    lerTodos<Lead>(supabase, "crm_leads"),
+    conferir(supabase.from("crm_metas").select("id,toques_semana").limit(1).maybeSingle<Meta>()),
+    lerTodos<{
+      id: string;
+      lead_id: string;
+      etapa: string;
+      anterior: string | null;
+      motivo: string | null;
+      ocorrido_em: string;
+      inicial: boolean;
+    }>(supabase, "crm_eventos_etapa").catch((e) => {
+      if (tabelaAusente(e)) return null;
+      throw e;
+    }),
+    lerTodos<Contrato>(supabase, "crm_contratos"),
   ]);
+  if (metaConsulta.error) throw new Error("Não foi possível carregar a meta comercial.");
+  const meta = metaConsulta.data;
+  const eventos = historico ?? [];
+  const antigos = new Set(eventos.filter((e) => e.inicial).map((e) => e.lead_id));
+  const avancou = (l: Lead, alvo: number) => avancouLead(l, historico, ordem[alvo]);
 
   const toques = interacoes ?? [];
   const todos = leads ?? [];
@@ -575,7 +623,7 @@ export async function metricas(dias: 7 | 30 | 90) {
 
   for (const t of toques) {
     if (t.direcao !== "saida") continue;
-    const dia = t.created_at.slice(0, 10);
+    const dia = diaLocal(t.created_at);
     const semana = inicioDaSemana(dia);
     if (semanas.has(semana)) semanas.set(semana, (semanas.get(semana) ?? 0) + 1);
   }
@@ -598,27 +646,10 @@ export async function metricas(dias: 7 | 30 | 90) {
      única imprecisão conhecida desta tela. */
   const ordem = ["lista", "contatado", "follow_up", "conversa", "previa", "proposta", "negociacao", "ganho"];
   const indice = (e: string) => (e === "perdido" ? -1 : ordem.indexOf(e));
-  const criadosNoPeriodo = todos.filter((l) => noPeriodo(l.created_at.slice(0, 10)));
+  const criadosNoPeriodo = todos.filter((l) => noPeriodo(diaLocal(l.created_at)));
 
-  const chegaramA = (estagio: string) => {
-    const alvo = ordem.indexOf(estagio);
-    return criadosNoPeriodo.filter((l) => {
-      const atual = indice(l.estagio);
-      /* Perdido guarda o ponto mais longe a que chegou? Não guarda. Um lead
-         perdido conta nas etapas anteriores só se o motivo indicar que a
-         conversa aconteceu, o que o dado não diz. Ele fica de fora do
-         numerador e dentro do denominador, que é a leitura pessimista e a
-         única honesta.
-
-         A geladeira cai na mesma conta pelo mesmo motivo, e sem precisar
-         de linha própria: ela não está em `ordem`, então `indexOf` devolve
-         -1 e ela fica de fora do numerador. Um lead na geladeira PASSOU por
-         conversa (ele respondeu), então isto conta a menos. É a mesma
-         imprecisão do perdido, na mesma direção, e o dado que consertaria
-         as duas (o histórico de passagens) não existe. */
-      return atual >= alvo;
-    }).length;
-  };
+  const chegaramA = (estagio: string) =>
+    criadosNoPeriodo.filter((l) => avancou(l, ordem.indexOf(estagio))).length;
 
   /* Cinco degraus, e a prévia entrou entre conversa e proposta porque é ali
      que ela mora no processo. Ela é a etapa mais informativa do funil: é a
@@ -650,7 +681,7 @@ export async function metricas(dias: 7 | 30 | 90) {
   }
   const chegaram = (grupo: Lead[], estagio: string) => {
     const alvo = ordem.indexOf(estagio);
-    return grupo.filter((l) => indice(l.estagio) >= alvo).length;
+    return grupo.filter((l) => avancou(l, alvo)).length;
   };
   const anuncios = [...porAnuncio.entries()]
     .map(([anuncio, grupo]) => ({
@@ -660,7 +691,17 @@ export async function metricas(dias: 7 | 30 | 90) {
       previa: chegaram(grupo, "previa"),
       proposta: chegaram(grupo, "proposta"),
       ganho: chegaram(grupo, "ganho"),
-      valor: grupo.filter((l) => l.estagio === "ganho").reduce((s, l) => s + (l.valor_fechado ?? 0), 0),
+      valor: grupo.reduce((s, l) => {
+        const seus = contratos.filter((c) => c.lead_id === l.id && c.tipo === "projeto");
+        return (
+          s +
+          (seus.length
+            ? seus.filter((c) => c.status === "ativo").reduce((v, c) => v + Number(c.valor_total ?? 0), 0)
+            : l.estagio === "ganho"
+              ? (l.valor_fechado ?? 0)
+              : 0)
+        );
+      }, 0),
     }))
     .sort((a, b) => b.ganho - a.ganho || b.proposta - a.proposta || b.previa - a.previa || b.leads - a.leads);
 
@@ -671,24 +712,48 @@ export async function metricas(dias: 7 | 30 | 90) {
      mensagem nenhuma não pode entrar na conta de quem não me respondeu. */
   const comSaida = new Set(toques.filter((t) => t.direcao === "saida").map((t) => t.lead_id));
   const comEntrada = new Set(toques.filter((t) => t.direcao === "entrada").map((t) => t.lead_id));
-  const responderam = [...comEntrada].filter((id) => comSaida.has(id)).length;
+  const responderam = [...comSaida].filter((id) => {
+    const primeira = toques.find((t) => t.lead_id === id && t.direcao === "saida");
+    return (
+      primeira &&
+      toques.some((t) => t.lead_id === id && t.direcao === "entrada" && t.created_at > primeira.created_at)
+    );
+  }).length;
 
   /* ---------- ciclo médio ----------
      Dias entre criar o lead e fechar como ganho, nos ganhos do período. */
   const ganhosNoPeriodo = todos.filter((l) => l.estagio === "ganho" && noPeriodo(l.fechado_em));
-  const ciclos = ganhosNoPeriodo.map((l) => diasEntre(l.created_at.slice(0, 10), l.fechado_em as string));
+  const ciclos = ganhosNoPeriodo.map((l) => diasEntre(diaLocal(l.created_at), l.fechado_em as string));
   const cicloMedio = ciclos.length ? Math.round(ciclos.reduce((a, b) => a + b, 0) / ciclos.length) : null;
 
-  const perdidosNoPeriodo = todos.filter(
-    (l) => l.estagio === "perdido" && noPeriodo(l.updated_at.slice(0, 10)),
-  );
+  const perdas =
+    historico === null
+      ? todos
+          .filter((l) => l.estagio === "perdido" && noPeriodo(diaLocal(l.updated_at)))
+          .map((l) => ({ lead_id: l.id, motivo: l.motivo_perda }))
+      : eventos.filter((e) => !e.inicial && e.etapa === "perdido" && noPeriodo(diaLocal(e.ocorrido_em)));
+  const perdidosNoPeriodo = [...new Map(perdas.map((p) => [p.lead_id, p])).values()];
   const porMotivo = new Map<string, number>();
-  for (const l of perdidosNoPeriodo) {
-    const m = l.motivo_perda ?? "desistiu";
+  for (const p of perdidosNoPeriodo) {
+    const m = p.motivo ?? "desistiu";
     porMotivo.set(m, (porMotivo.get(m) ?? 0) + 1);
   }
+  const comContrato = new Set(contratos.filter((c) => c.tipo === "projeto").map((c) => c.lead_id));
+  const contratados = contratos.filter(
+    (c) => c.tipo === "projeto" && c.status === "ativo" && noPeriodo(c.assinado_em),
+  );
+  const ganhosLegados = ganhosNoPeriodo.filter((l) => !comContrato.has(l.id));
 
   return {
+    historicoDisponivel: historico !== null,
+    baseAproximada:
+      historico === null ? criadosNoPeriodo.length : criadosNoPeriodo.filter((l) => antigos.has(l.id)).length,
+    historicoDesde:
+      eventos
+        .filter((e) => e.inicial)
+        .map((e) => e.ocorrido_em)
+        .sort()
+        .at(0) ?? null,
     dias,
     inicio,
     hoje,
@@ -710,8 +775,11 @@ export async function metricas(dias: 7 | 30 | 90) {
     /* VENDIDO, e não "faturamento" (06/10): é o espelho dos contratos de
        projeto, o que foi combinado no período. O que entrou é o RECEBIDO,
        e mora no Caixa. Os quatro números estão em tipos.ts, "O DINHEIRO". */
-    vendido: ganhosNoPeriodo.reduce((s, l) => s + (l.valor_fechado ?? 0), 0),
-    ganhos: ganhosNoPeriodo.length,
+    vendido: somar([
+      ...contratados.map((c) => Number(c.valor_total ?? 0)),
+      ...ganhosLegados.map((l) => l.valor_fechado ?? 0),
+    ]),
+    ganhos: contratados.length + ganhosLegados.length,
     motivos: [...porMotivo.entries()].sort((a, b) => b[1] - a[1]),
     perdidos: perdidosNoPeriodo.length,
     toquesPeriodo: toques.filter((t) => t.direcao === "saida").length,
@@ -746,29 +814,21 @@ export async function caixa(ano: number) {
   const inicio = `${ano}-01-01`;
   const fim = `${ano}-12-31`;
 
-  const [{ data: contratos }, { data: parcelas }, { data: recebimentos }, { data: leads }] =
-    await Promise.all([
-      supabase.from("crm_contratos").select("*").returns<Contrato[]>(),
-      supabase
-        .from("crm_parcelas")
-        .select("*")
-        .order("vence_em", { ascending: true })
-        .returns<Parcela[]>(),
-      /* TODOS os anos, de propósito (06/10). O recorte pelo ano escolhido
-         ficava aqui, e o pago de cada parcela saía só do que entrou NAQUELE
-         ano: em janeiro, toda parcela paga no ano anterior voltava como
-         devida em "para cobrar", "a receber" e na régua dos contratos. O
-         ano vale só para o gráfico dos doze meses, que já filtra sozinho. */
-      supabase
-        .from("crm_recebimentos")
-        .select("*")
-        .order("recebido_em", { ascending: false })
-        .returns<Recebimento[]>(),
-      supabase
-        .from("crm_leads")
-        .select("id, nome, empresa, whatsapp, instagram")
-        .returns<Pick<Lead, "id" | "nome" | "empresa" | "whatsapp" | "instagram">[]>(),
-    ]);
+  const [contratos, parcelas, recebimentos, leads, devolucoes] = await Promise.all([
+    lerTodos<Contrato>(supabase, "crm_contratos"),
+    lerTodos<Parcela>(supabase, "crm_parcelas"),
+    lerTodos<Recebimento>(supabase, "crm_recebimentos"),
+    lerTodos<Pick<Lead, "id" | "nome" | "empresa" | "whatsapp" | "instagram">>(
+      supabase,
+      "crm_leads",
+      "id,nome,empresa,whatsapp,instagram",
+    ),
+    lerTodos<Devolucao>(supabase, "crm_devolucoes").catch((e) => {
+      if (tabelaAusente(e)) return [];
+      throw e;
+    }),
+  ]);
+  const movimentosDevolucao = devolucoesComLegado(recebimentos, devolucoes);
 
   const porLead = new Map((leads ?? []).map((l) => [l.id, l]));
   const porContrato = new Map((contratos ?? []).map((c) => [c.id, c]));
@@ -777,7 +837,7 @@ export async function caixa(ano: number) {
   const pagoPorParcela = new Map<string, number>();
   for (const r of recebimentos ?? []) {
     if (!r.parcela_id || r.estornado_em) continue;
-    pagoPorParcela.set(r.parcela_id, (pagoPorParcela.get(r.parcela_id) ?? 0) + Number(r.valor));
+    pagoPorParcela.set(r.parcela_id, (pagoPorParcela.get(r.parcela_id) ?? 0) + valorRetido(r));
   }
 
   const enriquecida = (p: Parcela): ParcelaPainel => {
@@ -855,12 +915,12 @@ export async function caixa(ano: number) {
   );
   let depois = 0;
 
-  for (const { s } of aReceber) {
-    const m = mesDe(s.quando);
+  for (const { s, parcela } of aReceber) {
+    const m = mesDe(parcela.vence_em);
     const alvo = previsao.get(m > janela[0] ? m : janela[0]);
     if (alvo) {
       alvo.total += s.saldo;
-      if (s.situacao === "atrasada") alvo.vencido += s.saldo;
+      if (parcela.vence_em < hoje) alvo.vencido += s.saldo;
     } else {
       depois += s.saldo;
     }
@@ -888,10 +948,13 @@ export async function caixa(ano: number) {
      com dinheiro mente sobre o ritmo, porque some justamente com os meses
      em que não entrou nada, que são os que se precisa ver. */
   const porMes = new Map<string, number>(mesesDoAno(ano).map((m) => [m, 0]));
-  for (const r of recebimentos ?? []) {
-    if (r.estornado_em) continue;
-    const m = mesDe(r.recebido_em);
+  for (const r of recebimentos) {
+    const m = mesLocal(r.recebido_em);
     if (porMes.has(m)) porMes.set(m, (porMes.get(m) ?? 0) + Number(r.valor));
+  }
+  for (const d of movimentosDevolucao) {
+    const m = mesLocal(d.devolvido_em);
+    if (porMes.has(m)) porMes.set(m, (porMes.get(m) ?? 0) - Number(d.valor));
   }
 
   /* ---------- 5. o dinheiro sem dono ----------
@@ -911,7 +974,12 @@ export async function caixa(ano: number) {
     hoje,
     mesAtual,
     previstoNoMes: somar(doMes.map((p) => p.valor)),
-    recebidoNoMes: somar(recebidoNoMes.map((r) => Number(r.valor))),
+    recebidoNoMes:
+      somar(recebimentos.filter((r) => mesLocal(r.recebido_em) === mesAtual).map((r) => Number(r.valor))) -
+      somar(
+        movimentosDevolucao.filter((d) => mesLocal(d.devolvido_em) === mesAtual).map((d) => Number(d.valor)),
+      ),
+    vencidoContratual: somar(aReceber.filter((x) => x.parcela.vence_em < hoje).map((x) => x.s.saldo)),
     parcelasDoMes: doMes.length,
     recebimentosDoMes: recebidoNoMes.length,
     emAtraso: somar(devendo.map((x) => x.s.saldo)),
@@ -957,29 +1025,35 @@ async function cobrancasAbertas(
   supabase: Awaited<ReturnType<typeof clienteServidor>>,
   hoje: string,
 ): Promise<Map<string, NonNullable<LeadPainel["cobranca"]>>> {
-  const { data } = await supabase
-    .from("crm_parcelas")
-    .select(
-      "id, lead_id, rotulo, valor, vence_em, cobrar_em, cancelada_em, metodo_previsto, " +
-        "crm_contratos(titulo, status), crm_recebimentos(valor, estornado_em)",
-    )
-    .is("cancelada_em", null)
-    .lte("vence_em", hoje)
-    .order("vence_em", { ascending: true })
-    .returns<ParcelaDaFila[]>();
+  const { data } = await conferir(
+    supabase
+      .from("crm_parcelas")
+      .select(
+        "id, lead_id, rotulo, valor, vence_em, cobrar_em, cancelada_em, metodo_previsto, " +
+          "crm_contratos(titulo, status), crm_recebimentos(*)",
+      )
+      .is("cancelada_em", null)
+      .lte("vence_em", hoje)
+      .order("vence_em", { ascending: true })
+      .returns<ParcelaDaFila[]>(),
+  );
 
   const porLead = new Map<string, NonNullable<LeadPainel["cobranca"]>>();
 
   for (const p of data ?? []) {
     const quando = p.cobrar_em || p.vence_em;
-    const recebido = somar(
-      (p.crm_recebimentos ?? []).filter((r) => !r.estornado_em).map((r) => Number(r.valor)),
-    );
+    const recebido = somar((p.crm_recebimentos ?? []).map((r) => valorRetido(r)));
     const saldo = centavos(Number(p.valor) - recebido);
     /* A régua única (`cobravel`, 06/10): adiada para depois de hoje sai da
        fila (é para isso que servem +3d e +7d, e o vencimento continua
        intacto no banco), quitada sai, e parcela de contrato cancelado sai. */
-    if (!cobravel({ ...p, valor: Number(p.valor), recebido, contrato_status: p.crm_contratos?.status ?? null }, hoje)) continue;
+    if (
+      !cobravel(
+        { ...p, valor: Number(p.valor), recebido, contrato_status: p.crm_contratos?.status ?? null },
+        hoje,
+      )
+    )
+      continue;
 
     /* A primeira que aparece é a mais antiga (a consulta vem ordenada), e é
        ela que fica: `has` em vez de `set` incondicional. */
@@ -1011,5 +1085,5 @@ type ParcelaDaFila = {
   cancelada_em: string | null;
   metodo_previsto: string | null;
   crm_contratos: { titulo: string; status: string } | null;
-  crm_recebimentos: { valor: number; estornado_em: string | null }[] | null;
+  crm_recebimentos: { valor: number; estornado_em: string | null; valor_estornado?: number }[] | null;
 };

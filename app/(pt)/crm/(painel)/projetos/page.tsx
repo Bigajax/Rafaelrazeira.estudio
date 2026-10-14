@@ -51,8 +51,8 @@ export default async function PaginaProjetos() {
 
       {semTabela ? (
         <p className={p.aviso}>
-          A tabela dos projetos ainda não existe no banco. Rode o <code>supabase/projetos.sql</code> no SQL Editor do
-          Supabase: até lá a aba mostra o molde, mas não grava o que você marcar.
+          A tabela dos projetos ainda não existe no banco. Rode o <code>supabase/projetos.sql</code> no SQL
+          Editor do Supabase: até lá a aba mostra o molde, mas não grava o que você marcar.
         </p>
       ) : null}
 
@@ -66,12 +66,18 @@ export default async function PaginaProjetos() {
             const passo = proximoItem(x);
             const nomeEtapa = ETAPAS.find((e) => e.id === atual)?.nome;
             return (
-              <li key={x.lead_id} className={`${p.linha} ${atual ? "" : p.linhaEntregue}`}>
-                <Link href={`/crm/projetos/${x.lead_id}`} className={p.linhaLink}>
+              <li key={x.contrato_id ?? x.lead_id} className={`${p.linha} ${atual ? "" : p.linhaEntregue}`}>
+                <Link
+                  href={`/crm/projetos/${x.lead_id}${x.contrato_id ? "?contrato=" + x.contrato_id : ""}`}
+                  className={p.linhaLink}
+                >
                   <div className={p.linhaNome}>
                     <h2>{x.nome}</h2>
                     <span>
-                      {[x.instagram ? `@${x.instagram}` : "", x.fechado_em ? `fechou ${dataCurta(x.fechado_em)}` : ""]
+                      {[
+                        x.instagram ? `@${x.instagram}` : "",
+                        x.fechado_em ? `fechou ${dataCurta(x.fechado_em)}` : "",
+                      ]
                         .filter(Boolean)
                         .join(" · ")}
                     </span>

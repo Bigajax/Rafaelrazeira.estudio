@@ -98,9 +98,15 @@ export function ModalContrato({
   const [mensal, setMensal] = useState("");
   const [mesesGerar, setMesesGerar] = useState("3");
   const [lojaPerf, setLojaPerf] = useState("");
-  const [lojas, setLojas] = useState<{ id: string; nome: string; slug: string; doLead: boolean }[] | null>(null);
+  const [lojas, setLojas] = useState<{ id: string; nome: string; slug: string; doLead: boolean }[] | null>(
+    null,
+  );
 
   const [erro, setErro] = useState<string | null>(null);
+  const [requestId, setRequestId] = useState("");
+  useEffect(() => {
+    setRequestId(crypto.randomUUID());
+  }, []);
   const [salvando, comecar] = useTransition();
 
   const proposta = slug ? PROPOSTAS[slug] : null;
@@ -111,7 +117,9 @@ export function ModalContrato({
      modal pergunta ao servidor antes de desenhar o plano e, havendo
      contrato de projeto de pé, troca o formulário por um aviso e o botão
      por "Voltar para Ganho". `null` é "ainda não sei": o formulário espera. */
-  const [jaTem, setJaTem] = useState<{ id: string; titulo: string; valor_total: number | null }[] | null>(ganhar ? null : []);
+  const [jaTem, setJaTem] = useState<{ id: string; titulo: string; valor_total: number | null }[] | null>(
+    ganhar ? null : [],
+  );
   useEffect(() => {
     if (!ganhar) return;
     let vivo = true;
@@ -187,7 +195,12 @@ export function ModalContrato({
     if (modo === "mensal") {
       const v = Number(mensal) || 0;
       if (v <= 0) return [];
-      return gerarMensalidades({ valor: v, meses: Math.max(1, Math.min(12, Number(mesesGerar) || 3)), primeiro, somarMeses });
+      return gerarMensalidades({
+        valor: v,
+        meses: Math.max(1, Math.min(12, Number(mesesGerar) || 3)),
+        primeiro,
+        somarMeses,
+      });
     }
     const t = Number(total) || 0;
     const e = Number(entrada) || 0;
@@ -208,6 +221,7 @@ export function ModalContrato({
     setErro(null);
     comecar(async () => {
       const contrato = {
+        request_id: requestId,
         titulo: titulo.trim() || lead.nome,
         valor_total: modo === "proposta" ? somaPrevia : modo === "mensal" ? somaPrevia : Number(total),
         proposta_slug: modo === "proposta" ? slug : null,
@@ -260,8 +274,8 @@ export function ModalContrato({
                 </p>
               ))}
               <p className={s.campoNota}>
-                Fechar só devolve o lead para Ganho, com o valor destes contratos. Para um plano novo de verdade, use
-                &ldquo;Montar outro contrato&rdquo; na ficha.
+                Fechar só devolve o lead para Ganho, com o valor destes contratos. Para um plano novo de
+                verdade, use &ldquo;Montar outro contrato&rdquo; na ficha.
               </p>
             </div>
             {erro ? (
@@ -279,249 +293,266 @@ export function ModalContrato({
             </div>
           </>
         ) : (
-        <form onSubmit={enviar}>
-          <fieldset className={s.grupo}>
-            <legend className={s.campoRot}>De onde vem o plano</legend>
-            <div className={s.opcoes}>
-              <button
-                type="button"
-                className={`${s.opcao} ${modo === "proposta" ? s.opcaoAtiva : ""}`}
-                onClick={() => setModo("proposta")}
-                aria-pressed={modo === "proposta"}
-              >
-                De uma proposta
-              </button>
-              <button
-                type="button"
-                className={`${s.opcao} ${modo === "manual" ? s.opcaoAtiva : ""}`}
-                onClick={() => setModo("manual")}
-                aria-pressed={modo === "manual"}
-              >
-                À mão
-              </button>
-              <button
-                type="button"
-                className={`${s.opcao} ${modo === "mensal" ? s.opcaoAtiva : ""}`}
-                onClick={() => setModo("mensal")}
-                aria-pressed={modo === "mensal"}
-              >
-                Mensalidade
-              </button>
-            </div>
-          </fieldset>
+          <form onSubmit={enviar}>
+            <fieldset className={s.grupo}>
+              <legend className={s.campoRot}>De onde vem o plano</legend>
+              <div className={s.opcoes}>
+                <button
+                  type="button"
+                  className={`${s.opcao} ${modo === "proposta" ? s.opcaoAtiva : ""}`}
+                  onClick={() => setModo("proposta")}
+                  aria-pressed={modo === "proposta"}
+                >
+                  De uma proposta
+                </button>
+                <button
+                  type="button"
+                  className={`${s.opcao} ${modo === "manual" ? s.opcaoAtiva : ""}`}
+                  onClick={() => setModo("manual")}
+                  aria-pressed={modo === "manual"}
+                >
+                  À mão
+                </button>
+                <button
+                  type="button"
+                  className={`${s.opcao} ${modo === "mensal" ? s.opcaoAtiva : ""}`}
+                  onClick={() => setModo("mensal")}
+                  aria-pressed={modo === "mensal"}
+                >
+                  Mensalidade
+                </button>
+              </div>
+            </fieldset>
 
-          {modo === "mensal" ? (
-            <>
+            {modo === "mensal" ? (
+              <>
+                <div className={s.dupla}>
+                  <label className={s.campo}>
+                    <span className={s.campoRot}>Valor por mês</span>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={mensal}
+                      onChange={(e) => setMensal(e.target.value)}
+                      placeholder="0,00"
+                    />
+                  </label>
+                  <label className={s.campo}>
+                    <span className={s.campoRot}>Quantos meses gerar agora</span>
+                    <input
+                      type="number"
+                      min="1"
+                      max="12"
+                      value={mesesGerar}
+                      onChange={(e) => setMesesGerar(e.target.value)}
+                    />
+                  </label>
+                  <label className={s.campo}>
+                    <span className={s.campoRot}>Primeira vence em</span>
+                    <input type="date" value={primeiro} onChange={(e) => setPrimeiro(e.target.value)} />
+                  </label>
+                  <label className={s.campo}>
+                    <span className={s.campoRot}>Loja no Performance</span>
+                    <select value={lojaPerf} onChange={(e) => setLojaPerf(e.target.value)}>
+                      <option value="">{lojas === null ? "Carregando…" : "Nenhuma (só cobrar)"}</option>
+                      {(lojas ?? []).map((l) => (
+                        <option key={l.id} value={l.id}>
+                          {l.nome}
+                          {l.doLead ? " (deste lead)" : ""}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+                <p className={s.campoNota}>
+                  Cada mensalidade quitada no Caixa libera a aba Desempenho da loja por um mês (e cinco dias
+                  de folga). Gere poucas: o cartão do contrato gera mais quando estiverem acabando.
+                </p>
+              </>
+            ) : modo === "proposta" ? (
+              <>
+                <label className={s.campo}>
+                  <span className={s.campoRot}>Qual proposta</span>
+                  <select value={slug} onChange={(e) => setSlug(e.target.value)}>
+                    <option value="">Escolha…</option>
+                    {SLUGS.map((sl) => (
+                      <option key={sl} value={sl}>
+                        {sl}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                {proposta ? (
+                  <div className={s.blocoPergunta}>
+                    <p className={s.perguntaTitulo}>O que ele escolheu pagar?</p>
+                    {/* Os itens não somam: à vista é ALTERNATIVA a entrada mais
+                      saldo. Marcar os dois criaria um contrato do dobro. */}
+                    {Object.entries(proposta.itens).map(([id, item]) => (
+                      <label key={id} className={s.itemPlano}>
+                        <input
+                          type="checkbox"
+                          checked={marcados.includes(id)}
+                          onChange={(e) =>
+                            setMarcados((atual) =>
+                              e.target.checked ? [...atual, id] : atual.filter((x) => x !== id),
+                            )
+                          }
+                        />
+                        <span className={s.itemPlanoRot}>
+                          {item.label}
+                          {item.maxParcelas ? (
+                            <i className={s.itemPlanoNota}>
+                              até {item.maxParcelas}x no cartão dele: entra de uma vez aqui
+                            </i>
+                          ) : null}
+                        </span>
+                        <b className={s.itemPlanoValor}>{dinheiroExato(item.valor)}</b>
+                      </label>
+                    ))}
+                  </div>
+                ) : null}
+              </>
+            ) : (
               <div className={s.dupla}>
                 <label className={s.campo}>
-                  <span className={s.campoRot}>Valor por mês</span>
-                  <input type="number" step="0.01" min="0" value={mensal} onChange={(e) => setMensal(e.target.value)} placeholder="0,00" />
+                  <span className={s.campoRot}>Valor total</span>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={total}
+                    onChange={(e) => setTotal(e.target.value)}
+                  />
                 </label>
                 <label className={s.campo}>
-                  <span className={s.campoRot}>Quantos meses gerar agora</span>
-                  <input type="number" min="1" max="12" value={mesesGerar} onChange={(e) => setMesesGerar(e.target.value)} />
+                  <span className={s.campoRot}>Entrada</span>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={entrada}
+                    onChange={(e) => setEntrada(e.target.value)}
+                  />
+                </label>
+                <label className={s.campo}>
+                  <span className={s.campoRot}>O saldo em quantas vezes</span>
+                  <input
+                    type="number"
+                    min="1"
+                    max="12"
+                    value={vezes}
+                    onChange={(e) => setVezes(e.target.value)}
+                  />
                 </label>
                 <label className={s.campo}>
                   <span className={s.campoRot}>Primeira vence em</span>
                   <input type="date" value={primeiro} onChange={(e) => setPrimeiro(e.target.value)} />
                 </label>
-                <label className={s.campo}>
-                  <span className={s.campoRot}>Loja no Performance</span>
-                  <select value={lojaPerf} onChange={(e) => setLojaPerf(e.target.value)}>
-                    <option value="">{lojas === null ? "Carregando…" : "Nenhuma (só cobrar)"}</option>
-                    {(lojas ?? []).map((l) => (
-                      <option key={l.id} value={l.id}>
-                        {l.nome}
-                        {l.doLead ? " (deste lead)" : ""}
-                      </option>
-                    ))}
-                  </select>
-                </label>
               </div>
-              <p className={s.campoNota}>
-                Cada mensalidade quitada no Caixa libera a aba Desempenho da loja por um mês (e cinco dias de folga). Gere poucas: o
-                cartão do contrato gera mais quando estiverem acabando.
-              </p>
-            </>
-          ) : modo === "proposta" ? (
-            <>
-              <label className={s.campo}>
-                <span className={s.campoRot}>Qual proposta</span>
-                <select value={slug} onChange={(e) => setSlug(e.target.value)}>
-                  <option value="">Escolha…</option>
-                  {SLUGS.map((sl) => (
-                    <option key={sl} value={sl}>
-                      {sl}
-                    </option>
-                  ))}
-                </select>
-              </label>
+            )}
 
-              {proposta ? (
-                <div className={s.blocoPergunta}>
-                  <p className={s.perguntaTitulo}>O que ele escolheu pagar?</p>
-                  {/* Os itens não somam: à vista é ALTERNATIVA a entrada mais
-                      saldo. Marcar os dois criaria um contrato do dobro. */}
-                  {Object.entries(proposta.itens).map(([id, item]) => (
-                    <label key={id} className={s.itemPlano}>
-                      <input
-                        type="checkbox"
-                        checked={marcados.includes(id)}
-                        onChange={(e) =>
-                          setMarcados((atual) =>
-                            e.target.checked ? [...atual, id] : atual.filter((x) => x !== id),
-                          )
-                        }
-                      />
-                      <span className={s.itemPlanoRot}>
-                        {item.label}
-                        {item.maxParcelas ? (
-                          <i className={s.itemPlanoNota}>
-                            até {item.maxParcelas}x no cartão dele: entra de uma vez aqui
-                          </i>
-                        ) : null}
-                      </span>
-                      <b className={s.itemPlanoValor}>{dinheiroExato(item.valor)}</b>
-                    </label>
-                  ))}
-                </div>
+            <div className={ganhar ? s.dupla : undefined}>
+              <label className={s.campo}>
+                <span className={s.campoRot}>Nome do projeto</span>
+                <input
+                  type="text"
+                  value={titulo}
+                  onChange={(e) => setTitulo(e.target.value)}
+                  placeholder="Vitrine Digital"
+                />
+              </label>
+              {ganhar ? (
+                <label className={s.campo}>
+                  <span className={s.campoRot}>Fechou em</span>
+                  <input
+                    type="date"
+                    value={fechadoEm}
+                    onChange={(e) => setFechadoEm(e.target.value)}
+                    required
+                  />
+                </label>
               ) : null}
-            </>
-          ) : (
-            <div className={s.dupla}>
-              <label className={s.campo}>
-                <span className={s.campoRot}>Valor total</span>
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={total}
-                  onChange={(e) => setTotal(e.target.value)}
-                />
-              </label>
-              <label className={s.campo}>
-                <span className={s.campoRot}>Entrada</span>
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={entrada}
-                  onChange={(e) => setEntrada(e.target.value)}
-                />
-              </label>
-              <label className={s.campo}>
-                <span className={s.campoRot}>O saldo em quantas vezes</span>
-                <input
-                  type="number"
-                  min="1"
-                  max="12"
-                  value={vezes}
-                  onChange={(e) => setVezes(e.target.value)}
-                />
-              </label>
-              <label className={s.campo}>
-                <span className={s.campoRot}>Primeira vence em</span>
-                <input
-                  type="date"
-                  value={primeiro}
-                  onChange={(e) => setPrimeiro(e.target.value)}
-                />
-              </label>
             </div>
-          )}
 
-          <div className={ganhar ? s.dupla : undefined}>
-            <label className={s.campo}>
-              <span className={s.campoRot}>Nome do projeto</span>
-              <input
-                type="text"
-                value={titulo}
-                onChange={(e) => setTitulo(e.target.value)}
-                placeholder="Vitrine Digital"
-              />
-            </label>
-            {ganhar ? (
-              <label className={s.campo}>
-                <span className={s.campoRot}>Fechou em</span>
-                <input type="date" value={fechadoEm} onChange={(e) => setFechadoEm(e.target.value)} required />
-              </label>
-            ) : null}
-          </div>
-
-          {/* ---------- a prévia ----------
+            {/* ---------- a prévia ----------
               Ela não é enfeite: é a última chance de ver que a data ficou no
               passado ou que o total não é o que se combinou, e o custo de
               descobrir isso depois é cobrar o valor errado de um cliente. */}
-          {previa.length ? (
-            <div className={s.blocoPergunta}>
-              <p className={s.perguntaTitulo}>
-                Vão nascer {previa.length} {previa.length === 1 ? "parcela" : "parcelas"}, somando{" "}
-                {dinheiroExato(somaPrevia)}
-              </p>
-              {ganhar
-                ? /* No "Fechou" cada parcela vira uma caixa: marcada, ela
+            {previa.length ? (
+              <div className={s.blocoPergunta}>
+                <p className={s.perguntaTitulo}>
+                  Vão nascer {previa.length} {previa.length === 1 ? "parcela" : "parcelas"}, somando{" "}
+                  {dinheiroExato(somaPrevia)}
+                </p>
+                {ganhar
+                  ? /* No "Fechou" cada parcela vira uma caixa: marcada, ela
                      nasce paga (a baixa entra no Caixa no dia de "caiu em"). */
-                  previa.map((p) => (
-                    <label key={p.numero} className={s.itemPlano}>
+                    previa.map((p) => (
+                      <label key={p.numero} className={s.itemPlano}>
+                        <input
+                          type="checkbox"
+                          checked={pagas.includes(p.numero)}
+                          onChange={(e) =>
+                            setPagas((atual) =>
+                              e.target.checked ? [...atual, p.numero] : atual.filter((x) => x !== p.numero),
+                            )
+                          }
+                        />
+                        <span className={s.itemPlanoRot}>
+                          {p.rotulo}
+                          <i className={s.itemPlanoNota}>
+                            {pagas.includes(p.numero)
+                              ? "já recebi"
+                              : `vence ${p.vence_em.split("-").reverse().slice(0, 2).join("/")}`}
+                          </i>
+                        </span>
+                        <b className={s.itemPlanoValor}>{dinheiroExato(p.valor)}</b>
+                      </label>
+                    ))
+                  : previa.map((p) => (
+                      <p key={p.numero} className={s.previaLinha}>
+                        <span>{p.rotulo}</span>
+                        <i>{p.vence_em.split("-").reverse().slice(0, 2).join("/")}</i>
+                        <b>{dinheiroExato(p.valor)}</b>
+                      </p>
+                    ))}
+                {ganhar ? (
+                  pagas.some((n) => previa.some((p) => p.numero === n)) ? (
+                    <label className={s.campo}>
+                      <span className={s.campoRot}>Caiu na conta em</span>
                       <input
-                        type="checkbox"
-                        checked={pagas.includes(p.numero)}
-                        onChange={(e) =>
-                          setPagas((atual) =>
-                            e.target.checked ? [...atual, p.numero] : atual.filter((x) => x !== p.numero),
-                          )
-                        }
+                        type="date"
+                        value={caiuEm}
+                        onChange={(e) => setCaiuEm(e.target.value)}
+                        required
                       />
-                      <span className={s.itemPlanoRot}>
-                        {p.rotulo}
-                        <i className={s.itemPlanoNota}>
-                          {pagas.includes(p.numero)
-                            ? "já recebi"
-                            : `vence ${p.vence_em.split("-").reverse().slice(0, 2).join("/")}`}
-                        </i>
-                      </span>
-                      <b className={s.itemPlanoValor}>{dinheiroExato(p.valor)}</b>
                     </label>
-                  ))
-                : previa.map((p) => (
-                    <p key={p.numero} className={s.previaLinha}>
-                      <span>{p.rotulo}</span>
-                      <i>{p.vence_em.split("-").reverse().slice(0, 2).join("/")}</i>
-                      <b>{dinheiroExato(p.valor)}</b>
+                  ) : (
+                    <p className={s.campoNota}>
+                      Marque o que já caiu na conta. O resto fica cobrando sozinho no Caixa e na fila do dia.
                     </p>
-                  ))}
-              {ganhar ? (
-                pagas.some((n) => previa.some((p) => p.numero === n)) ? (
-                  <label className={s.campo}>
-                    <span className={s.campoRot}>Caiu na conta em</span>
-                    <input type="date" value={caiuEm} onChange={(e) => setCaiuEm(e.target.value)} required />
-                  </label>
-                ) : (
-                  <p className={s.campoNota}>Marque o que já caiu na conta. O resto fica cobrando sozinho no Caixa e na fila do dia.</p>
-                )
-              ) : null}
+                  )
+                ) : null}
+              </div>
+            ) : null}
+
+            {erro ? (
+              <p role="alert" className={s.erro}>
+                {erro}
+              </p>
+            ) : null}
+
+            <div className={s.modalPe}>
+              <button type="button" className={s.btn} onClick={aoFechar}>
+                Cancelar
+              </button>
+              <button type="submit" className={s.btnAcao} disabled={salvando || !previa.length}>
+                {salvando ? "Montando…" : ganhar ? "Fechar a venda" : "Montar contrato"}
+              </button>
             </div>
-          ) : null}
-
-          {erro ? (
-            <p role="alert" className={s.erro}>
-              {erro}
-            </p>
-          ) : null}
-
-          <div className={s.modalPe}>
-            <button type="button" className={s.btn} onClick={aoFechar}>
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              className={s.btnAcao}
-              disabled={salvando || !previa.length}
-            >
-              {salvando ? "Montando…" : ganhar ? "Fechar a venda" : "Montar contrato"}
-            </button>
-          </div>
-        </form>
+          </form>
         )}
       </div>
     </div>

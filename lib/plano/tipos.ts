@@ -21,7 +21,8 @@ export type Horizonte = "agora" | "depois" | "ideia";
 export type StatusProjeto = "ativo" | "pausado" | "encerrado";
 export type Unidade = "R$" | "un" | "%";
 export type Periodo = "mes" | "ano";
-export type Fonte = "manual" | "recebido" | "fechados" | "toques" | "posts";
+export type Fonte =
+  "manual" | "recebido" | "fechados" | "toques" | "posts" | "despesas" | "entregas" | "saldo";
 
 export const PRIORIDADES: Record<Prioridade, { nome: string; faz: string }> = {
   P1: { nome: "P1", faz: "a maior parte da energia do ano" },
@@ -38,10 +39,33 @@ export const HORIZONTES: Record<Horizonte, string> = {
 /* As metas que se medem sozinhas: o número vem do banco na hora. */
 export const FONTES: Record<Fonte, { nome: string; unidade: Unidade | null; ajuda: string }> = {
   manual: { nome: "Eu digito na RMR", unidade: null, ajuda: "você lança o número do mês na reunião mensal" },
-  recebido: { nome: "Caixa: o que entrou", unidade: "R$", ajuda: "a soma dos recebimentos do mês no Caixa" },
-  fechados: { nome: "Funil: fechamentos", unidade: "un", ajuda: "leads que viraram ganho no mês" },
+  recebido: {
+    nome: "Caixa: entradas após devoluções",
+    unidade: "R$",
+    ajuda: "recebimentos brutos menos devoluções nas respectivas datas, igual ao Caixa",
+  },
+  fechados: {
+    nome: "Vendas: contratações",
+    unidade: "un",
+    ajuda: "contratos de projeto assinados no mês; ganhos legados sem contrato entram uma vez",
+  },
   toques: { nome: "Toques enviados", unidade: "un", ajuda: "mensagens que você mandou no mês (as de saída)" },
   posts: { nome: "Marketing: posts", unidade: "un", ajuda: "peças marcadas como postadas no mês" },
+  despesas: {
+    nome: "Financeiro: despesas pagas",
+    unidade: "R$",
+    ajuda: "saídas realizadas pela data de pagamento, sem incluir custos apenas previstos",
+  },
+  entregas: {
+    nome: "Projetos: entregas concluídas",
+    unidade: "un",
+    ajuda: "projetos concluídos pela data de entrega",
+  },
+  saldo: {
+    nome: "Financeiro: saldo operacional",
+    unidade: "R$",
+    ajuda: "líquido menos devoluções e despesas; fica sem medição quando faltam taxas",
+  },
 };
 
 /* O prêmio em DEGRAUS (30/09): "a recompensa é trocar para um iPhone de
@@ -75,7 +99,11 @@ export type SituacaoDegrau = {
 };
 
 /* recebido[mes 1..12] = o que entrou no Caixa no mês */
-export function situacaoDoDegrau(d: Degrau, recebido: Partial<Record<number, number>>, ate: number): SituacaoDegrau {
+export function situacaoDoDegrau(
+  d: Degrau,
+  recebido: Partial<Record<number, number>>,
+  ate: number,
+): SituacaoDegrau {
   const meses = Math.max(1, d.meses || 1);
   let melhorMes = 0;
   let corrida = 0;
@@ -89,7 +117,11 @@ export function situacaoDoDegrau(d: Degrau, recebido: Partial<Record<number, num
     if (quando === null && corrida >= meses) quando = m;
   }
   const destravado = quando !== null;
-  const progresso = destravado ? 1 : maior > 0 ? Math.min(0.99, maior / meses) : Math.min(0.99, melhorMes / d.patamar);
+  const progresso = destravado
+    ? 1
+    : maior > 0
+      ? Math.min(0.99, maior / meses)
+      : Math.min(0.99, melhorMes / d.patamar);
   return { destravado, quando, melhorMes, seguidos: maior, progresso };
 }
 
@@ -114,27 +146,54 @@ export type Meta = {
   periodo: Periodo;
   peso: number;
   fonte: Fonte;
+  direcao?: "aumentar" | "reduzir";
   ordem: number;
 };
 
-export type Rmr = { mes: string; nota: number | null; causa: string | null; plano: string | null; fechada_em: string };
+export type Rmr = {
+  mes: string;
+  nota: number | null;
+  causa: string | null;
+  plano: string | null;
+  fechada_em: string;
+};
 
 /* valores[meta_id][mes 1..12] = número do mês (medido ou automático) */
 export type Valores = Record<string, Partial<Record<number, number>>>;
 
 export const MESES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
 export const MESES_LONGOS = [
-  "janeiro", "fevereiro", "março", "abril", "maio", "junho",
-  "julho", "agosto", "setembro", "outubro", "novembro", "dezembro",
+  "janeiro",
+  "fevereiro",
+  "março",
+  "abril",
+  "maio",
+  "junho",
+  "julho",
+  "agosto",
+  "setembro",
+  "outubro",
+  "novembro",
+  "dezembro",
 ];
 
 export const TETO = 1.2;
 
-export function percentual(meta: Pick<Meta, "alvo" | "periodo">, valores: Partial<Record<number, number>>, mes: number): number | null {
+export function percentual(
+  meta: Pick<Meta, "alvo" | "periodo" | "direcao">,
+  valores: Partial<Record<number, number>>,
+  mes: number,
+): number | null {
   if (!(meta.alvo > 0)) return null;
   if (meta.periodo === "mes") {
     const v = valores[mes];
-    return v === undefined ? null : v / meta.alvo;
+    return v === undefined
+      ? null
+      : meta.direcao === "reduzir"
+        ? v <= 0
+          ? TETO
+          : meta.alvo / v
+        : v / meta.alvo;
   }
   let soma = 0;
   let algum = false;
@@ -145,7 +204,8 @@ export function percentual(meta: Pick<Meta, "alvo" | "periodo">, valores: Partia
       algum = true;
     }
   }
-  return algum ? soma / ((meta.alvo * mes) / 12) : null;
+  const ritmo = (meta.alvo * mes) / 12;
+  return algum ? (meta.direcao === "reduzir" ? (soma <= 0 ? TETO : ritmo / soma) : soma / ritmo) : null;
 }
 
 export type Faixa = "bateu" | "perto" | "atencao" | "fora" | "sem";
@@ -165,7 +225,11 @@ export const FAIXAS: Record<Faixa, string> = {
 };
 
 /* O percentual da meta no ano, até o mês: é o que entra na nota. */
-export function percentualNoAno(meta: Pick<Meta, "alvo" | "periodo">, valores: Partial<Record<number, number>>, ate: number): number | null {
+export function percentualNoAno(
+  meta: Pick<Meta, "alvo" | "periodo" | "direcao">,
+  valores: Partial<Record<number, number>>,
+  ate: number,
+): number | null {
   if (meta.periodo === "ano") return percentual(meta, valores, ate);
   const ps: number[] = [];
   for (let m = 1; m <= ate; m++) {

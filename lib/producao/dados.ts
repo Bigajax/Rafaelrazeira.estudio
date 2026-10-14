@@ -1,3 +1,5 @@
+import { lerTodos } from "@/lib/sistema/consultas";
+import { conferir } from "@/lib/sistema/consultas";
 /* ============================================================
    AS CONSULTAS DA OFICINA
 
@@ -39,11 +41,20 @@ export async function listarLojas(): Promise<LojaNaLista[]> {
      linhas inteiras de produto e ativo de todas as lojas para contar no
      cliente. Duas listas de ids são mais baratas que isso e mais fáceis de
      ler daqui a seis meses. */
-  const [{ data: lojas }, { data: produtos }, { data: ativos }] = await Promise.all([
-    supabase.from("prod_lojas").select("*").order("criado_em", { ascending: false }),
-    supabase.from("prod_produtos").select("loja_id,revisado"),
-    supabase.from("prod_ativos").select("loja_id,tipo"),
+  const [lojas, produtos, ativos] = await Promise.all([
+    lerTodos<Loja>(supabase, "prod_lojas"),
+    lerTodos<{ id: string; loja_id: string; revisado: boolean }>(
+      supabase,
+      "prod_produtos",
+      "id,loja_id,revisado",
+    ),
+    lerTodos<{ id: string; loja_id: string; tipo: string | null }>(
+      supabase,
+      "prod_ativos",
+      "id,loja_id,tipo",
+    ),
   ]);
+  lojas.sort((a, b) => b.criado_em.localeCompare(a.criado_em));
 
   const conta = (linhas: { loja_id: string }[] | null) => {
     const m = new Map<string, number>();
@@ -56,16 +67,16 @@ export async function listarLojas(): Promise<LojaNaLista[]> {
   /* O material que o cliente mandou não é foto colhida: contá-lo aqui
      faria a ficha dizer que a loja tem sessenta fotos quando três são o
      logo. */
-  const nAtivos = conta(((ativos as { loja_id: string; tipo: string | null }[]) ?? []).filter((a) => a.tipo !== "MATERIAL"));
+  const nAtivos = conta(
+    ((ativos as { loja_id: string; tipo: string | null }[]) ?? []).filter((a) => a.tipo !== "MATERIAL"),
+  );
 
   return ((lojas as Loja[]) ?? []).map((l) => ({
     ...l,
     produtos: nProdutos.get(l.id) ?? 0,
     imagens: nAtivos.get(l.id) ?? 0,
     revisados: nRevisados.get(l.id) ?? 0,
-    colhidoHa: l.colhido_em
-      ? Math.floor((Date.now() - new Date(l.colhido_em).getTime()) / 86400000)
-      : null,
+    colhidoHa: l.colhido_em ? Math.floor((Date.now() - new Date(l.colhido_em).getTime()) / 86400000) : null,
   }));
 }
 
@@ -74,7 +85,7 @@ export async function lojaCompleta(
 ): Promise<{ loja: Loja; ativos: Ativo[]; produtos: Produto[]; versoes: VersaoPrompt[] } | null> {
   const supabase = await clienteServidor();
 
-  const { data: loja } = await supabase.from("prod_lojas").select("*").eq("id", id).single<Loja>();
+  const { data: loja } = await conferir(supabase.from("prod_lojas").select("*").eq("id", id).single<Loja>());
   if (!loja) return null;
 
   /* O markdown NÃO entra nesta consulta. A ficha desenha cinco linhas de
@@ -82,14 +93,16 @@ export async function lojaCompleta(
      seria carregar cem mil caracteres para escrever cinco datas. O texto vem
      por `buscarPrompt` quando você clica em copiar. */
   const [{ data: ativos }, { data: produtos }, { data: versoes }] = await Promise.all([
-    supabase.from("prod_ativos").select("*").eq("loja_id", id).order("ordem"),
-    supabase.from("prod_produtos").select("*").eq("loja_id", id).order("ordem"),
-    supabase
-      .from("prod_prompts")
-      .select("id,criado_em,modo")
-      .eq("loja_id", id)
-      .order("criado_em", { ascending: false })
-      .limit(5),
+    conferir(supabase.from("prod_ativos").select("*").eq("loja_id", id).order("ordem")),
+    conferir(supabase.from("prod_produtos").select("*").eq("loja_id", id).order("ordem")),
+    conferir(
+      supabase
+        .from("prod_prompts")
+        .select("id,criado_em,modo")
+        .eq("loja_id", id)
+        .order("criado_em", { ascending: false })
+        .limit(5),
+    ),
   ]);
 
   return {
@@ -103,19 +116,23 @@ export async function lojaCompleta(
 /* Os leads que ainda não viraram loja, para o campo de vínculo do formulário
    de nova loja. Só os ativos: oferecer um lead perdido de abril na hora de
    abrir uma prévia é ruído. */
-export async function leadsParaVincular(): Promise<{ id: string; nome: string; empresa: string | null; instagram: string | null }[]> {
+export async function leadsParaVincular(): Promise<
+  { id: string; nome: string; empresa: string | null; instagram: string | null }[]
+> {
   const supabase = await clienteServidor();
-  const { data } = await supabase
-    .from("crm_leads")
-    .select("id,nome,empresa,instagram,estagio")
-    .not("estagio", "in", '("ganho","perdido")')
-    /* `created_at`, não `criado_em`: as tabelas `crm_` nasceram em inglês e
+  const { data } = await conferir(
+    supabase
+      .from("crm_leads")
+      .select("id,nome,empresa,instagram,estagio")
+      .not("estagio", "in", '("ganho","perdido")')
+      /* `created_at`, não `criado_em`: as tabelas `crm_` nasceram em inglês e
        as `prod_`/`perf_` em português. Com a coluna errada a consulta
        falhava em silêncio e a lista de leads saía vazia (06/10). */
-    .order("created_at", { ascending: false })
-    .limit(80);
-
-  return ((data as { id: string; nome: string; empresa: string | null; instagram: string | null }[]) ?? []).map(
-    ({ id, nome, empresa, instagram }) => ({ id, nome, empresa, instagram }),
+      .order("created_at", { ascending: false })
+      .limit(80),
   );
+
+  return (
+    (data as { id: string; nome: string; empresa: string | null; instagram: string | null }[]) ?? []
+  ).map(({ id, nome, empresa, instagram }) => ({ id, nome, empresa, instagram }));
 }

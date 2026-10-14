@@ -182,11 +182,11 @@ async function acharParcela(dono, slug, item) {
      tem que cair na próxima em aberto, não em cima da que já fechou. */
   const recebidos = await supabaseSelect(
     `crm_recebimentos?owner_id=eq.${dono}&parcela_id=in.(${parcelas.map((p) => p.id).join(",")})` +
-      `&estornado_em=is.null&select=parcela_id,valor`,
+      `&estornado_em=is.null&select=*`,
   );
   const pago = new Map();
   for (const r of recebidos) {
-    pago.set(r.parcela_id, (pago.get(r.parcela_id) || 0) + Number(r.valor));
+    pago.set(r.parcela_id, (pago.get(r.parcela_id) || 0) + Math.max(0,Number(r.valor)-Number(r.valor_estornado||0)));
   }
 
   return parcelas.find((p) => Number(p.valor) - (pago.get(p.id) || 0) > 0.005) || null;
@@ -319,7 +319,7 @@ async function registrarPerf(dono, ref, pagamento) {
       bruto: pagamento,
     }),
   });
-  if (!ins.ok) console.error("mp_webhook_perf_caixa", ins.status);
+  if (!ins.ok) throw new Error(`mp_webhook_perf_caixa ${ins.status}`);
 
   /* o upgrade pago vira linha do tempo no lead: é o sinal para começar */
   if (upgrade && resultado.novo && lojas[0] && lojas[0].lead_id) {
@@ -452,14 +452,15 @@ export default async function handler(req, res) {
      A linha fica, com a data: ela aconteceu, e um mês já fechado precisa
      poder ser reconstruído. O que muda é que ela para de contar. */
   if (["refunded", "charged_back", "cancelled"].includes(pg.status)) {
-    await supabaseREST(
-      `crm_recebimentos?owner_id=eq.${dono}&mp_payment_id=eq.${encodeURIComponent(String(pg.id))}`,
+    const estorno = await supabaseREST(
+      `crm_recebimentos?owner_id=eq.${dono}&mp_payment_id=eq.${encodeURIComponent(String(pg.id))}&estornado_em=is.null`,
       {
         method: "PATCH",
         headers: { Prefer: "return=minimal" },
         body: JSON.stringify({ mp_status: pg.status, estornado_em: diaEmSP() }),
       },
     );
+    if(!estorno.ok)return responder(res,500,{erro:"não foi possível registrar o estorno"});
     return responder(res, 200, { ok: true, estornado: true });
   }
 

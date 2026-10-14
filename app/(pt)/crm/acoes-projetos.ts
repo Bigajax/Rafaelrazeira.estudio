@@ -20,19 +20,31 @@ export type Feito = { ok: true } | { ok: false; erro: string };
 
 const SEM_TABELA = "A tabela dos projetos ainda não existe: rode o supabase/projetos.sql no SQL Editor.";
 
-async function gravar(leadId: string, campos: Record<string, unknown>): Promise<Feito> {
+function destino(alvo: string) {
+  const [leadId, contratoId] = alvo.split(":");
+  return { leadId, contratoId };
+}
+
+async function gravar(alvo: string, campos: Record<string, unknown>): Promise<Feito> {
   const usuario = await usuarioAtual();
   if (!usuario) return { ok: false, erro: "Sessão expirada. Entre de novo." };
   const supabase = await clienteServidor();
-  const { error } = await supabase
-    .from("crm_projetos")
-    .upsert({ owner_id: usuario.id, lead_id: leadId, ...campos }, { onConflict: "owner_id,lead_id" });
+  const { leadId, contratoId } = destino(alvo);
+  const { error } = await supabase.from(contratoId ? "crm_entregas" : "crm_projetos").upsert(
+    {
+      owner_id: usuario.id,
+      lead_id: leadId,
+      ...(contratoId ? { contrato_id: contratoId } : {}),
+      ...campos,
+    },
+    { onConflict: contratoId ? "contrato_id" : "owner_id,lead_id" },
+  );
   if (error) {
-    if (/crm_projetos|does not exist|schema cache/i.test(error.message)) return { ok: false, erro: SEM_TABELA };
+    if (/crm_projetos|does not exist|schema cache/i.test(error.message))
+      return { ok: false, erro: SEM_TABELA };
     return { ok: false, erro: "Não consegui salvar. Tente de novo." };
   }
-  revalidatePath("/crm/projetos");
-  revalidatePath(`/crm/projetos/${leadId}`);
+  revalidatePath("/crm", "layout");
   return { ok: true };
 }
 
@@ -42,7 +54,9 @@ export async function salvarChecklist(leadId: string, itens: ItemChecklist[]): P
   if (!Array.isArray(itens) || itens.length > 120) return { ok: false, erro: "Checklist inválido." };
   const limpos: ItemChecklist[] = [];
   for (const x of itens) {
-    const texto = String(x?.texto ?? "").trim().slice(0, 200);
+    const texto = String(x?.texto ?? "")
+      .trim()
+      .slice(0, 200);
     if (!x?.id || !ETAPA_OK.has(x.etapa) || !texto) continue;
     limpos.push({
       id: String(x.id).slice(0, 60),
@@ -61,10 +75,14 @@ type Campo = (typeof CAMPOS)[number];
 
 export async function salvarCampo(leadId: string, campo: Campo, valor: string): Promise<Feito> {
   if (!CAMPOS.includes(campo)) return { ok: false, erro: "Campo desconhecido." };
-  let v: string | null = String(valor ?? "").trim().slice(0, campo === "notas" ? 4000 : 300) || null;
+  let v: string | null =
+    String(valor ?? "")
+      .trim()
+      .slice(0, campo === "notas" ? 4000 : 300) || null;
   if (v && campo === "material") {
     v = v.toLowerCase();
-    if (!/^[a-z0-9-]{1,60}$/.test(v)) return { ok: false, erro: "A chave do material é só letra minúscula, número e hífen, como fulltime." };
+    if (!/^[a-z0-9-]{1,60}$/.test(v))
+      return { ok: false, erro: "A chave do material é só letra minúscula, número e hífen, como fulltime." };
   }
   if (v && (campo === "site" || campo === "dominio") && !/^https?:\/\//.test(v)) v = `https://${v}`;
   return gravar(leadId, { [campo]: v });
@@ -82,7 +100,12 @@ export async function salvarCampo(leadId: string, campo: Campo, valor: string): 
    ============================================================ */
 export type Criado = { ok: true; link: string; pecas: number; chave: string } | { ok: false; erro: string };
 
-export async function criarChecklistCliente(leadId: string, site: string, perguntas: Partial<Perguntas>): Promise<Criado> {
+export async function criarChecklistCliente(
+  alvo: string,
+  site: string,
+  perguntas: Partial<Perguntas>,
+): Promise<Criado> {
+  const { leadId, contratoId } = destino(alvo);
   const usuario = await usuarioAtual();
   if (!usuario) return { ok: false, erro: "Sessão expirada. Entre de novo." };
   const supabase = await clienteServidor();
@@ -95,16 +118,33 @@ export async function criarChecklistCliente(leadId: string, site: string, pergun
     return { ok: false, erro: "Escreva o endereço da vitrine no ar, como https://loja.vercel.app." };
   }
 
+  if (contratoId) {
+    const { data: c, error: e } = await supabase
+      .from("crm_contratos")
+      .select("id")
+      .eq("id", contratoId)
+      .eq("lead_id", leadId)
+      .eq("tipo", "projeto")
+      .maybeSingle();
+    if (e || !c) return { ok: false, erro: "Contrato da entrega não encontrado." };
+  }
   const [{ data: lead }, { data: projeto }] = await Promise.all([
     supabase.from("crm_leads").select("id, empresa, nome, instagram").eq("id", leadId).maybeSingle(),
-    supabase.from("crm_projetos").select("material").eq("lead_id", leadId).maybeSingle(),
+    supabase
+      .from(contratoId ? "crm_entregas" : "crm_projetos")
+      .select("material")
+      .eq(contratoId ? "contrato_id" : "lead_id", contratoId ?? leadId)
+      .eq("lead_id", leadId)
+      .maybeSingle(),
   ]);
   if (!lead) return { ok: false, erro: "Não achei este cliente." };
   const nome = lead.empresa || lead.nome || lead.instagram || "Sua loja";
 
   /* a chave que ele já tem continua; nova só se ainda não houver, e sem
      tomar a de outra loja */
-  let chave = projeto?.material || chaveDe(nome);
+  let chave =
+    projeto?.material ||
+    (contratoId ? chaveDe(nome).slice(0, 48) + "-" + contratoId.slice(0, 8) : chaveDe(nome));
   if (!projeto?.material) {
     for (let n = 2; ; n++) {
       const existente = await lerConfig(chave);
@@ -118,7 +158,10 @@ export async function criarChecklistCliente(leadId: string, site: string, pergun
      misturaria as respostas dele com as peças novas */
   const anterior = await lerConfig(chave);
   if (projeto?.material && !anterior) {
-    return { ok: false, erro: `O checklist de "${chave}" foi feito à mão, antes do gerador. Ele continua valendo como está.` };
+    return {
+      ok: false,
+      erro: `O checklist de "${chave}" foi feito à mão, antes do gerador. Ele continua valendo como está.`,
+    };
   }
 
   let catalogo;
@@ -141,9 +184,14 @@ export async function criarChecklistCliente(leadId: string, site: string, pergun
   });
   if (!ok) return { ok: false, erro: "Não consegui gravar o checklist no cofre." };
 
-  const r = await gravar(leadId, { material: chave, site: siteLimpo });
+  const r = await gravar(alvo, { material: chave, site: siteLimpo });
   if (!r.ok) return r;
-  return { ok: true, link: `https://rafaelrazeira.com.br/checklist/${chave}`, pecas: catalogo.pecas.length, chave };
+  return {
+    ok: true,
+    link: `https://rafaelrazeira.com.br/checklist/${chave}`,
+    pecas: catalogo.pecas.length,
+    chave,
+  };
 }
 
 export async function marcarEntregue(leadId: string, entregue: boolean): Promise<Feito> {

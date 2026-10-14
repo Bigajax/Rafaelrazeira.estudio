@@ -1,3 +1,9 @@
+import { conferir } from "@/lib/sistema/consultas";
+import { lerTodos, tabelaAusente } from "@/lib/sistema/consultas";
+import { financeiro } from "@/lib/financeiro/dados";
+import { devolucoesComLegado } from "@/lib/sistema/indicadores";
+import { dinheiroExato } from "@/lib/crm/financeiro";
+import u from "@/components/sistema/sistema.module.css";
 /* ============================================================
    RESULTADOS: o que deu certo e o que não deu (01/10/2026)
 
@@ -25,8 +31,10 @@ import m from "@/app/(pt)/crm/marketing.module.css";
 
 export const metadata: Metadata = { title: "Resultados" };
 
-const num = (x: number | null | undefined, casas = 1) => (x == null ? "sem número" : x.toLocaleString("pt-BR", { maximumFractionDigits: casas }));
-const data = (iso: string | null) => (iso ? new Date(`${iso}T12:00:00`).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }) : "");
+const num = (x: number | null | undefined, casas = 1) =>
+  x == null ? "sem número" : x.toLocaleString("pt-BR", { maximumFractionDigits: casas });
+const data = (iso: string | null) =>
+  iso ? new Date(`${iso}T12:00:00`).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }) : "";
 
 function Post({ p, largura }: { p: Peca; largura: number }) {
   const cat = p.categoria && p.categoria in CATEGORIAS ? p.categoria : null;
@@ -54,7 +62,9 @@ function Post({ p, largura }: { p: Peca; largura: number }) {
           </div>
           {cat ? (
             <div>
-              <dt>{MEDIDAS[MEDIDA_DA_CATEGORIA[cat]].nome}, a medida de {CATEGORIAS[cat].nome}</dt>
+              <dt>
+                {MEDIDAS[MEDIDA_DA_CATEGORIA[cat]].nome}, a medida de {CATEGORIAS[cat].nome}
+              </dt>
               <dd>{num(p.metricas?.[MEDIDA_DA_CATEGORIA[cat]], 0)}</dd>
             </div>
           ) : null}
@@ -67,15 +77,47 @@ function Post({ p, largura }: { p: Peca; largura: number }) {
 export default async function PaginaResultados() {
   const hoje = hojeSP();
   const supabase = await clienteServidor();
-  const { data: postadas } = await supabase
-    .from("mkt_pecas")
-    .select("*")
-    .eq("status", "postada")
-    .order("posta_em", { ascending: false })
-    .returns<Peca[]>();
+  const { data: postadas } = await conferir(
+    supabase
+      .from("mkt_pecas")
+      .select("*")
+      .eq("status", "postada")
+      .order("posta_em", { ascending: false })
+      .returns<Peca[]>(),
+  );
   const lista = postadas ?? [];
   const { medidos, faltam, certos, errados, eixos, ranking } = leitura(lista, hoje);
   const pouco = medidos.length < POUCOS;
+  const [origens, fin] = await Promise.all([
+    lerTodos<{ id: string; lead_id: string; peca_id: string | null }>(supabase, "crm_origem_conteudo").catch(
+      (e) => {
+        if (tabelaAusente(e)) return null;
+        throw e;
+      },
+    ),
+    financeiro(Number(hoje.slice(0, 4))),
+  ]);
+  const atribuicao = lista
+    .map((p) => {
+      const ids = new Set((origens ?? []).filter((o) => o.peca_id === p.id).map((o) => o.lead_id));
+      const recebidos = fin.semTabela ? [] : fin.recebimentos.filter((r) => r.lead_id && ids.has(r.lead_id));
+      const devolvido = fin.semTabela
+        ? 0
+        : devolucoesComLegado(
+            recebidos,
+            fin.devolucoes.filter((d) => recebidos.some((r) => r.id === d.recebimento_id)),
+          ).reduce((s, d) => s + Number(d.valor), 0);
+      const vendido = fin.semTabela
+        ? 0
+        : fin.vendas.filter((v) => v.lead_id && ids.has(v.lead_id)).reduce((s, v) => s + v.valor, 0);
+      return {
+        peca: p,
+        negocios: ids.size,
+        vendido,
+        recebido: recebidos.reduce((s, r) => s + Number(r.valor), 0) - devolvido,
+      };
+    })
+    .filter((a) => a.negocios > 0);
 
   return (
     <div className={m.tela}>
@@ -91,6 +133,46 @@ export default async function PaginaResultados() {
         </p>
       </header>
 
+      <section className={u.painel}>
+        <h2>Conteúdo conectado às vendas</h2>
+        <p className={u.descricao}>
+          Atribuição manual pela ficha do negócio. Valores acumulados dos negócios vinculados; antes de taxas.
+          Não representa retorno sobre investimento em anúncios.
+        </p>
+        {origens === null ? (
+          <p className={u.meta}>O vínculo de conteúdo aguarda a instalação do módulo integrado.</p>
+        ) : atribuicao.length ? (
+          <div className={u.rolagem}>
+            <table className={u.tabela}>
+              <thead>
+                <tr>
+                  <th>Conteúdo</th>
+                  <th className={u.numero}>Negócios</th>
+                  <th className={u.numero}>Contratado ativo</th>
+                  <th className={u.numero}>Recebido após devoluções</th>
+                </tr>
+              </thead>
+              <tbody>
+                {atribuicao.map((a) => (
+                  <tr key={a.peca.id}>
+                    <td>
+                      <Link href={`/crm/marketing/${a.peca.id}`}>{a.peca.gancho}</Link>
+                    </td>
+                    <td className={u.numero}>{a.negocios}</td>
+                    <td className={u.numero}>{fin.semTabela ? "A apurar" : dinheiroExato(a.vendido)}</td>
+                    <td className={u.numero}>{fin.semTabela ? "A apurar" : dinheiroExato(a.recebido)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p className={u.vazio}>
+            Nenhum negócio vinculado a conteúdo publicado. Quando a origem for conhecida, associe o post na
+            ficha do CRM.
+          </p>
+        )}
+      </section>
       {faltam.length ? (
         <section className={m.resFaltam} aria-labelledby="faltam">
           <h2 id="faltam">
@@ -118,8 +200,8 @@ export default async function PaginaResultados() {
           {medidos.length === 0
             ? "Ainda não há post com número. "
             : `Só ${medidos.length} ${medidos.length === 1 ? "post tem" : "posts têm"} número. `}
-          A leitura começa com {POUCOS}: antes disso, o melhor post é sorte, não padrão. A Paula também só passa a usar a
-          leitura a partir daí.
+          A leitura começa com {POUCOS}: antes disso, o melhor post é sorte, não padrão. A Paula também só
+          passa a usar a leitura a partir daí.
         </p>
       ) : (
         <div className={m.resDuas}>
@@ -150,8 +232,8 @@ export default async function PaginaResultados() {
         <section className={m.resEixos} aria-labelledby="eixos">
           <h2 id="eixos">Por onde o post foi feito</h2>
           <p>
-            A média de encaminhamentos por mil de cada grupo. Grupo com menos de {POUCOS} posts vem apagado: é pista, ainda não é
-            regra.
+            A média de encaminhamentos por mil de cada grupo. Grupo com menos de {POUCOS} posts vem apagado: é
+            pista, ainda não é regra.
           </p>
           <div className={m.resEixosGrade}>
             {eixos
@@ -165,11 +247,17 @@ export default async function PaginaResultados() {
                       {e.grupos.map((g) => (
                         <li key={g.chave} className={g.n < POUCOS ? m.resPouco : ""}>
                           <span>
-                            {g.nome} <small>{g.n} {g.n === 1 ? "post" : "posts"}</small>
+                            {g.nome}{" "}
+                            <small>
+                              {g.n} {g.n === 1 ? "post" : "posts"}
+                            </small>
                           </span>
                           <b>{num(g.enc)}</b>
                           <i className={m.regua}>
-                            <i className={m.reguaCheia} style={{ width: `${((g.enc ?? 0) / maior) * 100}%` }} />
+                            <i
+                              className={m.reguaCheia}
+                              style={{ width: `${((g.enc ?? 0) / maior) * 100}%` }}
+                            />
                           </i>
                         </li>
                       ))}
