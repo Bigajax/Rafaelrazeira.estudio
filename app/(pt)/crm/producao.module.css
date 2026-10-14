@@ -2064,3 +2064,69 @@
 .estado b::first-letter { text-transform: uppercase }
 .vazio b { font-family: var(--display); font-stretch: 112%; font-weight: 700; text-transform: none; letter-spacing: 0 }
 .entradaRot, .campoLead span { font: 600 11.5px var(--body); letter-spacing: 0; text-transform: none; color: var(--ink-fraco) }
+
+
+/* Oficina no mesmo padrão de trabalho das demais abas. */
+.bancada { background: none; padding: 0; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)) }
+.ficha { border: 1px solid var(--line); border-left-width: 3px; border-radius: 8px; padding: 20px; box-shadow: none }
+.fichaNome b { font: 650 16px/1.4 var(--body); letter-spacing: -.015em }
+.avatar, .avatarGrande { border-radius: 6px; overflow: hidden }
+.entrada, .novaLoja { border: 1px solid var(--line); border-radius: 8px; padding: 20px; gap: 16px; margin-block: 24px }
+.entrada .campoArroba { border: 1px solid var(--line); border-radius: 5px; background: #fff; padding: 0 12px; min-height: 44px; align-items: center }
+.entrada .campoArroba input { font: 500 16px/1.5 var(--body); padding: 8px 0; min-height: 44px }
+.entrada .campoLead select { border: 1px solid var(--line); border-radius: 5px; background: #fff; padding: 10px 12px; min-height: 44px }
+.entrada.entrada button, .acoes .aVez.aVez { background: var(--painel-acento); border-color: var(--painel-acento); color: #fff; border-radius: 5px; min-height: 44px; box-shadow: none; font: 600 13px/1.4 var(--body); letter-spacing: 0; text-transform: none }
+.cabecalho { border-bottom: 1px solid var(--line); padding-bottom: 24px; margin-bottom: 24px }
+.cabecalhoTxt h1 { font-size: clamp(28px, 3vw, 38px); line-height: 1.15; text-transform: none }
+.bloco { margin-top: 24px; padding: 20px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper-alto); min-width: 0 }
+.blocoCab h2 { font: 650 18px/1.4 var(--body); text-transform: none; letter-spacing: -.015em }
+.blocoRot, .grupoRot, .familiaRot { font: 500 11px/1.5 var(--body); text-transform: none; letter-spacing: 0 }
+.nota, .whats, .vazio, .precos, .saidas li, .recadoFicha { border-radius: 6px; box-shadow: none }
+.nota { border: 1px solid var(--line); border-left: 3px solid var(--painel-acento) }
+.precos { border-color: var(--line) }
+.tipo, .voz, .superficie, .arquetipo, .chipForma, .prova2, .sugestao, .fundo { border: 1px solid var(--line); border-radius: 6px; box-shadow: none }
+.tipoEscolhido, .vozEscolhida, .arquetipoEscolhido, .chipMarcado, .superficieEscolhida, .sugestaoMarcada, .prova2Escolhida { border-color: var(--painel-borda-ativa); background: var(--painel-acento-suave); box-shadow: none }
+.tipo b, .voz i { font: 500 11px/1.5 var(--body); text-transform: none; letter-spacing: 0 }
+.condicoes .pergunta input, .conceitoCampos .pergunta input, .condicoes .campoTipo, .fichaMarca .campoTipo, .fatoNovo input { border: 1px solid var(--line); border-radius: 5px; background: #fff; min-height: 44px; padding: 10px 12px; font: 400 14px/1.5 var(--body) }
+.tabela { background: var(--paper-alto); border: 1px solid var(--line); border-radius: 8px; border-collapse: separate; border-spacing: 0; overflow: hidden }
+.tabela th { padding: 12px; background: var(--paper); border-bottom: 1px solid var(--line); font: 600 12px/1.5 var(--body); text-transform: none; letter-spacing: 0 }
+.tabela td { padding: 10px 12px }
+.celFoto img, .semFoto, .materiais img, .amostra, .tira { border-radius: 6px }
+.fecho {
+  --sobre-ink: var(--ink-soft); --sobre-ink-fraco: var(--ink-fraco); --green-live: var(--painel-acento); --rosa-live: var(--rosa-dark);
+  background: var(--paper-alto); border: 1px solid var(--line); border-radius: 8px; margin: 24px 0 0; padding: 24px; color: var(--ink);
+}
+.fecho + .fecho { border: 1px solid var(--line) }
+.fecho h2, .fecho h3, .fecho .blocoCab h2 { color: var(--ink); font: 650 18px/1.4 var(--body); text-transform: none; letter-spacing: -.015em }
+.fecho .saidas li { background: #fff; border-color: var(--line) }
+.fecho .saidas li:last-child { border-left-color: var(--painel-acento) }
+.btnGrafite.btnGrafite { background: #fff; border: 1px solid var(--line); color: var(--ink-soft); border-radius: 5px; min-height: 44px; font: 500 13px/1.4 var(--body); letter-spacing: 0; text-transform: none; box-shadow: none }
+.btnGrafite.aVez.aVez { background: var(--painel-acento); border-color: var(--painel-acento); color: #fff }
+.modo, .baseOpcao { border: 1px solid var(--line); border-radius: 6px; background: #fff; color: var(--ink-soft) }
+.modoEscolhido, .baseEscolhida { border-color: var(--painel-borda-ativa); background: var(--painel-acento-suave); color: var(--painel-acento) }
+.fecho :is(.modo, .baseOpcao) b { color: var(--ink) }
+.fecho :is(.modoEscolhido, .baseEscolhida) b { color: var(--painel-acento) }
+.marcoAtual span { color: var(--rosa-dark) }
+.fatoNovo { flex-wrap: wrap; border: 0; gap: 8px }
+.fatoNovo input { min-width: 0; flex: 1 1 200px }
+.fatoNovo span { white-space: normal; font: 400 11px/1.5 var(--body); text-transform: none; letter-spacing: 0 }
+.divisor { flex-wrap: wrap; row-gap: 8px }
+.divisor em { white-space: normal; font: 400 11px/1.5 var(--body); text-transform: none; letter-spacing: 0 }
+.fecho .ajuste textarea, .markdown { border: 1px solid var(--line); border-radius: 5px; background: #fff; color: var(--ink); padding: 12px; font-size: 14px }
+.pendencias { border-left-color: var(--line) }
+.fecho.fecho .aviso { background: #fbe6ed; color: var(--rosa-dark); border-left-color: var(--rosa) }
+.marco i { border-radius: 3px }
+.marcoFeito i { background: var(--painel-acento) }
+@media (hover: hover) and (pointer: fine) {
+  .ficha:hover { border-color: var(--painel-borda-ativa); background: #fff }
+  .entrada.entrada button:hover:not(:disabled), .acoes .aVez.aVez:hover:not(:disabled), .btnGrafite.aVez.aVez:hover:not(:disabled) { background: #065b38; color: #fff }
+  .btnGrafite.btnGrafite:hover:not(:disabled) { background: var(--paper-2); color: var(--ink); border-color: var(--line) }
+}
+@media (max-width: 860px) {
+  .entrada, .novaLoja { grid-template-columns: 1fr; padding: 16px }
+  .ficha, .bloco, .fecho { padding: 16px }
+  .cabecalho { grid-template-columns: 52px minmax(0, 1fr); gap: 12px }
+  .cabecalho > .estado { grid-column: 1 / -1; padding: 12px 0 0; border-left: 0; border-top: 1px solid var(--line) }
+  .tabela { min-width: 680px }
+  .divisor em { flex-basis: 100% }
+}

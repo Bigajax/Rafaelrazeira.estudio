@@ -1,64 +1,13 @@
 "use client";
 
-/* ============================================================
-   O TRILHO — a navegação de pé, na sala grafite
-
-   Ele substituiu um cabeçalho horizontal, e a troca resolve três coisas de
-   uma vez:
-
-   1. O TOPO VOLTA A SER DA PÁGINA. Com a navegação em cima, toda tela
-      começava com uma faixa que não falava dela: a manchete "Quem eu falo
-      agora." nascia na segunda linha da tela. Agora a primeira coisa que
-      se lê é o assunto.
-   2. QUATRO ROTAS CABEM SEM APERTO. Na horizontal, "Métricas" caía fora da
-      tela em 390px e ficava atrás de uma rolagem lateral que ninguém
-      descobre. Na vertical, quatro itens sobram espaço em qualquer altura.
-   3. ELE DÁ UMA BORDA À FERRAMENTA. O CRM tem colunas que rolam, listas que
-      crescem e modais que abrem. Um trilho fixo e escuro na esquerda é a
-      única coisa que não se move, e é dele que a tela ganha prumo.
-
-   ---------- por que grafite ----------
-   É o `--ink` da casa, a mesma "sala escura" que a /vitrine-digital e o
-   /portfolio usam quando a seção é o lugar da prova. Aqui ele faz o
-   trabalho oposto e complementar: o trilho é escuro para que TUDO à direita
-   dele leia como papel. A ferramenta inteira passa a ser uma mesa clara com
-   uma lombada preta, que é exatamente o objeto que ela imita.
-
-   O item ativo é o `--green-live`, o único esmeralda que funciona sobre
-   grafite (7,7:1). Os outros dois somem lá, e essa regra já estava escrita
-   no portfolio.module.css.
-
-   ---------- ele se chama trilho e agora TEM um trilho ----------
-   Até aqui o nome era só uma metáfora do comentário: na tela eram quatro
-   rótulos empilhados num retângulo escuro, com quatrocentos pixels de vão
-   embaixo e um filete de 3px que só existia no item aceso. Agora o filete
-   corre de ponta a ponta da altura, o tempo todo, e o item aceso é o trecho
-   dele que fica verde.
-
-   É o mesmo objeto da régua do dia, de pé: uma linha inteira, com uma marca
-   viva dizendo onde você está. E é ele que resolve o vão de baixo, porque
-   o vão deixa de ser espaço que sobrou e passa a ser trilho que continua.
-
-   ---------- e as rotas passaram a saber de si ----------
-   A navegação sabia os NOMES das telas e nada sobre elas: "Hoje" com sete
-   pessoas esperando e "Hoje" com a fila zerada eram o mesmo rótulo, e a
-   única forma de saber era abrir. Cada rota carrega o próprio número agora,
-   e só o de Hoje tem cor: rosa quer dizer "tem gente esperando", esmeralda
-   quer dizer "acabou". É a mesma escada da contagem da coluna do quadro.
-
-   Métricas não conta nada de propósito: ela não acumula trabalho, e um
-   número ali seria um número para ter número.
-
-   ---------- no celular ele deita ----------
-   Vira a barra fixa de baixo, que é onde o polegar chega. "Sair" não vem
-   junto: cinco itens em 390px espremem os quatro que importam, e sair é a
-   única ação da barra que custa uma senha para desfazer. Ele desce para o
-   pé do conteúdo, onde ninguém encosta sem querer.
-   ============================================================ */
+/* Navegação do estúdio no padrão do painel da loja: trilho compacto no
+   computador e quatro atalhos com o menu Mais no celular. */
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { IconePainel, type IconePainelNome } from "./IconePainel";
 import type { Contagens } from "@/lib/crm/dados";
 import s from "@/app/(pt)/crm/crm.module.css";
 
@@ -189,33 +138,47 @@ const MOMENTOS: { nome: string; rotas: Rota[] }[] = [
    são inventário, não dívida. */
 const COBRAM: readonly string[] = ["fila", "cobrar"];
 
+const ICONES: Record<string, IconePainelNome> = {
+  "/crm": "hoje", "/crm/pipeline": "funil", "/crm/templates": "mensagens",
+  "/crm/producao": "producao", "/crm/projetos": "projetos", "/crm/performance": "performance",
+  "/crm/caixa": "caixa", "/crm/financeiro": "financeiro", "/crm/marketing": "marketing",
+  "/crm/ai-studio": "ai", "/crm/metricas": "metricas", "/crm/plano": "plano",
+};
+
+const PRINCIPAIS = ["/crm", "/crm/pipeline", "/crm/producao", "/crm/caixa"];
+
 export function Trilho({ sair, contagens }: { sair: () => void; contagens: Contagens }) {
   const caminho = usePathname() ?? "";
-  /* no celular a barra desliza (nove rotas não cabem em 390px): ao trocar de
-     tela, a rota acesa vem para o meio, senão o Plano abria escondido na
-     ponta direita. No computador a lista não rola e isto não faz nada. */
-  const lista = useRef<HTMLUListElement>(null);
+  const [menuAberto, setMenuAberto] = useState(false);
+  const botaoMais = useRef<HTMLButtonElement>(null);
+  const menu = useRef<HTMLDivElement>(null);
+  useEffect(() => { setMenuAberto(false); }, [caminho]);
   useEffect(() => {
-    const ul = lista.current;
-    const aceso = ul?.querySelector<HTMLElement>("[aria-current=page]");
-    if (!ul || !aceso || ul.scrollWidth <= ul.clientWidth) return;
-    ul.scrollLeft = aceso.offsetLeft - (ul.clientWidth - aceso.offsetWidth) / 2;
-  }, [caminho]);
-
+    if (!menuAberto) return;
+    menu.current?.querySelector<HTMLElement>("[aria-current=page], a")?.focus();
+    const aoTeclar = (e: KeyboardEvent) => {
+      if (e.key === "Escape") { setMenuAberto(false); botaoMais.current?.focus(); }
+    };
+    document.addEventListener("keydown", aoTeclar);
+    return () => document.removeEventListener("keydown", aoTeclar);
+  }, [menuAberto]);
+  const estaAtiva = (href: string) => href === "/crm"
+    ? caminho === "/crm"
+    : caminho === href || caminho.startsWith(`${href}/`) || (href === "/crm/pipeline" && caminho.startsWith("/crm/lead/"));
   return (
+    <>
+    <a href="#crm-principal" className={s.pularConteudo}>Pular para o conteúdo</a>
     <nav className={s.trilho} aria-label="Seções do estúdio">
-      {/* O ponto final rosa é a assinatura da casa, e ela vale em toda
-          manchete. Esta é a única marca da ferramenta, e era a única voz de
-          display do CRM sem ele. */}
-      <Link href="/crm" className={s.trilhoMarca}>
-        <b>
-          RAFAEL RAZEIRA<i className={s.ponto}>.</i>
-        </b>
-        {/* era "PROSPECÇÃO": a plataforma virou o estúdio inteiro (01/10) */}
-        <span>ESTÚDIO</span>
+      <div className={s.trilhoPainel}>
+
+      <Link href="/crm" className={s.trilhoMarca} aria-label="Rafael Razeira Estúdio, início">
+        <Image src="/marca/rr.webp" alt="" width={36} height={36} className={s.trilhoLogo} priority />
+        <span className={s.trilhoMarcaTexto}><b>Rafael Razeira</b>
+
+        <small>Painel do estúdio</small></span>
       </Link>
 
-      <ul className={s.trilhoLista} ref={lista}>
+      <ul className={s.trilhoLista}>
         {MOMENTOS.flatMap(({ nome, rotas }) => [
           <li key={nome} className={s.trilhoMomento} aria-hidden>
             {nome}
@@ -223,29 +186,24 @@ export function Trilho({ sair, contagens }: { sair: () => void; contagens: Conta
           ...rotas.map(({ href, rotulo, nota, conta }) => {
             /* "/crm" só acende em si mesmo; as outras acendem também nas
              telas que nascem delas, como /crm/lead/[id], filha do pipeline. */
-            const ativo = href === "/crm" ? caminho === "/crm" : caminho.startsWith(href);
+            const ativo = estaAtiva(href);
             const n = conta ? contagens[conta] : null;
 
             return (
               <li key={href}>
-                <Link href={href} className={`${s.trilhoLink} ${ativo ? s.trilhoAtivo : ""}`} aria-current={ativo ? "page" : undefined}>
+                <Link href={href} className={`${s.trilhoLink} ${ativo ? s.trilhoAtivo : ""}`} aria-current={ativo ? "page" : undefined} aria-label={`${rotulo}${n !== null ? `, ${n} ${nota}` : ""}`} title={rotulo}>
+                  <IconePainel nome={ICONES[href]} className={s.trilhoIcone} />
+                  <div className={s.trilhoTexto}>
                   <b>
                     {rotulo}
-                    {/* Só quem cobra tem cor, e a cor tem três estados como a
-                      contagem da coluna do quadro: rosa é "tem gente
-                      esperando", esmeralda é "acabou", cinza é o resto do
-                      inventário. No trilho inteiro, quem fala é quem vai te
-                      cobrar — e é essa mesma frase que decide, na barra do
-                      celular, quais números sobrevivem ao aperto. */}
+
                     {n !== null ? (
                       <i className={`${s.trilhoCont} ${conta && COBRAM.includes(conta) ? (n ? s.trilhoCobra : s.trilhoEmDia) : ""}`}>{n}</i>
                     ) : null}
                   </b>
-                  {/* A nota diz o que a tela É, em duas palavras. Ela existe
-                    porque "Hoje" e "Pipeline" são nomes que só significam
-                    alguma coisa para quem já usou. Some no celular, onde
-                    não há espaço e onde a barra é sempre a mesma. */}
+
                   <span>{nota}</span>
+                  </div>
                 </Link>
               </li>
             );
@@ -253,14 +211,36 @@ export function Trilho({ sair, contagens }: { sair: () => void; contagens: Conta
         ])}
       </ul>
 
-      {/* Sair é um formulário e não um link: sair é uma escrita (encerra a
-          sessão no servidor), e escrita atrás de GET é o que um
-          pré-carregador de link dispara sozinho. */}
+
       <form action={sair} className={s.trilhoPe}>
         <button type="submit" className={s.trilhoSair}>
-          Sair
+          <IconePainel nome="sair" /><span>Sair do estúdio</span>
         </button>
       </form>
+      </div>
     </nav>
+    <nav className={s.barraCelular} aria-label="Navegação do estúdio no celular">
+      {MOMENTOS.flatMap(({ rotas }) => rotas).filter(({ href }) => PRINCIPAIS.includes(href)).map(({ href, rotulo }) => (
+        <Link key={href} href={href} aria-current={estaAtiva(href) ? "page" : undefined}>
+          <IconePainel nome={ICONES[href]} /><span>{rotulo}</span>
+        </Link>
+      ))}
+      <button type="button" ref={botaoMais} aria-expanded={menuAberto} aria-controls="crm-menu-celular" className={!PRINCIPAIS.some(estaAtiva) || menuAberto ? s.barraMaisAtivo : ""} onClick={() => setMenuAberto((aberto) => !aberto)}>
+        <IconePainel nome="menu" /><span>Mais</span>
+      </button>
+    </nav>
+    {menuAberto ? (
+      <div ref={menu} id="crm-menu-celular" role="navigation" className={s.menuCelular} aria-label="Todas as seções do estúdio">
+        <div className={s.menuCelularCab}><b>Seu estúdio</b><button type="button" onClick={() => { setMenuAberto(false); botaoMais.current?.focus(); }}>Fechar</button></div>
+        {MOMENTOS.map(({ nome, rotas }) => (
+          <div key={nome} className={s.menuCelularGrupo}>
+            <p>{nome}</p>
+            {rotas.map(({ href, rotulo, nota, conta }) => <Link key={href} href={href} aria-current={estaAtiva(href) ? "page" : undefined} onClick={() => setMenuAberto(false)}><IconePainel nome={ICONES[href]} /><span>{rotulo}<small>{nota}</small></span>{conta ? <b>{contagens[conta]}</b> : null}</Link>)}
+          </div>
+        ))}
+        <form action={sair}><button type="submit" className={s.menuCelularSair}><IconePainel nome="sair" />Sair do estúdio</button></form>
+      </div>
+    ) : null}
+    </>
   );
 }

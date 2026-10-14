@@ -12,7 +12,7 @@
 
 /* ---------- a lista ---------- */
 .lista { list-style: none; margin: 24px 0 0; padding: 0 }
-.linha { border-bottom: 1px solid var(--line); padding: 16px 0 14px; display: grid; gap: 10px }
+.linha { border: 1px solid var(--line); border-radius: 8px; background: var(--paper-alto); margin-bottom: 12px; padding: 20px; display: grid; gap: 16px }
 .linhaTopo { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) auto; gap: 16px; align-items: start }
 .linhaNome h2 { font-size: 17px; margin: 0; line-height: 1.2 }
 .linhaNome span { display: block; font: 12px var(--mono); letter-spacing: .04em; color: var(--ink-fraco); margin-top: 5px }
@@ -40,7 +40,7 @@
 .erro { color: var(--rosa); font-weight: 600; margin: 0; font-size: 14px }
 
 /* ---------- criar loja ---------- */
-.nova { margin-top: 28px; padding: 18px; background: var(--paper-alto); border: 1px solid var(--line); display: grid; gap: 12px }
+.nova { margin-top: 28px; padding: 20px; border-radius: 8px; background: var(--paper-alto); border: 1px solid var(--line); display: grid; gap: 12px }
 .nova h2 { margin: 0; font-size: 16px }
 .novaCampos { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px }
 .novaNota { font-size: 13px; color: var(--ink-soft); margin: 0; line-height: 1.5 }
@@ -48,3 +48,18 @@
 @media (max-width: 720px) {
   .linhaTopo { grid-template-columns: minmax(0, 1fr) }
 }
+
+
+/* Lojas, eventos e acesso com a mesma hierarquia do painel. */
+.tela { max-width: 1440px }
+.tela .cabeca { padding-bottom: 20px; border-bottom: 1px solid var(--line); align-items: center }
+.tela .placar { font: 400 13px/1.6 var(--body); letter-spacing: 0 }
+.tela .linhaNome h2 { font: 650 17px/1.4 var(--body); text-transform: none; letter-spacing: -.015em }
+.tela .linhaNome span, .tela .numero span { font: 400 12px/1.6 var(--body); letter-spacing: 0; text-transform: none }
+.tela .numero b { font: 650 20px/1.4 var(--body) }
+.tela .situacao { font: 500 11px/1.5 var(--body); letter-spacing: 0; text-transform: none; padding: 5px 9px; border-radius: 4px; background: var(--paper) }
+.tela .sitLiberada, .tela .sitSempre { border-color: var(--painel-borda-ativa); background: var(--painel-acento-suave); color: var(--painel-acento) }
+.tela .sitTravada { background: #fbe6ed; color: var(--rosa-dark); border-color: #f0ccd7 }
+.tela .chaveNova, .tela .chaveTexto, .tela .aviso { border-radius: 6px }
+.tela .nova h2 { font: 650 18px/1.4 var(--body) }
+.tela .novaCampos input, .tela .novaCampos select { min-height: 44px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 5px; background: #fff }

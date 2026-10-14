@@ -291,6 +291,7 @@ function Custos({ custos, cotacao, rodar, hoje }: { custos: Custo[]; cotacao: nu
 
   return (
     <div className={f.custos}>
+      <div className={f.rolagem} role="region" aria-label="Custos do estúdio" tabIndex={0}>
       <table className={f.tabela}>
         <thead>
           <tr>
@@ -391,6 +392,7 @@ function Custos({ custos, cotacao, rodar, hoje }: { custos: Custo[]; cotacao: nu
           </tr>
         </tfoot>
       </table>
+      </div>
 
       {novo ? (
         <FormCusto hoje={hoje} salvar={(campos) => rodar(() => criarCusto(campos), (r) => r.ok && setNovo(false))} cancelar={() => setNovo(false)} />

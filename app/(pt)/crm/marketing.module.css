@@ -20,9 +20,9 @@
 /* ---------- o cabeçalho ---------- */
 .tela .cabeca {
   display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px 20px; align-items: end;
-  padding-bottom: 18px; border-bottom: 3px solid var(--ink); margin-bottom: 20px;
+  padding-bottom: 20px; border-bottom: 1px solid var(--line); margin-bottom: 24px;
 }
-.tela .cabeca h1 { font-size: clamp(34px, 5vw, 64px); line-height: .86 }
+.tela .cabeca h1 { font-size: clamp(28px, 3vw, 38px); line-height: 1.15; text-transform: none }
 .tela .placar { font: 12px var(--mono); letter-spacing: .06em; color: var(--ink-fraco); margin-top: 8px }
 .tela .meses { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end }
 .tela .meses a { text-transform: lowercase }
@@ -772,3 +772,50 @@
 .tela .refNova > p { font-size: 12.5px; color: var(--ink-soft); margin-bottom: 12px }
 .tela .refNova form { display: grid; gap: 4px }
 .tela .refNova form > button { justify-self: start; margin-top: 8px }
+
+
+/* Calendário, produção, referências e editor no padrão do painel. As artes têm CSS próprio. */
+.tela { max-width: 1440px }
+.tela :is(.cabeca, .pecaCab, .criarCab, .mesCab, .portaCab, .portaPaula, .portaZero) { padding-bottom: 20px; border-bottom: 1px solid var(--line); margin-bottom: 24px; gap: 16px }
+.tela :is(.pecaCab, .criarCab, .mesCab, .portaCab, .portaPaula, .portaZero) h1 { font-size: clamp(28px, 3vw, 38px); line-height: 1.15; text-transform: none; letter-spacing: -.025em }
+.tela .mesCab h1 { font-size: clamp(28px, 3vw, 38px) }
+.tela .placar { font: 400 13px/1.6 var(--body); letter-spacing: 0 }
+.tela .abasMkt, .tela .abas { gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper-alto) }
+.tela .abasMkt { width: fit-content; max-width: 100%; margin-bottom: 24px }
+.tela .abasMkt a, .tela .aba { min-height: 40px; border: 0; border-radius: 4px; padding: 10px 14px; color: var(--ink-soft); font: 500 13px/1.4 var(--body); letter-spacing: 0; text-transform: none }
+.tela .abasMkt .abaMktAtiva, .tela .abaAtiva, .tela .abaVivo { background: var(--painel-acento-suave); color: var(--painel-acento) }
+.tela :is(.bandeja, .time, .painel, .prodColuna, .perfilGrade, .semDia, .numeros, .papelBloco) { background: var(--paper-alto); border: 1px solid var(--line); border-radius: 8px; box-shadow: none; overflow: hidden }
+.tela :is(.timeCab, .galeriaCab) { border-bottom: 1px solid var(--line); padding: 16px 20px }
+.tela :is(.gancho, .familia, .pilarCartao, .direcaoCartao, .letraCartao, .moldeItem, .textoBloco, .mesaVazia, .esperandoVazio, .refVazio, .paulaEstado, .resFaltam) { border-radius: 6px; box-shadow: none }
+.tela :is(.ganchoAtivo, .familiaAtiva, .pilarAtivo, .direcaoAtiva, .moldeAtivo) { border-color: var(--painel-borda-ativa); background: var(--painel-acento-suave); box-shadow: none }
+.tela .estados, .tela .segmento { border: 1px solid var(--line); border-radius: 5px; overflow: hidden; background: #fff }
+.tela .estado, .tela .segmento button { min-height: 40px; padding: 10px 14px; border-color: var(--line); font: 500 12px/1.4 var(--body); text-transform: none; letter-spacing: 0 }
+.tela .estadoAtivo, .tela .segmento .segAtivo { background: var(--painel-acento-suave); color: var(--painel-acento) }
+.tela .grade { border-radius: 8px; overflow: hidden }
+.tela .diaHoje { box-shadow: inset 0 3px 0 var(--painel-acento) }
+.tela .diaHoje .diaCab b { background: var(--painel-acento); border-radius: 4px }
+.tela .diaFora .diaCab b { color: var(--ink-fraco) }
+.tela .semanaNome, .tela .diaCab, .tela .bandejaRot { font-family: var(--body); letter-spacing: 0; text-transform: none }
+.tela .mesSeta { min-width: 44px; min-height: 44px; border: 1px solid var(--line); border-radius: 5px; background: var(--paper-alto); color: var(--ink-soft) }
+.tela .ligarTime { min-height: 44px; padding: 10px 16px; border: 1px solid var(--painel-acento); border-radius: 5px; background: var(--painel-acento); color: #fff; font: 600 13px/1.4 var(--body); letter-spacing: 0; text-transform: none }
+.tela .soltar { border-radius: 6px; border-width: 1px; font: 500 12px/1.5 var(--body); letter-spacing: 0; text-transform: none }
+.tela .soltarCheio { border-color: var(--line); box-shadow: none }
+.tela .slideArte, .tela .palcoArte { box-shadow: 0 4px 20px #14181a14 }
+.tela .refBanco section > h2, .tela .resDuas h2 { font: 650 18px/1.4 var(--body); text-transform: none; letter-spacing: -.015em; border-bottom: 1px solid var(--line); padding-bottom: 12px }
+.tela .resTabela { padding: 16px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper-alto); overflow-x: auto }
+.tela .refLinha { padding: 16px; border: 1px solid var(--line); border-radius: 6px; margin-bottom: 8px; background: var(--paper-alto) }
+.tela .refTirar { min-width: 44px; min-height: 44px }
+.tela .prodCartao { padding: 16px }
+.tela .prodCartao h3, .tela .prodColuna h2, .tela .bandeja h2, .tela .time h2 { font: 650 16px/1.4 var(--body); letter-spacing: -.015em; text-transform: none }
+.tela .capinhaCod, .tela .pilarSelo, .tela .prodFila { border-radius: 4px; font: 500 11px/1.4 var(--body); text-transform: none; letter-spacing: 0 }
+@media (hover: hover) and (pointer: fine) {
+  .tela .mesSeta:hover { background: var(--painel-acento-suave); color: var(--painel-acento); border-color: var(--painel-borda-ativa) }
+  .tela .abasMkt a:hover { background: var(--paper-2) }
+}
+@media (max-width: 860px) {
+  .tela :is(.cabeca, .mesCab, .portaCab, .criarCab, .pecaCab) { grid-template-columns: 1fr; align-items: start }
+  .tela .abasMkt { width: 100%; flex-wrap: wrap }
+  .tela .abasMkt a { flex: 1; text-align: center; padding-inline: 8px }
+  .tela .semDia { grid-template-columns: 1fr }
+  .tela .timeCab { padding: 16px }
+}

@@ -3730,3 +3730,320 @@
 .wrapVez .vezControle .vezSegmentos { flex-wrap: wrap; height: 32px; overflow: hidden; align-self: flex-end }
 .vezControle .vezIndiceBotao { margin-left: auto }
 .vezIndiceTitulo b { font: inherit }
+
+/* Painel do estúdio — mesma base do molde da loja (14/10/2026).
+   Esta camada altera a ferramenta; as fontes dos criativos continuam disponíveis. */
+.app {
+  --paper: #f1efe6;
+  --paper-2: #eae8df;
+  --paper-alto: #fafaf5;
+  --ink: #14181a;
+  --ink-soft: #555d5b;
+  --ink-fraco: #616966;
+  --line: #dedbd1;
+  --pad: clamp(16px, 2.5vw, 40px);
+  --painel-acento: #076b42;
+  --painel-acento-suave: #e6eee3;
+  --painel-borda-ativa: #c8d9cb;
+  --painel-raio: 8px;
+  --painel-campo-raio: 5px;
+  --painel-sombra: 0 12px 48px #14181a1f;
+  font-variant-numeric: tabular-nums;
+}
+.app h1, .app h2, .app h3 {
+  text-transform: none;
+  font-stretch: 85%;
+  letter-spacing: -.025em;
+  line-height: 1.15;
+}
+.app h1 { font-size: clamp(28px, 3vw, 38px) }
+.app h2 { font-size: clamp(20px, 2vw, 26px) }
+.app h3 { font-family: var(--body); font-size: 16px; font-weight: 650 }
+.app input, .app select, .app textarea { border-radius: 5px }
+.app button { border-radius: 5px }
+.main { padding: 32px var(--pad) 40px }
+.wrap { max-width: 1440px }
+.tituloLinha { align-items: center; gap: 16px }
+.eyebrow { font: 400 13px/1.5 var(--body); letter-spacing: 0; text-transform: none; margin-bottom: 8px }
+.subtitulo { font-size: 14px; line-height: 1.6 }
+.pularConteudo {
+  position: fixed; left: 76px; top: -100px; z-index: 150;
+  background: var(--paper-alto); padding: 12px 16px; border: 1px solid var(--green-dark);
+}
+.pularConteudo:focus { top: 12px }
+
+/* A largura do trilho fica estável; o menu abre por cima do conteúdo. */
+.trilho {
+  display: block; width: 60px; padding: 0; background: none;
+  position: sticky; top: 0; height: 100dvh; flex: none; z-index: 65;
+}
+.trilhoPainel {
+  position: absolute; inset: 0 auto 0 0; width: 60px;
+  display: flex; flex-direction: column; gap: 12px; padding: 12px 8px;
+  background: var(--paper-alto); color: var(--ink-soft);
+  border-right: 1px solid var(--line); overflow: hidden;
+  transition: width 160ms ease-out;
+}
+.trilho:focus-within .trilhoPainel { width: 240px }
+.app .trilhoMarca {
+  display: flex; flex: none; gap: 12px; align-items: center; padding: 4px 4px 16px;
+  margin: 0; background: none; color: var(--ink); border-bottom: 1px solid var(--line); box-shadow: none;
+}
+.trilhoLogo { width: 36px; height: 36px; flex: none; object-fit: contain; border-radius: 5px }
+.app .trilhoMarcaTexto { display: grid; gap: 4px; margin: 0; letter-spacing: 0; white-space: nowrap; text-transform: none; color: var(--ink) }
+.trilhoMarcaTexto b { font: 650 14px/1.2 var(--body); letter-spacing: -.015em }
+.trilhoMarcaTexto small { font: 400 11px/1.4 var(--body); color: var(--ink-soft) }
+.trilhoTexto, .trilhoMarcaTexto, .trilhoSair span { opacity: 0; transition: opacity 120ms ease-out }
+.trilho:focus-within :is(.trilhoTexto, .trilhoMarcaTexto, .trilhoSair span) { opacity: 1 }
+.trilhoLista { flex: 1; min-height: 0; gap: 3px; overflow-x: hidden; overflow-y: auto }
+.trilhoLista::before, .trilhoMomento::before, .app .trilhoAtivo::before { display: none }
+.trilhoLista li { flex: none }
+.trilhoMomento, .trilhoMomento:first-child { font-size: 0; padding: 0; margin: 5px 4px; height: 1px; background: var(--line); flex: none }
+.trilhoMomento:first-child { display: none }
+.trilho .trilhoLink {
+  display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 8px 12px;
+  border: 0; border-radius: 5px; background: none; color: var(--ink-soft);
+}
+.trilhoIcone { flex: none; width: 20px; height: 20px }
+.trilhoTexto { min-width: 152px; white-space: nowrap }
+.trilho .trilhoLink b { display: flex; justify-content: space-between; gap: 10px; font: 550 13px/1.3 var(--body); color: inherit; letter-spacing: 0; text-transform: none }
+.trilho .trilhoLink span { font: 400 11px/1.4 var(--body); color: var(--ink-fraco); margin-top: 2px; letter-spacing: 0; text-transform: none }
+.trilho .trilhoAtivo { background: #e6eee3; color: var(--green-dark) }
+.trilho .trilhoAtivo b { color: var(--green-dark); font-weight: 650 }
+.trilho .trilhoCont { font: 600 11px/1.4 var(--body); padding: 1px 6px; border-radius: 4px; background: var(--paper-2); color: var(--ink-soft) }
+.trilho .trilhoCobra { background: #fbe6ed; color: var(--rosa-dark) }
+.trilho .trilhoEmDia { background: #e6eee3; color: var(--green-dark) }
+.trilhoPe { margin: 0; padding: 12px 0 0; border-top: 1px solid var(--line) }
+.app .trilhoSair { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 44px; padding: 8px 12px; border: 0; background: none; color: var(--ink-soft); font: 500 13px var(--body); letter-spacing: 0; text-transform: none; white-space: nowrap }
+.trilhoSair svg { flex: none }
+.barraCelular, .menuCelular { display: none }
+
+/* Ações e superfícies, com o verde de trabalho do molde. */
+.app .btn, .app .btnMini, .app .btnAcao {
+  border-radius: 5px; min-height: 44px; padding: 10px 16px;
+  font: 600 13px/1.4 var(--body); text-transform: none; letter-spacing: 0;
+  border: 1px solid var(--line); box-shadow: none; transform: none;
+}
+.app .btn, .app .btnMini { background: var(--paper-alto); color: var(--ink) }
+.app .btnAcao { background: var(--green-dark); border-color: var(--green-dark); color: #fff }
+.app .btn:active, .app .btnMini:active, .app .btnAcao:active, .app .vezSeta:active { transform: none; box-shadow: none }
+.app .ficha { border-radius: 7px; box-shadow: none; border-top: 1px solid var(--line); border-right: 1px solid var(--line); border-bottom: 1px solid var(--line) }
+.app .fichaNome { font: 650 15px/1.4 var(--body); letter-spacing: -.015em; text-transform: none }
+.app .modal { border-radius: 10px; border: 1px solid var(--line); box-shadow: 0 16px 64px #14181a24 }
+.app .coluna { border-radius: 8px; overflow: hidden }
+.app .colunaCab { background: var(--paper-alto); color: var(--ink); border-bottom: 1px solid var(--line); box-shadow: none }
+.app .colunaCab::after { display: none }
+.app .colunaCab :is(.colunaNome, .colunaCont) { color: var(--ink) }
+.app .colunaCab :is(.colunaNota, .colunaValor) { color: var(--ink-soft) }
+.app .colunaPedindo { color: var(--rosa-dark) }
+.app .faixa { margin-inline: 0; padding-inline: 20px; background: var(--paper-alto); border: 1px solid var(--line); border-radius: 8px; color: var(--ink-soft) }
+.app .faixaItem { color: var(--ink-soft); font: 500 12px/1.5 var(--body); text-transform: none; letter-spacing: 0 }
+.app .faixaNum { color: var(--ink) }
+.app .faixaVivo { color: var(--green-dark) }
+.app .faixaAlerta { color: var(--rosa-dark) }
+.app .regua { background: var(--paper-2); border-radius: 3px }
+.app .reguaFill { background: var(--green-dark) }
+
+/* Hoje: um lead por vez, com o mesmo card claro do painel da loja. */
+.wrapVez { --vao: 72px; max-width: 1440px; margin: 0 auto }
+.app .vezPergunta { font-size: clamp(28px, 3vw, 38px); line-height: 1.15 }
+.vezTopo.tituloLinha { align-items: center }
+.vezControle { margin-top: 24px; gap: 12px 20px; align-items: center; padding: 16px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper-alto); box-shadow: none }
+.vezControle .vezBusca { flex: 1 1 280px; max-width: 400px; padding: 0 }
+.vezControle .vezBusca input { min-height: 44px; border: 1px solid var(--line); border-radius: 5px; padding: 10px 12px; background: #fff; box-shadow: none }
+.app .vezControle .buscaLinha { border: 1px solid var(--line); border-radius: 5px; background: #fff; padding: 0 12px; min-height: 44px }
+.app .vezControle .buscaRot { padding: 0; background: none; color: var(--ink-soft); font: 500 12px/1.4 var(--body); letter-spacing: 0; text-transform: none }
+.app .vezControle .buscaLinha input[type="search"] { min-width: 0; min-height: 44px; width: 100%; border: 0; background: none; padding: 10px 0; font-size: 14px; box-shadow: none }
+.app .vezControle .buscaLinha:focus-within { border-color: var(--green-dark); outline: 2px solid #076b4226; outline-offset: 1px }
+.app .wrapVez .vezControle .vezSegmentos { flex: 1 1 300px; height: auto; overflow: visible; gap: 6px; align-self: center }
+.app .wrapVez button.vezMonte { min-height: 36px; padding: 7px 10px; border: 1px solid transparent; border-radius: 5px; background: var(--paper); color: var(--ink-soft); font: 500 12px/1.4 var(--body) }
+.app .wrapVez button.vezMonteAtivo { background: #e6eee3; border-color: #c8d9cb; color: var(--green-dark) }
+.app .wrapVez button.vezMontePediram { color: var(--rosa-dark) }
+.app .vezMonteNum { font: 650 12px var(--body) }
+.app button.vezIndiceBotao { min-height: 44px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 5px; text-decoration: none; font-weight: 500 }
+.vezIndice { border: 1px solid var(--line); border-radius: 8px; box-shadow: none }
+.vezFolha, .caixaFolha {
+  --sobre-ink: var(--ink-soft); --sobre-ink-fraco: var(--ink-fraco);
+  --line-dark: var(--line); --green-live: var(--green-dark); --rosa-live: var(--rosa-dark);
+  background: var(--paper-alto); color: var(--ink);
+  margin: 20px 0 0; padding: 0 24px 24px; border: 1px solid var(--line); border-top-width: 3px;
+  border-radius: 8px; box-shadow: none;
+}
+.vezFolha.folhaAtrasado, .vezFolha.folhaSemPasso { border-top-color: var(--rosa) }
+.vezFolha.folhaHoje { border-top-color: var(--green-dark) }
+.vezFolha.folhaAgendado { border-top-color: var(--line) }
+.app .vezFolha .faixa { border: 0; border-bottom: 1px solid var(--line); border-radius: 0; padding: 16px 0; background: none }
+.vezPalco { justify-content: center; padding-top: 32px; padding-bottom: 8px }
+.app .vezNome { color: var(--ink); font-size: clamp(32px, 4.2vw, 60px); line-height: 1.05; font-stretch: 85%; margin-top: 16px }
+.app .vezContexto { color: var(--ink-soft); font-size: 14px; line-height: 1.6 }
+.app .vezPasso { color: var(--ink); font-size: 16px; line-height: 1.6; margin-top: 24px }
+.app .vezSemPasso { color: var(--ink-soft) }
+.app .vezFatoVal { font: 650 18px/1.4 var(--body); letter-spacing: -.02em; color: var(--ink) }
+.app .vezFatoVazio { font-size: 14px; font-weight: 400; color: var(--ink-soft) }
+.vezFato { gap: 5px }
+.vezDossie { gap: 20px }
+.vezChama { animation: none }
+.vezChamaMiolo { fill: var(--paper-alto) }
+.app .vezFolha :is(.btnEscuro, .btnMiniEscuro), .app .caixaFolha .btnEscuro { min-height: 44px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 5px; background: var(--paper-alto); color: var(--ink-soft); font: 500 13px/1.4 var(--body); letter-spacing: 0; text-transform: none }
+.app .vezFolha .btnMiniEscuro { color: var(--rosa-dark) }
+.app .vezFolha .btnAcao, .app .caixaFolha .btnAcao { box-shadow: none }
+.vezPe { margin-bottom: -16px; padding-block: 16px; gap: 12px; background: var(--paper) }
+.app .vezSeta { min-height: 60px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper-alto); box-shadow: none }
+.app .vezSetaNome { font-family: var(--body); font-weight: 600; font-size: 13px; line-height: 1.4 }
+.app .vezFolha button.reguaRotulo { color: var(--ink-soft) }
+.app .vezFolha .marca, .app .vezFolha button.marca, .app .vezFolha a.marca { background: var(--paper-2); border-color: var(--line) }
+.app .vezFolha .marcaFeita, .app .vezFolha a.marcaFeita { background: var(--green-dark) }
+.app .vezFolha button.marca.marcaAgora { background: var(--rosa); border-color: var(--rosa) }
+.app .vezVeioDe code { color: var(--ink-soft) }
+.caixaFolha { padding-top: 24px }
+.app .caixaNumero { font-size: clamp(36px, 5vw, 60px); line-height: 1.1 }
+.app .caixaNumeroVivo { color: var(--ink) }
+.app .caixaNumero .ponto { color: var(--rosa) }
+
+@media (hover: hover) and (pointer: fine) {
+  .trilho:hover .trilhoPainel { width: 240px }
+  .trilho:hover :is(.trilhoTexto, .trilhoMarcaTexto, .trilhoSair span) { opacity: 1 }
+  .app .trilhoLink:hover, .app .trilhoSair:hover { background: var(--paper-2); color: var(--ink) }
+  .app .trilhoLink:hover b { color: inherit }
+  .app .btn:hover, .app .btnMini:hover, .app .vezFolha .btnEscuro:hover { background: var(--paper-2); border-color: var(--line); color: var(--ink) }
+  .app .btnAcao:hover { background: #065b38; border-color: #065b38 }
+  .app .wrapVez button.vezMonte:hover { border-color: #c8d9cb; color: var(--green-dark) }
+}
+@media (max-width: 860px) {
+  .trilho { display: none }
+  .app .soNoPc { display: none }
+  .main { padding: 24px 16px calc(104px + env(safe-area-inset-bottom)) }
+  .wrapVez { --vao: calc(128px + env(safe-area-inset-bottom)) }
+  .barraCelular {
+    display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
+    position: fixed; inset: auto 0 0; z-index: 65;
+    padding: 0 4px env(safe-area-inset-bottom);
+    border-top: 1px solid var(--line); background: var(--paper-alto);
+  }
+  .barraCelular a, .app .barraCelular button { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; min-width: 0; min-height: 66px; padding: 10px 2px; border: 0; border-radius: 0; background: none; color: var(--ink-soft); font: 500 11px/1.4 var(--body); cursor: pointer }
+  .barraCelular a[aria-current=page], .app .barraCelular .barraMaisAtivo { color: var(--green-dark); background: #e6eee3 }
+  .barraCelular a[aria-current=page]::before, .barraMaisAtivo::before { content: ""; position: absolute; inset: 0 25% auto; height: 3px; background: var(--green-dark) }
+  .menuCelular { display: block; position: fixed; inset: 0 0 calc(67px + env(safe-area-inset-bottom)); z-index: 64; padding: 16px; overflow-y: auto; overscroll-behavior: contain; background: var(--paper-alto) }
+  .menuCelularCab { display: flex; align-items: center; justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid var(--line) }
+  .menuCelularCab b { font-size: 20px; letter-spacing: -.025em }
+  .app .menuCelularCab button { min-height: 44px; padding: 8px 14px; border: 1px solid var(--line); background: none; color: var(--ink-soft); cursor: pointer }
+  .menuCelularGrupo { padding-block: 12px; border-bottom: 1px solid var(--line) }
+  .app .menuCelularGrupo p { font: 600 10px/1.5 var(--mono); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 6px }
+  .menuCelularGrupo a { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 8px 12px; border-radius: 5px }
+  .menuCelularGrupo a[aria-current=page] { color: var(--green-dark); background: #e6eee3 }
+  .menuCelularGrupo a span { flex: 1; font-size: 14px; font-weight: 550 }
+  .menuCelularGrupo a small { display: block; margin-top: 2px; color: var(--ink-soft); font-size: 11px; font-weight: 400 }
+  .menuCelularGrupo a b { font-size: 12px }
+  .app .menuCelularSair { display: flex; align-items: center; gap: 12px; min-height: 48px; width: 100%; margin-top: 12px; padding: 8px 12px; border: 0; background: none; color: var(--ink-soft); text-align: left; font-size: 14px; cursor: pointer }
+  .vezTopo.tituloLinha { gap: 20px }
+  .app .vezPergunta { font-size: 30px }
+  .vezControle { padding: 12px; margin-top: 20px }
+  .vezControle .vezBusca { max-width: none; flex-basis: 100% }
+  .app .wrapVez .vezControle .vezSegmentos { flex-basis: 100%; gap: 6px }
+  .vezFolha, .caixaFolha { margin-inline: 0; padding-inline: 16px }
+  .vezPalco { padding-top: 24px }
+  .app .vezNome { font-size: 38px }
+  .vezPe { position: static; padding-bottom: 0; margin-bottom: 0 }
+  .app .vezSeta { flex: 1 1 0; min-width: 0; width: auto; max-width: none; padding: 10px }
+  .vezPosicao { order: 3; flex-basis: 100%; text-align: center }
+  .sairNoPe { display: none }
+}
+@media (max-height: 740px) and (min-width: 861px) {
+  .trilhoPainel { padding-block: 8px; gap: 6px }
+  .trilho .trilhoLink { min-height: 36px; padding-block: 6px }
+  .trilho .trilhoLink span { display: none }
+}
+@media (prefers-reduced-motion: reduce) {
+  .trilhoPainel, .trilhoTexto, .trilhoMarcaTexto, .trilhoSair span { transition: none }
+}
+
+
+/* Todas as abas: superfícies, formulários e indicadores do painel da loja. */
+.app .main { --painel-campo-fundo: #fff }
+.app .main :where(input[type="text"], input[type="email"], input[type="tel"], input[type="password"], input[type="search"], input[type="date"], input[type="number"], input:not([type]), select, textarea) {
+  min-height: 44px; border-radius: var(--painel-campo-raio); font-family: var(--body); font-size: 14px;
+}
+.app .main :where(input[type="checkbox"], input[type="radio"]) { accent-color: var(--painel-acento) }
+.app .main .campoRot { font: 500 12px/1.5 var(--body); text-transform: none; letter-spacing: 0; color: var(--ink-soft) }
+.app .main .campo :is(input, select, textarea) { font-family: var(--body); text-transform: none; letter-spacing: 0 }
+.app .rotulo { font: 650 18px/1.4 var(--body); text-transform: none; letter-spacing: -.015em; margin-top: 28px }
+.app .rotulo::before { display: none }
+.app .rotuloCont { font: 500 12px/1.4 var(--body); letter-spacing: 0 }
+.app :is(.bloco, .template, .vazio, .diaLimpo, .blocoPergunta, .loteNota, .previa, .dossieGancho) { border-radius: var(--painel-raio); box-shadow: none }
+.app .bloco { border: 1px solid var(--line); padding: 20px }
+.app .blocoPasso { border-left: 3px solid var(--painel-acento) }
+.app .blocoErro { border-color: var(--rosa); box-shadow: none }
+.app .template { padding: 20px; border: 1px solid var(--line) }
+.app .template h2 { font: 650 17px/1.4 var(--body); text-transform: none; letter-spacing: -.015em }
+.app .categoria { font: 500 11px/1.5 var(--body); letter-spacing: 0; text-transform: none; border-radius: 4px; padding: 4px 8px }
+.app .opcao, .app .chip, .app .periodo a { min-height: 40px; padding: 9px 12px; font: 500 12px/1.4 var(--body); text-transform: none; letter-spacing: 0; border: 1px solid var(--line); border-radius: 5px }
+.app .opcaoAtiva, .app .chipAtivo, .app .periodo .periodoAtivo { background: var(--painel-acento-suave); border-color: var(--painel-borda-ativa); color: var(--painel-acento) }
+.app .periodo { gap: 6px }
+.app .btnMiniForte { background: var(--painel-acento-suave); border-color: var(--painel-borda-ativa); color: var(--painel-acento) }
+.app .fichaCaixa { background: var(--paper-alto); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--painel-sombra); overflow: hidden }
+.app .fichaCab { --sobre-ink: var(--ink-soft); --sobre-ink-fraco: var(--ink-fraco); --green-live: var(--painel-acento); --rosa-live: var(--rosa-dark); background: var(--paper-alto); color: var(--ink); border-bottom: 1px solid var(--line); padding: 24px }
+.app .fichaCab :is(h1, h2, p, .fichaNome, .fichaValor, .fichaContexto) { color: var(--ink) }
+.app .fichaCab .btnEscuro { min-height: 44px; border: 1px solid var(--line); border-radius: 5px; background: #fff; color: var(--ink-soft); font: 500 13px/1.4 var(--body); text-transform: none; letter-spacing: 0 }
+.app .fechar { min-width: 44px; min-height: 44px; color: var(--ink-soft) }
+.app .fundo { background: #14181a80 }
+.app .modalTopo { border-bottom: 1px solid var(--line); padding-bottom: 16px }
+.app .modal :is(.rotulo, .gavetaTitulo) { font: 650 16px/1.4 var(--body); letter-spacing: 0; text-transform: none }
+.app .gaveta { font: 600 13px/1.4 var(--body); text-transform: none; letter-spacing: 0; min-height: 44px }
+.app .gavetaFila { border-radius: 6px; padding: 16px }
+.app .diaFolha { border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--painel-sombra) }
+.app .placar { margin: 24px 0 0; padding: 0; gap: 0; background: var(--paper-alto); border: 1px solid var(--line); border-radius: 8px; overflow: hidden }
+.app .placarCel { padding: 20px; border-left: 1px solid var(--line) }
+.app .placarCel:first-child { padding-left: 20px }
+.app .placarCel span { color: var(--ink-soft); font: 500 12px/1.5 var(--body); letter-spacing: 0; text-transform: none }
+.app .placarCel small { color: var(--ink-soft); font: 400 12px/1.6 var(--body); margin-top: 8px }
+.app .placarNum { color: var(--ink); font-size: clamp(26px, 3vw, 36px); font-stretch: 85%; line-height: 1.2 }
+.app .placarGanho { color: var(--painel-acento) }
+.app .placarSem { color: var(--ink-fraco); font-size: 24px }
+.app .placarAtraso { color: var(--rosa-dark) }
+.app .rotuloAlerta .rotuloCont, .app .dividaSinal, .app .funilQueda { color: var(--rosa-dark) }
+.app .opcoes { flex-wrap: wrap; gap: 8px }
+.app .barraTrilho, .app .funilTrilho { border-radius: 3px; overflow: hidden }
+.app .barraFill { background: var(--painel-acento) }
+.app .barraPerda { background: var(--rosa) }
+.app .semanas { margin-top: 20px }
+.app .impresso { border: 1px solid var(--line); border-radius: 8px; background: var(--paper-alto); padding: 16px }
+.app .impresso::before { display: none }
+.app .buscaLinha { border: 1px solid var(--line); border-radius: 5px; background: #fff; padding: 0 12px; min-height: 44px }
+.app .buscaRot { background: none; color: var(--ink-soft); font: 500 12px/1.4 var(--body); text-transform: none; letter-spacing: 0; padding: 0 }
+.app .buscaLinha:focus-within { border-color: var(--painel-acento) }
+.app .buscaLinha:focus-within .buscaRot { background: none; color: var(--painel-acento) }
+.app .filtro { font: 500 12px/1.5 var(--body); letter-spacing: 0; text-transform: none }
+.app .filtro select { border: 1px solid var(--line); border-radius: 5px; padding: 9px 12px; background: #fff; color: var(--ink); min-height: 44px }
+.app .pipe .impresso { padding: 16px; margin-top: 16px; gap: 12px 20px }
+.app .pipe .quadro { padding: 12px; gap: 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper-2) }
+.app .pipe .coluna { background: var(--paper); border: 1px solid var(--line); border-radius: 7px }
+.app .pipe .colunaCab { background: var(--paper-alto); border-bottom: 1px solid var(--line) }
+.app .colunaNome { font: 650 14px/1.4 var(--body); text-transform: none; letter-spacing: 0 }
+.app .colunaNota { font: 400 12px/1.5 var(--body); letter-spacing: 0; text-transform: none }
+.app .carga { background: var(--paper-2); border-radius: 3px }
+.app .cargaFill, .app .cargaMaior { background: var(--painel-acento) }
+.app .pipe .placa { border: 1px solid var(--line); border-left-width: 3px; border-radius: 6px; background: var(--paper-alto) }
+.app .pipe .placaAberta, .app .pipe .placaAlvo { background: var(--painel-acento-suave); border-color: var(--painel-borda-ativa); color: var(--ink); box-shadow: none }
+.app .pipe .placa :is(.placaNome, .placaNum) { color: var(--ink); text-transform: none }
+.app .pipe .placa .placaSoma { color: var(--ink-soft); font: 500 11px/1.5 var(--body); text-transform: none; letter-spacing: 0 }
+.app .pipe .placaGanho .placaNum { color: var(--painel-acento) }
+.app .pipe .placaPerda .placaNum { color: var(--ink-fraco) }
+.app .cardVoo { border-radius: 7px; box-shadow: var(--painel-sombra) }
+.app .loteBotao { border: 1px solid var(--painel-borda-ativa); border-radius: 5px; min-height: 44px; font: 600 12px/1.4 var(--body); text-transform: none; letter-spacing: 0; background: var(--painel-acento-suave) }
+.app .arquivoPuxador { min-height: 44px; font: 600 13px/1.4 var(--body); text-transform: none; letter-spacing: 0 }
+.app .caixaFolha :is(.caixaMes, .caixaLegendaRegua) { font: 500 12px/1.5 var(--body); letter-spacing: 0; text-transform: none }
+.app .caixaBotoes .btnEscuro { border-color: var(--line); color: var(--ink-soft); background: #fff; box-shadow: none }
+.app .orfao { border-radius: 6px; padding: 16px }
+.app .reguaQuita, .app .caixaRegua { border-radius: 3px; overflow: hidden }
+.app .notaAlerta { border-radius: 0 5px 5px 0; padding: 12px 16px; background: #fbe6ed }
+@media (max-width: 860px) {
+  .app .placar { grid-template-columns: repeat(2, minmax(0, 1fr)) }
+  .app .placarCel { padding: 16px; border-bottom: 1px solid var(--line) }
+  .app .placarCel:nth-child(odd) { border-left: 0 }
+  .app .placarCel:nth-last-child(-n+2) { border-bottom: 0 }
+  .app .placarCel:first-child { padding-left: 16px }
+  .app .pipe .quadro { padding: 0; border: 0; background: none }
+  .app .pipe .impresso { padding: 12px }
+  .app .fichaCab, .app .bloco, .app .template { padding: 16px }
+  .app .main :where(input[type="text"], input[type="email"], input[type="tel"], input[type="password"], input[type="search"], input[type="date"], input[type="number"], input:not([type]), select, textarea) { font-size: 16px }
+}

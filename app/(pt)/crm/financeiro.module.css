@@ -25,9 +25,9 @@
 
 .cabeca {
   display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px 20px; align-items: end;
-  padding-bottom: 18px; border-bottom: 3px solid var(--ink); margin-bottom: 24px;
+  padding-bottom: 20px; border-bottom: 1px solid var(--line); margin-bottom: 24px;
 }
-.cabeca h1 { font-size: clamp(34px, 5vw, 64px); line-height: .86 }
+.tela .cabeca h1 { font-size: clamp(28px, 3vw, 38px); line-height: 1.15; text-transform: none }
 .tela .voz { font: 400 15.5px/1.55 var(--body); color: var(--ink-soft); max-width: 72ch; margin: 6px 0 16px }
 .tela .cabeca .voz { margin: 8px 0 0 }
 .meses { display: flex; gap: 6px; align-items: baseline; font: 700 13px var(--body) }
@@ -237,3 +237,43 @@
 @media (max-width: 900px) {
   .viradaPerguntas, .viradaNumeros { grid-template-columns: minmax(0, 1fr) }
 }
+
+
+/* Resultado, custos e projeções com os mesmos cards e controles do painel. */
+.rolagem { max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; border-radius: 8px }
+.tela { max-width: 1440px }
+.tela .voz { font-size: 14px; line-height: 1.6 }
+.tela .btn, .tela .mini { min-height: 44px; border-radius: 5px; font: 600 13px/1.4 var(--body); padding: 10px 14px; box-shadow: none }
+.tela .btn { background: var(--painel-acento); border: 1px solid var(--painel-acento); color: #fff }
+.tela .mini { background: var(--paper-alto); border: 1px solid var(--line); color: var(--ink-soft) }
+.tela .meses a, .tela .meses b { min-height: 40px; padding: 9px 12px; border: 1px solid var(--line); border-radius: 5px; font: 500 13px/1.4 var(--body) }
+.tela .meses b { background: var(--painel-acento-suave); color: var(--painel-acento); border-color: var(--painel-borda-ativa) }
+.tela .cupom { padding: 24px; background: var(--paper-alto); border: 1px solid var(--line); border-radius: 8px; transform: none; box-shadow: none; mask: none; -webkit-mask: none }
+.tela .cupom:hover { transform: none }
+.tela .cupomCab { border-bottom: 1px solid var(--line); font: 650 16px/1.4 var(--body); text-align: left }
+.tela .cupomDica { text-align: left; margin-top: 10px; line-height: 1.6 }
+.tela .linhaTotal { border-block: 1px solid var(--line); padding-block: 12px; margin-block: 8px }
+.tela .final { border-top: 1px solid var(--line) }
+.tela .tabela { border: 1px solid var(--line); border-radius: 8px; border-collapse: separate; border-spacing: 0; overflow: hidden }
+.tela .tabela th { background: var(--paper); border-bottom: 1px solid var(--line); padding: 12px; font: 600 12px/1.5 var(--body) }
+.tela .tabela tfoot td { border-top: 1px solid var(--line) }
+.tela .form { padding: 20px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper-alto); gap: 16px }
+.tela .form input, .tela .form select { border: 1px solid var(--line); border-radius: 5px; background: #fff; min-height: 44px; padding: 10px 12px }
+.tela .viradaPerguntas label, .tela .viradaNumeros > div { border: 1px solid var(--line); border-radius: 8px; padding: 20px; background: var(--paper-alto); box-shadow: none }
+.tela .viradaNumeros > .viradaMeta { background: var(--painel-acento-suave); color: var(--painel-acento); border-color: var(--painel-borda-ativa) }
+.tela .viradaMeta :is(b, span, p, small, em) { color: var(--painel-acento) }
+.tela .campoDinheiro input[type] { border: 1px solid var(--line); border-radius: 5px; background: #fff; min-height: 44px; padding: 10px 12px; color: var(--painel-acento) }
+.tela .barra { border: 1px solid var(--line); border-radius: 6px; overflow: hidden }
+.tela .aviso, .tela .erro { border-radius: 6px; border-width: 1px }
+@media (hover: hover) and (pointer: fine) {
+  .tela .btn:hover { background: #065b38; box-shadow: none }
+  .tela .mini:hover { background: var(--paper-2); border-color: var(--line) }
+}
+@media (max-width: 860px) {
+  .tela .cabeca { grid-template-columns: 1fr; gap: 16px }
+  .tela .cupom, .tela .form { padding: 16px }
+  .tela .form { grid-template-columns: repeat(2, minmax(0, 1fr)) }
+  .tela .tabela { min-width: 700px }
+}
+@media (max-width: 420px) { .tela .form { grid-template-columns: 1fr } }
+@media (max-width: 560px) { .tela .tabela { min-width: 0 } }

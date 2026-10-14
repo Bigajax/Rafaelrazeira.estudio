@@ -16,9 +16,9 @@
 
 .cabeca {
   display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px 20px; align-items: end;
-  padding-bottom: 18px; border-bottom: 3px solid var(--ink); margin-bottom: 20px;
+  padding-bottom: 20px; border-bottom: 1px solid var(--line); margin-bottom: 24px;
 }
-.cabeca h1 { font-size: clamp(34px, 5vw, 64px); line-height: .86 }
+.tela .cabeca h1 { font-size: clamp(28px, 3vw, 38px); line-height: 1.15; text-transform: none }
 .tela .cabeca .voz { margin: 8px 0 0 }
 .ponto { color: var(--rosa); font-style: normal }
 .anos { display: flex; gap: 6px; align-items: baseline; font: 700 13px var(--mono) }
@@ -356,3 +356,42 @@
   .historico li { grid-template-columns: 80px 52px }
   .historico em { grid-column: 1 / -1 }
 }
+
+
+/* Metas e projetos no painel; o mapa de evolução preserva sua visualização. */
+.tela { max-width: 1440px }
+.tela .voz { font-size: 14px; line-height: 1.6 }
+.tela .btn, .tela .mini { min-height: 44px; border-radius: 5px; padding: 10px 14px; font: 600 13px/1.4 var(--body); letter-spacing: 0; text-transform: none; box-shadow: none }
+.tela .btn { background: var(--painel-acento); border: 1px solid var(--painel-acento); color: #fff }
+.tela .mini { background: var(--paper-alto); border: 1px solid var(--line); color: var(--ink-soft) }
+.tela .anos a, .tela .anos b { min-height: 40px; border: 1px solid var(--line); border-radius: 5px; padding: 9px 12px; font: 500 13px/1.4 var(--body) }
+.tela .anos b { background: var(--painel-acento-suave); border-color: var(--painel-borda-ativa); color: var(--painel-acento) }
+.tela .subida { border: 1px solid var(--line); border-radius: 8px 8px 0 0; box-shadow: none; overflow: hidden }
+.tela .placar { border: 1px solid var(--line); border-top: 0; border-radius: 0 0 8px 8px }
+.tela .editaPremios { border: 1px solid var(--line); border-radius: 8px; margin-top: 12px }
+.tela .proximo, .tela .projeto, .tela .painel, .tela .rmr { border: 1px solid var(--line); border-radius: 8px; box-shadow: none; overflow: hidden }
+.tela .proximo { border-left: 3px solid var(--painel-acento) }
+.tela .projeto { padding: 20px }
+.tela .P1 { border-left: 3px solid var(--painel-acento); box-shadow: none }
+.tela .P3 { background: var(--paper-alto); box-shadow: none }
+.tela .prio { min-width: 44px; min-height: 36px; border-radius: 4px; font-family: var(--body) }
+.tela .painelCab { border-bottom: 1px solid var(--line); padding: 16px 20px; font: 650 16px/1.4 var(--body); text-transform: none; letter-spacing: -.015em }
+.tela .grupoCab b { border-radius: 4px; background: var(--painel-acento-suave); color: var(--painel-acento) }
+.tela .formMeta { border: 1px solid var(--line); border-radius: 6px; background: var(--paper-alto); padding: 16px; gap: 12px }
+.tela .campo textarea, .tela .porque, .tela .linhaForm input, .tela .formMeta input, .tela .formMeta select, .tela .projecoes input, .tela .horizonte input, .tela .rmrValor { min-height: 44px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 5px; background: #fff; font: 400 14px/1.5 var(--body) }
+.tela .como ol { border: 1px solid var(--line); border-radius: 8px; background: var(--paper-alto); overflow: hidden }
+.tela .como li + li { border-left-width: 1px }
+.tela .novoProjeto, .tela .vazio, .tela .aviso, .tela .erro { border-radius: 6px; border-width: 1px }
+.tela .celula { border-radius: 3px; border-bottom-width: 2px }
+.tela .rmrPct, .tela .noAno { border-radius: 4px; border-width: 1px }
+@media (hover: hover) and (pointer: fine) {
+  .tela .btn:hover { box-shadow: none; background: #065b38 }
+  .tela .mini:hover { border-color: var(--line); background: var(--paper-2) }
+}
+@media (max-width: 860px) {
+  .tela .cabeca { grid-template-columns: 1fr; gap: 16px }
+  .tela .formMeta { grid-template-columns: repeat(2, minmax(0, 1fr)) }
+  .tela .projeto { padding: 16px }
+  .tela .painelCab { padding: 16px }
+}
+@media (max-width: 420px) { .tela .formMeta { grid-template-columns: 1fr } }

@@ -25,19 +25,8 @@ export default async function LayoutPainel({
   return (
     <div className={s.mesa}>
       <Trilho sair={sair} contagens={numeros} />
-      <main className={s.main}>{children}</main>
+      <main id="crm-principal" tabIndex={-1} className={s.main}>{children}</main>
       {modal}
-
-      {/* No celular a barra de baixo leva as quatro rotas e não leva "Sair":
-          cinco itens espremem os quatro que importam, e sair é a única ação
-          da barra que custa uma senha para desfazer. Ele desce para o pé do
-          conteúdo, onde ninguém encosta sem querer. No computador ele vive
-          no trilho e este bloco não existe. */}
-      <form action={sair} className={s.sairNoPe}>
-        <button type="submit" className={s.btnMini}>
-          Sair do estúdio
-        </button>
-      </form>
     </div>
   );
 }
