@@ -52,3 +52,6 @@ whatsapp-leitor.log
 # Prévias, backups e cache local das ferramentas.
 .tmp/
 supabase/.temp/
+
+# saídas dos scripts (a análise das vitrines, 14/10/2026)
+/tmp/

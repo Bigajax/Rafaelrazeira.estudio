@@ -12,12 +12,14 @@
    ============================================================ */
 
 import type { Metadata } from "next";
+import Link from "next/link";
 import { lojasPerformance } from "@/lib/performance/dados";
 import { clienteServidor } from "@/lib/crm/supabase";
 import { ListaLojas } from "@/components/performance/ListaLojas";
 import { FilaDaSemana } from "@/components/performance/FilaDaSemana";
 import s from "@/app/(pt)/crm/crm.module.css";
 import p from "@/app/(pt)/crm/performance.module.css";
+import a from "./analise/analise.module.css";
 
 export const metadata: Metadata = { title: "Performance" };
 
@@ -49,6 +51,9 @@ export default async function PaginaPerformance() {
               : `${lojas.length} ${lojas.length === 1 ? "loja" : "lojas"}, ${contando} com contagem chegando, ${pagando} com a aba liberada.`}
           </p>
         </div>
+        <Link href="/crm/performance/analise" className={a.botaoAnalise}>
+          Análise das vitrines
+        </Link>
       </header>
 
       {semTabela ? (

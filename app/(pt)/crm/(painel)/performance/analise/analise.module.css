@@ -1,0 +1,50 @@
+/* a aba Análise do Performance (14/10/2026): no desenho da página do Performance */
+.trilha { font: 400 12.5px/1.5 var(--body); color: var(--ink-fraco); margin-bottom: 6px }
+.trilha a { color: inherit; text-decoration: underline; text-underline-offset: 3px }
+.como { margin-top: 18px; font: 400 13px/1.6 var(--body); color: var(--ink-soft) }
+.como code { font: 12px var(--mono); padding: 1px 5px; border-radius: 4px; background: var(--paper) }
+
+.secao { margin-top: 32px }
+.secao > h2 { font: 650 18px/1.3 var(--body); letter-spacing: -.015em; text-transform: none; margin-bottom: 14px }
+
+/* as lojas */
+.lojas { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)) }
+.loja { border: 1px solid var(--line); border-radius: 8px; background: var(--paper-alto); padding: 16px 18px; display: grid; gap: 10px }
+.lojaNome { display: grid; gap: 2px; min-width: 0 }
+.lojaNome b { font: 650 15.5px/1.35 var(--body) }
+.lojaNome a { font: 400 12px/1.5 var(--body); color: var(--ink-fraco); overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+.notas { display: flex; flex-wrap: wrap; gap: 6px }
+.nota { display: inline-flex; align-items: center; gap: 6px; padding: 4px 9px; border-radius: 999px; background: var(--paper); font: 500 12px/1.4 var(--body) }
+.nota i { width: 8px; height: 8px; border-radius: 50% }
+.nota[data-nivel="verde"] i { background: #0c9159 }
+.nota[data-nivel="amarelo"] i { background: #e0a100 }
+.nota[data-nivel="vermelho"] i { background: #d12a4f }
+.nota[data-nivel="vermelho"] { background: #fbe6ed; color: var(--rosa-dark) }
+.lojaResumo { font: 400 12.5px/1.5 var(--body); color: var(--ink-soft) }
+
+/* o que fazer */
+.fazer { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px }
+.fazer > li { border: 1px solid var(--line); border-left-width: 4px; border-radius: 6px; background: var(--paper-alto); padding: 12px 16px }
+.fazer > li[data-nivel="vermelho"] { border-left-color: #d12a4f }
+.fazer > li[data-nivel="amarelo"] { border-left-color: #e0a100 }
+.fazerLoja { font: 500 11.5px/1.5 var(--body); color: var(--ink-fraco) }
+.fazerTexto { margin-top: 2px; font: 600 14.5px/1.45 var(--body) }
+.fazerAcao { margin-top: 3px; font: 400 13px/1.5 var(--body); color: var(--ink-soft) }
+
+/* os números para anúncio */
+.numerosNota { font: 400 13px/1.55 var(--body); color: var(--ink-soft); margin-bottom: 14px }
+.numeros { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)) }
+.numeros > div { border: 1px solid var(--line); border-radius: 8px; background: var(--paper-alto); padding: 16px 18px; display: grid; gap: 4px }
+.numeros b { font: 700 30px/1.1 var(--body); letter-spacing: -.02em; font-variant-numeric: tabular-nums }
+.numeros span { font: 400 13px/1.45 var(--body); color: var(--ink-soft) }
+.origem { margin-top: 12px; font: 400 13.5px/1.6 var(--body) }
+.frases { margin-top: 16px; padding: 14px 16px; border: 1px dashed var(--line); border-radius: 8px }
+.frasesTitulo { font: 600 13px/1.5 var(--body); margin-bottom: 6px }
+.frases ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; font: 400 14px/1.55 var(--body) }
+.porLoja { margin: 14px 0 0; padding-left: 18px; display: grid; gap: 4px; font: 400 13.5px/1.55 var(--body); color: var(--ink-soft) }
+.porLoja b { color: var(--ink); font-weight: 600 }
+
+/* o botão no cabeçalho do Performance que leva para cá */
+.botaoAnalise { display: inline-flex; align-items: center; min-height: 40px; padding: 8px 14px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper-alto); font: 500 13.5px/1.3 var(--body); color: var(--ink); text-decoration: none }
+.botaoAnalise:hover { border-color: var(--ink-fraco) }
+.botaoAnalise:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px }
