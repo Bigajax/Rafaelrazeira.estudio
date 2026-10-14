@@ -8009,7 +8009,9 @@
   border: 1px solid var(--line);
   border-radius: 10px;
   box-shadow: var(--painel-sombra);
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
 }
 .app .fichaCab {
   --sobre-ink: var(--ink-soft);
