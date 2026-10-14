@@ -1,0 +1,303 @@
+/* ============================================================
+   O CHECK-IN DAS FOTOS, na gramática da casa (14/10/2026).
+   docs/design-estudio.md: papel e tinta; Archivo condensada na
+   manchete e no número da ficha; Inter no corpo; mono em caixa alta nos
+   rótulos; filete de 1,5px; uma ficha por parte da vitrine, com a
+   sombra dura em esmeralda; o rosa só na ação (Escolher fotos).
+   Quina reta. Feito primeiro para o celular.
+   ============================================================ */
+.pagina {
+  --paper: #f2efe6;
+  --paper-2: #eae6d9;
+  --ficha: #fbf9f3;
+  --ink: #14181a;
+  --ink-soft: #3a4144;
+  --green: #0c9159;
+  --green-dark: #076b42;
+  --rosa: #e31b62;
+  --rosa-dark: #b81250;
+  --linha: #d8d3c4;
+  --vermelho: #b3261e;
+  min-height: 100vh;
+  padding: clamp(1.5rem, 4vw, 3.5rem) 16px 4rem;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body), Inter, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.pagina :where(h1, h2, p, ul) {
+  margin: 0;
+}
+.folha {
+  max-width: 56rem;
+  margin: 0 auto;
+}
+
+/* ── o cabeçalho ───────────────────────────────────────────── */
+.topo {
+  padding-bottom: 1.75rem;
+  box-shadow: 0 1.5px 0 var(--ink), 0 4.5px 0 var(--linha);
+}
+.kicker,
+.contagem,
+.nota span,
+.assinatura {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.kicker {
+  color: var(--green-dark);
+}
+.titulo {
+  margin-top: 0.75rem;
+  font-family: var(--font-display), "Arial Narrow", sans-serif;
+  font-variation-settings: "wdth" 62;
+  font-weight: 900;
+  font-size: clamp(2.75rem, 11vw, 5.25rem);
+  line-height: 0.92;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+.intro {
+  margin-top: 1.25rem;
+  max-width: 38rem;
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+.intro b {
+  color: var(--ink);
+}
+
+/* ── as fichas ─────────────────────────────────────────────── */
+.fichas {
+  display: grid;
+  gap: 2rem;
+  margin-top: 2.5rem;
+}
+.ficha {
+  min-width: 0;
+  padding: 1.25rem;
+  background: var(--ficha);
+  border: 1.5px solid var(--ink);
+  box-shadow: 6px 6px 0 var(--green);
+}
+.ficha__topo {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.25rem 1rem;
+  align-items: start;
+}
+.ficha__num {
+  font-family: var(--font-display), "Arial Narrow", sans-serif;
+  font-variation-settings: "wdth" 62;
+  font-weight: 900;
+  font-size: 2.75rem;
+  line-height: 0.9;
+  color: var(--green);
+}
+.ficha__texto {
+  min-width: 0;
+}
+.ficha__nome {
+  font-family: var(--font-display), "Arial Narrow", sans-serif;
+  font-variation-settings: "wdth" 75;
+  font-weight: 800;
+  font-size: 1.5rem;
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+.ficha__dica {
+  margin-top: 0.25rem;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+.contagem {
+  grid-column: 2;
+  color: var(--green-dark);
+}
+
+.botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 3.25rem;
+  margin-top: 1.25rem;
+  padding: 0 1.5rem;
+  border: 0;
+  background: var(--rosa);
+  color: #fff;
+  font-family: var(--font-display), "Arial Narrow", sans-serif;
+  font-variation-settings: "wdth" 75;
+  font-weight: 800;
+  font-size: 1.0625rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 4px 4px 0 var(--ink);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.botao:active {
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 var(--ink);
+}
+.botao:focus-visible,
+.tirar:focus-visible,
+.repetir:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+@media (hover: hover) {
+  .botao:hover {
+    background: var(--rosa-dark);
+  }
+}
+@media (min-width: 40rem) {
+  .botao {
+    width: auto;
+  }
+}
+
+/* ── as fotos ──────────────────────────────────────────────── */
+.grade {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1.25rem;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 40rem) {
+  .grade {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+.foto {
+  min-width: 0;
+}
+.foto__quadro {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--paper-2);
+  border: 1.5px solid var(--ink);
+}
+.foto__quadro img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.foto[data-estado="fila"] img,
+.foto[data-estado="subindo"] img {
+  opacity: 0.55;
+}
+.foto__estado {
+  position: absolute;
+  inset: auto 0 0;
+  padding: 0.5rem;
+}
+.barra {
+  display: block;
+  height: 6px;
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  position: relative;
+}
+.barra::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--p, 0) * 100%);
+  background: var(--green);
+  transition: width 0.2s linear;
+}
+.repetir {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1.5px solid var(--ink);
+  background: var(--paper);
+  color: var(--vermelho);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.selo {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  background: var(--green);
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.nota {
+  display: block;
+  margin-top: 0.5rem;
+}
+.nota span {
+  display: block;
+  font-size: 0.5625rem;
+  letter-spacing: 0.14em;
+  color: var(--ink-soft);
+}
+.nota input {
+  width: 100%;
+  margin-top: 0.15rem;
+  padding: 0.35rem 0;
+  border: 0;
+  border-bottom: 1.5px solid var(--ink);
+  border-radius: 0;
+  background: transparent;
+  color: var(--ink);
+  /* 16px: abaixo disso o iPhone dá zoom ao tocar no campo */
+  font: 400 1rem/1.3 var(--font-body), Inter, system-ui, sans-serif;
+}
+.nota input:focus {
+  outline: none;
+  border-bottom-color: var(--green);
+}
+.nota input:disabled {
+  opacity: 0.4;
+}
+.aviso {
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--vermelho);
+}
+.tirar {
+  margin-top: 0.35rem;
+  padding: 0.35rem 0;
+  border: 0;
+  background: none;
+  color: var(--ink-soft);
+  font-size: 0.8125rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+/* ── o pé ──────────────────────────────────────────────────── */
+.pe {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1.5px solid var(--ink);
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+.assinatura {
+  margin-top: 1rem;
+  color: var(--ink);
+}
