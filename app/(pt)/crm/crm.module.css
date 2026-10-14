@@ -5234,117 +5234,35 @@
   }
 }
 
-/* ============================================================
-   O CARREGANDO — a manchete chegando
-
-   Nenhuma roda girando, nenhum esqueleto cinza pulsando. A primeira
-   versão era uma régua de 4px com uma palavra mono de 10,5px, e ela era
-   correta e não era da casa: uma espera com a voz de nota de rodapé, numa
-   casa que fala em manchete.
-
-   Agora a palavra do gerúndio ("Puxando a fila", "Fazendo as contas") É a
-   manchete: condensada 900 em caixa alta, no mesmo corpo e no mesmo lugar
-   do h1 da tela que está vindo. A troca do carregando pela página vira um
-   preenchimento (a manchete de espera dá lugar à manchete de verdade) em
-   vez de um pulo. E ela carrega o ponto final rosa da casa, PULSANDO no
-   ritmo da régua: é o menor movimento possível com a cor da casa, no
-   único lugar onde a manchete aceita cor.
-
-   A régua embaixo continua sendo o instrumento da casa, com um voto novo:
-   o trilho é HACHURA, a tinta interrompida que no gráfico de semanas quer
-   dizer "ainda não consolidado", e o filete cheio corre por cima. O que a
-   tinta ainda não alcançou está em rascunho, que é exatamente o estado da
-   tela.
-   ============================================================ */
-.carregando {
-  padding-top: clamp(18px, 2.6vw, 30px);
-}
-
-/* A palavra na voz de manchete: a mesma receita do `.app h1`, escrita aqui
-   porque o carregando é um `span` com `role="status"`, não um título de
-   documento. */
-.carregandoPalavra {
-  display: block;
-  font-family: var(--display);
-  font-stretch: 78%;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: -0.012em;
-  font-size: clamp(26px, 3.4vw, 38px);
-  line-height: 0.94;
-  color: var(--ink);
-}
-.carregandoPonto {
-  animation: pulsaPonto 1.15s ease-in-out infinite;
-}
-@keyframes pulsaPonto {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.18;
-  }
-}
-
+/* Indicador discreto das ações que aguardam uma resposta. */
 .carregandoRegua {
   display: block;
   position: relative;
   overflow: hidden;
-  height: 6px;
-  margin-top: clamp(14px, 2vw, 20px);
-  background: repeating-linear-gradient(
-    -45deg,
-    var(--line) 0 4px,
-    transparent 4px 8px
-  );
+  height: 3px;
+  margin-top: 14px;
+  background: #e3e9df;
+  border-radius: 3px;
 }
-/* Sangra até as bordas da janela só quando o carregando É a página. Dentro
-   do casco do modal ele fica preso à moldura, senão a régua estoura o
-   cartão. É a mesma conta da `.faixa`, e o `50%` resolve contra o bloco que
-   a contém, que é a largura do conteúdo. */
-.carregandoSangra .carregandoRegua {
-  margin-top: clamp(14px, 2vw, 20px);
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-}
-
 .carregandoCorre {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 26%;
-  background: var(--ink);
-  animation: correNaRegua 1.15s cubic-bezier(0.62, 0, 0.38, 1) infinite;
+  display: block;
+  height: 100%;
+  width: 28%;
+  background: var(--green-dark);
+  animation: correNaRegua 1.4s ease-in-out infinite;
+  border-radius: 3px;
 }
-/* 385% é a largura da pista dividida pela do filete (100/26), que é o
-   quanto ele precisa andar para sair inteiro pela direita depois de ter
-   entrado inteiro pela esquerda. */
 @keyframes correNaRegua {
   from {
     transform: translateX(-100%);
   }
   to {
-    transform: translateX(385%);
+    transform: translateX(460%);
   }
 }
-
-/* Dentro do casco do modal: o cartão tem `padding: 0 ...` no topo porque o
-   cabeçalho de tinta da ficha sangra até a borda. Sem conteúdo, esse zero
-   colaria a régua na moldura. */
-.carregandoNaCaixa {
-  padding: clamp(18px, 2.6vw, 26px) 0 clamp(10px, 1.6vw, 16px);
-}
-
-/* Sob movimento reduzido o filete não corre: ele fica cheio, de ponta a
-   ponta. A guarda global deste arquivo já zera a animação (o ponto para
-   de pulsar sozinho); o que falta é dar ao filete parado uma forma que
-   signifique alguma coisa, e um filete de tinta inteiro com a manchete em
-   cima diz o mesmo sem se mexer. É por isso que a informação foi posta na
-   PALAVRA e não no movimento. */
 @media (prefers-reduced-motion: reduce) {
   .carregandoCorre {
+    animation: none;
     width: 100%;
   }
 }
@@ -8415,5 +8333,160 @@
       textarea
     ) {
     font-size: 16px;
+  }
+}
+
+/* Funil: a área de trabalho ocupa o espaço disponível da janela. */
+.app .pipe .painelFiltros {
+  display: block;
+  padding: 10px 14px;
+  margin-top: 10px;
+  flex: none;
+}
+.painelFiltros > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 28px;
+  cursor: pointer;
+  list-style: none;
+  font: 500 13px/1.5 var(--body);
+  color: var(--ink-soft);
+}
+.painelFiltros > summary::-webkit-details-marker {
+  display: none;
+}
+.painelFiltros > summary > span:first-child::before {
+  content: "+";
+  display: inline-block;
+  width: 20px;
+  color: var(--green-dark);
+  font-size: 17px;
+}
+.painelFiltros[open] > summary > span:first-child::before {
+  content: "−";
+}
+.painelFiltros[open] > .filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 18px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+.painelFiltros > summary:focus-visible {
+  outline: 2px solid var(--green-dark);
+  outline-offset: 4px;
+}
+.ampliarQuadro {
+  white-space: nowrap;
+}
+@media (min-width: 861px) {
+  .app .main:has(.pipe) {
+    padding-top: 20px;
+    padding-bottom: 12px;
+  }
+  .app .pipe {
+    height: calc(100dvh - 32px);
+    min-height: 600px;
+    --colW: clamp(258px, 18vw, 320px);
+  }
+  .app .pipe > .tituloLinha {
+    gap: 10px;
+    margin-bottom: 0;
+    flex: none;
+  }
+  .app .pipe > .tituloLinha h1 {
+    font-size: 32px;
+  }
+  .app .pipe .pipeBusca {
+    min-width: 200px;
+    flex: 1 1 360px;
+    max-width: 640px;
+  }
+  .app .pipe > .faixa {
+    margin-top: 10px;
+    min-height: 36px;
+    padding: 7px 14px;
+    flex: none;
+  }
+  .app .pipe .quadroCaixa {
+    margin-top: 10px;
+    flex: 1 1 0;
+    min-height: 420px;
+  }
+  .app .pipe .quadro {
+    grid-template-rows: minmax(0, 1fr);
+    gap: 10px;
+    padding: 10px;
+    height: 100%;
+    min-height: 0;
+    max-height: none;
+    margin-top: 0;
+  }
+  .app .pipe .coluna,
+  .app .pipe .placas {
+    grid-row: 1;
+  }
+  .app .pipe .colunaCab {
+    padding: 10px 12px 9px;
+    flex: none;
+  }
+  .app .pipe .colunaCont {
+    font-size: 26px;
+  }
+  .app .pipe .colunaLista {
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior-y: contain;
+  }
+  .app .pipe .colunaLista > * {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  .app .pipe .fichaContexto {
+    overflow-wrap: anywhere;
+  }
+  .app .pipe .filtros select {
+    min-height: 36px;
+  }
+  .app .pipe:has(.saidaLista) {
+    height: auto;
+    min-height: calc(100dvh - 32px);
+  }
+  .app .pipe:has(.saidaLista) .quadroCaixa {
+    height: calc(100dvh - 190px);
+    min-height: 420px;
+    flex: none;
+  }
+  .app .pipe:fullscreen {
+    width: 100vw;
+    max-width: none;
+    height: 100dvh;
+    min-height: 0;
+    padding: 16px 20px;
+    box-sizing: border-box;
+    background: var(--paper);
+    overflow-y: auto;
+  }
+  .app .pipe:fullscreen .quadroCaixa {
+    min-height: 260px;
+  }
+}
+@media (max-width: 860px) {
+  .ampliarQuadro {
+    display: none;
+  }
+  .painelFiltros > summary {
+    font-size: 12px;
+  }
+  .app .pipe .painelFiltros {
+    padding: 10px 12px;
+  }
+  .app .pipe .quadro {
+    grid-template-rows: none;
   }
 }

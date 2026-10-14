@@ -1,5 +1,4 @@
 import { Carregando } from "@/components/crm/Carregando";
-
 export default function CarregandoRota() {
-  return <Carregando palavra="Abrindo o projeto" />;
+  return <Carregando area="a entrega" formato="ficha" />;
 }

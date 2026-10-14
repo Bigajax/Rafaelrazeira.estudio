@@ -25,7 +25,7 @@
    segunda implementação das regras, pronta para divergir da primeira.
    ============================================================ */
 
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import {
   closestCorners,
   DndContext,
@@ -129,6 +129,24 @@ export function Quadro({
   const [fechando, setFechando] = useState<LeadPainel | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [novo, setNovo] = useState(false);
+  const quadroRef = useRef<HTMLDivElement>(null);
+  const [ampliado, setAmpliado] = useState(false);
+  useEffect(() => {
+    const atualizar = () =>
+      setAmpliado(document.fullscreenElement === quadroRef.current);
+    document.addEventListener("fullscreenchange", atualizar);
+    return () => document.removeEventListener("fullscreenchange", atualizar);
+  }, []);
+  async function ampliar() {
+    try {
+      if (document.fullscreenElement === quadroRef.current)
+        await document.exitFullscreen();
+      else if (quadroRef.current?.requestFullscreen)
+        await quadroRef.current.requestFullscreen();
+    } catch {
+      setErro("Não foi possível ampliar o quadro neste navegador.");
+    }
+  }
   const [salvando, comecar] = useTransition();
 
   /* `distance: 6` é o que permite o card ser ao mesmo tempo arrastável e
@@ -136,7 +154,9 @@ export function Quadro({
      zero pixel e o link nunca abriria. */
   const sensores = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
   );
 
   const filtrados = useMemo(() => {
@@ -151,7 +171,14 @@ export function Quadro({
       /* A busca varre o que a pessoa lembra na hora: nome, empresa, perfil,
          nicho e o próprio próximo passo, que costuma ser onde está a frase
          que ficou na cabeça ("mandar o orçamento da joalheria"). */
-      return [l.nome, l.empresa, l.instagram, l.nicho, l.cidade, l.proximo_passo]
+      return [
+        l.nome,
+        l.empresa,
+        l.instagram,
+        l.nicho,
+        l.cidade,
+        l.proximo_passo,
+      ]
         .filter(Boolean)
         .some((campo) => String(campo).toLowerCase().includes(termo));
     });
@@ -187,7 +214,8 @@ export function Quadro({
          já foi tomada: esperar. */
       if (!ehNoPipeline(l.estagio)) continue;
       aberto += l.ticket_estimado ?? 0;
-      if (l.estagio === "proposta" || l.estagio === "negociacao") naMesa += l.ticket_estimado ?? 0;
+      if (l.estagio === "proposta" || l.estagio === "negociacao")
+        naMesa += l.ticket_estimado ?? 0;
       const u = urgencia(l, hoje);
       if (u === "atrasado" || u === "sem_passo") esperando += 1;
     }
@@ -220,7 +248,9 @@ export function Quadro({
      data, motivo) nunca é o que as colunas pedem. */
   const pedeNaColuna = (estagio: Estagio) => {
     if (!arrastando) return "";
-    return oQuePede(oQueFalta(estagio, arrastando).filter((c) => !exigenciaComum.includes(c)));
+    return oQuePede(
+      oQueFalta(estagio, arrastando).filter((c) => !exigenciaComum.includes(c)),
+    );
   };
 
   /* ---------- onde o card cai, e com que posição ----------
@@ -238,9 +268,17 @@ export function Quadro({
     /* A coluna SEM o card arrastado: incluí-lo faria a média ser calculada
        contra a própria posição antiga e o card ficaria preso no lugar. */
     const alvo = porColuna[estagio].filter((l) => l.id !== leadId);
-    const indice = sobre.startsWith("col:") ? alvo.length : Math.max(0, alvo.findIndex((l) => l.id === sobre));
+    const indice = sobre.startsWith("col:")
+      ? alvo.length
+      : Math.max(
+          0,
+          alvo.findIndex((l) => l.id === sobre),
+        );
 
-    const posicao = posicaoEntre(alvo[indice - 1]?.posicao ?? null, alvo[indice]?.posicao ?? null);
+    const posicao = posicaoEntre(
+      alvo[indice - 1]?.posicao ?? null,
+      alvo[indice]?.posicao ?? null,
+    );
     return { lead, estagio, posicao };
   }
 
@@ -254,7 +292,12 @@ export function Quadro({
   }, [assentando]);
 
   /* ---------- aplicar: otimismo primeiro, rollback se der errado ---------- */
-  function aplicar(lead: LeadPainel, estagio: Estagio, posicao: number, passagem: Passagem = {}) {
+  function aplicar(
+    lead: LeadPainel,
+    estagio: Estagio,
+    posicao: number,
+    passagem: Passagem = {},
+  ) {
     const antes = leads;
     setErro(null);
     setAssentando(lead.id);
@@ -272,7 +315,9 @@ export function Quadro({
                  continuaria mostrando "frio: 22 dias parado" até o próximo
                  carregamento, bem no momento em que deixou de ser verdade. */
               entrou_no_estagio_em:
-                estagio !== l.estagio ? new Date().toISOString() : l.entrou_no_estagio_em,
+                estagio !== l.estagio
+                  ? new Date().toISOString()
+                  : l.entrou_no_estagio_em,
             }
           : l,
       ),
@@ -352,11 +397,13 @@ export function Quadro({
     setSoPediram(false);
     setBusca("");
   };
-  const filtrando = Boolean(tipo || origem || nicho || anuncio || soPediram || busca.trim());
+  const filtrando = Boolean(
+    tipo || origem || nicho || anuncio || soPediram || busca.trim(),
+  );
   const pediram = useMemo(() => leads.filter(procurouOEstudio).length, [leads]);
 
   return (
-    <div className={`${s.wrapLargo} ${s.pipe}`}>
+    <div ref={quadroRef} className={`${s.wrapLargo} ${s.pipe}`}>
       <div className={s.tituloLinha}>
         <h1>
           Funil<i className={s.ponto}>.</i>
@@ -379,8 +426,20 @@ export function Quadro({
             placeholder="nome, empresa, nicho ou próximo passo"
           />
         </label>
-        <button type="button" className={s.btnAcao} onClick={() => setNovo(true)}>
+        <button
+          type="button"
+          className={s.btnAcao}
+          onClick={() => setNovo(true)}
+        >
           Anotar lead
+        </button>
+        <button
+          type="button"
+          className={`${s.btnMini} ${s.ampliarQuadro}`}
+          aria-pressed={ampliado}
+          onClick={ampliar}
+        >
+          {ampliado ? "Sair da tela cheia" : "Ampliar quadro"}
         </button>
       </div>
 
@@ -415,7 +474,9 @@ export function Quadro({
 
         <span className={s.faixaItem}>
           Esperando você
-          <b className={`${s.faixaNum} ${placar.esperando ? s.faixaAlerta : s.faixaVivo}`}>
+          <b
+            className={`${s.faixaNum} ${placar.esperando ? s.faixaAlerta : s.faixaVivo}`}
+          >
             {placar.esperando}
           </b>
         </span>
@@ -439,7 +500,16 @@ export function Quadro({
           ler nenhuma palavra, e é o mesmo princípio do filete de margem da
           ficha, aplicado ao controle em vez de ao dado.
           ============================================================ */}
-      <div className={s.impresso}>
+      <details className={`${s.impresso} ${s.painelFiltros}`}>
+        <summary>
+          <span>Filtros{filtrando ? " · em uso" : ""}</span>
+          <span>
+            {filtrando
+              ? `${filtrados.length} de ${leads.length}`
+              : leads.length}{" "}
+            {leads.length === 1 ? "lead" : "leads"} no quadro
+          </span>
+        </summary>
         <div className={s.filtros}>
           {pediram ? (
             <button
@@ -461,7 +531,12 @@ export function Quadro({
             ))}
           </Filtro>
 
-          <Filtro rotulo="Origem" valor={origem} aoMudar={setOrigem} vazio="todas">
+          <Filtro
+            rotulo="Origem"
+            valor={origem}
+            aoMudar={setOrigem}
+            vazio="todas"
+          >
             {ORIGENS.map((o) => (
               <option key={o} value={o}>
                 {NOME_ORIGEM[o]}
@@ -480,7 +555,12 @@ export function Quadro({
           {/* Só existe quando algum lead veio de anúncio: um filtro com
               a lista vazia seria uma pergunta sem resposta possível. */}
           {anuncios.length ? (
-            <Filtro rotulo="Anúncio" valor={anuncio} aoMudar={setAnuncio} vazio="todos">
+            <Filtro
+              rotulo="Anúncio"
+              valor={anuncio}
+              aoMudar={setAnuncio}
+              vazio="todos"
+            >
               {anuncios.map((a) => (
                 <option key={a} value={a}>
                   {a}
@@ -505,18 +585,23 @@ export function Quadro({
             {filtrando ? (
               <>
                 <b>{filtrados.length}</b> de {leads.length}
-                <button type="button" className={s.recolher} onClick={limparFiltros}>
+                <button
+                  type="button"
+                  className={s.recolher}
+                  onClick={limparFiltros}
+                >
                   Limpar
                 </button>
               </>
             ) : (
               <>
-                <b>{leads.length}</b> {leads.length === 1 ? "lead" : "leads"} no quadro
+                <b>{leads.length}</b> {leads.length === 1 ? "lead" : "leads"} no
+                quadro
               </>
             )}
           </span>
         </div>
-      </div>
+      </details>
 
       {erro ? (
         <p role="alert" className={s.erro}>
@@ -576,7 +661,12 @@ export function Quadro({
             A classe entra no quadro inteiro e não em cada coluna porque a
             pergunta é do quadro ("há um card no ar?"), não de cada uma. */}
         <div className={s.quadroCaixa}>
-          <div className={`${s.quadro} ${arrastando ? s.quadroEmVoo : ""}`}>
+          <div
+            className={`${s.quadro} ${arrastando ? s.quadroEmVoo : ""}`}
+            role="region"
+            aria-label="Quadro de oportunidades"
+            tabIndex={0}
+          >
             {/* ---------- O CORTE DO FUNIL (21/09) ----------
                 Uma silhueta de tinta atravessando as sete etapas, com a
                 altura de cada trecho na proporção de quantos leads há
@@ -585,7 +675,9 @@ export function Quadro({
                 substitui as sete placas pretas e a régua de dinheiro de
                 4px, e é a única tinta cheia da mesa; o resto vira papel
                 em três tons. Conta o quadro FILTRADO, como o placar. */}
-            <PerfilDoFunil contagens={ESTAGIOS_DO_QUADRO.map((e) => porColuna[e].length)} />
+            <PerfilDoFunil
+              contagens={ESTAGIOS_DO_QUADRO.map((e) => porColuna[e].length)}
+            />
 
             {ESTAGIOS_DO_QUADRO.map((estagio) => (
               <Coluna
@@ -622,8 +714,12 @@ export function Quadro({
                   estagio={estagio}
                   leads={porColuna[estagio]}
                   aberta={saidaAberta === estagio}
-                  pede={arrastando ? oQuePede(oQueFalta(estagio, arrastando)) : ""}
-                  aoAbrir={() => setSaidaAberta(saidaAberta === estagio ? null : estagio)}
+                  pede={
+                    arrastando ? oQuePede(oQueFalta(estagio, arrastando)) : ""
+                  }
+                  aoAbrir={() =>
+                    setSaidaAberta(saidaAberta === estagio ? null : estagio)
+                  }
                 />
               ))}
             </div>
@@ -648,11 +744,22 @@ export function Quadro({
             não dentro de uma coluna de 220px. Ganho e perdido não são fila
             de trabalho: são histórico, e histórico se lê em lista larga. */}
         {saidaAberta ? (
-          <section className={s.saidaLista} aria-label={NOME_ESTAGIO[saidaAberta]}>
-            <h2 className={`${s.rotulo} ${saidaAberta === "ganho" ? s.rotuloHoje : ""}`}>
+          <section
+            className={s.saidaLista}
+            aria-label={NOME_ESTAGIO[saidaAberta]}
+          >
+            <h2
+              className={`${s.rotulo} ${saidaAberta === "ganho" ? s.rotuloHoje : ""}`}
+            >
               {NOME_ESTAGIO[saidaAberta]}
-              <span className={s.rotuloCont}>{porColuna[saidaAberta].length}</span>
-              <button type="button" className={s.recolher} onClick={() => setSaidaAberta(null)}>
+              <span className={s.rotuloCont}>
+                {porColuna[saidaAberta].length}
+              </span>
+              <button
+                type="button"
+                className={s.recolher}
+                onClick={() => setSaidaAberta(null)}
+              >
                 Fechar
               </button>
             </h2>
@@ -698,7 +805,14 @@ export function Quadro({
         />
       ) : null}
 
-      {fechando ? <ModalContrato lead={fechando} hoje={hoje} ganhar aoFechar={() => setFechando(null)} /> : null}
+      {fechando ? (
+        <ModalContrato
+          lead={fechando}
+          hoje={hoje}
+          ganhar
+          aoFechar={() => setFechando(null)}
+        />
+      ) : null}
 
       {novo ? <ModalNovoLead aoFechar={() => setNovo(false)} /> : null}
     </div>
@@ -812,7 +926,9 @@ function Coluna({
             {leads.length}
           </span>
           <h2 className={s.colunaNome}>{NOME_ESTAGIO[estagio]}</h2>
-          {soma ? <span className={s.colunaSoma}>{dinheiroCurto(soma)}</span> : null}
+          {soma ? (
+            <span className={s.colunaSoma}>{dinheiroCurto(soma)}</span>
+          ) : null}
         </span>
         {/* A legenda dá lugar à exigência enquanto há um card no ar. Não é
             uma linha nova: é a MESMA linha dizendo a coisa que importa
@@ -824,14 +940,19 @@ function Coluna({
         </span>
       </header>
 
-
-      <div ref={setNodeRef} className={`${s.colunaLista} ${isOver ? s.colunaAlvo : ""}`}>
+      <div
+        ref={setNodeRef}
+        className={`${s.colunaLista} ${isOver ? s.colunaAlvo : ""}`}
+      >
         {/* Só a Lista tem o lote: é onde lead importado aterrissa, e é o
             único lugar onde "pesquisar todo mundo" faz sentido. Nas outras
             colunas a conversa já começou e o dossiê se pede pela ficha. */}
         {estagio === "lista" ? <PesquisaLote leads={leads} /> : null}
 
-        <SortableContext items={leads.map((l) => l.id)} strategy={verticalListSortingStrategy}>
+        <SortableContext
+          items={leads.map((l) => l.id)}
+          strategy={verticalListSortingStrategy}
+        >
           {leads.map((lead) => (
             <CardLead
               key={lead.id}
@@ -848,7 +969,9 @@ function Coluna({
             já está dito na placa preta logo acima. O que fica é um alvo de
             soltar do tamanho de uma ficha: silencioso quando ninguém está
             arrastando, e acesa quando alguém está. */}
-        {!leads.length ? <span className={s.colunaAlvoVazio} aria-hidden /> : null}
+        {!leads.length ? (
+          <span className={s.colunaAlvoVazio} aria-hidden />
+        ) : null}
       </div>
     </section>
   );
@@ -896,7 +1019,11 @@ function PlacaDeSaida({
   const { setNodeRef, isOver } = useDroppable({ id: idDaColuna(estagio) });
   const soma = leads.reduce((t, l) => t + (l.valor_fechado ?? 0), 0);
   const cor =
-    estagio === "ganho" ? s.placaGanho : estagio === "geladeira" ? s.placaGelo : s.placaPerda;
+    estagio === "ganho"
+      ? s.placaGanho
+      : estagio === "geladeira"
+        ? s.placaGelo
+        : s.placaPerda;
 
   return (
     <button
@@ -919,7 +1046,6 @@ function PlacaDeSaida({
   );
 }
 
-
 /* ============================================================
    O CORTE DO FUNIL
 
@@ -938,8 +1064,12 @@ function PerfilDoFunil({ contagens }: { contagens: number[] }) {
   const L = 700;
   const A = 64;
   const maior = Math.max(0, ...contagens);
-  const altura = (n: number) => (n <= 0 || maior <= 0 ? 0 : 5 + 55 * (Math.sqrt(n) / Math.sqrt(maior)));
-  const pontos = contagens.map((n, i) => ({ x: ((i + 0.5) / contagens.length) * L, y: A - altura(n) }));
+  const altura = (n: number) =>
+    n <= 0 || maior <= 0 ? 0 : 5 + 55 * (Math.sqrt(n) / Math.sqrt(maior));
+  const pontos = contagens.map((n, i) => ({
+    x: ((i + 0.5) / contagens.length) * L,
+    y: A - altura(n),
+  }));
   const inicio = { x: 0, y: pontos[0]?.y ?? A };
   const fim = { x: L, y: pontos[pontos.length - 1]?.y ?? A };
   const serie = [inicio, ...pontos, fim];

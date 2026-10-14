@@ -1,59 +1,98 @@
-/* ============================================================
-   O CARREGANDO — a manchete chegando
+import s from "./carregando.module.css";
 
-   Nenhuma roda girando, nenhum esqueleto cinza pulsando. A palavra do
-   gerúndio ("Puxando a fila", "Montando o quadro", "Fazendo as contas")
-   sai na VOZ DE MANCHETE da casa, no mesmo corpo e no mesmo lugar do h1
-   da tela que está vindo: a troca do carregando pela página é um
-   preenchimento, não um pulo. O ponto final rosa pulsa no ritmo da régua,
-   que corre logo abaixo sobre um trilho de hachura: o que a tinta ainda
-   não alcançou está em rascunho, que é o estado da tela.
+type Formato = "painel" | "quadro" | "lista" | "ficha";
 
-   A palavra não é enfeite nem frase genérica ("Carregando…", "Aguarde"):
-   é a mesma pergunta que a tela responde, no gerúndio. Numa ferramenta de
-   cinco telas que se abrem umas às outras o dia inteiro, saber QUAL delas
-   está vindo é a diferença entre "travou" e "está buscando o quadro".
-
-   ---------- por que ele existe ----------
-   Sem `loading.tsx`, o Next segura a tela ANTIGA inteira enquanto o
-   servidor busca a nova, e o clique fica sem resposta: nada acontece, e a
-   sensação é de botão quebrado. Com ele, a troca é instantânea e a espera
-   passa a ter forma.
-
-   ---------- e sob movimento reduzido ----------
-   O filete não corre (fica cheio, de ponta a ponta) e o ponto não pulsa.
-   Uma manchete com um filete de tinta inteiro embaixo continua dizendo a
-   mesma coisa parada, e é por isso que a informação foi posta na PALAVRA
-   e não no movimento.
-   ============================================================ */
-
-import s from "@/app/(pt)/crm/crm.module.css";
-
+/** Estrutura estática da próxima tela; apenas o pequeno indicador de estado se move. */
 export function Carregando({
-  palavra,
-  /* Verdadeiro quando o carregando ocupa a página: aí a régua sangra até as
-     bordas da janela, como a faixa de status faz. Falso dentro de um casco
-     (o modal da ficha), onde sangrar seria estourar a moldura. */
-  sangra = false,
+  area = "painel",
+  formato = "painel",
+  compacto = false,
 }: {
-  palavra: string;
+  area?: string;
+  formato?: Formato;
+  compacto?: boolean;
+  // Compatibilidade com telas locais que também reutilizam este componente.
+  palavra?: string;
   sangra?: boolean;
 }) {
   return (
-    <div
-      className={`${s.carregando} ${sangra ? s.carregandoSangra : ""}`}
-      role="status"
-      aria-live="polite"
+    <section
+      className={`${s.carregando} ${compacto ? s.compacto : ""}`}
+      aria-busy="true"
+      aria-label={`Carregando ${area}`}
     >
-      <span className={s.carregandoPalavra}>
-        {palavra}
-        <i className={`${s.ponto} ${s.carregandoPonto}`} aria-hidden="true">
-          .
-        </i>
-      </span>
-      <span className={s.carregandoRegua} aria-hidden="true">
-        <i className={s.carregandoCorre} />
-      </span>
-    </div>
+      <div className={s.estado} role="status" aria-live="polite">
+        <span className={s.indicador} aria-hidden="true" />
+        <span>Carregando {area}…</span>
+      </div>
+      <div className={s.estrutura} aria-hidden="true">
+        <div className={s.cabecalho}>
+          <span className={s.titulo} />
+          <span className={s.acao} />
+        </div>
+        {formato === "quadro" ? (
+          <>
+            <div className={s.resumo}>
+              <span />
+              <span />
+              <span />
+            </div>
+            <div className={s.quadro}>
+              {Array.from({ length: 5 }, (_, i) => (
+                <div className={s.coluna} key={i}>
+                  <span className={s.colunaTitulo} />
+                  {Array.from({ length: i === 2 ? 2 : 3 }, (_, j) => (
+                    <div className={s.cartao} key={j}>
+                      <span />
+                      <span />
+                      <span />
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </>
+        ) : formato === "ficha" ? (
+          <div className={s.ficha}>
+            <div className={s.bloco}>
+              <span className={s.linhaLarga} />
+              <span />
+              <span />
+              <span className={s.linhaCurta} />
+            </div>
+            <div className={s.bloco}>
+              <span />
+              <span />
+              <span className={s.linhaCurta} />
+            </div>
+          </div>
+        ) : (
+          <>
+            {formato === "painel" ? (
+              <div className={s.indicadores}>
+                {Array.from({ length: 4 }, (_, i) => (
+                  <div key={i}>
+                    <span />
+                    <span className={s.valor} />
+                    <span />
+                  </div>
+                ))}
+              </div>
+            ) : null}
+            <div className={s.lista}>
+              {Array.from({ length: compacto ? 3 : 5 }, (_, i) => (
+                <div className={s.linha} key={i}>
+                  <div>
+                    <span />
+                    <span className={s.linhaCurta} />
+                  </div>
+                  <span className={s.acao} />
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+    </section>
   );
 }
