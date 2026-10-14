@@ -14,7 +14,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { projetos } from "@/lib/projetos/dados";
-import { ETAPAS, etapaAtual, proximoItem, situacaoDasEtapas } from "@/lib/projetos/tipos";
+import {
+  ETAPAS,
+  etapaAtual,
+  proximoItem,
+  situacaoDasEtapas,
+} from "@/lib/projetos/tipos";
 import { dinheiroExato } from "@/lib/crm/financeiro";
 import { dataCurta } from "@/lib/crm/regras";
 import { Regua } from "@/components/projetos/Regua";
@@ -23,16 +28,40 @@ import p from "@/app/(pt)/crm/projetos.module.css";
 
 export const metadata: Metadata = { title: "Projetos" };
 
-export default async function PaginaProjetos() {
+export default async function PaginaProjetos({
+  searchParams,
+}: {
+  searchParams: Promise<{ etapa?: string; estado?: string }>;
+}) {
+  const filtros = await searchParams;
   const { projetos: lista, semTabela } = await projetos();
 
   const linhas = lista
+    .filter(
+      (x) =>
+        (!filtros.etapa || etapaAtual(x) === filtros.etapa) &&
+        (!filtros.estado ||
+          (filtros.estado === "bloqueado"
+            ? !!x.bloqueio
+            : filtros.estado === "aberto"
+              ? !x.entregue_em && x.status_contrato !== "cancelado"
+              : true)),
+    )
     .map((x) => {
       const situacoes = situacaoDasEtapas(x);
-      const atual = etapaAtual(x);
-      return { x, situacoes, atual, ordem: atual ? ETAPAS.findIndex((e) => e.id === atual) : 99 };
+      const atual = x.status_contrato === "cancelado" ? null : etapaAtual(x);
+      return {
+        x,
+        situacoes,
+        atual,
+        ordem: atual ? ETAPAS.findIndex((e) => e.id === atual) : 99,
+      };
     })
-    .sort((a, b) => a.ordem - b.ordem || (b.x.fechado_em ?? "").localeCompare(a.x.fechado_em ?? ""));
+    .sort(
+      (a, b) =>
+        a.ordem - b.ordem ||
+        (b.x.fechado_em ?? "").localeCompare(a.x.fechado_em ?? ""),
+    );
 
   const andamento = linhas.filter((l) => l.atual).length;
 
@@ -48,17 +77,24 @@ export default async function PaginaProjetos() {
             : `${andamento} em andamento, ${lista.length - andamento} ${lista.length - andamento === 1 ? "entregue" : "entregues"}.`}
         </p>
       </header>
+      <nav className={p.atalhos} aria-label="Filtrar entregas">
+        <Link href="/crm/projetos">Todas</Link>
+        <Link href="/crm/projetos?estado=aberto">Em andamento</Link>
+        <Link href="/crm/projetos?estado=bloqueado">Bloqueadas</Link>
+      </nav>
 
       {semTabela ? (
         <p className={p.aviso}>
-          A tabela dos projetos ainda não existe no banco. Rode o <code>supabase/projetos.sql</code> no SQL
-          Editor do Supabase: até lá a aba mostra o molde, mas não grava o que você marcar.
+          A tabela dos projetos ainda não existe no banco. Rode o{" "}
+          <code>supabase/projetos.sql</code> no SQL Editor do Supabase: até lá a
+          aba mostra o molde, mas não grava o que você marcar.
         </p>
       ) : null}
 
       {lista.length === 0 ? (
         <p className={p.vazio}>
-          Quando um card do Funil for para <b>ganho</b>, ele aparece aqui como projeto.
+          Quando um card do Funil for para <b>ganho</b>, ele aparece aqui como
+          projeto.
         </p>
       ) : (
         <ol className={p.lista}>
@@ -66,7 +102,10 @@ export default async function PaginaProjetos() {
             const passo = proximoItem(x);
             const nomeEtapa = ETAPAS.find((e) => e.id === atual)?.nome;
             return (
-              <li key={x.contrato_id ?? x.lead_id} className={`${p.linha} ${atual ? "" : p.linhaEntregue}`}>
+              <li
+                key={x.contrato_id ?? x.lead_id}
+                className={`${p.linha} ${atual ? "" : p.linhaEntregue}`}
+              >
                 <Link
                   href={`/crm/projetos/${x.lead_id}${x.contrato_id ? "?contrato=" + x.contrato_id : ""}`}
                   className={p.linhaLink}
@@ -74,6 +113,8 @@ export default async function PaginaProjetos() {
                   <div className={p.linhaNome}>
                     <h2>{x.nome}</h2>
                     <span>
+                      {x.prazo ? "Prazo " + dataCurta(x.prazo) + " · " : ""}
+                      {x.bloqueio ? "Bloqueio: " + x.bloqueio + " · " : ""}
                       {[
                         x.instagram ? `@${x.instagram}` : "",
                         x.fechado_em ? `fechou ${dataCurta(x.fechado_em)}` : "",
@@ -85,20 +126,29 @@ export default async function PaginaProjetos() {
                   <div className={p.linhaRegua}>
                     <Regua situacoes={situacoes} atual={atual} />
                     <span className={p.linhaEtapa}>
-                      {atual ? (
+                      {x.status_contrato === "cancelado" ? (
+                        <b>Contrato cancelado · histórico</b>
+                      ) : atual ? (
                         <>
                           <b>{nomeEtapa}</b>
                           {passo ? `: ${passo}` : ""}
                         </>
                       ) : (
-                        <b>Entregue{x.entregue_em ? ` em ${dataCurta(x.entregue_em)}` : ""}</b>
+                        <b>
+                          Entregue
+                          {x.entregue_em
+                            ? ` em ${dataCurta(x.entregue_em)}`
+                            : ""}
+                        </b>
                       )}
                     </span>
                   </div>
                   <div className={p.linhaDinheiro}>
                     {x.caixa.contrato ? (
                       x.caixa.saldo ? (
-                        <span className={p.quitado}>{dinheiroExato(x.caixa.total)} quitado</span>
+                        <span className={p.quitado}>
+                          {dinheiroExato(x.caixa.total)} quitado
+                        </span>
                       ) : (
                         <>
                           <b>{dinheiroExato(x.caixa.total - x.caixa.pago)}</b>
@@ -110,7 +160,9 @@ export default async function PaginaProjetos() {
                         </>
                       )
                     ) : (
-                      <span className={p.semContrato}>sem contrato no Caixa</span>
+                      <span className={p.semContrato}>
+                        sem contrato no Caixa
+                      </span>
                     )}
                   </div>
                 </Link>

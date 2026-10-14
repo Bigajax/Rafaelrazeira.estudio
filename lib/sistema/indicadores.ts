@@ -5,7 +5,8 @@ export const INDICADORES = {
   recebido: {
     nome: "Recebido bruto",
     unidade: "R$",
-    regra: "Entradas pela data de recebimento. Devoluções aparecem na data em que aconteceram.",
+    regra:
+      "Entradas pela data de recebimento. Devoluções aparecem na data em que aconteceram.",
     href: "/crm/caixa",
   },
   vendido: {
@@ -18,7 +19,8 @@ export const INDICADORES = {
   despesas: {
     nome: "Despesas pagas",
     unidade: "R$",
-    regra: "Saídas registradas em reais pela data de pagamento. Custos cadastrados são previsão.",
+    regra:
+      "Saídas registradas em reais pela data de pagamento. Custos cadastrados são previsão.",
     href: "/crm/financeiro?aba=despesas",
   },
   saldo: {
@@ -31,7 +33,8 @@ export const INDICADORES = {
   entregas: {
     nome: "Entregas concluídas",
     unidade: "un",
-    regra: "Projetos pela data de entrega, sem contar mensalidades como novas entregas.",
+    regra:
+      "Projetos pela data de entrega, sem contar mensalidades como novas entregas.",
     href: "/crm/projetos",
   },
 } as const;
@@ -54,6 +57,7 @@ export type Devolucao = {
   notas?: string | null;
 };
 export type Despesa = {
+  ocorrencia_id?: string | null;
   id: string;
   nome: string;
   categoria: string;
@@ -64,18 +68,32 @@ export type Despesa = {
   valor_original: number | null;
   notas: string | null;
 };
-export type Venda = { id?: string; lead_id?: string; valor: number; quando: string | null };
+export type Venda = {
+  id?: string;
+  lead_id?: string;
+  valor: number;
+  quando: string | null;
+};
 
-export function devolucoesComLegado(entradas: Entrada[], devolucoes: Devolucao[]): Devolucao[] {
+export function devolucoesComLegado(
+  entradas: Entrada[],
+  devolucoes: Devolucao[],
+): Devolucao[] {
   const anteriores = new Map<string, number>();
   for (const d of devolucoes)
-    anteriores.set(d.recebimento_id, (anteriores.get(d.recebimento_id) ?? 0) + Number(d.valor));
+    anteriores.set(
+      d.recebimento_id,
+      (anteriores.get(d.recebimento_id) ?? 0) + Number(d.valor),
+    );
   // Uma devolução integral do webhook pode suceder uma devolução parcial manual.
   // Preservar as duas datas e somar apenas o restante, sem duplicar o integral.
   return [
     ...devolucoes,
     ...entradas
-      .filter((r) => r.estornado_em && Number(r.valor) > (anteriores.get(r.id ?? "") ?? 0))
+      .filter(
+        (r) =>
+          r.estornado_em && Number(r.valor) > (anteriores.get(r.id ?? "") ?? 0),
+      )
       .map((r) => ({
         id: `legado:${r.id}`,
         recebimento_id: r.id ?? "",
@@ -84,8 +102,12 @@ export function devolucoesComLegado(entradas: Entrada[], devolucoes: Devolucao[]
       })),
   ];
 }
-export function valorRetido(r: Pick<Entrada, "valor" | "estornado_em" | "valor_estornado">) {
-  return r.estornado_em ? 0 : centavos(Math.max(0, Number(r.valor) - Number(r.valor_estornado ?? 0)));
+export function valorRetido(
+  r: Pick<Entrada, "valor" | "estornado_em" | "valor_estornado">,
+) {
+  return r.estornado_em
+    ? 0
+    : centavos(Math.max(0, Number(r.valor) - Number(r.valor_estornado ?? 0)));
 }
 export function apurarMes(
   mes: string,
@@ -96,12 +118,18 @@ export function apurarMes(
 ) {
   const rs = entradas.filter((r) => mesLocal(r.recebido_em) === mes);
   const ds = despesas.filter((d) => mesLocal(d.pago_em) === mes);
-  const es = devolucoesComLegado(entradas, devolucoes).filter((d) => mesLocal(d.devolvido_em) === mes);
+  const es = devolucoesComLegado(entradas, devolucoes).filter(
+    (d) => mesLocal(d.devolvido_em) === mes,
+  );
   const taxasPendentes = rs.filter((r) => r.valor_liquido == null).length;
   const bruto = centavos(rs.reduce((s, r) => s + Number(r.valor), 0));
   const taxas = centavos(
     rs.reduce(
-      (s, r) => s + (r.valor_liquido == null ? 0 : Math.max(0, Number(r.valor) - Number(r.valor_liquido))),
+      (s, r) =>
+        s +
+        (r.valor_liquido == null
+          ? 0
+          : Math.max(0, Number(r.valor) - Number(r.valor_liquido))),
       0,
     ),
   );
@@ -117,7 +145,9 @@ export function apurarMes(
     liquido: taxasPendentes ? null : centavos(bruto - taxas),
     saldo: taxasPendentes ? null : centavos(bruto - taxas - devolvido - pago),
     vendido: centavos(
-      vendas.filter((v) => v.quando && mesLocal(v.quando) === mes).reduce((s, v) => s + v.valor, 0),
+      vendas
+        .filter((v) => v.quando && mesLocal(v.quando) === mes)
+        .reduce((s, v) => s + v.valor, 0),
     ),
     entradas: rs,
     saidas: ds,

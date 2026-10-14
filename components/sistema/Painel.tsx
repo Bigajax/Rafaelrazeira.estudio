@@ -40,7 +40,13 @@ export function Indicador({
     </Link>
   );
 }
-export function Aviso({ children, erro = false }: { children: ReactNode; erro?: boolean }) {
+export function Aviso({
+  children,
+  erro = false,
+}: {
+  children: ReactNode;
+  erro?: boolean;
+}) {
   return (
     <div role={erro ? "alert" : "status"} className={erro ? s.erro : s.aviso}>
       {children}
@@ -58,9 +64,14 @@ export function SerieMensal({
   rotulo: string;
   href: (mes: string) => string;
 }) {
-  const teto = Math.max(1, ...dados.flatMap((d) => d.valores.map((v) => Math.max(0, v ?? 0))));
+  const teto = Math.max(
+    1,
+    ...dados.flatMap((d) => d.valores.map((v) => Math.max(0, v ?? 0))),
+  );
   const formatar = (v: number | null) =>
-    v == null ? "Não disponível" : v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    v == null
+      ? "Não disponível"
+      : v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
   return (
     <>
       <p className={s.descricao}>{rotulo}</p>
@@ -76,7 +87,7 @@ export function SerieMensal({
               {d.valores.map((v, i) => (
                 <i
                   key={i}
-                  className={`${s.barra} ${i ? s.barra2 : ""}`}
+                  className={`${s.barra} ${i === 2 ? s.barra3 : i ? s.barra2 : ""}`}
                   style={{ height: `${(Math.max(0, v ?? 0) / teto) * 100}%` }}
                 />
               ))}
@@ -90,7 +101,9 @@ export function SerieMensal({
       <div className={s.legenda}>
         {series.map((nome, i) => (
           <span key={nome}>
-            <i className={`${s.barra} ${i ? s.barra2 : ""}`} />
+            <i
+              className={`${s.barra} ${i === 2 ? s.barra3 : i ? s.barra2 : ""}`}
+            />
             {nome}
           </span>
         ))}

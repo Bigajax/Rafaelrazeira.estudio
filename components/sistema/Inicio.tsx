@@ -9,9 +9,11 @@ import { dinheiroExato } from "@/lib/crm/financeiro";
 import { lerTodos } from "@/lib/sistema/consultas";
 import { apurarMes } from "@/lib/sistema/indicadores";
 import { percentual, formatar, type Meta } from "@/lib/plano/tipos";
+import { valoresDaMeta } from "@/lib/sistema/metas";
+import { Barras } from "./Barras";
 import { leitura } from "@/lib/marketing/resultados";
 import type { Peca } from "@/lib/marketing/tipos";
-import { Cabecalho, Indicador } from "./Painel";
+import { Cabecalho, Indicador, Aviso } from "./Painel";
 import s from "./sistema.module.css";
 
 export async function Inicio() {
@@ -19,28 +21,47 @@ export async function Inicio() {
   const mes = hoje.slice(0, 7);
   const ano = Number(hoje.slice(0, 4));
   const b = await clienteServidor();
-  const [fin, contas, entregas, leads, metas, posts, lojas] = await Promise.all([
-    financeiro(ano),
-    caixa(ano),
-    projetos(),
-    lerTodos<{
-      id: string;
-      nome: string;
-      empresa: string | null;
-      estagio: string;
-      proxima_acao_em: string | null;
-      proximo_passo: string | null;
-    }>(b, "crm_leads", "id,nome,empresa,estagio,proxima_acao_em,proximo_passo"),
-    lerTodos<Meta>(b, "plano_metas"),
-    lerTodos<Peca>(b, "mkt_pecas"),
-    lerTodos<{ id: string; nome: string; ativa: boolean; para_sempre: boolean; liberado_ate: string | null }>(
-      b,
-      "perf_lojas",
-      "id,nome,ativa,para_sempre,liberado_ate",
-    ),
-  ]);
-  if (fin.semTabela) throw new Error("Não foi possível carregar o resumo financeiro.");
-  const r = apurarMes(mes, fin.recebimentos, fin.despesas, fin.devolucoes, fin.vendas);
+  let falhaMarketing = false;
+  const [fin, contas, entregas, leads, metas, posts, lojas] = await Promise.all(
+    [
+      financeiro(ano),
+      caixa(ano),
+      projetos(),
+      lerTodos<{
+        id: string;
+        nome: string;
+        empresa: string | null;
+        estagio: string;
+        proxima_acao_em: string | null;
+        proximo_passo: string | null;
+      }>(
+        b,
+        "crm_leads",
+        "id,nome,empresa,estagio,proxima_acao_em,proximo_passo",
+      ),
+      lerTodos<Meta>(b, "plano_metas"),
+      lerTodos<Peca>(b, "mkt_pecas").catch(() => {
+        falhaMarketing = true;
+        return [] as Peca[];
+      }),
+      lerTodos<{
+        id: string;
+        nome: string;
+        ativa: boolean;
+        para_sempre: boolean;
+        liberado_ate: string | null;
+      }>(b, "perf_lojas", "id,nome,ativa,para_sempre,liberado_ate"),
+    ],
+  );
+  if (fin.semTabela)
+    throw new Error("Não foi possível carregar o resumo financeiro.");
+  const r = apurarMes(
+    mes,
+    fin.recebimentos,
+    fin.despesas,
+    fin.devolucoes,
+    fin.vendas,
+  );
   const meta = metas
     .filter((m) => m.ano === ano && m.fonte === "recebido")
     .sort((a, b) => a.ordem - b.ordem)[0];
@@ -54,7 +75,13 @@ export async function Inicio() {
     );
     valores[n] = a.bruto - a.devolvido;
   }
-  const progresso = meta ? percentual(meta, valores, Number(mes.slice(5))) : null;
+  const progresso = meta
+    ? percentual(
+        meta,
+        valoresDaMeta(meta, valores, Number(mes.slice(5))),
+        Number(mes.slice(5)),
+      )
+    : null;
   type Acao = {
     chave: string;
     nome: string;
@@ -68,7 +95,11 @@ export async function Inicio() {
     ...contas.devendo.map((x) => ({
       chave: "p:" + x.parcela.id,
       nome: x.parcela.lead_nome,
-      motivo: "Cobrança · " + dinheiroExato(x.s.saldo) + " · vence " + x.parcela.vence_em,
+      motivo:
+        "Cobrança · " +
+        dinheiroExato(x.s.saldo) +
+        " · vence " +
+        x.parcela.vence_em,
       acao: "Ver parcela",
       href: "/crm/lead/" + x.parcela.lead_id,
       prioridade: x.parcela.vence_em < hoje ? 0 : 1,
@@ -91,14 +122,21 @@ export async function Inicio() {
         data: l.proxima_acao_em!,
       })),
     ...entregas.projetos
-      .filter((p) => !p.entregue_em)
+      .filter((p) => !p.entregue_em && p.status_contrato !== "cancelado")
       .map((p) => ({
         chave: "e:" + (p.contrato_id ?? p.lead_id),
         nome: p.nome,
-        motivo: "Entrega · " + (proximoItem(p) ?? "Conferir entrega"),
+        motivo:
+          "Entrega · " +
+          (p.bloqueio
+            ? "Bloqueado: " + p.bloqueio
+            : p.proxima_acao || proximoItem(p) || "Conferir entrega"),
         acao: "Abrir entrega",
-        href: "/crm/projetos/" + p.lead_id + (p.contrato_id ? "?contrato=" + p.contrato_id : ""),
-        prioridade: p.prazo && p.prazo < hoje ? 0 : 2,
+        href:
+          "/crm/projetos/" +
+          p.lead_id +
+          (p.contrato_id ? "?contrato=" + p.contrato_id : ""),
+        prioridade: p.bloqueio || (p.prazo && p.prazo < hoje) ? 0 : 2,
         data: p.prazo ?? hoje,
       })),
     ...leitura(
@@ -114,7 +152,13 @@ export async function Inicio() {
       data: p.posta_em ?? hoje,
     })),
     ...lojas
-      .filter((l) => l.ativa && !l.para_sempre && l.liberado_ate && l.liberado_ate <= somarDias(hoje, 7))
+      .filter(
+        (l) =>
+          l.ativa &&
+          !l.para_sempre &&
+          l.liberado_ate &&
+          l.liberado_ate <= somarDias(hoje, 7),
+      )
       .map((l) => ({
         chave: "s:" + l.id,
         nome: l.nome,
@@ -125,10 +169,15 @@ export async function Inicio() {
         data: l.liberado_ate!,
       })),
   ].sort(
-    (a, b) => a.prioridade - b.prioridade || a.data.localeCompare(b.data) || a.chave.localeCompare(b.chave),
+    (a, b) =>
+      a.prioridade - b.prioridade ||
+      a.data.localeCompare(b.data) ||
+      a.chave.localeCompare(b.chave),
   );
   const estagios = new Map<string, number>();
-  for (const p of entregas.projetos.filter((p) => !p.entregue_em)) {
+  for (const p of entregas.projetos.filter(
+    (p) => !p.entregue_em && p.status_contrato !== "cancelado",
+  )) {
     const etapa = etapaAtual(p) ?? "revisao";
     estagios.set(etapa, (estagios.get(etapa) ?? 0) + 1);
   }
@@ -167,25 +216,42 @@ export async function Inicio() {
         />
         <Indicador
           nome="Entregas pendentes"
-          valor={String(entregas.projetos.filter((p) => !p.entregue_em).length)}
+          valor={String(
+            entregas.projetos.filter(
+              (p) => !p.entregue_em && p.status_contrato !== "cancelado",
+            ).length,
+          )}
           nota="Projetos em andamento"
           href="/crm/projetos"
         />
         <Indicador
           nome="Meta de recebimentos"
-          valor={progresso === null ? "Definir meta" : Math.round(progresso * 100) + "%"}
+          valor={
+            progresso === null
+              ? "Definir meta"
+              : Math.round(progresso * 100) + "%"
+          }
           nota={
             meta
-              ? formatar(meta.alvo, "R$") + (meta.periodo === "mes" ? " por mês" : " no ano")
+              ? formatar(meta.alvo, "R$") +
+                (meta.periodo === "mes" ? " por mês" : " no ano")
               : "Organize o alvo no Plano"
           }
           href={"/crm/plano?ano=" + ano + "#metas"}
         />
       </div>
       <div className={s.grade}>
+        {falhaMarketing ? (
+          <Aviso erro>
+            Não foi possível carregar as pendências de Marketing. As demais
+            fontes carregadas continuam disponíveis.
+          </Aviso>
+        ) : null}
         <section className={s.painel}>
           <h2>Próximas ações</h2>
-          <p className={s.descricao}>Atrasos primeiro, depois os prazos e as tarefas em andamento.</p>
+          <p className={s.descricao}>
+            Atrasos primeiro, depois os prazos e as tarefas em andamento.
+          </p>
           {fila.length ? (
             <>
               <ul className={s.fila}>
@@ -202,12 +268,15 @@ export async function Inicio() {
                 ))}
               </ul>
               {fila.length > 12 ? (
-                <p className={s.meta}>{fila.length} ações no total. Continue nas áreas de origem.</p>
+                <p className={s.meta}>
+                  {fila.length} ações no total. Continue nas áreas de origem.
+                </p>
               ) : null}
             </>
           ) : (
             <p className={s.vazio}>
-              Nenhuma pendência encontrada. A fila comercial continua disponível para iniciar novos contatos.
+              Nenhuma pendência encontrada. A fila comercial continua disponível
+              para iniciar novos contatos.
             </p>
           )}
         </section>
@@ -219,9 +288,14 @@ export async function Inicio() {
                 <li>
                   <div>
                     <b>{r.taxasPendentes} recebimentos sem líquido</b>
-                    <small>Confirme as taxas para apurar o saldo operacional.</small>
+                    <small>
+                      Confirme as taxas para apurar o saldo operacional.
+                    </small>
                   </div>
-                  <Link className={s.botao} href={"/crm/financeiro?mes=" + mes + "&aba=extrato"}>
+                  <Link
+                    className={s.botao}
+                    href={"/crm/financeiro?mes=" + mes + "&aba=extrato"}
+                  >
                     Conferir
                   </Link>
                 </li>
@@ -230,17 +304,20 @@ export async function Inicio() {
                 <li>
                   <div>
                     <b>{contas.semDono.length} pagamentos sem parcela</b>
-                    <small>Vincule ao contrato correspondente.</small>
+                    <small>Confira a origem e o vínculo do recebimento.</small>
                   </div>
                   <Link className={s.botao} href="/crm/caixa">
-                    Vincular
+                    Conferir
                   </Link>
                 </li>
               ) : null}
               {contas.desencontros.length ? (
                 <li>
                   <div>
-                    <b>{contas.desencontros.length} contratos sem distribuição completa</b>
+                    <b>
+                      {contas.desencontros.length} contratos sem distribuição
+                      completa
+                    </b>
                   </div>
                   <Link className={s.botao} href="/crm/caixa">
                     Revisar
@@ -249,7 +326,10 @@ export async function Inicio() {
               ) : null}
               {!fin.movimentosDisponiveis ? (
                 <li>
-                  <small>Registro de despesas e devoluções aguardando instalação do módulo.</small>
+                  <small>
+                    Registro de despesas e devoluções aguardando instalação do
+                    módulo.
+                  </small>
                 </li>
               ) : null}
               {!r.taxasPendentes &&
@@ -257,21 +337,24 @@ export async function Inicio() {
               !contas.desencontros.length &&
               fin.movimentosDisponiveis ? (
                 <li>
-                  <small>Nenhuma inconsistência detectada nestas verificações.</small>
+                  <small>
+                    Nenhuma inconsistência detectada nestas verificações.
+                  </small>
                 </li>
               ) : null}
             </ul>
           </section>
           <section className={s.painel}>
             <h2>Entregas por etapa</h2>
-            <ul className={s.fila}>
-              {[...estagios].map(([etapa, n]) => (
-                <li key={etapa}>
-                  <span>{etapa}</span>
-                  <b>{n}</b>
-                </li>
-              ))}
-            </ul>
+            <Barras
+              rotulo="Entregas abertas por etapa"
+              linhas={[...estagios].map(([etapa, n]) => ({
+                nome: etapa,
+                valor: n,
+                texto: String(n),
+                href: "/crm/projetos?etapa=" + etapa + "&estado=aberto",
+              }))}
+            />
             <div className={s.links}>
               <Link href="/crm/projetos">Ver entregas</Link>
               <Link href="/crm/producao">Abrir oficina</Link>
@@ -280,7 +363,8 @@ export async function Inicio() {
           <section className={s.painel}>
             <h2>Do resultado à decisão</h2>
             <p className={s.descricao}>
-              Revise os números do mês e ajuste as iniciativas do próximo período.
+              Revise os números do mês e ajuste as iniciativas do próximo
+              período.
             </p>
             <div className={s.links}>
               <Link href="/crm/metricas">Indicadores comerciais</Link>

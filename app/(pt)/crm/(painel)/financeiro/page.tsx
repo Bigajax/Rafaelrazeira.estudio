@@ -18,11 +18,14 @@ export const metadata: Metadata = { title: "Financeiro" };
 export default async function PaginaFinanceiro({
   searchParams,
 }: {
-  searchParams: Promise<{ mes?: string; aba?: string }>;
+  searchParams: Promise<{ mes?: string; aba?: string; previsao?: string }>;
 }) {
   const hoje = hojeSP().slice(0, 7);
-  const { mes: pedido, aba } = await searchParams;
-  const mes = /^\d{4}-(0[1-9]|1[0-2])$/.test(pedido ?? "") && pedido! <= hoje ? pedido! : hoje;
+  const { mes: pedido, aba, previsao } = await searchParams;
+  const mes =
+    /^\d{4}-(0[1-9]|1[0-2])$/.test(pedido ?? "") && pedido! <= hoje
+      ? pedido!
+      : hoje;
   const [dados, contas] = await Promise.all([
     financeiro(Number(mes.slice(0, 4))),
     caixa(Number(mes.slice(0, 4))),
@@ -35,8 +38,9 @@ export default async function PaginaFinanceiro({
         <div className={f.aviso}>
           <b>Falta criar a tabela de custos.</b>
           <p>
-            Cole o arquivo <code>supabase/financeiro.sql</code> inteiro no SQL Editor do Supabase e clique em
-            Run. Depois é só recarregar esta página.
+            Cole o arquivo <code>supabase/financeiro.sql</code> inteiro no SQL
+            Editor do Supabase e clique em Run. Depois é só recarregar esta
+            página.
           </p>
         </div>
       </div>
@@ -58,6 +62,19 @@ export default async function PaginaFinanceiro({
       aba={aba}
       previsao={contas.previsao}
       vencido={contas.vencidoContratual}
+      ocorrencias={dados.ocorrencias}
+      revisaoDisponivel={dados.revisaoDisponivel}
+      historicoDespesas={dados.historicoDespesas}
+      clientes={dados.clientes}
+      previsaoSelecionada={previsao}
+      parcelasPrevistas={contas.parcelasAbertas.map((x) => ({
+        id: x.parcela.id,
+        lead_id: x.parcela.lead_id,
+        lead_nome: x.parcela.lead_nome,
+        rotulo: x.parcela.rotulo,
+        vence_em: x.parcela.vence_em,
+        saldo: x.s.saldo,
+      }))}
     />
   );
 }

@@ -327,7 +327,13 @@
   background: #77829a;
 }
 .previsto {
-  background: repeating-linear-gradient(135deg, #77829a, #77829a 3px, #cbd0da 3px, #cbd0da 6px);
+  background: repeating-linear-gradient(
+    135deg,
+    #77829a,
+    #77829a 3px,
+    #cbd0da 3px,
+    #cbd0da 6px
+  );
 }
 .legenda {
   display: flex;
@@ -429,4 +435,72 @@
 
 .grade {
   align-items: start;
+}
+.semBorda {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+  display: contents;
+}
+.semBorda:disabled button {
+  cursor: wait;
+  opacity: 0.6;
+}
+.barrasLista {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0;
+  display: grid;
+  gap: 16px;
+}
+.barrasLista a {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px 12px;
+  color: inherit;
+  text-decoration: none;
+}
+.trilhoBarra {
+  grid-column: 1/-1;
+  height: 7px;
+  border-radius: 4px;
+  background: #e8ebe5;
+  overflow: hidden;
+}
+.trilhoBarra i {
+  display: block;
+  height: 100%;
+  background: #176745;
+}
+.barra3 {
+  background: #ad6852;
+}
+.tela .botao.primario {
+  color: #fff;
+}
+.dialogo {
+  width: min(640px, calc(100vw - 32px));
+  max-height: calc(100dvh - 40px);
+  margin: auto;
+  border: 1px solid #d8d8cd;
+  border-radius: 12px;
+  padding: 22px;
+  background: #fafaf5;
+  color: #17231d;
+  overflow: auto;
+  box-sizing: border-box;
+}
+.dialogo::backdrop {
+  background: #17231d66;
+}
+.dialogo .form {
+  margin-top: 20px;
+}
+.dialogo input,
+.dialogo select,
+.dialogo textarea {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }

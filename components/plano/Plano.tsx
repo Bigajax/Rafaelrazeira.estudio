@@ -15,9 +15,16 @@
    ============================================================ */
 
 import Link from "next/link";
+import { EvolucaoMeta } from "./EvolucaoMeta";
 import u from "@/components/sistema/sistema.module.css";
 import { useRouter } from "next/navigation";
-import { createContext, useContext, useMemo, useState, useTransition } from "react";
+import {
+  createContext,
+  useContext,
+  useMemo,
+  useState,
+  useTransition,
+} from "react";
 import {
   apagarMeta,
   apagarProjeto,
@@ -72,7 +79,13 @@ type Props = {
 
 const ModuloIntegrado = createContext(false);
 const ORDEM_P: Record<Prioridade, number> = { P1: 0, P2: 1, P3: 2 };
-const FAIXA_CLASSE = { bateu: p.fBateu, perto: p.fPerto, atencao: p.fAtencao, fora: p.fFora, sem: p.fSem };
+const FAIXA_CLASSE = {
+  bateu: p.fBateu,
+  perto: p.fPerto,
+  atencao: p.fAtencao,
+  fora: p.fFora,
+  sem: p.fSem,
+};
 
 export function Plano({
   ano,
@@ -115,15 +128,25 @@ export function Plano({
   const somaPesos = metas.reduce((a, m) => a + m.peso, 0);
   const seq = sequencia(rmrs, ano, ate || 1);
   const batidasNoMes = ate
-    ? metas.filter((m) => faixa(percentual(m, valores[m.id] ?? {}, ate)) === "bateu").length
+    ? metas.filter(
+        (m) => faixa(percentual(m, valores[m.id] ?? {}, ate)) === "bateu",
+      ).length
     : 0;
 
   /* o que a página manda fazer agora, na ordem do método */
   const passos: Passo[] = [];
   if (!ciclo?.missao?.trim())
-    passos.push({ texto: "Escreva a missão do estúdio numa frase.", ancora: "rumo", acao: "Escrever" });
+    passos.push({
+      texto: "Escreva a missão do estúdio numa frase.",
+      ancora: "rumo",
+      acao: "Escrever",
+    });
   if (!ativos.length)
-    passos.push({ texto: "Crie o primeira iniciativa do ano.", ancora: "projetos", acao: "Criar" });
+    passos.push({
+      texto: "Crie o primeira iniciativa do ano.",
+      ancora: "projetos",
+      acao: "Criar",
+    });
   if (metas.length && somaPesos !== 100)
     passos.push({
       texto: `Os pesos somam ${somaPesos}. Ajuste até dar 100.`,
@@ -140,7 +163,10 @@ export function Plano({
         acao: "Lançar",
       });
     }
-    if (metas.length && !rmrs.some((r) => r.mes === `${ano}-${String(ate).padStart(2, "0")}-01`)) {
+    if (
+      metas.length &&
+      !rmrs.some((r) => r.mes === `${ano}-${String(ate).padStart(2, "0")}-01`)
+    ) {
       passos.push({
         texto: `Feche a RMR de ${MESES_LONGOS[ate - 1]} no último dia do mês.`,
         ancora: "rmr",
@@ -157,7 +183,9 @@ export function Plano({
             <h1>
               Plano<i className={p.ponto}>.</i>
             </h1>
-            <p className={p.voz}>O rumo do estúdio, e quanto falta para chegar.</p>
+            <p className={p.voz}>
+              O rumo do estúdio, e quanto falta para chegar.
+            </p>
           </div>
           <nav className={p.anos} aria-label="Trocar de ano">
             <Link href={`/crm/plano?ano=${ano - 1}`}>{ano - 1}</Link>
@@ -172,7 +200,8 @@ export function Plano({
         <section className={u.painel}>
           <h2>Metas e decisões do período</h2>
           <p className={u.descricao}>
-            Cada meta automática consulta a área de origem. Medições ausentes ficam a apurar.
+            Cada meta automática consulta a área de origem. Medições ausentes
+            ficam a apurar.
           </p>
           <ul className={u.fila}>
             {metas.slice(0, 6).map((m) => {
@@ -200,8 +229,9 @@ export function Plano({
                   <div>
                     <b>{m.titulo}</b>
                     <small>
-                      {v === undefined ? "A apurar" : formatar(v, m.unidade)} · alvo{" "}
-                      {formatar(m.alvo, m.unidade)} · {m.direcao === "reduzir" ? "reduzir" : "aumentar"} ·{" "}
+                      {v === undefined ? "A apurar" : formatar(v, m.unidade)} ·
+                      alvo {formatar(m.alvo, m.unidade)} ·{" "}
+                      {m.direcao === "reduzir" ? "reduzir" : "aumentar"} ·{" "}
                       {FONTES[m.fonte].nome}
                     </small>
                     <div
@@ -209,13 +239,27 @@ export function Plano({
                       role="progressbar"
                       aria-label={m.titulo}
                       aria-valuenow={
-                        pc === null ? undefined : Math.min(100, Math.max(0, Math.round(pc * 100)))
+                        pc === null
+                          ? undefined
+                          : Math.min(100, Math.max(0, Math.round(pc * 100)))
                       }
                       aria-valuemin={0}
                       aria-valuemax={100}
                     >
-                      <i style={{ width: (pc === null ? 0 : Math.min(100, Math.max(0, pc * 100))) + "%" }} />
+                      <i
+                        style={{
+                          width:
+                            (pc === null
+                              ? 0
+                              : Math.min(100, Math.max(0, pc * 100))) + "%",
+                        }}
+                      />
                     </div>
+                    <EvolucaoMeta
+                      meta={m}
+                      valores={valores[m.id] ?? {}}
+                      ate={ate}
+                    />
                   </div>
                   <Link className={u.botao} href={href}>
                     {m.fonte === "manual" ? "Medir" : "Abrir fonte"}
@@ -225,11 +269,14 @@ export function Plano({
             })}
           </ul>
           {!metas.length ? (
-            <p className={u.vazio}>Crie uma iniciativa e defina suas primeiras metas.</p>
+            <p className={u.vazio}>
+              Crie uma iniciativa e defina suas primeiras metas.
+            </p>
           ) : null}
           {!movimentosDisponiveis ? (
             <p className={u.meta}>
-              Metas de despesas pagas e saldo operacional exigem a instalação do módulo integrado.
+              Metas de despesas pagas e saldo operacional exigem a instalação do
+              módulo integrado.
             </p>
           ) : null}
         </section>
@@ -260,14 +307,20 @@ export function Plano({
           </div>
           <div>
             <b className={p.placarNum}>{seq}</b>
-            <span>{seq === 1 ? "mês fechado seguido na RMR" : "meses fechados seguidos na RMR"}</span>
+            <span>
+              {seq === 1
+                ? "mês fechado seguido na RMR"
+                : "meses fechados seguidos na RMR"}
+            </span>
           </div>
           <div>
             <b className={p.placarNum}>
               {batidasNoMes}
               <small> de {metas.length}</small>
             </b>
-            <span>metas batidas em {ate ? MESES_LONGOS[ate - 1] : "nenhum mês"}</span>
+            <span>
+              metas batidas em {ate ? MESES_LONGOS[ate - 1] : "nenhum mês"}
+            </span>
           </div>
           <button
             type="button"
@@ -283,7 +336,12 @@ export function Plano({
           </button>
         </div>
         {premios ? (
-          <EditarPremios ano={ano} ciclo={ciclo} rodar={rodar} fechar={() => setPremios(false)} />
+          <EditarPremios
+            ano={ano}
+            ciclo={ciclo}
+            rodar={rodar}
+            fechar={() => setPremios(false)}
+          />
         ) : null}
 
         <div className={p.guia}>
@@ -297,8 +355,8 @@ export function Plano({
             <i className={p.num}>1</i> O rumo<i className={p.ponto}>.</i>
           </h2>
           <p className={p.voz}>
-            Para onde o estúdio vai daqui a 3 a 5 anos. Quando aparecer uma oportunidade boa, é aqui que se
-            decide se ela entra.
+            Para onde o estúdio vai daqui a 3 a 5 anos. Quando aparecer uma
+            oportunidade boa, é aqui que se decide se ela entra.
           </p>
           <div className={p.estrategico}>
             <CampoTexto
@@ -326,7 +384,9 @@ export function Plano({
                   placeholder={String(ano + 3)}
                   onBlur={(e) => {
                     if (String(ciclo?.horizonte ?? "") !== e.target.value)
-                      rodar(() => salvarCiclo(ano, { horizonte: e.target.value || null }));
+                      rodar(() =>
+                        salvarCiclo(ano, { horizonte: e.target.value || null }),
+                      );
                   }}
                 />
               </label>
@@ -338,12 +398,14 @@ export function Plano({
         {/* ---------- 2. os projetos ---------- */}
         <section className={p.andar} id="projetos">
           <h2>
-            <i className={p.num}>2</i> As iniciativas<i className={p.ponto}>.</i>
+            <i className={p.num}>2</i> As iniciativas
+            <i className={p.ponto}>.</i>
           </h2>
           <p className={p.voz}>
-            A lista fechada do que leva a sua energia este ano. P1 é onde vai quase tudo; P3 anda devagar de
-            propósito. E o que você decidir não fazer vira um &ldquo;não&rdquo; escrito, para não voltar à
-            mesa todo mês.
+            A lista fechada do que leva a sua energia este ano. P1 é onde vai
+            quase tudo; P3 anda devagar de propósito. E o que você decidir não
+            fazer vira um &ldquo;não&rdquo; escrito, para não voltar à mesa todo
+            mês.
           </p>
           <ul className={p.projetos}>
             {ativos.map((x) => (
@@ -371,7 +433,9 @@ export function Plano({
                     <button
                       type="button"
                       className={p.mini}
-                      onClick={() => rodar(() => salvarProjeto(x.id, { status: "ativo" }))}
+                      onClick={() =>
+                        rodar(() => salvarProjeto(x.id, { status: "ativo" }))
+                      }
                     >
                       Reabrir
                     </button>
@@ -389,8 +453,8 @@ export function Plano({
             <i className={p.ponto}>.</i>
           </h2>
           <p className={p.voz}>
-            Cada iniciativa vira poucos números por mês. O peso diz quanto cada meta conta na nota: somados,
-            os pesos dão 100.{" "}
+            Cada iniciativa vira poucos números por mês. O peso diz quanto cada
+            meta conta na nota: somados, os pesos dão 100.{" "}
             <span className={somaPesos === 100 ? p.pesoOk : p.pesoFalta}>
               {somaPesos === 100
                 ? "Os seus somam 100, certo."
@@ -399,7 +463,8 @@ export function Plano({
             {metas.length > 7 ? (
               <span className={p.pesoFalta}>
                 {" "}
-                São {metas.length} metas: a G4 limita em 5 por pessoa, e você é uma só.
+                São {metas.length} metas: a G4 limita em 5 por pessoa, e você é
+                uma só.
               </span>
             ) : null}
           </p>
@@ -410,7 +475,9 @@ export function Plano({
             <li className={p.fFora}>abaixo de 60%: fora da linha</li>
           </ul>
           {ativos.length === 0 ? (
-            <div className={p.vazio}>Crie um projeto no passo 2 para dar metas a ele.</div>
+            <div className={p.vazio}>
+              Crie um projeto no passo 2 para dar metas a ele.
+            </div>
           ) : (
             <div className={p.painel}>
               <div className={p.painelCab} aria-hidden>
@@ -432,7 +499,13 @@ export function Plano({
                   {metas
                     .filter((m) => m.projeto_id === x.id)
                     .map((m) => (
-                      <LinhaMeta key={m.id} m={m} v={valores[m.id] ?? {}} ate={ate} rodar={rodar} />
+                      <LinhaMeta
+                        key={m.id}
+                        m={m}
+                        v={valores[m.id] ?? {}}
+                        ate={ate}
+                        rodar={rodar}
+                      />
                     ))}
                   <NovaMeta projetoId={x.id} ano={ano} rodar={rodar} />
                 </div>
@@ -503,7 +576,9 @@ function EditarPremios({
   rodar: Rodar;
   fechar: () => void;
 }) {
-  const salvos = [...(ciclo?.premios ?? [])].sort((a, b) => a.patamar - b.patamar || a.meses - b.meses);
+  const salvos = [...(ciclo?.premios ?? [])].sort(
+    (a, b) => a.patamar - b.patamar || a.meses - b.meses,
+  );
   const [rascunho, setRascunho] = useState<Degrau[]>(
     salvos.length ? salvos : [{ nome: "", patamar: 0, meses: 1 }],
   );
@@ -512,8 +587,9 @@ function EditarPremios({
   return (
     <div className={p.editaPremios}>
       <p className={p.voz}>
-        Cada prêmio é um acampamento na montanha. Ele destrava quando o Caixa de um mês passa do patamar; se
-        pedir meses seguidos, o patamar tem que se repetir.
+        Cada prêmio é um acampamento na montanha. Ele destrava quando o Caixa de
+        um mês passa do patamar; se pedir meses seguidos, o patamar tem que se
+        repetir.
       </p>
       <div className={p.degrausForm}>
         {rascunho.map((d, i) => (
@@ -543,7 +619,9 @@ function EditarPremios({
                 min={1}
                 max={12}
                 value={d.meses}
-                onChange={(e) => mudar(i, { meses: Number(e.target.value) || 1 })}
+                onChange={(e) =>
+                  mudar(i, { meses: Number(e.target.value) || 1 })
+                }
                 aria-label="Meses seguidos"
               />
               {d.meses > 1 ? " meses seguidos" : " mês"}
@@ -562,7 +640,9 @@ function EditarPremios({
         <button
           type="button"
           className={p.mini}
-          onClick={() => setRascunho([...rascunho, { nome: "", patamar: 0, meses: 1 }])}
+          onClick={() =>
+            setRascunho([...rascunho, { nome: "", patamar: 0, meses: 1 }])
+          }
         >
           Mais um prêmio
         </button>
@@ -586,7 +666,15 @@ function EditarPremios({
   );
 }
 
-function Projecoes({ ano, ciclo, rodar }: { ano: number; ciclo: Ciclo | null; rodar: Rodar }) {
+function Projecoes({
+  ano,
+  ciclo,
+  rodar,
+}: {
+  ano: number;
+  ciclo: Ciclo | null;
+  rodar: Rodar;
+}) {
   const base = ciclo?.projecoes?.length
     ? ciclo.projecoes
     : [0, 1, 2].map((k) => ({ ano: ano + k, faturamento: null, caixa: null }));
@@ -620,7 +708,11 @@ function Projecoes({ ano, ciclo, rodar }: { ano: number; ciclo: Ciclo | null; ro
                     placeholder="·"
                     onBlur={(e) => {
                       if (String(l[k] ?? "") === e.target.value) return;
-                      salvar(linhas.map((x, j) => (j === i ? { ...x, [k]: num(e.target.value) } : x)));
+                      salvar(
+                        linhas.map((x, j) =>
+                          j === i ? { ...x, [k]: num(e.target.value) } : x,
+                        ),
+                      );
                     }}
                   />
                 </td>
@@ -634,7 +726,14 @@ function Projecoes({ ano, ciclo, rodar }: { ano: number; ciclo: Ciclo | null; ro
           type="button"
           className={p.mini}
           onClick={() =>
-            salvar([...linhas, { ano: (linhas.at(-1)?.ano ?? ano) + 1, faturamento: null, caixa: null }])
+            salvar([
+              ...linhas,
+              {
+                ano: (linhas.at(-1)?.ano ?? ano) + 1,
+                faturamento: null,
+                caixa: null,
+              },
+            ])
           }
         >
           + um ano
@@ -687,12 +786,16 @@ function CartaoProjeto({
   const [encerrando, setEncerrando] = useState(false);
   const nota = ate ? notaDoPainel(metas, valores, ate) : null;
   return (
-    <li className={`${p.projeto} ${p[x.prioridade]} ${x.status === "pausado" ? p.pausado : ""}`}>
+    <li
+      className={`${p.projeto} ${p[x.prioridade]} ${x.status === "pausado" ? p.pausado : ""}`}
+    >
       <div className={p.projetoCab}>
         <select
           className={p.prio}
           value={x.prioridade}
-          onChange={(e) => rodar(() => salvarProjeto(x.id, { prioridade: e.target.value }))}
+          onChange={(e) =>
+            rodar(() => salvarProjeto(x.id, { prioridade: e.target.value }))
+          }
           aria-label="Prioridade"
           title={PRIORIDADES[x.prioridade].faz}
         >
@@ -733,7 +836,9 @@ function CartaoProjeto({
           horizonte{" "}
           <select
             value={x.horizonte}
-            onChange={(e) => rodar(() => salvarProjeto(x.id, { horizonte: e.target.value }))}
+            onChange={(e) =>
+              rodar(() => salvarProjeto(x.id, { horizonte: e.target.value }))
+            }
           >
             {Object.entries(HORIZONTES).map(([k, v]) => (
               <option key={k} value={k}>
@@ -749,12 +854,20 @@ function CartaoProjeto({
           type="button"
           className={p.mini}
           onClick={() =>
-            rodar(() => salvarProjeto(x.id, { status: x.status === "pausado" ? "ativo" : "pausado" }))
+            rodar(() =>
+              salvarProjeto(x.id, {
+                status: x.status === "pausado" ? "ativo" : "pausado",
+              }),
+            )
           }
         >
           {x.status === "pausado" ? "Retomar" : "Pausar"}
         </button>
-        <button type="button" className={p.mini} onClick={() => setEncerrando(!encerrando)}>
+        <button
+          type="button"
+          className={p.mini}
+          onClick={() => setEncerrando(!encerrando)}
+        >
           Dizer não
         </button>
       </div>
@@ -763,16 +876,31 @@ function CartaoProjeto({
           className={p.linhaForm}
           onSubmit={(e) => {
             e.preventDefault();
-            const motivo = String(new FormData(e.currentTarget).get("motivo") ?? "");
-            rodar(() => salvarProjeto(x.id, { status: "encerrado", motivo_encerrado: motivo }));
+            const motivo = String(
+              new FormData(e.currentTarget).get("motivo") ?? "",
+            );
+            rodar(() =>
+              salvarProjeto(x.id, {
+                status: "encerrado",
+                motivo_encerrado: motivo,
+              }),
+            );
           }}
         >
-          <input name="motivo" placeholder="Por que não (fica escrito para não voltar)" maxLength={300} />
+          <input
+            name="motivo"
+            placeholder="Por que não (fica escrito para não voltar)"
+            maxLength={300}
+          />
           <button type="submit" className={p.btn}>
             Encerrar
           </button>
           {metas.length === 0 ? (
-            <button type="button" className={p.mini} onClick={() => rodar(() => apagarProjeto(x.id))}>
+            <button
+              type="button"
+              className={p.mini}
+              onClick={() => rodar(() => apagarProjeto(x.id))}
+            >
               Apagar de vez
             </button>
           ) : null}
@@ -807,8 +935,11 @@ function LinhaMeta({
           {m.titulo}
         </button>
         <span className={p.metaAlvo}>
-          {formatar(m.alvo, m.unidade)} {m.periodo === "mes" ? "por mês" : "no ano"}
-          {m.fonte !== "manual" ? <i title={FONTES[m.fonte].ajuda}>, medida sozinha</i> : null}
+          {formatar(m.alvo, m.unidade)}{" "}
+          {m.periodo === "mes" ? "por mês" : "no ano"}
+          {m.fonte !== "manual" ? (
+            <i title={FONTES[m.fonte].ajuda}>, medida sozinha</i>
+          ) : null}
         </span>
       </div>
       <input
@@ -819,7 +950,8 @@ function LinhaMeta({
         defaultValue={m.peso}
         aria-label="Peso"
         onBlur={(e) => {
-          if (Number(e.target.value) !== m.peso) rodar(() => salvarMeta(m.id, { peso: e.target.value }));
+          if (Number(e.target.value) !== m.peso)
+            rodar(() => salvarMeta(m.id, { peso: e.target.value }));
         }}
       />
       {MESES.map((nome, i) => {
@@ -841,7 +973,9 @@ function LinhaMeta({
         );
       })}
       <b className={`${p.noAno} ${FAIXA_CLASSE[faixa(noAno)]}`}>{pct(noAno)}</b>
-      {editando ? <EditarMeta m={m} rodar={rodar} fechar={() => setEditando(false)} /> : null}
+      {editando ? (
+        <EditarMeta m={m} rodar={rodar} fechar={() => setEditando(false)} />
+      ) : null}
     </div>
   );
 }
@@ -866,7 +1000,9 @@ function CamposMeta({ m }: { m?: Meta }) {
         aria-label="Como se mede"
       >
         {(Object.keys(FONTES) as Fonte[])
-          .filter((k) => integrado || !["despesas", "entregas", "saldo"].includes(k))
+          .filter(
+            (k) => integrado || !["despesas", "entregas", "saldo"].includes(k),
+          )
           .map((k) => (
             <option key={k} value={k}>
               {FONTES[k].nome}
@@ -886,7 +1022,11 @@ function CamposMeta({ m }: { m?: Meta }) {
       {unidadeFixa ? (
         <input type="hidden" name="unidade" value={unidadeFixa} />
       ) : (
-        <select name="unidade" defaultValue={m?.unidade ?? "un"} aria-label="Unidade">
+        <select
+          name="unidade"
+          defaultValue={m?.unidade ?? "un"}
+          aria-label="Unidade"
+        >
           <option value="un">un</option>
           <option value="R$">R$</option>
           <option value="%">%</option>
@@ -896,14 +1036,20 @@ function CamposMeta({ m }: { m?: Meta }) {
         <select
           name="direcao"
           key={fonte}
-          defaultValue={m?.direcao ?? (fonte === "despesas" ? "reduzir" : "aumentar")}
+          defaultValue={
+            m?.direcao ?? (fonte === "despesas" ? "reduzir" : "aumentar")
+          }
           aria-label="Direção da meta"
         >
           <option value="aumentar">Aumentar até o alvo</option>
           <option value="reduzir">Reduzir até o limite</option>
         </select>
       ) : null}
-      <select name="periodo" defaultValue={m?.periodo ?? "mes"} aria-label="Período do alvo">
+      <select
+        name="periodo"
+        defaultValue={m?.periodo ?? "mes"}
+        aria-label="Período do alvo"
+      >
         <option value="mes">por mês</option>
         <option value="ano">no ano</option>
       </select>
@@ -923,15 +1069,29 @@ function CamposMeta({ m }: { m?: Meta }) {
 function lerForm(f: HTMLFormElement) {
   const d = new FormData(f);
   return Object.fromEntries(
-    ["titulo", "fonte", "alvo", "unidade", "periodo", "peso", "direcao"].map((k) => [k, d.get(k)]),
+    ["titulo", "fonte", "alvo", "unidade", "periodo", "peso", "direcao"].map(
+      (k) => [k, d.get(k)],
+    ),
   );
 }
 
-function NovaMeta({ projetoId, ano, rodar }: { projetoId: string; ano: number; rodar: Rodar }) {
+function NovaMeta({
+  projetoId,
+  ano,
+  rodar,
+}: {
+  projetoId: string;
+  ano: number;
+  rodar: Rodar;
+}) {
   const [aberta, setAberta] = useState(false);
   if (!aberta) {
     return (
-      <button type="button" className={p.addMeta} onClick={() => setAberta(true)}>
+      <button
+        type="button"
+        className={p.addMeta}
+        onClick={() => setAberta(true)}
+      >
         + meta neste projeto
       </button>
     );
@@ -959,7 +1119,15 @@ function NovaMeta({ projetoId, ano, rodar }: { projetoId: string; ano: number; r
   );
 }
 
-function EditarMeta({ m, rodar, fechar }: { m: Meta; rodar: Rodar; fechar: () => void }) {
+function EditarMeta({
+  m,
+  rodar,
+  fechar,
+}: {
+  m: Meta;
+  rodar: Rodar;
+  fechar: () => void;
+}) {
   return (
     <form
       className={p.formMeta}
@@ -976,7 +1144,11 @@ function EditarMeta({ m, rodar, fechar }: { m: Meta; rodar: Rodar; fechar: () =>
       <button type="submit" className={p.btn}>
         Salvar
       </button>
-      <button type="button" className={p.mini} onClick={() => rodar(() => apagarMeta(m.id))}>
+      <button
+        type="button"
+        className={p.mini}
+        onClick={() => rodar(() => apagarMeta(m.id))}
+      >
         Apagar meta
       </button>
     </form>
@@ -1004,9 +1176,16 @@ function RmrDoMes({
   const chave = `${ano}-${String(mes).padStart(2, "0")}-01`;
   const feita = rmrs.find((r) => r.mes === chave);
   const nota = notaDoPainel(metas, valores, mes);
-  const nomeProjeto = useMemo(() => Object.fromEntries(projetos.map((x) => [x.id, x.nome])), [projetos]);
-  const faltam = metas.filter((m) => m.fonte === "manual" && valores[m.id]?.[mes] === undefined).length;
-  const doAno = rmrs.filter((r) => r.mes.startsWith(String(ano))).sort((a, b) => b.mes.localeCompare(a.mes));
+  const nomeProjeto = useMemo(
+    () => Object.fromEntries(projetos.map((x) => [x.id, x.nome])),
+    [projetos],
+  );
+  const faltam = metas.filter(
+    (m) => m.fonte === "manual" && valores[m.id]?.[mes] === undefined,
+  ).length;
+  const doAno = rmrs
+    .filter((r) => r.mes.startsWith(String(ano)))
+    .sort((a, b) => b.mes.localeCompare(a.mes));
 
   return (
     <section className={p.andar} id="rmr">
@@ -1015,8 +1194,9 @@ function RmrDoMes({
         <i className={p.ponto}>.</i>
       </h2>
       <p className={p.voz}>
-        A reunião mensal de resultados, de você com você. As metas automáticas já chegam preenchidas; lance as
-        outras, olhe onde saiu da linha e escreva o que causou e o plano para voltar. Mês fechado conta na
+        A reunião mensal de resultados, de você com você. As metas automáticas
+        já chegam preenchidas; lance as outras, olhe onde saiu da linha e
+        escreva o que causou e o plano para voltar. Mês fechado conta na
         sequência.{" "}
         <label className={p.trocaMes}>
           ver o mês de{" "}
@@ -1031,7 +1211,9 @@ function RmrDoMes({
       </p>
 
       {metas.length === 0 ? (
-        <div className={p.vazio}>Sem metas no ano ainda: crie no painel acima.</div>
+        <div className={p.vazio}>
+          Sem metas no ano ainda: crie no painel acima.
+        </div>
       ) : (
         <ul className={p.rmr}>
           {metas.map((m) => {
@@ -1039,10 +1221,20 @@ function RmrDoMes({
             const pc = percentual(m, valores[m.id] ?? {}, mes);
             return (
               <li key={m.id} className={p.rmrLinha}>
-                <span className={`${p.bolinha} ${FAIXA_CLASSE[faixa(pc)]}`} aria-hidden />
+                <span
+                  className={`${p.bolinha} ${FAIXA_CLASSE[faixa(pc)]}`}
+                  aria-hidden
+                />
                 <div className={p.rmrMeta}>
                   <b>{m.titulo}</b>
-                  <em>{faltaTexto(m, valores[m.id] ?? {}, mes, nomeProjeto[m.projeto_id])}</em>
+                  <em>
+                    {faltaTexto(
+                      m,
+                      valores[m.id] ?? {},
+                      mes,
+                      nomeProjeto[m.projeto_id],
+                    )}
+                  </em>
                 </div>
                 {m.fonte === "manual" ? (
                   <input
@@ -1053,7 +1245,8 @@ function RmrDoMes({
                     defaultValue={v ?? ""}
                     placeholder="número do mês"
                     onBlur={(e) => {
-                      const novo = e.target.value === "" ? null : Number(e.target.value);
+                      const novo =
+                        e.target.value === "" ? null : Number(e.target.value);
                       if (novo === (v ?? null)) return;
                       rodar(() => lancar(m.id, chave, novo));
                     }}
@@ -1065,7 +1258,9 @@ function RmrDoMes({
                     <i>medido sozinho</i>
                   </span>
                 )}
-                <b className={`${p.rmrPct} ${FAIXA_CLASSE[faixa(pc)]}`}>{pct(pc)}</b>
+                <b className={`${p.rmrPct} ${FAIXA_CLASSE[faixa(pc)]}`}>
+                  {pct(pc)}
+                </b>
               </li>
             );
           })}
@@ -1078,7 +1273,14 @@ function RmrDoMes({
         onSubmit={(e) => {
           e.preventDefault();
           const d = new FormData(e.currentTarget);
-          rodar(() => fecharRmr(chave, nota, String(d.get("causa") ?? ""), String(d.get("plano") ?? "")));
+          rodar(() =>
+            fecharRmr(
+              chave,
+              nota,
+              String(d.get("causa") ?? ""),
+              String(d.get("plano") ?? ""),
+            ),
+          );
         }}
       >
         <label className={p.campo}>
@@ -1111,7 +1313,9 @@ function RmrDoMes({
           </button>
         </div>
         {feita ? (
-          <p className={p.fechada}>Fechada em {new Date(feita.fechada_em).toLocaleDateString("pt-BR")}.</p>
+          <p className={p.fechada}>
+            Fechada em {new Date(feita.fechada_em).toLocaleDateString("pt-BR")}.
+          </p>
         ) : null}
       </form>
 
@@ -1122,8 +1326,16 @@ function RmrDoMes({
             {doAno.map((r) => (
               <li key={r.mes}>
                 <b>{MESES_LONGOS[Number(r.mes.slice(5, 7)) - 1]}</b>
-                <span className={`${p.notaMini} ${FAIXA_CLASSE[faixa(r.nota)]}`}>{pct(r.nota)}</span>
-                {r.plano ? <em>{r.plano}</em> : r.causa ? <em>{r.causa}</em> : null}
+                <span
+                  className={`${p.notaMini} ${FAIXA_CLASSE[faixa(r.nota)]}`}
+                >
+                  {pct(r.nota)}
+                </span>
+                {r.plano ? (
+                  <em>{r.plano}</em>
+                ) : r.causa ? (
+                  <em>{r.causa}</em>
+                ) : null}
               </li>
             ))}
           </ul>
@@ -1136,17 +1348,31 @@ function RmrDoMes({
 /* O que falta, em português: a RMR lia "54%" e o Rafael tinha que fazer a
    conta de cabeça. Agora cada meta diz o número que falta no mês (ou para o
    ritmo, nas metas do ano). */
-function faltaTexto(m: Meta, v: Partial<Record<number, number>>, mes: number, projeto?: string): string {
+function faltaTexto(
+  m: Meta,
+  v: Partial<Record<number, number>>,
+  mes: number,
+  projeto?: string,
+): string {
   const fmt = (x: number) => formatar(x, m.unidade);
   const onde = projeto ? `${projeto}. ` : "";
   if (m.direcao === "reduzir") {
     const medidos = Object.entries(v).filter(([k]) => Number(k) <= mes);
-    const atual = m.periodo === "ano" ? medidos.reduce((s, [, x]) => s + (x ?? 0), 0) : v[mes];
-    if (atual === undefined || !medidos.length) return onde + "Medição a apurar.";
+    const atual =
+      m.periodo === "ano"
+        ? medidos.reduce((s, [, x]) => s + (x ?? 0), 0)
+        : v[mes];
+    if (atual === undefined || !medidos.length)
+      return onde + "Medição a apurar.";
     const limite = m.periodo === "ano" ? (m.alvo * mes) / 12 : m.alvo;
     return atual <= limite
       ? onde + "Dentro do limite: " + fmt(atual) + " de " + fmt(limite) + "."
-      : onde + "Reduzir " + fmt(atual - limite) + " para o limite de " + fmt(limite) + ".";
+      : onde +
+          "Reduzir " +
+          fmt(atual - limite) +
+          " para o limite de " +
+          fmt(limite) +
+          ".";
   }
   if (m.periodo === "ano") {
     let acum = 0;
@@ -1157,7 +1383,8 @@ function faltaTexto(m: Meta, v: Partial<Record<number, number>>, mes: number, pr
       : `${onde}Faltam ${fmt(ritmo - acum)} para o ritmo do ano (${fmt(m.alvo)} até dezembro).`;
   }
   const x = v[mes];
-  if (x === undefined) return `${onde}Alvo de ${fmt(m.alvo)} no mês. Lance o número.`;
+  if (x === undefined)
+    return `${onde}Alvo de ${fmt(m.alvo)} no mês. Lance o número.`;
   return x >= m.alvo
     ? `${onde}Bateu: ${fmt(x)} de ${fmt(m.alvo)}.`
     : `${onde}Faltam ${fmt(m.alvo - x)} para ${fmt(m.alvo)}.`;

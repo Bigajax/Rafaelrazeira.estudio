@@ -2,7 +2,11 @@ import { conferir } from "@/lib/sistema/consultas";
 import { avancouLead } from "@/lib/sistema/comercial";
 import { lerTodos, tabelaAusente } from "@/lib/sistema/consultas";
 import { diaLocal, mesLocal } from "@/lib/sistema/calendario";
-import { valorRetido, devolucoesComLegado, type Devolucao } from "@/lib/sistema/indicadores";
+import {
+  valorRetido,
+  devolucoesComLegado,
+  type Devolucao,
+} from "@/lib/sistema/indicadores";
 /* ============================================================
    AS CONSULTAS
 
@@ -70,36 +74,43 @@ export async function painelHoje() {
   const hoje = hojeSP();
   const segunda = inicioDaSemana(hoje);
 
-  const [{ data: leads }, { data: meta }, { count: toquesSemana }] = await Promise.all([
-    conferir(
-      supabase
-        .from("crm_leads_painel")
-        .select("*")
-        .in("estagio", ATIVOS)
-        .order("proxima_acao_em", { ascending: true, nullsFirst: false })
-        /* Desempate FIXO (21/09): sem ele, os 295 sem passo (todos com
+  const [{ data: leads }, { data: meta }, { count: toquesSemana }] =
+    await Promise.all([
+      conferir(
+        supabase
+          .from("crm_leads_painel")
+          .select("*")
+          .in("estagio", ATIVOS)
+          .order("proxima_acao_em", { ascending: true, nullsFirst: false })
+          /* Desempate FIXO (21/09): sem ele, os 295 sem passo (todos com
          proxima_acao_em nula) voltavam do banco numa ordem qualquer a
          cada refresh, e a fila do dia "embaralhava" a cada mensagem
          registrada. */
-        .order("created_at", { ascending: false })
-        .order("id", { ascending: true })
-        .returns<LeadPainel[]>(),
-    ),
-    conferir(supabase.from("crm_metas").select("id, toques_semana").limit(1).maybeSingle<Meta>()),
-    /* `head: true` traz só a contagem, sem uma linha sequer de payload: o
+          .order("created_at", { ascending: false })
+          .order("id", { ascending: true })
+          .returns<LeadPainel[]>(),
+      ),
+      conferir(
+        supabase
+          .from("crm_metas")
+          .select("id, toques_semana")
+          .limit(1)
+          .maybeSingle<Meta>(),
+      ),
+      /* `head: true` traz só a contagem, sem uma linha sequer de payload: o
        número da faixa não precisa das interações, precisa de quantas são.
        O `+ 1` no fim do intervalo é o dia seguinte à meia-noite: interações
        são timestamp, e comparar com a data pura deixaria de fora tudo que
        aconteceu depois das 00h do domingo. */
-    conferir(
-      supabase
-        .from("crm_interacoes")
-        .select("id", { count: "exact", head: true })
-        .eq("direcao", "saida")
-        .gte("created_at", `${segunda}T00:00:00-03:00`)
-        .lt("created_at", `${somarDias(segunda, 7)}T00:00:00-03:00`),
-    ),
-  ]);
+      conferir(
+        supabase
+          .from("crm_interacoes")
+          .select("id", { count: "exact", head: true })
+          .eq("direcao", "saida")
+          .gte("created_at", `${segunda}T00:00:00-03:00`)
+          .lt("created_at", `${somarDias(segunda, 7)}T00:00:00-03:00`),
+      ),
+    ]);
 
   /* ============================================================
      A COBRANÇA ENTRA NA FILA (20/08)
@@ -115,11 +126,17 @@ export async function painelHoje() {
      ============================================================ */
   const cobrancasPorLead = await cobrancasAbertas(supabase, hoje);
   const jaNaLista = new Set((leads ?? []).map((l) => l.id));
-  const devedoresDeFora = [...cobrancasPorLead.keys()].filter((id) => !jaNaLista.has(id));
+  const devedoresDeFora = [...cobrancasPorLead.keys()].filter(
+    (id) => !jaNaLista.has(id),
+  );
 
   const { data: ganhosQueDevem } = devedoresDeFora.length
     ? await conferir(
-        supabase.from("crm_leads_painel").select("*").in("id", devedoresDeFora).returns<LeadPainel[]>(),
+        supabase
+          .from("crm_leads_painel")
+          .select("*")
+          .in("id", devedoresDeFora)
+          .returns<LeadPainel[]>(),
       )
     : { data: [] as LeadPainel[] };
 
@@ -134,7 +151,9 @@ export async function painelHoje() {
       .not("lead_id", "is", null)
       .returns<{ lead_id: string; previa_url: string }[]>(),
   );
-  const amostraPorLead = new Map((amostras ?? []).map((a) => [a.lead_id, a.previa_url]));
+  const amostraPorLead = new Map(
+    (amostras ?? []).map((a) => [a.lead_id, a.previa_url]),
+  );
 
   const lista = [...(leads ?? []), ...(ganhosQueDevem ?? [])].map((l) => ({
     ...l,
@@ -161,7 +180,9 @@ export async function painelHoje() {
   const paraHoje = lista.filter((l) => naFila(l) === hoje);
   /* Sem passo continua sendo só sobre o funil: um cliente ganho que não deve
      nada não está "sem próximo passo", ele terminou. */
-  const semPasso = lista.filter((l) => !l.proxima_acao_em && !l.cobranca && ehAtivo(l.estagio));
+  const semPasso = lista.filter(
+    (l) => !l.proxima_acao_em && !l.cobranca && ehAtivo(l.estagio),
+  );
 
   /* ---------- OS RISCADOS ----------
      Quem eu falei hoje E que já tem retorno marcado para depois de hoje.
@@ -179,7 +200,9 @@ export async function painelHoje() {
   const riscados = lista
     .filter((l) => l.ultimo_toque_em && diaEmSP(l.ultimo_toque_em) === hoje)
     .filter((l) => l.proxima_acao_em && l.proxima_acao_em > hoje)
-    .sort((a, b) => (a.ultimo_toque_em as string).localeCompare(b.ultimo_toque_em as string));
+    .sort((a, b) =>
+      (a.ultimo_toque_em as string).localeCompare(b.ultimo_toque_em as string),
+    );
 
   /* ============================================================
      O HORIZONTE — o que a tela mostra quando não há nada para hoje
@@ -218,13 +241,18 @@ export async function painelHoje() {
      antigo (mais atrasado, mais parado) como desempate entre iguais.
      Sem dossiê fica entre morno e frio: não sabemos, e o não-sei anda
      atrás de quem já foi conferido. */
-  const FILA_VEREDITO: Record<string, number> = { quente: 0, morno: 1, frio: 3 };
+  const FILA_VEREDITO: Record<string, number> = {
+    quente: 0,
+    morno: 1,
+    frio: 3,
+  };
   const calorDaFila = (l: (typeof lista)[number]) =>
     FILA_VEREDITO[(l.dossie?.status === "ok" && l.dossie.veredito) || ""] ?? 2;
   /* Todo sort daqui tem o id como último desempate: cards importados no
      mesmo segundo (o garimpo entra em lote) empatam em qualquer data, e
      ordem que depende de empate é ordem que muda entre dois refreshes. */
-  const porId = (a: { id: string }, b: { id: string }) => a.id.localeCompare(b.id);
+  const porId = (a: { id: string }, b: { id: string }) =>
+    a.id.localeCompare(b.id);
   const quentePrimeiro = <T extends (typeof lista)[number]>(grupo: T[]) =>
     [...grupo].sort((a, b) => calorDaFila(a) - calorDaFila(b) || porId(a, b));
 
@@ -249,11 +277,17 @@ export async function painelHoje() {
     semPasso: [
       ...semPasso
         .filter(procurouOEstudio)
-        .sort((a, b) => b.created_at.localeCompare(a.created_at) || porId(a, b)),
+        .sort(
+          (a, b) => b.created_at.localeCompare(a.created_at) || porId(a, b),
+        ),
       ...quentePrimeiro(
         semPasso
           .filter((l) => !procurouOEstudio(l))
-          .sort((a, b) => a.entrou_no_estagio_em.localeCompare(b.entrou_no_estagio_em) || porId(a, b)),
+          .sort(
+            (a, b) =>
+              a.entrou_no_estagio_em.localeCompare(b.entrou_no_estagio_em) ||
+              porId(a, b),
+          ),
       ),
     ],
     /* Na ordem em que foram riscados: a pilha do dia se lê de cima para
@@ -265,7 +299,11 @@ export async function painelHoje() {
        quem espera há mais tempo esfria primeiro. */
     amostras: lista
       .filter((l) => ehAtivo(l.estagio) && amostraNoLote(l))
-      .sort((a, b) => (a.ultimo_toque_em ?? "").localeCompare(b.ultimo_toque_em ?? "") || porId(a, b)),
+      .sort(
+        (a, b) =>
+          (a.ultimo_toque_em ?? "").localeCompare(b.ultimo_toque_em ?? "") ||
+          porId(a, b),
+      ),
     /* Os dentes da linha: só o que cabe na janela. */
     horizonte: futuros.filter((d) => d.data <= limite),
     /* E o próximo retorno inteiro, caia ele onde cair. É ele que impede a
@@ -311,30 +349,35 @@ export async function contagens() {
   const supabase = await clienteServidor();
   const hoje = hojeSP();
 
-  const [{ data: leads }, { count: templates }, { data: cobrancas }] = await Promise.all([
-    conferir(
-      supabase
-        .from("crm_leads")
-        .select("proxima_acao_em")
-        .in("estagio", ATIVOS)
-        .returns<Pick<Lead, "proxima_acao_em">[]>(),
-    ),
-    conferir(supabase.from("crm_templates").select("id", { count: "exact", head: true })),
-    /* As parcelas vivas que já chegaram no dia de cobrar. Traz as linhas em
+  const [{ data: leads }, { count: templates }, { data: cobrancas }] =
+    await Promise.all([
+      conferir(
+        supabase
+          .from("crm_leads")
+          .select("proxima_acao_em")
+          .in("estagio", ATIVOS)
+          .returns<Pick<Lead, "proxima_acao_em">[]>(),
+      ),
+      conferir(
+        supabase
+          .from("crm_templates")
+          .select("id", { count: "exact", head: true }),
+      ),
+      /* As parcelas vivas que já chegaram no dia de cobrar. Traz as linhas em
        vez de `head: true` porque quitação é soma de recebimentos, e o banco
        não sabe disso sozinho: quem decide se ainda deve é a conta em
        JavaScript logo abaixo. São poucas dezenas de linhas. */
-    conferir(
-      supabase
-        .from("crm_parcelas")
-        .select(
-          "id, lead_id, valor, vence_em, cobrar_em, cancelada_em, crm_contratos(status), crm_recebimentos(*)",
-        )
-        .is("cancelada_em", null)
-        .lte("vence_em", hoje)
-        .returns<ParcelaComRecebimentos[]>(),
-    ),
-  ]);
+      conferir(
+        supabase
+          .from("crm_parcelas")
+          .select(
+            "id, lead_id, valor, vence_em, cobrar_em, cancelada_em, crm_contratos(status), crm_recebimentos(*)",
+          )
+          .is("cancelada_em", null)
+          .lte("vence_em", hoje)
+          .returns<ParcelaComRecebimentos[]>(),
+      ),
+    ]);
 
   const lista = leads ?? [];
 
@@ -342,7 +385,8 @@ export async function contagens() {
     /* A MESMA definição de fila do painel Hoje, e ela precisa continuar
        sendo: o trilho dizendo "3" com quatro cartas na tela é pior do que o
        trilho não dizer nada. Atrasado, hoje e sem próximo passo. */
-    fila: lista.filter((l) => !l.proxima_acao_em || l.proxima_acao_em <= hoje).length,
+    fila: lista.filter((l) => !l.proxima_acao_em || l.proxima_acao_em <= hoje)
+      .length,
     ativos: lista.length,
     templates: templates ?? 0,
     /* Quem está para cobrar, pela MESMA régua do Hoje e do Caixa
@@ -379,7 +423,9 @@ type ParcelaComRecebimentos = {
   cobrar_em: string | null;
   cancelada_em: string | null;
   crm_contratos: { status: string } | null;
-  crm_recebimentos: { valor: number; estornado_em: string | null; valor_estornado?: number }[] | null;
+  crm_recebimentos:
+    | { valor: number; estornado_em: string | null; valor_estornado?: number }[]
+    | null;
 };
 
 /** Soma o que entrou numa parcela, ignorando o que foi estornado. */
@@ -407,16 +453,19 @@ export async function quadro() {
   /* Os nichos do filtro saem do próprio dado, e não de uma lista fixa: o
      estúdio prospecta o ramo que aparecer, e uma lista escrita à mão
      começaria errada e envelheceria. */
-  const nichos = [...new Set(leads.map((l) => l.nicho).filter((n): n is string => Boolean(n?.trim())))].sort(
-    (a, b) => a.localeCompare(b, "pt-BR"),
-  );
+  const nichos = [
+    ...new Set(
+      leads.map((l) => l.nicho).filter((n): n is string => Boolean(n?.trim())),
+    ),
+  ].sort((a, b) => a.localeCompare(b, "pt-BR"));
 
   /* Os anúncios pela mesma regra dos nichos: os nomes são os do Gerenciador
      e mudam a cada lote de criativos. Quem mais trouxe lead vem primeiro,
      porque é dele que se quer ver o funil. */
   const porAnuncio = new Map<string, number>();
   for (const l of leads)
-    if (l.anuncio?.trim()) porAnuncio.set(l.anuncio, (porAnuncio.get(l.anuncio) ?? 0) + 1);
+    if (l.anuncio?.trim())
+      porAnuncio.set(l.anuncio, (porAnuncio.get(l.anuncio) ?? 0) + 1);
   const anuncios = [...porAnuncio.entries()]
     .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
     .map(([a]) => a);
@@ -431,42 +480,54 @@ export async function leadCompleto(id: string) {
   const supabase = await clienteServidor();
 
   const { data: lead } = await conferir(
-    supabase.from("crm_leads_painel").select("*").eq("id", id).maybeSingle<LeadPainel>(),
+    supabase
+      .from("crm_leads_painel")
+      .select("*")
+      .eq("id", id)
+      .maybeSingle<LeadPainel>(),
   );
 
   if (!lead) return null;
 
-  const [{ data: interacoes }, { data: indicados }, { data: quemIndicou }, { data: templates }] =
-    await Promise.all([
-      conferir(
-        supabase
-          .from("crm_interacoes")
-          .select("*")
-          .eq("lead_id", id)
-          .order("created_at", { ascending: false })
-          .returns<Interacao[]>(),
-      ),
-      conferir(
-        supabase
-          .from("crm_leads")
-          .select("id, nome, empresa, estagio")
-          .eq("indicado_por", id)
-          .order("created_at", { ascending: false })
-          .returns<Pick<Lead, "id" | "nome" | "empresa" | "estagio">[]>(),
-      ),
-      lead.indicado_por
-        ? conferir(
-            supabase
-              .from("crm_leads")
-              .select("id, nome, empresa, estagio")
-              .eq("id", lead.indicado_por)
-              .maybeSingle<Pick<Lead, "id" | "nome" | "empresa" | "estagio">>(),
-          )
-        : Promise.resolve({ data: null }),
-      conferir(
-        supabase.from("crm_templates").select("*").order("ordem", { ascending: true }).returns<Template[]>(),
-      ),
-    ]);
+  const [
+    { data: interacoes },
+    { data: indicados },
+    { data: quemIndicou },
+    { data: templates },
+  ] = await Promise.all([
+    conferir(
+      supabase
+        .from("crm_interacoes")
+        .select("*")
+        .eq("lead_id", id)
+        .order("created_at", { ascending: false })
+        .returns<Interacao[]>(),
+    ),
+    conferir(
+      supabase
+        .from("crm_leads")
+        .select("id, nome, empresa, estagio")
+        .eq("indicado_por", id)
+        .order("created_at", { ascending: false })
+        .returns<Pick<Lead, "id" | "nome" | "empresa" | "estagio">[]>(),
+    ),
+    lead.indicado_por
+      ? conferir(
+          supabase
+            .from("crm_leads")
+            .select("id, nome, empresa, estagio")
+            .eq("id", lead.indicado_por)
+            .maybeSingle<Pick<Lead, "id" | "nome" | "empresa" | "estagio">>(),
+        )
+      : Promise.resolve({ data: null }),
+    conferir(
+      supabase
+        .from("crm_templates")
+        .select("*")
+        .order("ordem", { ascending: true })
+        .returns<Template[]>(),
+    ),
+  ]);
 
   return {
     lead,
@@ -494,40 +555,46 @@ export type ContratoPainel = Contrato & {
   avulsos: Recebimento[];
 };
 
-export async function contratosDoLead(leadId: string): Promise<ContratoPainel[]> {
+export async function contratosDoLead(
+  leadId: string,
+): Promise<ContratoPainel[]> {
   const supabase = await clienteServidor();
 
-  const [{ data: contratos }, { data: parcelas }, { data: recebimentos }] = await Promise.all([
-    conferir(
-      supabase
-        .from("crm_contratos")
-        .select("*")
-        .eq("lead_id", leadId)
-        .order("created_at", { ascending: false })
-        .returns<Contrato[]>(),
-    ),
-    conferir(
-      supabase
-        .from("crm_parcelas")
-        .select("*")
-        .eq("lead_id", leadId)
-        .order("numero", { ascending: true })
-        .returns<Parcela[]>(),
-    ),
-    conferir(
-      supabase
-        .from("crm_recebimentos")
-        .select("*")
-        .eq("lead_id", leadId)
-        .order("recebido_em", { ascending: false })
-        .returns<Recebimento[]>(),
-    ),
-  ]);
+  const [{ data: contratos }, { data: parcelas }, { data: recebimentos }] =
+    await Promise.all([
+      conferir(
+        supabase
+          .from("crm_contratos")
+          .select("*")
+          .eq("lead_id", leadId)
+          .order("created_at", { ascending: false })
+          .returns<Contrato[]>(),
+      ),
+      conferir(
+        supabase
+          .from("crm_parcelas")
+          .select("*")
+          .eq("lead_id", leadId)
+          .order("numero", { ascending: true })
+          .returns<Parcela[]>(),
+      ),
+      conferir(
+        supabase
+          .from("crm_recebimentos")
+          .select("*")
+          .eq("lead_id", leadId)
+          .order("recebido_em", { ascending: false })
+          .returns<Recebimento[]>(),
+      ),
+    ]);
 
   const pagoPorParcela = new Map<string, number>();
   for (const r of recebimentos ?? []) {
     if (!r.parcela_id || r.estornado_em) continue;
-    pagoPorParcela.set(r.parcela_id, (pagoPorParcela.get(r.parcela_id) ?? 0) + valorRetido(r));
+    pagoPorParcela.set(
+      r.parcela_id,
+      (pagoPorParcela.get(r.parcela_id) ?? 0) + valorRetido(r),
+    );
   }
 
   const avulsos = (recebimentos ?? []).filter((r) => !r.parcela_id);
@@ -557,7 +624,11 @@ export async function contratosDoLead(leadId: string): Promise<ContratoPainel[]>
 export async function listarTemplates() {
   const supabase = await clienteServidor();
   const { data } = await conferir(
-    supabase.from("crm_templates").select("*").order("ordem", { ascending: true }).returns<Template[]>(),
+    supabase
+      .from("crm_templates")
+      .select("*")
+      .order("ordem", { ascending: true })
+      .returns<Template[]>(),
   );
   return data ?? [];
 }
@@ -578,39 +649,56 @@ export async function metricas(dias: 7 | 30 | 90) {
   const hoje = hojeSP();
   const inicio = somarDias(hoje, -(dias - 1));
 
-  const [interacoes, leads, metaConsulta, historico, contratos] = await Promise.all([
-    lerTodos<Interacao>(supabase, "crm_interacoes", "id,lead_id,canal,direcao,created_at", {
-      coluna: "created_at",
-      inicio: inicio + "T00:00:00-03:00",
-      fim: somarDias(hoje, 1) + "T00:00:00-03:00",
-    }),
-    lerTodos<Lead>(supabase, "crm_leads"),
-    conferir(supabase.from("crm_metas").select("id,toques_semana").limit(1).maybeSingle<Meta>()),
-    lerTodos<{
-      id: string;
-      lead_id: string;
-      etapa: string;
-      anterior: string | null;
-      motivo: string | null;
-      ocorrido_em: string;
-      inicial: boolean;
-    }>(supabase, "crm_eventos_etapa").catch((e) => {
-      if (tabelaAusente(e)) return null;
-      throw e;
-    }),
-    lerTodos<Contrato>(supabase, "crm_contratos"),
-  ]);
-  if (metaConsulta.error) throw new Error("Não foi possível carregar a meta comercial.");
+  const [interacoes, leads, metaConsulta, historico, contratos] =
+    await Promise.all([
+      lerTodos<Interacao>(
+        supabase,
+        "crm_interacoes",
+        "id,lead_id,canal,direcao,created_at",
+        {
+          coluna: "created_at",
+          inicio: inicio + "T00:00:00-03:00",
+          fim: somarDias(hoje, 1) + "T00:00:00-03:00",
+        },
+      ),
+      lerTodos<Lead>(supabase, "crm_leads"),
+      conferir(
+        supabase
+          .from("crm_metas")
+          .select("id,toques_semana")
+          .limit(1)
+          .maybeSingle<Meta>(),
+      ),
+      lerTodos<{
+        id: string;
+        lead_id: string;
+        etapa: string;
+        anterior: string | null;
+        motivo: string | null;
+        ocorrido_em: string;
+        inicial: boolean;
+      }>(supabase, "crm_eventos_etapa").catch((e) => {
+        if (tabelaAusente(e)) return null;
+        throw e;
+      }),
+      lerTodos<Contrato>(supabase, "crm_contratos"),
+    ]);
+  if (metaConsulta.error)
+    throw new Error("Não foi possível carregar a meta comercial.");
   const meta = metaConsulta.data;
   const eventos = historico ?? [];
-  const antigos = new Set(eventos.filter((e) => e.inicial).map((e) => e.lead_id));
-  const avancou = (l: Lead, alvo: number) => avancouLead(l, historico, ordem[alvo]);
+  const antigos = new Set(
+    eventos.filter((e) => e.inicial).map((e) => e.lead_id),
+  );
+  const avancou = (l: Lead, alvo: number) =>
+    avancouLead(l, historico, ordem[alvo]);
 
   const toques = interacoes ?? [];
   const todos = leads ?? [];
   const metaSemana = meta?.toques_semana ?? 50;
 
-  const noPeriodo = (data: string | null) => Boolean(data && data >= inicio && data <= hoje);
+  const noPeriodo = (data: string | null) =>
+    Boolean(data && data >= inicio && data <= hoje);
 
   /* ---------- atividade: toques de saída por semana ----------
      Só saída. Entrada é resposta do outro lado, e contar resposta como
@@ -619,17 +707,20 @@ export async function metricas(dias: 7 | 30 | 90) {
   const semanas = new Map<string, number>();
   const primeiraSemana = inicioDaSemana(inicio);
   const totalSemanas = Math.floor(diasEntre(primeiraSemana, hoje) / 7) + 1;
-  for (let i = 0; i < totalSemanas; i++) semanas.set(somarDias(primeiraSemana, i * 7), 0);
+  for (let i = 0; i < totalSemanas; i++)
+    semanas.set(somarDias(primeiraSemana, i * 7), 0);
 
   for (const t of toques) {
     if (t.direcao !== "saida") continue;
     const dia = diaLocal(t.created_at);
     const semana = inicioDaSemana(dia);
-    if (semanas.has(semana)) semanas.set(semana, (semanas.get(semana) ?? 0) + 1);
+    if (semanas.has(semana))
+      semanas.set(semana, (semanas.get(semana) ?? 0) + 1);
   }
 
   const porCanal = new Map<string, number>();
-  for (const t of toques) porCanal.set(t.canal, (porCanal.get(t.canal) ?? 0) + 1);
+  for (const t of toques)
+    porCanal.set(t.canal, (porCanal.get(t.canal) ?? 0) + 1);
 
   /* ---------- conversão por etapa ----------
      A pergunta é "de quem eu contatei no período, quantos chegaram até
@@ -644,9 +735,20 @@ export async function metricas(dias: 7 | 30 | 90) {
      estágio à frente dela, ganho incluído". É exato para o caminho normal e
      conta a menos para um lead que voltou atrás. Registrado aqui porque é a
      única imprecisão conhecida desta tela. */
-  const ordem = ["lista", "contatado", "follow_up", "conversa", "previa", "proposta", "negociacao", "ganho"];
+  const ordem = [
+    "lista",
+    "contatado",
+    "follow_up",
+    "conversa",
+    "previa",
+    "proposta",
+    "negociacao",
+    "ganho",
+  ];
   const indice = (e: string) => (e === "perdido" ? -1 : ordem.indexOf(e));
-  const criadosNoPeriodo = todos.filter((l) => noPeriodo(diaLocal(l.created_at)));
+  const criadosNoPeriodo = todos.filter((l) =>
+    noPeriodo(diaLocal(l.created_at)),
+  );
 
   const chegaramA = (estagio: string) =>
     criadosNoPeriodo.filter((l) => avancou(l, ordem.indexOf(estagio))).length;
@@ -692,62 +794,103 @@ export async function metricas(dias: 7 | 30 | 90) {
       proposta: chegaram(grupo, "proposta"),
       ganho: chegaram(grupo, "ganho"),
       valor: grupo.reduce((s, l) => {
-        const seus = contratos.filter((c) => c.lead_id === l.id && c.tipo === "projeto");
+        const seus = contratos.filter(
+          (c) => c.lead_id === l.id && c.tipo === "projeto",
+        );
         return (
           s +
           (seus.length
-            ? seus.filter((c) => c.status === "ativo").reduce((v, c) => v + Number(c.valor_total ?? 0), 0)
+            ? seus
+                .filter((c) => c.status === "ativo")
+                .reduce((v, c) => v + Number(c.valor_total ?? 0), 0)
             : l.estagio === "ganho"
               ? (l.valor_fechado ?? 0)
               : 0)
         );
       }, 0),
     }))
-    .sort((a, b) => b.ganho - a.ganho || b.proposta - a.proposta || b.previa - a.previa || b.leads - a.leads);
+    .sort(
+      (a, b) =>
+        b.ganho - a.ganho ||
+        b.proposta - a.proposta ||
+        b.previa - a.previa ||
+        b.leads - a.leads,
+    );
 
   /* ---------- taxa de resposta ----------
      Leads com ao menos uma interação de entrada, sobre o total de leads que
      receberam ao menos uma de saída. O denominador é "contatado de verdade"
      e não "está na coluna Contatado": quem eu movi de coluna sem mandar
      mensagem nenhuma não pode entrar na conta de quem não me respondeu. */
-  const comSaida = new Set(toques.filter((t) => t.direcao === "saida").map((t) => t.lead_id));
-  const comEntrada = new Set(toques.filter((t) => t.direcao === "entrada").map((t) => t.lead_id));
+  const comSaida = new Set(
+    toques.filter((t) => t.direcao === "saida").map((t) => t.lead_id),
+  );
+  const comEntrada = new Set(
+    toques.filter((t) => t.direcao === "entrada").map((t) => t.lead_id),
+  );
   const responderam = [...comSaida].filter((id) => {
-    const primeira = toques.find((t) => t.lead_id === id && t.direcao === "saida");
+    const primeira = toques.find(
+      (t) => t.lead_id === id && t.direcao === "saida",
+    );
     return (
       primeira &&
-      toques.some((t) => t.lead_id === id && t.direcao === "entrada" && t.created_at > primeira.created_at)
+      toques.some(
+        (t) =>
+          t.lead_id === id &&
+          t.direcao === "entrada" &&
+          t.created_at > primeira.created_at,
+      )
     );
   }).length;
 
   /* ---------- ciclo médio ----------
      Dias entre criar o lead e fechar como ganho, nos ganhos do período. */
-  const ganhosNoPeriodo = todos.filter((l) => l.estagio === "ganho" && noPeriodo(l.fechado_em));
-  const ciclos = ganhosNoPeriodo.map((l) => diasEntre(diaLocal(l.created_at), l.fechado_em as string));
-  const cicloMedio = ciclos.length ? Math.round(ciclos.reduce((a, b) => a + b, 0) / ciclos.length) : null;
+  const ganhosNoPeriodo = todos.filter(
+    (l) => l.estagio === "ganho" && noPeriodo(l.fechado_em),
+  );
+  const ciclos = ganhosNoPeriodo.map((l) =>
+    diasEntre(diaLocal(l.created_at), l.fechado_em as string),
+  );
+  const cicloMedio = ciclos.length
+    ? Math.round(ciclos.reduce((a, b) => a + b, 0) / ciclos.length)
+    : null;
 
   const perdas =
     historico === null
       ? todos
-          .filter((l) => l.estagio === "perdido" && noPeriodo(diaLocal(l.updated_at)))
+          .filter(
+            (l) => l.estagio === "perdido" && noPeriodo(diaLocal(l.updated_at)),
+          )
           .map((l) => ({ lead_id: l.id, motivo: l.motivo_perda }))
-      : eventos.filter((e) => !e.inicial && e.etapa === "perdido" && noPeriodo(diaLocal(e.ocorrido_em)));
-  const perdidosNoPeriodo = [...new Map(perdas.map((p) => [p.lead_id, p])).values()];
+      : eventos.filter(
+          (e) =>
+            !e.inicial &&
+            e.etapa === "perdido" &&
+            noPeriodo(diaLocal(e.ocorrido_em)),
+        );
+  const perdidosNoPeriodo = [
+    ...new Map(perdas.map((p) => [p.lead_id, p])).values(),
+  ];
   const porMotivo = new Map<string, number>();
   for (const p of perdidosNoPeriodo) {
     const m = p.motivo ?? "desistiu";
     porMotivo.set(m, (porMotivo.get(m) ?? 0) + 1);
   }
-  const comContrato = new Set(contratos.filter((c) => c.tipo === "projeto").map((c) => c.lead_id));
+  const comContrato = new Set(
+    contratos.filter((c) => c.tipo === "projeto").map((c) => c.lead_id),
+  );
   const contratados = contratos.filter(
-    (c) => c.tipo === "projeto" && c.status === "ativo" && noPeriodo(c.assinado_em),
+    (c) =>
+      c.tipo === "projeto" && c.status === "ativo" && noPeriodo(c.assinado_em),
   );
   const ganhosLegados = ganhosNoPeriodo.filter((l) => !comContrato.has(l.id));
 
   return {
     historicoDisponivel: historico !== null,
     baseAproximada:
-      historico === null ? criadosNoPeriodo.length : criadosNoPeriodo.filter((l) => antigos.has(l.id)).length,
+      historico === null
+        ? criadosNoPeriodo.length
+        : criadosNoPeriodo.filter((l) => antigos.has(l.id)).length,
     historicoDesde:
       eventos
         .filter((e) => e.inicial)
@@ -814,20 +957,19 @@ export async function caixa(ano: number) {
   const inicio = `${ano}-01-01`;
   const fim = `${ano}-12-31`;
 
-  const [contratos, parcelas, recebimentos, leads, devolucoes] = await Promise.all([
-    lerTodos<Contrato>(supabase, "crm_contratos"),
-    lerTodos<Parcela>(supabase, "crm_parcelas"),
-    lerTodos<Recebimento>(supabase, "crm_recebimentos"),
-    lerTodos<Pick<Lead, "id" | "nome" | "empresa" | "whatsapp" | "instagram">>(
-      supabase,
-      "crm_leads",
-      "id,nome,empresa,whatsapp,instagram",
-    ),
-    lerTodos<Devolucao>(supabase, "crm_devolucoes").catch((e) => {
-      if (tabelaAusente(e)) return [];
-      throw e;
-    }),
-  ]);
+  const [contratos, parcelas, recebimentos, leads, devolucoes] =
+    await Promise.all([
+      lerTodos<Contrato>(supabase, "crm_contratos"),
+      lerTodos<Parcela>(supabase, "crm_parcelas"),
+      lerTodos<Recebimento>(supabase, "crm_recebimentos"),
+      lerTodos<
+        Pick<Lead, "id" | "nome" | "empresa" | "whatsapp" | "instagram">
+      >(supabase, "crm_leads", "id,nome,empresa,whatsapp,instagram"),
+      lerTodos<Devolucao>(supabase, "crm_devolucoes").catch((e) => {
+        if (tabelaAusente(e)) return [];
+        throw e;
+      }),
+    ]);
   const movimentosDevolucao = devolucoesComLegado(recebimentos, devolucoes);
 
   const porLead = new Map((leads ?? []).map((l) => [l.id, l]));
@@ -837,7 +979,10 @@ export async function caixa(ano: number) {
   const pagoPorParcela = new Map<string, number>();
   for (const r of recebimentos ?? []) {
     if (!r.parcela_id || r.estornado_em) continue;
-    pagoPorParcela.set(r.parcela_id, (pagoPorParcela.get(r.parcela_id) ?? 0) + valorRetido(r));
+    pagoPorParcela.set(
+      r.parcela_id,
+      (pagoPorParcela.get(r.parcela_id) ?? 0) + valorRetido(r),
+    );
   }
 
   const enriquecida = (p: Parcela): ParcelaPainel => {
@@ -857,7 +1002,8 @@ export async function caixa(ano: number) {
   /* Viva é não cancelada E de contrato de pé: a parcela de um contrato
      cancelado não é dívida de ninguém. */
   const vivas = todasParcelas.filter(
-    (p) => !p.cancelada_em && porContrato.get(p.contrato_id)?.status !== "cancelado",
+    (p) =>
+      !p.cancelada_em && porContrato.get(p.contrato_id)?.status !== "cancelado",
   );
 
   /* ---------- 1. o mês ----------
@@ -880,7 +1026,9 @@ export async function caixa(ano: number) {
   const devendo = vivas
     .filter((p) => cobravel(p, hoje))
     .map((p) => ({ parcela: p, s: situacaoDaParcela(p, hoje) }))
-    .sort((a, b) => b.s.atraso - a.s.atraso || a.s.quando.localeCompare(b.s.quando));
+    .sort(
+      (a, b) => b.s.atraso - a.s.atraso || a.s.quando.localeCompare(b.s.quando),
+    );
 
   const aReceber = vivas
     .map((p) => ({ parcela: p, s: situacaoDaParcela(p, hoje) }))
@@ -935,13 +1083,19 @@ export async function caixa(ano: number) {
     .map((c) => {
       const suas = todasParcelas.filter((p) => p.contrato_id === c.id);
       return {
-        contrato: { ...c, valor_total: c.valor_total == null ? null : Number(c.valor_total) },
+        contrato: {
+          ...c,
+          valor_total: c.valor_total == null ? null : Number(c.valor_total),
+        },
         lead: porLead.get(c.lead_id) ?? null,
         parcelas: suas,
         q: quitacaoDoContrato(c, suas),
       };
     })
-    .sort((a, b) => Number(a.q.quitado) - Number(b.q.quitado) || b.q.saldo - a.q.saldo);
+    .sort(
+      (a, b) =>
+        Number(a.q.quitado) - Number(b.q.quitado) || b.q.saldo - a.q.saldo,
+    );
 
   /* ---------- 4. o ano ----------
      Doze meses sempre, mesmo os vazios: um gráfico que só desenha os meses
@@ -961,7 +1115,13 @@ export async function caixa(ano: number) {
      O que o webhook gravou e não conseguiu amarrar. Fica em rosa na tela
      porque é a única coisa ali que pede uma decisão, e de qualquer ano: o
      órfão de dezembro continua pedindo decisão em janeiro. */
-  const semDono = (recebimentos ?? []).filter((r) => !r.parcela_id && !r.estornado_em);
+  const semDono = (recebimentos ?? []).filter(
+    (r) =>
+      !r.parcela_id &&
+      !r.estornado_em &&
+      !r.mp_external_reference?.startsWith("perf:") &&
+      !r.lead_id,
+  );
 
   /* ---------- 6. o que não fecha ----------
      Contrato cujo plano de pagamento não cobre o total. Não é erro de
@@ -975,16 +1135,25 @@ export async function caixa(ano: number) {
     mesAtual,
     previstoNoMes: somar(doMes.map((p) => p.valor)),
     recebidoNoMes:
-      somar(recebimentos.filter((r) => mesLocal(r.recebido_em) === mesAtual).map((r) => Number(r.valor))) -
       somar(
-        movimentosDevolucao.filter((d) => mesLocal(d.devolvido_em) === mesAtual).map((d) => Number(d.valor)),
+        recebimentos
+          .filter((r) => mesLocal(r.recebido_em) === mesAtual)
+          .map((r) => Number(r.valor)),
+      ) -
+      somar(
+        movimentosDevolucao
+          .filter((d) => mesLocal(d.devolvido_em) === mesAtual)
+          .map((d) => Number(d.valor)),
       ),
-    vencidoContratual: somar(aReceber.filter((x) => x.parcela.vence_em < hoje).map((x) => x.s.saldo)),
+    vencidoContratual: somar(
+      aReceber.filter((x) => x.parcela.vence_em < hoje).map((x) => x.s.saldo),
+    ),
     parcelasDoMes: doMes.length,
     recebimentosDoMes: recebidoNoMes.length,
     emAtraso: somar(devendo.map((x) => x.s.saldo)),
     aReceber: somar(aReceber.map((x) => x.s.saldo)),
     aReceberN: aReceber.length,
+    parcelasAbertas: aReceber,
     contratado: somar(clientes.map((c) => c.q.total)),
     devendo,
     aVencer,
@@ -999,12 +1168,19 @@ export async function caixa(ano: number) {
     /* Os quitados saem da lista e viram uma linha: eles são a parte que
        cresce para sempre e a que não tem trabalho nenhum dentro. */
     quitados: clientes.filter((c) => c.q.quitado).length,
-    quitadoTotal: somar(clientes.filter((c) => c.q.quitado).map((c) => c.q.pago)),
-    meses: [...porMes.entries()].map(([mes, valor]) => ({ mes, valor: centavos(valor) })),
+    quitadoTotal: somar(
+      clientes.filter((c) => c.q.quitado).map((c) => c.q.pago),
+    ),
+    meses: [...porMes.entries()].map(([mes, valor]) => ({
+      mes,
+      valor: centavos(valor),
+    })),
     semDono,
     desencontros,
     /* Os anos em que houve dinheiro, para o seletor não oferecer 2019. */
-    anos: [...new Set([ano, new Date().getUTCFullYear()])].sort((a, b) => b - a),
+    anos: [...new Set([ano, new Date().getUTCFullYear()])].sort(
+      (a, b) => b - a,
+    ),
   };
 }
 
@@ -1042,14 +1218,21 @@ async function cobrancasAbertas(
 
   for (const p of data ?? []) {
     const quando = p.cobrar_em || p.vence_em;
-    const recebido = somar((p.crm_recebimentos ?? []).map((r) => valorRetido(r)));
+    const recebido = somar(
+      (p.crm_recebimentos ?? []).map((r) => valorRetido(r)),
+    );
     const saldo = centavos(Number(p.valor) - recebido);
     /* A régua única (`cobravel`, 06/10): adiada para depois de hoje sai da
        fila (é para isso que servem +3d e +7d, e o vencimento continua
        intacto no banco), quitada sai, e parcela de contrato cancelado sai. */
     if (
       !cobravel(
-        { ...p, valor: Number(p.valor), recebido, contrato_status: p.crm_contratos?.status ?? null },
+        {
+          ...p,
+          valor: Number(p.valor),
+          recebido,
+          contrato_status: p.crm_contratos?.status ?? null,
+        },
         hoje,
       )
     )
@@ -1085,5 +1268,7 @@ type ParcelaDaFila = {
   cancelada_em: string | null;
   metodo_previsto: string | null;
   crm_contratos: { titulo: string; status: string } | null;
-  crm_recebimentos: { valor: number; estornado_em: string | null; valor_estornado?: number }[] | null;
+  crm_recebimentos:
+    | { valor: number; estornado_em: string | null; valor_estornado?: number }[]
+    | null;
 };

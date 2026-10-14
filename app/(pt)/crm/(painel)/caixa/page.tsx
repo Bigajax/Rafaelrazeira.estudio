@@ -1,4 +1,7 @@
 import { SerieMensal } from "@/components/sistema/Painel";
+import { Barras } from "@/components/sistema/Barras";
+import { FAIXAS_ATRASO, faixaDoAtraso } from "@/lib/sistema/atrasos";
+import u from "@/components/sistema/sistema.module.css";
 /* ============================================================
    O CAIXA — a aba do dinheiro
 
@@ -74,9 +77,14 @@ const MES_POR_EXTENSO = [
 export default async function PaginaCaixa({
   searchParams,
 }: {
-  searchParams: Promise<{ ano?: string; exemplo?: string }>;
+  searchParams: Promise<{
+    ano?: string;
+    exemplo?: string;
+    atraso?: string;
+    mes?: string;
+  }>;
 }) {
-  const { ano: bruto, exemplo } = await searchParams;
+  const { ano: bruto, exemplo, atraso, mes } = await searchParams;
   const agora = new Date().getUTCFullYear();
   const pedido = Number(bruto);
   /* Janela curta de propósito: o estúdio nasceu em 2026, e um seletor que
@@ -111,7 +119,19 @@ export default async function PaginaCaixa({
      Um convite e mais nada, do jeito que o `DiaLimpo` resolve a fila
      limpa. Quatro zeros numa placa e três cartões de desculpa não são
      "vazio", são uma ferramenta parecendo quebrada. */
-  const semNada = c.clientes.length === 0 && c.semDono.length === 0 && noAno === 0;
+  const semNada =
+    c.clientes.length === 0 && c.semDono.length === 0 && noAno === 0;
+  const linhasFaixas = FAIXAS_ATRASO.map((f) => {
+    const total = c.parcelasAbertas
+      .filter((x) => faixaDoAtraso(x.parcela.vence_em, c.hoje) === f.id)
+      .reduce((s, x) => s + x.s.saldo, 0);
+    return {
+      nome: f.nome,
+      valor: total,
+      texto: dinheiroExato(total),
+      href: "/crm/caixa?atraso=" + f.id + "#atrasos",
+    };
+  });
 
   return (
     <div className={s.wrap}>
@@ -136,10 +156,55 @@ export default async function PaginaCaixa({
       </div>
 
       <p className={s.subtitulo}>
-        O que entrou de verdade, e não o que foi vendido. As vendas fechadas ficam em{" "}
-        <Link href="/crm/metricas">Métricas</Link>, e os dois números não batem de propósito: fechar em agosto
-        e receber em setembro é o normal aqui.
+        O que entrou de verdade, e não o que foi vendido. As vendas fechadas
+        ficam em <Link href="/crm/metricas">Métricas</Link>, e os dois números
+        não batem de propósito: fechar em agosto e receber em setembro é o
+        normal aqui.
       </p>
+      <section className={u.painel} id="atrasos">
+        <h2>Atrasos por vencimento contratual</h2>
+        <p className={u.descricao}>
+          Posição de hoje. Adiar o lembrete de cobrança não altera estas faixas.
+        </p>
+        <Barras
+          rotulo="Saldo aberto por faixa de atraso"
+          linhas={linhasFaixas}
+        />
+        <Link className={u.botao} href="/crm/conciliacao">
+          Conciliação de pagamentos
+        </Link>
+        {atraso || mes ? (
+          <>
+            <p>
+              Filtro: {mes || FAIXAS_ATRASO.find((f) => f.id === atraso)?.nome}
+            </p>
+            <Link href="/crm/caixa#atrasos">Limpar filtro</Link>
+            <ul className={u.fila}>
+              {c.parcelasAbertas
+                .filter(
+                  (x) =>
+                    (!atraso ||
+                      faixaDoAtraso(x.parcela.vence_em, c.hoje) === atraso) &&
+                    (!mes || x.parcela.vence_em.slice(0, 7) === mes),
+                )
+                .map((x) => (
+                  <li key={x.parcela.id}>
+                    <div>
+                      <b>{x.parcela.lead_nome}</b>
+                      <small>
+                        {x.parcela.rotulo} · vence {x.parcela.vence_em} · saldo{" "}
+                        {dinheiroExato(x.s.saldo)}
+                      </small>
+                    </div>
+                    <Link href={"/crm/lead/" + x.parcela.lead_id}>
+                      Ver parcela
+                    </Link>
+                  </li>
+                ))}
+            </ul>
+          </>
+        ) : null}
+      </section>
 
       {/* ============================================================
           A FOLHA — o objeto desta tela
@@ -148,10 +213,15 @@ export default async function PaginaCaixa({
           única tela do CRM que abre com uma tabela.
           ============================================================ */}
       <p className={s.subtitulo}>
-        Cobranças e saldos: posição de hoje. Recebido no mês considera devoluções na data em que ocorreram.{" "}
-        <Link href={"/crm/financeiro?mes=" + c.mesAtual}>Resultado e despesas ↗</Link>
+        Cobranças e saldos: posição de hoje. Recebido no mês considera
+        devoluções na data em que ocorreram.{" "}
+        <Link href={"/crm/financeiro?mes=" + c.mesAtual}>
+          Resultado e despesas ↗
+        </Link>
       </p>
-      <section className={`${s.caixaFolha} ${c.emAtraso ? s.caixaFolhaDeve : ""}`}>
+      <section
+        className={`${s.caixaFolha} ${c.emAtraso ? s.caixaFolhaDeve : ""}`}
+      >
         {semNada ? (
           /* ---------- o vazio como convite ----------
              Ele ocupa as DUAS colunas, e a da direita não é enfeite: ela
@@ -166,8 +236,8 @@ export default async function PaginaCaixa({
                 Nada entrou ainda<i className={s.vezPonto}>.</i>
               </p>
               <p className={s.caixaConvite}>
-                O caixa nasce na ficha de um lead ganho: monte o contrato e as parcelas passam a te cobrar
-                sozinhas, aqui e na fila do dia.
+                O caixa nasce na ficha de um lead ganho: monte o contrato e as
+                parcelas passam a te cobrar sozinhas, aqui e na fila do dia.
               </p>
               <span className={s.caixaBotoes}>
                 <Link href="/crm/pipeline" className={s.btnAcao}>
@@ -181,8 +251,16 @@ export default async function PaginaCaixa({
 
             <aside className={s.vezDossie}>
               {[
-                ["1", "Monte o contrato", "na ficha de um lead ganho, a partir do plano da própria proposta"],
-                ["2", "As parcelas cobram", "a que vence aparece na fila do dia, com o passo já escrito"],
+                [
+                  "1",
+                  "Monte o contrato",
+                  "na ficha de um lead ganho, a partir do plano da própria proposta",
+                ],
+                [
+                  "2",
+                  "As parcelas cobram",
+                  "a que vence aparece na fila do dia, com o passo já escrito",
+                ],
                 [
                   "3",
                   "A baixa é sozinha",
@@ -207,7 +285,9 @@ export default async function PaginaCaixa({
               {/* O número em corpo de cartaz, com o ponto rosa da casa. É a
                   única coisa desta tela que se lê de longe, e é a pergunta
                   que se faz toda manhã. */}
-              <p className={`${s.caixaNumero} ${c.recebidoNoMes ? s.caixaNumeroVivo : ""}`}>
+              <p
+                className={`${s.caixaNumero} ${c.recebidoNoMes ? s.caixaNumeroVivo : ""}`}
+              >
                 {dinheiroExato(c.recebidoNoMes)}
                 <i className={s.vezPonto}>.</i>
               </p>
@@ -228,7 +308,9 @@ export default async function PaginaCaixa({
                 className={s.caixaRegua}
                 role="img"
                 aria-label={`${dinheiroExato(c.recebidoNoMes)} recebidos de ${dinheiroExato(c.previstoNoMes)} previstos no mês${
-                  c.emAtraso ? `, com ${dinheiroExato(c.emAtraso)} vencidos e não pagos` : ""
+                  c.emAtraso
+                    ? `, com ${dinheiroExato(c.emAtraso)} vencidos e não pagos`
+                    : ""
                 }.`}
               >
                 <i
@@ -236,13 +318,18 @@ export default async function PaginaCaixa({
                   style={{ width: `${pctRecebido}%` }}
                 />
                 {pctAtraso > 0 ? (
-                  <i className={s.caixaReguaAtraso} style={{ width: `${pctAtraso}%` }} />
+                  <i
+                    className={s.caixaReguaAtraso}
+                    style={{ width: `${pctAtraso}%` }}
+                  />
                 ) : null}
               </div>
 
               <div className={s.caixaLegendaRegua}>
                 <span>
-                  <i className={`${s.caixaAmostra} ${mesPago ? s.caixaReguaPago : s.caixaReguaFill}`} />
+                  <i
+                    className={`${s.caixaAmostra} ${mesPago ? s.caixaReguaPago : s.caixaReguaFill}`}
+                  />
                   recebido
                 </span>
                 {c.emAtraso ? (
@@ -252,7 +339,8 @@ export default async function PaginaCaixa({
                   </span>
                 ) : null}
                 <span>
-                  <i className={`${s.caixaAmostra} ${s.caixaAmostraVazia}`} />a vencer
+                  <i className={`${s.caixaAmostra} ${s.caixaAmostraVazia}`} />a
+                  vencer
                 </span>
               </div>
             </div>
@@ -264,7 +352,9 @@ export default async function PaginaCaixa({
             <aside className={s.vezDossie}>
               <div className={s.vezFato}>
                 <span className={s.vezFatoRot}>Para cobrar</span>
-                <b className={`${s.vezFatoVal} ${c.emAtraso ? s.caixaDeve : s.caixaEmDia}`}>
+                <b
+                  className={`${s.vezFatoVal} ${c.emAtraso ? s.caixaDeve : s.caixaEmDia}`}
+                >
                   {dinheiroExato(c.emAtraso)}
                 </b>
                 <span className={s.vezFatoNota}>
@@ -276,21 +366,29 @@ export default async function PaginaCaixa({
 
               <div className={s.vezFato}>
                 <span className={s.vezFatoRot}>A receber</span>
-                <b className={`${s.vezFatoVal} ${c.aReceber ? "" : s.vezFatoVazio}`}>
+                <b
+                  className={`${s.vezFatoVal} ${c.aReceber ? "" : s.vezFatoVazio}`}
+                >
                   {dinheiroExato(c.aReceber)}
                 </b>
                 <span className={s.vezFatoNota}>
-                  {c.aReceberN} {c.aReceberN === 1 ? "parcela em aberto" : "parcelas em aberto"}
+                  {c.aReceberN}{" "}
+                  {c.aReceberN === 1
+                    ? "parcela em aberto"
+                    : "parcelas em aberto"}
                 </span>
               </div>
 
               <div className={s.vezFato}>
                 <span className={s.vezFatoRot}>Contratado</span>
-                <b className={`${s.vezFatoVal} ${c.contratado ? "" : s.vezFatoVazio}`}>
+                <b
+                  className={`${s.vezFatoVal} ${c.contratado ? "" : s.vezFatoVazio}`}
+                >
                   {dinheiroExato(c.contratado)}
                 </b>
                 <span className={s.vezFatoNota}>
-                  {c.clientes.length} {c.clientes.length === 1 ? "contrato" : "contratos"}
+                  {c.clientes.length}{" "}
+                  {c.clientes.length === 1 ? "contrato" : "contratos"}
                 </span>
               </div>
             </aside>
@@ -315,12 +413,17 @@ export default async function PaginaCaixa({
               {c.devendo.map(({ parcela, s: sit }) => (
                 <div key={parcela.id} className={s.divida}>
                   <div className={s.dividaQuem}>
-                    <Link href={`/crm/lead/${parcela.lead_id}`} className={s.dividaNome}>
+                    <Link
+                      href={`/crm/lead/${parcela.lead_id}`}
+                      className={s.dividaNome}
+                    >
                       {parcela.lead_nome}
                     </Link>
                     <span className={s.dividaCtx}>
                       {parcela.rotulo}
-                      {parcela.contrato_titulo ? ` · ${parcela.contrato_titulo}` : ""}
+                      {parcela.contrato_titulo
+                        ? ` · ${parcela.contrato_titulo}`
+                        : ""}
                     </span>
                   </div>
                   <b className={s.dividaValor}>{dinheiroExato(sit.saldo)}</b>
@@ -353,8 +456,8 @@ export default async function PaginaCaixa({
           </h2>
           <section className={`${s.bloco} ${s.blocoDivida}`}>
             <p className={s.blocoNota}>
-              Dinheiro que chegou e não bateu com nenhuma parcela. Amarre no contrato certo, ou monte o
-              contrato primeiro e volte aqui.
+              Dinheiro que chegou e não bateu com nenhuma parcela. Amarre no
+              contrato certo, ou monte o contrato primeiro e volte aqui.
             </p>
             {c.semDono.map((r) => (
               <AmarrarRecebimento
@@ -399,7 +502,8 @@ export default async function PaginaCaixa({
           <h2 className={s.rotulo}>
             A receber
             <span className={s.rotuloCont}>
-              {dinheiroExato(c.aReceber)} em {c.aReceberN} {c.aReceberN === 1 ? "parcela" : "parcelas"}
+              {dinheiroExato(c.aReceber)} em {c.aReceberN}{" "}
+              {c.aReceberN === 1 ? "parcela" : "parcelas"}
             </span>
           </h2>
           <section className={s.bloco}>
@@ -419,18 +523,25 @@ export default async function PaginaCaixa({
               {c.aVencer.map(({ parcela, s: sit }) => (
                 <div key={parcela.id} className={s.divida}>
                   <div className={s.dividaQuem}>
-                    <Link href={`/crm/lead/${parcela.lead_id}`} className={s.dividaNome}>
+                    <Link
+                      href={`/crm/lead/${parcela.lead_id}`}
+                      className={s.dividaNome}
+                    >
                       {parcela.lead_nome}
                     </Link>
                     <span className={s.dividaCtx}>
                       {parcela.rotulo}
-                      {parcela.contrato_titulo ? ` · ${parcela.contrato_titulo}` : ""}
+                      {parcela.contrato_titulo
+                        ? ` · ${parcela.contrato_titulo}`
+                        : ""}
                     </span>
                   </div>
                   <b className={s.dividaValor}>{dinheiroExato(sit.saldo)}</b>
                   {/* Voz calma: estas não estão atrasadas, e o rosa da linha
                       de cima existe justamente para separar as duas. */}
-                  <span className={`${s.dividaSinal} ${s.dividaSinalCalmo}`}>{nomeDaSituacao(sit)}</span>
+                  <span className={`${s.dividaSinal} ${s.dividaSinalCalmo}`}>
+                    {nomeDaSituacao(sit)}
+                  </span>
                   <div className={s.dividaAcoes}>
                     <BaixaRapida
                       parcelaId={parcela.id}
@@ -461,9 +572,14 @@ export default async function PaginaCaixa({
         <details className={s.arquivo}>
           <summary className={s.arquivoPuxador}>
             <span>
-              {c.clientes.length} {c.clientes.length === 1 ? "contrato" : "contratos"}
-              {c.quitados ? ` · ${c.quitados} ${c.quitados === 1 ? "quitado" : "quitados"}` : ""}
-              {c.quitadoTotal ? ` · ${dinheiroExato(c.quitadoTotal)} já pagos` : ""}
+              {c.clientes.length}{" "}
+              {c.clientes.length === 1 ? "contrato" : "contratos"}
+              {c.quitados
+                ? ` · ${c.quitados} ${c.quitados === 1 ? "quitado" : "quitados"}`
+                : ""}
+              {c.quitadoTotal
+                ? ` · ${dinheiroExato(c.quitadoTotal)} já pagos`
+                : ""}
             </span>
             <i className={s.arquivoAbre}>ver todos</i>
           </summary>
@@ -472,7 +588,10 @@ export default async function PaginaCaixa({
               {c.clientes.map(({ contrato, lead, q }) => (
                 <div key={contrato.id} className={s.funilEtapa}>
                   <span className={s.funilNome}>
-                    <Link href={`/crm/lead/${contrato.lead_id}`} title={lead?.nome ?? contrato.titulo}>
+                    <Link
+                      href={`/crm/lead/${contrato.lead_id}`}
+                      title={lead?.nome ?? contrato.titulo}
+                    >
                       {lead?.nome ?? contrato.titulo}
                     </Link>
                   </span>
@@ -484,7 +603,9 @@ export default async function PaginaCaixa({
                     />
                   </span>
                   <b className={s.funilNum}>{dinheiroExato(q.pago)}</b>
-                  <span className={`${s.funilPct} ${q.quitado ? "" : s.funilQueda}`}>
+                  <span
+                    className={`${s.funilPct} ${q.quitado ? "" : s.funilQueda}`}
+                  >
                     {q.quitado ? "quitado" : `de ${dinheiroExato(q.total)}`}
                   </span>
                 </div>
@@ -498,8 +619,9 @@ export default async function PaginaCaixa({
               <p className={`${s.blocoNota} ${s.notaAlerta}`}>
                 {c.desencontros.map((d) => (
                   <span key={d.contrato.id}>
-                    {d.lead?.nome ?? d.contrato.titulo}: faltam {dinheiroExato(d.q.semParcela)} sem parcela
-                    nenhuma cobrindo.{" "}
+                    {d.lead?.nome ?? d.contrato.titulo}: faltam{" "}
+                    {dinheiroExato(d.q.semParcela)} sem parcela nenhuma
+                    cobrindo.{" "}
                   </span>
                 ))}
               </p>
@@ -523,7 +645,8 @@ export default async function PaginaCaixa({
           <section className={s.bloco}>
             <div className={s.blocoCab}>
               <span className={s.blocoNota}>
-                O que entrou na conta, pela data do pagamento. Estorno não conta.
+                Entradas brutas pela data do recebimento, menos devoluções nas
+                respectivas datas. Antes das taxas.
               </span>
             </div>
             <SerieMensal
@@ -595,7 +718,12 @@ function exemploDoCaixa(ano: number, hoje: string): Caixa {
     lead_instagram: null,
   });
 
-  const contrato = (id: string, lead_id: string, titulo: string, valor_total: number): Contrato => ({
+  const contrato = (
+    id: string,
+    lead_id: string,
+    titulo: string,
+    valor_total: number,
+  ): Contrato => ({
     id,
     owner_id: "exemplo",
     lead_id,
@@ -658,8 +786,28 @@ function exemploDoCaixa(ano: number, hoje: string): Caixa {
     dia("02"),
     500,
   );
-  const p5 = parcela("p5", "l2", "Dolce Amore", "c2", "Vitrine Digital", "Entrada", 199, dia("01"), 199);
-  const p6 = parcela("p6", "l3", "Pisada de Ouro", "c3", "E-commerce", "Entrada", 1495, dia("03"), 1495);
+  const p5 = parcela(
+    "p5",
+    "l2",
+    "Dolce Amore",
+    "c2",
+    "Vitrine Digital",
+    "Entrada",
+    199,
+    dia("01"),
+    199,
+  );
+  const p6 = parcela(
+    "p6",
+    "l3",
+    "Pisada de Ouro",
+    "c3",
+    "E-commerce",
+    "Entrada",
+    1495,
+    dia("03"),
+    1495,
+  );
 
   const cli = (
     id: string,
@@ -693,6 +841,10 @@ function exemploDoCaixa(ano: number, hoje: string): Caixa {
     vencidoContratual: 1299,
     aReceber: 2794,
     aReceberN: 3,
+    parcelasAbertas: [p1, p2, p3].map((parcela) => ({
+      parcela,
+      s: situacaoDaParcela(parcela, hoje),
+    })),
     contratado: 4988,
     devendo: [
       { parcela: p2, s: situacaoDaParcela(p2, hoje) },
@@ -749,18 +901,24 @@ function Previsao({
     ...previsao.map((p) => ({ ...p, rotulo: rotuloMes(p.mes) })),
     /* O "depois" só ganha coluna quando existe: uma coluna vazia no fim
        seria a tela dizendo que há um futuro que não há. */
-    ...(depois > 0 ? [{ mes: "depois", total: depois, vencido: 0, rotulo: "depois" }] : []),
+    ...(depois > 0
+      ? [{ mes: "depois", total: depois, vencido: 0, rotulo: "depois" }]
+      : []),
   ];
   const teto = Math.max(1, ...colunas.map((x) => x.total));
   const curto = (v: number) =>
-    v >= 1000 ? `${(Math.round(v / 100) / 10).toLocaleString("pt-BR")}k` : String(Math.round(v));
+    v >= 1000
+      ? `${(Math.round(v / 100) / 10).toLocaleString("pt-BR")}k`
+      : String(Math.round(v));
 
   return (
     <div className={s.semanas}>
       {colunas.map((x) => (
         <div key={x.mes} className={s.semana}>
           <div className={s.semanaArea}>
-            {x.total > 0 ? <span className={s.semanaNum}>{curto(x.total)}</span> : null}
+            {x.total > 0 ? (
+              <span className={s.semanaNum}>{curto(x.total)}</span>
+            ) : null}
             {x.vencido > 0 ? (
               <i
                 className={`${s.semanaSeg} ${s.semanaFalta}`}

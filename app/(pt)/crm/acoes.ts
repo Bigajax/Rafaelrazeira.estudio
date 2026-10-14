@@ -40,9 +40,19 @@ import {
   type Passagem,
 } from "@/lib/crm/regras";
 import type { CampoExigido } from "@/lib/crm/regras";
-import type { Canal, Direcao, Estagio, Lead, MotivoPerda, Resposta } from "@/lib/crm/tipos";
+import type {
+  Canal,
+  Direcao,
+  Estagio,
+  Lead,
+  MotivoPerda,
+  Resposta,
+} from "@/lib/crm/tipos";
 
-export type Resultado = { ok: true } | { ok: false; falta: CampoExigido[] } | { ok: false; erro: string };
+export type Resultado =
+  | { ok: true }
+  | { ok: false; falta: CampoExigido[] }
+  | { ok: false; erro: string };
 
 /* Toda tela do CRM é derivada das mesmas duas tabelas, e qualquer escrita
    muda pelo menos duas telas ao mesmo tempo (mover um card muda o kanban E o
@@ -54,11 +64,15 @@ function atualizarTelas() {
 }
 
 /** Mensagem legível para o que o Postgres devolve. */
-function traduzirErro(erro: { code?: string; message?: string } | null): string {
+function traduzirErro(
+  erro: { code?: string; message?: string } | null,
+): string {
   if (!erro) return "Não foi possível salvar.";
-  if (erro.code === "23505") return "Já existe um lead com este WhatsApp ou e-mail.";
+  if (erro.code === "23505")
+    return "Já existe um lead com este WhatsApp ou e-mail.";
   if (erro.code === "23514") return "Um dos valores não é aceito neste campo.";
-  if (erro.code === "42501" || erro.code === "PGRST301") return "Sessão expirada. Entre de novo.";
+  if (erro.code === "42501" || erro.code === "PGRST301")
+    return "Sessão expirada. Entre de novo.";
   return erro.message || "Não foi possível salvar.";
 }
 
@@ -72,7 +86,10 @@ async function exigirSessao() {
    SESSÃO
    ============================================================ */
 
-export async function entrar(_anterior: string | null, form: FormData): Promise<string | null> {
+export async function entrar(
+  _anterior: string | null,
+  form: FormData,
+): Promise<string | null> {
   const email = String(form.get("email") || "").trim();
   const senha = String(form.get("senha") || "");
   const destino = String(form.get("destino") || "/crm");
@@ -80,7 +97,10 @@ export async function entrar(_anterior: string | null, form: FormData): Promise<
   if (!email || !senha) return "Preencha e-mail e senha.";
 
   const supabase = await clienteServidor();
-  const { error } = await supabase.auth.signInWithPassword({ email, password: senha });
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password: senha,
+  });
 
   /* A mensagem é a mesma para e-mail que não existe e para senha errada, de
      propósito: distinguir as duas conta para quem tentar quais endereços têm
@@ -160,7 +180,10 @@ export async function moverLead(
     mudanca.proximo_passo = null;
   }
 
-  const { error } = await supabase.from("crm_leads").update(mudanca).eq("id", id);
+  const { error } = await supabase
+    .from("crm_leads")
+    .update(mudanca)
+    .eq("id", id);
   if (error) return { ok: false, erro: traduzirErro(error) };
 
   atualizarTelas();
@@ -227,7 +250,11 @@ export async function registrarToque(
   const supabase = await clienteServidor();
 
   /* O lead é lido antes: o trilho precisa saber de onde ele parte. */
-  const { data: lead } = await supabase.from("crm_leads").select("*").eq("id", leadId).single<Lead>();
+  const { data: lead } = await supabase
+    .from("crm_leads")
+    .select("*")
+    .eq("id", leadId)
+    .single<Lead>();
 
   const { error } = await supabase.from("crm_interacoes").insert({
     owner_id: usuario.id,
@@ -242,25 +269,38 @@ export async function registrarToque(
      retorno sem mexer no passo, e gravar o passo vazio junto apagaria
      "Cobrar retorno no WhatsApp" de quem só queria empurrar a data. */
   if (dados.proximo_passo || dados.proxima_acao_em) {
-    const agenda: { proximo_passo?: string | null; proxima_acao_em?: string | null } = {};
-    if (dados.proximo_passo !== undefined) agenda.proximo_passo = dados.proximo_passo?.trim() || null;
-    if (dados.proxima_acao_em !== undefined) agenda.proxima_acao_em = dados.proxima_acao_em || null;
-    const { error: erroPasso } = await supabase.from("crm_leads").update(agenda).eq("id", leadId);
+    const agenda: {
+      proximo_passo?: string | null;
+      proxima_acao_em?: string | null;
+    } = {};
+    if (dados.proximo_passo !== undefined)
+      agenda.proximo_passo = dados.proximo_passo?.trim() || null;
+    if (dados.proxima_acao_em !== undefined)
+      agenda.proxima_acao_em = dados.proxima_acao_em || null;
+    const { error: erroPasso } = await supabase
+      .from("crm_leads")
+      .update(agenda)
+      .eq("id", leadId);
     if (erroPasso) return { ok: false, erro: traduzirErro(erroPasso) };
   }
 
   if (lead) {
     /* A etapa marcada no modal vence o trilho; sem ela, o trilho de sempre. */
-    const destino = dados.estagio ?? destinoDoToque(dados.direcao, lead.estagio, dados.resposta);
+    const destino =
+      dados.estagio ??
+      destinoDoToque(dados.direcao, lead.estagio, dados.resposta);
     if (destino && destino !== lead.estagio) {
       /* Escolhido = o Rafael marcou o teor da resposta ou a etapa, e este
          destino é o trabalho que ele pediu. Automático = o trilho
          mecânico, que é cortesia e cala a boca quando não dá. */
       const escolhido =
-        dados.estagio !== undefined || dados.resposta === "nao" || dados.resposta === "depois";
+        dados.estagio !== undefined ||
+        dados.resposta === "nao" ||
+        dados.resposta === "depois";
 
       const passagem: Passagem = {};
-      if (dados.ticket_estimado !== undefined) passagem.ticket_estimado = dados.ticket_estimado;
+      if (dados.ticket_estimado !== undefined)
+        passagem.ticket_estimado = dados.ticket_estimado;
 
       if (destino === "perdido") {
         /* A única exigência da placa de perdido, e a que faz o gráfico de
@@ -278,7 +318,8 @@ export async function registrarToque(
         const dataAtual = dados.proxima_acao_em || lead.proxima_acao_em;
         if (padrao) {
           if (!passoAtual) passagem.proximo_passo = padrao.passo;
-          if (!dataAtual) passagem.proxima_acao_em = somarDias(hojeSP(), padrao.dias);
+          if (!dataAtual)
+            passagem.proxima_acao_em = somarDias(hojeSP(), padrao.dias);
         }
       }
 
@@ -332,7 +373,11 @@ export async function adiar(leadId: string, dias: number): Promise<Resultado> {
    vez de aceitar o que vier. Passo sem data é um lembrete que nunca toca;
    data sem passo é um alarme que não diz o que fazer.
    ============================================================ */
-export async function definirPasso(leadId: string, passo: string, data: string): Promise<Resultado> {
+export async function definirPasso(
+  leadId: string,
+  passo: string,
+  data: string,
+): Promise<Resultado> {
   await exigirSessao();
 
   const texto = String(passo || "").trim();
@@ -341,7 +386,8 @@ export async function definirPasso(leadId: string, passo: string, data: string):
   /* A forma da data é conferida aqui e não só no `<input type="date">`: o
      campo nativo pode ser digitado, e uma data pela metade viraria erro cru
      do Postgres em vez de um pedido de campo. */
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(data || ""))) falta.push("proxima_acao_em");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(data || "")))
+    falta.push("proxima_acao_em");
   if (falta.length) return { ok: false, falta };
 
   const supabase = await clienteServidor();
@@ -393,12 +439,16 @@ export async function salvarLead(
        valer. Ver a nota em supabase/crm.sql. */
     if (campo === "whatsapp") valor = soDigitos(String(valor ?? ""));
     if (campo === "email") valor = emailNormal(String(valor ?? ""));
-    if (campo === "ticket_estimado") valor = valor === "" || valor == null ? null : Number(valor);
+    if (campo === "ticket_estimado")
+      valor = valor === "" || valor == null ? null : Number(valor);
     mudanca[campo] = valor === "" ? null : valor;
   }
   if (!Object.keys(mudanca).length) return { ok: true };
 
-  const { error } = await supabase.from("crm_leads").update(mudanca).eq("id", id);
+  const { error } = await supabase
+    .from("crm_leads")
+    .update(mudanca)
+    .eq("id", id);
   if (error) return { ok: false, erro: traduzirErro(error) };
 
   atualizarTelas();
@@ -416,7 +466,9 @@ export async function salvarLead(
    cobrar isso depois, no momento certo.
    ============================================================ */
 export async function criarLead(
-  campos: Partial<Record<CampoEditavel, string | number | null>> & { nome: string },
+  campos: Partial<Record<CampoEditavel, string | number | null>> & {
+    nome: string;
+  },
 ): Promise<{ ok: true; id: string } | { ok: false; erro: string }> {
   const usuario = await exigirSessao();
   const supabase = await clienteServidor();
@@ -431,24 +483,48 @@ export async function criarLead(
      existe" em vez do erro cru do índice único. A trava de verdade continua
      sendo o índice, para o caso de dois envios ao mesmo tempo. */
   if (whatsapp || email) {
-    const filtro = [whatsapp ? `whatsapp.eq.${whatsapp}` : "", email ? `email.eq.${email}` : ""]
+    const filtro = [
+      whatsapp ? `whatsapp.eq.${whatsapp}` : "",
+      email ? `email.eq.${email}` : "",
+    ]
       .filter(Boolean)
       .join(",");
-    const { data: existente } = await supabase.from("crm_leads").select("id, nome").or(filtro).limit(1);
+    const { data: existente } = await supabase
+      .from("crm_leads")
+      .select("id, nome")
+      .or(filtro)
+      .limit(1);
     if (existente?.length) {
-      return { ok: false, erro: `Este contato já está no CRM como "${existente[0].nome}".` };
+      return {
+        ok: false,
+        erro: `Este contato já está no CRM como "${existente[0].nome}".`,
+      };
     }
   }
 
-  const linha: Record<string, unknown> = { owner_id: usuario.id, nome, whatsapp, email };
+  const linha: Record<string, unknown> = {
+    owner_id: usuario.id,
+    nome,
+    whatsapp,
+    email,
+  };
   for (const campo of CAMPOS_EDITAVEIS) {
     if (campo === "nome" || campo === "whatsapp" || campo === "email") continue;
     if (!(campo in campos)) continue;
     const valor = campos[campo];
-    linha[campo] = valor === "" || valor == null ? null : campo === "ticket_estimado" ? Number(valor) : valor;
+    linha[campo] =
+      valor === "" || valor == null
+        ? null
+        : campo === "ticket_estimado"
+          ? Number(valor)
+          : valor;
   }
 
-  const { data, error } = await supabase.from("crm_leads").insert(linha).select("id").single();
+  const { data, error } = await supabase
+    .from("crm_leads")
+    .insert(linha)
+    .select("id")
+    .single();
   if (error || !data) return { ok: false, erro: traduzirErro(error) };
 
   atualizarTelas();
@@ -480,7 +556,10 @@ export async function apagarLead(id: string): Promise<Resultado> {
     .select("id", { count: "exact", head: true })
     .eq("lead_id", id);
   if (erroContratos)
-    return { ok: false, erro: "Não consegui conferir o histórico. Tente novamente antes de excluir." };
+    return {
+      ok: false,
+      erro: "Não consegui conferir o histórico. Tente novamente antes de excluir.",
+    };
   if (contratos)
     return {
       ok: false,
@@ -488,7 +567,9 @@ export async function apagarLead(id: string): Promise<Resultado> {
     };
 
   if (recebimentos?.length) {
-    const total = centavos(recebimentos.reduce((s, r) => s + Number(r.valor), 0));
+    const total = centavos(
+      recebimentos.reduce((s, r) => s + Number(r.valor), 0),
+    );
     return {
       ok: false,
       erro: `Este lead tem R$ ${total.toLocaleString("pt-BR")} recebidos. Apagar levaria o caixa junto.`,
@@ -506,14 +587,20 @@ export async function apagarLead(id: string): Promise<Resultado> {
    ============================================================ */
 export async function salvarTemplate(
   id: string | null,
-  campos: { titulo: string; categoria: string | null; conteudo: string; ordem?: number },
+  campos: {
+    titulo: string;
+    categoria: string | null;
+    conteudo: string;
+    ordem?: number;
+  },
 ): Promise<Resultado> {
   const usuario = await exigirSessao();
   const supabase = await clienteServidor();
 
   const titulo = campos.titulo.trim();
   const conteudo = campos.conteudo.trim();
-  if (!titulo || !conteudo) return { ok: false, erro: "Título e texto são obrigatórios." };
+  if (!titulo || !conteudo)
+    return { ok: false, erro: "Título e texto são obrigatórios." };
 
   const linha = {
     titulo,
@@ -525,7 +612,9 @@ export async function salvarTemplate(
 
   const { error } = id
     ? await supabase.from("crm_templates").update(linha).eq("id", id)
-    : await supabase.from("crm_templates").insert({ ...linha, owner_id: usuario.id });
+    : await supabase
+        .from("crm_templates")
+        .insert({ ...linha, owner_id: usuario.id });
 
   if (error) return { ok: false, erro: traduzirErro(error) };
   atualizarTelas();
@@ -551,12 +640,14 @@ export async function salvarMeta(toques: number): Promise<Resultado> {
   const valor = Math.max(1, Math.round(Number(toques) || 0));
   /* `upsert` com conflito no dono: o índice único `crm_metas_owner_uniq` faz
      "salvar a meta" ser sempre a mesma linha, e não uma linha nova por vez. */
-  const { error } = await supabase
-    .from("crm_metas")
-    .upsert(
-      { owner_id: usuario.id, toques_semana: valor, atualizado_em: new Date().toISOString() },
-      { onConflict: "owner_id" },
-    );
+  const { error } = await supabase.from("crm_metas").upsert(
+    {
+      owner_id: usuario.id,
+      toques_semana: valor,
+      atualizado_em: new Date().toISOString(),
+    },
+    { onConflict: "owner_id" },
+  );
 
   if (error) return { ok: false, erro: traduzirErro(error) };
   atualizarTelas();
@@ -624,12 +715,21 @@ export async function fecharContrato(
   const ciclo = Number(dados.valor_ciclo);
   if (recorrencia) {
     if (!Number.isFinite(ciclo) || ciclo <= 0)
-      return { ok: false, erro: "A mensalidade precisa de um valor por mês maior que zero." };
+      return {
+        ok: false,
+        erro: "A mensalidade precisa de um valor por mês maior que zero.",
+      };
   } else if (!Number.isFinite(total) || total <= 0) {
-    return { ok: false, erro: "O valor do contrato precisa ser maior que zero." };
+    return {
+      ok: false,
+      erro: "O valor do contrato precisa ser maior que zero.",
+    };
   }
   if (!dados.parcelas?.length) {
-    return { ok: false, erro: "Um contrato sem parcela nenhuma não cobra ninguém." };
+    return {
+      ok: false,
+      erro: "Um contrato sem parcela nenhuma não cobra ninguém.",
+    };
   }
 
   const atomico = await supabase.rpc("crm_fechar_contrato", {
@@ -661,7 +761,12 @@ export async function fecharContrato(
       dia_vencimento: recorrencia
         ? Math.min(
             28,
-            Math.max(1, Number(dados.dia_vencimento) || Number(dados.parcelas[0].vence_em.slice(8, 10)) || 1),
+            Math.max(
+              1,
+              Number(dados.dia_vencimento) ||
+                Number(dados.parcelas[0].vence_em.slice(8, 10)) ||
+                1,
+            ),
           )
         : null,
       assinado_em: dados.assinado_em || hojeSP(),
@@ -675,7 +780,10 @@ export async function fecharContrato(
   /* A loja do Performance passa a ser deste contrato: é por aqui que o
      recebimento da mensalidade libera a aba (trigger perf_ao_receber). */
   if (recorrencia && dados.perf_loja_id) {
-    await supabase.from("perf_lojas").update({ contrato_id: contrato.id }).eq("id", dados.perf_loja_id);
+    await supabase
+      .from("perf_lojas")
+      .update({ contrato_id: contrato.id })
+      .eq("id", dados.perf_loja_id);
   }
 
   const { error: erroParcelas } = await supabase.from("crm_parcelas").insert(
@@ -776,7 +884,10 @@ export async function voltarParaGanho(leadId: string): Promise<Resultado> {
   const supabase = await clienteServidor();
   const ativos = await contratosAtivosDoLead(leadId);
   if (!ativos.length)
-    return { ok: false, erro: "Este lead não tem contrato de pé. Monte o plano para fechar." };
+    return {
+      ok: false,
+      erro: "Este lead não tem contrato de pé. Monte o plano para fechar.",
+    };
   const r = await moverLead(leadId, "ganho", null, {
     valor_fechado: somar(ativos.map((c) => c.valor_total ?? 0)),
     fechado_em: hojeSP(),
@@ -796,47 +907,17 @@ export async function voltarParaGanho(leadId: string): Promise<Resultado> {
 export async function cancelarContrato(id: string): Promise<Resultado> {
   await exigirSessao();
   const supabase = await clienteServidor();
-
-  const { data: contrato } = await supabase
-    .from("crm_contratos")
-    .select("lead_id, status")
-    .eq("id", id)
-    .maybeSingle<{ lead_id: string; status: string }>();
-  if (!contrato) return { ok: false, erro: "Contrato não encontrado." };
-  if (contrato.status === "cancelado") return { ok: true };
-
-  const { data: parcelas } = await supabase
-    .from("crm_parcelas")
-    .select("id, valor, cancelada_em, crm_recebimentos(*)")
-    .eq("contrato_id", id)
-    .returns<
-      {
-        id: string;
-        valor: number;
-        cancelada_em: string | null;
-        crm_recebimentos: { valor: number; estornado_em: string | null; valor_estornado?: number }[] | null;
-      }[]
-    >();
-  const devendo = (parcelas ?? []).filter((p) => {
-    if (p.cancelada_em) return false;
-    const pago = somar((p.crm_recebimentos ?? []).map((r) => valorRetido(r)));
-    return pago < Number(p.valor) - 0.005;
+  const { error } = await supabase.rpc("crm_cancelar_contrato", {
+    p_contrato: id,
   });
-  if (devendo.length) {
-    const { error } = await supabase
-      .from("crm_parcelas")
-      .update({ cancelada_em: hojeSP() })
-      .in(
-        "id",
-        devendo.map((p) => p.id),
-      );
-    if (error) return { ok: false, erro: traduzirErro(error) };
-  }
-
-  const { error } = await supabase.from("crm_contratos").update({ status: "cancelado" }).eq("id", id);
-  if (error) return { ok: false, erro: traduzirErro(error) };
-
-  await espelharVendaNoLead(supabase, contrato.lead_id);
+  if (error)
+    return {
+      ok: false,
+      erro:
+        error.code === "PGRST202"
+          ? "Cancelamento indisponível até a atualização do módulo financeiro."
+          : "Não foi possível cancelar o contrato. Nenhum cancelamento parcial foi aplicado.",
+    };
   atualizarTelas();
   return { ok: true };
 }
@@ -873,7 +954,10 @@ export async function fecharVenda(
     ) ||
     new Set(pagas.map((p) => p.numero)).size !== pagas.length
   )
-    return { ok: false, erro: "Confira as parcelas recebidas e as datas das baixas." };
+    return {
+      ok: false,
+      erro: "Confira as parcelas recebidas e as datas das baixas.",
+    };
   const atomico = await supabase.rpc("crm_fechar_venda", {
     p_lead: leadId,
     p_dados: contrato,
@@ -897,7 +981,10 @@ export async function fecharVenda(
     .maybeSingle<{ estagio: Estagio }>();
   if (!lead) return { ok: false, erro: "Lead não encontrado." };
 
-  const valor = contrato.tipo === "recorrencia" ? Number(contrato.valor_ciclo) : Number(contrato.valor_total);
+  const valor =
+    contrato.tipo === "recorrencia"
+      ? Number(contrato.valor_ciclo)
+      : Number(contrato.valor_total);
   const fechado_em = contrato.assinado_em || hojeSP();
 
   /* Já tem contrato de projeto de pé: não nasce outro (06/10). O modal já
@@ -909,11 +996,17 @@ export async function fecharVenda(
   }
 
   if (lead.estagio !== "ganho") {
-    const r = await moverLead(leadId, "ganho", null, { valor_fechado: valor, fechado_em });
+    const r = await moverLead(leadId, "ganho", null, {
+      valor_fechado: valor,
+      fechado_em,
+    });
     if (!r.ok) return r;
   }
 
-  const c = await fecharContrato(leadId, { ...contrato, assinado_em: fechado_em });
+  const c = await fecharContrato(leadId, {
+    ...contrato,
+    assinado_em: fechado_em,
+  });
   if (!c.ok) return c;
 
   if (pagas.length) {
@@ -948,7 +1041,10 @@ export async function fecharVenda(
    doze depois é doze cliques. Quando as geradas estão acabando, este botão
    gera mais N a partir da última, no mesmo dia do mês e no mesmo valor
    (`valor_ciclo`). Não mexe em parcela existente. */
-export async function gerarProximasMensalidades(contratoId: string, meses = 3): Promise<Resultado> {
+export async function gerarProximasMensalidades(
+  contratoId: string,
+  meses = 3,
+): Promise<Resultado> {
   const usuario = await exigirSessao();
   const supabase = await clienteServidor();
   const quantas = Math.max(1, Math.min(12, Math.floor(Number(meses) || 3)));
@@ -957,11 +1053,18 @@ export async function gerarProximasMensalidades(contratoId: string, meses = 3): 
     .from("crm_contratos")
     .select("id, lead_id, tipo, valor_ciclo, status")
     .eq("id", contratoId)
-    .maybeSingle<{ id: string; lead_id: string; tipo: string; valor_ciclo: number | null; status: string }>();
+    .maybeSingle<{
+      id: string;
+      lead_id: string;
+      tipo: string;
+      valor_ciclo: number | null;
+      status: string;
+    }>();
   if (!c) return { ok: false, erro: "Contrato não encontrado." };
   if (c.tipo !== "recorrencia" || !c.valor_ciclo)
     return { ok: false, erro: "Este contrato não é uma mensalidade." };
-  if (c.status !== "ativo") return { ok: false, erro: "Este contrato está cancelado." };
+  if (c.status !== "ativo")
+    return { ok: false, erro: "Este contrato está cancelado." };
 
   const { data: ultimas } = await supabase
     .from("crm_parcelas")
@@ -971,7 +1074,11 @@ export async function gerarProximasMensalidades(contratoId: string, meses = 3): 
     .limit(1)
     .returns<{ numero: number; vence_em: string }[]>();
   const ultima = ultimas?.[0];
-  if (!ultima) return { ok: false, erro: "A mensalidade não tem parcela nenhuma para continuar." };
+  if (!ultima)
+    return {
+      ok: false,
+      erro: "A mensalidade não tem parcela nenhuma para continuar.",
+    };
 
   const novas = gerarMensalidades({
     valor: Number(c.valor_ciclo),
@@ -1021,7 +1128,10 @@ export async function lancarRecebimento(dados: {
   if (!Number.isFinite(valor) || valor <= 0) {
     return { ok: false, erro: "O valor recebido precisa ser maior que zero." };
   }
-  if (dados.recebido_em && (!dataValida(dados.recebido_em) || dados.recebido_em > hojeSP()))
+  if (
+    dados.recebido_em &&
+    (!dataValida(dados.recebido_em) || dados.recebido_em > hojeSP())
+  )
     return { ok: false, erro: "Confira a data do recebimento." };
   if (
     dados.valor_liquido != null &&
@@ -1029,7 +1139,10 @@ export async function lancarRecebimento(dados: {
       Number(dados.valor_liquido) < 0 ||
       Number(dados.valor_liquido) > valor)
   )
-    return { ok: false, erro: "O valor líquido deve estar entre zero e o valor bruto." };
+    return {
+      ok: false,
+      erro: "O valor líquido deve estar entre zero e o valor bruto.",
+    };
 
   /* O lead vem da parcela quando há parcela: pedir os dois à tela seria
      deixar o dinheiro de um cliente cair na conta de outro por um campo
@@ -1050,7 +1163,10 @@ export async function lancarRecebimento(dados: {
     parcela_id: dados.parcela_id || null,
     lead_id: leadId,
     valor,
-    valor_liquido: dados.valor_liquido == null ? null : centavos(Number(dados.valor_liquido)),
+    valor_liquido:
+      dados.valor_liquido == null
+        ? null
+        : centavos(Number(dados.valor_liquido)),
     /* `hojeSP()` e nunca `new Date()`: o servidor da Vercel roda em UTC, e
        uma baixa lançada às 22h cairia no dia seguinte. Na virada do mês,
        cairia no mês seguinte, e o mês fecharia errado todo mês. */
@@ -1071,7 +1187,10 @@ export async function lancarRecebimento(dados: {
 export async function apagarRecebimento(id: string): Promise<Resultado> {
   await exigirSessao();
   const supabase = await clienteServidor();
-  const { error } = await supabase.from("crm_recebimentos").delete().eq("id", id);
+  const { error } = await supabase
+    .from("crm_recebimentos")
+    .delete()
+    .eq("id", id);
   if (error) return { ok: false, erro: traduzirErro(error) };
   atualizarTelas();
   return { ok: true };
@@ -1095,7 +1214,10 @@ export async function estornarRecebimento(id: string): Promise<Resultado> {
 
 /** Amarrar um recebimento órfão (o que o webhook gravou sem entender) a uma
     parcela. O lead vem junto, pela mesma razão do `lancarRecebimento`. */
-export async function amarrarRecebimento(id: string, parcelaId: string): Promise<Resultado> {
+export async function amarrarRecebimento(
+  id: string,
+  parcelaId: string,
+): Promise<Resultado> {
   await exigirSessao();
   const supabase = await clienteServidor();
 
@@ -1124,7 +1246,10 @@ export async function amarrarRecebimento(id: string, parcelaId: string): Promise
 
    A conta parte de HOJE, como o `adiar()` dos leads e pelo mesmo motivo
    escrito lá em cima: "+1 dia" a partir de uma data velha não move a fila. */
-export async function adiarCobranca(parcelaId: string, dias: number): Promise<Resultado> {
+export async function adiarCobranca(
+  parcelaId: string,
+  dias: number,
+): Promise<Resultado> {
   await exigirSessao();
   const supabase = await clienteServidor();
   const { error } = await supabase
@@ -1153,7 +1278,10 @@ export async function cancelarParcela(parcelaId: string): Promise<Resultado> {
 export async function reativarParcela(parcelaId: string): Promise<Resultado> {
   await exigirSessao();
   const supabase = await clienteServidor();
-  const { error } = await supabase.from("crm_parcelas").update({ cancelada_em: null }).eq("id", parcelaId);
+  const { error } = await supabase
+    .from("crm_parcelas")
+    .update({ cancelada_em: null })
+    .eq("id", parcelaId);
   if (error) return { ok: false, erro: traduzirErro(error) };
   atualizarTelas();
   return { ok: true };
@@ -1181,7 +1309,10 @@ export async function apagarContrato(id: string): Promise<Resultado> {
         parcelas.map((p) => p.id),
       );
     if (count) {
-      return { ok: false, erro: "Este contrato tem dinheiro recebido. Cancele em vez de apagar." };
+      return {
+        ok: false,
+        erro: "Este contrato tem dinheiro recebido. Cancele em vez de apagar.",
+      };
     }
   }
 
