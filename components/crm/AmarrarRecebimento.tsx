@@ -19,7 +19,8 @@
    ============================================================ */
 
 import { useState, useTransition } from "react";
-import { amarrarRecebimento, apagarRecebimento } from "@/app/(pt)/crm/acoes";
+import Link from "next/link";
+import { amarrarRecebimento } from "@/app/(pt)/crm/acoes";
 import { dinheiroExato } from "@/lib/crm/financeiro";
 import { NOME_METODO, type Metodo } from "@/lib/crm/tipos";
 import { dataCurta } from "@/lib/crm/regras";
@@ -52,13 +53,6 @@ export function AmarrarRecebimento({
     });
   };
 
-  const descartar = () => {
-    setErro(null);
-    comecar(async () => {
-      const r = await apagarRecebimento(recebimento.id);
-      if (!r.ok) setErro("erro" in r ? r.erro : "Não foi possível apagar.");
-    });
-  };
 
   return (
     <div className={s.orfao}>
@@ -99,12 +93,7 @@ export function AmarrarRecebimento({
         >
           {salvando ? "Amarrando…" : "Amarrar"}
         </button>
-        {/* Apagar e não estornar: um órfão sem dono nenhum é um teste, uma
-            duplicata ou um engano, e nenhum dos três é histórico. Estorno de
-            verdade acontece na linha da parcela, depois de amarrada. */}
-        <button type="button" className={s.btnMini} onClick={descartar} disabled={salvando}>
-          Não é meu
-        </button>
+        <Link className={s.btnMini} href="/crm/caixa?aba=conferir">Conferir no Caixa</Link>
       </div>
 
       {erro ? (

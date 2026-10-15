@@ -1,5 +1,5 @@
 "use server";
-import { valorRetido } from "@/lib/sistema/indicadores";
+import { valorRetido,recebimentoAnulado } from "@/lib/sistema/indicadores";
 import { validarContrato } from "@/lib/sistema/contratos";
 import { dataValida } from "@/lib/sistema/calendario";
 
@@ -1188,19 +1188,10 @@ export async function lancarRecebimento(dados: {
   return { ok: true };
 }
 
-/** Desfazer uma baixa lançada por engano. Some de vez: erro de digitação
-    não é histórico, é erro. Estorno de verdade (o cliente pediu o dinheiro
-    de volta) é outra ação, logo abaixo, e ela guarda a linha. */
-export async function apagarRecebimento(id: string): Promise<Resultado> {
+/** Compatibilidade com telas antigas: anulação exige motivo e histórico no Caixa. */
+export async function apagarRecebimento(_id: string): Promise<Resultado> {
   await exigirSessao();
-  const supabase = await clienteServidor();
-  const { error } = await supabase
-    .from("crm_recebimentos")
-    .delete()
-    .eq("id", id);
-  if (error) return { ok: false, erro: traduzirErro(error) };
-  atualizarTelas();
-  return { ok: true };
+  return {ok:false,erro:"Abra o Caixa e use Corrigir lançamento para anular com motivo e histórico."};
 }
 
 /** O dinheiro voltou (estorno, chargeback). A linha FICA, com a data: ela
@@ -1209,6 +1200,8 @@ export async function apagarRecebimento(id: string): Promise<Resultado> {
 export async function estornarRecebimento(id: string): Promise<Resultado> {
   await exigirSessao();
   const supabase = await clienteServidor();
+  const {data:r}=await supabase.from("crm_recebimentos").select("bruto").eq("id",id).maybeSingle();
+  if (!r||recebimentoAnulado(r)) return {ok:false,erro:"Recebimento indisponível ou anulado. Confira o histórico no Caixa."};
   const { error } = await supabase
     .from("crm_recebimentos")
     .update({ estornado_em: hojeSP() })
@@ -1221,28 +1214,13 @@ export async function estornarRecebimento(id: string): Promise<Resultado> {
 
 /** Amarrar um recebimento órfão (o que o webhook gravou sem entender) a uma
     parcela. O lead vem junto, pela mesma razão do `lancarRecebimento`. */
-export async function amarrarRecebimento(
-  id: string,
-  parcelaId: string,
-): Promise<Resultado> {
+export async function amarrarRecebimento(id:string,parcelaId:string): Promise<Resultado> {
   await exigirSessao();
-  const supabase = await clienteServidor();
-
-  const { data: parcela } = await supabase
-    .from("crm_parcelas")
-    .select("lead_id")
-    .eq("id", parcelaId)
-    .maybeSingle<{ lead_id: string }>();
-  if (!parcela) return { ok: false, erro: "Parcela não encontrada." };
-
-  const { error } = await supabase
-    .from("crm_recebimentos")
-    .update({ parcela_id: parcelaId, lead_id: parcela.lead_id })
-    .eq("id", id);
-
-  if (error) return { ok: false, erro: traduzirErro(error) };
-  atualizarTelas();
-  return { ok: true };
+  const b=await clienteServidor();
+  const [{data:r},{data:p}]=await Promise.all([b.from("crm_recebimentos").select("*").eq("id",id).maybeSingle(),b.from("crm_parcelas").select("lead_id").eq("id",parcelaId).maybeSingle()]);
+  if (!r||!p) return {ok:false,erro:"Pagamento ou parcela não encontrado."};
+  const {ajustarRecebimento}=await import("./acoes-caixa");
+  return ajustarRecebimento({id,request:crypto.randomUUID(),motivo:"Pagamento identificado no Financeiro",lead:p.lead_id,alocacoes:[{parcela_id:parcelaId,valor:valorRetido(r)}]});
 }
 
 /* ---------- ADIAR A COBRANÇA ----------

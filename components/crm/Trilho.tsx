@@ -99,11 +99,12 @@ const MOMENTOS: { nome: string; rotas: Rota[] }[] = [
        resultado do mês tem contexto só dentro da tela. */
     nome: "Financeiro",
     rotas: [
+      { href: "/crm/caixa", rotulo: "Caixa", nota: "receber e cobrar", conta: "cobrar" },
       {
         href: "/crm/financeiro",
         rotulo: "Financeiro",
-        nota: "receber e pagar",
-        conta: "cobrar",
+        nota: "resultado e despesas",
+        conta: null,
       },
     ],
   },
@@ -154,7 +155,7 @@ const ICONES: Record<string, IconePainelNome> = {
   "/crm/plano": "plano",
 };
 
-const PRINCIPAIS = ["/crm", "/crm/pipeline", "/crm/producao", "/crm/financeiro"];
+const PRINCIPAIS = ["/crm", "/crm/pipeline", "/crm/producao", "/crm/caixa"];
 
 export function Trilho({
   sair,
@@ -194,7 +195,7 @@ export function Trilho({
       : caminho === href ||
         caminho.startsWith(`${href}/`) ||
         (href === "/crm/pipeline" && caminho.startsWith("/crm/lead/")) ||
-        (href === "/crm/financeiro" && (caminho === "/crm/conciliacao" || caminho === "/crm/caixa"));
+        (href === "/crm/financeiro" && caminho === "/crm/conciliacao");
   return (
     <>
       <a href="#crm-principal" className={s.pularConteudo}>

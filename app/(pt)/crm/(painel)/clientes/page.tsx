@@ -1,9 +1,9 @@
+import { pagamentosPorParcela } from "@/lib/caixa/recebimentos";
 import Link from "next/link";
 import { clienteServidor } from "@/lib/crm/supabase";
 import { lerTodos, tabelaAusente } from "@/lib/sistema/consultas";
 import { Cabecalho, Aviso } from "@/components/sistema/Painel";
 import { dinheiroExato, quitacaoDoContrato } from "@/lib/crm/financeiro";
-import { valorRetido } from "@/lib/sistema/indicadores";
 import type { Contrato, Parcela, Recebimento } from "@/lib/crm/tipos";
 import s from "@/components/sistema/sistema.module.css";
 export const metadata = { title: "Clientes" };
@@ -40,6 +40,7 @@ export default async function Clientes({
             entregue_em: string | null;
           }>(b, "crm_entregas", "id,lead_id,contrato_id,entregue_em"),
         ]);
+  const pagamentos = pagamentosPorParcela(recebimentos);
   const ativos = contratos.filter((c) => c.status === "ativo");
   const semFicha = [
     ...new Set(
@@ -73,9 +74,7 @@ export default async function Clientes({
               .filter((p) => p.contrato_id === c.id)
               .map((p) => ({
                 ...p,
-                recebido: recebimentos
-                  .filter((r) => r.parcela_id === p.id)
-                  .reduce((s, r) => s + valorRetido(r), 0),
+                recebido: pagamentos.get(p.id) ?? 0,
               })),
           ).saldo,
         0,

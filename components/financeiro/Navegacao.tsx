@@ -4,6 +4,7 @@ import s from "@/components/sistema/sistema.module.css";
 
 export function NavegacaoFinanceiro({ mes, ativa }: { mes: string; ativa?: AreaFinanceiro | "conferencia" }) {
   return <nav className={s.abas} aria-label="Áreas do Financeiro">
+    <Link href={"/crm/caixa?mes=" + mes}>Operar Caixa</Link>
     {AREAS_FINANCEIRO.map(([id, nome]) => <Link key={id} href={urlFinanceiro(mes, id)} aria-current={ativa === id ? "page" : undefined}>{nome}</Link>)}
     <Link href={"/crm/conciliacao?mes=" + mes} aria-current={ativa === "conferencia" ? "page" : undefined}>Conferências</Link>
   </nav>;

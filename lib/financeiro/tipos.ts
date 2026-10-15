@@ -16,6 +16,7 @@
    ============================================================ */
 
 import { mesLocal } from "@/lib/sistema/calendario";
+import { recebimentoAnulado } from "@/lib/sistema/indicadores";
 
 export type Categoria =
   "trafego" | "ferramenta" | "pessoal" | "imposto" | "outro";
@@ -95,6 +96,7 @@ export function porMes(
 }
 
 export type Recebimento = {
+  bruto?: unknown;
   mp_payment_id?: string | null;
   id?: string;
   lead_id?: string | null;
@@ -128,7 +130,7 @@ export function resultadoDoMes(
   dolar: number | null,
 ): Resultado {
   const doMes = recebimentos.filter(
-    (r) => !r.estornado_em && mesLocal(r.recebido_em) === mes,
+    (r) => !recebimentoAnulado(r) && !r.estornado_em && mesLocal(r.recebido_em) === mes,
   );
   const taxasPendentes = doMes.filter((r) => r.valor_liquido === null).length;
   let custosSemCotacao = 0;

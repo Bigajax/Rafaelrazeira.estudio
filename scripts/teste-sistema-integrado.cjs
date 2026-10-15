@@ -12,6 +12,7 @@ const arquivos = [
   "lib/sistema/historico.ts",
   "lib/financeiro/ocorrencias.ts",
   "lib/projetos/dados.ts",
+  "lib/caixa/recebimentos.ts",
   "lib/projetos/tipos.ts",
   "lib/sistema/consultas.ts",
   "lib/sistema/calendario.ts",

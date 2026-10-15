@@ -2,6 +2,7 @@ import { clienteServidor } from "@/lib/crm/supabase";
 import { cache } from "react";
 import { lerTodos, tabelaAusente } from "@/lib/sistema/consultas";
 import type { Despesa, Devolucao, Venda } from "@/lib/sistema/indicadores";
+import { recebimentoAnulado } from "@/lib/sistema/indicadores";
 import type { Custo, Recebimento } from "./tipos";
 import type { Ocorrencia } from "./ocorrencias";
 
@@ -49,7 +50,7 @@ export const financeiro = cache(async function financeiro(ano: number) {
     lerTodos<Recebimento>(
       banco,
       "crm_recebimentos",
-      "id,lead_id,parcela_id,valor,valor_liquido,recebido_em,estornado_em,mp_payment_id",
+      "id,lead_id,parcela_id,valor,valor_liquido,recebido_em,estornado_em,mp_payment_id,bruto",
     ),
     cotacaoDolar(),
     lerTodos<{
@@ -136,7 +137,7 @@ export const financeiro = cache(async function financeiro(ano: number) {
   return {
     semTabela: false as const,
     custos: custos.map((c) => ({ ...c, valor: Number(c.valor) })),
-    recebimentos: recebimentos.map((r) => ({
+    recebimentos: recebimentos.filter((r) => !recebimentoAnulado(r)).map((r) => ({
       ...r,
       valor: Number(r.valor),
       valor_liquido: r.valor_liquido == null ? null : Number(r.valor_liquido),

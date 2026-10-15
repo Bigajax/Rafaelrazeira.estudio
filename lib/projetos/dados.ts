@@ -1,3 +1,4 @@
+import { pagamentosPorParcela } from "@/lib/caixa/recebimentos";
 import { clienteServidor } from "@/lib/crm/supabase";
 import {
   centavos,
@@ -5,7 +6,6 @@ import {
   situacaoDaParcela,
 } from "@/lib/crm/financeiro";
 import { lerTodos, tabelaAusente } from "@/lib/sistema/consultas";
-import { valorRetido } from "@/lib/sistema/indicadores";
 import { cache } from "react";
 import type { Contrato, Parcela, Recebimento } from "@/lib/crm/tipos";
 import {
@@ -56,11 +56,7 @@ export function caixaDo(
       c.tipo === "projeto" &&
       (!contratoId || c.id === contratoId),
   );
-  const pago = new Map<string, number>();
-  for (const r of recebimentos) {
-    if (r.parcela_id && r.lead_id === leadId)
-      pago.set(r.parcela_id, (pago.get(r.parcela_id) ?? 0) + valorRetido(r));
-  }
+  const pago = pagamentosPorParcela(recebimentos.filter(r => r.lead_id === leadId));
   const minhas = parcelas
     .filter(
       (p) => p.lead_id === leadId && vivos.some((c) => c.id === p.contrato_id),

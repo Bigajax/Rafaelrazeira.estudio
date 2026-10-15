@@ -15,10 +15,10 @@
    alguém adivinhar que a aba Caixa existe.
    ============================================================ */
 
+import Link from "next/link";
 import { useState, useTransition } from "react";
 import {
   adiarCobranca,
-  apagarRecebimento,
   cancelarContrato,
   cancelarParcela,
   estornarRecebimento,
@@ -340,15 +340,7 @@ function Avulso({ recebimento }: { recebimento: Recebimento }) {
             Estornar
           </button>
         )}
-        <button
-          type="button"
-          className={s.btnMini}
-          onClick={() => comecar(() => void apagarRecebimento(recebimento.id))}
-          disabled={salvando}
-          title="Lancei por engano"
-        >
-          Apagar
-        </button>
+        <Link className={s.btnMini} href="/crm/caixa?aba=historico">Corrigir no Caixa</Link>
       </div>
     </div>
   );

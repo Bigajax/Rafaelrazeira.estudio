@@ -13,6 +13,7 @@ import { clienteServidor, usuarioAtual } from "@/lib/crm/supabase";
 import { CATEGORIAS, FREQUENCIAS } from "@/lib/financeiro/tipos";
 import { dataValida } from "@/lib/sistema/calendario";
 import { hojeSP } from "@/lib/crm/regras";
+import { recebimentoAnulado } from "@/lib/sistema/indicadores";
 import { datasDoCompromisso } from "@/lib/financeiro/ocorrencias";
 import type { Custo } from "@/lib/financeiro/tipos";
 
@@ -214,12 +215,13 @@ export async function informarLiquido(
   if (!s) return { ok: false, erro: "Sessão expirada." };
   const { data: r, error: e } = await s.supabase
     .from("crm_recebimentos")
-    .select("valor")
+    .select("valor,bruto")
     .eq("id", id)
     .maybeSingle();
   if (
     e ||
     !r ||
+    recebimentoAnulado(r) ||
     !Number.isFinite(valor) ||
     valor < 0 ||
     valor > Number(r.valor)
@@ -228,11 +230,11 @@ export async function informarLiquido(
       ok: false,
       erro: "O líquido deve estar entre zero e o valor bruto recebido.",
     };
-  const { error } = await s.supabase
+  const { data:alterados,error } = await s.supabase
     .from("crm_recebimentos")
     .update({ valor_liquido: Math.round(valor * 100) / 100 })
-    .eq("id", id);
-  if (error) return { ok: false, erro: "Não consegui salvar o valor líquido." };
+    .eq("id", id).eq("valor",r.valor).is("bruto->>caixa_anulado",null).select("id").maybeSingle();
+  if (error||!alterados) return { ok: false, erro: "Não consegui salvar o valor líquido. Atualize a tela e confira se o lançamento mudou." };
   revalidatePath("/crm", "layout");
   return { ok: true };
 }
@@ -256,11 +258,12 @@ export async function registrarDevolucao(
     return { ok: false, erro: "Confira o valor e a data da devolução." };
   const { data: recebimento, error: erroLeitura } = await s.supabase
     .from("crm_recebimentos")
-    .select("estornado_em,mp_payment_id")
+    .select("estornado_em,mp_payment_id,bruto")
     .eq("id", id)
     .maybeSingle();
   if (erroLeitura || !recebimento)
     return { ok: false, erro: "Não foi possível conferir o recebimento." };
+  if (recebimentoAnulado(recebimento)) return {ok:false,erro:"Lançamento anulado. Não houve devolução de dinheiro."};
   if (recebimento.estornado_em)
     return {
       ok: false,

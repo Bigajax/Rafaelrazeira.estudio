@@ -40,6 +40,7 @@ export const INDICADORES = {
 } as const;
 
 export type Entrada = {
+  bruto?: unknown;
   id?: string;
   lead_id?: string | null;
   parcela_id?: string | null;
@@ -79,6 +80,7 @@ export function devolucoesComLegado(
   entradas: Entrada[],
   devolucoes: Devolucao[],
 ): Devolucao[] {
+  entradas = entradas.filter(r => !recebimentoAnulado(r));
   const anteriores = new Map<string, number>();
   for (const d of devolucoes)
     anteriores.set(
@@ -102,10 +104,13 @@ export function devolucoesComLegado(
       })),
   ];
 }
+export function recebimentoAnulado(r: {bruto?: unknown}) {
+  return Boolean(r.bruto && typeof r.bruto === "object" && (r.bruto as Record<string,unknown>).caixa_anulado);
+}
 export function valorRetido(
-  r: Pick<Entrada, "valor" | "estornado_em" | "valor_estornado">,
+  r: Pick<Entrada, "valor" | "estornado_em" | "valor_estornado" | "bruto">,
 ) {
-  return r.estornado_em
+  return r.estornado_em || recebimentoAnulado(r)
     ? 0
     : centavos(Math.max(0, Number(r.valor) - Number(r.valor_estornado ?? 0)));
 }
@@ -116,7 +121,7 @@ export function apurarMes(
   devolucoes: Devolucao[],
   vendas: Venda[] = [],
 ) {
-  const rs = entradas.filter((r) => mesLocal(r.recebido_em) === mes);
+  const rs = entradas.filter((r) => !recebimentoAnulado(r) && mesLocal(r.recebido_em) === mes);
   const ds = despesas.filter((d) => mesLocal(d.pago_em) === mes);
   const es = devolucoesComLegado(entradas, devolucoes).filter(
     (d) => mesLocal(d.devolvido_em) === mes,

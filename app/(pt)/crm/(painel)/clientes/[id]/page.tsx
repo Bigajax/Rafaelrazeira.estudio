@@ -1,8 +1,9 @@
+import { pagamentosPorParcela } from "@/lib/caixa/recebimentos";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { clienteServidor } from "@/lib/crm/supabase";
 import { lerTodos } from "@/lib/sistema/consultas";
-import { valorRetido } from "@/lib/sistema/indicadores";
+import { valorRetido,recebimentoAnulado } from "@/lib/sistema/indicadores";
 import { projeto } from "@/lib/projetos/dados";
 import { EditarCliente } from "@/components/sistema/EditarCliente";
 import { paginarHistorico, type EventoCliente } from "@/lib/sistema/historico";
@@ -93,13 +94,12 @@ export default async function Cliente({
   const ns = negocios.filter((n) => ids.has(n.id));
   const cs = contratos.filter((c) => ids.has(c.lead_id));
   const rs = recebimentos.filter((r) => r.lead_id && ids.has(r.lead_id));
+  const pagamentos = pagamentosPorParcela(rs);
   const ps = parcelas
     .filter((p) => ids.has(p.lead_id))
     .map((p) => ({
       ...p,
-      recebido: rs
-        .filter((r) => r.parcela_id === p.id)
-        .reduce((s, r) => s + valorRetido(r), 0),
+      recebido: pagamentos.get(p.id) ?? 0,
     }));
   const qs = cs
     .filter((c) => c.status === "ativo")
@@ -148,7 +148,7 @@ export default async function Cliente({
       id: "recebimento:" + r.id,
       tipo: "financeiro" as const,
       quando: dataEvento(r.recebido_em),
-      titulo: "Recebimento · " + dinheiroExato(Number(r.valor)),
+      titulo: (recebimentoAnulado(r)?"Lançamento anulado · ":"Recebimento · ") + dinheiroExato(Number(r.valor)),
       nota: r.origem === "mercadopago" ? "Mercado Pago" : "Registro manual",
       href: "/crm/financeiro?mes=" + r.recebido_em.slice(0, 7) + "&aba=extrato",
     })),

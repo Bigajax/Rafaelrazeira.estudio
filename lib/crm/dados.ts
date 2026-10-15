@@ -1,9 +1,11 @@
+import { cache } from "react";
+import { pagamentosPorParcela, semAlocacao } from "@/lib/caixa/recebimentos";
 import { conferir } from "@/lib/sistema/consultas";
 import { avancouLead } from "@/lib/sistema/comercial";
 import { lerTodos, tabelaAusente } from "@/lib/sistema/consultas";
 import { diaLocal, mesLocal } from "@/lib/sistema/calendario";
 import {
-  valorRetido,
+  recebimentoAnulado,
   devolucoesComLegado,
   type Devolucao,
 } from "@/lib/sistema/indicadores";
@@ -58,6 +60,8 @@ import {
   type Recebimento,
   type Template,
 } from "./tipos";
+
+export const recebimentosDoCaixa = cache(async () => lerTodos<Recebimento>(await clienteServidor(), "crm_recebimentos"));
 
 const ATIVOS = ESTAGIOS_ATIVOS as readonly string[];
 const NO_PIPELINE = ESTAGIOS_NO_PIPELINE as readonly string[];
@@ -349,7 +353,7 @@ export async function contagens() {
   const supabase = await clienteServidor();
   const hoje = hojeSP();
 
-  const [{ data: leads }, { count: templates }, { data: cobrancas }] =
+  const [{ data: leads }, { count: templates }, { data: cobrancas }, entradas] =
     await Promise.all([
       conferir(
         supabase
@@ -374,10 +378,11 @@ export async function contagens() {
             "id, lead_id, valor, vence_em, cobrar_em, cancelada_em, crm_contratos(status), crm_recebimentos(*)",
           )
           .is("cancelada_em", null)
-          .lte("vence_em", hoje)
           .returns<ParcelaComRecebimentos[]>(),
       ),
+      recebimentosDoCaixa(),
     ]);
+  const pagamentos = pagamentosPorParcela(entradas);
 
   const lista = leads ?? [];
 
@@ -402,7 +407,7 @@ export async function contagens() {
             {
               ...p,
               valor: Number(p.valor),
-              recebido: recebidoDaParcela(p),
+              recebido: pagamentos.get(p.id) ?? 0,
               contrato_status: p.crm_contratos?.status ?? null,
             },
             hoje,
@@ -428,9 +433,6 @@ type ParcelaComRecebimentos = {
     | null;
 };
 
-/** Soma o que entrou numa parcela, ignorando o que foi estornado. */
-const recebidoDaParcela = (p: ParcelaComRecebimentos) =>
-  somar((p.crm_recebimentos ?? []).map((r) => valorRetido(r)));
 
 export type Contagens = Awaited<ReturnType<typeof contagens>>;
 
@@ -588,16 +590,9 @@ export async function contratosDoLead(
       ),
     ]);
 
-  const pagoPorParcela = new Map<string, number>();
-  for (const r of recebimentos ?? []) {
-    if (!r.parcela_id || r.estornado_em) continue;
-    pagoPorParcela.set(
-      r.parcela_id,
-      (pagoPorParcela.get(r.parcela_id) ?? 0) + valorRetido(r),
-    );
-  }
+  const pagoPorParcela = pagamentosPorParcela(recebimentos ?? []);
 
-  const avulsos = (recebimentos ?? []).filter((r) => !r.parcela_id);
+  const avulsos = (recebimentos ?? []).filter((r) => semAlocacao(r) > .005);
 
   return (contratos ?? []).map((c) => ({
     ...c,
@@ -976,14 +971,7 @@ export async function caixa(ano: number) {
   const porContrato = new Map((contratos ?? []).map((c) => [c.id, c]));
 
   /* O que entrou em cada parcela, estornos fora. */
-  const pagoPorParcela = new Map<string, number>();
-  for (const r of recebimentos ?? []) {
-    if (!r.parcela_id || r.estornado_em) continue;
-    pagoPorParcela.set(
-      r.parcela_id,
-      (pagoPorParcela.get(r.parcela_id) ?? 0) + valorRetido(r),
-    );
-  }
+  const pagoPorParcela = pagamentosPorParcela(recebimentos ?? []);
 
   const enriquecida = (p: Parcela): ParcelaPainel => {
     const lead = porLead.get(p.lead_id);
@@ -1014,7 +1002,7 @@ export async function caixa(ano: number) {
      se o estúdio está recebendo em dia. */
   const doMes = vivas.filter((p) => mesDe(p.vence_em) === mesAtual);
   const recebidoNoMes = (recebimentos ?? []).filter(
-    (r) => !r.estornado_em && mesDe(r.recebido_em) === mesAtual,
+    (r) => !recebimentoAnulado(r) && !r.estornado_em && mesDe(r.recebido_em) === mesAtual,
   );
 
   /* ---------- 2. para cobrar ----------
@@ -1103,6 +1091,7 @@ export async function caixa(ano: number) {
      em que não entrou nada, que são os que se precisa ver. */
   const porMes = new Map<string, number>(mesesDoAno(ano).map((m) => [m, 0]));
   for (const r of recebimentos) {
+    if (recebimentoAnulado(r)) continue;
     const m = mesLocal(r.recebido_em);
     if (porMes.has(m)) porMes.set(m, (porMes.get(m) ?? 0) + Number(r.valor));
   }
@@ -1117,10 +1106,9 @@ export async function caixa(ano: number) {
      órfão de dezembro continua pedindo decisão em janeiro. */
   const semDono = (recebimentos ?? []).filter(
     (r) =>
-      !r.parcela_id &&
+      semAlocacao(r) > 0 &&
       !r.estornado_em &&
-      !r.mp_external_reference?.startsWith("perf:") &&
-      !r.lead_id,
+      !r.mp_external_reference?.startsWith("perf:"),
   );
 
   /* ---------- 6. o que não fecha ----------
@@ -1137,7 +1125,7 @@ export async function caixa(ano: number) {
     recebidoNoMes:
       somar(
         recebimentos
-          .filter((r) => mesLocal(r.recebido_em) === mesAtual)
+          .filter((r) => !recebimentoAnulado(r) && mesLocal(r.recebido_em) === mesAtual)
           .map((r) => Number(r.valor)),
       ) -
       somar(
@@ -1175,6 +1163,11 @@ export async function caixa(ano: number) {
       mes,
       valor: centavos(valor),
     })),
+    recebimentos,
+    contratos,
+    todasParcelas,
+    devolucoes: movimentosDevolucao,
+    leads,
     semDono,
     desencontros,
     /* Os anos em que houve dinheiro, para o seletor não oferecer 2019. */
@@ -1209,18 +1202,16 @@ async function cobrancasAbertas(
           "crm_contratos(titulo, status), crm_recebimentos(*)",
       )
       .is("cancelada_em", null)
-      .lte("vence_em", hoje)
       .order("vence_em", { ascending: true })
       .returns<ParcelaDaFila[]>(),
   );
 
+  const pagamentos = pagamentosPorParcela(await recebimentosDoCaixa());
   const porLead = new Map<string, NonNullable<LeadPainel["cobranca"]>>();
 
-  for (const p of data ?? []) {
+  for (const p of (data ?? []).sort((a,b)=>(a.cobrar_em||a.vence_em).localeCompare(b.cobrar_em||b.vence_em)||a.vence_em.localeCompare(b.vence_em))) {
     const quando = p.cobrar_em || p.vence_em;
-    const recebido = somar(
-      (p.crm_recebimentos ?? []).map((r) => valorRetido(r)),
-    );
+    const recebido = pagamentos.get(p.id) ?? 0;
     const saldo = centavos(Number(p.valor) - recebido);
     /* A régua única (`cobravel`, 06/10): adiada para depois de hoje sai da
        fila (é para isso que servem +3d e +7d, e o vencimento continua

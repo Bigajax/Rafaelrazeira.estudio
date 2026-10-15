@@ -2,7 +2,7 @@ import { centavos } from "@/lib/crm/financeiro";
 import { diaLocal } from "@/lib/sistema/calendario";
 import { somarDias } from "@/lib/crm/regras";
 import type { Despesa, Devolucao, Entrada } from "@/lib/sistema/indicadores";
-import { devolucoesComLegado } from "@/lib/sistema/indicadores";
+import { devolucoesComLegado, recebimentoAnulado } from "@/lib/sistema/indicadores";
 import { saldoDaOcorrencia, type Ocorrencia } from "./ocorrencias";
 
 export const AREAS_FINANCEIRO = [
@@ -36,6 +36,7 @@ export function contasAPagar(ocorrencias: Ocorrencia[], despesas: Despesa[], hoj
   }).sort((a, b) => Number(a.saldo <= 0) - Number(b.saldo <= 0) || a.vence_em.localeCompare(b.vence_em) || a.id.localeCompare(b.id));
 }
 export function liquidoConfirmado(entradas: Entrada[]) {
+  entradas = entradas.filter(e=>!recebimentoAnulado(e));
   const confirmadas = entradas.filter((e) => e.valor_liquido != null);
   return {
     valor: centavos(confirmadas.reduce((s, e) => s + Number(e.valor_liquido), 0)),
@@ -61,6 +62,7 @@ export type MovimentoFinanceiro = {
   valor: number; lead_id?: string | null; origemId: string;
 };
 export function extratoFinanceiro(mes: string, entradas: Entrada[], despesas: Despesa[], devolucoes: Devolucao[]): MovimentoFinanceiro[] {
+  entradas = entradas.filter(e=>!recebimentoAnulado(e));
   const movimentos: MovimentoFinanceiro[] = [
     ...entradas.map((e, i) => ({ id: "entrada:" + (e.id ?? i), origemId: e.id ?? "", tipo: "entrada" as const, data: diaLocal(e.recebido_em), descricao: "Recebimento", valor: Number(e.valor), lead_id: e.lead_id })),
     ...despesas.map((e) => ({ id: "saida:" + e.id, origemId: e.id, tipo: "saida" as const, data: diaLocal(e.pago_em), descricao: e.nome, valor: Number(e.valor) })),
