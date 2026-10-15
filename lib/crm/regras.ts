@@ -10,6 +10,7 @@
 
 import {
   ehAtivo,
+  MOTIVOS_PERDA,
   type CategoriaTemplate,
   type Direcao,
   type Estagio,
@@ -18,6 +19,7 @@ import {
   type MotivoPerda,
   type Resposta,
 } from "./tipos";
+import { dataValida } from "@/lib/sistema/calendario";
 
 /* ============================================================
    DATAS
@@ -734,7 +736,12 @@ export function oQueFalta(estagio: Estagio, lead: Lead, coletado: Passagem = {})
     // já tinha. É isso que faz "mover um lead que já tem próximo passo
     // marcado" não abrir modal nenhum.
     const valor = novo === undefined ? lead[campo] : novo;
-    return vazio(valor);
+    if (vazio(valor)) return true;
+    if (campo === "proxima_acao_em" || campo === "fechado_em") return !dataValida(valor);
+    if (campo === "ticket_estimado" || campo === "valor_fechado")
+      return typeof valor !== "number" || !Number.isFinite(valor) || valor <= 0;
+    if (campo === "motivo_perda") return !MOTIVOS_PERDA.includes(valor as MotivoPerda);
+    return false;
   });
 }
 
@@ -971,6 +978,25 @@ export function posicaoEntre(anterior: number | null, seguinte: number | null): 
   if (anterior == null) return (seguinte as number) - PASSO_POSICAO;
   if (seguinte == null) return anterior + PASSO_POSICAO;
   return (anterior + seguinte) / 2;
+}
+
+/** Na mesma coluna, descer um card o coloca DEPOIS do alvo; subir, antes. */
+export function posicaoAoSoltar(
+  coluna: readonly { id: string; posicao: number }[],
+  leadId: string,
+  sobreId: string | null,
+): number {
+  const origem = coluna.findIndex((l) => l.id === leadId);
+  const sobre = coluna.findIndex((l) => l.id === sobreId);
+  if (origem >= 0 && sobreId === leadId) return coluna[origem].posicao;
+  const semLead = coluna.filter((l) => l.id !== leadId);
+  let indice = semLead.length;
+  if (sobre >= 0) {
+    indice = origem >= 0 && origem < sobre
+      ? sobre
+      : semLead.findIndex((l) => l.id === sobreId);
+  }
+  return posicaoEntre(semLead[indice - 1]?.posicao ?? null, semLead[indice]?.posicao ?? null);
 }
 
 /** A ordem que o kanban usa: posição, e `created_at` para desempatar. */

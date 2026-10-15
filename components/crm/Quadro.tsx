@@ -50,6 +50,7 @@ import {
   oQueFalta,
   oQuePede,
   ordenarColuna,
+  posicaoAoSoltar,
   posicaoEntre,
   procurouOEstudio,
   urgencia,
@@ -267,17 +268,8 @@ export function Quadro({
 
     /* A coluna SEM o card arrastado: incluí-lo faria a média ser calculada
        contra a própria posição antiga e o card ficaria preso no lugar. */
-    const alvo = porColuna[estagio].filter((l) => l.id !== leadId);
-    const indice = sobre.startsWith("col:")
-      ? alvo.length
-      : Math.max(
-          0,
-          alvo.findIndex((l) => l.id === sobre),
-        );
-
-    const posicao = posicaoEntre(
-      alvo[indice - 1]?.posicao ?? null,
-      alvo[indice]?.posicao ?? null,
+    const posicao = posicaoAoSoltar(
+      porColuna[estagio], leadId, sobre.startsWith("col:") ? null : sobre,
     );
     return { lead, estagio, posicao };
   }

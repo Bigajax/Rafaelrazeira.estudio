@@ -34,7 +34,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { registrarToque } from "@/app/(pt)/crm/acoes";
-import { destinoDoToque, hojeSP, linkWhatsapp, PADRAO_DO_DESTINO, somarDias } from "@/lib/crm/regras";
+import { destinoDoToque, hojeSP, linkWhatsapp, oQueFalta, PADRAO_DO_DESTINO, somarDias } from "@/lib/crm/regras";
 import {
   CANAIS,
   EFEITO_RESPOSTA,
@@ -104,7 +104,7 @@ export function ModalToque({
      registro já é a passagem, com as exigências dela pedidas aqui. */
   const [etapa, setEtapa] = useState<Estagio | "">("");
   const [ticket, setTicket] = useState(String(lead.ticket_estimado ?? 999));
-  const pedeTicket = etapa === "proposta" && !lead.ticket_estimado;
+  const pedeTicket = etapa === "proposta" && oQueFalta("proposta", lead).includes("ticket_estimado");
 
   /* O mesmo cálculo que o servidor vai refazer na gravação. É daqui que sai
      a frase de destino: a tela promete exatamente o que o servidor executa

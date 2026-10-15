@@ -19,7 +19,7 @@
    que não dá para confiar.
    ============================================================ */
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { salvarLead, type CampoEditavel } from "@/app/(pt)/crm/acoes";
 import s from "@/app/(pt)/crm/crm.module.css";
 
@@ -51,6 +51,7 @@ export function CampoInline({
   const [estado, setEstado] = useState<"parado" | "salvo" | "erro">("parado");
   const [mensagem, setMensagem] = useState<string | null>(null);
   const [, comecar] = useTransition();
+  const cancelando = useRef(false);
 
   /* O valor do servidor manda quando ele muda por fora (outra aba, uma
      passagem de estágio que preencheu o ticket). O `inicial` na dependência
@@ -64,6 +65,10 @@ export function CampoInline({
   }, [estado]);
 
   const gravar = () => {
+    if (cancelando.current) {
+      cancelando.current = false;
+      return;
+    }
     if (texto === inicial) return;
     setMensagem(null);
     comecar(async () => {
@@ -83,7 +88,10 @@ export function CampoInline({
        dispara a gravação, então tê-los aqui é ter um caminho só. */
     if (e.key === "Enter") (e.target as HTMLElement).blur();
     if (e.key === "Escape") {
+      cancelando.current = true;
       setTexto(inicial);
+      setEstado("parado");
+      setMensagem(null);
       (e.target as HTMLElement).blur();
     }
   };

@@ -250,11 +250,55 @@ export async function registrarToque(
   const supabase = await clienteServidor();
 
   /* O lead é lido antes: o trilho precisa saber de onde ele parte. */
-  const { data: lead } = await supabase
+  const { data: lead, error: erroLeitura } = await supabase
     .from("crm_leads")
     .select("*")
     .eq("id", leadId)
     .single<Lead>();
+
+  if (erroLeitura || !lead) return { ok: false, erro: "Lead não encontrado." };
+
+  /* Validar ANTES de registrar: uma etapa recusada não pode deixar um
+     toque salvo que será duplicado quando o formulário for reenviado. */
+  const agenda: Passagem = {};
+  if (dados.proximo_passo !== undefined)
+    agenda.proximo_passo = dados.proximo_passo?.trim() || null;
+  if (dados.proxima_acao_em !== undefined)
+    agenda.proxima_acao_em = dados.proxima_acao_em || null;
+  if (agenda.proxima_acao_em && !dataValida(agenda.proxima_acao_em))
+    return { ok: false, falta: ["proxima_acao_em"] };
+  if (
+    dados.ticket_estimado != null &&
+    (!Number.isFinite(dados.ticket_estimado) || dados.ticket_estimado <= 0)
+  ) {
+    return { ok: false, falta: ["ticket_estimado"] };
+  }
+
+  const destino = dados.estagio ?? destinoDoToque(dados.direcao, lead.estagio, dados.resposta);
+  const escolhido =
+    dados.estagio !== undefined ||
+    (dados.direcao === "entrada" && (dados.resposta === "nao" || dados.resposta === "depois"));
+  const passagem: Passagem = { ...agenda };
+  if (dados.ticket_estimado !== undefined)
+    passagem.ticket_estimado = dados.ticket_estimado;
+
+  let deveMover = Boolean(destino && destino !== lead.estagio);
+  if (destino && deveMover) {
+    if (destino === "perdido") {
+      passagem.motivo_perda = dados.motivo_perda ?? "sem_interesse";
+    } else {
+      const padrao = PADRAO_DO_DESTINO[destino];
+      if (padrao) {
+        if (!(agenda.proximo_passo ?? lead.proximo_passo))
+          passagem.proximo_passo = padrao.passo;
+        if (!(agenda.proxima_acao_em ?? lead.proxima_acao_em))
+          passagem.proxima_acao_em = somarDias(hojeSP(), padrao.dias);
+      }
+    }
+    const falta = oQueFalta(destino, lead, passagem);
+    if (falta.length && escolhido) return { ok: false, falta };
+    if (falta.length) deveMover = false;
+  }
 
   const { error } = await supabase.from("crm_interacoes").insert({
     owner_id: usuario.id,
@@ -265,71 +309,14 @@ export async function registrarToque(
   });
   if (error) return { ok: false, erro: traduzirErro(error) };
 
-  /* Só o que veio (01/10): o modal de mensagem manda a DATA do próximo
-     retorno sem mexer no passo, e gravar o passo vazio junto apagaria
-     "Cobrar retorno no WhatsApp" de quem só queria empurrar a data. */
-  if (dados.proximo_passo || dados.proxima_acao_em) {
-    const agenda: {
-      proximo_passo?: string | null;
-      proxima_acao_em?: string | null;
-    } = {};
-    if (dados.proximo_passo !== undefined)
-      agenda.proximo_passo = dados.proximo_passo?.trim() || null;
-    if (dados.proxima_acao_em !== undefined)
-      agenda.proxima_acao_em = dados.proxima_acao_em || null;
-    const { error: erroPasso } = await supabase
-      .from("crm_leads")
-      .update(agenda)
-      .eq("id", leadId);
+  if (destino && deveMover) {
+    /* A passagem escreve a agenda junto e mantém as limpezas de saída. */
+    const r = await moverLead(leadId, destino, null, passagem);
+    if (!r.ok) return r;
+  } else if (Object.keys(agenda).length) {
+    /* Só os campos enviados: mudar a data não apaga o passo existente. */
+    const { error: erroPasso } = await supabase.from("crm_leads").update(agenda).eq("id", leadId);
     if (erroPasso) return { ok: false, erro: traduzirErro(erroPasso) };
-  }
-
-  if (lead) {
-    /* A etapa marcada no modal vence o trilho; sem ela, o trilho de sempre. */
-    const destino =
-      dados.estagio ??
-      destinoDoToque(dados.direcao, lead.estagio, dados.resposta);
-    if (destino && destino !== lead.estagio) {
-      /* Escolhido = o Rafael marcou o teor da resposta ou a etapa, e este
-         destino é o trabalho que ele pediu. Automático = o trilho
-         mecânico, que é cortesia e cala a boca quando não dá. */
-      const escolhido =
-        dados.estagio !== undefined ||
-        dados.resposta === "nao" ||
-        dados.resposta === "depois";
-
-      const passagem: Passagem = {};
-      if (dados.ticket_estimado !== undefined)
-        passagem.ticket_estimado = dados.ticket_estimado;
-
-      if (destino === "perdido") {
-        /* A única exigência da placa de perdido, e a que faz o gráfico de
-           motivos existir. O `moverLead` cuida do resto da saída: zera a
-           agenda para o lead não voltar na fila do dia seguinte. */
-        passagem.motivo_perda = dados.motivo_perda ?? "sem_interesse";
-      } else {
-        /* A regra 1 (estágio ativo exige passo com data) continua valendo,
-           e é o TRILHO quem a cumpre: a primeira versão que parava o card
-           por falta de passo parou no primeiro uso real (a Mister Tattoo
-           ficou na Lista com a mensagem já mandada). O que o Rafael
-           digitou vence sempre; o padrão só entra em campo vazio. */
-        const padrao = PADRAO_DO_DESTINO[destino];
-        const passoAtual = dados.proximo_passo?.trim() || lead.proximo_passo;
-        const dataAtual = dados.proxima_acao_em || lead.proxima_acao_em;
-        if (padrao) {
-          if (!passoAtual) passagem.proximo_passo = padrao.passo;
-          if (!dataAtual)
-            passagem.proxima_acao_em = somarDias(hojeSP(), padrao.dias);
-        }
-      }
-
-      /* Pelo `moverLead` e não por um update solto: ele é quem sabe limpar
-         o motivo de um lead que sai de perdido, zerar a agenda dos
-         destinos sem agenda e conferir a régua de novo. Duplicar essas
-         três coisas aqui era ter duas versões da mesma passagem. */
-      const r = await moverLead(leadId, destino, null, passagem);
-      if (escolhido && !r.ok) return r;
-    }
   }
 
   atualizarTelas();
@@ -386,8 +373,7 @@ export async function definirPasso(
   /* A forma da data é conferida aqui e não só no `<input type="date">`: o
      campo nativo pode ser digitado, e uma data pela metade viraria erro cru
      do Postgres em vez de um pedido de campo. */
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(data || "")))
-    falta.push("proxima_acao_em");
+  if (!dataValida(data)) falta.push("proxima_acao_em");
   if (falta.length) return { ok: false, falta };
 
   const supabase = await clienteServidor();
