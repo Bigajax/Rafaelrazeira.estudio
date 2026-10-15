@@ -131,6 +131,49 @@ export async function agendarCompromisso(
     };
   }
 }
+
+/** Um envio cadastra a conta e seus vencimentos. O mesmo pedido pode ser
+ * retomado depois de uma falha sem criar outra conta ou outras parcelas. */
+export async function criarCompromisso(campos: Record<string, unknown>): Promise<Feito> {
+  const s = await sessao();
+  if (!s) return { ok: false, erro: "Sessão expirada. Entre novamente." };
+  const id = String(campos.request_id ?? "");
+  const primeiro = String(campos.primeiro_vencimento ?? "");
+  const frequencia = String(campos.frequencia ?? "");
+  if (!UUID.test(id) || !dataValida(primeiro) ||
+      !Object.hasOwn(FREQUENCIAS, frequencia) || !Object.hasOwn(CATEGORIAS, String(campos.categoria)) ||
+      !["BRL", "USD"].includes(String(campos.moeda)))
+    return { ok: false, erro: "Confira a categoria, a frequência e o primeiro vencimento." };
+  const linha = limpar({ ...campos, inicio: primeiro.slice(0, 7) });
+  if (typeof linha === "string") return { ok: false, erro: linha };
+  if (!linha.nome || !linha.valor) return { ok: false, erro: "Informe o nome e o valor da conta." };
+  let datas: string[];
+  try {
+    datas = datasDoCompromisso(primeiro, frequencia as Custo["frequencia"], Number(campos.quantas));
+  } catch (e) {
+    return { ok: false, erro: e instanceof Error ? e.message : "Vencimentos inválidos." };
+  }
+  const anteriores = await s.supabase.from("fin_ocorrencias").select("vence_em").eq("custo_id", id);
+  if (anteriores.error) return { ok: false, erro: "Não foi possível consultar os vencimentos. Tente novamente." };
+  if ((anteriores.data ?? []).some((o) => !datas.includes(o.vence_em)))
+    return { ok: false, erro: "Este cadastro já gerou outros vencimentos. Confira a conta em A pagar antes de alterá-lo." };
+  const insercao = await s.supabase.from("fin_custos").upsert(
+    { id, owner_id: s.usuario.id, ...linha }, { onConflict: "id", ignoreDuplicates: true },
+  );
+  if (insercao.error) return falhou(insercao.error)!;
+  const { data: custo, error } = await s.supabase.from("fin_custos").select("*").eq("id", id).single<Custo>();
+  if (error || !custo) return { ok: false, erro: "Não foi possível conferir o cadastro. Tente novamente com os mesmos dados." };
+  if (custo.nome !== linha.nome || Number(custo.valor) !== Number(linha.valor) ||
+      custo.categoria !== linha.categoria || custo.frequencia !== frequencia || custo.moeda !== linha.moeda || custo.inicio !== linha.inicio)
+    return { ok: false, erro: "O cadastro anterior foi preservado. Retome com os mesmos dados ou confira a conta em Planejamento." };
+  const agenda = await s.supabase.from("fin_ocorrencias").upsert(
+    datas.map((vence_em) => ({ owner_id: s.usuario.id, custo_id: id, descricao: custo.nome, valor: custo.valor, moeda: custo.moeda, vence_em })),
+    { onConflict: "owner_id,custo_id,vence_em", ignoreDuplicates: true },
+  );
+  revalidatePath("/crm", "layout");
+  if (agenda.error) return { ok: false, erro: "A conta foi cadastrada, mas os vencimentos não foram confirmados. Tente novamente com os mesmos dados para concluir." };
+  return { ok: true };
+}
 export async function retificarDespesa(
   id: string,
   dados: Record<string, unknown>,

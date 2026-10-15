@@ -41,6 +41,7 @@ import u from "@/components/sistema/sistema.module.css";
 
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { caixa, type Caixa } from "@/lib/crm/dados";
 import {
   dinheiroExato,
@@ -85,6 +86,15 @@ export default async function PaginaCaixa({
   }>;
 }) {
   const { ano: bruto, exemplo, atraso, mes } = await searchParams;
+  if (!exemplo) {
+    const atual = hojeSP().slice(0, 7);
+    const selecionado = /^\d{4}-(0[1-9]|1[0-2])$/.test(mes ?? "") ? mes! :
+      /^\d{4}$/.test(bruto ?? "") ? `${bruto}-${atual.slice(5)}` : atual;
+    const destino = new URLSearchParams({ mes: selecionado, aba: "receber" });
+    if (atraso) destino.set("filtro", atraso);
+    else if (mes) destino.set("filtro", "mes");
+    redirect("/crm/financeiro?" + destino.toString());
+  }
   const agora = new Date().getUTCFullYear();
   const pedido = Number(bruto);
   /* Janela curta de propósito: o estúdio nasceu em 2026, e um seletor que

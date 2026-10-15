@@ -1099,6 +1099,7 @@ export async function gerarProximasMensalidades(
    a lista de devedores do Caixa e a carta da fila do dia) e nos três o caso
    comum é um clique com tudo já preenchido. */
 export async function lancarRecebimento(dados: {
+  request_id?: string;
   parcela_id?: string | null;
   lead_id?: string | null;
   valor: number;
@@ -1111,6 +1112,8 @@ export async function lancarRecebimento(dados: {
   const supabase = await clienteServidor();
 
   const valor = centavos(Number(dados.valor));
+  if (dados.request_id && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(dados.request_id))
+    return { ok: false, erro: "Identificação do lançamento inválida. Abra o formulário novamente." };
   if (!Number.isFinite(valor) || valor <= 0) {
     return { ok: false, erro: "O valor recebido precisa ser maior que zero." };
   }
@@ -1144,7 +1147,8 @@ export async function lancarRecebimento(dados: {
     leadId = parcela.lead_id;
   }
 
-  const { error } = await supabase.from("crm_recebimentos").insert({
+  const lancamento = {
+    ...(dados.request_id ? { id: dados.request_id } : {}),
     owner_id: usuario.id,
     parcela_id: dados.parcela_id || null,
     lead_id: leadId,
@@ -1160,7 +1164,24 @@ export async function lancarRecebimento(dados: {
     metodo: dados.metodo || "pix",
     origem: "manual",
     notas: dados.notas?.trim() || null,
-  });
+  };
+  if (dados.request_id) {
+    const { data: anterior, error: erroConsulta } = await supabase
+      .from("crm_recebimentos").select("*").eq("id", dados.request_id).maybeSingle();
+    if (erroConsulta) return { ok: false, erro: "Não foi possível conferir o lançamento anterior. Tente novamente neste formulário." };
+    if (anterior) {
+      const igual = Number(anterior.valor) === lancamento.valor && anterior.lead_id === lancamento.lead_id &&
+        anterior.parcela_id === lancamento.parcela_id && anterior.recebido_em === lancamento.recebido_em &&
+        anterior.metodo === lancamento.metodo &&
+        (anterior.valor_liquido == null ? null : Number(anterior.valor_liquido)) === lancamento.valor_liquido;
+      if (!igual) return { ok: false, erro: "Este envio já registrou um recebimento com outros dados. Confira o extrato antes de registrar novamente." };
+      atualizarTelas();
+      return { ok: true };
+    }
+  }
+  const { error } = dados.request_id
+    ? await supabase.from("crm_recebimentos").upsert(lancamento, { onConflict: "id", ignoreDuplicates: true })
+    : await supabase.from("crm_recebimentos").insert(lancamento);
 
   if (error) return { ok: false, erro: traduzirErro(error) };
   atualizarTelas();

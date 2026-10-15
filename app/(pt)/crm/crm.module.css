@@ -5462,6 +5462,8 @@
   overflow-wrap: anywhere;
 }
 .orfaoAcoes {
+  min-width: 0;
+  max-width: 100%;
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
@@ -5470,7 +5472,8 @@
 .app .orfaoAcoes select {
   font-size: 12px;
   padding: 7px 9px;
-  max-width: 260px;
+  min-width: 0;
+  max-width: min(260px, 100%);
 }
 
 /* ---------- o bloco do dinheiro na ficha do lead ---------- */

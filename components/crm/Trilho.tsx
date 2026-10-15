@@ -100,16 +100,10 @@ const MOMENTOS: { nome: string; rotas: Rota[] }[] = [
     nome: "Financeiro",
     rotas: [
       {
-        href: "/crm/caixa",
-        rotulo: "Caixa",
-        nota: "o dinheiro",
-        conta: "cobrar",
-      },
-      {
         href: "/crm/financeiro",
         rotulo: "Financeiro",
-        nota: "o resultado",
-        conta: null,
+        nota: "receber e pagar",
+        conta: "cobrar",
       },
     ],
   },
@@ -160,7 +154,7 @@ const ICONES: Record<string, IconePainelNome> = {
   "/crm/plano": "plano",
 };
 
-const PRINCIPAIS = ["/crm", "/crm/pipeline", "/crm/producao", "/crm/caixa"];
+const PRINCIPAIS = ["/crm", "/crm/pipeline", "/crm/producao", "/crm/financeiro"];
 
 export function Trilho({
   sair,
@@ -199,7 +193,8 @@ export function Trilho({
       ? caminho === "/crm"
       : caminho === href ||
         caminho.startsWith(`${href}/`) ||
-        (href === "/crm/pipeline" && caminho.startsWith("/crm/lead/"));
+        (href === "/crm/pipeline" && caminho.startsWith("/crm/lead/")) ||
+        (href === "/crm/financeiro" && (caminho === "/crm/conciliacao" || caminho === "/crm/caixa"));
   return (
     <>
       <a href="#crm-principal" className={s.pularConteudo}>

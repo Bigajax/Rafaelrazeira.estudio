@@ -25,17 +25,19 @@ export function Compromissos({
   despesas,
   hoje,
   rodar,
+  somenteAgendamento = false,
 }: {
   custos: Custo[];
   ocorrencias: Ocorrencia[];
   despesas: Despesa[];
   hoje: string;
   rodar: Rodar;
+  somenteAgendamento?: boolean;
 }) {
   const [selecionado, setSelecionado] = useState("");
   return (
     <section className={s.painel}>
-      <h2>Agenda de pagamentos</h2>
+      <h2>{somenteAgendamento ? "Gerar próximos vencimentos" : "Agenda de pagamentos"}</h2>
       <p className={s.descricao}>
         Defina o primeiro vencimento real. Pagamentos parciais reduzem o saldo
         da ocorrência; o equivalente mensal continua separado.
@@ -76,7 +78,7 @@ export function Compromissos({
           <input required type="date" name="dia" />
         </label>
         <label>
-          Ocorrências
+          Quantos vencimentos gerar?
           <input
             required
             type="number"
@@ -88,7 +90,7 @@ export function Compromissos({
         </label>
         <button className={s.botao}>Agendar</button>
       </form>
-      <div className={s.rolagem}>
+      {!somenteAgendamento ? <div className={s.rolagem}>
         <table className={s.tabela}>
           <thead>
             <tr>
@@ -137,8 +139,8 @@ export function Compromissos({
               })}
           </tbody>
         </table>
-      </div>
-      {!ocorrencias.length ? (
+      </div> : null}
+      {!somenteAgendamento && !ocorrencias.length ? (
         <p className={s.vazio}>
           Nenhum vencimento agendado. Os custos cadastrados continuam
           disponíveis como estimativa.

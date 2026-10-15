@@ -4,8 +4,12 @@ import { lerTodos, tabelaAusente } from "@/lib/sistema/consultas";
 import { Cabecalho, Aviso } from "@/components/sistema/Painel";
 import { AtualizarPagamento } from "@/components/financeiro/Conciliacao";
 import s from "@/components/sistema/sistema.module.css";
+import { NavegacaoFinanceiro } from "@/components/financeiro/Navegacao";
+import { hojeSP } from "@/lib/crm/regras";
 export const metadata = { title: "Conciliação" };
-export default async function Conciliacao() {
+export default async function Conciliacao({ searchParams }: { searchParams: Promise<{ mes?: string }> }) {
+  const { mes: pedido } = await searchParams;
+  const mes = /^\d{4}-(0[1-9]|1[0-2])$/.test(pedido ?? "") ? pedido! : hojeSP().slice(0, 7);
   const b = await clienteServidor();
   const [jobs, rs] = await Promise.all([
     lerTodos<{
@@ -39,16 +43,17 @@ export default async function Conciliacao() {
   return (
     <div className={s.tela}>
       <Cabecalho
-        titulo="Conciliação"
-        descricao="Confira os movimentos na origem e retome efeitos pendentes sem duplicar pagamentos ou acesso."
+        titulo="Conferências financeiras"
+        descricao="Confira pagamentos automáticos e resolva registros pendentes. Atualizar consulta o Mercado Pago; não faz uma cobrança nem devolve dinheiro."
       >
-        <Link className={s.botao} href="/crm/financeiro">
+        <Link className={s.botao} href={"/crm/financeiro?mes=" + mes}>
           Financeiro
         </Link>
         <Link className={s.botao} href="/crm/caixa">
-          Caixa
+          A receber
         </Link>
       </Cabecalho>
+      <NavegacaoFinanceiro mes={mes} ativa="conferencia" />
       {jobs === null ? (
         <Aviso>
           O acompanhamento de tentativas aguarda a atualização do módulo. Os
@@ -56,7 +61,7 @@ export default async function Conciliacao() {
         </Aviso>
       ) : null}
       <section className={s.painel}>
-        <h2>Efeitos pendentes · {pendentes.length}</h2>
+        <h2>Pagamentos que precisam de conferência · {pendentes.length}</h2>
         {pendentes.length ? (
           <ul className={s.fila}>
             {pendentes.map((j) => (
@@ -76,7 +81,7 @@ export default async function Conciliacao() {
             ))}
           </ul>
         ) : (
-          <p className={s.vazio}>Nenhum efeito pendente registrado.</p>
+          <p className={s.vazio}>Nenhum pagamento aguardando conferência registrado.</p>
         )}
       </section>
       <section className={s.painel}>

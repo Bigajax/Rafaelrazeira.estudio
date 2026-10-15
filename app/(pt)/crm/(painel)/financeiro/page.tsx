@@ -10,6 +10,9 @@ import type { Metadata } from "next";
 import { financeiro } from "@/lib/financeiro/dados";
 import { caixa } from "@/lib/crm/dados";
 import { hojeSP } from "@/lib/crm/regras";
+import { proximoMes } from "@/lib/sistema/calendario";
+import { lerTodos, tabelaAusente } from "@/lib/sistema/consultas";
+import { clienteServidor } from "@/lib/crm/supabase";
 import { Financeiro } from "@/components/financeiro/Financeiro";
 import f from "@/app/(pt)/crm/financeiro.module.css";
 
@@ -18,17 +21,22 @@ export const metadata: Metadata = { title: "Financeiro" };
 export default async function PaginaFinanceiro({
   searchParams,
 }: {
-  searchParams: Promise<{ mes?: string; aba?: string; previsao?: string }>;
+  searchParams: Promise<{ mes?: string; aba?: string; previsao?: string; filtro?: string }>;
 }) {
   const hoje = hojeSP().slice(0, 7);
-  const { mes: pedido, aba, previsao } = await searchParams;
+  const { mes: pedido, aba, previsao, filtro } = await searchParams;
   const mes =
-    /^\d{4}-(0[1-9]|1[0-2])$/.test(pedido ?? "") && pedido! <= hoje
+    /^\d{4}-(0[1-9]|1[0-2])$/.test(pedido ?? "") && pedido! <= proximoMes(hoje, 12)
       ? pedido!
       : hoje;
-  const [dados, contas] = await Promise.all([
+  const banco = await clienteServidor();
+  const [dados, contas, conferencias] = await Promise.all([
     financeiro(Number(mes.slice(0, 4))),
     caixa(Number(mes.slice(0, 4))),
+    lerTodos<{ id: string }>(banco, "crm_integracoes", "id", undefined, { estado: "pendente" }).catch((e) => {
+      if (tabelaAusente(e)) return null;
+      throw e;
+    }),
   ]);
 
   if (dados.semTabela) {
@@ -67,14 +75,9 @@ export default async function PaginaFinanceiro({
       historicoDespesas={dados.historicoDespesas}
       clientes={dados.clientes}
       previsaoSelecionada={previsao}
-      parcelasPrevistas={contas.parcelasAbertas.map((x) => ({
-        id: x.parcela.id,
-        lead_id: x.parcela.lead_id,
-        lead_nome: x.parcela.lead_nome,
-        rotulo: x.parcela.rotulo,
-        vence_em: x.parcela.vence_em,
-        saldo: x.s.saldo,
-      }))}
+      contas={contas}
+      filtro={filtro}
+      conferenciasPendentes={conferencias?.length}
     />
   );
 }
