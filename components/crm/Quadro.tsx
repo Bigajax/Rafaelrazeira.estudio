@@ -3,7 +3,7 @@
 /* ============================================================
    O KANBAN
 
-   Sete colunas de caminho e três placas de saída no fim, arrasto entre
+   Sete colunas de caminho e três destinos de saída, arrasto entre
    elas e dentro delas, e as regras 1 a 4 barrando a passagem quando falta
    informação.
 
@@ -37,6 +37,7 @@ import {
   useSensors,
   type DragEndEvent,
   type DragStartEvent,
+  type KeyboardCoordinateGetter,
 } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -45,7 +46,6 @@ import {
 } from "@dnd-kit/sortable";
 import { moverLead } from "@/app/(pt)/crm/acoes";
 import {
-  dinheiroCurto,
   exigenciaDeTodas,
   oQueFalta,
   oQuePede,
@@ -58,14 +58,12 @@ import {
   type Passagem,
 } from "@/lib/crm/regras";
 import {
-  ehNoPipeline,
   ESTAGIOS,
   ESTAGIOS_DO_QUADRO,
   ESTAGIOS_DE_PLACA,
   NOME_ESTAGIO,
   NOME_ORIGEM,
   NOME_TIPO,
-  NOTA_ESTAGIO,
   ORIGENS,
   TIPOS_PROJETO,
   type Estagio,
@@ -76,9 +74,50 @@ import { ModalContrato } from "./ModalContrato";
 import { ModalNovoLead } from "./ModalNovoLead";
 import { ModalPassagem } from "./ModalPassagem";
 import { PesquisaLote } from "./PesquisaLote";
-import s from "@/app/(pt)/crm/crm.module.css";
+import p from "./pipeline.module.css";
+import { IconePipeline } from "./IconePipeline";
+import {
+  ETAPAS_VISUAIS,
+  noFoco,
+  resumoPipeline,
+  valorPipeline,
+  type FocoPipeline,
+} from "@/lib/crm/pipeline";
 
 const idDaColuna = (e: Estagio) => `col:${e}`;
+
+// Esquerda/direita navegam por etapas; cima/baixo mantêm a ordenação do dnd-kit.
+const coordenadasDoQuadro: KeyboardCoordinateGetter = (evento, argumentos) => {
+  if (evento.code !== "ArrowLeft" && evento.code !== "ArrowRight")
+    return sortableKeyboardCoordinates(evento, argumentos);
+  evento.preventDefault();
+  const { active, over, collisionRect, droppableContainers, droppableRects } =
+    argumentos.context;
+  if (!active || !collisionRect) return;
+  const etapas = [...ESTAGIOS_DO_QUADRO, ...ESTAGIOS_DE_PLACA];
+  const atual = (over?.data.current?.estagio ??
+    active.data.current?.estagio) as Estagio;
+  const indice = etapas.indexOf(atual);
+  const destino = etapas[indice + (evento.code === "ArrowRight" ? 1 : -1)];
+  if (indice < 0 || !destino) return argumentos.currentCoordinates;
+  const candidatos = droppableContainers
+    .getEnabled()
+    .filter(
+      (c) => c.data.current?.estagio === destino && droppableRects.has(c.id),
+    );
+  const cards = candidatos.filter((c) => !String(c.id).startsWith("col:"));
+  const alvo = (cards.length ? cards : candidatos).sort(
+    (a, b) =>
+      Math.abs(droppableRects.get(a.id)!.top - collisionRect.top) -
+      Math.abs(droppableRects.get(b.id)!.top - collisionRect.top),
+  )[0];
+  const retangulo = alvo && droppableRects.get(alvo.id);
+  if (!retangulo) return argumentos.currentCoordinates;
+  return {
+    x: argumentos.currentCoordinates.x + retangulo.left - collisionRect.left,
+    y: argumentos.currentCoordinates.y + retangulo.top - collisionRect.top,
+  };
+};
 
 type Pendente = {
   lead: LeadPainel;
@@ -107,6 +146,8 @@ export function Quadro({
   const [leads, setLeads] = useState(doServidor);
   useEffect(() => setLeads(doServidor), [doServidor]);
 
+  const rolagemRef = useRef<HTMLDivElement>(null);
+  const [foco, setFoco] = useState<FocoPipeline>("todos");
   const [tipo, setTipo] = useState("");
   const [origem, setOrigem] = useState("");
   const [nicho, setNicho] = useState("");
@@ -131,6 +172,44 @@ export function Quadro({
   const [erro, setErro] = useState<string | null>(null);
   const [novo, setNovo] = useState(false);
   const quadroRef = useRef<HTMLDivElement>(null);
+  const saidaRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const fecharPaineis = (evento: PointerEvent) => {
+      for (const detalhe of quadroRef.current?.querySelectorAll<HTMLDetailsElement>(
+        "details[data-ferramenta][open]",
+      ) ?? [])
+        if (!detalhe.contains(evento.target as Node)) detalhe.open = false;
+    };
+    const escapar = (evento: KeyboardEvent) => {
+      if (evento.key !== "Escape") return;
+      for (const detalhe of quadroRef.current?.querySelectorAll<HTMLDetailsElement>(
+        "details[data-ferramenta][open]",
+      ) ?? []) {
+        detalhe.open = false;
+        if (detalhe.contains(document.activeElement))
+          detalhe.querySelector("summary")?.focus();
+      }
+    };
+    document.addEventListener("pointerdown", fecharPaineis);
+    document.addEventListener("keydown", escapar);
+    return () => {
+      document.removeEventListener("pointerdown", fecharPaineis);
+      document.removeEventListener("keydown", escapar);
+    };
+  }, []);
+  useEffect(() => {
+    if (!saidaAberta) return;
+    saidaRef.current?.focus({ preventScroll: true });
+    saidaRef.current?.scrollIntoView({ block: "nearest" });
+  }, [saidaAberta]);
+  function fecharSaida() {
+    const anterior = saidaAberta;
+    setSaidaAberta(null);
+    quadroRef.current
+      ?.querySelector<HTMLButtonElement>(`[data-resultado="${anterior}"]`)
+      ?.focus({ preventScroll: true });
+    quadroRef.current?.scrollIntoView({ block: "start" });
+  }
   const [ampliado, setAmpliado] = useState(false);
   useEffect(() => {
     const atualizar = () =>
@@ -156,11 +235,11 @@ export function Quadro({
   const sensores = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
+      coordinateGetter: coordenadasDoQuadro,
     }),
   );
 
-  const filtrados = useMemo(() => {
+  const baseFiltrados = useMemo(() => {
     const termo = busca.trim().toLowerCase();
     return leads.filter((l) => {
       if (tipo && l.tipo_projeto !== tipo) return false;
@@ -185,13 +264,21 @@ export function Quadro({
     });
   }, [leads, tipo, origem, nicho, anuncio, soPediram, busca]);
 
+  const filtrados = useMemo(
+    () => baseFiltrados.filter((l) => noFoco(l, foco, hoje)),
+    [baseFiltrados, foco, hoje],
+  );
+
   const porColuna = useMemo(() => {
     const mapa = {} as Record<Estagio, LeadPainel[]>;
     for (const e of ESTAGIOS) mapa[e] = [];
     for (const l of filtrados) mapa[l.estagio]?.push(l);
+    // Prioridade filtra a operação; resultados e pausas continuam consultáveis.
+    for (const e of ESTAGIOS_DE_PLACA)
+      mapa[e] = baseFiltrados.filter((l) => l.estagio === e);
     for (const e of ESTAGIOS) mapa[e] = ordenarColuna(mapa[e]);
     return mapa;
-  }, [filtrados]);
+  }, [filtrados, baseFiltrados]);
 
   /* ---------- O PLACAR DA FAIXA ----------
      Três números, e cada um responde uma pergunta diferente sobre o mesmo
@@ -201,28 +288,10 @@ export function Quadro({
      Ele conta o quadro FILTRADO e não o banco inteiro: a faixa descreve o
      que está na tela. Filtrar por "joalheria" e continuar vendo o total da
      casa seria um placar de outra partida. */
-  const placar = useMemo(() => {
-    let aberto = 0;
-    let naMesa = 0;
-    let esperando = 0;
-
-    for (const l of filtrados) {
-      /* `ehNoPipeline` e não `ehAtivo`: a geladeira é ativa (ela devolve o
-         lead na fila do dia) mas não é pipeline aberto. O ticket de quem
-         pediu para ser chamado em novembro somado aqui faria a faixa
-         prometer um número que ninguém está perseguindo neste ciclo, e o
-         "esperando" contaria como decisão pendente um lead cuja decisão
-         já foi tomada: esperar. */
-      if (!ehNoPipeline(l.estagio)) continue;
-      aberto += l.ticket_estimado ?? 0;
-      if (l.estagio === "proposta" || l.estagio === "negociacao")
-        naMesa += l.ticket_estimado ?? 0;
-      const u = urgencia(l, hoje);
-      if (u === "atrasado" || u === "sem_passo") esperando += 1;
-    }
-
-    return { aberto, naMesa, esperando };
-  }, [filtrados, hoje]);
+  const placar = useMemo(
+    () => resumoPipeline(baseFiltrados, hoje),
+    [baseFiltrados, hoje],
+  );
 
   /* ---------- A ESCALA DA RÉGUA DE CARGA ----------
      A referência é a etapa MAIS CARREGADA, e não o total do pipeline. Com o
@@ -269,7 +338,9 @@ export function Quadro({
     /* A coluna SEM o card arrastado: incluí-lo faria a média ser calculada
        contra a própria posição antiga e o card ficaria preso no lugar. */
     const posicao = posicaoAoSoltar(
-      porColuna[estagio], leadId, sobre.startsWith("col:") ? null : sobre,
+      porColuna[estagio],
+      leadId,
+      sobre.startsWith("col:") ? null : sobre,
     );
     return { lead, estagio, posicao };
   }
@@ -382,6 +453,7 @@ export function Quadro({
   }
 
   const limparFiltros = () => {
+    setFoco("todos");
     setTipo("");
     setOrigem("");
     setNicho("");
@@ -390,384 +462,402 @@ export function Quadro({
     setBusca("");
   };
   const filtrando = Boolean(
-    tipo || origem || nicho || anuncio || soPediram || busca.trim(),
+    foco !== "todos" ||
+    tipo ||
+    origem ||
+    nicho ||
+    anuncio ||
+    soPediram ||
+    busca.trim(),
   );
+  const numeroFiltros = [tipo, origem, nicho, anuncio, soPediram].filter(
+    Boolean,
+  ).length;
   const pediram = useMemo(() => leads.filter(procurouOEstudio).length, [leads]);
 
+  function navegarEtapa(etapa: Estagio) {
+    if (saidaAberta) fecharSaida();
+    setColunaMovel(etapa);
+    const quadro = rolagemRef.current;
+    const coluna = quadro?.querySelector<HTMLElement>(
+      `[data-coluna="${etapa}"]`,
+    );
+    if (quadro && coluna)
+      quadro.scrollTo({
+        left:
+          quadro.scrollLeft +
+          coluna.getBoundingClientRect().left -
+          quadro.getBoundingClientRect().left -
+          12,
+        behavior: "instant",
+      });
+  }
   return (
-    <div ref={quadroRef} className={`${s.wrapLargo} ${s.pipe}`}>
-      <div className={s.tituloLinha}>
-        <h1>
-          Funil<i className={s.ponto}>.</i>
-        </h1>
-        {/* ---------- por que ESTE botão é rosa ----------
-            Regra da casa: o rosa é a cor do que ABRE alguma coisa. Numa
-            ferramenta de prospecção, o que abre alguma coisa é anotar um
-            lead novo: tudo o mais nesta tela mexe em negócio que já existe.
-            É o único botão rosa do CRM inteiro, e ele é o mesmo em todas as
-            telas onde aparece. */}
-        {/* A busca mora na linha da manchete desde 01/10: era uma linha
-            inteira só para ela, com meia linha de papel vazio ao lado do
-            título, e o quadro nascia meia janela abaixo do topo. */}
-        <label className={`${s.buscaLinha} ${s.pipeBusca}`}>
-          <span className={s.buscaRot}>Buscar</span>
+    <div
+      ref={quadroRef}
+      className={p.painel}
+      data-pipeline
+      data-saida-aberta={Boolean(saidaAberta)}
+    >
+      <div className={p.topo}>
+        <header className={p.cabecalho}>
+          <div>
+            <span className={p.sobretitulo}>ESTÚDIO / VENDAS</span>
+            <h1>
+              Pipeline de vendas<span>.</span>
+            </h1>
+            <p>Da primeira conversa ao projeto fechado.</p>
+          </div>
+          <div className={p.acoesCabecalho}>
+            <button
+              type="button"
+              className={`${p.botao} ${p.botaoSecundario} ${p.expandir}`}
+              aria-pressed={ampliado}
+              onClick={ampliar}
+            >
+              <IconePipeline nome="expandir" />
+              {ampliado ? "Sair da tela cheia" : "Ampliar"}
+            </button>
+            <button
+              type="button"
+              className={`${p.botao} ${p.botaoPrimario}`}
+              onClick={() => setNovo(true)}
+            >
+              <IconePipeline nome="mais" />
+              Novo lead
+            </button>
+          </div>
+        </header>
+
+        <div
+          className={p.indicadores}
+          aria-label="Resumo das oportunidades nesta seleção"
+        >
+          <div className={p.indicador} data-cor="verde">
+            <span className={p.iconeIndicador}>
+              <IconePipeline nome="dinheiro" />
+            </span>
+            <div>
+              <span>Em aberto</span>
+              <strong>{valorPipeline(placar.aberto)}</strong>
+              <small>
+                {placar.ativos}{" "}
+                {placar.ativos === 1 ? "oportunidade" : "oportunidades"} no funil
+              </small>
+            </div>
+          </div>
+          <div className={p.indicador} data-cor="azul">
+            <span className={p.iconeIndicador}>
+              <IconePipeline nome="proposta" />
+            </span>
+            <div>
+              <span>Proposta e negociação</span>
+              <strong>{valorPipeline(placar.naMesa)}</strong>
+              <small>
+                {placar.propostas}{" "}
+                {placar.propostas === 1
+                  ? "proposta em andamento"
+                  : "propostas em andamento"}
+              </small>
+            </div>
+          </div>
+          <div className={p.indicador} data-cor="ambar">
+            <span className={p.iconeIndicador}>
+              <IconePipeline nome="relogio" />
+            </span>
+            <div>
+              <span>Para fazer hoje</span>
+              <strong>
+                {placar.hoje}
+                <em> {placar.hoje === 1 ? "contato" : "contatos"}</em>
+              </strong>
+              <small>
+                {placar.atrasados}{" "}
+                {placar.atrasados === 1 ? "atrasado" : "atrasados"} ·{" "}
+                {placar.semPasso} sem data
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className={p.ferramentas}>
+        <label className={p.busca}>
+          <IconePipeline nome="busca" />
+          <span className={p.srOnly}>Buscar no pipeline</span>
           <input
             type="search"
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
-            placeholder="nome, empresa, nicho ou próximo passo"
+            placeholder="Buscar cliente, empresa ou próxima ação"
           />
         </label>
-        <button
-          type="button"
-          className={s.btnAcao}
-          onClick={() => setNovo(true)}
-        >
-          Anotar lead
-        </button>
-        <button
-          type="button"
-          className={`${s.btnMini} ${s.ampliarQuadro}`}
-          aria-pressed={ampliado}
-          onClick={ampliar}
-        >
-          {ampliado ? "Sair da tela cheia" : "Ampliar quadro"}
-        </button>
-      </div>
-
-      {/* ============================================================
-          A FAIXA DE STATUS
-
-          O pipeline era a única tela do CRM sem ela, e a ausência aparecia:
-          a manchete caía direto na linha de busca e o topo não tinha peso
-          nenhum. A faixa é o objeto mais pesado da casa (tinta cheia
-          sangrando pela margem esquerda até encostar no trilho) e ela existe
-          no painel Hoje, no hero do /portfolio e na /vitrine-digital.
-
-          Os três números não repetem os do quadro: as placas dizem quanto
-          tem em CADA etapa, a faixa diz o que o quadro inteiro soma. E
-          "Esperando você" é o único que não é dinheiro, de propósito: ele é
-          a pergunta que faz alguém abrir esta tela.
-          ============================================================ */}
-      <div className={s.faixa}>
-        <span className={s.faixaItem}>
-          {/* O ponto que pulsa: a assinatura da casa, no tom claro porque
-              aqui ele vive sobre grafite. Ele diz que os três números ao
-              lado são os de agora, contados sobre o que está na tela. */}
-          <i className={`${s.pontoVivo} ${s.pontoVivoClaro}`} aria-hidden />
-          Em aberto
-          <b className={s.faixaNum}>{dinheiroCurto(placar.aberto) || "R$ 0"}</b>
-        </span>
-
-        <span className={s.faixaItem}>
-          Na mesa
-          <b className={s.faixaNum}>{dinheiroCurto(placar.naMesa) || "R$ 0"}</b>
-        </span>
-
-        <span className={s.faixaItem}>
-          Esperando você
-          <b
-            className={`${s.faixaNum} ${placar.esperando ? s.faixaAlerta : s.faixaVivo}`}
+        <label className={p.saltoEtapa}>
+          <span className={p.srOnly}>Ir para etapa</span>
+          <select
+            value=""
+            onChange={(e) => navegarEtapa(e.target.value as Estagio)}
           >
-            {placar.esperando}
-          </b>
-        </span>
-      </div>
-
-      {/* ============================================================
-          A LINHA DE BUSCA
-
-          Ela era uma caixa larga de contorno claro com três caixas iguais
-          do lado: a única parte da tela com cara de formulário de sistema,
-          bem no meio de uma página que é toda tinta sobre papel.
-
-          Agora ela é uma LINHA ESCRITA. Nesta gramática não se escreve
-          dentro de uma caixa, escreve-se sobre um filete: o rótulo vem em
-          mono miúda na frente, o texto senta em cima de um traço de tinta,
-          e os três filtros são a segunda linha do mesmo impresso.
-
-          O QUE A FORMA PASSOU A DIZER: um filtro em uso fica com o filete
-          em tinta cheia e o texto em preto; um filtro em repouso fica com
-          o filete claro e o texto cinza. Dá para ver o que está ligado sem
-          ler nenhuma palavra, e é o mesmo princípio do filete de margem da
-          ficha, aplicado ao controle em vez de ao dado.
-          ============================================================ */}
-      <details className={`${s.impresso} ${s.painelFiltros}`}>
-        <summary>
-          <span>Filtros{filtrando ? " · em uso" : ""}</span>
-          <span>
-            {filtrando
-              ? `${filtrados.length} de ${leads.length}`
-              : leads.length}{" "}
-            {leads.length === 1 ? "lead" : "leads"} no quadro
-          </span>
-        </summary>
-        <div className={s.filtros}>
-          {pediram ? (
-            <button
-              type="button"
-              className={`${s.vezMonte} ${s.vezMontePediram} ${soPediram ? s.vezMonteAtivo : ""}`}
-              onClick={() => setSoPediram((v) => !v)}
-              aria-pressed={soPediram}
-              aria-label={`Só quem chegou por anúncio ou pelo site, ${pediram}`}
-            >
-              Anúncio e site<b className={s.vezMonteNum}>{pediram}</b>
-            </button>
-          ) : null}
-
-          <Filtro rotulo="Tipo" valor={tipo} aoMudar={setTipo} vazio="todos">
-            {TIPOS_PROJETO.map((t) => (
-              <option key={t} value={t}>
-                {NOME_TIPO[t]}
+            <option value="" disabled>
+              Ir para etapa…
+            </option>
+            {ESTAGIOS_DO_QUADRO.map((e) => (
+              <option key={e} value={e}>
+                {NOME_ESTAGIO[e]} · {porColuna[e].length}
               </option>
             ))}
-          </Filtro>
-
-          <Filtro
-            rotulo="Origem"
-            valor={origem}
-            aoMudar={setOrigem}
-            vazio="todas"
-          >
-            {ORIGENS.map((o) => (
-              <option key={o} value={o}>
-                {NOME_ORIGEM[o]}
-              </option>
-            ))}
-          </Filtro>
-
-          <Filtro rotulo="Nicho" valor={nicho} aoMudar={setNicho} vazio="todos">
-            {nichos.map((n) => (
-              <option key={n} value={n}>
-                {n}
-              </option>
-            ))}
-          </Filtro>
-
-          {/* Só existe quando algum lead veio de anúncio: um filtro com
-              a lista vazia seria uma pergunta sem resposta possível. */}
-          {anuncios.length ? (
+          </select>
+        </label>
+        <details className={p.filtrosAvancados} data-ferramenta>
+          <summary>
+            <IconePipeline nome="filtros" />
+            Filtros{numeroFiltros > 0 && <b>{numeroFiltros}</b>}
+          </summary>
+          <div className={p.filtros}>
+            {pediram > 0 && (
+              <button
+                type="button"
+                className={`${p.botao} ${soPediram ? p.filtroLigado : ""}`}
+                aria-pressed={soPediram}
+                onClick={() => setSoPediram((v) => !v)}
+              >
+                Anúncio e site · {pediram}
+              </button>
+            )}
             <Filtro
-              rotulo="Anúncio"
-              valor={anuncio}
-              aoMudar={setAnuncio}
-              vazio="todos"
+              rotulo="Tipo de projeto"
+              valor={tipo}
+              aoMudar={setTipo}
+              vazio="Todos"
             >
-              {anuncios.map((a) => (
-                <option key={a} value={a}>
-                  {a}
+              {TIPOS_PROJETO.map((t) => (
+                <option key={t} value={t}>
+                  {NOME_TIPO[t]}
                 </option>
               ))}
             </Filtro>
-          ) : null}
-
-          {/* ---------- O PLACAR, COM O PONTO PULSANTE ----------
-              O ponto verde que pulsa é a assinatura registrada do estúdio:
-              ele está no cabeçalho da /vitrine-digital, na faixa do
-              /portfolio e no chip "NO AR" de cada card de lá. Trazê-lo para
-              cá é o que faz esta linha ser da casa, e ele não é enfeite:
-              ele diz que o número ao lado é o de agora, calculado sobre o
-              que está na tela.
-
-              Filtrando, o placar vira "3 DE 9" e ganha o botão de limpar.
-              Sem ele, "não achei o lead" e "o filtro escondeu o lead" são a
-              mesma tela vazia. */}
-          <span className={s.placarBusca}>
-            <i className={s.pontoVivo} aria-hidden />
-            {filtrando ? (
-              <>
-                <b>{filtrados.length}</b> de {leads.length}
-                <button
-                  type="button"
-                  className={s.recolher}
-                  onClick={limparFiltros}
-                >
-                  Limpar
-                </button>
-              </>
-            ) : (
-              <>
-                <b>{leads.length}</b> {leads.length === 1 ? "lead" : "leads"} no
-                quadro
-              </>
+            <Filtro
+              rotulo="Origem"
+              valor={origem}
+              aoMudar={setOrigem}
+              vazio="Todas"
+            >
+              {ORIGENS.map((o) => (
+                <option key={o} value={o}>
+                  {NOME_ORIGEM[o]}
+                </option>
+              ))}
+            </Filtro>
+            <Filtro
+              rotulo="Nicho"
+              valor={nicho}
+              aoMudar={setNicho}
+              vazio="Todos"
+            >
+              {nichos.map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+            </Filtro>
+            {anuncios.length > 0 && (
+              <Filtro
+                rotulo="Anúncio"
+                valor={anuncio}
+                aoMudar={setAnuncio}
+                vazio="Todos"
+              >
+                {anuncios.map((a) => (
+                  <option key={a} value={a}>
+                    {a}
+                  </option>
+                ))}
+              </Filtro>
             )}
-          </span>
-        </div>
-      </details>
-
-      {erro ? (
-        <p role="alert" className={s.erro}>
+          </div>
+        </details>
+        <details className={p.prospeccao} data-ferramenta>
+          <summary>
+            <IconePipeline nome="pessoas" />
+            Prospecção
+          </summary>
+          <div>
+            <PesquisaLote leads={porColuna.lista} />
+          </div>
+        </details>
+      </div>
+      {erro && (
+        <p role="alert" className={p.erro}>
           {erro}
         </p>
-      ) : null}
+      )}
 
-      {/* ---------- seletor de coluna do celular ----------
-          As sete etapas do caminho viram sete chips com o contador dentro.
-          Ganho, perdido e geladeira ficam de fora: eles não são coluna nem
-          aqui nem no computador, são as três placas do fim do quadro, e
-          elas continuam visíveis e clicáveis logo abaixo. */}
-      <div className={s.chips} role="tablist" aria-label="Etapa do funil">
-        {ESTAGIOS_DO_QUADRO.map((e) => (
-          <button
-            key={e}
-            type="button"
-            role="tab"
-            aria-selected={colunaMovel === e}
-            className={`${s.chip} ${colunaMovel === e ? s.chipAtivo : ""}`}
-            onClick={() => setColunaMovel(e)}
-          >
-            {NOME_ESTAGIO[e]}
-            <small>{porColuna[e].length}</small>
-          </button>
-        ))}
-      </div>
-
-      {/* O `id` fixo não é enfeite: sem ele o dnd-kit numera sozinho os
-          `aria-describedby` de cada card, e o contador do servidor não é o
-          mesmo do navegador. O resultado era um erro de hidratação em toda
-          abertura do pipeline, com o React descartando o HTML do servidor e
-          redesenhando o quadro inteiro. Com o id declarado, os dois lados
-          geram a mesma sequência. */}
       <DndContext
         id="quadro-crm"
         sensors={sensores}
         collisionDetection={closestCorners}
+        accessibility={{
+          screenReaderInstructions: {
+            draggable:
+              "Para mover um lead, foque o botão Arrastar e pressione espaço. Use as setas para escolher o destino, espaço para soltar e Escape para cancelar. Você também pode usar Mover para no card.",
+          },
+        }}
         onDragStart={(e: DragStartEvent) =>
           setArrastando(leads.find((l) => l.id === e.active.id) ?? null)
         }
         onDragCancel={() => setArrastando(null)}
         onDragEnd={aoSoltar}
       >
-        {/* ---------- o quadro ----------
-            Sete colunas de caminho, e no fim as três placas de saída. O
-            `.quadroCaixa` existe só para segurar o esmaecido da borda
-            direita, que é o que diz "tem mais quadro para lá" sem depender
-            de a pessoa notar uma barra de rolagem. */}
-        {/* ---------- O QUADRO SÓ MOSTRA OS ALVOS COM UM CARD NO AR ----------
-            O alvo de soltar da coluna vazia era desenhado o tempo todo, e o
-            comentário dele dizia "silencioso quando ninguém está
-            arrastando". Ele não era: seis retângulos tracejados de 62px num
-            quadro de dois leads são a coisa mais presente da tela, e o que
-            eles anunciavam era o próprio vazio, seis vezes.
-
-            A classe entra no quadro inteiro e não em cada coluna porque a
-            pergunta é do quadro ("há um card no ar?"), não de cada uma. */}
-        <div className={s.quadroCaixa}>
+        <div className={p.operacao}>
+          <div className={p.linhaFoco}>
+            <div className={p.focos} aria-label="Prioridade dos contatos">
+              {(
+                [
+                  ["todos", "Todos", placar.ativos],
+                  ["hoje", "Para hoje", placar.hoje],
+                  ["atrasados", "Atrasados", placar.atrasados],
+                  ["sem_passo", "Sem próxima data", placar.semPasso],
+                ] as [FocoPipeline, string, number][]
+              ).map(([valor, rotulo, total]) => (
+                <button
+                  key={valor}
+                  type="button"
+                  data-foco={valor}
+                  aria-pressed={foco === valor}
+                  onClick={() => setFoco(valor)}
+                >
+                  {rotulo}
+                  <span>{total}</span>
+                </button>
+              ))}
+            </div>
+            <div className={p.resultadoBusca} aria-live="polite">
+              {filtrando
+                ? `${filtrados.length} de ${leads.length} leads`
+                : `${placar.ativos} oportunidades em aberto`}
+              {filtrando && (
+                <button type="button" onClick={limparFiltros}>
+                  Limpar filtros
+                </button>
+              )}
+            </div>
+          </div>
           <div
-            className={`${s.quadro} ${arrastando ? s.quadroEmVoo : ""}`}
-            role="region"
-            aria-label="Quadro de oportunidades"
-            tabIndex={0}
+            className={p.resultados}
+            aria-label="Resultados e contatos pausados"
           >
-            {/* ---------- O CORTE DO FUNIL (21/09) ----------
-                Uma silhueta de tinta atravessando as sete etapas, com a
-                altura de cada trecho na proporção de quantos leads há
-                ali (raiz quadrada, senão os 272 da Lista achatam o resto
-                em nada). É o desenho do que o quadro É: um funil. Ela
-                substitui as sete placas pretas e a régua de dinheiro de
-                4px, e é a única tinta cheia da mesa; o resto vira papel
-                em três tons. Conta o quadro FILTRADO, como o placar. */}
-            <PerfilDoFunil
-              contagens={ESTAGIOS_DO_QUADRO.map((e) => porColuna[e].length)}
-            />
-
-            {ESTAGIOS_DO_QUADRO.map((estagio) => (
-              <Coluna
+            {ESTAGIOS_DE_PLACA.map((estagio) => (
+              <PlacaDeSaida
                 key={estagio}
                 estagio={estagio}
                 leads={porColuna[estagio]}
-                hoje={hoje}
-                assentando={assentando}
-                /* ---------- A MESA RESPONDE NA MÃO ----------
-                   Com um card no ar, cada coluna escreve na própria placa o
-                   que ELA ainda vai exigir DAQUELE lead. É a mesma
-                   `oQueFalta` que o soltar consulta e que o servidor
-                   confere: a coluna não está adivinhando, está adiantando a
-                   resposta que já existia.
-
-                   Sai vazio quando não falta nada ali, e coluna calada
-                   continua mostrando a legenda normal. O silêncio é o "pode
-                   soltar". */
-                pede={pedeNaColuna(estagio)}
-                visivelNoCelular={colunaMovel === estagio}
-                aoTrocarEstagio={trocarEstagio}
+                aberta={saidaAberta === estagio}
+                pede={
+                  arrastando ? oQuePede(oQueFalta(estagio, arrastando)) : ""
+                }
+                aoAbrir={() =>
+                  setSaidaAberta(saidaAberta === estagio ? null : estagio)
+                }
               />
             ))}
-
-            {/* Três placas e não duas desde 20/08: a geladeira entrou ao
-                lado das duas saídas porque ela é a mesma natureza de coisa
-                (não é etapa do caminho, é o que acontece com quem sai
-                dele), com uma diferença que o filete tracejado diz: dela
-                se volta, e sozinho, no dia marcado. */}
-            <div className={s.placas}>
-              {ESTAGIOS_DE_PLACA.map((estagio) => (
-                <PlacaDeSaida
-                  key={estagio}
-                  estagio={estagio}
-                  leads={porColuna[estagio]}
-                  aberta={saidaAberta === estagio}
-                  pede={
-                    arrastando ? oQuePede(oQueFalta(estagio, arrastando)) : ""
-                  }
-                  aoAbrir={() =>
-                    setSaidaAberta(saidaAberta === estagio ? null : estagio)
-                  }
-                />
-              ))}
-            </div>
           </div>
         </div>
-
-        {/* O card em voo leva a exigência que vale em toda parte. É a única
-            frase que a mão precisa ver o tempo todo: as colunas dizem o que
-            muda de uma para outra, o card diz o que não muda em lugar
-            nenhum. "Falta" e não "pede" porque aqui o sujeito é o lead. */}
+        <nav className={p.etapas} aria-label="Navegar pelas etapas do funil">
+          {ESTAGIOS_DO_QUADRO.map((e, i) => (
+            <button
+              key={e}
+              type="button"
+              data-etapa={e}
+              data-atual={colunaMovel === e}
+              aria-label={`${NOME_ESTAGIO[e]}, ${porColuna[e].length} leads. Mostrar etapa.`}
+              onClick={() => navegarEtapa(e)}
+            >
+              <span className={p.numeroEtapa}>
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <span>{NOME_ESTAGIO[e]}</span>
+              <b>{porColuna[e].length}</b>
+            </button>
+          ))}
+        </nav>
+        <div
+          ref={rolagemRef}
+          className={p.quadro}
+          role="region"
+          aria-label="Quadro de oportunidades"
+          tabIndex={0}
+          aria-busy={salvando}
+          data-arrastando={Boolean(arrastando)}
+        >
+          {ESTAGIOS_DO_QUADRO.map((estagio, i) => (
+            <Coluna
+              key={estagio}
+              estagio={estagio}
+              indice={i}
+              leads={porColuna[estagio]}
+              hoje={hoje}
+              assentando={assentando}
+              pede={pedeNaColuna(estagio)}
+              visivelNoCelular={colunaMovel === estagio}
+              aoTrocarEstagio={trocarEstagio}
+              desabilitado={salvando}
+              arrastando={Boolean(arrastando)}
+              filtrando={filtrando}
+              aoNovo={() => setNovo(true)}
+            />
+          ))}
+        </div>
+        <div className={p.notaQuadro}>
+          <span>
+            <span className={p.notaDesktop}>
+              Arraste pelos seis pontos ou use{" "}
+            </span>
+            <span className={p.notaMobile}>Use </span>“Mover para” no card para
+            mudar de etapa.
+          </span>
+          {salvando ? (
+            <span role="status">Salvando mudança…</span>
+          ) : (
+            <span>Valores estimados, antes do fechamento.</span>
+          )}
+        </div>
         <DragOverlay>
-          {arrastando ? (
+          {arrastando && (
             <CardVoando
               lead={arrastando}
               hoje={hoje}
               falta={oQuePede(exigenciaComum, "Falta")}
             />
-          ) : null}
+          )}
         </DragOverlay>
-
-        {/* A saída aberta se estende EMBAIXO do quadro, em largura inteira, e
-            não dentro de uma coluna de 220px. Ganho e perdido não são fila
-            de trabalho: são histórico, e histórico se lê em lista larga. */}
-        {saidaAberta ? (
+        {saidaAberta && (
           <section
-            className={s.saidaLista}
+            ref={saidaRef}
+            tabIndex={-1}
+            className={p.saidaLista}
             aria-label={NOME_ESTAGIO[saidaAberta]}
+            data-etapa={saidaAberta}
           >
-            <h2
-              className={`${s.rotulo} ${saidaAberta === "ganho" ? s.rotuloHoje : ""}`}
-            >
-              {NOME_ESTAGIO[saidaAberta]}
-              <span className={s.rotuloCont}>
-                {porColuna[saidaAberta].length}
-              </span>
-              <button
-                type="button"
-                className={s.recolher}
-                onClick={() => setSaidaAberta(null)}
-              >
-                Fechar
+            <div className={p.saidaCabeca}>
+              <div>
+                <h2>
+                  {NOME_ESTAGIO[saidaAberta]}{" "}
+                  <span>{porColuna[saidaAberta].length}</span>
+                </h2>
+                <p>{ETAPAS_VISUAIS[saidaAberta].descricao}</p>
+              </div>
+              <button type="button" className={p.botao} onClick={fecharSaida}>
+                Fechar lista
               </button>
-            </h2>
-
+            </div>
             {porColuna[saidaAberta].length === 0 ? (
-              <p className={s.blocoNota}>Nada por aqui neste filtro.</p>
+              <p className={p.nota}>{ETAPAS_VISUAIS[saidaAberta].vazio}</p>
             ) : (
-              <div className={s.saidaGrade}>
-                {/* Também em SortableContext: um card fechado continua
-                    arrastável (é assim que um "perdido" volta para a
-                    conversa quando a pessoa reaparece), e fora do contexto
-                    o dnd-kit não sabe calcular a posição de origem. */}
-                <SortableContext
-                  items={porColuna[saidaAberta].map((l) => l.id)}
-                  strategy={verticalListSortingStrategy}
-                >
+              <SortableContext
+                items={porColuna[saidaAberta].map((l) => l.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                <div className={p.saidaGrade}>
                   {porColuna[saidaAberta].map((lead) => (
                     <CardLead
                       key={lead.id}
@@ -775,16 +865,16 @@ export function Quadro({
                       hoje={hoje}
                       assentando={assentando === lead.id}
                       aoTrocarEstagio={trocarEstagio}
+                      desabilitado={salvando}
                     />
                   ))}
-                </SortableContext>
-              </div>
+                </div>
+              </SortableContext>
             )}
           </section>
-        ) : null}
+        )}
       </DndContext>
-
-      {pendente ? (
+      {pendente && (
         <ModalPassagem
           nomeLead={pendente.lead.nome}
           estagio={pendente.estagio}
@@ -795,27 +885,20 @@ export function Quadro({
             aplicar(pendente.lead, pendente.estagio, pendente.posicao, passagem)
           }
         />
-      ) : null}
-
-      {fechando ? (
+      )}
+      {fechando && (
         <ModalContrato
           lead={fechando}
           hoje={hoje}
           ganhar
           aoFechar={() => setFechando(null)}
         />
-      ) : null}
-
-      {novo ? <ModalNovoLead aoFechar={() => setNovo(false)} /> : null}
+      )}
+      {novo && <ModalNovoLead aoFechar={() => setNovo(false)} />}
     </div>
   );
 }
 
-/* ---------- um filtro da linha impressa ----------
-   Rótulo em mono na frente, valor escrito sobre um filete. A opção vazia
-   não diz "Todo tipo" (que soa como uma escolha entre outras): ela diz
-   "todos", em minúscula, porque um campo em repouso é um campo que ainda
-   não foi preenchido. */
 function Filtro({
   rotulo,
   valor,
@@ -830,8 +913,8 @@ function Filtro({
   children: React.ReactNode;
 }) {
   return (
-    <label className={`${s.filtro} ${valor ? s.filtroAtivo : ""}`}>
-      <span className={s.filtroRot}>{rotulo}</span>
+    <label className={p.filtro}>
+      <span>{rotulo}</span>
       <select value={valor} onChange={(e) => aoMudar(e.target.value)}>
         <option value="">{vazio}</option>
         {children}
@@ -840,107 +923,74 @@ function Filtro({
   );
 }
 
-/* ============================================================
-   UMA COLUNA
-
-   O cabeçalho é uma PLACA DE TINTA, e essa é a decisão que dá cara ao
-   quadro. Antes ele era papel claro com um filete embaixo: correto,
-   anônimo, e igual ao cabeçalho de qualquer tabela. Agora as sete placas
-   pretas atravessam o topo do quadro como uma régua interrompida, que é o
-   mesmo objeto da faixa de status do painel Hoje e do trilho da esquerda.
-   A ferramenta inteira passa a ter um vocabulário só: tinta cheia onde o
-   sistema fala, papel onde o trabalho acontece.
-
-   Dentro da placa, a hierarquia é a da casa: nome em condensada branca,
-   contagem em `--green-live` (o único esmeralda legível sobre grafite), e
-   a soma em cinza-claro na mono. A legenda de duas ou três palavras
-   embaixo diz o que a etapa é, porque "Lista" e "Prévia" são nomes que só
-   significam alguma coisa para quem já usou.
-   ============================================================ */
 function Coluna({
   estagio,
+  indice,
   leads,
   hoje,
   assentando,
   pede,
   visivelNoCelular,
   aoTrocarEstagio,
+  desabilitado,
+  arrastando,
+  filtrando,
+  aoNovo,
 }: {
   estagio: Estagio;
+  indice: number;
   leads: LeadPainel[];
   hoje: string;
   assentando: string | null;
   pede: string;
   visivelNoCelular: boolean;
   aoTrocarEstagio: (lead: LeadPainel, estagio: Estagio) => void;
+  desabilitado: boolean;
+  arrastando: boolean;
+  filtrando: boolean;
+  aoNovo: () => void;
 }) {
-  const { setNodeRef, isOver } = useDroppable({ id: idDaColuna(estagio) });
-  const soma = leads.reduce((t, l) => t + (l.ticket_estimado ?? 0), 0);
-
-  /* ---------- A CONTAGEM É UM SINAL, NÃO SÓ UM NÚMERO ----------
-     Ela era sempre esmeralda, dissesse o que dissesse. Agora ela é rosa
-     quando aquela coluna tem alguém esperando (retorno vencido ou lead sem
-     próximo passo), e esmeralda quando está tudo em dia.
-
-     O efeito é que a fileira de placas pretas do topo vira uma barra de
-     status: dá para varrer as sete e saber ONDE está o trabalho sem ler uma
-     palavra e sem abrir coluna nenhuma. É o mesmo princípio do filete de
-     margem da ficha, um nível acima, e é a única coisa que o rosa faz no
-     quadro além do ponto final da manchete. */
-  const pedindo = leads.filter((l) => {
-    const u = urgencia(l, hoje);
-    return u === "atrasado" || u === "sem_passo";
-  }).length;
-
+  const { setNodeRef, isOver } = useDroppable({
+    id: idDaColuna(estagio),
+    data: { estagio },
+    disabled: desabilitado,
+  });
+  const soma = leads.reduce((s, l) => s + Number(l.ticket_estimado ?? 0), 0);
+  const pedindo = leads.filter((l) =>
+    ["atrasado", "sem_passo"].includes(urgencia(l, hoje)),
+  ).length;
   return (
     <section
-      className={s.coluna}
-      /* No celular só uma coluna aparece por vez, e quem escolhe é o chip
-         lá de cima. A escolha viaja como atributo de dado e o CSS resolve
-         o resto: assim o mesmo HTML serve às duas larguras e nada depende
-         de medir a tela no JavaScript, que é o que costuma piscar entre o
-         primeiro e o segundo quadro. */
-      data-visivel={visivelNoCelular ? "sim" : "nao"}
+      className={p.coluna}
+      data-etapa={estagio}
+      data-coluna={estagio}
+      data-visivel={visivelNoCelular}
       aria-label={`${NOME_ESTAGIO[estagio]}: ${leads.length} leads`}
     >
-      {/* ---------- O PLACAR DA ETAPA (21/09) ----------
-          O número vem PRIMEIRO e grande, na Archivo larga: é ele que o
-          corte do funil logo acima desenha, e é ele que se lê varrendo
-          as sete etapas. O nome fica ao lado, em caixa normal; a legenda
-          embaixo, em frase. A placa de tinta que ficava aqui foi para o
-          perfil, uma vez só, em vez de sete. */}
-      <header className={s.colunaCab}>
-        <span className={s.colunaTopo}>
-          <span
-            className={`${s.colunaCont} ${pedindo ? s.colunaPedindo : ""} ${!leads.length ? s.colunaZero : ""}`}
-            title={pedindo ? `${pedindo} esperando você` : undefined}
-          >
-            {leads.length}
-          </span>
-          <h2 className={s.colunaNome}>{NOME_ESTAGIO[estagio]}</h2>
-          {soma ? (
-            <span className={s.colunaSoma}>{dinheiroCurto(soma)}</span>
-          ) : null}
-        </span>
-        {/* A legenda dá lugar à exigência enquanto há um card no ar. Não é
-            uma linha nova: é a MESMA linha dizendo a coisa que importa
-            naquele segundo. Uma segunda linha faria a placa crescer e o
-            quadro inteiro empurrar para baixo no instante em que a mão
-            levanta, que é o pior momento possível para a tela se mexer. */}
-        <span className={`${s.colunaNota} ${pede ? s.colunaPede : ""}`}>
-          {pede || NOTA_ESTAGIO[estagio]}
-        </span>
+      <header className={p.colunaCab}>
+        <div className={p.colunaTitulo}>
+          <span className={p.pontoEtapa} />
+          <h2>{NOME_ESTAGIO[estagio]}</h2>
+          <span className={p.contagem}>{leads.length}</span>
+        </div>
+        <p>{ETAPAS_VISUAIS[estagio].descricao}</p>
+        <div className={p.colunaResumo}>
+          <b>{valorPipeline(soma)}</b>
+          {pedindo > 0 ? (
+            <span>
+              <i />
+              {pedindo} {pedindo === 1 ? "pede" : "pedem"} atenção
+            </span>
+          ) : (
+            <span>{String(indice + 1).padStart(2, "0")} / 07</span>
+          )}
+        </div>
       </header>
-
       <div
         ref={setNodeRef}
-        className={`${s.colunaLista} ${isOver ? s.colunaAlvo : ""}`}
+        className={`${p.colunaLista} ${isOver ? p.alvo : ""}`}
       >
-        {/* Só a Lista tem o lote: é onde lead importado aterrissa, e é o
-            único lugar onde "pesquisar todo mundo" faz sentido. Nas outras
-            colunas a conversa já começou e o dossiê se pede pela ficha. */}
-        {estagio === "lista" ? <PesquisaLote leads={leads} /> : null}
-
+        {pede && <p className={p.exigencia}>{pede}</p>}
         <SortableContext
           items={leads.map((l) => l.id)}
           strategy={verticalListSortingStrategy}
@@ -952,49 +1002,39 @@ function Coluna({
               hoje={hoje}
               assentando={assentando === lead.id}
               aoTrocarEstagio={aoTrocarEstagio}
+              desabilitado={desabilitado}
             />
           ))}
         </SortableContext>
-
-        {/* A coluna vazia não escreve "VAZIA". Cinco caixas cinzas repetindo
-            a mesma palavra dominavam a tela de um CRM recém-aberto, e o zero
-            já está dito na placa preta logo acima. O que fica é um alvo de
-            soltar do tamanho de uma ficha: silencioso quando ninguém está
-            arrastando, e acesa quando alguém está. */}
-        {!leads.length ? (
-          <span className={s.colunaAlvoVazio} aria-hidden />
-        ) : null}
+        {leads.length === 0 && (
+          <div className={p.vazio}>
+            <span className={p.vazioIcone}>
+              <IconePipeline nome={arrastando ? "mais" : "pessoas"} />
+            </span>
+            <b>
+              {arrastando
+                ? "Solte o lead aqui"
+                : filtrando
+                  ? "Nenhum lead neste filtro"
+                  : "O próximo passo acontece aqui"}
+            </b>
+            <p>
+              {filtrando
+                ? "Ajuste a busca ou os filtros para ver mais contatos."
+                : ETAPAS_VISUAIS[estagio].vazio}
+            </p>
+            {estagio === "lista" && !filtrando && !arrastando && (
+              <button type="button" onClick={aoNovo}>
+                <IconePipeline nome="mais" />
+                Adicionar lead
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </section>
   );
 }
-
-/* ============================================================
-   A PLACA DE SAÍDA — ganho, perdido e geladeira
-
-   Elas eram colunas recolhidas: lombadas verticais de 52px com o nome
-   deitado e um zero embaixo. Ocupavam a largura de duas etapas vivas para
-   dizer dois números, e ninguém consegue ler texto girado de relance.
-
-   Agora são placas empilhadas num slot só, no fim do quadro, e a forma diz
-   o que elas são: não são etapas do caminho, são o que acontece com quem
-   sai dele. Continuam sendo alvo de arrasto (é assim que um lead fecha), e
-   o clique abre a lista inteira EMBAIXO do quadro, em largura cheia, que é
-   como se lê histórico.
-
-   O placar do ganho é o valor FECHADO, não o estimado: depois que o
-   negócio aconteceu, a estimativa deixou de ser notícia. Perdido e
-   geladeira não têm valor fechado nenhum, então os dois caem na legenda da
-   etapa, que é o que se quer saber deles.
-
-   ---------- a terceira, que entrou em 20/08 ----------
-   A geladeira é a única daqui de onde o lead volta sozinho: ela é ATIVA, e
-   por isso o painel Hoje devolve o lead na data marcada. O que a põe nesta
-   fileira em vez de numa oitava coluna é a mesma pergunta que separou
-   ganho e perdido das outras: coluna é o que se trabalha todo dia, e a
-   geladeira é exatamente o que não se trabalha. O filete tracejado é o que
-   diz que esta saída tem volta.
-   ============================================================ */
 function PlacaDeSaida({
   estagio,
   leads,
@@ -1008,82 +1048,34 @@ function PlacaDeSaida({
   pede: string;
   aoAbrir: () => void;
 }) {
-  const { setNodeRef, isOver } = useDroppable({ id: idDaColuna(estagio) });
-  const soma = leads.reduce((t, l) => t + (l.valor_fechado ?? 0), 0);
-  const cor =
-    estagio === "ganho"
-      ? s.placaGanho
-      : estagio === "geladeira"
-        ? s.placaGelo
-        : s.placaPerda;
-
+  const { setNodeRef, isOver } = useDroppable({
+    id: idDaColuna(estagio),
+    data: { estagio },
+  });
   return (
     <button
       ref={setNodeRef}
       type="button"
-      onClick={aoAbrir}
+      data-etapa={estagio}
+      data-resultado={estagio}
+      data-alvo={isOver}
+      className={p.resultado}
       aria-expanded={aberta}
-      className={`${s.placa} ${cor} ${isOver ? s.placaAlvo : ""} ${aberta ? s.placaAberta : ""}`}
+      onClick={aoAbrir}
+      title={pede || ETAPAS_VISUAIS[estagio].descricao}
     >
-      <span className={s.placaNome}>{NOME_ESTAGIO[estagio]}</span>
-      <b className={s.placaNum}>{leads.length}</b>
-      {/* Com um card no ar, a linha de baixo troca o placar pela exigência.
-          Estas duas são as que mais cobram (ganho quer valor e data,
-          perdido quer o motivo), e ficarem caladas enquanto as sete colunas
-          avisam leria como "aqui pode soltar". */}
-      <span className={`${s.placaSoma} ${pede ? s.placaPede : ""}`}>
-        {pede || (soma ? dinheiroCurto(soma) : NOTA_ESTAGIO[estagio])}
-      </span>
+      <IconePipeline
+        nome={
+          estagio === "ganho"
+            ? "ganho"
+            : estagio === "perdido"
+              ? "perdido"
+              : "geladeira"
+        }
+      />
+      <span>{NOME_ESTAGIO[estagio]}</span>
+      <b>{leads.length}</b>
+      {pede && <small>{pede}</small>}
     </button>
-  );
-}
-
-/* ============================================================
-   O CORTE DO FUNIL
-
-   Sete pontos, um por etapa do caminho, ligados por uma curva e fechados
-   até o chão: a silhueta é o funil visto de lado. A altura de cada ponto
-   é a raiz quadrada da contagem contra a maior das sete (com 272 na Lista
-   e 4 no Follow-up, a escala linear achataria seis etapas numa linha), e
-   uma etapa com alguém dentro nunca desce abaixo de um filete, para a
-   forma não dizer "vazio" onde há gente.
-
-   Ela é um SVG esticado (preserveAspectRatio none) na largura das sete
-   colunas: os pontos ficam no meio de cada coluna, e os 6px de vão entre
-   elas pesam menos de 1% da largura, o que não vale uma conta separada.
-   ============================================================ */
-function PerfilDoFunil({ contagens }: { contagens: number[] }) {
-  const L = 700;
-  const A = 64;
-  const maior = Math.max(0, ...contagens);
-  const altura = (n: number) =>
-    n <= 0 || maior <= 0 ? 0 : 5 + 55 * (Math.sqrt(n) / Math.sqrt(maior));
-  const pontos = contagens.map((n, i) => ({
-    x: ((i + 0.5) / contagens.length) * L,
-    y: A - altura(n),
-  }));
-  const inicio = { x: 0, y: pontos[0]?.y ?? A };
-  const fim = { x: L, y: pontos[pontos.length - 1]?.y ?? A };
-  const serie = [inicio, ...pontos, fim];
-
-  /* Catmull-Rom para Bézier: passa por todos os pontos, sem quina. */
-  let d = `M ${serie[0].x} ${serie[0].y}`;
-  for (let i = 0; i < serie.length - 1; i++) {
-    const p0 = serie[Math.max(0, i - 1)];
-    const p1 = serie[i];
-    const p2 = serie[i + 1];
-    const p3 = serie[Math.min(serie.length - 1, i + 2)];
-    const c1 = { x: p1.x + (p2.x - p0.x) / 6, y: p1.y + (p2.y - p0.y) / 6 };
-    const c2 = { x: p2.x - (p3.x - p1.x) / 6, y: p2.y - (p3.y - p1.y) / 6 };
-    d += ` C ${c1.x.toFixed(1)} ${c1.y.toFixed(1)}, ${c2.x.toFixed(1)} ${c2.y.toFixed(1)}, ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
-  }
-  d += ` L ${L} ${A} L 0 ${A} Z`;
-
-  return (
-    <div className={s.perfil} aria-hidden>
-      <svg viewBox={`0 0 ${L} ${A}`} preserveAspectRatio="none">
-        <path d={d} />
-      </svg>
-    </div>
   );
 }

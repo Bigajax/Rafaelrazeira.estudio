@@ -1,0 +1,1471 @@
+.painel {
+  --texto: #22342d;
+  --suave: #637568;
+  --borda: #dfe6e1;
+  --acento: #14724f;
+  --etapa: #67798b;
+  --etapa-suave: #eaf0f6;
+  color: var(--texto);
+  font-family: var(--body, Arial, sans-serif);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+:global(main):has(.painel) {
+  background: #f5f7f5;
+  padding-block: 24px 16px;
+}
+.painel [data-etapa="lista"],
+.painel .card[data-etapa="lista"] {
+  --etapa: #566b82;
+  --etapa-suave: #edf1f7;
+  --raia: #f0f3f7;
+}
+.painel [data-etapa="contatado"],
+.painel .card[data-etapa="contatado"] {
+  --etapa: #286aa6;
+  --etapa-suave: #e8f2fc;
+  --raia: #edf4fa;
+}
+.painel [data-etapa="follow_up"],
+.painel .card[data-etapa="follow_up"] {
+  --etapa: #8c5c12;
+  --etapa-suave: #fbf0d8;
+  --raia: #faf6ec;
+}
+.painel [data-etapa="conversa"],
+.painel .card[data-etapa="conversa"] {
+  --etapa: #0b6d6e;
+  --etapa-suave: #e0f3f0;
+  --raia: #edf7f4;
+}
+.painel [data-etapa="previa"],
+.painel .card[data-etapa="previa"] {
+  --etapa: #7956b2;
+  --etapa-suave: #eee7f9;
+  --raia: #f4f0fa;
+}
+.painel [data-etapa="proposta"],
+.painel .card[data-etapa="proposta"] {
+  --etapa: #4b60b9;
+  --etapa-suave: #e9edfc;
+  --raia: #f0f2fc;
+}
+.painel [data-etapa="negociacao"],
+.painel .card[data-etapa="negociacao"] {
+  --etapa: #24734e;
+  --etapa-suave: #e1f3e8;
+  --raia: #edf6ef;
+}
+.painel [data-etapa="ganho"],
+.painel .card[data-etapa="ganho"] {
+  --etapa: #19724c;
+  --etapa-suave: #e6f4eb;
+}
+.painel [data-etapa="perdido"],
+.painel .card[data-etapa="perdido"] {
+  --etapa: #8d5353;
+  --etapa-suave: #f8eceb;
+}
+.painel [data-etapa="geladeira"],
+.painel .card[data-etapa="geladeira"] {
+  --etapa: #4c6e90;
+  --etapa-suave: #eaf2f9;
+}
+.painel .cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex: none;
+}
+.painel .sobretitulo {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #637568;
+  margin-bottom: 6px;
+}
+.painel .cabecalho h1 {
+  margin: 0;
+  color: #21392c;
+  font: 750 clamp(25px, 2.5vw, 34px)/1.15 var(--body, Arial, sans-serif);
+  letter-spacing: -0.045em;
+}
+.painel .cabecalho h1 > span {
+  color: #2ba36d;
+}
+.painel .cabecalho p {
+  font-size: 12px;
+  color: var(--suave);
+  margin: 7px 0 0;
+}
+.painel .acoesCabecalho {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.painel .botao {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+  min-height: 40px;
+  border: 1px solid var(--borda);
+  padding: 9px 14px;
+  border-radius: 8px;
+  font: 600 12px/1.4 var(--body, Arial, sans-serif);
+  background: white;
+  color: var(--texto);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.painel .botao svg {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+.painel .botaoPrimario {
+  background: var(--acento);
+  border-color: var(--acento);
+  color: white;
+  box-shadow: 0 3px 8px #176a451b;
+}
+.painel .botaoSecundario {
+  color: #607169;
+  background: transparent;
+}
+.painel .botao:hover {
+  border-color: #a4bcab;
+}
+.painel .botaoPrimario:hover {
+  background: #0d6242;
+  color: white;
+}
+.painel .indicadores {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  flex: none;
+}
+.painel .indicador {
+  display: flex;
+  gap: 13px;
+  align-items: flex-start;
+  padding: 16px 19px;
+  border: 1px solid #e0e8e1;
+  border-radius: 12px;
+  background: #fff;
+}
+.painel .iconeIndicador {
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  width: 38px;
+  height: 38px;
+  flex: none;
+  background: #e8f5ec;
+  color: #29805a;
+}
+.painel .indicador[data-cor="azul"] .iconeIndicador {
+  color: #5173ad;
+  background: #edf2fc;
+}
+.painel .indicador[data-cor="ambar"] .iconeIndicador {
+  color: #ad7c21;
+  background: #fcf3dc;
+}
+.painel .indicador > div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+.painel .indicador > div > span {
+  font-size: 11px;
+  color: #637568;
+  font-weight: 500;
+}
+.painel .indicador strong {
+  font-size: 24px;
+  font-weight: 750;
+  line-height: 1.15;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+.painel .indicador strong em {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: #637568;
+  font-style: normal;
+}
+.painel .indicador small {
+  font-size: 10px;
+  color: #65766b;
+  line-height: 1.5;
+}
+.painel .ferramentas {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex: none;
+  position: relative;
+  z-index: 5;
+}
+.painel .busca {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex: 1 1 320px;
+  min-width: 0;
+  min-height: 42px;
+  border: 1px solid #dde5df;
+  border-radius: 8px;
+  padding: 0 13px;
+  background: #fff;
+  color: #65766b;
+}
+.painel .busca input[type="search"] {
+  border: 0;
+  outline: 0;
+  background: transparent;
+  min-width: 0;
+  width: 100%;
+  padding: 11px 0;
+  font: 400 12px/1.4 var(--body, Arial, sans-serif);
+  color: #2b4336;
+  box-shadow: none;
+  border-radius: 0;
+}
+.painel .busca input::placeholder {
+  color: #65766b;
+}
+.painel .busca:focus-within {
+  outline: 2px solid #3d9170;
+  outline-offset: 2px;
+}
+.painel .filtrosAvancados,
+.painel .prospeccao {
+  position: relative;
+}
+.painel .saltoEtapa select {
+  min-height: 42px;
+  max-width: 175px;
+  padding: 9px 12px;
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+  background: white;
+  color: #5c6d61;
+  font: 600 12px/1.4 var(--body, Arial, sans-serif);
+  cursor: pointer;
+}
+.painel .filtrosAvancados > summary,
+.painel .prospeccao > summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  list-style: none;
+  padding: 10px 13px;
+  min-height: 42px;
+  font: 600 12px/1.4 var(--body, Arial, sans-serif);
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+  cursor: pointer;
+  background: white;
+  color: #5c6d61;
+}
+.painel .filtrosAvancados > summary::-webkit-details-marker,
+.painel .prospeccao > summary::-webkit-details-marker {
+  display: none;
+}
+.painel .filtrosAvancados > summary b {
+  background: #e4f1e9;
+  color: #206949;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 10px;
+}
+.painel .filtrosAvancados[open] > summary,
+.painel .prospeccao[open] > summary {
+  border-color: #78ac8e;
+  background: #f0f7f2;
+}
+.painel .filtros,
+.painel .prospeccao > div {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 390px;
+  max-width: calc(100vw - 44px);
+  background: white;
+  padding: 18px;
+  border: 1px solid var(--borda);
+  border-radius: 10px;
+  box-shadow: 0 14px 35px #223d2a20;
+}
+.painel .filtros {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.painel .filtros > button {
+  grid-column: 1/-1;
+}
+.painel .filtro {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.painel .filtro > span {
+  font-size: 11px;
+  color: #63766a;
+  font-weight: 600;
+}
+.painel .filtro select {
+  width: 100%;
+  min-width: 0;
+  min-height: 40px;
+  font-size: 12px;
+  border: 1px solid #dce4de;
+  border-radius: 6px;
+  padding: 8px;
+  background: white;
+}
+.painel .filtroLigado {
+  background: #e7f4ec;
+  border-color: #82b798;
+  color: #1d6e4a;
+}
+.painel .prospeccao > div {
+  width: 310px;
+}
+.painel .linhaFoco {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  flex: none;
+  margin-top: -5px;
+}
+.painel .focos {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+.painel .focos > button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 7px;
+  color: #637568;
+  padding: 6px 9px;
+  font: 500 11px/1.5 var(--body, Arial, sans-serif);
+  cursor: pointer;
+}
+.painel .focos > button > span {
+  font-size: 10px;
+  background: #e8ede8;
+  color: #637568;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.painel .focos > button[aria-pressed="true"] {
+  background: #e5f2e9;
+  border-color: #cde3d4;
+  color: #236849;
+  font-weight: 650;
+}
+.painel .focos > button[aria-pressed="true"] > span {
+  color: #236849;
+  background: #d1e8d9;
+}
+.painel .focos > button[data-foco="atrasados"][aria-pressed="true"] {
+  background: #fff0e8;
+  border-color: #f1d4c4;
+  color: #ad5a30;
+}
+.painel .resultadoBusca {
+  display: flex;
+  gap: 10px;
+  color: #65766b;
+  font-size: 10px;
+  align-items: center;
+}
+.painel .resultadoBusca button {
+  border: 0;
+  padding: 4px;
+  color: #216e4e;
+  font: 600 10px var(--body, Arial, sans-serif);
+  background: transparent;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.painel .resultados {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.painel .resultado {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 9px;
+  min-height: 33px;
+  border: 1px solid #dfe7e0;
+  background: #fff;
+  border-radius: 7px;
+  font: 500 10px var(--body, Arial, sans-serif);
+  color: #738179;
+  cursor: pointer;
+}
+.painel .resultado svg {
+  width: 14px;
+  height: 14px;
+  color: var(--etapa);
+}
+.painel .resultado b {
+  padding: 2px 5px;
+  min-width: 18px;
+  border-radius: 4px;
+  font-size: 10px;
+  color: var(--etapa);
+  background: var(--etapa-suave);
+  text-align: center;
+}
+.painel .resultado[aria-expanded="true"],
+.painel .resultado[data-alvo="true"] {
+  border-color: var(--etapa);
+  background: var(--etapa-suave);
+  color: var(--etapa);
+}
+.painel .resultado small {
+  position: absolute;
+  z-index: 10;
+  background: #fff8eb;
+  border: 1px solid #ead0a5;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 170px;
+  padding: 8px;
+  color: #986427;
+  border-radius: 6px;
+  font-size: 11px;
+}
+.painel .etapas {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+  flex: none;
+  padding: 0 0 3px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #cad7cd transparent;
+}
+.painel .etapas > button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: 1 0 auto;
+  border: 1px solid #dfe6df;
+  border-radius: 7px;
+  min-height: 39px;
+  padding: 7px 10px;
+  font: 600 10px/1.4 var(--body, Arial, sans-serif);
+  color: #637568;
+  background: #fff;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.painel .numeroEtapa {
+  display: grid;
+  place-items: center;
+  font-size: 9px;
+  font-weight: 700;
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  color: var(--etapa);
+  background: var(--etapa-suave);
+}
+.painel .etapas > button > b {
+  margin-left: auto;
+  font-size: 10px;
+  color: #637568;
+  font-weight: 500;
+}
+.painel .etapas > button[data-atual="true"] {
+  border-color: var(--etapa);
+  color: var(--etapa);
+  box-shadow: inset 0 -2px var(--etapa);
+}
+.painel .etapas > button:hover {
+  background: var(--etapa-suave);
+}
+.painel .quadro {
+  display: flex;
+  align-items: stretch;
+  gap: 14px;
+  padding: 2px 1px 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  min-height: 350px;
+  flex: 1 1 0;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #bdccbf #e9eee8;
+  scroll-snap-type: x proximity;
+}
+.painel .quadro::-webkit-scrollbar {
+  height: 8px;
+}
+.painel .quadro::-webkit-scrollbar-thumb {
+  background: #bdccbf;
+  border-radius: 8px;
+  border: 1px solid #edf2ed;
+}
+.painel .quadro::-webkit-scrollbar-track {
+  background: #e9eee8;
+  border-radius: 8px;
+}
+.painel .coluna {
+  flex: 0 0 clamp(278px, 22vw, 330px);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--raia, #eff3f1);
+  border: 1px solid #e0e7e1;
+  border-top: 3px solid var(--etapa);
+  border-radius: 10px;
+  overflow: hidden;
+  scroll-snap-align: start;
+}
+.painel .colunaCab {
+  padding: 16px 14px 13px;
+  flex: none;
+}
+.painel .colunaTitulo {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+}
+.painel .pontoEtapa {
+  display: block;
+  width: 7px;
+  height: 7px;
+  background: var(--etapa);
+  border-radius: 50%;
+  flex: none;
+}
+.painel .colunaTitulo h2 {
+  font-size: 15px;
+  line-height: 1.3;
+  font-weight: 700;
+  margin: 0;
+  color: #334438;
+}
+.painel .contagem {
+  margin-left: auto;
+  display: grid;
+  place-items: center;
+  width: 23px;
+  height: 23px;
+  border-radius: 6px;
+  color: var(--etapa);
+  background: var(--etapa-suave);
+  font: 700 11px var(--body, Arial, sans-serif);
+}
+.painel .colunaCab > p {
+  margin: 7px 0 12px;
+  color: #65766b;
+  font-size: 10px;
+  line-height: 1.5;
+}
+.painel .colunaResumo {
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  align-items: center;
+}
+.painel .colunaResumo > b {
+  color: #63756a;
+  font-size: 12px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+.painel .colunaResumo > span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 9px;
+  color: #65766b;
+}
+.painel .colunaResumo i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #d89940;
+}
+.painel .colunaLista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 10px 14px;
+  min-height: 120px;
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd7ce transparent;
+}
+.painel .alvo {
+  background: var(--etapa-suave);
+  outline: 2px solid var(--etapa);
+  outline-offset: -3px;
+  border-radius: 8px;
+}
+.painel .card {
+  --texto: #263e2d;
+  --borda: #e0e7e1;
+  position: relative;
+  flex: none;
+  min-width: 0;
+  padding: 13px;
+  border: 1px solid #e0e7e1;
+  border-radius: 9px;
+  background: #fff;
+  box-shadow: 0 2px 3px #2e493307;
+  color: var(--texto);
+  font-family: var(--body, Arial, sans-serif);
+}
+.painel .card:hover {
+  border-color: #bdcec0;
+  box-shadow: 0 4px 12px #2b503b10;
+}
+.painel .card[data-urgencia="atrasado"] {
+  border-left: 3px solid #cf8d57;
+  padding-left: 11px;
+}
+.painel .card[data-urgencia="hoje"] {
+  border-left: 3px solid #4b9d73;
+  padding-left: 11px;
+}
+.painel .cardEtiqueta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 20px;
+  margin-bottom: 13px;
+}
+.painel .tipoProjeto {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.5;
+  padding: 3px 7px;
+  border-radius: 4px;
+  background: var(--etapa-suave);
+  color: var(--etapa);
+}
+.painel .potencial {
+  font-size: 8px;
+  color: #86600e;
+  background: #fcf4df;
+  padding: 3px 5px;
+  border-radius: 4px;
+}
+.painel .arrastador {
+  display: grid;
+  place-items: center;
+  margin: -4px -5px -4px auto;
+  padding: 3px;
+  min-width: 27px;
+  height: 28px;
+  border: 0;
+  background: transparent;
+  border-radius: 5px;
+  color: #7b8d81;
+  cursor: grab;
+  position: relative;
+  z-index: 2;
+  touch-action: none;
+}
+.painel .arrastador:hover {
+  background: #f0f4f0;
+  color: #597662;
+}
+.painel .arrastador:active {
+  cursor: grabbing;
+}
+.painel .cardLink {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+.painel .cardLink::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9px;
+}
+.painel .identidade {
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+}
+.painel .identidade > div {
+  min-width: 0;
+}
+.painel .avatar {
+  display: grid;
+  place-items: center;
+  width: 33px;
+  height: 33px;
+  flex: none;
+  background: var(--etapa-suave);
+  color: var(--etapa);
+  border: 1px solid #fff;
+  border-radius: 9px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.painel .cardNome {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: #283d30;
+  overflow-wrap: anywhere;
+}
+.painel .cardContexto {
+  margin: 3px 0 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #65766b;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+.painel .cardValor {
+  display: flex;
+  gap: 7px;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 13px 0 11px;
+}
+.painel .cardValor > span {
+  color: #65766b;
+  font-size: 11px;
+}
+.painel .cardValor > strong {
+  color: #405747;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums;
+}
+.painel .proximaAcao {
+  background: #f7f9f6;
+  border: 1px solid #edf0ea;
+  border-radius: 6px;
+  padding: 9px;
+}
+.painel .acaoCabeca {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  font-size: 10px;
+  color: #65766b;
+}
+.painel .acaoCabeca > span:first-child {
+  font-weight: 600;
+}
+.painel .acaoCabeca > span:last-child {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  font-variant-numeric: tabular-nums;
+}
+.painel .acaoCabeca svg {
+  width: 11px;
+  height: 11px;
+}
+.painel .proximaAcao > p {
+  margin: 6px 0 0;
+  font-size: 13px;
+  line-height: 1.55;
+  font-weight: 500;
+  color: #5d6f60;
+  overflow-wrap: anywhere;
+}
+.painel .proximaAcao[data-vazia="true"] {
+  background: #fcf9f1;
+  border-color: #f2ead8;
+}
+.painel .proximaAcao[data-vazia="true"] p {
+  color: #85692f;
+}
+.painel .cardRodape {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-top: 11px;
+  min-height: 28px;
+}
+.painel .status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  line-height: 1.5;
+  color: #65766b;
+  min-width: 0;
+  max-width: 65%;
+}
+.painel .status i {
+  width: 5px;
+  height: 5px;
+  background: currentColor;
+  border-radius: 50%;
+  flex: none;
+}
+.painel .status[data-tom="alerta"] {
+  color: #9f542c;
+}
+.painel .status[data-tom="agora"] {
+  color: #23754e;
+}
+.painel .status[data-tom="morno"] {
+  color: #806b2c;
+}
+.painel .mover {
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+  flex: none;
+}
+.painel .mover select {
+  max-width: 110px;
+  padding: 5px 16px 5px 5px;
+  min-height: 30px;
+  border: 0;
+  background-color: transparent;
+  border-radius: 5px;
+  font: 500 11px/1.5 var(--body, Arial, sans-serif);
+  color: #6f8274;
+  cursor: pointer;
+}
+.painel .mover select:hover {
+  background-color: #edf4ee;
+}
+.painel .cardArrastando {
+  border: 1px dashed var(--etapa);
+  background: var(--etapa-suave);
+  box-shadow: none;
+}
+.painel .cardArrastando > * {
+  visibility: hidden;
+}
+.painel .cardVoo {
+  width: 290px;
+  box-shadow: 0 15px 35px #253c342c;
+  border-color: var(--etapa);
+}
+.painel .cardAssentado {
+  border-color: var(--etapa);
+}
+.painel .vooFalta,
+.painel .exigencia {
+  font-size: 11px;
+  line-height: 1.5;
+  padding: 9px;
+  background: #fff2dd;
+  color: #9b6b25;
+  border-radius: 6px;
+  margin: 0;
+}
+.painel .vooFalta {
+  margin-top: 10px;
+}
+.painel .encerrado {
+  margin: 0;
+  padding: 9px;
+  background: var(--etapa-suave);
+  color: var(--etapa);
+  font-size: 11px;
+  border-radius: 6px;
+}
+.painel .vazio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 7px;
+  margin: 2px 0 0;
+  padding: 25px 14px;
+  border: 1px dashed #d2ded5;
+  border-radius: 8px;
+  color: #65766b;
+}
+.painel .vazioIcone {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  background: #ffffffad;
+  color: var(--etapa);
+  border-radius: 50%;
+  opacity: 0.7;
+  margin-bottom: 4px;
+}
+.painel .vazio > b {
+  font-size: 10px;
+  font-weight: 600;
+  color: #65766b;
+}
+.painel .vazio > p {
+  margin: 0;
+  font-size: 10px;
+  line-height: 1.6;
+  color: #65766b;
+}
+.painel .vazio > button {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  padding: 6px 8px;
+  font: 600 10px var(--body, Arial, sans-serif);
+  color: var(--etapa);
+  background: white;
+  border: 1px solid #d9e3db;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.painel .vazio > button svg {
+  width: 13px;
+  height: 13px;
+}
+.painel .notaQuadro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: none;
+  gap: 12px;
+  color: #65766b;
+  font-size: 9px;
+  line-height: 1.5;
+  margin-top: -9px;
+}
+.painel .notaMobile {
+  display: none;
+}
+.painel .saidaLista {
+  flex: none;
+  background: #edf3ee;
+  border: 1px solid #dce7de;
+  border-radius: 12px;
+  padding: 20px;
+}
+.painel .saidaCabeca {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+.painel .saidaCabeca h2 {
+  margin: 0;
+  font-size: 18px;
+  color: var(--etapa);
+}
+.painel .saidaCabeca h2 span {
+  font-size: 14px;
+  margin-left: 6px;
+}
+.painel .saidaCabeca p,
+.painel .nota {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: #819086;
+  line-height: 1.6;
+}
+.painel .saidaGrade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 14px;
+}
+.painel .erro {
+  padding: 12px 16px;
+  background: #fff1e9;
+  color: #984d2d;
+  border: 1px solid #f0d4c3;
+  border-radius: 8px;
+  font-size: 12px;
+  margin: 0;
+}
+.painel .srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.painel :is(button, summary, select):focus-visible,
+.painel .cardLink:focus-visible::after,
+.painel .quadro:focus-visible {
+  outline: 2px solid #288356;
+  outline-offset: 3px;
+}
+.painel button:disabled,
+.painel select:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+.painel:fullscreen {
+  padding: 24px;
+  height: 100dvh;
+  background: #f5f7f5;
+  overflow: auto;
+}
+@media (min-width: 861px) {
+  .painel {
+    height: calc(100dvh - 40px);
+    min-height: 640px;
+    gap: 10px;
+  }
+  .painel .topo {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .painel .cabecalho {
+    flex: 1;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .painel .sobretitulo {
+    display: none;
+  }
+  .painel .cabecalho h1 {
+    font-size: 27px;
+  }
+  .painel .cabecalho p {
+    margin-top: 4px;
+  }
+  .painel .indicadores {
+    flex: 1;
+    gap: 8px;
+  }
+  .painel .indicador {
+    padding: 10px 12px;
+  }
+  .painel .iconeIndicador {
+    display: none;
+  }
+  .painel .indicador strong {
+    font-size: 21px;
+  }
+  .painel .operacao {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex: none;
+  }
+  .painel .linhaFoco {
+    margin: 0;
+    gap: 4px 12px;
+  }
+  .painel .etapas {
+    display: none;
+  }
+  .painel .quadro {
+    min-height: 390px;
+  }
+  .painel .colunaCab {
+    padding: 11px 12px 10px;
+  }
+  .painel .colunaCab > p {
+    margin: 4px 0 7px;
+  }
+  .painel .colunaLista {
+    gap: 8px;
+    padding-inline: 8px;
+  }
+  .painel .card {
+    padding: 9px;
+  }
+  .painel .card[data-urgencia="atrasado"],
+  .painel .card[data-urgencia="hoje"] {
+    padding-left: 7px;
+  }
+  .painel .cardEtiqueta {
+    margin-bottom: 5px;
+  }
+  .painel .cardValor {
+    padding: 7px 0;
+  }
+  .painel .proximaAcao {
+    padding: 7px 8px;
+  }
+  .painel .proximaAcao > p {
+    margin-top: 3px;
+    line-height: 1.4;
+  }
+  .painel .cardRodape {
+    margin-top: 3px;
+  }
+  .painel .notaQuadro {
+    margin-top: -5px;
+  }
+  .painel[data-saida-aberta="true"] {
+    height: auto;
+  }
+  .painel[data-saida-aberta="true"] .quadro {
+    flex: none;
+    height: 55dvh;
+    min-height: 360px;
+  }
+}
+@media (min-width: 861px) and (max-height: 800px) {
+  :global(main):has(.painel) {
+    padding-block: 10px 8px;
+  }
+  .painel {
+    height: calc(100dvh - 18px);
+    gap: 6px;
+  }
+  .painel .indicador {
+    padding-block: 8px;
+  }
+  .painel .indicador small {
+    display: none;
+  }
+  .painel .colunaCab > p {
+    display: none;
+  }
+  .painel .colunaResumo {
+    margin-top: 7px;
+  }
+}
+@media (min-width: 1800px) {
+  .painel .coluna {
+    flex-basis: calc((100% - 6 * 14px) / 7);
+  }
+  .painel .indicador {
+    padding-block: 18px;
+  }
+}
+@media (max-width: 1100px) {
+  .painel .indicador {
+    padding: 13px;
+    gap: 9px;
+  }
+  .painel .iconeIndicador {
+    width: 32px;
+    height: 32px;
+  }
+  .painel .etapas > button {
+    flex: 1 0 110px;
+  }
+  .painel .indicador strong {
+    font-size: 21px;
+  }
+}
+@media (min-width: 861px) and (max-width: 1250px) {
+  .painel .topo {
+    gap: 14px;
+  }
+  .painel .cabecalho {
+    flex: 0 1 40%;
+  }
+  .painel .cabecalho h1 {
+    font-size: 25px;
+  }
+  .painel .indicador {
+    padding: 10px;
+  }
+  .painel .indicador strong {
+    font-size: 19px;
+  }
+  .painel .indicador strong em {
+    display: none;
+  }
+  .painel .resultadoBusca {
+    width: 100%;
+  }
+}
+@media (max-width: 860px) {
+  :global(main):has(.painel) {
+    padding-top: 22px;
+    padding-bottom: calc(90px + env(safe-area-inset-bottom));
+  }
+  .painel {
+    gap: 11px;
+  }
+  .painel .topo,
+  .painel .operacao {
+    display: grid;
+    gap: 11px;
+    min-width: 0;
+  }
+  .painel .operacao > * {
+    min-width: 0;
+  }
+  .painel .cabecalho {
+    align-items: flex-start;
+  }
+  .painel .cabecalho h1 {
+    font-size: 25px;
+  }
+  .painel .cabecalho p {
+    max-width: 230px;
+    line-height: 1.5;
+  }
+  .painel .expandir {
+    display: none;
+  }
+  .painel .saltoEtapa {
+    display: none;
+  }
+  .painel .acoesCabecalho {
+    padding-top: 17px;
+  }
+  .painel .acoesCabecalho .botao {
+    padding: 9px 11px;
+    font-size: 11px;
+  }
+  .painel .indicadores {
+    gap: 8px;
+  }
+  .painel .indicador {
+    display: block;
+    padding: 12px 10px;
+    border-radius: 9px;
+  }
+  .painel .iconeIndicador {
+    display: none;
+  }
+  .painel .iconeIndicador svg {
+    width: 15px;
+    height: 15px;
+  }
+  .painel .indicador > div > span {
+    font-size: 9px;
+  }
+  .painel .indicador strong {
+    font-size: 18px;
+  }
+  .painel .indicador strong em {
+    display: none;
+  }
+  .painel .indicador small {
+    font-size: 9px;
+  }
+  .painel .busca {
+    flex-basis: 100%;
+  }
+  .painel .busca input[type="search"],
+  .painel .filtro select {
+    font-size: 16px;
+  }
+  .painel .filtrosAvancados,
+  .painel .prospeccao {
+    flex: 1;
+  }
+  .painel .filtrosAvancados > summary,
+  .painel .prospeccao > summary {
+    font-size: 11px;
+    min-height: 40px;
+  }
+  .painel .filtros {
+    left: 0;
+    right: auto;
+  }
+  .painel .prospeccao > div {
+    right: 0;
+  }
+  .painel .focos {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    gap: 5px;
+  }
+  .painel .focos > button {
+    font-size: 10px;
+    padding: 7px 8px;
+    justify-content: space-between;
+    border-color: #e4eae3;
+    border-radius: 6px;
+    min-height: 36px;
+  }
+  .painel .resultadoBusca {
+    font-size: 10px;
+  }
+  .painel .resultados {
+    flex: 1;
+    width: 100%;
+  }
+  .painel .resultado {
+    flex: 1;
+    min-width: 0;
+    justify-content: center;
+    padding: 7px 8px;
+    min-height: 36px;
+  }
+  .painel .resultado small {
+    min-width: 130px;
+  }
+  .painel .etapas {
+    gap: 7px;
+    padding-bottom: 7px;
+    margin-top: -3px;
+  }
+  .painel .etapas > button {
+    flex: 0 0 auto;
+    min-height: 41px;
+    font-size: 11px;
+  }
+  .painel .quadro {
+    display: block;
+    overflow: visible;
+    flex: none;
+    min-height: 0;
+    padding: 0;
+    scroll-snap-type: none;
+  }
+  .painel .coluna {
+    width: 100%;
+    border-radius: 10px;
+  }
+  .painel .coluna[data-visivel="false"] {
+    display: none;
+  }
+  .painel .colunaCab {
+    padding: 16px;
+  }
+  .painel .colunaCab > p {
+    font-size: 11px;
+  }
+  .painel .colunaTitulo h2 {
+    font-size: 15px;
+  }
+  .painel .colunaLista {
+    overflow: visible;
+    padding: 0 10px 12px;
+    gap: 10px;
+  }
+  .painel .card {
+    padding: 15px;
+  }
+  .painel .cardNome {
+    font-size: 15px;
+  }
+  .painel .cardContexto {
+    font-size: 11px;
+  }
+  .painel .cardValor > strong {
+    font-size: 17px;
+  }
+  .painel .cardValor > span,
+  .painel .acaoCabeca {
+    font-size: 11px;
+  }
+  .painel .proximaAcao > p {
+    font-size: 13px;
+  }
+  .painel .tipoProjeto {
+    font-size: 10px;
+  }
+  .painel .cardEtiqueta {
+    margin-bottom: 14px;
+  }
+  .painel .arrastador {
+    display: none;
+  }
+  .painel .cardRodape {
+    min-height: 36px;
+  }
+  .painel .status {
+    font-size: 10px;
+  }
+  .painel .mover select {
+    min-height: 40px;
+    max-width: 135px;
+    font-size: 16px;
+  }
+  .painel .notaQuadro {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    font-size: 10px;
+    margin-top: -6px;
+  }
+  .painel .notaDesktop {
+    display: none;
+  }
+  .painel .notaMobile {
+    display: inline;
+  }
+  .painel .saidaLista {
+    padding: 14px;
+  }
+  .painel .saidaGrade {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .painel .saidaCabeca h2 {
+    font-size: 17px;
+  }
+}
+@media (max-width: 370px) {
+  .painel .resultados {
+    gap: 4px;
+  }
+  .painel .resultado {
+    padding-inline: 6px;
+  }
+  .painel .cabecalho {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .painel .acoesCabecalho {
+    padding-top: 4px;
+    margin-left: auto;
+  }
+  .painel .indicador {
+    padding: 10px 8px;
+  }
+  .painel .indicador strong {
+    font-size: 16px;
+  }
+  .painel .etapas > button {
+    padding-inline: 8px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .painel .card {
+    transition: none !important;
+  }
+}
