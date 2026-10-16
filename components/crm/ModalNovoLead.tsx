@@ -16,6 +16,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { criarLead } from "@/app/(pt)/crm/acoes";
 import { mascararWhatsapp } from "@/components/telefone";
 import {
@@ -28,19 +29,21 @@ import {
 } from "@/lib/crm/tipos";
 import s from "@/app/(pt)/crm/crm.module.css";
 
-export function ModalNovoLead({ aoFechar }: { aoFechar: () => void }) {
+export function ModalNovoLead({ aoFechar, origemInicial = "prospeccao", aoCriar, pesquisarAoCriar = true }: { aoFechar: () => void; origemInicial?: Origem; aoCriar?: (id: string) => void; pesquisarAoCriar?: boolean }) {
   const router = useRouter();
   const [erro, setErro] = useState<string | null>(null);
+  const [existente, setExistente] = useState<string | null>(null);
   const [salvando, comecar] = useTransition();
 
   const [nome, setNome] = useState("");
   const [empresa, setEmpresa] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
+  const [email, setEmail] = useState("");
   const [instagram, setInstagram] = useState("");
   const [nicho, setNicho] = useState("");
   const [cidade, setCidade] = useState("Maringá");
   const [tipo, setTipo] = useState<TipoProjeto | "">("");
-  const [origem, setOrigem] = useState<Origem>("prospeccao");
+  const [origem, setOrigem] = useState<Origem>(origemInicial);
 
   useEffect(() => {
     const aoTeclar = (e: KeyboardEvent) => e.key === "Escape" && aoFechar();
@@ -51,11 +54,13 @@ export function ModalNovoLead({ aoFechar }: { aoFechar: () => void }) {
   const enviar = (e: React.FormEvent) => {
     e.preventDefault();
     setErro(null);
+    setExistente(null);
     comecar(async () => {
       const r = await criarLead({
         nome,
         empresa,
         whatsapp,
+        email,
         instagram,
         nicho,
         cidade,
@@ -68,7 +73,7 @@ export function ModalNovoLead({ aoFechar }: { aoFechar: () => void }) {
            mostra "pesquisando" e se atualiza quando o dossiê chegar. O
            `catch` vazio é deliberado: pesquisa que falha não pode impedir
            o lead de ser anotado, e a ficha tem o botão de refazer. */
-        void fetch("/api/crm/pesquisa", {
+        if (pesquisarAoCriar) void fetch("/api/crm/pesquisa", {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify({ lead_id: r.id }),
@@ -76,9 +81,11 @@ export function ModalNovoLead({ aoFechar }: { aoFechar: () => void }) {
         aoFechar();
         /* Vai direto para a ficha: quem acabou de anotar um nome quase
            sempre quer escrever a primeira mensagem em seguida. */
-        router.push(`/crm/lead/${r.id}`);
+        if (aoCriar) aoCriar(r.id);
+        else router.push(`/crm/lead/${r.id}`);
       } else {
         setErro(r.erro);
+        setExistente(r.existente ?? null);
       }
     });
   };
@@ -86,7 +93,7 @@ export function ModalNovoLead({ aoFechar }: { aoFechar: () => void }) {
   return (
     <div className={s.fundo} onMouseDown={(e) => e.target === e.currentTarget && aoFechar()}>
       <div className={s.modal} role="dialog" aria-modal="true" aria-labelledby="novo-titulo">
-        <p className={s.modalRot}>Prospecção</p>
+        <p className={s.modalRot}>{origemInicial === "prospeccao" ? "Prospecção" : "Atendimento"}</p>
         <h2 id="novo-titulo">Anotar um lead</h2>
         <p>Só o nome é obrigatório. O resto você completa quando souber.</p>
 
@@ -122,6 +129,11 @@ export function ModalNovoLead({ aoFechar }: { aoFechar: () => void }) {
               />
             </label>
           </div>
+
+          <label className={s.campo}>
+            <span className={s.campoRot}>E-mail</span>
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          </label>
 
           <div className={s.dupla}>
             <label className={s.campo}>
@@ -168,6 +180,7 @@ export function ModalNovoLead({ aoFechar }: { aoFechar: () => void }) {
               {erro}
             </p>
           ) : null}
+          {existente && <p><Link className={s.btn} href={`/crm/lead/${existente}`} onClick={aoFechar}>Abrir contato e histórico existentes</Link></p>}
 
           <div className={s.modalPe}>
             <button type="button" className={s.btn} onClick={aoFechar}>

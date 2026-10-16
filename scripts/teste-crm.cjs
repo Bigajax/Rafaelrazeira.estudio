@@ -118,6 +118,27 @@ testar("Entrada de outra coluna e coluna vazia", () => {
 });
 
 const toque = { canal: "whatsapp", direcao: "saida" };
+
+testar("Central exige próximo passo antes de gravar atendimento mesmo com agenda futura", async () => {
+  const c = cenario();
+  const r = await c.acoes.registrarToque("lead", { ...toque, exigir_proximo_passo: true });
+  assert.equal(r.ok, false);
+  assert.deepEqual(r.falta, ["proximo_passo", "proxima_acao_em"]);
+  assert.deepEqual(c.escritas, []);
+});
+testar("Central salva atendimento e agenda explícita juntos", async () => {
+  const c = cenario();
+  assert.equal((await c.acoes.registrarToque("lead", { ...toque, exigir_proximo_passo: true, proximo_passo: "Confirmar escopo", proxima_acao_em: "2026-10-25" })).ok, true);
+  assert.equal(c.toques.length, 1);
+  assert.equal(c.lead.proximo_passo, "Confirmar escopo");
+  assert.equal(c.lead.proxima_acao_em, "2026-10-25");
+});
+testar("Central permite encerrar por perda sem inventar próximo passo", async () => {
+  const c = cenario();
+  assert.equal((await c.acoes.registrarToque("lead", { ...toque, exigir_proximo_passo: true, estagio: "perdido", motivo_perda: "sem_interesse" })).ok, true);
+  assert.equal(c.lead.estagio, "perdido");
+  assert.equal(c.lead.proxima_acao_em, null);
+});
 testar("Etapa recusada não grava toque nem altera agenda", async () => {
   const c = cenario();
   const r = await c.acoes.registrarToque("lead", {

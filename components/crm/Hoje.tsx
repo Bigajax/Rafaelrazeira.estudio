@@ -73,6 +73,7 @@ type Dia = { data: string; n: number };
 
 type Painel = {
   hoje: string;
+  contatos: LeadPainel[];
   atrasados: LeadPainel[];
   paraHoje: LeadPainel[];
   semPasso: LeadPainel[];

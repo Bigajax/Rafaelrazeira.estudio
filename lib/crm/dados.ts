@@ -80,20 +80,10 @@ export async function painelHoje() {
 
   const [{ data: leads }, { data: meta }, { count: toquesSemana }] =
     await Promise.all([
-      conferir(
-        supabase
-          .from("crm_leads_painel")
-          .select("*")
-          .in("estagio", ATIVOS)
-          .order("proxima_acao_em", { ascending: true, nullsFirst: false })
-          /* Desempate FIXO (21/09): sem ele, os 295 sem passo (todos com
-         proxima_acao_em nula) voltavam do banco numa ordem qualquer a
-         cada refresh, e a fila do dia "embaralhava" a cada mensagem
-         registrada. */
-          .order("created_at", { ascending: false })
-          .order("id", { ascending: true })
-          .returns<LeadPainel[]>(),
-      ),
+      // Paginação mantém novos contatos visíveis mesmo em bases com mais de mil leads.
+      lerTodos<LeadPainel>(supabase, "crm_leads_painel", "*", undefined, { estagio: [...ATIVOS] }).then((data) => ({
+        data: data.sort((a, b) => (a.proxima_acao_em ?? "9999").localeCompare(b.proxima_acao_em ?? "9999") || b.created_at.localeCompare(a.created_at) || a.id.localeCompare(b.id)),
+      })),
       conferir(
         supabase
           .from("crm_metas")
@@ -262,6 +252,8 @@ export async function painelHoje() {
 
   return {
     hoje,
+    // Inteiro, independente da agenda: novos e respostas não podem sumir no futuro.
+    contatos: lista,
     /* Mais atrasado primeiro: a fila é de execução, e o que espera há mais
        tempo é o que corre mais risco de virar "sumiu, sem resposta". */
     atrasados: quentePrimeiro(atrasados),

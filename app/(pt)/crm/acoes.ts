@@ -244,6 +244,7 @@ export async function registrarToque(
        pede o ticket, que vem junto quando o lead não tem. */
     estagio?: Estagio;
     ticket_estimado?: number | null;
+    exigir_proximo_passo?: boolean;
   },
 ): Promise<Resultado> {
   const usuario = await exigirSessao();
@@ -275,6 +276,12 @@ export async function registrarToque(
   }
 
   const destino = dados.estagio ?? destinoDoToque(dados.direcao, lead.estagio, dados.resposta);
+  if (dados.exigir_proximo_passo && !["perdido", "ganho"].includes(destino ?? lead.estagio)) {
+    const falta: CampoExigido[] = [];
+    if (!agenda.proximo_passo) falta.push("proximo_passo");
+    if (!agenda.proxima_acao_em || !dataValida(agenda.proxima_acao_em)) falta.push("proxima_acao_em");
+    if (falta.length) return { ok: false, falta };
+  }
   const escolhido =
     dados.estagio !== undefined ||
     (dados.direcao === "entrada" && (dados.resposta === "nao" || dados.resposta === "depois"));
@@ -455,7 +462,7 @@ export async function criarLead(
   campos: Partial<Record<CampoEditavel, string | number | null>> & {
     nome: string;
   },
-): Promise<{ ok: true; id: string } | { ok: false; erro: string }> {
+): Promise<{ ok: true; id: string } | { ok: false; erro: string; existente?: string }> {
   const usuario = await exigirSessao();
   const supabase = await clienteServidor();
 
@@ -484,6 +491,7 @@ export async function criarLead(
       return {
         ok: false,
         erro: `Este contato já está no CRM como "${existente[0].nome}".`,
+        existente: existente[0].id,
       };
     }
   }

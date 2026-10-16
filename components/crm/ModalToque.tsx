@@ -63,10 +63,12 @@ const PRAZOS_GELADEIRA = [30, 60, 90] as const;
 export function ModalToque({
   lead,
   direcaoInicial = "saida",
+  exigirProximoPasso = false,
   aoFechar,
 }: {
   lead: LeadPainel;
   direcaoInicial?: Direcao;
+  exigirProximoPasso?: boolean;
   aoFechar: () => void;
 }) {
   const hoje = hojeSP();
@@ -85,7 +87,7 @@ export function ModalToque({
   /* Um retorno marcado para hoje ainda não venceu, então "hoje" conta como
      futuro agendado e a pergunta não aparece. */
   const [passo, setPasso] = useState(lead.proximo_passo ?? "");
-  const [data, setData] = useState(somarDias(hoje, 3));
+  const [data, setData] = useState(exigirProximoPasso && lead.proxima_acao_em && lead.proxima_acao_em >= hoje ? lead.proxima_acao_em : somarDias(hoje, 3));
 
   /* A geladeira tem estado próprio, e não reaproveita `passo`/`data`, por
      uma razão prática: o Rafael pode digitar o próximo passo, mudar de
@@ -125,7 +127,7 @@ export function ModalToque({
      passo antigo era de outra etapa. */
   const mudaEtapaNoFunil = !teorDecide && etapa !== "" && etapa !== "geladeira" && etapa !== "perdido";
   const precisaDePasso =
-    !ehGeladeira && !ehPerda && (mudaEtapaNoFunil || !lead.proxima_acao_em || lead.proxima_acao_em < hoje);
+    !ehGeladeira && !ehPerda && (exigirProximoPasso || mudaEtapaNoFunil || !lead.proxima_acao_em || lead.proxima_acao_em < hoje);
 
   useEffect(() => {
     const aoTeclar = (e: KeyboardEvent) => e.key === "Escape" && aoFechar();
@@ -147,6 +149,7 @@ export function ModalToque({
            viaja quando foi o select que escolheu */
         estagio: teorDecide || etapa === "" ? undefined : etapa,
         ticket_estimado: pedeTicket ? Number(ticket.replace(",", ".")) || null : undefined,
+        exigir_proximo_passo: exigirProximoPasso,
         /* A geladeira MANDA a data em vez de deixar o padrão entrar em
            campo vazio: o lead que está na fila do dia já tem uma data
            marcada (é por isso que ele apareceu), e sem mandar a nova ele

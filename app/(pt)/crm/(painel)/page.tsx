@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Hoje } from "@/components/crm/Hoje";
+import { CentralAtendimento } from "@/components/crm/CentralAtendimento";
 import { listarTemplates, painelHoje } from "@/lib/crm/dados";
 import { hojeSP } from "@/lib/crm/regras";
 import { postsDoDia } from "@/lib/marketing/dados";
@@ -19,5 +19,5 @@ export default async function PaginaHoje({ searchParams }: { searchParams: Promi
     listarTemplates(),
     postsDoDia(hojeSP()),
   ]);
-  return <Hoje painel={painel} templates={templates} posts={posts} />;
+  return <CentralAtendimento painel={painel} templates={templates} posts={posts} />;
 }
