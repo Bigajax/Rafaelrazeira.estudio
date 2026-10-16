@@ -3,24 +3,19 @@
 /* ============================================================
    O PLANO NA TELA
 
-   Quatro andares, na ordem do método:
-   1. o PLACAR: a nota do painel no ano, o prêmio e a sequência de RMRs;
-      é o que faz o plano virar jogo (a G4 amarra metade do bônus nisso);
-   2. o ESTRATÉGICO: missão, visão com ano e projeções por ano;
-   3. os PROJETOS: a lista fechada, com prioridade e horizonte, e os "nãos"
-      que já se disse, riscados e à vista;
-   4. o PAINEL DE METAS do ano, mês a mês, e a RMR do mês.
-
-   Tudo salva ao sair do campo, como o resto do CRM.
+   Objetivo em foco e ações reais primeiro. A Montanha distingue conquistas
+   confirmadas de progresso provisório. Configurações e revisão mensal
+   ficam em seções recolhidas, abertas também pelos atalhos.
    ============================================================ */
 
 import Link from "next/link";
-import { EvolucaoMeta } from "./EvolucaoMeta";
-import u from "@/components/sistema/sistema.module.css";
+import { ResumoPlano } from "./ResumoPlano";
+import { leituraMeta, notaDoMes, type OperacaoPlano } from "@/lib/plano/resumo";
 import { useRouter } from "next/navigation";
 import {
   createContext,
   useContext,
+  useEffect,
   useMemo,
   useState,
   useTransition,
@@ -50,8 +45,6 @@ import {
   pct,
   percentual,
   percentualNoAno,
-  sequencia,
-  situacaoDoDegrau,
   type Ciclo,
   type Degrau,
   type Fonte,
@@ -61,12 +54,15 @@ import {
   type Rmr,
   type Valores,
 } from "@/lib/plano/tipos";
-import { ComoFunciona, ProximoPasso, Subida, type Passo } from "./Subida";
+import { Subida } from "./Subida";
 import p from "@/app/(pt)/crm/plano.module.css";
 
 type Props = {
   ano: number;
   ate: number;
+  hoje: string;
+  ateFechado: number;
+  operacao: OperacaoPlano | null;
   ciclo: Ciclo | null;
   projetos: Projeto[];
   metas: Meta[];
@@ -90,6 +86,9 @@ const FAIXA_CLASSE = {
 export function Plano({
   ano,
   ate,
+  hoje,
+  ateFechado,
+  operacao,
   ciclo,
   projetos,
   metas,
@@ -102,17 +101,37 @@ export function Plano({
   const router = useRouter();
   const [pendente, comecar] = useTransition();
   const [aviso, setAviso] = useState<string | null>(null);
+  const [salvo, setSalvo] = useState(false);
   const [premios, setPremios] = useState(false);
 
   function rodar(acao: () => Promise<Feito>, depois?: (r: Feito) => void) {
+    setSalvo(false);
     comecar(async () => {
-      const r = await acao();
-      if (!r.ok) setAviso(r.erro);
-      else setAviso(null);
-      depois?.(r);
-      router.refresh();
+      try {
+        const r = await acao();
+        if (!r.ok) setAviso(r.erro);
+        else { setAviso(null); setSalvo(true); router.refresh(); }
+        depois?.(r);
+      } catch {
+        setAviso("Não foi possível confirmar a alteração. Confira os dados antes de tentar novamente.");
+      }
     });
   }
+
+  useEffect(() => {
+    const abrir = (hash: string) => {
+      let id: string;
+      try { id = decodeURIComponent(hash.replace(/^#/, "")); } catch { return; }
+      const alvo = document.getElementById(id);
+      if (!alvo) return;
+      for (let pai = alvo.parentElement; pai; pai = pai.parentElement) if (pai instanceof HTMLDetailsElement) pai.open = true;
+      requestAnimationFrame(() => alvo.scrollIntoView({ block: "start", behavior: "instant" }));
+    };
+    const mudar = () => abrir(window.location.hash);
+    const clicar = (e: MouseEvent) => { const a = e.target instanceof Element ? e.target.closest("a") : null; if (a?.getAttribute("href")?.startsWith("#")) abrir(a.hash); };
+    mudar(); window.addEventListener("hashchange", mudar); document.addEventListener("click", clicar);
+    return () => { window.removeEventListener("hashchange", mudar); document.removeEventListener("click", clicar); };
+  }, []);
 
   const ativos = projetos
     .filter((x) => x.status !== "encerrado")
@@ -124,56 +143,6 @@ export function Plano({
     );
   const nao = projetos.filter((x) => x.status === "encerrado");
 
-  const nota = ate ? notaDoPainel(metas, valores, ate) : null;
-  const somaPesos = metas.reduce((a, m) => a + m.peso, 0);
-  const seq = sequencia(rmrs, ano, ate || 1);
-  const batidasNoMes = ate
-    ? metas.filter(
-        (m) => faixa(percentual(m, valores[m.id] ?? {}, ate)) === "bateu",
-      ).length
-    : 0;
-
-  /* o que a página manda fazer agora, na ordem do método */
-  const passos: Passo[] = [];
-  if (!ciclo?.missao?.trim())
-    passos.push({
-      texto: "Escreva a missão do estúdio numa frase.",
-      ancora: "rumo",
-      acao: "Escrever",
-    });
-  if (!ativos.length)
-    passos.push({
-      texto: "Crie o primeira iniciativa do ano.",
-      ancora: "projetos",
-      acao: "Criar",
-    });
-  if (metas.length && somaPesos !== 100)
-    passos.push({
-      texto: `Os pesos somam ${somaPesos}. Ajuste até dar 100.`,
-      ancora: "metas",
-      acao: "Ajustar",
-    });
-  if (ate) {
-    for (const m of metas
-      .filter((x) => x.fonte === "manual" && valores[x.id]?.[ate] === undefined)
-      .slice(0, 2)) {
-      passos.push({
-        texto: `Lance "${m.titulo}" de ${MESES_LONGOS[ate - 1]}.`,
-        ancora: "rmr",
-        acao: "Lançar",
-      });
-    }
-    if (
-      metas.length &&
-      !rmrs.some((r) => r.mes === `${ano}-${String(ate).padStart(2, "0")}-01`)
-    ) {
-      passos.push({
-        texto: `Feche a RMR de ${MESES_LONGOS[ate - 1]} no último dia do mês.`,
-        ancora: "rmr",
-        acao: "Fechar",
-      });
-    }
-  }
 
   return (
     <ModuloIntegrado.Provider value={movimentosDisponiveis}>
@@ -184,171 +153,31 @@ export function Plano({
               Plano<i className={p.ponto}>.</i>
             </h1>
             <p className={p.voz}>
-              O rumo do estúdio, e quanto falta para chegar.
+              Um objetivo claro, o resultado real e o próximo passo.
             </p>
           </div>
           <nav className={p.anos} aria-label="Trocar de ano">
-            <Link href={`/crm/plano?ano=${ano - 1}`}>{ano - 1}</Link>
+            {ano > 2020 && <Link href={`/crm/plano?ano=${ano - 1}`}>{ano - 1}</Link>}
             <b>{ano}</b>
-            <Link href={`/crm/plano?ano=${ano + 1}`}>{ano + 1}</Link>
+            {ano < 2100 && <Link href={`/crm/plano?ano=${ano + 1}`}>{ano + 1}</Link>}
+            {ano !== Number(hoje.slice(0, 4)) && <Link href="/crm/plano">Ano atual</Link>}
           </nav>
         </header>
 
-        {aviso ? <p className={p.erro}>{aviso}</p> : null}
+        {aviso ? <p role="alert" className={p.erro}>{aviso}</p> : null}
+        <p className={p.salvamento} role="status">{pendente ? "Salvando alterações…" : salvo ? "Alterações salvas." : "Os dados automáticos vêm das áreas de origem."}</p>
+        <nav className={p.atalhos} aria-label="Navegar pelo Plano"><a href="#objetivo">Objetivo e ações</a><a href="#montanha">Montanha</a><a href="#metas">Ajustar metas</a><a href="#rmr">Revisão mensal</a></nav>
+        <fieldset disabled={pendente} className={p.conteudo}>
 
-        {/* ---------- a subida: o placar que se vê de longe ---------- */}
-        <section className={u.painel}>
-          <h2>Metas e decisões do período</h2>
-          <p className={u.descricao}>
-            Cada meta automática consulta a área de origem. Medições ausentes
-            ficam a apurar.
-          </p>
-          <ul className={u.fila}>
-            {metas.slice(0, 6).map((m) => {
-              const v = valores[m.id]?.[ate];
-              const pc = ate ? percentual(m, valores[m.id] ?? {}, ate) : null;
-              const mes = String(ano) + "-" + String(ate || 1).padStart(2, "0");
-              const href =
-                m.fonte === "recebido"
-                  ? "/crm/financeiro?mes=" + mes + "&aba=extrato"
-                  : m.fonte === "despesas"
-                    ? "/crm/financeiro?mes=" + mes + "&aba=despesas"
-                    : m.fonte === "saldo"
-                      ? "/crm/financeiro?mes=" + mes
-                      : m.fonte === "fechados"
-                        ? "/crm/financeiro?mes=" + mes + "&aba=contratos"
-                        : m.fonte === "entregas"
-                          ? "/crm/projetos"
-                          : m.fonte === "posts"
-                            ? "/crm/marketing/resultados"
-                            : m.fonte === "toques"
-                              ? "/crm/metricas"
-                              : "#rmr";
-              return (
-                <li key={m.id}>
-                  <div>
-                    <b>{m.titulo}</b>
-                    <small>
-                      {v === undefined ? "A apurar" : formatar(v, m.unidade)} ·
-                      alvo {formatar(m.alvo, m.unidade)} ·{" "}
-                      {m.direcao === "reduzir" ? "reduzir" : "aumentar"} ·{" "}
-                      {FONTES[m.fonte].nome}
-                    </small>
-                    <div
-                      className={u.progresso}
-                      role="progressbar"
-                      aria-label={m.titulo}
-                      aria-valuenow={
-                        pc === null
-                          ? undefined
-                          : Math.min(100, Math.max(0, Math.round(pc * 100)))
-                      }
-                      aria-valuemin={0}
-                      aria-valuemax={100}
-                    >
-                      <i
-                        style={{
-                          width:
-                            (pc === null
-                              ? 0
-                              : Math.min(100, Math.max(0, pc * 100))) + "%",
-                        }}
-                      />
-                    </div>
-                    <EvolucaoMeta
-                      meta={m}
-                      valores={valores[m.id] ?? {}}
-                      ate={ate}
-                    />
-                  </div>
-                  <Link className={u.botao} href={href}>
-                    {m.fonte === "manual" ? "Medir" : "Abrir fonte"}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-          {!metas.length ? (
-            <p className={u.vazio}>
-              Crie uma iniciativa e defina suas primeiras metas.
-            </p>
-          ) : null}
-          {!movimentosDisponiveis ? (
-            <p className={u.meta}>
-              Metas de despesas pagas e saldo operacional exigem a instalação do
-              módulo integrado.
-            </p>
-          ) : null}
+        <section id="objetivo"><ResumoPlano ano={ano} ate={ate} metas={metas} projetos={projetos} valores={valores} operacao={operacao} /></section>
+        <section className={p.montanhaSecao} id="montanha">
+          <div className={p.montanhaCab}><div><h2>A Montanha</h2><p>Marcos de crescimento, acompanhados pelo recebido no Caixa.</p></div><button type="button" className={p.mini} onClick={() => setPremios(!premios)} aria-expanded={premios}>{premios ? "Fechar editor" : "Editar marcos"}</button></div>
+          <Subida ano={ano} ate={ate} ateFechado={ateFechado} degraus={ciclo?.premios ?? []} recebido={recebido} vendido={vendido} visao={ciclo?.visao ?? null} horizonte={ciclo?.horizonte ?? null} />
+          {premios && <EditarPremios ano={ano} ciclo={ciclo} rodar={rodar} fechar={() => setPremios(false)} />}
         </section>
-        <details className={u.detalhes}>
-          <summary>Motivação e incentivos do ano</summary>
-          <Subida
-            ano={ano}
-            ate={ate}
-            degraus={ciclo?.premios ?? []}
-            recebido={recebido}
-            vendido={vendido}
-            visao={ciclo?.visao ?? null}
-            horizonte={ciclo?.horizonte ?? null}
-          />
-        </details>
-
-        <div className={p.placar} aria-label="Placar do ano">
-          <div className={FAIXA_CLASSE[faixa(nota)]}>
-            <b className={p.placarNum}>{pct(nota)}</b>
-            <span>
-              é a nota do painel em {ano}
-              {nota === null
-                ? metas.length
-                  ? ", ainda sem número lançado"
-                  : ", sem metas ainda"
-                : `: ${FAIXAS[faixa(nota)]}`}
-            </span>
-          </div>
-          <div>
-            <b className={p.placarNum}>{seq}</b>
-            <span>
-              {seq === 1
-                ? "mês fechado seguido na RMR"
-                : "meses fechados seguidos na RMR"}
-            </span>
-          </div>
-          <div>
-            <b className={p.placarNum}>
-              {batidasNoMes}
-              <small> de {metas.length}</small>
-            </b>
-            <span>
-              metas batidas em {ate ? MESES_LONGOS[ate - 1] : "nenhum mês"}
-            </span>
-          </div>
-          <button
-            type="button"
-            className={p.mini}
-            onClick={() => setPremios(!premios)}
-            aria-expanded={premios}
-          >
-            {premios
-              ? "Fechar os prêmios"
-              : ciclo?.premios?.length
-                ? "Ajustar os prêmios"
-                : "Criar os prêmios"}
-          </button>
-        </div>
-        {premios ? (
-          <EditarPremios
-            ano={ano}
-            ciclo={ciclo}
-            rodar={rodar}
-            fechar={() => setPremios(false)}
-          />
-        ) : null}
-
-        <div className={p.guia}>
-          <ProximoPasso passos={passos.slice(0, 4)} />
-          <ComoFunciona />
-        </div>
-
+        <details className={p.configuracao}>
+          <summary>Ajustar metas, iniciativas e rumo do estúdio</summary>
+          <p className={p.voz}>Defina o que quer alcançar e como medir. As mudanças nos campos de texto são salvas ao sair deles; Escape cancela a edição.</p>
         {/* ---------- 1. o rumo ---------- */}
         <section className={p.andar} id="rumo">
           <h2>
@@ -382,6 +211,7 @@ export function Plano({
                   max={ano + 10}
                   defaultValue={ciclo?.horizonte ?? ""}
                   placeholder={String(ano + 3)}
+                  onKeyDown={(e) => cancelarEdicao(e, ciclo?.horizonte)}
                   onBlur={(e) => {
                     if (String(ciclo?.horizonte ?? "") !== e.target.value)
                       rodar(() =>
@@ -453,18 +283,11 @@ export function Plano({
             <i className={p.ponto}>.</i>
           </h2>
           <p className={p.voz}>
-            Cada iniciativa vira poucos números por mês. O peso diz quanto cada
-            meta conta na nota: somados, os pesos dão 100.{" "}
-            <span className={somaPesos === 100 ? p.pesoOk : p.pesoFalta}>
-              {somaPesos === 100
-                ? "Os seus somam 100, certo."
-                : `Os seus somam ${somaPesos}${somaPesos > 100 ? ", passou." : ", falta distribuir."}`}
-            </span>
+            Escolha um resultado, um alvo e a fonte do número. A importância define quanto cada meta conta na nota; os valores são proporcionais e não precisam somar 100. Importância zero deixa a meta só para acompanhamento.
             {metas.length > 7 ? (
               <span className={p.pesoFalta}>
                 {" "}
-                São {metas.length} metas: a G4 limita em 5 por pessoa, e você é
-                uma só.
+                São {metas.length} metas. Priorize as que realmente mudam o resultado.
               </span>
             ) : null}
           </p>
@@ -482,7 +305,7 @@ export function Plano({
             <div className={p.painel}>
               <div className={p.painelCab} aria-hidden>
                 <span>Meta</span>
-                <span>Peso</span>
+                <span>Importância</span>
                 {MESES.map((m, i) => (
                   <span key={m} className={i + 1 === ate ? p.mesAtual : ""}>
                     {m}
@@ -490,11 +313,12 @@ export function Plano({
                 ))}
                 <span>No ano</span>
               </div>
-              {ativos.map((x) => (
+              {projetos.filter((x) => metas.some((m) => m.projeto_id === x.id) || x.status !== "encerrado").map((x) => (
                 <div key={x.id} className={p.grupo}>
                   <div className={p.grupoCab}>
                     <b>{x.prioridade}</b> {x.nome}
                     {x.status === "pausado" ? <em> (pausado)</em> : null}
+                    {x.status === "encerrado" ? <em> (iniciativa encerrada)</em> : null}
                   </div>
                   {metas
                     .filter((m) => m.projeto_id === x.id)
@@ -514,24 +338,36 @@ export function Plano({
           )}
         </section>
 
+        </details>
         {/* ---------- 4. a RMR ---------- */}
         {ate ? (
+          <details className={p.configuracao}><summary>Revisão mensal: medir, entender e decidir</summary>
           <RmrDoMes
             ano={ano}
             ate={ate}
+            ateFechado={ateFechado}
             metas={metas}
             valores={valores}
             rmrs={rmrs}
             projetos={projetos}
             rodar={rodar}
           />
+          </details>
         ) : null}
+        </fieldset>
       </div>
     </ModuloIntegrado.Provider>
   );
 }
 
 type Rodar = (acao: () => Promise<Feito>, depois?: (r: Feito) => void) => void;
+
+function cancelarEdicao(e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>, valor: string | number | null | undefined) {
+  if (e.key !== "Escape") return;
+  e.preventDefault();
+  e.currentTarget.value = String(valor ?? "");
+  e.currentTarget.blur();
+}
 
 /* ---------- peças ---------- */
 
@@ -555,6 +391,7 @@ function CampoTexto({
         rows={linhas}
         defaultValue={valor}
         placeholder={dica}
+        onKeyDown={(e) => cancelarEdicao(e, valor)}
         onBlur={(e) => {
           if (e.target.value.trim() !== valor.trim()) salvar(e.target.value);
         }}
@@ -585,11 +422,9 @@ function EditarPremios({
   const mudar = (i: number, parte: Partial<Degrau>) =>
     setRascunho(rascunho.map((d, j) => (j === i ? { ...d, ...parte } : d)));
   return (
-    <div className={p.editaPremios}>
+    <form className={p.editaPremios} onSubmit={(e) => { e.preventDefault(); rodar(() => salvarCiclo(ano, { premios: rascunho }), (r) => r.ok && fechar()); }}>
       <p className={p.voz}>
-        Cada prêmio é um acampamento na montanha. Ele destrava quando o Caixa de
-        um mês passa do patamar; se pedir meses seguidos, o patamar tem que se
-        repetir.
+        Cada marco pede um valor recebido por mês. A confirmação usa somente meses que já terminaram; um mês em andamento aparece como provisório. Para contratar equipe, por exemplo, você pode exigir vários meses seguidos.
       </p>
       <div className={p.degrausForm}>
         {rascunho.map((d, i) => (
@@ -599,13 +434,16 @@ function EditarPremios({
               onChange={(e) => mudar(i, { nome: e.target.value })}
               placeholder="O prêmio"
               maxLength={80}
+              required
               aria-label="Prêmio"
             />
             <label>
               R${" "}
               <input
                 type="number"
-                min={1}
+                min={0.01}
+                step="0.01"
+                required
                 value={d.patamar || ""}
                 onChange={(e) => mudar(i, { patamar: Number(e.target.value) })}
                 aria-label="Entrou no Caixa no mês"
@@ -618,9 +456,10 @@ function EditarPremios({
                 type="number"
                 min={1}
                 max={12}
+                required
                 value={d.meses}
                 onChange={(e) =>
-                  mudar(i, { meses: Number(e.target.value) || 1 })
+                  mudar(i, { meses: Number(e.target.value) })
                 }
                 aria-label="Meses seguidos"
               />
@@ -640,6 +479,7 @@ function EditarPremios({
         <button
           type="button"
           className={p.mini}
+          disabled={rascunho.length >= 12}
           onClick={() =>
             setRascunho([...rascunho, { nome: "", patamar: 0, meses: 1 }])
           }
@@ -647,14 +487,8 @@ function EditarPremios({
           Mais um prêmio
         </button>
         <button
-          type="button"
+          type="submit"
           className={p.btn}
-          onClick={() =>
-            rodar(
-              () => salvarCiclo(ano, { premios: rascunho }),
-              (r) => r.ok && fechar(),
-            )
-          }
         >
           Salvar os prêmios
         </button>
@@ -662,7 +496,7 @@ function EditarPremios({
           Cancelar
         </button>
       </div>
-    </div>
+    </form>
   );
 }
 
@@ -692,7 +526,7 @@ function Projecoes({
           <tr>
             <th>Ano</th>
             <th>Faturamento (R$)</th>
-            <th>Caixa que sobra (R$)</th>
+            <th>Resultado desejado (R$)</th>
           </tr>
         </thead>
         <tbody>
@@ -706,6 +540,8 @@ function Projecoes({
                     min={0}
                     defaultValue={l[k] ?? ""}
                     placeholder="·"
+                    aria-label={`${k === "faturamento" ? "Faturamento" : "Resultado"} projetado de ${l.ano}`}
+                    onKeyDown={(e) => cancelarEdicao(e, l[k])}
                     onBlur={(e) => {
                       if (String(l[k] ?? "") === e.target.value) return;
                       salvar(
@@ -813,6 +649,7 @@ function CartaoProjeto({
               rodar(() => salvarProjeto(x.id, { nome: e.target.value }));
           }}
           aria-label="Nome do projeto"
+          onKeyDown={(e) => cancelarEdicao(e, x.nome)}
         />
         <span
           className={`${p.notaMini} ${FAIXA_CLASSE[faixa(nota)]}`}
@@ -825,6 +662,8 @@ function CartaoProjeto({
         className={p.porque}
         rows={2}
         defaultValue={x.porque ?? ""}
+        aria-label={`Objetivo da iniciativa ${x.nome}`}
+        onKeyDown={(e) => cancelarEdicao(e, x.porque)}
         placeholder="Por que este projeto existe e o que ele tem a ver com a visão."
         onBlur={(e) => {
           if (e.target.value.trim() !== (x.porque ?? "").trim())
@@ -948,7 +787,8 @@ function LinhaMeta({
         min={0}
         max={100}
         defaultValue={m.peso}
-        aria-label="Peso"
+        aria-label={`Importância de ${m.titulo}`}
+        onKeyDown={(e) => cancelarEdicao(e, m.peso)}
         onBlur={(e) => {
           if (Number(e.target.value) !== m.peso)
             rodar(() => salvarMeta(m.id, { peso: e.target.value }));
@@ -964,7 +804,7 @@ function LinhaMeta({
             className={`${p.celula} ${mes <= ate ? FAIXA_CLASSE[f] : p.futuro}`}
             title={
               mes <= ate
-                ? `${MESES_LONGOS[i]}: ${formatar(v[mes], m.unidade)} (${pct(pc)}, ${FAIXAS[f]})`
+                ? `${MESES_LONGOS[i]}: ${formatar(leituraMeta(m, v, mes).realizado, m.unidade)} ${m.periodo === "ano" ? "acumulados" : "no mês"} (${pct(pc)}, ${FAIXAS[f]})`
                 : MESES_LONGOS[i]
             }
           >
@@ -991,6 +831,7 @@ function CamposMeta({ m }: { m?: Meta }) {
         defaultValue={m?.titulo}
         placeholder="A meta (ex.: Vitrines entregues)"
         maxLength={120}
+        aria-label="Nome da meta"
         required
       />
       <select
@@ -1001,7 +842,7 @@ function CamposMeta({ m }: { m?: Meta }) {
       >
         {(Object.keys(FONTES) as Fonte[])
           .filter(
-            (k) => integrado || !["despesas", "entregas", "saldo"].includes(k),
+            (k) => integrado || m?.fonte === k || !["despesas", "entregas", "saldo"].includes(k),
           )
           .map((k) => (
             <option key={k} value={k}>
@@ -1012,7 +853,7 @@ function CamposMeta({ m }: { m?: Meta }) {
       <input
         name="alvo"
         type="number"
-        min={0}
+        min={0.01}
         step="any"
         defaultValue={m?.alvo}
         placeholder="alvo"
@@ -1037,7 +878,7 @@ function CamposMeta({ m }: { m?: Meta }) {
           name="direcao"
           key={fonte}
           defaultValue={
-            m?.direcao ?? (fonte === "despesas" ? "reduzir" : "aumentar")
+            m?.fonte === fonte ? m.direcao ?? "aumentar" : fonte === "despesas" ? "reduzir" : "aumentar"
           }
           aria-label="Direção da meta"
         >
@@ -1059,8 +900,8 @@ function CamposMeta({ m }: { m?: Meta }) {
         min={0}
         max={100}
         defaultValue={m?.peso ?? 10}
-        aria-label="Peso"
-        title="peso"
+        aria-label="Importância na nota"
+        title="Importância relativa; zero deixa a meta fora da nota"
       />
     </>
   );
@@ -1069,7 +910,7 @@ function CamposMeta({ m }: { m?: Meta }) {
 function lerForm(f: HTMLFormElement) {
   const d = new FormData(f);
   return Object.fromEntries(
-    ["titulo", "fonte", "alvo", "unidade", "periodo", "peso", "direcao"].map(
+    ["titulo", "fonte", "alvo", "unidade", "periodo", "peso", "direcao"].filter((k) => d.has(k)).map(
       (k) => [k, d.get(k)],
     ),
   );
@@ -1144,10 +985,11 @@ function EditarMeta({
       <button type="submit" className={p.btn}>
         Salvar
       </button>
+      <button type="button" className={p.mini} onClick={fechar}>Cancelar edição</button>
       <button
         type="button"
         className={p.mini}
-        onClick={() => rodar(() => apagarMeta(m.id))}
+        onClick={() => { if (window.confirm(`Apagar a meta "${m.titulo}" e todas as suas medições?`)) rodar(() => apagarMeta(m.id)); }}
       >
         Apagar meta
       </button>
@@ -1158,6 +1000,7 @@ function EditarMeta({
 function RmrDoMes({
   ano,
   ate,
+  ateFechado,
   metas,
   valores,
   rmrs,
@@ -1166,23 +1009,24 @@ function RmrDoMes({
 }: {
   ano: number;
   ate: number;
+  ateFechado: number;
   metas: Meta[];
   valores: Valores;
   rmrs: Rmr[];
   projetos: Projeto[];
   rodar: Rodar;
 }) {
-  const [mes, setMes] = useState(ate);
+  const [mes, setMes] = useState(Math.max(1, ateFechado));
   const chave = `${ano}-${String(mes).padStart(2, "0")}-01`;
   const feita = rmrs.find((r) => r.mes === chave);
-  const nota = notaDoPainel(metas, valores, mes);
+  const revisaveis = metas.filter((m) => leituraMeta(m, valores[m.id] ?? {}, mes).vigente);
+  const nota = notaDoMes(revisaveis, valores, mes);
   const nomeProjeto = useMemo(
     () => Object.fromEntries(projetos.map((x) => [x.id, x.nome])),
     [projetos],
   );
-  const faltam = metas.filter(
-    (m) => m.fonte === "manual" && valores[m.id]?.[mes] === undefined,
-  ).length;
+  const faltam = revisaveis.filter((m) => leituraMeta(m, valores[m.id] ?? {}, mes).realizado === null).length;
+  const podeFechar = mes <= ateFechado && revisaveis.length > 0 && faltam === 0 && nota !== null;
   const doAno = rmrs
     .filter((r) => r.mes.startsWith(String(ano)))
     .sort((a, b) => b.mes.localeCompare(a.mes));
@@ -1190,33 +1034,30 @@ function RmrDoMes({
   return (
     <section className={p.andar} id="rmr">
       <h2>
-        <i className={p.num}>4</i> A RMR de {MESES_LONGOS[mes - 1]}
+        Revisão de {MESES_LONGOS[mes - 1]}
         <i className={p.ponto}>.</i>
       </h2>
       <p className={p.voz}>
-        A reunião mensal de resultados, de você com você. As metas automáticas
-        já chegam preenchidas; lance as outras, olhe onde saiu da linha e
-        escreva o que causou e o plano para voltar. Mês fechado conta na
-        sequência.{" "}
+        Confira os números, registre o que aprendeu e decida a ação do próximo mês. Meses em andamento podem ser medidos, mas só podem ser concluídos depois de terminar.{" "}
         <label className={p.trocaMes}>
           ver o mês de{" "}
-          <select value={mes} onChange={(e) => setMes(Number(e.target.value))}>
+          <select aria-label="Mês da revisão" value={mes} onChange={(e) => setMes(Number(e.target.value))}>
             {Array.from({ length: ate }, (_, i) => i + 1).map((n) => (
               <option key={n} value={n}>
-                {MESES_LONGOS[n - 1]}
+                {MESES_LONGOS[n - 1]}{n > ateFechado ? " (em andamento)" : ""}
               </option>
             ))}
           </select>
         </label>
       </p>
 
-      {metas.length === 0 ? (
+      {revisaveis.length === 0 ? (
         <div className={p.vazio}>
-          Sem metas no ano ainda: crie no painel acima.
+          Nenhuma meta vigente neste mês. Defina metas ou escolha outro mês.
         </div>
       ) : (
         <ul className={p.rmr}>
-          {metas.map((m) => {
+          {revisaveis.map((m) => {
             const v = valores[m.id]?.[mes];
             const pc = percentual(m, valores[m.id] ?? {}, mes);
             return (
@@ -1244,6 +1085,7 @@ function RmrDoMes({
                     step="any"
                     defaultValue={v ?? ""}
                     placeholder="número do mês"
+                    onKeyDown={(e) => cancelarEdicao(e, v)}
                     onBlur={(e) => {
                       const novo =
                         e.target.value === "" ? null : Number(e.target.value);
@@ -1254,8 +1096,8 @@ function RmrDoMes({
                   />
                 ) : (
                   <span className={p.rmrAuto} title={FONTES[m.fonte].ajuda}>
-                    {formatar(v, m.unidade)}
-                    <i>medido sozinho</i>
+                    {formatar(leituraMeta(m, valores[m.id] ?? {}, mes).realizado, m.unidade)}
+                    <i>{m.periodo === "ano" ? "acumulado automático" : "automático"}</i>
                   </span>
                 )}
                 <b className={`${p.rmrPct} ${FAIXA_CLASSE[faixa(pc)]}`}>
@@ -1284,7 +1126,7 @@ function RmrDoMes({
         }}
       >
         <label className={p.campo}>
-          <span className={p.rotulo}>O que causou</span>
+          <span className={p.rotulo}>O que aconteceu e por quê</span>
           <textarea
             name="causa"
             rows={3}
@@ -1293,7 +1135,7 @@ function RmrDoMes({
           />
         </label>
         <label className={p.campo}>
-          <span className={p.rotulo}>O plano para voltar</span>
+          <span className={p.rotulo}>Qual é a próxima ação</span>
           <textarea
             name="plano"
             rows={3}
@@ -1303,25 +1145,26 @@ function RmrDoMes({
         </label>
         <div className={p.fecharPe}>
           <span>
-            Nota do painel até {MESES_LONGOS[mes - 1]}: <b>{pct(nota)}</b>
+            Nota desta revisão: <b>{pct(nota)}</b>
             {faltam
               ? `, com ${faltam} ${faltam === 1 ? "meta ainda sem número" : "metas ainda sem número"}`
               : ""}
           </span>
-          <button type="submit" className={p.btn}>
-            {feita ? "Atualizar a RMR" : `Fechar ${MESES_LONGOS[mes - 1]}`}
+          <button type="submit" className={p.btn} disabled={!podeFechar}>
+            {mes > ateFechado ? "Mês em andamento" : feita ? "Atualizar revisão" : `Concluir ${MESES_LONGOS[mes - 1]}`}
           </button>
         </div>
         {feita ? (
           <p className={p.fechada}>
-            Fechada em {new Date(feita.fechada_em).toLocaleDateString("pt-BR")}.
+            Concluída em {new Date(feita.fechada_em).toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" })}. A nota salva é a do fechamento; alterações nas fontes mudam a leitura atual.
           </p>
         ) : null}
       </form>
+      {!podeFechar && <p className={p.voz}>{mes > ateFechado ? "Você pode medir este mês agora. A conclusão fica disponível quando o mês terminar." : faltam ? "Complete as medições pendentes ou confira as fontes automáticas para concluir." : "Defina metas vigentes e a importância de pelo menos uma delas para concluir."}</p>}
 
       {doAno.length ? (
         <div className={p.historico}>
-          <span className={p.rotulo}>As RMRs de {ano}</span>
+          <span className={p.rotulo}>Revisões concluídas de {ano}</span>
           <ul>
             {doAno.map((r) => (
               <li key={r.mes}>
@@ -1354,38 +1197,10 @@ function faltaTexto(
   mes: number,
   projeto?: string,
 ): string {
-  const fmt = (x: number) => formatar(x, m.unidade);
-  const onde = projeto ? `${projeto}. ` : "";
-  if (m.direcao === "reduzir") {
-    const medidos = Object.entries(v).filter(([k]) => Number(k) <= mes);
-    const atual =
-      m.periodo === "ano"
-        ? medidos.reduce((s, [, x]) => s + (x ?? 0), 0)
-        : v[mes];
-    if (atual === undefined || !medidos.length)
-      return onde + "Medição a apurar.";
-    const limite = m.periodo === "ano" ? (m.alvo * mes) / 12 : m.alvo;
-    return atual <= limite
-      ? onde + "Dentro do limite: " + fmt(atual) + " de " + fmt(limite) + "."
-      : onde +
-          "Reduzir " +
-          fmt(atual - limite) +
-          " para o limite de " +
-          fmt(limite) +
-          ".";
-  }
-  if (m.periodo === "ano") {
-    let acum = 0;
-    for (let k = 1; k <= mes; k++) acum += v[k] ?? 0;
-    const ritmo = (m.alvo * mes) / 12;
-    return acum >= ritmo
-      ? `${onde}No ritmo: ${fmt(acum)} no ano, e o ritmo pede ${fmt(ritmo)}.`
-      : `${onde}Faltam ${fmt(ritmo - acum)} para o ritmo do ano (${fmt(m.alvo)} até dezembro).`;
-  }
-  const x = v[mes];
-  if (x === undefined)
-    return `${onde}Alvo de ${fmt(m.alvo)} no mês. Lance o número.`;
-  return x >= m.alvo
-    ? `${onde}Bateu: ${fmt(x)} de ${fmt(m.alvo)}.`
-    : `${onde}Faltam ${fmt(m.alvo - x)} para ${fmt(m.alvo)}.`;
+  const r = leituraMeta(m, v, mes);
+  const onde = projeto ? projeto + '. ' : '';
+  if (r.realizado === null) return onde + 'Medição a apurar. Confira a fonte ou complete os meses pendentes.';
+  const fmt = (n: number) => formatar(n, m.unidade);
+  if (r.falta === 0) return onde + (m.direcao === 'reduzir' ? 'Dentro do limite: ' : m.periodo === 'ano' ? 'No ritmo: ' : 'Alcançado: ') + fmt(r.realizado) + ' de ' + fmt(r.alvo) + '.';
+  return onde + (m.direcao === 'reduzir' ? 'Reduzir ' : 'Faltam ') + fmt(r.falta!) + (m.periodo === 'ano' ? ' para o ritmo do ano.' : ' para o alvo do mês.');
 }

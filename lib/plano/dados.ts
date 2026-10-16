@@ -4,6 +4,10 @@ import { projetos as lerProjetos } from "@/lib/projetos/dados";
 import { apurarMes } from "@/lib/sistema/indicadores";
 import { valoresDaMeta } from "@/lib/sistema/metas";
 import { lerTodos, tabelaAusente } from "@/lib/sistema/consultas";
+import { hojeSP } from "@/lib/crm/regras";
+import { filasAtendimento } from "@/lib/crm/atendimento";
+import { ESTAGIOS_NO_PIPELINE, type LeadPainel } from "@/lib/crm/tipos";
+import { ultimoMesConcluido, type OperacaoPlano } from "./resumo";
 import {
   diaLocal,
   instanteSP,
@@ -14,6 +18,7 @@ import type { Ciclo, Fonte, Meta, Projeto, Rmr, Valores } from "./tipos";
 
 export async function plano(ano: number, ate: number) {
   const b = await clienteServidor();
+  const hoje = hojeSP();
   const { inicio, fim } = limitesAno(ano);
   const [ciclo, iniciativas, metas, medicoes, rmrs] = await Promise.all([
     b.from("plano_ciclos").select("*").eq("ano", ano).maybeSingle<Ciclo>(),
@@ -30,10 +35,10 @@ export async function plano(ano: number, ate: number) {
       "plano_medicoes",
       "id,meta_id,mes,valor",
       { coluna: "mes", inicio, fim },
-    ),
-    lerTodos<Rmr & { id: string }>(b, "plano_rmr"),
+    ).catch((e) => { if (tabelaAusente(e)) return null; throw e; }),
+    lerTodos<Rmr & { id: string }>(b, "plano_rmr").catch((e) => { if (tabelaAusente(e)) return null; throw e; }),
   ]);
-  if (tabelaAusente(ciclo.error) || iniciativas === null || metas === null)
+  if (tabelaAusente(ciclo.error) || iniciativas === null || metas === null || medicoes === null || rmrs === null)
     return { semTabela: true as const };
   if (ciclo.error)
     throw new Error("Não foi possível carregar o Plano. Tente novamente.");
@@ -43,7 +48,7 @@ export async function plano(ano: number, ate: number) {
   const valores: Valores = {};
   for (const m of medicoes)
     (valores[m.meta_id] ??= {})[Number(m.mes.slice(5, 7))] = Number(m.valor);
-  const [fin, entregas, toques, posts] = await Promise.all([
+  const [fin, entregas, toques, posts, contatos] = await Promise.all([
     financeiro(ano),
     lerProjetos(),
     lerTodos<{ id: string; direcao: string; created_at: string }>(
@@ -66,6 +71,7 @@ export async function plano(ano: number, ate: number) {
         fim,
       },
     ),
+    ano === Number(hoje.slice(0, 4)) ? lerTodos<LeadPainel>(b, "crm_leads_painel", "*", undefined, { estagio: [...ESTAGIOS_NO_PIPELINE] }) : Promise.resolve([] as LeadPainel[]),
   ]);
   if (fin.semTabela)
     throw new Error(
@@ -99,7 +105,7 @@ export async function plano(ano: number, ate: number) {
       somar("despesas", mes, r.despesas);
       if (r.saldo !== null) somar("saldo", mes, r.saldo);
     }
-    somar(
+    if (!entregas.semTabela || entregas.integrado) somar(
       "entregas",
       mes,
       entregas.projetos.filter(
@@ -119,15 +125,24 @@ export async function plano(ano: number, ate: number) {
     if (m.fonte === "manual") continue;
     valores[m.id] = valoresDaMeta(m, auto[m.fonte] ?? {}, ate);
   }
+  const filas = filasAtendimento(contatos, hoje);
+  const operacao: OperacaoPlano | null = ano === Number(hoje.slice(0, 4)) ? {
+    novos: filas.novos.length,
+    respostas: filas.responder.length,
+    propostas: filas.negociacao.length,
+    entregasPendentes: entregas.semTabela && !entregas.integrado ? null : entregas.projetos.filter((p) => !p.entregue_em && p.status_contrato !== "cancelado").length,
+    taxasPendentes: apurarMes(hoje.slice(0, 7), fin.recebimentos, fin.despesas, fin.devolucoes, fin.vendas).taxasPendentes,
+  } : null;
   return {
     semTabela: false as const,
     ciclo: ciclo.data,
+    hoje,
+    ateFechado: ultimoMesConcluido(ano, hoje),
+    operacao,
     projetos: iniciativas.sort((a, b) => a.ordem - b.ordem),
     metas: listaMetas.map((m) => ({ ...m, alvo: Number(m.alvo) })),
     valores,
-    rmrs: rmrs
-      .filter((r) => r.mes >= inicio && r.mes < fim)
-      .map((r) => ({ ...r, nota: r.nota === null ? null : Number(r.nota) })),
+    rmrs: rmrs.map((r) => ({ ...r, nota: r.nota === null ? null : Number(r.nota) })),
     recebido,
     vendido,
     movimentosDisponiveis: fin.movimentosDisponiveis,

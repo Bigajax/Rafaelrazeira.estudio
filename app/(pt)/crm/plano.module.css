@@ -395,3 +395,68 @@
   .tela .painelCab { padding: 16px }
 }
 @media (max-width: 420px) { .tela .formMeta { grid-template-columns: 1fr } }
+
+/* Objetivo, execução e revisão em uma leitura contínua. */
+:global(main):has(.tela) { background: #f4f7f4; }
+.tela .conteudo { min-width: 0; margin: 0; padding: 0; border: 0; }
+.tela .salvamento { font-size: 11px; color: #5f7365; margin: -12px 0 12px; min-height: 18px; }
+.tela .atalhos { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.tela .atalhos a { display: inline-flex; align-items: center; min-height: 36px; padding: 8px 12px; background: white; border: 1px solid #dce6df; border-radius: 7px; color: #4e6958; font-size: 12px; font-weight: 600; }
+.tela :is(section, details) { scroll-margin-top: 18px; }
+.tela .montanhaSecao { margin-bottom: 24px; }
+.tela .montanhaCab { display: flex; justify-content: space-between; gap: 14px; align-items: center; margin-bottom: 12px; }
+.tela .montanhaCab h2 { font: 700 22px/1.3 var(--body); margin: 0; letter-spacing: -.025em; }
+.tela .montanhaCab p { font-size: 12px; color: #5e7265; margin: 5px 0 0; }
+.tela .subida { border-radius: 12px; border: 0; }
+.tela .montanha { min-height: 280px; aspect-ratio: 640 / 400; align-self: center; }
+.tela .subidaTexto { padding: 24px; gap: 12px; }
+.tela .subidaTexto .subidaFrase { font: 750 clamp(24px, 2.7vw, 36px)/1.15 var(--body); letter-spacing: -.03em; text-transform: none; margin: 0; }
+.tela .subidaTexto .subidaAno { font-size: 10px; letter-spacing: .07em; margin: 0; }
+.tela .subidaTexto .subidaApoio { font-size: 13px; line-height: 1.7; margin: 0; }
+.tela .subidaNota, .tela .subidaVisao { font-size: 11px; line-height: 1.7; color: #e0e9ff; margin: 0; }
+.tela .subidaVisao { border-top: 1px solid #ffffff40; padding-top: 10px; }
+.tela .altitude { margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.tela .altitude dt { font-size: 10px; color: #dfe8ff; margin-bottom: 5px; }
+.tela .altitude dd { margin: 0; font-size: 19px; font-weight: 700; color: white; }
+.tela .numeroMarco { fill: #fff; font: 700 13px var(--body); }
+.tela .legendaMontanha { fill: #e5edff; font: 600 12px var(--body); }
+.tela .marcosLista { grid-column: 1/-1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; list-style: none; margin: 0; padding: 16px 20px; background: #203b80; }
+.tela .marcosLista li { display: flex; align-items: flex-start; gap: 10px; min-width: 0; padding: 12px; background: #ffffff0c; border: 1px solid #ffffff25; border-radius: 8px; }
+.tela .marcosLista li > div { display: grid; gap: 4px; min-width: 0; }
+.tela .marcosLista b { font-size: 13px; line-height: 1.5; color: white; overflow-wrap: anywhere; }
+.tela .marcosLista span:not(.marcoNumero), .tela .marcosLista small { font-size: 11px; line-height: 1.6; color: #e0e9ff; }
+.tela .marcoNumero { display: grid; place-items: center; width: 25px; height: 25px; flex: none; border-radius: 7px; background: #ffffff20; color: #fff; font-size: 12px; font-weight: 700; }
+.tela .marcosLista [data-marco-confirmado="true"] { border-color: #92d4b0; }
+.tela .marcosLista [data-marco-confirmado="true"] .marcoNumero { background: #bce8d0; color: #155539; }
+.tela .marcosLista [data-marco-proximo="true"] { border-color: #f4cf68; background: #ffffff16; }
+.tela .configuracao { background: white; border: 1px solid #dce6df; border-radius: 10px; margin-bottom: 18px; padding: 18px; min-width: 0; }
+.tela .configuracao > summary { font-size: 14px; font-weight: 650; color: #3d5c46; cursor: pointer; }
+.tela .configuracao[open] > summary { margin-bottom: 18px; }
+.tela .configuracao .andar:last-child { margin-bottom: 0; }
+.tela .andar h2 { font: 700 23px/1.3 var(--body); text-transform: none; margin: 0 0 10px; }
+.tela .painel { overflow-x: auto; }
+.tela .painel { --cols: minmax(220px, 2.4fr) 96px repeat(12, minmax(34px, 1fr)) 58px; }
+.tela .projetos { grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); }
+.tela .formMeta :is(input, select) { min-width: 0; }
+.tela .projecoes { min-width: 0; width: 100%; }
+.tela .projecoes table { table-layout: fixed; }
+.tela .projecoes th { overflow-wrap: anywhere; }
+.tela .editaPremios { margin: 12px 0 0; }
+.tela :is(button, input, select, textarea):disabled { cursor: wait; opacity: .65; }
+.tela :is(a, button, summary, input, select, textarea):focus-visible { outline: 2px solid #237a4d; outline-offset: 3px; }
+@media (max-width: 1100px) {
+  .tela .subida { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .tela .marcosLista { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 700px) {
+  .tela .subida { grid-template-columns: minmax(0, 1fr); }
+  .tela .subidaTexto { padding: 20px; }
+  .tela .montanha { min-height: 0; width: 100%; }
+  .tela .marcosLista { padding: 12px; grid-template-columns: minmax(0, 1fr); }
+  .tela .montanhaCab { align-items: flex-start; flex-wrap: wrap; }
+  .tela .configuracao { padding: 14px; }
+  .tela .campo textarea, .tela .porque, .tela .formMeta :is(input, select), .tela .rmrValor, .tela .trocaMes select { font-size: 16px; }
+  .tela .altitude dd { font-size: 17px; }
+  .tela .degrauEdita { grid-template-columns: minmax(0, 1fr); }
+  .tela .degrauEdita > input { min-width: 0; width: 100%; }
+}

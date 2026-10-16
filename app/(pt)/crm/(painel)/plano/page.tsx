@@ -15,6 +15,7 @@ import type { Metadata } from "next";
 import { plano } from "@/lib/plano/dados";
 import { hojeSP } from "@/lib/crm/regras";
 import { Plano } from "@/components/plano/Plano";
+import { anoDoPlano } from "@/lib/plano/resumo";
 import p from "@/app/(pt)/crm/plano.module.css";
 
 export const metadata: Metadata = { title: "Plano" };
@@ -24,7 +25,7 @@ export default async function PaginaPlano({ searchParams }: { searchParams: Prom
   const anoHoje = Number(hoje.slice(0, 4));
   const mesHoje = Number(hoje.slice(5, 7));
   const { ano: pedido } = await searchParams;
-  const ano = /^\d{4}$/.test(pedido ?? "") ? Number(pedido) : anoHoje;
+  const ano = anoDoPlano(pedido, hoje);
   /* até que mês o ano já conta: o mês corrente, o ano inteiro se já passou,
      nenhum se ainda não começou */
   const ate = ano < anoHoje ? 12 : ano > anoHoje ? 0 : mesHoje;
@@ -48,5 +49,5 @@ export default async function PaginaPlano({ searchParams }: { searchParams: Prom
     );
   }
 
-  return <Plano ano={ano} ate={ate} {...dados} />;
+  return <Plano key={ano} ano={ano} ate={ate} {...dados} />;
 }

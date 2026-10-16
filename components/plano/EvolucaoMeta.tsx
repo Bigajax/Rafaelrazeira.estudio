@@ -1,6 +1,7 @@
 "use client";
 import { formatar, type Meta } from "@/lib/plano/tipos";
 import { valoresDaMeta } from "@/lib/sistema/metas";
+import { leituraMeta } from "@/lib/plano/resumo";
 import s from "@/components/sistema/sistema.module.css";
 export function EvolucaoMeta({
   meta: m,
@@ -16,16 +17,11 @@ export function EvolucaoMeta({
     Object.fromEntries(Array.from({ length: ate }, (_, i) => [i + 1, 0])),
     ate,
   );
-  let soma = 0,
-    completo = true;
   const linhas = Object.keys(vigentes).map((n) => {
-    const mes = Number(n),
-      v = valores[mes];
-    if (v === undefined) completo = false;
-    else soma += v;
+    const mes = Number(n), leitura = leituraMeta(m, valores, mes);
     return {
       mes,
-      real: m.periodo === "ano" ? (completo ? soma : null) : (v ?? null),
+      real: leitura.realizado,
       alvo: m.periodo === "ano" ? (m.alvo * mes) / 12 : m.alvo,
     };
   });

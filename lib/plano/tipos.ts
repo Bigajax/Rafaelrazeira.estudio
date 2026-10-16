@@ -16,6 +16,8 @@
      Meta mensal entra pela média dos meses medidos; anual, pelo ritmo.
    ============================================================ */
 
+import { inicioDaMeta } from "@/lib/sistema/metas";
+
 export type Prioridade = "P1" | "P2" | "P3";
 export type Horizonte = "agora" | "depois" | "ideia";
 export type StatusProjeto = "ativo" | "pausado" | "encerrado";
@@ -49,9 +51,9 @@ export const FONTES: Record<
   { nome: string; unidade: Unidade | null; ajuda: string }
 > = {
   manual: {
-    nome: "Eu digito na RMR",
+    nome: "Eu informo o resultado",
     unidade: null,
-    ajuda: "você lança o número do mês na reunião mensal",
+    ajuda: "você lança o número do mês na revisão mensal",
   },
   recebido: {
     nome: "Caixa: entradas após devoluções",
@@ -124,8 +126,10 @@ export type SituacaoDegrau = {
   /* o melhor mês do ano e a maior sequência de meses no patamar */
   melhorMes: number;
   seguidos: number;
-  /* quanto do caminho já foi (0..1): pelo melhor mês, ou pelos meses seguidos */
+  /* Progresso da sequência atual; o mês em andamento conta apenas provisoriamente. */
   progresso: number;
+  atuais: number;
+  provisorio: boolean;
 };
 
 /* recebido[mes 1..12] = o que entrou no Caixa no mês */
@@ -133,26 +137,31 @@ export function situacaoDoDegrau(
   d: Degrau,
   recebido: Partial<Record<number, number>>,
   ate: number,
+  ateFechado = ate,
 ): SituacaoDegrau {
-  const meses = Math.max(1, d.meses || 1);
+  const meses = Math.max(1, Math.min(12, Math.trunc(d.meses || 1)));
+  const limite = Math.max(0, Math.min(12, Math.trunc(ate)));
+  const fechado = Math.max(0, Math.min(limite, Math.trunc(ateFechado)));
   let melhorMes = 0;
   let corrida = 0;
   let maior = 0;
   let quando: number | null = null;
-  for (let m = 1; m <= ate; m++) {
-    const v = recebido[m] ?? 0;
+  for (let m = 1; m <= limite; m++) {
+    const v = Number.isFinite(recebido[m]) ? recebido[m]! : 0;
     melhorMes = Math.max(melhorMes, v);
-    corrida = v >= d.patamar ? corrida + 1 : 0;
+    if (m > fechado) continue;
+    corrida = d.patamar > 0 && v >= d.patamar ? corrida + 1 : 0;
     maior = Math.max(maior, corrida);
     if (quando === null && corrida >= meses) quando = m;
   }
   const destravado = quando !== null;
+  const parcial = limite > fechado && Number.isFinite(recebido[limite]) ? Math.max(0, recebido[limite]!) : 0;
+  const fracao = d.patamar > 0 ? Math.min(1, parcial / d.patamar) : 0;
+  const provisorio = !destravado && limite > fechado && d.patamar > 0 && parcial >= d.patamar && corrida + 1 >= meses;
   const progresso = destravado
     ? 1
-    : maior > 0
-      ? Math.min(0.99, maior / meses)
-      : Math.min(0.99, melhorMes / d.patamar);
-  return { destravado, quando, melhorMes, seguidos: maior, progresso };
+    : Math.max(0, Math.min(0.99, (corrida + fracao) / meses));
+  return { destravado, quando, melhorMes, seguidos: maior, progresso, atuais: corrida, provisorio };
 }
 
 export type Projeto = {
@@ -224,14 +233,14 @@ export const MESES_LONGOS = [
 export const TETO = 1.2;
 
 export function percentual(
-  meta: Pick<Meta, "alvo" | "periodo" | "direcao">,
+  meta: Pick<Meta, "alvo" | "periodo" | "direcao"> & Partial<Pick<Meta, "ano" | "created_at">>,
   valores: Partial<Record<number, number>>,
   mes: number,
 ): number | null {
-  if (!(meta.alvo > 0)) return null;
+  if (!Number.isFinite(meta.alvo) || !(meta.alvo > 0) || !Number.isInteger(mes) || mes < 1 || mes > 12 || mes < inicioDaMeta(meta)) return null;
   if (meta.periodo === "mes") {
     const v = valores[mes];
-    return v === undefined
+    return v === undefined || !Number.isFinite(v)
       ? null
       : meta.direcao === "reduzir"
         ? v <= 0
@@ -241,12 +250,12 @@ export function percentual(
   }
   let soma = 0;
   let algum = false;
-  for (let m = 1; m <= mes; m++) {
+  for (let m = inicioDaMeta(meta); m <= mes; m++) {
     const v = valores[m];
-    if (v !== undefined) {
+    if (v !== undefined && Number.isFinite(v)) {
       soma += v;
       algum = true;
-    }
+    } else return null;
   }
   const ritmo = (meta.alvo * mes) / 12;
   return algum
@@ -276,7 +285,7 @@ export const FAIXAS: Record<Faixa, string> = {
 
 /* O percentual da meta no ano, até o mês: é o que entra na nota. */
 export function percentualNoAno(
-  meta: Pick<Meta, "alvo" | "periodo" | "direcao">,
+  meta: Pick<Meta, "alvo" | "periodo" | "direcao"> & Partial<Pick<Meta, "ano" | "created_at">>,
   valores: Partial<Record<number, number>>,
   ate: number,
 ): number | null {
@@ -300,7 +309,7 @@ export function notaDoPainel(
   for (const m of metas) {
     const p = percentualNoAno(m, valores[m.id] ?? {}, ate);
     if (p === null || m.peso <= 0) continue;
-    soma += Math.min(p, TETO) * m.peso;
+    soma += Math.max(0, Math.min(p, TETO)) * m.peso;
     pesos += m.peso;
   }
   return pesos ? soma / pesos : null;
@@ -340,8 +349,11 @@ export function formatar(
   v: number | null | undefined,
   unidade: Unidade,
 ): string {
-  if (v === null || v === undefined || Number.isNaN(v)) return "·";
-  if (unidade === "R$") return `R$ ${Math.round(v).toLocaleString("pt-BR")}`;
+  if (v === null || v === undefined || !Number.isFinite(v)) return "·";
+  if (unidade === "R$") {
+    const valor = Math.round(v * 100) / 100;
+    return `R$ ${valor.toLocaleString("pt-BR", { minimumFractionDigits: Number.isInteger(valor) ? 0 : 2, maximumFractionDigits: 2 })}`;
+  }
   if (unidade === "%")
     return `${v.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%`;
   return v.toLocaleString("pt-BR", { maximumFractionDigits: 1 });
