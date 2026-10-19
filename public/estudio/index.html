@@ -3,13 +3,55 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Rafael Razeira Estúdio — Landing pages de alto padrão</title>
-<meta name="description" content="Estúdio boutique de design. Landing pages de alto padrão que posicionam sua marca com autoridade e convertem visitantes em clientes." />
+<!-- O título e a descrição são o que o Google mostra na busca. Até
+     19/10/2026 eles diziam "Landing pages de alto padrão", de agosto, e o
+     estúdio já vendia vitrine: quem buscava "vitrine digital rafael
+     razeira" achava a home falando de outra coisa. Sem travessão. -->
+<title>Vitrine digital para lojas, com pedido no WhatsApp | Rafael Razeira Estúdio</title>
+<meta name="description" content="Vitrines digitais para lojas pequenas: catálogo com foto, preço e tamanho, e o pedido pronto no WhatsApp. Estúdio em Maringá, mais de 100 projetos no ar." />
 
 <!-- Open Graph -->
-<meta property="og:title" content="Rafael Razeira Estúdio — Tenha uma página que vende" />
-<meta property="og:description" content="Landing pages de alto padrão que posicionam sua marca com autoridade e convertem visitantes em clientes." />
+<meta property="og:title" content="Rafael Razeira Estúdio: vitrine digital para lojas" />
+<meta property="og:description" content="Catálogo com foto, preço e tamanho, e o pedido pronto no WhatsApp. Estúdio em Maringá, mais de 100 projetos no ar." />
 <meta property="og:type" content="website" />
+<meta property="og:url" content="https://rafaelrazeira.com.br/" />
+<meta property="og:site_name" content="Rafael Razeira Estúdio" />
+<meta property="og:locale" content="pt_BR" />
+
+<!-- Quem é o estúdio, para o Google (19/10/2026). Na busca pelo nome
+     apareciam um engenheiro e fotógrafos de Maringá: isto amarra o site,
+     o Instagram, o LinkedIn e o Facebook como o MESMO negócio. Os perfis
+     são os que a própria busca mostrou; perfil novo entra em sameAs. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "@id": "https://rafaelrazeira.com.br/#estudio",
+  "name": "Rafael Razeira Estúdio",
+  "description": "Estúdio de design que faz vitrines digitais para lojas pequenas: catálogo com foto, preço e tamanho, e o pedido pronto no WhatsApp. Também landing pages e e-commerce.",
+  "url": "https://rafaelrazeira.com.br/",
+  "logo": "https://rafaelrazeira.com.br/assets/favicon.png",
+  "image": "https://rafaelrazeira.com.br/assets/og-rr.png",
+  "telephone": "+55 44 99124-6187",
+  "email": "rafael.rbarbon@gmail.com",
+  "address": { "@type": "PostalAddress", "addressLocality": "Maringá", "addressRegion": "PR", "addressCountry": "BR" },
+  "areaServed": { "@type": "Country", "name": "Brasil" },
+  "founder": { "@type": "Person", "name": "Rafael Razeira" },
+  "sameAs": [
+    "https://www.instagram.com/rafaelrazeira.estudio/",
+    "https://www.linkedin.com/in/razeirarafa",
+    "https://www.facebook.com/profile.php?id=61591963821667"
+  ],
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "Serviços",
+    "itemListElement": [
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Vitrine digital", "url": "https://rafaelrazeira.com.br/vitrine-digital" } },
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "E-commerce", "url": "https://rafaelrazeira.com.br/e-commerce" } }
+    ]
+  }
+}
+</script>
 <!-- URL absoluta de propósito: o robô de preview do WhatsApp não resolve caminho relativo -->
 <meta property="og:image" content="https://rafaelrazeira.com.br/assets/og-rr.png" />
 <meta property="og:image:width" content="1200" />
@@ -68,8 +110,42 @@
   <span></span><span></span><span></span><span></span><span></span>
 </div>
 
-<!-- A página inteira é montada aqui pelos módulos de js/sections/*.js -->
-<div id="app"></div>
+<!-- A página inteira é montada aqui pelos módulos de js/sections/*.js.
+
+     O que está DENTRO do #app é o hero e o menu que o JavaScript monta,
+     mais uma linha que resume a página, em HTML de verdade (19/10/2026). O main.js troca
+     tudo isto no primeiro instante (app.innerHTML), e até lá o loader
+     preto cobre a tela, então o visitante nunca vê esta versão. Ela
+     existe para quem lê sem JavaScript: o robô do Google na primeira
+     passada, e o preview de quem compartilha o link. Antes o #app vinha
+     vazio, e a home não tinha nenhum título nem nenhum link para a
+     /vitrine-digital, que por isso não aparecia na busca.
+     Mudou o hero ou o menu no config.js / header.js? Mudar aqui junto:
+     o texto daqui tem que ser o mesmo da página, nunca outro. -->
+<div id="app">
+  <header>
+    <a href="/estudio">RAFAEL RAZEIRA ESTÚDIO</a>
+    <nav aria-label="Navegação principal">
+      <a href="/vitrine-digital/">Vitrine Digital</a>
+      <a href="/portfolio">Portfólio</a>
+      <a href="/casos">Casos</a>
+      <a href="/servicos">Serviços</a>
+      <a href="/e-commerce">E-commerce</a>
+    </nav>
+  </header>
+  <main id="top">
+    <h1>Sua marca vendendo online em até 7 dias úteis.</h1>
+    <p>Landing pages, vitrines e lojas completas: estratégia, copy e design sob medida.</p>
+    <p>A vitrine digital é o catálogo da sua loja com foto, preço e tamanho, e o pedido chega pronto no WhatsApp. <a href="/vitrine-digital/">Conheça a Vitrine Digital</a>, veja <a href="/portfolio">os projetos no ar</a> e <a href="/casos">as lojas contadas por dentro</a>.</p>
+  </main>
+  <footer>
+    <p>Rafael Razeira Estúdio, Maringá, PR.</p>
+    <a href="https://www.instagram.com/rafaelrazeira.estudio/">@rafaelrazeira.estudio</a>
+    <a href="https://wa.me/5544991246187">WhatsApp (44) 99124-6187</a>
+    <a href="/termos">Termos de uso</a>
+    <a href="/privacidade">Política de privacidade</a>
+  </footer>
+</div>
 
 <!-- Ponto de entrada (ES module): monta as seções na ordem e liga as interações -->
 <script type="module" src="js/main.js"></script>
