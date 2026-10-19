@@ -17,8 +17,9 @@ import type { Metadata } from "next";
 import { Archivo, Inter, JetBrains_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
 import { lerCheckin } from "@/lib/checkin";
-import { listarFotos } from "@/lib/checkin-servidor";
+import { lerRespostas, listarFotos } from "@/lib/checkin-servidor";
 import { EnvioDeFotos } from "./EnvioDeFotos";
+import { PerguntasDaLoja } from "./PerguntasDaLoja";
 import s from "./checkin.module.css";
 
 const display = Archivo({ subsets: ["latin"], axes: ["wdth"], variable: "--font-display" });
@@ -36,7 +37,7 @@ export default async function PaginaCheckin({ params }: { params: Promise<{ toke
   const { token } = await params;
   const c = lerCheckin(token);
   if (!c) notFound();
-  const fotos = await listarFotos(c);
+  const [fotos, respostas] = await Promise.all([listarFotos(c), lerRespostas(c)]);
 
   return (
     <main className={`${s.pagina} ${display.variable} ${corpo.variable} ${mono.variable}`}>
@@ -48,14 +49,23 @@ export default async function PaginaCheckin({ params }: { params: Promise<{ toke
             <br />
             já separadas.
           </h1>
-          <p className={s.intro}>
-            {c.dono}, cada ficha abaixo é uma parte da vitrine. Toque em <b>Escolher fotos</b>, pegue da galeria e
-            elas sobem sozinhas. Se souber, escreva embaixo de cada uma o modelo, a numeração e o valor: é isso que
-            vai para o site.
-          </p>
+          {c.instrucao ? (
+            <p className={s.intro}>{c.instrucao}</p>
+          ) : (
+            <p className={s.intro}>
+              {c.dono}, cada ficha abaixo é uma parte da vitrine. Toque em <b>Escolher fotos</b>, pegue da galeria e
+              elas sobem sozinhas. Se souber, escreva embaixo de cada uma o modelo, a numeração e o valor: é isso que
+              vai para o site.
+            </p>
+          )}
         </header>
 
-        <EnvioDeFotos token={token} categorias={c.categorias} iniciais={fotos} />
+        {c.perguntas ? (
+          <div className={s.fichas}>
+            <PerguntasDaLoja token={token} perguntas={c.perguntas} iniciais={respostas} />
+          </div>
+        ) : null}
+        <EnvioDeFotos token={token} categorias={c.categorias} campos={c.campos} iniciais={fotos} />
 
         <footer className={s.pe}>
           <p>

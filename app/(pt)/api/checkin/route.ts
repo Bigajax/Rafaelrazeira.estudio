@@ -1,21 +1,31 @@
 /* ============================================================
    /api/checkin — a porta do check-in das fotos (ver lib/checkin.ts)
 
-   Sem login: quem tem o token do link é o dono da loja. Quatro pedidos:
+   Sem login: quem tem o token do link é o dono da loja. Cinco pedidos:
      subir    devolve uma URL assinada para o navegador subir UMA foto
               direto no Storage (o arquivo nunca passa por aqui)
-     nota     grava o "modelo, numeração e valor" da foto, em <foto>.json
+     nota     grava a ficha da foto em <foto>.json: a nota solta ("modelo,
+              numeração e valor") ou os campos da loja (nome, marca, cores,
+              tamanhos, preço...), desde 19/10/2026
+     loja     grava as respostas da loja (as perguntas) em <slug>/_loja.json
      apagar   tira uma foto que foi errada (e a nota dela)
      avisar   o lote terminou de subir: avisa o celular do Rafael
    ============================================================ */
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { EXTENSOES, caminhoValido, lerCheckin } from "@/lib/checkin";
+import { ARQUIVO_LOJA, EXTENSOES, caminhoValido, filtrarChaves, lerCheckin } from "@/lib/checkin";
 import { avisarRafael, storageCheckin } from "@/lib/checkin-servidor";
 
 const Pedido = z.discriminatedUnion("acao", [
   z.object({ acao: z.literal("subir"), token: z.string(), categoria: z.string(), tipo: z.string() }),
-  z.object({ acao: z.literal("nota"), token: z.string(), caminho: z.string(), nota: z.string().max(500) }),
+  z.object({
+    acao: z.literal("nota"),
+    token: z.string(),
+    caminho: z.string(),
+    nota: z.string().max(500).default(""),
+    campos: z.record(z.string(), z.string().max(300)).optional(),
+  }),
+  z.object({ acao: z.literal("loja"), token: z.string(), respostas: z.record(z.string(), z.string().max(600)) }),
   z.object({ acao: z.literal("apagar"), token: z.string(), caminho: z.string() }),
   z.object({ acao: z.literal("avisar"), token: z.string(), categoria: z.string(), quantas: z.number().int().min(1).max(500) }),
 ]);
@@ -50,10 +60,19 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true });
   }
 
+  if (p.acao === "loja") {
+    if (!c.perguntas) return erro("Esta loja não tem perguntas.");
+    const corpo = JSON.stringify({ respostas: filtrarChaves(c.perguntas, p.respostas), em: new Date().toISOString() });
+    const { error } = await st.upload(`${c.slug}/${ARQUIVO_LOJA}`, corpo, { contentType: "application/json", upsert: true });
+    if (error) return erro("Não deu para guardar as respostas.", 502);
+    return NextResponse.json({ ok: true });
+  }
+
   if (!caminhoValido(c, p.caminho)) return erro("Foto inválida.");
 
   if (p.acao === "nota") {
-    const corpo = JSON.stringify({ nota: p.nota.trim(), em: new Date().toISOString() });
+    const campos = c.campos && p.campos ? filtrarChaves(c.campos, p.campos) : undefined;
+    const corpo = JSON.stringify({ nota: p.nota.trim(), ...(campos ? { campos } : {}), em: new Date().toISOString() });
     const { error } = await st.upload(`${p.caminho}.json`, corpo, { contentType: "application/json", upsert: true });
     if (error) return erro("Não deu para guardar a anotação.", 502);
     return NextResponse.json({ ok: true });

@@ -301,3 +301,72 @@
   margin-top: 1rem;
   color: var(--ink);
 }
+
+/* ── a ficha com campos (19/10/2026, Fardo) ─────────────────── */
+/* com campos, cada foto vira uma linha: a foto pequena à esquerda e a
+   ficha (nome, marca, cores, tamanhos, preço) ao lado; uma coluna no
+   celular, duas no computador. Sem campos, a grade de 2 e 4 continua */
+.gradeCampos {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.25rem;
+}
+@media (min-width: 52rem) {
+  .gradeCampos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.fotoCampos {
+  display: grid;
+  grid-template-columns: 6.5rem minmax(0, 1fr);
+  gap: 0.25rem 0.875rem;
+  align-items: start;
+  padding-bottom: 1rem;
+  border-bottom: 1.5px solid var(--linha);
+}
+.fotoCampos .foto__quadro {
+  width: 6.5rem;
+}
+.fichaDaFoto {
+  min-width: 0;
+}
+.fichaDaFoto .nota {
+  margin-top: 0;
+}
+.fichaDaFoto .nota + .nota {
+  margin-top: 0.5rem;
+}
+.fichaDaFoto .nota input {
+  padding: 0.25rem 0;
+}
+
+/* ── as perguntas da loja ──────────────────────────────────── */
+.perguntas {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+@media (min-width: 40rem) {
+  .perguntas {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem 1.5rem;
+  }
+}
+.pergunta textarea {
+  width: 100%;
+  margin-top: 0.15rem;
+  padding: 0.35rem 0;
+  border: 0;
+  border-bottom: 1.5px solid var(--ink);
+  border-radius: 0;
+  background: transparent;
+  color: var(--ink);
+  font: 400 1rem/1.4 var(--font-body), Inter, system-ui, sans-serif;
+  resize: vertical;
+}
+.pergunta textarea:focus {
+  outline: none;
+  border-bottom-color: var(--green);
+}
+.pergunta span {
+  font-size: 0.625rem;
+}

@@ -2,7 +2,7 @@
    abre o bucket privado, então nada daqui pode ir para o navegador. */
 
 import { createClient } from "@supabase/supabase-js";
-import { BUCKET_CHECKIN, type Checkin } from "./checkin";
+import { ARQUIVO_LOJA, BUCKET_CHECKIN, filtrarChaves, type Checkin } from "./checkin";
 
 export function storageCheckin() {
   const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -11,7 +11,7 @@ export function storageCheckin() {
   return createClient(url, chave, { auth: { persistSession: false } }).storage.from(BUCKET_CHECKIN);
 }
 
-export type FotoEnviada = { caminho: string; url: string; nota: string; criada: string };
+export type FotoEnviada = { caminho: string; url: string; nota: string; campos: Record<string, string>; criada: string };
 
 /* o que já chegou, por categoria, com URL assinada de 1 hora para a miniatura */
 export async function listarFotos(c: Checkin): Promise<Record<string, FotoEnviada[]>> {
@@ -31,26 +31,42 @@ export async function listarFotos(c: Checkin): Promise<Record<string, FotoEnviad
       const caminhos = fotos.map((a) => `${pasta}/${a.name}`);
       const { data: urls } = await st.createSignedUrls(caminhos, 3600);
       const textos = await Promise.all(
-        fotos.map(async (a) => {
-          if (!notas.has(`${a.name}.json`)) return "";
+        fotos.map(async (a): Promise<{ nota: string; campos: Record<string, string> }> => {
+          const vazio = { nota: "", campos: {} };
+          if (!notas.has(`${a.name}.json`)) return vazio;
           const { data: blob } = await st.download(`${pasta}/${a.name}.json`);
-          if (!blob) return "";
+          if (!blob) return vazio;
           try {
-            return String(JSON.parse(await blob.text()).nota ?? "");
+            const j = JSON.parse(await blob.text());
+            return { nota: String(j.nota ?? ""), campos: c.campos ? filtrarChaves(c.campos, j.campos ?? {}) : {} };
           } catch {
-            return "";
+            return vazio;
           }
         }),
       );
       saida[k.id] = fotos.map((a, i) => ({
         caminho: caminhos[i],
         url: urls?.[i]?.signedUrl ?? "",
-        nota: textos[i],
+        nota: textos[i].nota,
+        campos: textos[i].campos,
         criada: a.created_at ?? "",
       }));
     }),
   );
   return saida;
+}
+
+/* as respostas da loja (as perguntas do check-in), em <slug>/_loja.json */
+export async function lerRespostas(c: Checkin): Promise<Record<string, string>> {
+  const st = storageCheckin();
+  if (!st || !c.perguntas) return {};
+  const { data } = await st.download(`${c.slug}/${ARQUIVO_LOJA}`);
+  if (!data) return {};
+  try {
+    return filtrarChaves(c.perguntas, JSON.parse(await data.text()).respostas ?? {});
+  } catch {
+    return {};
+  }
 }
 
 /* O aviso no celular do Rafael quando um lote termina de subir. Mesmos

@@ -16,7 +16,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { createClient } from "@supabase/supabase-js";
-import { BUCKET_CHECKIN, CHECKINS } from "../lib/checkin";
+import { ARQUIVO_LOJA, BUCKET_CHECKIN, CHECKINS } from "../lib/checkin";
 
 function carregarEnv() {
   const arquivo = path.resolve(process.cwd(), ".env.local");
@@ -61,12 +61,30 @@ async function principal() {
       }
       if ((data ?? []).some((b) => b.name === `${a.name}.json`)) {
         const { data: j } = await st.download(`${c.slug}/${k.id}/${a.name}.json`);
-        const nota = j ? String(JSON.parse(await j.text()).nota ?? "").trim() : "";
-        if (nota) notas.push(`${a.name}: ${nota}`);
+        const lido = j ? JSON.parse(await j.text()) : {};
+        const nota = String(lido.nota ?? "").trim();
+        /* desde 19/10 a ficha pode vir em campos (nome, marca, cores...): um por linha */
+        const campos = Object.entries((lido.campos ?? {}) as Record<string, string>)
+          .filter(([, v]) => String(v).trim())
+          .map(([k, v]) => `${k}: ${String(v).trim()}`)
+          .join(" | ");
+        const texto = [nota, campos].filter(Boolean).join(" | ");
+        if (texto) notas.push(`${a.name}: ${texto}`);
       }
     }
     fs.writeFileSync(path.join(pasta, "notas.txt"), notas.join("\n") + (notas.length ? "\n" : ""));
     console.log(`${k.nome}: ${fotos.length} foto(s), ${notas.length} com anotação`);
+  }
+  /* as respostas da loja (as perguntas do check-in), se houver */
+  if (c.perguntas) {
+    const { data: j } = await st.download(`${c.slug}/${ARQUIVO_LOJA}`);
+    if (j) {
+      const r = (JSON.parse(await j.text()).respostas ?? {}) as Record<string, string>;
+      const linhas = c.perguntas.map((p) => `${p.rotulo}\n  ${(r[p.chave] ?? "").trim() || "(sem resposta)"}`);
+      fs.mkdirSync(raiz, { recursive: true });
+      fs.writeFileSync(path.join(raiz, "respostas-da-loja.txt"), linhas.join("\n\n") + "\n");
+      console.log(`Respostas da loja: ${c.perguntas.filter((p) => (r[p.chave] ?? "").trim()).length} de ${c.perguntas.length}`);
+    }
   }
   console.log(`\n${novas} nova(s) em ${raiz}`);
 }

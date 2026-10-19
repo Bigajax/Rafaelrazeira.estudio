@@ -6,7 +6,7 @@
    Quando a leva toda termina, a rota avisa o celular do Rafael. */
 
 import { useRef, useState } from "react";
-import type { CategoriaCheckin } from "@/lib/checkin";
+import type { CampoCheckin, CategoriaCheckin } from "@/lib/checkin";
 import type { FotoEnviada } from "@/lib/checkin-servidor";
 import s from "./checkin.module.css";
 
@@ -16,6 +16,8 @@ type Item = {
   url: string;
   nota: string;
   notaSalva: string;
+  campos: Record<string, string>;
+  camposSalvos: Record<string, string>;
   estado: "fila" | "subindo" | "pronta" | "erro";
   progresso: number;
   arquivo?: File;
@@ -52,12 +54,12 @@ function tipoDe(f: File) {
   return n.endsWith(".heic") ? "image/heic" : n.endsWith(".heif") ? "image/heif" : "";
 }
 
-export function EnvioDeFotos({ token, categorias, iniciais }: { token: string; categorias: CategoriaCheckin[]; iniciais: Record<string, FotoEnviada[]> }) {
+export function EnvioDeFotos({ token, categorias, campos, iniciais }: { token: string; categorias: CategoriaCheckin[]; campos?: CampoCheckin[]; iniciais: Record<string, FotoEnviada[]> }) {
   const [itens, setItens] = useState<Record<string, Item[]>>(() =>
     Object.fromEntries(
       categorias.map((k) => [
         k.id,
-        (iniciais[k.id] ?? []).map((f) => ({ chave: f.caminho, caminho: f.caminho, url: f.url, nota: f.nota, notaSalva: f.nota, estado: "pronta" as const, progresso: 1 })),
+        (iniciais[k.id] ?? []).map((f) => ({ chave: f.caminho, caminho: f.caminho, url: f.url, nota: f.nota, notaSalva: f.nota, campos: f.campos ?? {}, camposSalvos: f.campos ?? {}, estado: "pronta" as const, progresso: 1 })),
       ]),
     ),
   );
@@ -99,6 +101,8 @@ export function EnvioDeFotos({ token, categorias, iniciais }: { token: string; c
       url: URL.createObjectURL(f),
       nota: "",
       notaSalva: "",
+      campos: {},
+      camposSalvos: {},
       estado: "fila",
       progresso: 0,
       arquivo: f,
@@ -108,10 +112,12 @@ export function EnvioDeFotos({ token, categorias, iniciais }: { token: string; c
   }
 
   async function guardarNota(cat: string, i: Item) {
-    if (!i.caminho || i.nota.trim() === i.notaSalva.trim()) return;
+    if (!i.caminho) return;
+    const iguais = i.nota.trim() === i.notaSalva.trim() && (campos ?? []).every((c) => (i.campos[c.chave] ?? "").trim() === (i.camposSalvos[c.chave] ?? "").trim());
+    if (iguais) return;
     try {
-      await api({ acao: "nota", token, caminho: i.caminho, nota: i.nota });
-      mudar(cat, i.chave, { notaSalva: i.nota, notaFalhou: false });
+      await api({ acao: "nota", token, caminho: i.caminho, nota: i.nota, ...(campos ? { campos: i.campos } : {}) });
+      mudar(cat, i.chave, { notaSalva: i.nota, camposSalvos: i.campos, notaFalhou: false });
     } catch {
       mudar(cat, i.chave, { notaFalhou: true });
     }
@@ -136,9 +142,11 @@ export function EnvioDeFotos({ token, categorias, iniciais }: { token: string; c
           key={k.id}
           numero={n + 1}
           categoria={k}
+          campos={campos}
           itens={itens[k.id]}
           aoEscolher={(l) => escolher(k.id, l)}
           aoEscrever={(i, nota) => mudar(k.id, i.chave, { nota })}
+          aoPreencher={(i, chave, valor) => mudar(k.id, i.chave, { campos: { ...i.campos, [chave]: valor } })}
           aoSair={(i) => guardarNota(k.id, i)}
           aoTirar={(i) => tirar(k.id, i)}
           aoRepetir={(i) => subirUma(k.id, i).then((ok) => ok && api({ acao: "avisar", token, categoria: k.id, quantas: 1 }).catch(() => {}))}
@@ -151,18 +159,22 @@ export function EnvioDeFotos({ token, categorias, iniciais }: { token: string; c
 function Ficha({
   numero,
   categoria,
+  campos,
   itens,
   aoEscolher,
   aoEscrever,
+  aoPreencher,
   aoSair,
   aoTirar,
   aoRepetir,
 }: {
   numero: number;
   categoria: CategoriaCheckin;
+  campos?: CampoCheckin[];
   itens: Item[];
   aoEscolher: (l: FileList | null) => void;
   aoEscrever: (i: Item, nota: string) => void;
+  aoPreencher: (i: Item, chave: string, valor: string) => void;
   aoSair: (i: Item) => void;
   aoTirar: (i: Item) => void;
   aoRepetir: (i: Item) => void;
@@ -202,9 +214,9 @@ function Ficha({
       </button>
 
       {itens.length > 0 && (
-        <ul className={s.grade}>
+        <ul className={campos ? `${s.grade} ${s.gradeCampos}` : s.grade}>
           {itens.map((i) => (
-            <li key={i.chave} className={s.foto} data-estado={i.estado}>
+            <li key={i.chave} className={campos ? `${s.foto} ${s.fotoCampos}` : s.foto} data-estado={i.estado}>
               <div className={s.foto__quadro}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={i.url} alt="" loading="lazy" onError={(e) => ((e.target as HTMLImageElement).style.visibility = "hidden")} />
@@ -221,25 +233,46 @@ function Ficha({
                 )}
                 {i.estado === "pronta" && <span className={s.selo}>✓</span>}
               </div>
-              <label className={s.nota}>
-                <span>Modelo, numeração, valor</span>
-                <input
-                  type="text"
-                  value={i.nota}
-                  maxLength={500}
-                  placeholder="Se souber"
-                  disabled={i.estado !== "pronta"}
-                  onChange={(e) => aoEscrever(i, e.target.value)}
-                  onBlur={() => aoSair(i)}
-                  onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
-                />
-              </label>
-              {i.notaFalhou && <p className={s.aviso}>Não guardou. Toque fora do campo de novo.</p>}
-              {(i.estado === "pronta" || i.estado === "erro") && (
-                <button type="button" className={s.tirar} onClick={() => aoTirar(i)}>
-                  {i.apagando ? "Tirar mesmo?" : "Tirar"}
-                </button>
-              )}
+              <div className={campos ? s.fichaDaFoto : undefined}>
+                {campos ? (
+                  campos.map((c) => (
+                    <label key={c.chave} className={s.nota}>
+                      <span>{c.rotulo}</span>
+                      <input
+                        type="text"
+                        inputMode={c.modo === "decimal" ? "decimal" : "text"}
+                        value={i.campos[c.chave] ?? ""}
+                        maxLength={300}
+                        placeholder={c.dica ?? ""}
+                        disabled={i.estado !== "pronta"}
+                        onChange={(e) => aoPreencher(i, c.chave, e.target.value)}
+                        onBlur={() => aoSair(i)}
+                        onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
+                      />
+                    </label>
+                  ))
+                ) : (
+                  <label className={s.nota}>
+                    <span>Modelo, numeração, valor</span>
+                    <input
+                      type="text"
+                      value={i.nota}
+                      maxLength={500}
+                      placeholder="Se souber"
+                      disabled={i.estado !== "pronta"}
+                      onChange={(e) => aoEscrever(i, e.target.value)}
+                      onBlur={() => aoSair(i)}
+                      onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
+                    />
+                  </label>
+                )}
+                {i.notaFalhou && <p className={s.aviso}>Não guardou. Toque fora do campo de novo.</p>}
+                {(i.estado === "pronta" || i.estado === "erro") && (
+                  <button type="button" className={s.tirar} onClick={() => aoTirar(i)}>
+                    {i.apagando ? "Tirar mesmo?" : "Tirar"}
+                  </button>
+                )}
+              </div>
             </li>
           ))}
         </ul>
