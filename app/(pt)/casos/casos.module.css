@@ -1,0 +1,117 @@
+/* ============================================================
+   Os casos (19/10/2026): o que é só deles, por cima da roupa do
+   /portfolio. Tokens, tipos, cabeçalho, faixa, janela, contato e
+   rodapé vêm de portfolio.module.css; aqui não nasce cor nova.
+
+   O objeto desta página é a FICHA (a régua de docs/design-estudio.md:
+   cartaz convence, ficha coleta). O hero é cartaz; a ficha da loja logo
+   abaixo e a lista numerada do que foi feito são ficha: filete de
+   tinta, rótulo em mono, dado em Inter.
+   ============================================================ */
+
+/* ---------- a trilha (Casos / loja) ----------
+   Pequena e em mono, acima do eyebrow: é navegação, não título. */
+.trilha { display: flex; gap: 8px; align-items: center; margin-bottom: 18px; font: 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft) }
+.trilha a { color: var(--green-dark); border-bottom: 1px solid var(--line) }
+@media (hover: hover) and (pointer: fine) { .trilha a:hover { border-bottom-color: var(--green-dark) } }
+
+/* O nome da loja não herda a caixa alta da manchete: marca tem grafia
+   própria ("vérít.lab" é minúsculo), mesma regra do card do /portfolio. */
+.nome { text-transform: none }
+
+/* ---------- a ficha da loja ----------
+   Uma régua de cinco campos, cada um com filete de tinta em cima. Em
+   colunas no notebook, em duas no celular: o dado é curto, e uma pilha
+   de cinco linhas empurraria as telas para fora da segunda dobra. */
+.ficha {
+  margin: clamp(28px, 3.4vw, 44px) 0 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 18px clamp(16px, 2vw, 28px);
+  max-width: 1040px;
+}
+.ficha div { border-top: 1.5px solid var(--ink); padding-top: 10px; min-width: 0 }
+.ficha dt { font: 700 9.5px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--green-dark); margin-bottom: 6px }
+.ficha dd { margin: 0; font-size: 14.5px; line-height: 1.45; color: var(--ink); overflow-wrap: break-word }
+/* o endereço ganha duas colunas: um domínio como fulltimeskateboards.com.br
+   não cabe numa de 150px e quebrava no meio do ".br" */
+.largo { grid-column: span 2 }
+.ficha a { border-bottom: 1px solid var(--line) }
+@media (hover: hover) and (pointer: fine) { .ficha a:hover { border-bottom-color: var(--ink) } }
+
+/* ---------- as duas telas ----------
+   O notebook ocupa a largura e o celular encosta por cima, na quina
+   direita, como dois aparelhos na mesma mesa. No celular a ordem
+   inverte: o aparelho vem primeiro e o notebook depois, inteiro. */
+.telas { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; justify-items: center }
+.notebook { max-width: 1040px }
+.aparelho {
+  width: min(300px, 72vw);
+  border-radius: 34px; padding: 9px; background: #0b0d0e;
+  box-shadow: 0 0 0 1.5px var(--line-dark), 0 24px 50px #00000080;
+}
+.aparelho img { display: block; width: 100%; height: auto; border-radius: 26px }
+.abrir { font: 700 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--green-live); border-bottom: 1px solid currentColor; padding-bottom: 3px }
+
+@media (max-width: 899.98px) {
+  .aparelho { order: -1 }
+}
+@media (min-width: 900px) {
+  .telas { padding-right: 150px; justify-items: start }
+  .aparelho { position: absolute; right: 0; bottom: 34px; width: 260px }
+  .abrir { justify-self: start }
+}
+
+/* ---------- os blocos de texto: título à esquerda, texto à direita ----------
+   O eixo é a margem esquerda, como no resto do estúdio. No notebook o
+   h2 fica numa coluna estreita e preso no topo enquanto o texto rola. */
+.bloco { display: grid; gap: 22px }
+.texto { display: grid; gap: 16px; max-width: 66ch }
+.texto p { font-size: clamp(16px, 1.25vw, 18px) }
+@media (min-width: 900px) {
+  .bloco { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 40px }
+  .bloco > h2 { position: sticky; top: 96px; align-self: start }
+}
+
+.feitoSec { background: var(--paper-2); border-top: 1.5px solid var(--line); border-bottom: 1.5px solid var(--line) }
+
+/* ---------- o que foi feito: a lista numerada ----------
+   Cada decisão é uma linha de ficha: número em Archivo larga, título e
+   texto. O número é tinta, não verde: são sete, e sete marcas verdes
+   seguidas virariam enfeite. */
+.feito { list-style: none; margin: 0; padding: 0; display: grid }
+.feito li {
+  display: grid; grid-template-columns: 52px minmax(0, 1fr); column-gap: 18px;
+  padding: 22px 0; border-top: 1.5px solid var(--ink);
+}
+.feito li:last-child { border-bottom: 1.5px solid var(--ink) }
+.num { grid-row: span 2; font-family: var(--display); font-stretch: 100%; font-weight: 900; font-size: 30px; line-height: 1; color: var(--ink) }
+.feito h3 { font-size: clamp(18px, 1.5vw, 22px); margin-bottom: 8px }
+.feito p { font-size: 16px; max-width: 62ch }
+
+/* ---------- os números (só quando existem) ---------- */
+.numeros { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 24px }
+.numeros li { display: grid; gap: 6px; border-top: 1.5px solid var(--ink); padding-top: 12px }
+.numeros b { font-family: var(--display); font-stretch: 100%; font-weight: 900; font-size: clamp(36px, 4vw, 56px); line-height: 1 }
+.numeros span { font-size: 15px; color: var(--ink) }
+.numeros small { font: 9.5px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft) }
+
+/* ---------- outros casos e a linha de conferência ---------- */
+.outrosSec { padding-bottom: 0 }
+.outros { list-style: none; margin: 0; padding: 0; display: grid }
+.outros a { display: block; padding: 16px 0; border-top: 1.5px solid var(--line); font-weight: 600; color: var(--ink) }
+@media (hover: hover) and (pointer: fine) { .outros a:hover { color: var(--green-dark) } }
+.conferido { max-width: 1360px; margin: 0 auto; padding: 28px var(--pad) 0; font: 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft) }
+.conferido a { color: var(--green-dark); border-bottom: 1px solid var(--line); margin-left: 6px }
+
+/* ---------- o índice (/casos) ---------- */
+.lista { list-style: none; margin-top: 0; margin-bottom: 0; padding: 0; display: grid }
+.lista li { border-top: 1.5px solid var(--line-dark) }
+.lista li:last-child { border-bottom: 1.5px solid var(--line-dark) }
+.lista a { display: block; padding: clamp(24px, 3vw, 36px) 0 }
+/* texto à esquerda, a capa à direita; no celular a capa desce */
+.lista .linha { display: grid; gap: 26px; grid-template-columns: minmax(0, 1fr); align-items: center }
+.linhaTexto, .linhaCapa, .capaTela { display: block }
+@media (min-width: 900px) { .lista .linha { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 48px } }
+.lista .listaNome { color: #fff; text-transform: none; font-size: clamp(30px, 4.4vw, 60px); margin: 4px 0 10px }
+.lista p { max-width: 70ch }
+.ler { display: inline-block; margin-top: 16px; font: 700 10.5px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--green-live) }
+@media (hover: hover) and (pointer: fine) { .lista a:hover .listaNome { color: var(--green-live) } }

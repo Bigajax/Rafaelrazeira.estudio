@@ -55,6 +55,7 @@ export const pt = {
       { label: "VITRINE DIGITAL", href: "/vitrine-digital/" },
       { label: "SERVIÇOS", href: "/servicos" },
       { label: "E-COMMERCE", href: "/e-commerce" },
+      { label: "CASOS", href: "/casos" },
     ],
     copyright: "© 2026 RAFAEL RAZEIRA ESTÚDIO",
   },

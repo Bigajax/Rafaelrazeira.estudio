@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { PARES, SITE } from "@/lib/idiomas";
+import { casos } from "@/data/casos";
 
 /* As páginas públicas de venda, nos dois idiomas, cada uma apontando a
    irmã. Fora: /crm, as propostas (são por link), o registrar-venda e as
@@ -14,5 +15,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ];
   });
   const soPt = ["/estudio", "/e-commerce", "/servicos"].map((p) => ({ url: `${SITE}${p}`, lastModified: agora }));
-  return [...emDoisIdiomas, ...soPt];
+  /* os casos (19/10/2026): o índice e uma página por loja, datada pela
+     última conferência do texto */
+  const doCasos = [
+    { url: `${SITE}/casos`, lastModified: agora },
+    ...casos.map((c) => ({ url: `${SITE}/casos/${c.slug}`, lastModified: new Date(c.conferido) })),
+  ];
+  return [...emDoisIdiomas, ...soPt, ...doCasos];
 }
