@@ -18,6 +18,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   /* os casos (19/10/2026): o índice e uma página por loja, datada pela
      última conferência do texto */
   const doCasos = [
+    { url: `${SITE}/quanto-custa-site-para-loja`, lastModified: agora },
     { url: `${SITE}/casos`, lastModified: agora },
     ...casos.map((c) => ({ url: `${SITE}/casos/${c.slug}`, lastModified: new Date(c.conferido) })),
   ];

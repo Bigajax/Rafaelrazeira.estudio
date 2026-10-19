@@ -66,6 +66,8 @@
 .bloco { display: grid; gap: 22px }
 .texto { display: grid; gap: 16px; max-width: 66ch }
 .texto p { font-size: clamp(16px, 1.25vw, 18px) }
+/* pergunta e resposta (a página de preço): o respiro vai entre os pares */
+.texto h3 { font-size: clamp(18px, 1.5vw, 22px); margin: 10px 0 6px }
 @media (min-width: 900px) {
   .bloco { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 40px }
   .bloco > h2 { position: sticky; top: 96px; align-self: start }

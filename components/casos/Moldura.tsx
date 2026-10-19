@@ -25,6 +25,7 @@ const RODAPE = [
   { label: "VITRINE DIGITAL", href: "/vitrine-digital/" },
   { label: "PORTFÓLIO", href: "/portfolio" },
   { label: "CASOS", href: "/casos" },
+  { label: "QUANTO CUSTA", href: "/quanto-custa-site-para-loja" },
 ];
 
 export function Moldura({ children, mensagem, origem }: { children: ReactNode; mensagem: string; origem: string }) {
