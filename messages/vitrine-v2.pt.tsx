@@ -335,7 +335,8 @@ export const v2 = {
       {
         nome: "vérít.lab", tag: "ARTE E OBJETOS · MARINGÁ",
         dom: "www.verit.com.br", url: "https://verit-lab.vercel.app",
-        img: "/assets/v2/prova-verit.webp", w: 640, h: 2712, dur: "40s",
+        /* recapturada em 19/10: a vérít trocou o site (hero do Pato Cowboy) */
+        img: "/assets/v2/prova-verit-desktop-2026-10-19.webp", w: 640, h: 2479, dur: "37s",
         antes: "As peças espalhadas pelo feed do Instagram.",
         depois: "Uma galeria com cada peça única, o preço e a encomenda direto no WhatsApp.",
         cta: "ABRIR A VITRINE DA VÉRÍT ↗",

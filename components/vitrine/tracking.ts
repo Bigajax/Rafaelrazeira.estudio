@@ -695,6 +695,18 @@ export function initTracking(cfg?: Partial<ConfigTracking>) {
     fbq("trackCustom", "ClickCTA", dados);
     mpTrack("ClickCTA", dados);
 
+    /* A compra direta (V4, 19/10) não tem formulário: o InitiateCheckout é o
+       toque no botão que abre o checkout do Mercado Pago. Mesma chave de
+       sessão do foco no formulário, então nunca conta duas vezes. */
+    if (destino === "checkout") {
+      umaVezPorSessao("mp_ic_vitrine", () => {
+        conversao("InitiateCheckout",
+          { content_name: "vitrine-digital", value: CFG.valor, currency: CFG.currency },
+          { content_name: "vitrine-digital", value: CFG.valor, currency: CFG.currency });
+      });
+      return;
+    }
+
     /* Daqui para baixo é só o caminho do WhatsApp. Quem rola a página
        (`nav`, `hero_projetos`, `oferta_entrada`, `final_reserva`) ou abre o
        site de um cliente (`case_*`) sai aqui: vira ClickCTA e mais nada. */

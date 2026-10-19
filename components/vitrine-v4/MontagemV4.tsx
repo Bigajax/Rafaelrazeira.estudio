@@ -5,7 +5,7 @@ import { ligarAncoras } from "@/components/vitrine/ancora";
 import { initTracking } from "@/components/vitrine/tracking";
 import checkoutStyles from "./landing-v4.module.css";
 
-// A V4 usa a mesma oferta de compra direta da V2, com métricas próprias.
+// A V4 cobra a entrada da tabela (lib/propostas.ts, "vitrine-direta"), com métricas próprias.
 export function MontagemV4({ valor }: { valor: number }) {
   useEffect(() => {
     initTracking({ page: "vitrine-v4", valor, currency: "BRL", lang: "pt" });
@@ -47,7 +47,7 @@ export function MontagemV4({ valor }: { valor: number }) {
     };
     document.addEventListener("keydown", manterFoco);
 
-    document.body.setAttribute("data-proposta", "vitrine-v2");
+    document.body.setAttribute("data-proposta", "vitrine-direta");
     if (!document.getElementById("ck-css")) {
       const link = document.createElement("link");
       link.id = "ck-css";

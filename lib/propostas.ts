@@ -464,6 +464,17 @@ export const PROPOSTAS: Record<string, Proposta> = {
       avista_card: { label: "Vitrine digital, no cartão em até 12x", valor: 997, metodo: "card", maxParcelas: 12 },
     },
   },
+  /* A compra direta da V4 (19/10/2026), decisão do Rafael: a página cobra
+     só a entrada da tabela, R$ 199 no Pix, e os R$ 800 vêm na entrega pela
+     página de entrega da loja, como em toda proposta (lib/oferta.ts). A
+     vitrine-v2 acima segue intacta, com o R$ 997 do teste antigo. */
+  "vitrine-direta": {
+    titulo: "Rafael Razeira Estúdio, Vitrine Digital",
+    whatsapp: "5544991246187",
+    itens: {
+      entrada_pix: { label: "Vitrine digital: entrada para início do projeto", valor: 199, metodo: "pix" },
+    },
+  },
   /* A HG Surf Wear (06/10/2026), decisão do Rafael: duas formas na mesma
      página. À vista no Pix, R$ 899, um recebimento só (o desconto de pagar
      de uma vez, sem bloco de condição especial). Ou os R$ 999 de tabela em

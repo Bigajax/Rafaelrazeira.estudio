@@ -1,12 +1,266 @@
-.checkout button:last-of-type{margin-top:12px;width:100%;font-size:13px}
-.checkout button:first-of-type{margin-top:20px}
-.revisao{display:flex;align-items:center;gap:7px;color:#076b43!important;font-size:12px!important;margin-top:20px!important}
-.revisao svg{width:18px;height:18px;flex-shrink:0}
-.vagasHero{display:flex;align-items:center;gap:8px;color:#fff;font-size:12px;font-weight:500;margin-top:16px!important}
-.vagasHero>span{width:6px;height:6px;border:1px solid var(--rosa);background:var(--rosa);flex-shrink:0}
-.vagas{border:1px solid var(--rosa);background:var(--rosa);padding:13px 14px;margin-top:18px;color:#fff}
-.vagas b{display:block;font-size:12px;font-weight:600;line-height:1.5}
-.vagas p{font-size:11px;color:#fff;line-height:1.6;margin-top:4px!important}
+/* o título de 19/10 é uma frase longa: o -.04em do hero comum colava as palavras.
+   Classe dobrada para vencer o `.hero h1` do landing.module.css em todas as larguras */
+/* a Archivo estreitada: mais corpo no mesmo espaço, a voz de cartaz do título */
+.titulo.titulo{letter-spacing:-.012em;max-width:none;font-variation-settings:"wdth" 78;font-weight:800;font-size:clamp(38px,11.6cqi,84px);line-height:.96}
+/* o tamanho do título sai da largura da coluna do texto: "Pare de mandar foto" cabe numa linha em qualquer tela */
+.heroV4.heroV4>div:first-child{container-type:inline-size}
+/* três linhas de tamanho parecido no computador; abaixo de 1100 a coluna estreita e o texto corre livre */
+.linha{display:block}
+@media(max-width:1100px){.linha{display:inline}}
+
+/* O topo no papel da régua do estúdio (19/10, docs/design-estudio.md): papel
+   #F2EFE6, tinta grafite #14181A, filete #D8D3C4, verde só em texto miúdo
+   (#076B42) e o rosa só na ação. O verde-escuro do siteV2 saiu da V4.
+
+   O cabeçalho: fixo no computador, de ponta a ponta com o papel atrás (sem
+   fundo o sticky deixaria o conteúdo passar por baixo), a marca sem caixa
+   alta nem mono, e o botão com contorno grafite: o único botão cheio da
+   primeira tela é o rosa do hero. Classe tripla para vencer o landing.module.css */
+.cabecalho.cabecalho.cabecalho{position:sticky;top:0;z-index:40;max-width:none;background:#f2efe6;color:#14181a;border-bottom:1px solid #d8d3c4;padding-inline:max(28px,calc((100vw - 1144px)/2));transition:box-shadow .2s ease}
+.cabecalho.cabecalho.cabecalho[data-rolou]{box-shadow:0 8px 24px #14181a14}
+/* o RR sem o quadrado (19/10): a logo recortada rente às letras, maior */
+.cabecalho.cabecalho.cabecalho .rr{width:auto;height:34px;border:0;padding:0;background:none;object-fit:contain}
+@media(max-width:600px){.cabecalho.cabecalho.cabecalho .rr{height:28px}}
+.cabecalho.cabecalho.cabecalho small{font-family:var(--font-body),sans-serif;text-transform:none;letter-spacing:.01em;font-size:12px;font-weight:500;color:#076b42}
+.cabecalho.cabecalho.cabecalho nav{font-size:13px;gap:26px}
+.cabecalho.cabecalho.cabecalho nav>a:not(:last-child){color:#3a4144}
+.cabecalho.cabecalho.cabecalho nav>a:not(:last-child):hover{color:#14181a;text-decoration:underline;text-underline-offset:5px}
+.cabecalho.cabecalho.cabecalho a[data-cta=header]{min-height:42px;padding:9px 16px;font-size:13px;color:#14181a;border:1px solid #14181a;background:transparent;box-shadow:none}
+.cabecalho.cabecalho.cabecalho a[data-cta=header]:hover{background:#14181a;color:#f2efe6}
+.principal :is(section,div)[id]{scroll-margin-top:96px}
+@media(prefers-reduced-motion:reduce){.cabecalho.cabecalho.cabecalho{transition:none}}
+
+/* o hero em duas metades iguais: a prova sai da ponta e chega perto do texto */
+.heroV4.heroV4{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;color:#14181a}
+.heroV4.heroV4 h1+p{color:#3a4144}
+.heroV4.heroV4 a[data-cta=hero]{background:#e31b62;border-color:#e31b62;color:#fff;box-shadow:3px 3px 0 #b81250}
+.heroV4.heroV4 a[data-cta=hero]:hover{background:#b81250}
+.heroV4.heroV4 a[data-cta=hero_projetos]{color:#14181a}
+.semFio.semFio{border-top:0;padding-top:0;margin-top:34px}
+
+/* O hero de 19/10: o que é o produto numa linha de texto comum (sem caixa alta
+   nem mono), o preço dentro do botão e a condição numa linha só embaixo */
+.sobre{color:#076b42;font-size:15px;font-weight:500;margin-bottom:18px!important}
+.condicao{color:#3a4144;font-size:13px;line-height:1.6;margin-top:14px!important}
+
+/* A prova do título: a peça na vitrine e a mensagem que chega no WhatsApp.
+   O rosa fica só no botão de compra; aqui só o verde do WhatsApp */
+.prova{position:relative;width:100%;max-width:540px;margin:0 auto;padding:6px 0 34px}
+.provaTelefone.provaTelefone{width:296px;margin:0 0 0 auto;border-color:#14181a;box-shadow:0 30px 60px #14181a26;background:#f4f4f2}
+/* a faixa de promoção da Japa anda e sai cortada na captura: o recorte começa no cabeçalho da loja */
+.provaTelefone img{width:100%;height:auto;display:block;margin-top:-9.3%}
+.mensagem{position:absolute;left:0;bottom:30px;width:min(280px,56%);background:#fff;color:#19231e;border:1px solid #d8d3c4;border-radius:16px;padding:13px 14px 14px;box-shadow:0 24px 48px #14181a24}
+.mensagemTopo{display:flex;align-items:center;gap:10px;font-size:12px;color:#5c6861;margin-bottom:11px}
+.agora{margin-left:auto;align-self:flex-start;font-size:11px;color:#8a948e}
+.vistos{float:right;color:#53bdeb;letter-spacing:-.18em;font-size:12px}
+.mensagemTopo b{display:block;color:#19231e;font-size:13px;font-weight:600}
+.whats{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:#25d366;color:#fff;flex-shrink:0}
+.whats svg{width:18px;height:18px}
+.balao{background:#d9fdd3;border-radius:12px 12px 12px 3px;padding:11px 13px;font-size:13px;line-height:1.55;color:#19231e}
+.balao b{display:block;font-weight:600;margin:6px 0}
+.balao small{display:block;margin-top:8px;padding-top:7px;border-top:1px solid #19231e14;color:#076b43;font-size:11px}
+/* O direct de hoje (19/10): balões cinza do Instagram, um por um, que se
+   apagam quando o pedido do WhatsApp entra. Um movimento só, na abertura */
+.direct{position:absolute;left:0;top:18px;width:min(230px,44%);z-index:1}
+.direct p{font-size:12px;color:#5c6861;margin-bottom:10px!important}
+.direct ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+.direct li{background:#e4e0d4;color:#14181a;border-radius:18px 18px 18px 5px;padding:8px 14px;font-size:14px;line-height:1.35;animation:chega .35s cubic-bezier(.2,.8,.2,1) both,apaga .6s ease 1.9s forwards;animation-delay:calc(var(--i) * .22s),1.9s}
+.direct li:nth-child(even){margin-left:18px}
+.mensagem{z-index:2;animation:entra .55s cubic-bezier(.2,.8,.2,1) 2.1s both}
+@keyframes chega{from{opacity:0;transform:translateY(8px) scale(.96)}to{opacity:1;transform:none}}
+@keyframes apaga{to{opacity:.38}}
+@keyframes entra{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.direct li{animation:none;opacity:.38}.mensagem{animation:none}}
+
+/* A faixa dos fatos (19/10): grafite #14181A de ponta a ponta, filetes
+   #2A3134 entre os itens, o fato na Archivo estreitada em papel e a linha em cinza claro */
+.fatos{list-style:none;margin:0;background:#14181a;color:#f2efe6;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));padding:34px max(28px,calc((100vw - 1144px)/2))}
+.fatos li{padding:4px 28px;border-left:1px solid #2a3134}
+.fatos li:first-child{padding-left:0;border-left:0}
+.fatos b{display:block;font-family:var(--font-display),sans-serif;font-variation-settings:"wdth" 78;font-weight:800;font-size:clamp(30px,2.9vw,42px);line-height:1;letter-spacing:-.01em}
+.fatos span{display:block;margin-top:10px;font-size:13px;line-height:1.5;color:#a9b0ac;max-width:24ch}
+@media(max-width:800px){.fatos{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:26px;padding:30px 22px}.fatos li:nth-child(3){padding-left:0;border-left:0}}
+@media(max-width:600px){.fatos{padding:26px 18px;row-gap:22px}.fatos li{padding:2px 0 2px 16px}.fatos li:nth-child(odd){padding-left:0}.fatos b{font-size:28px}.fatos span{font-size:12px}}
+
+/* As respostas (19/10): a pergunta no balão cinza do direct, à esquerda; a
+   resposta da vitrine à direita, linha por linha com o filete da régua */
+.respostas h2{max-width:20ch;margin-bottom:34px!important}
+.respostas dl{margin:0;border-bottom:1px solid #d8d3c4}
+.respostas dl>div{display:grid;grid-template-columns:minmax(0,.75fr) minmax(0,1.25fr);gap:32px;align-items:center;padding:24px 0;border-top:1px solid #d8d3c4}
+.respostas dt span{display:inline-block;background:#e4e0d4;color:#14181a;border-radius:22px 22px 22px 6px;padding:11px 18px;font-size:18px;font-weight:500;line-height:1.3}
+/* a resposta é o balão da vitrine: branco, com o canto do lado de quem responde */
+.respostas dd{margin:0;justify-self:start;background:#fff;border:1px solid #d8d3c4;border-radius:22px 22px 6px 22px;padding:13px 19px;font-size:17px;line-height:1.5;color:#14181a;max-width:46ch;box-shadow:0 6px 18px #14181a0d}
+@media(max-width:600px){.respostas h2{margin-bottom:24px!important}.respostas dl>div{grid-template-columns:1fr;gap:10px;padding:20px 0}.respostas dt span{font-size:15px;padding:9px 15px}.respostas dd{font-size:15px;justify-self:end;margin-left:28px}}
+
+/* Depois da entrada (19/10): uma linha do tempo em grafite. O primeiro ponto
+   cheio (é hoje), os outros vazados; o quando na Archivo estreitada e o
+   quanto se paga numa etiqueta de contorno */
+.depois h2{margin-bottom:46px!important}
+.trilho{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:40px;position:relative}
+.trilho::before{content:"";position:absolute;left:0;right:0;top:8px;height:2px;background:#14181a}
+.trilho li{position:relative;padding-top:38px}
+.trilho li::before{content:"";position:absolute;left:0;top:0;width:18px;height:18px;border-radius:50%;background:#f2efe6;border:2px solid #14181a;box-sizing:border-box}
+.trilho li:first-child::before{background:#14181a}
+.quando{display:block;font-family:var(--font-display),sans-serif;font-variation-settings:"wdth" 78;font-weight:800;font-size:clamp(28px,2.7vw,40px);line-height:1.02;color:#14181a}
+.valor{display:inline-block;margin-top:14px;border:1px solid #14181a;border-radius:999px;padding:4px 13px;font-size:13px;font-weight:600;color:#14181a}
+.trilho h3{font-size:19px;margin-top:22px!important}
+.trilho p{font-size:14px;line-height:1.7;color:#3a4144;margin-top:8px!important;max-width:38ch}
+@media(max-width:800px){
+  .trilho{grid-template-columns:1fr;gap:34px;padding-left:34px}
+  .trilho::before{left:8px;right:auto;top:0;bottom:0;width:2px;height:auto}
+  .trilho li{padding-top:0}
+  .trilho li::before{left:-34px;top:6px}
+}
+
+/* O "Como funciona" da V4 (19/10): sem caixa e sem o verde. O celular grande
+   no papel; os passos em grafite (o ativo) ou cinza (os outros), com o
+   número de ordem porque é sequência de verdade */
+.como h2{margin-bottom:40px!important}
+.comoGrade{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:56px;align-items:center}
+.comoPalco{display:flex;justify-content:center;padding:10px 0}
+.comoTelefone.comoTelefone{width:310px;margin:0;border-color:#14181a;box-shadow:0 30px 60px #14181a26;background:#f4f4f2}
+.comoTelefone img{width:100%;height:auto;display:block;animation:troca .3s ease both}
+@keyframes troca{from{opacity:0}to{opacity:1}}
+.passos{display:flex;flex-direction:column}
+.passos button{display:grid;grid-template-columns:64px minmax(0,1fr);gap:8px;text-align:left;background:none;border:0;border-top:1px solid #d8d3c4;padding:24px 0;cursor:pointer;color:#8a948e;font:inherit}
+.passos button:last-of-type{border-bottom:1px solid #d8d3c4}
+.passos button[aria-selected=true]{color:#14181a}
+.passos button:hover b{color:#14181a}
+.passos button:focus-visible{outline:3px solid #14181a;outline-offset:4px}
+.passoNum{font-family:var(--font-display),sans-serif;font-variation-settings:"wdth" 78;font-weight:800;font-size:34px;line-height:1}
+.passos b{display:block;font-family:var(--font-display),sans-serif;font-variation-settings:"wdth" 78;font-weight:800;font-size:clamp(26px,2.5vw,36px);line-height:1.05;transition:color .15s ease}
+.passos small{display:block;margin-top:12px;font-size:15px;line-height:1.65;color:#3a4144;max-width:42ch}
+.comoNota{margin-top:20px!important;font-size:13px;color:#5c6861}
+.comoNota a{color:#14181a;text-decoration:underline;text-underline-offset:3px}
+/* a tela do passo 3: a conversa no WhatsApp */
+.chat{aspect-ratio:390/760;display:flex;flex-direction:column;background:#efeae2}
+.chatTopo{display:flex;align-items:center;gap:10px;background:#008069;color:#fff;padding:14px 14px 12px}
+.chatTopo>span{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#14181a;font-size:12px;font-weight:700}
+.chatTopo b{font-size:15px;line-height:1.2}
+.chatTopo small{display:block;font-size:11px;font-weight:400;opacity:.85}
+.chatCorpo{flex:1;display:flex;align-items:flex-end;padding:16px 12px 26px}
+.chatBalao{margin-left:auto!important;max-width:88%;background:#d9fdd3;border-radius:12px 12px 3px 12px;padding:10px 12px;font-size:13px;line-height:1.5;color:#14181a;box-shadow:0 1px 1px #0000001a;animation:troca .3s ease both}
+.chatBalao b{display:block;font-weight:600;margin:6px 0}
+.chatBalao small{display:block;margin-top:8px;padding-top:7px;border-top:1px solid #14181a14;color:#076b42;font-size:11px}
+@media(prefers-reduced-motion:reduce){.comoTelefone img,.chatBalao,.passos b{animation:none;transition:none}}
+@media(max-width:800px){.comoGrade{grid-template-columns:1fr;gap:28px}.comoTelefone.comoTelefone{width:250px}.passos button{grid-template-columns:48px minmax(0,1fr);padding:18px 0}.passoNum{font-size:26px}.passos b{font-size:24px}.passos small{font-size:14px}}
+
+/* O painel (19/10): a seção grafite da régua, de ponta a ponta. A tela clara
+   do painel salta no escuro; as abas em texto com fio embaixo (sem rosa:
+   rosa é só ação); a situação da dona em letra de cartaz e o que ela faz.
+   O verde vivo #1FBF7A só aparece aqui, sobre o grafite, como manda a régua */
+.painelV4{background:#14181a;color:#f2efe6;padding:84px max(28px,calc((100vw - 1144px)/2))}
+.painelCabeca{margin-bottom:34px}
+.painelCabeca h2{color:#f2efe6}
+.painelCabeca p{margin-top:12px!important;font-size:17px;color:#a9b0ac}
+.painelGrade{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,.9fr);gap:56px;align-items:start}
+.painelAbas{display:flex;gap:26px;border-bottom:1px solid #2a3134;margin-bottom:18px}
+.painelAbas button{background:none;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;padding:10px 0 12px;font:inherit;font-size:14px;font-weight:600;color:#a9b0ac;cursor:pointer}
+.painelAbas button[aria-selected=true]{color:#f2efe6;border-bottom-color:#f2efe6}
+.painelAbas button:hover{color:#f2efe6}
+.painelV4 :is(button,a,[tabindex]):focus-visible{outline:3px solid #f2efe6;outline-offset:3px}
+.painelTela{border-radius:10px;overflow:hidden;border:1px solid #2a3134;box-shadow:0 30px 60px #00000059;background:#faf9f5}
+.painelTela img{width:100%;height:auto;display:block;animation:troca .3s ease both}
+.painelLegenda{margin-top:14px!important;font-size:12px;line-height:1.6;color:#8a928e}
+.situacoes{margin:0}
+.situacoes>div{padding:18px 0;border-top:1px solid #2a3134}
+.situacoes>div:first-child{border-top:0;padding-top:4px}
+.situacoes dt{font-family:var(--font-display),sans-serif;font-variation-settings:"wdth" 78;font-weight:800;font-size:clamp(22px,2vw,28px);line-height:1.1;color:#f2efe6}
+.situacoes dd{margin:6px 0 0;font-size:14px;line-height:1.6;color:#a9b0ac;max-width:40ch}
+.incluso{display:flex;align-items:center;gap:8px;margin-top:22px!important;padding-top:18px;border-top:1px solid #2a3134;font-size:14px;font-weight:600;color:#f2efe6}
+.incluso svg{color:#1fbf7a;width:18px;height:18px}
+@media(prefers-reduced-motion:reduce){.painelTela img{animation:none}}
+@media(max-width:900px){.painelGrade{grid-template-columns:1fr;gap:36px}}
+@media(max-width:600px){.painelV4{padding:56px 18px}.painelCabeca p{font-size:15px}.painelAbas{gap:18px;overflow-x:auto}.painelAbas button{font-size:13px;white-space:nowrap}.situacoes dt{font-size:22px}}
+
+/* A oferta (19/10): no papel, sem a caixa verde-escura. A conta num cupom de
+   caixa branco com o pé em zigue-zague; a mono é a letra do cupom, e o rosa
+   continua só no botão. A sombra mora no invólucro: a máscara do zigue-zague
+   cortaria uma sombra posta no próprio cupom */
+.ofertaV4.ofertaV4{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.85fr);gap:64px;align-items:start}
+.ofertaLead{margin-top:16px!important;font-size:17px;line-height:1.6;color:#3a4144;max-width:44ch}
+.inclui{list-style:none;margin:26px 0 0;padding:0;display:grid;gap:0}
+.inclui li{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-top:1px solid #d8d3c4;font-size:15px;line-height:1.5;color:#14181a}
+.inclui li:last-child{border-bottom:1px solid #d8d3c4}
+.inclui svg{width:18px;height:18px;flex-shrink:0;margin-top:2px;color:#076b42}
+.ofertaNota{margin-top:18px!important;font-size:13px;line-height:1.6;color:#5c6861}
+.ofertaNota a{color:#14181a;text-decoration:underline;text-underline-offset:3px}
+.reciboSombra{filter:drop-shadow(0 24px 40px #14181a1f);position:sticky;top:110px}
+.recibo{--z:9px;background:#fff;padding:30px 30px calc(30px + var(--z));font-family:var(--font-mono),monospace;color:#14181a;
+  -webkit-mask:conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) 50%/calc(2*var(--z)) 100%;
+  mask:conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) 50%/calc(2*var(--z)) 100%}
+.reciboTopo{text-align:center;padding-bottom:18px;border-bottom:1px dashed #14181a66}
+.reciboTopo b{display:block;font-size:15px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.reciboTopo span{display:block;margin-top:4px;font-size:12px;color:#5c6861}
+.reciboLinhas{margin:16px 0 0}
+.reciboLinhas>div{display:flex;align-items:baseline;gap:10px;padding:9px 0;font-size:14px}
+.reciboLinhas>div::after{content:"";order:1;flex:1;border-bottom:1px dotted #14181a55;transform:translateY(-4px)}
+.reciboLinhas dt{order:0}
+.reciboLinhas dd{order:2;margin:0;font-weight:700;white-space:nowrap}
+.reciboTotal{margin-top:8px;padding-top:16px!important;border-top:1px dashed #14181a66}
+.reciboTotal dt,.reciboTotal dd{font-size:20px;font-weight:700}
+.recibo .reciboBotao{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:22px;min-height:54px;padding:12px 18px;background:#e31b62;color:#fff;border:0;border-radius:3px;box-shadow:3px 3px 0 #b81250;font-family:var(--font-body),sans-serif;font-size:15px;font-weight:600;cursor:pointer}
+.recibo .reciboBotao:hover{background:#b81250}
+.reciboBotao:focus-visible{outline:3px solid #14181a;outline-offset:3px}
+.reciboBotao svg{width:18px;height:18px}
+.reciboNota{margin-top:16px!important;font-family:var(--font-body),sans-serif;font-size:12px;line-height:1.6;color:#5c6861}
+.recibo .duvida{font-family:var(--font-body),sans-serif}
+@media(max-width:900px){.ofertaV4.ofertaV4{grid-template-columns:1fr;gap:40px}.reciboSombra{position:static}}
+@media(max-width:600px){.recibo{padding:24px 20px calc(24px + var(--z))}.reciboLinhas>div{font-size:13px}.reciboTotal dt,.reciboTotal dd{font-size:18px}.inclui li{font-size:14px}.ofertaLead{font-size:15px}}
+
+/* As dúvidas (19/10): o título preso à esquerda, as perguntas na Archivo
+   estreitada e o + num círculo grafite que vira − quando abre */
+.duvidasV4.duvidasV4{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:64px;align-items:start}
+.duvidasV4 h2{position:sticky;top:110px}
+.duvidasV4 details{border-top:1px solid #d8d3c4}
+.duvidasV4 details:last-child{border-bottom:1px solid #d8d3c4}
+.duvidasV4 summary{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:22px 0;cursor:pointer;list-style:none;font-family:var(--font-display),sans-serif;font-variation-settings:"wdth" 78;font-weight:800;font-size:clamp(21px,1.9vw,27px);line-height:1.15;color:#14181a}
+.duvidasV4 summary::-webkit-details-marker{display:none}
+.duvidasV4 summary:focus-visible{outline:3px solid #14181a;outline-offset:4px}
+.duvidasV4 summary>span{position:relative;flex-shrink:0;width:34px;height:34px;border-radius:50%;background:#14181a}
+.duvidasV4 summary>span::before,.duvidasV4 summary>span::after{content:"";position:absolute;left:50%;top:50%;width:12px;height:2px;background:#f2efe6;transform:translate(-50%,-50%)}
+.duvidasV4 summary>span::after{transform:translate(-50%,-50%) rotate(90deg);transition:transform .2s ease}
+.duvidasV4 details[open] summary>span::after{transform:translate(-50%,-50%) rotate(0)}
+.duvidasV4 details p{margin:-6px 0 0!important;padding:0 54px 24px 0;font-size:16px;line-height:1.7;color:#3a4144;max-width:60ch}
+
+/* O fim (19/10): grafite de ponta a ponta, a frase que fecha a história do
+   hero e a conversa respondida ao lado. Rosa só no botão */
+.fimV4{background:#14181a;color:#f2efe6;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:56px;align-items:center;padding:92px max(28px,calc((100vw - 1144px)/2))}
+.fimV4 h2{letter-spacing:-.012em;color:#f2efe6;font-variation-settings:"wdth" 78;font-weight:800;font-size:clamp(38px,4.6vw,64px);line-height:1;max-width:14ch}
+.fimV4 a[data-cta=final]{margin-top:30px;background:#e31b62;border-color:#e31b62;color:#fff;box-shadow:3px 3px 0 #b81250}
+.fimV4 a[data-cta=final]:hover{background:#b81250}
+.fimV4 a[data-cta=final]:focus-visible{outline:3px solid #f2efe6;outline-offset:3px}
+.fimV4 p{margin-top:16px!important;font-size:14px;color:#a9b0ac}
+.fimConversa{display:flex;flex-direction:column;gap:12px}
+.fimPergunta{align-self:flex-start;background:#2a3134;color:#f2efe6;border-radius:22px 22px 22px 6px;padding:12px 20px;font-size:20px;font-weight:500}
+.fimResposta{align-self:flex-end;max-width:90%;background:#fff;color:#14181a;border-radius:22px 22px 6px 22px;padding:14px 20px;font-size:18px;line-height:1.45}
+.fimResposta small{display:block;margin-top:8px;padding-top:8px;border-top:1px solid #14181a14;font-size:12px;color:#076b42}
+@media(prefers-reduced-motion:reduce){.duvidasV4 summary>span::after{transition:none}}
+@media(max-width:900px){.duvidasV4.duvidasV4{grid-template-columns:1fr;gap:28px}.duvidasV4 h2{position:static}.fimV4{grid-template-columns:1fr;gap:40px}}
+@media(max-width:600px){.duvidasV4 summary{font-size:20px;padding:18px 0}.duvidasV4 summary>span{width:30px;height:30px}.duvidasV4 details p{font-size:15px;padding-right:0}.fimV4{padding:60px 18px 70px}.fimV4 a[data-cta=final]{width:100%}.fimPergunta{font-size:17px}.fimResposta{font-size:16px}}
+
+.provaLegenda{position:absolute;right:0;bottom:0;font-size:12px;color:#5c6861}
+.provaLegenda a{color:#14181a;text-decoration:underline;text-underline-offset:3px}
+
+@media(max-width:1100px){.prova{max-width:460px}.provaTelefone.provaTelefone{width:250px}.mensagem{width:min(260px,60%)}}
+@media(max-width:900px){.prova{max-width:430px}.provaTelefone.provaTelefone{width:210px}.mensagem{bottom:40px;width:min(240px,80%)}.balao{font-size:12px}.cabecalho.cabecalho.cabecalho nav>a:not(:last-child){display:none}}
+@media(max-width:600px){
+  .sobre{font-size:13px;margin-bottom:14px!important}
+  .condicao{text-align:center;font-size:12px}
+  /* o balão encosta só no pé do celular: a foto da peça fica inteira à mostra */
+  .prova{margin:40px auto 0;max-width:340px;padding-bottom:150px}
+  .provaTelefone.provaTelefone{width:210px}
+  .mensagem{bottom:36px;width:80%}
+  .direct{top:8px;width:52%}
+  .direct li{font-size:12px;padding:6px 11px}
+  .direct li:nth-child(n+3){display:none}
+  .provaLegenda{left:0;text-align:center}
+  /* no celular a barra fixa de baixo já leva ao checkout: o botão do topo repetia
+     o do hero; e o cabeçalho não fica fixo, para não roubar altura da tela */
+  .cabecalho.cabecalho.cabecalho [data-cta=header]{display:none}
+  .cabecalho.cabecalho.cabecalho{position:relative}
+  .principal :is(section,div)[id]{scroll-margin-top:0}
+}
 .duvida{display:inline-block;color:#076b43!important;font-size:12px;text-decoration:underline!important;text-underline-offset:4px;margin-top:20px}
 .etapas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:30px;list-style:none;padding:0;margin:0}
 .etapas li{border-top:1px solid #deded3;padding-top:22px}
