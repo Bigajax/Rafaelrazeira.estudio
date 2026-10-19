@@ -64,7 +64,9 @@ export const projetos: Projeto[] = [
   { nome: "PR Grife", slug: "pr-grife", tipo: "Vitrine Digital", ramo: "Multimarcas com loja física em Maringá.", ramoEn: "Multi-brand store with a physical shop in Maringá.", url: "https://pr-grife.vercel.app" },
   { nome: "Bella Black", slug: "bella-black", tipo: "Vitrine Digital", ramo: "Streetwear e lançamentos, loja física em Maringá.", ramoEn: "Streetwear and new drops, physical shop in Maringá.", url: "https://bella-black-three.vercel.app" },
   { nome: "PR Gold", slug: "pr-gold", tipo: "Vitrine Digital", ramo: "Joias em ouro 18K, com confecção própria.", ramoEn: "18K gold jewelry, made in-house.", url: "https://prgold.vercel.app" },
-  { nome: "Filato Bene", slug: "filato-bene", tipo: "Vitrine Digital", ramo: "Alfaiataria masculina e moda para noivos.", ramoEn: "Men's tailoring and groom's fashion.", url: "https://filato-bene.vercel.app" },
+  /* Filato Bene saiu em 19/10/2026: filato-bene.vercel.app dava 404, e um card
+     que abre erro derruba o "todos abrem agora" da página. Volta quando o
+     site voltar. */
   { nome: "Lancellotti Tattoo Clinic", slug: "lancellotti", tipo: "Site profissional", ramo: "Tatuagem autoral e piercing, com orçamento online.", ramoEn: "Custom tattoos and piercing, with online quotes.", url: "https://lancellotti-tattoo-clinic.vercel.app" },
   { nome: "Baixudos.PR", slug: "baixudos", tipo: "Site de evento", ramo: "Encontro de cultura automotiva, com ingresso e inscrição.", ramoEn: "Car culture meetup, with tickets and sign-up.", url: "https://baixudos.vercel.app" },
 
