@@ -77,6 +77,32 @@ export const casos: Caso[] = [
     noAr: "2026-09-29",
     conferido: "2026-10-19",
   },
+  {
+    slug: "verit-lab",
+    nicho: "Decoração autoral",
+    cidade: "Maringá, PR",
+    titulo: "vérít.lab: vitrine digital de decoração autoral em Maringá",
+    descricao: "Como a vérít.lab, laboratório de design de Maringá que faz espelhos, quadros e objetos únicos, trocou o catálogo em PDF por uma galeria online com encomenda e pedido pelo WhatsApp.",
+    chamada: "Decoração autoral em Maringá",
+    resumo: "A vérít.lab é um laboratório de design de Maringá: espelhos, quadros e objetos feitos à mão, com frases em grafite, e nenhuma peça se repete. As obras moravam no feed e num catálogo em PDF. Hoje cada uma tem a sua página, com o número do acervo, e o site sabe quais já foram vendidas.",
+    antes: [
+      "As obras apareciam no feed do Instagram e num catálogo em PDF, com nome, medida e preço de 19 peças. A bio do perfil não tinha link nenhum.",
+      "Quando uma peça vendia, a notícia ia na legenda do post, com um (vendido) no fim. Quem chegava depois não tinha como saber o que ainda estava disponível sem perguntar.",
+    ],
+    feito: [
+      { titulo: "Cada obra é única, e o site sabe disso", texto: "Toda peça tem número no acervo. Quando vende, fica marcada como vendida; quando alguém separa, aparece como reservada. Ninguém chama para pedir uma obra que já foi." },
+      { titulo: "A galeria no lugar do PDF", texto: "Espelhos, Quadros e Objetos, cada obra com fotos, medida e preço quando a loja publica. As obras mais novas, que ainda não têm preço publicado, ficam sob consulta." },
+      { titulo: "A cara da logo", texto: "Preto, o ciano e o magenta da logo nova, e a letra de pincel no \"Nada aqui se repete.\", a frase que a própria loja usa. Nada de vitrine de luxo: é galeria de rua." },
+      { titulo: "As obras no topo", texto: "Três banners abrem a página com as próprias obras e uma frase curta cada. O botão leva direto à peça, ou ao acervo inteiro." },
+      { titulo: "O pedido leva a obra", texto: "O botão de cada peça abre o WhatsApp com o nome da obra, o número do acervo e o link. A loja sabe na hora de qual peça a pessoa está falando." },
+      { titulo: "A encomenda em duas perguntas", texto: "Quem quer uma peça sob medida escolhe o tipo (espelho, quadro ou objeto) e conta a ideia. A ficha abre de qualquer página e chega montada no WhatsApp." },
+      { titulo: "O painel cabe no celular", texto: "A dona marca a obra como vendida, separada ou disponível pelo telefone, e o site acompanha. Sem planilha e sem pedir ao estúdio." },
+    ],
+    numeros: [],
+    previa: "2026-08-11",
+    noAr: "2026-08-14",
+    conferido: "2026-10-19",
+  },
 ];
 
 export const casoPorSlug = (slug: string) => casos.find((c) => c.slug === slug);
