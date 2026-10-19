@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Proposta VAYLW, o livro · Rafael Razeira Estúdio</title>
+
+<!-- O cartao do link: a logo RR no preview do WhatsApp (URL absoluta de proposito) -->
+<meta property="og:image" content="https://rafaelrazeira.com.br/assets/og-rr.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Monograma RR do Rafael Razeira Estudio" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Rafael Razeira Estúdio" />
+<meta property="og:title" content="Proposta · VAYLW, o livro" />
+<meta property="og:description" content="Rafael Razeira Estúdio: o catálogo da VAYLW em forma de livro, o investimento e o prazo." />
+<meta property="og:url" content="https://rafaelrazeira.com.br/proposta/vaylw-livro.html" />
+
+<!-- ============================================================
+     PROPOSTA COMERCIAL · VAYLW, O LIVRO (19/10/2026)
+     O Luis pediu um conceito novo: o catalogo "igual um livro", com as
+     bermudas e o mascote da marca. Ainda NAO existe previa: no lugar da
+     vitrine ao vivo no celular, a capa traz um livro de amostra feito aqui
+     mesmo, com as 3 fotos que ele mandou (recortes em
+     public/assets/proposta/vaylw-livro/). A vitrine-livro e feita depois do
+     aceite.
+     A proposta antiga (/proposta/vaylw.html, a camiseta) continua no ar.
+     Condicao, decisao do Rafael em 19/10: a MESMA da antiga, R$ 999 no
+     cartao em ate 12x com os juros do Mercado Pago, sem entrada, e o Pix
+     como alternativa. Mesma chave em lib/propostas.ts ("vaylw"), sem item
+     novo. Nenhum numero de parcela escrito a mao: quem mostra e o Brick.
+     Sem preco de peca e sem nome de modelo: a loja nao mandou.
+     ============================================================ -->
+
+<link rel="icon" type="image/png" href="/assets/favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+
+<link rel="stylesheet" href="/css/proposta-checkout.css" />
+<script src="/js/proposta-checkout.js" defer></script>
+
+<style>
+:root{
+  --emerald:#10B981;
+  --emerald-dark:#065F46;
+  --emerald-light:#D1FAE5;
+  --off-white:#FAFAF7;
+  --black:#0A0A0A;
+  --ink-70:rgba(10,10,10,.70);
+  --ink-55:rgba(10,10,10,.55);
+  --line:rgba(10,10,10,.12);
+  --maxw:1160px;
+  --pad:clamp(16px,5vw,64px);
+  --font-display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --font-body:"Inter",system-ui,-apple-system,sans-serif;
+  --font-mono:"Space Mono",ui-monospace,monospace;
+  --font-livro:"Syne","Archivo",system-ui,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--font-body);background:var(--off-white);color:var(--black);line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+b{font-weight:600;color:var(--black)}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--emerald-dark);outline-offset:3px}
+img{display:block;max-width:100%}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--pad)}
+
+/* ——— Cabeçalho ——— */
+.topo{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding-block:24px;border-bottom:1px solid var(--line)}
+.marca{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(15px,4vw,19px);letter-spacing:-.01em;white-space:nowrap}
+.marca small{font-size:1em;font-weight:800;color:var(--ink-55)}
+.topo time{font-family:var(--font-mono);font-size:13px;color:var(--ink-55)}
+
+/* ——— Hero: capa de documento + o livro de amostra ——— */
+.capa{display:grid;gap:clamp(40px,6vw,72px);padding-block:clamp(40px,8vw,88px) clamp(56px,8vw,96px);align-items:center}
+@media(min-width:900px){.capa{grid-template-columns:minmax(0,1fr) auto}}
+.capa-para{font-family:var(--font-mono);font-size:14px;color:var(--ink-70)}
+.capa h1{
+  margin-top:20px;font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(2.6rem,9vw,6rem);line-height:.96;letter-spacing:-.04em;max-width:9ch;
+}
+.ficha{margin-top:clamp(32px,5vw,48px);border-top:2px solid var(--black);max-width:520px}
+.ficha div{display:grid;grid-template-columns:130px 1fr;gap:16px;padding-block:13px;border-bottom:1px solid var(--line)}
+.ficha dt{font-family:var(--font-mono);font-size:13px;color:var(--ink-55);padding-top:2px}
+.ficha dd{font-size:clamp(1rem,3.8vw,1.08rem);line-height:1.45}
+@media(max-width:420px){.ficha div{grid-template-columns:1fr;gap:2px}}
+
+/* ——— O livro ———
+   Página 3:4. No computador abre em página dupla (folha com frente e verso);
+   no celular é uma página por vez, e a folha virada sai pela esquerda. */
+.livro-area{justify-self:center;width:max-content;max-width:100%}
+.livro-palco{--pw:min(300px,calc(100vw - 2 * var(--pad)));--ph:calc(var(--pw) * 4 / 3);width:var(--pw);height:var(--ph);margin-inline:auto;overflow:hidden;touch-action:pan-y;outline:none;border-radius:4px}
+.livro{position:relative;width:var(--pw);height:var(--ph);perspective:1800px;transition:transform .7s cubic-bezier(.645,.045,.355,1)}
+@media(min-width:900px){
+  .livro-palco{--pw:clamp(200px,21vw,250px);width:calc(var(--pw) * 2);overflow:visible}
+  .livro{width:calc(var(--pw) * 2)}
+  .livro.fechado{transform:translateX(-25%)}
+  .livro.fim{transform:translateX(25%)}
+}
+.folha{position:absolute;top:0;left:0;width:var(--pw);height:var(--ph);transform-origin:left center;transform-style:preserve-3d;transition:transform .8s cubic-bezier(.645,.045,.355,1);cursor:pointer}
+@media(min-width:900px){.folha{left:var(--pw)}}
+.folha.virada{transform:rotateY(-180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;background:#fff;box-shadow:0 30px 50px -30px rgba(10,10,10,.55)}
+.verso{transform:rotateY(180deg)}
+/* a sombra da lombada */
+.face::after{content:"";position:absolute;inset:0;pointer-events:none}
+.frente::after{background:linear-gradient(90deg,rgba(0,0,0,.22),rgba(0,0,0,0) 9%)}
+.verso::after{background:linear-gradient(270deg,rgba(0,0,0,.22),rgba(0,0,0,0) 9%)}
+.face--branca{background:#e9e7e1}
+@media(prefers-reduced-motion:reduce){.folha,.livro{transition:none}}
+
+/* As páginas, na identidade da VAYLW: preto, branco e a Syne */
+.pg{position:absolute;inset:0;display:flex;flex-direction:column;font-family:var(--font-livro)}
+.pg--preta{background:#000;color:#fff}
+.pg--clara{background:#fff;color:#000}
+.pg img{width:100%;height:100%;object-fit:cover}
+.pg-foto{flex:1;min-height:0}
+.pg-foto img{object-fit:contain}
+.pg-pad{padding:9% 9% 14%}
+.pg-num{position:absolute;bottom:4.5%;font-family:var(--font-mono);font-size:10px;opacity:.55}
+.frente .pg-num{right:7%}
+.verso .pg-num{left:7%}
+.pg-rotulo{font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.6}
+.pg-titulo{font-weight:800;font-size:calc(var(--pw) * .08);line-height:.95;letter-spacing:-.02em;text-transform:uppercase;margin-top:auto}
+.pg-legenda{font-weight:700;font-size:calc(var(--pw) * .062);line-height:1.15;text-transform:uppercase;letter-spacing:.01em}
+.pg-pedir{display:inline-block;margin-top:10px;padding:7px 12px;border-radius:999px;background:#000;color:#fff;font-family:var(--font-body);font-weight:600;font-size:11px}
+.pg--preta .pg-pedir{background:#fff;color:#000}
+.sumario{list-style:none;margin-top:9%;border-top:1px solid rgba(255,255,255,.35)}
+.sumario a{display:flex;justify-content:space-between;gap:10px;padding-block:9px;border-bottom:1px solid rgba(255,255,255,.2);text-decoration:none;font-weight:700;font-size:calc(var(--pw) * .056);text-transform:uppercase}
+.sumario a span{white-space:nowrap;font-family:var(--font-mono);font-weight:400;font-size:10px;opacity:.6;align-self:center}
+.sumario a:hover{opacity:.7}
+.pg-frase{margin-top:8%;font-family:var(--font-body);font-size:12px;opacity:.7}
+.pg-detalhes{flex:1;min-height:0;display:grid;grid-template-rows:1fr 1fr;gap:3px;background:#fff}
+.pg-detalhes img{min-height:0}
+.pg-sobre{position:absolute;left:0;right:0;top:0;padding:9% 8% 14%;color:#fff;background:linear-gradient(180deg,rgba(0,0,0,.75),rgba(0,0,0,0))}
+.pg-texto{font-family:var(--font-body);font-size:calc(var(--pw) * .052);line-height:1.5;margin-top:8%;opacity:.85}
+.pg .pg-logo{margin:auto 0;width:100%;height:auto;object-fit:contain}
+
+.livro-controles{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:20px}
+.livro-btn{width:44px;height:44px;border-radius:50%;border:1.5px solid var(--black);background:#fff;font-size:18px;cursor:pointer;display:grid;place-items:center;transition:background-color .2s,opacity .2s}
+.livro-btn:hover{background:var(--line)}
+.livro-btn:disabled{opacity:.3;cursor:default}
+.livro-contador{font-family:var(--font-mono);font-size:13px;color:var(--ink-70);text-align:center}
+.livro-nota{display:flex;gap:10px;align-items:flex-start;margin-top:16px;max-width:330px;font-size:.95rem;color:var(--ink-70);line-height:1.45}
+
+/* ——— O marcador: a anotação do estúdio ——— */
+.pin{
+  display:inline-grid;place-items:center;flex:none;
+  width:28px;height:28px;border-radius:50%;
+  background:var(--emerald);color:var(--black);
+  font-family:var(--font-mono);font-weight:700;font-size:13px;line-height:1;
+  box-shadow:0 0 0 3px var(--off-white);
+}
+
+/* ——— Seções ——— */
+.sec{padding-block:clamp(56px,9vw,112px);border-top:1px solid var(--line)}
+.sec h2{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.9rem,6.5vw,3.4rem);line-height:.95;letter-spacing:-.03em;max-width:16ch}
+.sec-intro{margin-top:18px;max-width:58ch;font-size:clamp(1rem,3.9vw,1.15rem);color:var(--ink-70)}
+
+/* O que o livro vai ter: notas numeradas, duas colunas */
+.notas{list-style:none;margin-top:clamp(32px,5vw,48px);border-top:2px solid var(--black);display:grid;column-gap:clamp(24px,4vw,48px)}
+@media(min-width:760px){.notas{grid-template-columns:1fr 1fr}}
+.notas li{display:flex;gap:14px;align-items:flex-start;padding-block:16px;border-bottom:1px solid var(--line);font-size:clamp(.98rem,3.8vw,1.04rem);color:var(--ink-70);line-height:1.5}
+
+/* O que não aparece na tela: lista corrida em duas colunas, sem cartão */
+.fora-da-tela{margin-top:clamp(56px,8vw,88px);display:grid;gap:clamp(20px,4vw,48px)}
+@media(min-width:900px){.fora-da-tela{grid-template-columns:minmax(0,1fr) minmax(0,1.7fr)}}
+.fora-da-tela h3{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.3rem,4.6vw,1.7rem);line-height:1;letter-spacing:-.02em}
+.fora-da-tela ul{list-style:none;columns:2 280px;column-gap:40px;border-top:2px solid var(--black)}
+.fora-da-tela li{break-inside:avoid;padding-block:12px;border-bottom:1px solid var(--line);color:var(--ink-70)}
+
+/* ——— Investimento: uma tela, com a linha de cota ——— */
+.valor{padding-block:clamp(72px,12vw,140px)}
+.valor-numero{font-family:var(--font-display);font-weight:900;letter-spacing:-.05em;line-height:.85;font-size:clamp(5rem,24vw,15rem);margin-top:clamp(24px,4vw,40px);white-space:nowrap}
+.valor-numero small{font-size:.28em;letter-spacing:-.02em;vertical-align:.95em;margin-right:.08em}
+.cota{position:relative;margin-top:22px;height:14px;border-bottom:2px solid var(--emerald)}
+.cota::before,.cota::after{content:"";position:absolute;bottom:-8px;width:2px;height:16px;background:var(--emerald)}
+.cota::before{left:0}.cota::after{right:0}
+.cota-legenda{margin-top:14px;font-family:var(--font-mono);font-size:clamp(12px,3.4vw,14px);color:var(--emerald-dark)}
+.valor-grade{margin-top:clamp(40px,6vw,64px);display:grid;gap:clamp(28px,4vw,56px)}
+@media(min-width:900px){.valor-grade{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}}
+.valor-grade p{font-size:clamp(1rem,3.9vw,1.12rem);color:var(--ink-70);max-width:52ch}
+.valor-grade p + p{margin-top:14px}
+.garantia{margin-top:24px;padding:20px 22px;border-left:3px solid var(--emerald);background:var(--emerald-light)}
+.garantia p{color:rgba(10,10,10,.78)}
+.pagar{border:2px solid var(--black);border-radius:6px;padding:clamp(20px,4vw,28px);background:#fff;align-self:start}
+.pagar-titulo{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:1.25rem;letter-spacing:-.01em}
+.pagar ul{list-style:none;margin:14px 0 20px}
+.pagar li{padding-block:9px;border-top:1px solid var(--line);font-size:.96rem;color:var(--ink-70)}
+.btn-pay{
+  width:100%;border:none;border-radius:999px;background:var(--emerald);color:var(--black);
+  padding:15px 20px;cursor:pointer;font-family:var(--font-display);font-weight:900;font-size:15px;
+  letter-spacing:.02em;text-transform:uppercase;transition:background-color .2s;
+}
+.btn-pay:hover{background:#0ea371}
+.btn-pay--ghost{margin-top:10px;background:#fff;border:1.5px solid var(--black)}
+.btn-pay--ghost:hover{background:var(--line)}
+.pagar-rodape{margin-top:12px;font-family:var(--font-mono);font-size:12px;color:var(--ink-55)}
+
+/* ——— Depois da publicação ——— */
+.opcoes{margin-top:clamp(32px,5vw,48px);display:grid;gap:0;border-top:2px solid var(--black)}
+@media(min-width:760px){.opcoes{grid-template-columns:1fr 1fr}.opcao + .opcao{border-left:1px solid var(--line);padding-left:clamp(20px,4vw,40px)}}
+.opcao{padding-block:24px;padding-right:clamp(0px,3vw,32px);border-bottom:1px solid var(--line)}
+.opcao h3{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.2rem,4.4vw,1.5rem);letter-spacing:-.02em;line-height:1}
+.opcao-preco{margin-top:10px;font-family:var(--font-display);font-weight:900;font-size:clamp(1.8rem,6vw,2.4rem);letter-spacing:-.03em;line-height:1}
+.opcao-preco small{font-size:.45em;color:var(--ink-55)}
+.opcao p{margin-top:12px;color:var(--ink-70);max-width:44ch}
+.opcao ul{list-style:none;margin-top:14px}
+.opcao li{padding-block:8px;border-top:1px solid var(--line);font-size:.96rem;color:var(--ink-70)}
+
+/* ——— Prazo e passos ——— */
+.prazo{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.6rem,6vw,2.6rem);letter-spacing:-.025em;line-height:1;margin-top:clamp(24px,4vw,36px)}
+.passos{list-style:none;counter-reset:p;margin-top:clamp(28px,4vw,40px);border-top:2px solid var(--black);max-width:760px}
+.passos li{counter-increment:p;display:flex;gap:16px;padding-block:16px;border-bottom:1px solid var(--line);color:var(--ink-70);font-size:clamp(1rem,3.9vw,1.1rem)}
+.passos li::before{content:counter(p);font-family:var(--font-display);font-weight:900;font-size:1.4rem;line-height:1.1;color:var(--black);min-width:1.2em}
+
+/* ——— Não incluso: nota de rodapé ——— */
+.rodape-nota{padding-block:clamp(40px,6vw,64px);border-top:1px solid var(--line);display:grid;gap:16px}
+@media(min-width:900px){.rodape-nota{grid-template-columns:minmax(0,1fr) minmax(0,1.7fr)}}
+.rodape-nota h2{font-family:var(--font-mono);font-weight:700;font-size:14px;color:var(--ink-55)}
+.rodape-nota ul{list-style:none}
+.rodape-nota li{padding-block:8px;border-bottom:1px solid var(--line);font-size:.95rem;color:var(--ink-70)}
+
+/* ——— Fecho ——— */
+.fecho{padding-block:clamp(64px,10vw,120px);border-top:1px solid var(--line)}
+.fecho h2{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(2.2rem,8vw,4.6rem);line-height:.92;letter-spacing:-.04em;max-width:12ch}
+.fecho a{display:inline-block;margin-top:28px;font-weight:600;font-size:1.1rem;text-decoration:underline;text-decoration-color:var(--emerald);text-decoration-thickness:2px;text-underline-offset:4px}
+.assinatura{padding-block:28px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px 28px;font-family:var(--font-mono);font-size:12px;color:var(--ink-55)}
+
+@page{size:A4;margin:14mm}
+@media print{
+  .livro-area,.btn-pay,.fecho a{display:none}
+  .capa{grid-template-columns:1fr}
+  .sec,.valor{padding-block:28px}
+  .pin,.garantia{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body data-proposta="vaylw">
+
+<div class="wrap">
+
+  <header class="topo">
+    <div class="marca">Rafael Razeira <small>Estúdio</small></div>
+    <time datetime="2026-10-19">19/10/2026</time>
+  </header>
+
+  <!-- CAPA -->
+  <section class="capa">
+    <div>
+      <p class="capa-para">Proposta para o Luis, da VAYLW</p>
+      <h1>A VAYLW, de folhear.</h1>
+      <dl class="ficha">
+        <div><dt>O conceito</dt><dd>O catálogo da loja em forma de livro: a página vira com o dedo, peça por peça</dd></div>
+        <div><dt>O que entra</dt><dd>Até 60 peças cadastradas por mim, com o fundo das fotos tratado</dd></div>
+        <div><dt>Investimento</dt><dd><b>R$ 999</b>, no cartão em até 12x, sem entrada</dd></div>
+        <div><dt>No ar em</dt><dd>Até 5 dias úteis depois das suas fotos e da lista de peças</dd></div>
+      </dl>
+    </div>
+
+    <div class="livro-area">
+      <div class="livro-palco" data-livro tabindex="0" aria-label="Livro de amostra da VAYLW. Use as setas para virar a página.">
+        <div class="livro fechado"></div>
+      </div>
+      <div class="livro-controles">
+        <button class="livro-btn" type="button" data-volta aria-label="Página anterior">←</button>
+        <span class="livro-contador" aria-live="polite">Capa</span>
+        <button class="livro-btn" type="button" data-segue aria-label="Próxima página">→</button>
+      </div>
+      <p class="livro-nota"><span class="pin" aria-hidden="true">↔</span><span>Uma amostra do conceito, feita com as fotos que você mandou: vire a página. O livro de verdade é a VAYLW inteira.</span></p>
+    </div>
+  </section>
+
+  <!-- As páginas do livro de amostra. O script monta as folhas a partir daqui. -->
+  <template id="paginas">
+    <div class="pg pg--preta"><img src="/assets/proposta/vaylw-livro/capa.webp" alt="Capa: o mascote da VAYLW, com a logo" /></div>
+
+    <div class="pg pg--preta pg-pad">
+      <p class="pg-rotulo">VAYLW® · Original Goods</p>
+      <p class="pg-titulo">Bermudas</p>
+      <ul class="sumario">
+        <li><a href="#" data-ir="2">Bermuda preta <span>p. 2</span></a></li>
+        <li><a href="#" data-ir="4">Verde, cós laranja <span>p. 4</span></a></li>
+        <li><a href="#" data-ir="6">Como pedir <span>p. 6</span></a></li>
+      </ul>
+      <p class="pg-frase">Essência em cada detalhe.</p>
+      <span class="pg-num">1</span>
+    </div>
+
+    <div class="pg pg--clara pg-pad">
+      <div class="pg-foto"><img src="/assets/proposta/vaylw-livro/preta.webp" alt="Bermuda preta da VAYLW" /></div>
+      <p class="pg-legenda">Bermuda preta</p>
+      <span><span class="pg-pedir">Pedir no WhatsApp</span></span>
+      <span class="pg-num">2</span>
+    </div>
+
+    <div class="pg pg--preta">
+      <img src="/assets/proposta/vaylw-livro/preta-detalhe.webp" alt="De perto: o cordão mesclado e a marca na perna" />
+      <div class="pg-sobre"><p class="pg-rotulo">De perto</p><p class="pg-legenda">O cordão mesclado e a marca na perna</p></div>
+      <span class="pg-num" style="color:#fff">3</span>
+    </div>
+
+    <div class="pg pg--clara pg-pad">
+      <div class="pg-foto"><img src="/assets/proposta/vaylw-livro/verde.webp" alt="Bermuda verde com cós laranja, no cabide" /></div>
+      <p class="pg-legenda">Verde, cós laranja</p>
+      <span><span class="pg-pedir">Pedir no WhatsApp</span></span>
+      <span class="pg-num">4</span>
+    </div>
+
+    <div class="pg pg--clara">
+      <div class="pg-detalhes">
+        <img src="/assets/proposta/vaylw-livro/verde-bolso.webp" alt="O bolso com lapela e a marca" />
+        <img src="/assets/proposta/vaylw-livro/verde-perna.webp" alt="A marca na barra da perna" />
+      </div>
+      <span class="pg-num" style="color:#fff">5</span>
+    </div>
+
+    <div class="pg pg--preta pg-pad">
+      <p class="pg-rotulo">Como pedir</p>
+      <p class="pg-titulo">Gostou de uma?</p>
+      <p class="pg-texto">Toque em Pedir no WhatsApp na página da peça. A mensagem já chega na loja com o nome dela e o link.</p>
+      <span><span class="pg-pedir">Falar com a VAYLW</span></span>
+      <span class="pg-num">6</span>
+    </div>
+
+    <div class="pg pg--preta pg-pad"><img class="pg-logo" src="/assets/proposta/vaylw-livro/logo.webp" alt="VAYLW, est. 1992" /></div>
+  </template>
+
+  <!-- O QUE O LIVRO VAI TER -->
+  <section class="sec">
+    <h2>O que o livro vai ter</h2>
+    <p class="sec-intro">A amostra lá em cima tem duas peças. O livro de verdade é a VAYLW inteira, e funciona assim:</p>
+    <ol class="notas">
+      <li><span class="pin">1</span><span><b>A capa é a sua marca:</b> o mascote, de ponta a ponta, antes de qualquer peça.</span></li>
+      <li><span class="pin">2</span><span><b>Um sumário na primeira página.</b> Um toque leva direto à peça, sem virar o livro inteiro.</span></li>
+      <li><span class="pin">3</span><span><b>Cada peça ganha uma página dupla:</b> a foto inteira de um lado, os detalhes do outro.</span></li>
+      <li><span class="pin">4</span><span><b>A página vira com o dedo</b> no celular, e com a seta ou o clique no computador.</span></li>
+      <li><span class="pin">5</span><span><b>Em cada peça, o botão de pedir no WhatsApp.</b> A mensagem chega para você já montada, com o nome da peça e o link.</span></li>
+      <li><span class="pin">6</span><span><b>O livro cresce pelo painel.</b> Peça nova que você cadastra vira página nova, sem me pedir.</span></li>
+    </ol>
+
+    <div class="fora-da-tela">
+      <h3>E o que vem junto</h3>
+      <ul>
+        <li><b>Até 60 peças cadastradas por mim</b> na entrega, com o fundo das fotos tratado. Você manda o nome, a cor e as fotos</li>
+        <li><b>O painel</b> para você mesmo colocar e trocar peças, preço, tamanhos e a ordem das páginas</li>
+        <li><b>A versão de celular</b>, para quem chega pelo Instagram</li>
+        <li><b>O Google</b>: a VAYLW aparece para quem procura a loja pelo nome</li>
+        <li><b>O cartão do link</b>: a sua marca aparece quando alguém manda o endereço no WhatsApp</li>
+        <li><b>2 rodadas de revisão</b> antes de publicar</li>
+        <li><b>Treinamento do painel</b> e 30 dias de suporte depois da publicação</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- INVESTIMENTO -->
+  <section class="sec valor">
+    <h2>O investimento</h2>
+    <p class="valor-numero"><small>R$</small>999</p>
+    <div class="cota" aria-hidden="true"></div>
+    <p class="cota-legenda">No cartão em até 12x. Sem entrada, sem mensalidade.</p>
+
+    <div class="valor-grade">
+      <div>
+        <p>O livro é feito para a VAYLW, com as suas fotos e o seu mascote. O valor cobre a construção, o cadastro das suas peças com o fundo tratado, a revisão com você, a publicação e o treinamento do painel.</p>
+        <p>O domínio próprio, se você quiser o endereço com o nome da loja, é à parte: <b>R$ 40 por 1 ano</b>, registrado no nome da loja. Eu faço a configuração.</p>
+        <div class="garantia">
+          <p>Pagou, eu começo no mesmo dia. E se o livro publicado com as suas peças não for o conceito que você viu nesta página, <b>o valor volta inteiro</b>.</p>
+        </div>
+      </div>
+      <div class="pagar">
+        <p class="pagar-titulo">Pagar no cartão</p>
+        <ul>
+          <li>De 1x a 12x no cartão de crédito, com os juros do Mercado Pago</li>
+          <li>Você escolhe as parcelas no formulário e vê o valor de cada uma, e o total, antes de confirmar</li>
+          <li>Aprovação na hora, aqui na página: pode ser agora</li>
+        </ul>
+        <button class="btn-pay" type="button" data-checkout-item="avista_card">Pagar R$ 999 no cartão</button>
+        <button class="btn-pay btn-pay--ghost" type="button" data-checkout-item="avista_pix">Prefiro pagar no Pix</button>
+        <p class="pagar-rodape">Processado pelo Mercado Pago, sem sair desta página.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEPOIS DA PUBLICAÇÃO -->
+  <section class="sec">
+    <h2>Depois que ele estiver no ar</h2>
+    <p class="sec-intro">Você mesmo consegue colocar e trocar peças pelo painel: é simples, e eu te mostro como no treinamento. Se preferir que eu cuide disso pra você todo mês, tem o plano de suporte.</p>
+    <div class="opcoes">
+      <div class="opcao">
+        <h3>Você mesmo cuida</h3>
+        <p class="opcao-preco">R$ 0<small>/mês</small></p>
+        <p>Peça nova, foto, preço e a ordem das páginas, direto do celular. Sem limite e sem pedir para ninguém.</p>
+      </div>
+      <div class="opcao">
+        <h3>Eu cuido pra você</h3>
+        <p class="opcao-preco">R$ 149,90<small>/mês</small></p>
+        <p>Você me manda as peças novas pelo WhatsApp e eu trato o fundo das fotos, cadastro e atualizo. Sem fidelidade.</p>
+        <ul>
+          <li><b>Até 10 peças por mês</b>, cada uma com até 3 fotos</li>
+          <li>Trocar foto, preço, tamanhos ou cores do que já está no livro, e tirar o que acabou</li>
+          <li>Acima de 10 peças no mês: <b>R$ 15 por peça extra</b></li>
+          <li>Não acumula de um mês para o outro. Seção ou página nova é orçamento à parte</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRAZO E PASSOS -->
+  <section class="sec">
+    <h2>Como a gente segue</h2>
+    <p class="prazo">No ar em até 5 dias úteis depois das suas fotos</p>
+    <ol class="passos">
+      <li><span>Você paga os <b>R$ 999 no cartão</b>, em até 12x, aqui nesta página, e me avisa no WhatsApp.</span></li>
+      <li><span>Você me manda as peças, com <b>nome, cor e tamanhos</b>, e as fotos. Se puder, mande os <b>arquivos originais</b> por e-mail ou Drive: o WhatsApp diminui a foto, e num livro a foto aparece grande. Me diz também em qual WhatsApp os pedidos devem cair: no (12) 99605-1886 ou no (12) 99112-8111, o da bio.</span></li>
+      <li><span>Eu monto o livro, trato as fotos, reviso com você e publico.</span></li>
+    </ol>
+  </section>
+
+  <!-- NÃO INCLUSO -->
+  <section class="rodape-nota">
+    <h2>O que não está incluso</h2>
+    <ul>
+      <li>Domínio próprio: R$ 40 por 1 ano, à parte, no nome da loja</li>
+      <li>Carrinho e pagamento online: o pedido fecha no WhatsApp</li>
+      <li>Controle de estoque, ERP e nota fiscal</li>
+      <li>Tirar as fotos: a foto é sua, e o tratamento do fundo é comigo</li>
+      <li>Simulador de frete e de parcelamento: preço e entrega ficam para a conversa</li>
+    </ul>
+  </section>
+
+  <section class="fecho">
+    <h2>Vamos abrir o livro da VAYLW.</h2>
+    <a href="https://wa.me/5544991246187?text=Ol%C3%A1%20Rafael%2C%20tenho%20uma%20d%C3%BAvida%20sobre%20a%20proposta%20do%20livro%20da%20VAYLW." target="_blank" rel="noopener">Ficou com dúvida? Me chama no WhatsApp</a>
+  </section>
+
+  <footer class="assinatura">
+    <span>Rafael Razeira Estúdio</span>
+    <span>rafael.rbarbon@gmail.com</span>
+    <span>(44) 99124-6187</span>
+    <span>@rafaelrazeira.estudio</span>
+  </footer>
+
+</div>
+
+<script>
+/* O livro de amostra. As páginas vêm do <template>; no computador cada folha
+   leva duas (frente e verso) e abre em página dupla, no celular cada folha
+   leva uma e a virada sai pela esquerda. Remonta quando a largura cruza 900. */
+(function () {
+  var palco = document.querySelector("[data-livro]");
+  var livro = palco.querySelector(".livro");
+  var paginas = Array.prototype.slice.call(document.getElementById("paginas").content.children);
+  var total = paginas.length; // 8: capa, 6 páginas, contracapa
+  var contador = document.querySelector(".livro-contador");
+  var btnVolta = document.querySelector("[data-volta]");
+  var btnSegue = document.querySelector("[data-segue]");
+  var dupla = window.matchMedia("(min-width:900px)");
+  var calmo = window.matchMedia("(prefers-reduced-motion:reduce)");
+  var folhas = [], viradas = 0;
+
+  function face(classe, i) {
+    var f = document.createElement("div");
+    f.className = "face " + classe;
+    if (i === null) f.classList.add("face--branca");
+    else f.appendChild(paginas[i].cloneNode(true));
+    return f;
+  }
+
+  function montar(pagina) {
+    livro.innerHTML = "";
+    folhas = [];
+    var n = dupla.matches ? total / 2 : total;
+    for (var i = 0; i < n; i++) {
+      var folha = document.createElement("div");
+      folha.className = "folha";
+      if (dupla.matches) {
+        folha.appendChild(face("frente", 2 * i));
+        folha.appendChild(face("verso", 2 * i + 1));
+      } else {
+        folha.appendChild(face("frente", i));
+        folha.appendChild(face("verso", null));
+      }
+      livro.appendChild(folha);
+      folhas.push(folha);
+    }
+    viradas = 0;
+    ir(pagina || 0, true);
+  }
+
+  // Quantas folhas viradas mostram a página p
+  function folhasPara(p) { return dupla.matches ? Math.ceil(p / 2) : p; }
+  function maximo() { return dupla.matches ? folhas.length : folhas.length - 1; }
+  // A página que está à vista agora (a da direita, no computador)
+  function paginaAtual() { return dupla.matches ? Math.min(2 * viradas, total - 1) : viradas; }
+
+  function empilhar() {
+    folhas.forEach(function (f, i) { f.style.zIndex = i < viradas ? i + 1 : folhas.length - i; });
+  }
+
+  function ir(p, ja) {
+    var alvo = Math.max(0, Math.min(maximo(), folhasPara(p)));
+    var de = viradas;
+    if (alvo === de && !ja) return;
+    var passo = alvo > de ? 1 : -1;
+    var demora = ja || calmo.matches ? 0 : 110;
+    var k = 0;
+    for (var i = de; i !== alvo; i += passo) {
+      (function (idx, atraso) {
+        var folha = folhas[passo > 0 ? idx : idx - 1];
+        setTimeout(function () {
+          folha.style.zIndex = folhas.length + 2;
+          folha.classList.toggle("virada", passo > 0);
+          setTimeout(empilhar, calmo.matches ? 0 : 820);
+        }, atraso);
+      })(i, k++ * demora);
+    }
+    viradas = alvo;
+    if (ja || alvo === de) empilhar();
+    livro.classList.toggle("fechado", dupla.matches && alvo === 0);
+    livro.classList.toggle("fim", dupla.matches && alvo === folhas.length);
+    rotular();
+  }
+
+  function rotular() {
+    var txt;
+    if (viradas === 0) txt = "Capa";
+    else if (viradas === maximo()) txt = "Contracapa";
+    else if (dupla.matches) txt = "Páginas " + (2 * viradas - 1) + " e " + (2 * viradas) + " de " + (total - 2);
+    else txt = "Página " + viradas + " de " + (total - 2);
+    contador.textContent = txt;
+    btnVolta.disabled = viradas === 0;
+    btnSegue.disabled = viradas === maximo();
+  }
+
+  function segue() { ir(paginaAtual() + (dupla.matches ? 2 : 1)); }
+  function volta() {
+    ir(dupla.matches ? 2 * (viradas - 1) : viradas - 1);
+  }
+
+  btnSegue.addEventListener("click", segue);
+  btnVolta.addEventListener("click", volta);
+  palco.addEventListener("keydown", function (e) {
+    if (e.key === "ArrowRight") { e.preventDefault(); segue(); }
+    if (e.key === "ArrowLeft") { e.preventDefault(); volta(); }
+  });
+
+  // Sumário: pula direto para a página
+  livro.addEventListener("click", function (e) {
+    var link = e.target.closest("[data-ir]");
+    if (link) { e.preventDefault(); ir(+link.dataset.ir); }
+  });
+
+  // Toque e clique: arrastar vira; um toque na metade direita segue, na esquerda volta
+  var x0 = null;
+  palco.addEventListener("pointerdown", function (e) { x0 = e.clientX; });
+  palco.addEventListener("pointerup", function (e) {
+    if (x0 === null || e.target.closest("[data-ir]")) { x0 = null; return; }
+    var dx = e.clientX - x0;
+    x0 = null;
+    if (Math.abs(dx) > 40) { dx < 0 ? segue() : volta(); return; }
+    // fechado, o livro fica centralizado: qualquer toque abre (ou volta, na contracapa)
+    if (viradas === 0) return segue();
+    if (viradas === maximo()) return volta();
+    var r = palco.getBoundingClientRect();
+    var meio = dupla.matches ? r.left + r.width / 2 : r.left + r.width * 0.35;
+    e.clientX >= meio ? segue() : volta();
+  });
+
+  dupla.addEventListener("change", function () { montar(paginaAtual()); });
+  montar(0);
+})();
+</script>
+</body>
+</html>
