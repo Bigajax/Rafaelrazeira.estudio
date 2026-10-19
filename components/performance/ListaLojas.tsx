@@ -173,6 +173,9 @@ function Loja({ loja }: { loja: LojaPerformance }) {
         <Link className={s.btnMini} href={`/crm/performance/${loja.id}`}>
           Relatórios do mês
         </Link>
+        <Link className={s.btnMini} href={`/crm/performance/placas?loja=${loja.id}`}>
+          Criar placa
+        </Link>
         <button type="button" className={s.btnMini} disabled={ocupado} onClick={() => rodar(() => ligarLojaPerformance(loja.id, !loja.ativa))}>
           {loja.ativa ? "Desligar" : "Religar"}
         </button>

@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
      pasta e o dev nem percebe. Sem a variável (a Vercel, o dev), é a .next
      de sempre. */
   distDir: process.env.NEXT_DIST_DIR || ".next",
+  /* O molde privado é lido pelo servidor; acompanha a função no deploy. */
+  outputFileTracingIncludes: {
+    "/crm/performance/placas": ["./docs/placas/molde.html"],
+  },
   /* O balão de dev do Next (<nextjs-portal>) nascia por cima do "RAFAEL
      RAZEIRA" do header e passava por bug de layout em todo teste de celular
      em localhost. Ele não existe no build de produção (verificado com

@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#F2EFE6">
+<meta name="description" content="Plano mestre vigente da gamificação do painel: a nota de atenção com Feito, a faixa que se perde, o selo na vitrine, placas medidas pelo central e o reconhecimento humano.">
+<title>A gamificação que roda</title>
+<!-- Gramática da casa: docs/design-estudio.md (papel e tinta, Archivo em duas larguras, mono no rótulo, filete 1,5 px, sombra dura). Fonte do texto: o .md ao lado. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..100,400..900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F2EFE6;--paper-2:#EAE6D9;--ink:#14181A;--ink-soft:#3A4144;
+  --green:#0C9159;--green-dark:#076B42;--green-live:#1FBF7A;
+  --rosa:#E31B62;--rosa-dark:#B81250;
+  --linha:#D8D3C4;--linha-dark:#2A3134;
+  --display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --body:"Inter",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,monospace;
+  --maxw:1280px;--pad:clamp(20px,5vw,64px);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55}
+a{color:inherit;text-decoration-thickness:1.5px;text-underline-offset:3px}
+a:focus-visible,summary:focus-visible{outline:2.5px solid var(--rosa);outline-offset:3px}
+::selection{background:var(--green);color:var(--paper)}
+img{display:block;max-width:100%;height:auto}
+.wrap{max-width:var(--maxw);margin:0 auto;padding-left:var(--pad);padding-right:var(--pad)}
+
+/* tipos */
+.cond{font-family:var(--display);font-variation-settings:"wdth" 62,"wght" 800;text-transform:uppercase;line-height:.92;letter-spacing:-.01em}
+.mono{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;font-weight:700}
+p{color:var(--ink-soft);max-width:68ch}
+p strong{color:var(--ink);font-weight:600}
+code{font-family:var(--mono);font-size:.82em;background:var(--paper-2);padding:1px 5px;color:var(--ink)}
+
+/* cabeçalho com o filete duplo */
+.topo{box-shadow:0 1.5px 0 var(--ink),0 4px 0 var(--linha);position:sticky;top:0;background:var(--paper);z-index:5}
+.topo .wrap{display:flex;align-items:center;justify-content:space-between;gap:20px;height:64px}
+.marca{display:flex;align-items:center;gap:12px;text-decoration:none}
+.marca img{height:26px;width:auto}
+.marca span{font-family:var(--display);font-variation-settings:"wdth" 62,"wght" 800;text-transform:uppercase;font-size:17px;letter-spacing:-.01em}
+.topo .mono{color:var(--green-dark);font-weight:400}
+
+/* o hero: o cartaz e as duas placas */
+.hero{padding:clamp(40px,7vw,96px) 0 clamp(32px,5vw,72px)}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(28px,5vw,72px);align-items:center}
+.hero h1{font-family:var(--display);font-variation-settings:"wdth" 62,"wght" 900;text-transform:uppercase;font-size:min(clamp(3.2rem,9.5vw,8.6rem),17vh);line-height:.88;letter-spacing:-.04em}
+.hero h1 em{display:block;font-style:normal;font-variation-settings:"wdth" 100,"wght" 900;font-size:.72em;color:var(--green);margin-top:.08em}
+.hero .lead{margin-top:28px;font-size:clamp(16.5px,1.35vw,19px);line-height:1.45;max-width:40ch}
+.hero .lead strong{font-weight:600}
+.hero .data{margin-top:26px;color:var(--green-dark);font-weight:400}
+.placas{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:clamp(12px,2vw,28px);align-items:end}
+.placas figure{margin:0}
+.placas img{box-shadow:0 16px 32px #14181a26;border:1px solid #19382c44}
+.placas figure>a{display:block;text-decoration:none}
+.placas figure:first-child{transform:translateY(-6%)}
+.placas figcaption{margin-top:12px;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--green-dark)}
+
+/* a decisão: seção escura */
+.escura{background:var(--ink);color:var(--paper);padding:clamp(40px,6vw,80px) 0}
+.escura h2{font-size:clamp(2rem,5.5vw,3.6rem)}
+.escura p{color:#C9CEC4;max-width:68ch}
+.escura p strong{color:var(--paper)}
+.escura .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(28px,5vw,72px);align-items:start}
+.gravada{background:#ffffff10;box-shadow:inset 0 1px 0 #ffffff26,0 1px 0 #00000045;padding:22px 24px}
+.gravada .mono{color:var(--green-live);display:block;margin-bottom:10px;font-weight:400}
+.gravada p{font-size:15px}
+.escura .fio{display:block;height:1.5px;background:var(--linha-dark);margin:22px 0}
+
+/* o corpo: título à esquerda, conteúdo à direita, filete entre seções */
+.secao{border-top:1.5px solid var(--ink);padding:clamp(32px,5vw,64px) 0}
+.secao .wrap{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,2.1fr);gap:clamp(24px,4vw,64px)}
+.secao h2{font-size:clamp(1.9rem,4.2vw,3rem);position:sticky;top:88px}
+.secao h2 small{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;font-weight:400;color:var(--green-dark);margin-bottom:12px;text-transform:uppercase}
+.secao h3{font-family:var(--display);font-variation-settings:"wdth" 62,"wght" 800;text-transform:uppercase;font-size:1.45rem;line-height:1;letter-spacing:-.01em;margin:34px 0 12px}
+.secao h3:first-child{margin-top:0}
+.secao p+p{margin-top:14px}
+.secao ul{list-style:none;max-width:68ch}
+.secao li{padding:12px 0;border-bottom:1.5px solid var(--linha);color:var(--ink-soft)}
+.secao li strong{color:var(--ink);font-weight:600}
+.secao li:first-child{border-top:1.5px solid var(--ink)}
+
+/* tabelas: filete de tinta em cima, linha entre as linhas, rótulo em mono */
+.tabela{overflow-x:auto;margin:18px 0 8px}
+table{border-collapse:collapse;width:100%;border-top:1.5px solid var(--ink);font-size:15px;line-height:1.5}
+th{text-align:left;font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--green-dark);padding:12px 14px 10px 0;border-bottom:1.5px solid var(--linha);vertical-align:bottom}
+td{padding:12px 14px 12px 0;border-bottom:1.5px solid var(--linha);vertical-align:top;color:var(--ink-soft)}
+td:first-child{color:var(--ink);font-weight:600;min-width:9em}
+td:last-child,th:last-child{padding-right:0}
+
+/* as entregas: a única sequência numerada */
+.etapas{list-style:none;counter-reset:etapa -1;max-width:none}
+.etapas li{display:grid;grid-template-columns:64px minmax(0,1fr) minmax(0,1fr);gap:18px;padding:20px 0;border-bottom:1.5px solid var(--linha);border-top:0}
+.etapas li:first-child{border-top:1.5px solid var(--ink)}
+.etapas li::before{counter-increment:etapa;content:counter(etapa);font-family:var(--display);font-variation-settings:"wdth" 100,"wght" 900;font-size:2.6rem;line-height:.9;letter-spacing:-.04em;color:var(--ink)}
+.etapas b{display:block;font-family:var(--display);font-variation-settings:"wdth" 62,"wght" 800;text-transform:uppercase;font-size:1.25rem;line-height:1;margin-bottom:8px;color:var(--ink)}
+.etapas .mono{display:block;color:var(--green-dark);font-weight:400;margin-bottom:6px}
+.etapas li.zero{background:var(--rosa);color:#fff;padding:22px 20px;border:0;box-shadow:6px 6px 0 var(--rosa-dark);margin-bottom:12px}
+.etapas li.zero::before,.etapas li.zero b,.etapas li.zero .mono{color:#fff}
+.etapas li.zero p{color:#ffe3ec}
+.etapas li.zero p strong{color:#fff}
+
+/* a régua de conferência: o ✓ na margem direita */
+.regua{max-width:none}
+.regua li{display:flex;justify-content:space-between;gap:20px;align-items:flex-start}
+.regua li::after{content:"✓";font-family:var(--display);font-variation-settings:"wdth" 100,"wght" 900;color:var(--green);font-size:1.3rem;line-height:1.2;flex:none}
+.regua li b{display:block;color:var(--ink);font-weight:600;margin-bottom:2px}
+
+/* o fecho: o que nunca fazer, em grafite */
+.nunca{background:var(--ink);color:var(--paper);padding:clamp(40px,6vw,80px) 0 clamp(32px,5vw,64px)}
+.nunca .wrap{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,2.1fr);gap:clamp(24px,4vw,64px)}
+.nunca h2{font-size:clamp(1.9rem,4.2vw,3rem)}
+.nunca ul{list-style:none}
+.nunca li{padding:12px 0;border-bottom:1.5px solid var(--linha-dark);color:#C9CEC4;display:flex;gap:16px}
+.nunca li:first-child{border-top:1.5px solid #ffffff30}
+.nunca li::before{content:"";flex:none;width:12px;height:12px;margin-top:7px;background:var(--green-live)}
+.nunca p{color:#A8AFA4;margin-top:26px;font-size:14px}
+.nunca p a{color:#C9CEC4}
+
+.rodape .wrap{display:flex;justify-content:space-between;gap:16px;padding:20px 0 32px;color:var(--ink-soft);font-weight:400}
+
+@media(max-width:900px){
+  .hero .wrap,.escura .wrap,.secao .wrap,.nunca .wrap{grid-template-columns:1fr}
+  .secao h2{position:static}
+  .etapas li{grid-template-columns:48px minmax(0,1fr)}
+  .etapas li>div:last-child{grid-column:2}
+  .placas{max-width:520px}
+}
+@media(max-width:560px){
+  .topo .mono{display:none}
+  .hero h1{font-size:clamp(3rem,16vw,4.6rem)}
+  .rodape .wrap{flex-direction:column;gap:6px}
+  td,th{font-size:14px}
+  /* a tabela vira ficha empilhada: a primeira célula é o título da linha */
+  thead{display:none}
+  table,tbody,tr,td{display:block}
+  tr{padding:12px 0;border-bottom:1.5px solid var(--linha)}
+  td{border:0;padding:3px 0}
+  td:first-child{padding-bottom:6px;min-width:0}
+  code{overflow-wrap:anywhere}
+}
+@media(prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+@media print{.topo{position:static;box-shadow:none}.secao h2{position:static}body{font-size:12px}}
+</style>
+</head>
+<body>
+
+<header class="topo"><div class="wrap">
+  <a class="marca" href="#"><img src="../public/assets/rr-marca.webp" alt="Rafael Razeira Estúdio"><span>Plano mestre</span></a>
+  <span class="mono">Molde · Performance · Placas · 19/10/2026</span>
+</div></header>
+
+<section class="hero"><div class="wrap">
+  <div>
+    <h1>A gamificação <em>que roda.</em></h1>
+    <p class="lead"><strong>O jogo é a rotina que a dona já tem.</strong> A recompensa é vista pela cliente. O marco é medido, não digitado. E quem entrega a placa é o estúdio.</p>
+    <p class="mono data">Estúdio Rafael Razeira · substitui a versão da manhã de 19/10</p>
+    <p style="margin-top:20px"><a href="placas/molde.html" style="display:inline-block;padding:11px 17px;border:1px solid currentColor;border-radius:6px;font-size:13px;font-weight:600;text-decoration:none">Abrir molde editável das placas ↗</a></p>
+  </div>
+  <div class="placas">
+    <figure><a href="placas/placa-medida.png?v=3" target="_blank" rel="noopener" aria-label="Ampliar placa de 1.000 pessoas na vitrine"><img src="placas/placa-medida.webp?v=3" width="1080" height="1920" alt="Placa verde com moldura metálica e seta original do Performance: Loja Modelo, 1.000 pessoas na vitrine"></a><figcaption>Medida pelo central · ampliar ↗</figcaption></figure>
+    <figure><a href="placas/placa-registrada.png?v=3" target="_blank" rel="noopener" aria-label="Ampliar placa de R$ 10 mil em vendas registradas"><img src="placas/placa-registrada.webp?v=3" width="1080" height="1920" alt="Placa com acabamento champanhe e seta original do Performance: Loja Modelo, R$ 10 mil em vendas registradas"></a><figcaption>Registrada pela dona · ampliar ↗</figcaption></figure>
+  </div>
+</div></section>
+
+<section class="escura"><div class="wrap">
+  <div>
+    <h2 class="cond">A decisão</h2>
+    <span class="fio"></span>
+    <p>A gamificação do painel é <strong>a rotina que a dona já tem</strong>, com três coisas a mais: um "feito" nas notas de atenção que o Performance já calcula, uma faixa que se ganha e se perde e aparece na vitrine para a cliente, e placas que o estúdio emite a partir do que o central já conta.</p>
+    <p style="margin-top:14px"><strong>Nada precisa ser digitado para começar.</strong> Registrar o valor da venda é a família de cima das placas, entra só se as lojistas disserem que fariam isso, e nunca vira pré-requisito do resto.</p>
+  </div>
+  <div class="gravada">
+    <span class="mono">O caso que causou</span>
+    <p>A versão da manhã dependia de a dona lançar recebimentos (parciais, frete, reembolso) para ter qualquer placa, enquanto a decisão do Performance de 06/10 é "contatos, nunca vendas", porque a loja não reporta venda. O XP vinha só de missões de primeira vez (primeira foto, primeira contagem), com emblemas desenhados até o nível 100 e uma fonte de pontos que seca no primeiro mês. Não houve validação com nenhuma lojista. O que daquela versão continua valendo está em "O que se preserva".</p>
+  </div>
+</div></section>
+
+<section class="secao" id="nao-roda"><div class="wrap">
+  <h2 class="cond">Por que o desenho anterior não roda</h2>
+  <ul>
+    <li><strong>A fonte de pontos acaba.</strong> Nove missões, todas "primeira vez". Quando o catálogo fica completo, não há mais o que ganhar. O plano proibia XP por venda, entrega e recebimento, as únicas atividades recorrentes.</li>
+    <li><strong>O nível não serve para nada fora do painel.</strong> Ninguém vê, ninguém compra por causa dele. Enfeite.</li>
+    <li><strong>A placa exige o gesto que ninguém faz.</strong> Digitar valor de venda, parcial, frete e reembolso, antes de ganhar qualquer coisa em troca.</li>
+    <li><strong>Era o quarto plano em nove dias.</strong> Unificação, simplificação, estoque e pedidos, mestre. Planejar virou o produto.</li>
+  </ul>
+</div></section>
+
+<section class="secao" id="funciona"><div class="wrap">
+  <h2 class="cond">O que funciona para quem vende</h2>
+  <div>
+    <p>O que o Mercado Livre (Mercado Líder), a Shopee, o iFood (Super Restaurante) e o YouTube (a placa de inscritos) fazem, e o que isso vira aqui.</p>
+    <div class="tabela"><table>
+      <thead><tr><th>Mecanismo</th><th>Neles</th><th>Na vitrine</th></tr></thead>
+      <tbody>
+        <tr><td>O jogo é a rotina</td><td>responder rápido, enviar no prazo, estoque certo</td><td>foto na peça, estoque conferido, link postado, interesse respondido</td></tr>
+        <tr><td>A recompensa é vista pelo comprador</td><td>a medalha aparece no anúncio</td><td>o selo aparece na vitrine, para a cliente</td></tr>
+        <tr><td>O status cai se parar</td><td>Mercado Líder perde a cor</td><td>"Loja em dia" é da semana, não para sempre</td></tr>
+        <tr><td>O marco é medido, não declarado</td><td>a placa do YouTube é o contador</td><td>pessoas, chamadas e aniversário vêm do central, sem digitar</td></tr>
+        <tr><td>O reconhecimento é humano</td><td>o YouTube manda a placa pelo correio</td><td>a mensagem mensal do Rafael, e a arte para postar</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div></section>
+
+<section class="secao" id="pecas"><div class="wrap">
+  <h2 class="cond">As seis peças</h2>
+  <div>
+    <h3>A missão é a nota de atenção, com um Feito</h3>
+    <p><code>estudio/lib/atencao.ts</code> já produz até três notas por loja a partir de dado real: a peça que mais leva ao WhatsApp, procuraram e não tem, número que acabou, olham e não chamam, a maior perda do caminho, o post que traz gente que não chama. <strong>Isso é a lista de missões</strong>, e é recorrente por natureza: toda semana a vitrine gera notas novas. Não há motor de XP, nem nove modelos, nem grupos.</p>
+    <p>O que muda: cada nota ganha um botão <strong>Feito</strong> (ou "Deixar para depois"), e o feito é gravado com a chave da nota. A Início mostra <strong>uma</strong> nota por vez, a de maior consequência, depois das pendências operacionais. Desempenho mostra as três. O que foi feito aparece no histórico da semana ("você resolveu 2 de 3").</p>
+    <p>Nunca: inventar missão sem dado (sem tráfego, sem nota; a loja em dia recebe "nada que precise de atenção agora"), nem premiar duas vezes a mesma chave.</p>
+
+    <h3>A faixa: ganha-se e perde-se</h3>
+    <p>Em vez de nível 1 a 100, <strong>três faixas com nome</strong>, calculadas a cada abertura do painel a partir do estado real da loja. Proposta inicial, a validar no piloto.</p>
+    <div class="tabela"><table>
+      <thead><tr><th>Faixa</th><th>Critério (todos)</th></tr></thead>
+      <tbody>
+        <tr><td>Loja em dia</td><td>toda peça publicada tem foto de capa e preço; estoque com movimento ou conferência nos últimos 14 dias (só nas lojas que contam estoque); visita vinda de um post nos últimos 7 dias (o link curto mede); nenhuma nota de atenção parada há mais de 7 dias</td></tr>
+        <tr><td>Quase em dia</td><td>falta um critério</td></tr>
+        <tr><td>Precisa de você</td><td>faltam dois ou mais</td></tr>
+      </tbody>
+    </table></div>
+    <p>A faixa <strong>cai</strong> se a loja parar. É o que faz voltar. O único número que cresce é a <strong>sequência</strong>: "5 semanas seguidas em dia", apurada no fechamento da semana que o central já tem (<code>perf_semana_de</code>, <code>perf_resumo_semana</code>). A sequência zera quando a semana fecha fora da faixa de cima, e isso é dito com calma, sem culpa.</p>
+    <p>Nunca: faixa derivada de pontos. Ela é derivada de fatos, e a frase embaixo dela diz qual fato falta ("2 peças sem foto de capa"), com link para resolver.</p>
+
+    <h3>O selo na vitrine, para a cliente</h3>
+    <p>É o que dá valor comercial à faixa. Um selo pequeno e honesto na vitrine, perto do rodapé ou do botão do WhatsApp, <strong>só quando for verdade e só com fato</strong>: "estoque conferido há 2 dias", "responde em até 1 hora" (quando houver a fila de interesses e o tempo medido). A dona cuida do painel porque a cliente vê o resultado.</p>
+    <p>O selo some sozinho quando o fato envelhece (conferência há mais de 7 dias, por exemplo). Nunca mostra faixa, sequência, pontos ou qualquer palavra do jogo: a cliente vê um fato da loja, não uma conquista.</p>
+
+    <h3>Placas em duas famílias</h3>
+    <p><strong>Medidas</strong>, do que o central já conta por vitrine, sem a dona digitar nada.</p>
+    <div class="tabela"><table>
+      <thead><tr><th>Placa</th><th>Marcos</th><th>Fonte</th></tr></thead>
+      <tbody>
+        <tr><td>Pessoas na vitrine</td><td>1.000 · 5.000 · 20.000</td><td>visitantes distintos em <code>perf_eventos</code> (tipo <code>visita</code>)</td></tr>
+        <tr><td>Chamadas no WhatsApp</td><td>100 · 500 · 2.000</td><td>tipo <code>whatsapp</code></td></tr>
+        <tr><td>Tempo no ar</td><td>1 ano · 2 anos</td><td>criação da loja no central</td></tr>
+      </tbody>
+    </table></div>
+    <p>Toda loja ganha a primeira no primeiro ou segundo mês e aprende que a coleção existe. É a porta.</p>
+    <p><strong>Registradas</strong>, a família de cima, com os seis marcos que já estavam desenhados (R$ 10 mil, 20, 50, 100, 300 e 500 mil), e o nome honesto, <strong>"em vendas registradas"</strong>. A fonte é o <strong>Vendi com valor</strong>: o modal "Vendi 1 / Chegou +1" ganha um campo de valor, opcional, e o Vendi manda ao central um evento <code>venda</code> com o valor em centavos, como manda uma visita. O Desfazer manda o estorno com a mesma referência; o central soma o líquido. Sem pedido, sem parcial, sem frete, sem reembolso: a placa é o que a dona registrou.</p>
+    <p>Regras das duas famílias: cada marco uma vez por loja, com a data em que foi atingido; a coleção não reinicia; uma passagem que cruza dois marcos celebra o maior; o acumulado de vendas pode cair com um Desfazer, e a placa já concedida fica. O critério fica escrito no detalhe de cada placa.</p>
+    <p>Nunca: "faturamento", "faturado com a plataforma" ou qualquer palavra que afirme o que o sistema não mediu. Nunca mostrar o total de vendas na arte pública, só o marco.</p>
+
+    <h3>Tudo mora no central, não em cada loja</h3>
+    <p>Faixa semanal, sequência, feitos e placas vivem no Supabase do estúdio, sobre <code>perf_eventos</code>, com duas tabelas novas (<code>perf_placas</code> e <code>perf_cuidados</code>) e dois tipos de evento novos (<code>cuidado</code> e <code>venda</code>). A vitrine lê tudo pelo <code>perf_painel</code>, como já lê a contagem. Isso evita migrar os bancos das 90 lojas, e faz da placa uma coisa que <strong>o estúdio emite</strong>, não que o painel concede sozinho. Combina com o posicionamento: o designer que mostra o número.</p>
+    <p>O que fica na loja: o catálogo (fotos, preço) e o estoque, que a camada do estúdio já lê para montar as notas. A faixa é calculada na vitrine (precisa do catálogo e do estoque) e reportada ao central uma vez por dia, como um evento <code>faixa</code>; o central fecha a semana.</p>
+
+    <h3>O reconhecimento é humano e sai do app</h3>
+    <p><strong>Uma mensagem sua por mês no WhatsApp da dona</strong>, com o número da loja no mês e a placa quando houver. A regra da Japa já dizia: um número que só os dados dela dizem. O CRM lista, em <code>/crm/performance</code>, quem atingiu marco no mês, com o texto pronto.</p>
+    <p><strong>A arte</strong>, 1080 × 1920, com a logo da loja, o marco, a data e "Performance, por Rafael Razeira Estúdio", gerada pela mesma rota de imagem do "Compartilhar no Status" (<code>app/painel/compartilhar/[id]</code>, que já tem a logo real e a fonte da loja). Cada placa postada no Instagram da loja é um anúncio do estúdio: <strong>é aqui que a gamificação paga a própria conta.</strong> O desenho das duas placas está em <a href="placas/placa.html">docs/placas/placa.html</a>, e o render em PNG sai pelo <code>scripts/render-placas.mjs</code>.</p>
+    <p>No painel, a celebração é discreta: uma faixa no topo da Início, uma vez, sem som, respeitando redução de movimento. A placa física e o marco de R$ 1 milhão continuam evolução futura.</p>
+  </div>
+</div></section>
+
+<section class="secao" id="fora"><div class="wrap">
+  <h2 class="cond">O que fica de fora</h2>
+  <div>
+    <p>XP, nível 1 a 100, nove modelos de missão, grupos de missão, retrospectiva de nível, recebimentos estruturados (parcial, frete, reembolso, correção), fila de integração com consumidor, reconciliação periódica, retificação auditável de placa, a "prévia completa" com dados fictícios (já existem três HTMLs em <code>docs/</code> e em <code>experimentos/</code>).</p>
+    <p>A <strong>fila de interesses da vitrine</strong> (quem escolheu o quê na sacola) não é gamificação e continua valendo, no <a href="plano-estoque-pedidos-whatsapp.md">plano de estoque e pedidos</a>, com <strong>três estados</strong> (novo, atendido, virou venda), não cinco. Quando ela existir, alimenta o selo "responde em até N" e o critério de nota parada.</p>
+  </div>
+</div></section>
+
+<section class="secao" id="onde"><div class="wrap">
+  <h2 class="cond">Onde mora cada coisa</h2>
+  <div class="tabela"><table>
+    <thead><tr><th>Peça</th><th>Onde</th><th>Trabalho</th></tr></thead>
+    <tbody>
+      <tr><td>Notas de atenção e o Feito</td><td><code>_plataforma/estudio/lib/atencao.ts</code>, <code>estudio/rotas/desempenho</code>, a Início do molde</td><td>chave estável por nota; botão Feito; evento <code>cuidado</code> ao central</td></tr>
+      <tr><td>A faixa e a sequência</td><td>nova <code>estudio/lib/faixa.ts</code> (lê catálogo, estoque e <code>perf_painel</code>); <code>supabase/performance.sql</code> (<code>perf_semana_de</code>, <code>perf_resumo_semana</code>)</td><td>calcular na vitrine, reportar <code>faixa</code> por dia, fechar a semana no central</td></tr>
+      <tr><td>O selo na vitrine</td><td>o rodapé ou o botão do WhatsApp do molde</td><td>só fato, some sozinho</td></tr>
+      <tr><td>Placas medidas</td><td><code>supabase/performance.sql</code>: <code>perf_placas</code>, cálculo dentro de <code>perf_painel</code></td><td>marcos, data atingida, concessão única</td></tr>
+      <tr><td>Vendi com valor</td><td><code>_plataforma/painel/AjustarEstoque.tsx</code>, <code>lib/acoes-estoque.ts</code>, <code>estudio/lib/medir.ts</code></td><td>campo opcional; evento <code>venda</code> e estorno</td></tr>
+      <tr><td>A arte</td><td><code>docs/placas/placa.html</code> hoje; <code>app/painel/compartilhar/[id]</code> do molde na entrega 1</td><td>um modelo por marco, logo e fonte da loja</td></tr>
+      <tr><td>A mensagem mensal</td><td><code>app/(pt)/crm/(painel)/performance</code>, <code>lib/performance/dados.ts</code></td><td>quem atingiu marco no mês, texto pronto</td></tr>
+      <tr><td>A distribuição</td><td>o processo "levar a camada do estúdio" (a pasta <code>estudio/</code> é copiada)</td><td>nenhuma migração no banco da loja nas entregas 1 e 2</td></tr>
+    </tbody>
+  </table></div>
+</div></section>
+
+<section class="secao" id="preserva"><div class="wrap">
+  <h2 class="cond">O que se preserva</h2>
+  <div>
+    <p>A matriz de preservação da versão anterior vale como contrato: nenhum acesso do painel (Início, Peças, Banners, Textos, Estoque, Pedidos, Desempenho, Clientes, Mais) sai, nem muda de lugar, por causa disto. Estoque, Pedidos e catálogo nunca dependem de faixa ou placa.</p>
+    <p>A rota continua <code>/painel/desempenho</code> e a visão atual continua inteira; o que entra são a seção "Sua semana" (nota, faixa, sequência) e "Suas conquistas" (placas). Loja sem Performance pago vê tudo isto: faixa, notas grátis e placas são do básico, não do plano mensal.</p>
+  </div>
+</div></section>
+
+<section class="secao" id="entregas"><div class="wrap">
+  <h2 class="cond">As entregas</h2>
+  <div>
+    <ol class="etapas">
+      <li class="zero">
+        <div><b>Validar antes de codar</b><span class="mono">uma semana</span><p>A imagem de uma placa "1.000 pessoas" e uma "R$ 10 mil em vendas registradas" mandadas para a Japa, a Full Time e a Arena, com duas perguntas: <strong>"postaria isso no Instagram?"</strong> e <strong>"registraria o valor das vendas para ganhar a segunda?"</strong>. E a contagem dos Vendi existentes nos bancos das lojas com a 0009.</p></div>
+        <div><span class="mono">Acabou quando</span><p>A resposta das três decide se a entrega 3 entra agora ou nunca. Nenhuma linha de código antes disso.</p></div>
+      </li>
+      <li>
+        <div><b>Placas medidas, arte e mensagem</b><p><code>perf_placas</code> no central, as três placas medidas no <code>perf_painel</code>, "Suas conquistas" no Desempenho, a arte pelo Compartilhar, a lista do mês no CRM.</p></div>
+        <div><span class="mono">Acabou quando</span><p>A Japa (para_sempre) recebe a primeira placa real; a arte sai com a logo dela; a mensagem é mandada à mão.</p></div>
+      </li>
+      <li>
+        <div><b>Nota com Feito, faixa, sequência e selo</b><p>O Feito nas notas, <code>faixa.ts</code>, o evento diário, o fechamento da semana, o selo na vitrine.</p></div>
+        <div><span class="mono">Acabou quando</span><p>Em duas lojas piloto, a faixa cai e volta conforme o fato; o selo some sozinho; a Início mostra uma nota por vez.</p></div>
+      </li>
+      <li>
+        <div><b>Vendi com valor e placas registradas</b><span class="mono">só se a etapa 0 disser sim</span><p>O campo no modal, o evento <code>venda</code> e o estorno, os seis marcos.</p></div>
+        <div><span class="mono">Acabou quando</span><p>Uma loja de teste cruza R$ 10 mil pelo Vendi; o Desfazer reduz e a placa fica.</p></div>
+      </li>
+    </ol>
+    <p style="margin-top:18px">Cada entrega sai com o relatório curto: o que mudou, o que foi preservado, o que foi executado (não "testado": executado, pelo caminho do cliente no celular), e o que ficou de fora.</p>
+  </div>
+</div></section>
+
+<section class="secao" id="conferir"><div class="wrap">
+  <h2 class="cond">Como conferir</h2>
+  <div>
+    <ul class="regua">
+      <li><div><b>Placa medida</b>Loja de teste com 998 visitantes distintos. Duas visitas novas de aparelhos diferentes levam a 1.000: <code>perf_painel</code> devolve a placa com a data de hoje; abrir de novo não concede de novo; a arte sai com a logo e o marco, sem o número exato.</div></li>
+      <li><div><b>Faixa</b>Loja com todas as peças com foto e preço, estoque mexido há 3 dias, visita de post há 2 dias, nenhuma nota parada: "Loja em dia". Apagar a foto de capa de uma peça: na próxima abertura, "Quase em dia", com a frase "1 peça sem foto de capa" e o link para a peça. Recolocar: volta. Semana fechada fora da faixa: a sequência zera e a frase diz por quê.</div></li>
+      <li><div><b>Selo</b>Vitrine da loja mostra "estoque conferido há 3 dias". Simular 8 dias sem movimento: o selo some. Nenhuma palavra do jogo na vitrine.</div></li>
+      <li><div><b>Nota com Feito</b>A nota "3 pessoas procuraram 'vestido' e não acharam" na Início; Feito grava o evento <code>cuidado</code> com a chave; a Início passa à próxima nota; a mesma chave não volta a aparecer naquela semana; o Desempenho mostra "1 de 3 resolvidas".</div></li>
+      <li><div><b>Vendi com valor (entrega 3)</b>Loja com R$ 9.900 registrados. Vendi 1 com R$ 150: R$ 10.050, placa de R$ 10 mil com a data. Desfazer: R$ 9.900, a placa fica, a próxima meta segue R$ 20 mil. Vendi sem valor: o estoque baixa, o acumulado não muda.</div></li>
+    </ul>
+    <p style="margin-top:18px">Em todos: no celular, pelo caminho da dona, e com o <code>scripts/teste-de-ponta-a-ponta.cjs</code> do molde estendido com esses passos.</p>
+  </div>
+</div></section>
+
+<section class="nunca" id="nunca"><div class="wrap">
+  <h2 class="cond">O que nunca fazer</h2>
+  <div>
+    <ul>
+      <li>Inventar missão, nota ou número que o dado não sustente. Loja sem tráfego recebe silêncio, não tarefa.</li>
+      <li>Derivar faixa ou selo de pontos. Só de fato, com o fato escrito embaixo.</li>
+      <li>Pôr palavra do jogo na vitrine (faixa, sequência, conquista). A cliente vê um fato da loja.</li>
+      <li>Escrever "faturamento" ou "faturado com a plataforma". É "vendas registradas", e o critério está no detalhe.</li>
+      <li>Publicar a arte sozinho, ou pôr nela o total exato de vendas.</li>
+      <li>Tornar Estoque, Pedidos ou catálogo dependentes de faixa ou placa.</li>
+      <li>Exigir registro de valor para a dona ter a primeira placa. As medidas são a porta.</li>
+      <li>Cobrar por isto antes de o piloto mostrar que a dona volta ao painel por causa disto. Faixa, notas e placas são do básico.</li>
+      <li>Começar a entrega 1 sem a etapa 0 respondida.</li>
+    </ul>
+    <p>Materiais anteriores, agora só como exploração: <a href="plano-unificacao-vitrine-performance-placas.md">plano de unificação</a>, <a href="plano-simplificacao-painel.md">plano de simplificação</a>, <a href="../experimentos/painel-gamificado/documentacao/PLANO-1.5-UTILIDADE-COMERCIAL.md">Performance 1.5</a>, <a href="../experimentos/painel-gamificado/documentacao/PLANO-PLACAS-DE-FATURAMENTO.md">placas de faturamento</a>, <a href="previa-integracao-molde-painel.html">prévia parcial</a>. O texto deste plano é o <a href="PLANO-MESTRE-MOLDE-PERFORMANCE-GAMIFICACAO-PLACAS.md">.md ao lado</a>.</p>
+  </div>
+</div></section>
+
+<footer class="rodape"><div class="wrap mono"><span>Rafael Razeira Estúdio · Performance</span><span>Plano mestre vigente · 19/10/2026</span></div></footer>
+
+</body>
+</html>

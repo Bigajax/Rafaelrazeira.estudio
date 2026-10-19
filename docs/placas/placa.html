@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1080">
+<title>Placa do Performance</title>
+<!--
+  A placa do Performance, 1080 x 1920 (o formato do Status e do Stories).
+  Revisão visual 3: seta original do Performance em um medalhão facetado,
+  moldura com chanfros e filetes, superfície acetinada e hierarquia editorial.
+  Geometria da marca preservada de components/performance/Selo.tsx.
+  Preserva as duas famílias, seus critérios e acabamentos progressivos.
+
+  Parâmetros na URL (todos opcionais):
+    familia     medida | registrada
+    acabamento  verde | verde-claro | champanhe | bronze | metal | prata | ouro
+    numero      o número grande, ex.: 1.000  |  10
+    unidade     a linha com entreletra abaixo do número, ex.: pessoas | mil
+    rotulo      a frase miúda, ex.: na sua vitrine | em vendas registradas
+    moeda       1 para o R$ pequeno antes do número
+    loja        o nome da loja
+    data        ex.: 19 de outubro de 2026
+
+  Renderizar em PNG: node scripts/render-placas.mjs
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --serif:"Cormorant Garamond",Georgia,serif;
+  --sans:"Inter",system-ui,sans-serif;
+  /* o acabamento: a moldura (metal e seu tom fundo) e o miolo */
+  --metal:#a8bea0; --deep:#365c43; --face:#173b2e; --luz:#f0f4ea;
+  --chao:#102a21;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden}
+body{
+  position:relative;font-family:var(--sans);color:#f4f0df;
+  background:
+    radial-gradient(ellipse 75% 50% at 50% 26%, #b7cf9720, transparent 72%),
+    radial-gradient(ellipse 80% 28% at 50% 74%, #00000055, transparent 75%),
+    linear-gradient(135deg,#ffffff04,transparent 55%,#00000022),
+    var(--chao);
+}
+
+/* a área segura do Stories: 250 px em cima e embaixo ficam sob a interface */
+.cena{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:250px 0}
+
+.topo{font-size:17px;letter-spacing:.32em;text-transform:uppercase;color:#c0cbb7;margin-bottom:48px;display:flex;align-items:center;gap:22px}
+.topo::before,.topo::after{content:"";height:1px;width:46px;background:linear-gradient(90deg,transparent,var(--metal));opacity:.55}
+.topo::after{transform:rotate(180deg)}
+
+/* a placa */
+.placa{
+  position:relative;width:772px;height:1012px;padding:19px;
+  background:linear-gradient(133deg,var(--luz) 0%,var(--metal) 8%,var(--deep) 26%,var(--metal) 41%,var(--luz) 48%,var(--metal) 54%,var(--deep) 75%,var(--metal) 93%,var(--luz));
+  box-shadow:2px 3px 0 var(--deep),5px 7px 0 #0a160f,0 48px 65px -25px #000000cc,0 17px 28px -15px #00000088;
+  transform:rotate(-2deg);
+}
+.placa::before{content:"";position:absolute;inset:6px;border:1px solid #fffbe38a;box-shadow:inset 1px 1px 0 #0005,1px 1px 0 #0005;pointer-events:none}
+.placa::after{content:"";position:absolute;inset:15px;border:1px solid #07150da6;box-shadow:0 0 0 2px #fff8df26;pointer-events:none}
+.face{
+  height:100%;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+  text-align:center;padding:43px 45px 35px;
+  background:repeating-linear-gradient(101deg,#ffffff02 0,#ffffff02 1px,transparent 1px,transparent 4px),radial-gradient(ellipse at 35% 0%,#e4e7c51a,transparent 64%),linear-gradient(160deg,#ffffff03,#00000019),var(--face);
+  border:1px solid #ffffff40;color:#f4f0df;overflow:hidden;
+  box-shadow:inset 0 0 0 3px #00000035,inset 0 20px 50px -35px #000000cc;
+}
+.face::before{content:"";position:absolute;inset:15px;border:1px solid #e6e7c936;pointer-events:none}
+.face::after{content:"";position:absolute;width:560px;height:560px;border:1px solid #e2e6c508;border-radius:50%;top:-285px;pointer-events:none;box-shadow:0 0 0 45px #e2e6c503,0 0 0 100px #e2e6c502}
+.cabecalho{width:100%;display:flex;align-items:center;justify-content:space-between;gap:25px;position:relative;z-index:1}
+.marca-texto{font-size:16px;letter-spacing:.26em;text-transform:uppercase;color:#e2e6d5}
+.edicao{font-size:9px;letter-spacing:.24em;text-transform:uppercase;color:var(--metal);padding-left:18px;border-left:1px solid #e6e7c939;line-height:1.8;text-align:right}
+.flecha{width:246px;height:246px;margin-top:19px;flex:none;filter:drop-shadow(0 10px 9px #00000055)}
+.meio{display:flex;flex-direction:column;align-items:center;position:relative;width:100%;margin-top:-13px}
+.marco-rotulo{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:#aebfa5;margin:0 0 17px}
+.numero{
+  font-family:var(--serif);font-weight:600;color:var(--metal);
+  font-size:250px;line-height:.85;letter-spacing:-.055em;white-space:nowrap;font-variant-numeric:lining-nums;
+  display:flex;align-items:baseline;gap:.13em;text-shadow:0 2px 1px #00000033;
+}
+.numero .moeda{font-family:var(--sans);font-size:.16em;font-weight:400;letter-spacing:-.03em;align-self:flex-start;margin-top:.5em;display:none;color:#ded4b5}
+body.moeda .numero .moeda{display:inline}
+.unidade{font-family:var(--sans);font-weight:500;font-size:26px;letter-spacing:.42em;text-transform:uppercase;color:var(--metal);margin-top:23px;padding-left:.42em}
+.rotulo{font-size:15px;letter-spacing:.21em;text-transform:uppercase;margin-top:26px;max-width:540px;line-height:1.9;color:#e6e9dc;padding-left:.21em}
+.ornamento{display:flex;align-items:center;justify-content:center;gap:12px;width:126px;margin-top:27px;color:var(--metal);opacity:.8}
+.ornamento::before,.ornamento::after{content:"";height:1px;width:45px;background:currentColor;opacity:.45}
+.ornamento span{width:5px;height:5px;background:currentColor;transform:rotate(45deg)}
+.pe{width:100%;border-top:1px solid #e2e5cb2e;padding-top:22px;margin-top:24px;position:relative}
+.pe::before{content:"";position:absolute;width:32px;height:1px;top:-1px;left:calc(50% - 16px);background:var(--metal)}
+.loja{font-family:var(--serif);font-weight:500;font-size:46px;line-height:1.12;color:#f7f3e6;overflow-wrap:anywhere;max-width:100%;text-wrap:balance}
+.data{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#b4c2ac;margin-top:12px;padding-left:.18em;line-height:1.7}
+.rodape-placa{display:flex;align-items:center;justify-content:space-between;width:100%;margin-top:20px;font-size:8px;letter-spacing:.15em;color:#9eb294;text-transform:uppercase}
+
+/* a assinatura, fora da placa */
+.assinatura{margin-top:65px;display:flex;flex-direction:column;align-items:center;gap:17px}
+.assinatura .frase{font-family:var(--serif);font-weight:500;font-size:34px;color:#e7e8d8;letter-spacing:.01em}
+.assinatura .estudio{font-size:11px;letter-spacing:.23em;text-transform:uppercase;color:#97ac8b}
+
+/* os acabamentos */
+body[data-acabamento="verde"]{--metal:#a8bea0;--deep:#365c43;--face:#173b2e;--luz:#eef3e8;--chao:#102a21}
+body[data-acabamento="verde-claro"]{--metal:#b8c3b1;--deep:#526951;--face:#183d30;--luz:#f1f3ed;--chao:#102a21}
+body[data-acabamento="champanhe"]{--metal:#ddc68b;--deep:#8d7042;--face:#1d3328;--luz:#f6edd4;--chao:#112a20}
+body[data-acabamento="bronze"]{--metal:#d0a47e;--deep:#775039;--face:#302c25;--luz:#f3dcc6;--chao:#1b1917}
+body[data-acabamento="metal"]{--metal:#cfccb6;--deep:#737a6c;--face:#25392e;--luz:#f4f2e8;--chao:#142820}
+body[data-acabamento="prata"]{--metal:#e5e8de;--deep:#7e8b81;--face:#27382e;--luz:#ffffff;--chao:#142820}
+body[data-acabamento="ouro"]{--metal:#d0bd87;--deep:#6b5632;--face:#19382c;--luz:#f4ead0;--chao:#0f2419}
+</style>
+</head>
+<body>
+<div class="cena">
+  <div class="topo" id="topo">Uma conquista da sua loja</div>
+  <div class="placa">
+    <div class="face">
+      <div class="cabecalho"><div class="marca-texto">Performance</div><div class="edicao">Conquistas<br>da sua loja</div></div>
+      <svg class="flecha" viewBox="0 0 240 240" aria-hidden="true">
+        <defs>
+          <linearGradient id="aro-metal" x1="35" y1="12" x2="200" y2="230" gradientUnits="userSpaceOnUse"><stop style="stop-color:var(--luz)"/><stop offset=".24" style="stop-color:var(--metal)"/><stop offset=".5" style="stop-color:var(--deep)"/><stop offset=".74" style="stop-color:var(--metal)"/><stop offset="1" style="stop-color:var(--luz)"/></linearGradient>
+          <linearGradient id="gema" x1="58" y1="37" x2="173" y2="210" gradientUnits="userSpaceOnUse"><stop stop-color="#4c7350"/><stop offset=".5" stop-color="#264a36"/><stop offset="1" stop-color="#142c21"/></linearGradient>
+          <linearGradient id="performance-metal" x1="7" y1="5" x2="17" y2="19" gradientUnits="userSpaceOnUse"><stop style="stop-color:var(--luz)"/><stop offset=".3" style="stop-color:var(--metal)"/><stop offset=".52" style="stop-color:var(--luz)"/><stop offset=".78" style="stop-color:var(--metal)"/><stop offset="1" style="stop-color:var(--deep)"/></linearGradient>
+        </defs>
+        <path d="m120 9 105 110-105 113L15 119Z" fill="#07170f" opacity=".6" transform="translate(0 4)"/>
+        <path d="m120 7 107 111-107 115L13 118Z" fill="url(#aro-metal)"/>
+        <path d="m120 13 101 105-101 109L19 118Z" fill="url(#gema)"/>
+        <path d="m120 22 91 96-91 99-91-99Z" fill="none" stroke="url(#aro-metal)" stroke-width=".8" opacity=".7"/>
+        <path d="m120 14-5 103-96 1Z" fill="#d5e7ac" opacity=".09"/>
+        <path d="m120 14 101 104-89-9Z" fill="#e2edc2" opacity=".07"/>
+        <path d="m19 118 101 109-10-93Z" fill="#000" opacity=".1"/>
+        <path d="m221 118-101 109 12-93Z" fill="#000" opacity=".22"/>
+        <!-- Mesmo path do selo Performance, com escala e acabamento da placa. -->
+        <g transform="scale(10)">
+          <path d="M11.55 5.15 6.65 12.15 8.95 12.6 11.55 8.7ZM12.45 5.15 17.35 12.15 15.05 12.6 12.45 8.7ZM9.15 13H11.55V17.1C11.55 17.84 11.62 18.05 11.85 18.22V18.55H8.7V18.22C9.61 18.16 9.85 17.81 9.85 17.1V13.75H9.15ZM14.85 13H12.45V17.1C12.45 17.84 12.38 18.05 12.15 18.22V18.55H15.3V18.22C14.39 18.16 14.15 17.81 14.15 17.1V13.75H14.85Z" transform="translate(0 .3)" fill="#08180f" opacity=".6"/>
+          <path id="seta-performance" d="M11.55 5.15 6.65 12.15 8.95 12.6 11.55 8.7ZM12.45 5.15 17.35 12.15 15.05 12.6 12.45 8.7ZM9.15 13H11.55V17.1C11.55 17.84 11.62 18.05 11.85 18.22V18.55H8.7V18.22C9.61 18.16 9.85 17.81 9.85 17.1V13.75H9.15ZM14.85 13H12.45V17.1C12.45 17.84 12.38 18.05 12.15 18.22V18.55H15.3V18.22C14.39 18.16 14.15 17.81 14.15 17.1V13.75H14.85Z" fill="url(#performance-metal)"/>
+        </g>
+        <path d="m120 7 3 6-3 5-3-5Zm0 208 3 6-3 12-3-12ZM13 118l6-3 6 3-6 3Zm202 0 6-3 6 3-6 3Z" fill="var(--luz)" opacity=".75"/>
+      </svg>
+      <div class="meio">
+        <div class="marco-rotulo">Um marco da sua história</div>
+        <div class="numero"><span class="moeda">R$</span><span id="numero">1.000</span></div>
+        <div class="unidade" id="unidade">pessoas</div>
+        <div class="rotulo" id="rotulo">na sua vitrine</div>
+        <div class="ornamento" aria-hidden="true"><span></span></div>
+      </div>
+      <div class="pe">
+        <div class="loja" id="loja">Loja Modelo</div>
+        <div class="data" id="data">Conquista de 19 de outubro de 2026</div>
+        <div class="rodape-placa"><span>Reconhecimento Performance</span><span>Uma história em evolução</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="assinatura">
+    <div class="frase" id="frase">Feito de trabalho. Celebrado com orgulho.</div>
+    <div class="estudio">Performance, por Rafael Razeira Estúdio</div>
+  </div>
+</div>
+<script>
+  const q = new URLSearchParams(location.search);
+  const padrao = {
+    medida: { acabamento: "verde", numero: "1.000", unidade: "pessoas", rotulo: "na sua vitrine", moeda: false,
+              topo: "Uma conquista da sua loja" },
+    registrada: { acabamento: "champanhe", numero: "10", unidade: "mil", rotulo: "em vendas registradas", moeda: true,
+                  topo: "Uma conquista da sua loja" }
+  };
+  let revisao = 0;
+  window.atualizarPlaca = async (dados = {}) => {
+    const atual = ++revisao;
+    delete document.body.dataset.pronto;
+    const familia = dados.familia === "registrada" ? "registrada" : "medida";
+    const p = padrao[familia];
+    const acabamentos = ["verde", "verde-claro", "champanhe", "bronze", "metal", "prata", "ouro"];
+    document.body.dataset.acabamento = acabamentos.includes(dados.acabamento) ? dados.acabamento : p.acabamento;
+    const moeda = dados.moeda == null ? p.moeda : dados.moeda === true || dados.moeda === "1";
+    document.body.classList.toggle("moeda", moeda);
+    const texto = (id, valor, fallback, limite) => {
+      document.getElementById(id).textContent = String(valor ?? fallback).slice(0, limite);
+    };
+    texto("numero", dados.numero, p.numero, 18);
+    texto("unidade", dados.unidade, p.unidade, 24);
+    texto("rotulo", dados.rotulo, p.rotulo, 90);
+    texto("topo", dados.topo, p.topo, 65);
+    texto("loja", dados.loja, "Loja Modelo", 80);
+    texto("data", dados.data ? "Conquista de " + dados.data : null, "Conquista de 19 de outubro de 2026", 100);
+    texto("frase", dados.frase, "Feito de trabalho. Celebrado com orgulho.", 100);
+    await document.fonts.ready;
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    if (atual !== revisao) return false;
+    // Cada atualização recomeça nos tamanhos originais antes de ajustar.
+    const n = document.querySelector(".numero");
+    const largura = document.querySelector(".face").clientWidth - 115;
+    let tamanho = 250;
+    n.style.fontSize = tamanho + "px";
+    while (n.getBoundingClientRect().width > largura && tamanho > 70) {
+      tamanho -= 4;
+      n.style.fontSize = tamanho + "px";
+    }
+    const nome = document.querySelector(".loja");
+    let nomeTamanho = 46;
+    nome.style.fontSize = nomeTamanho + "px";
+    while (nome.getBoundingClientRect().height > 112 && nomeTamanho > 28) {
+      nomeTamanho -= 2;
+      nome.style.fontSize = nomeTamanho + "px";
+    }
+    const rotulo = document.querySelector(".rotulo");
+    let rotuloTamanho = 15;
+    rotulo.style.fontSize = rotuloTamanho + "px";
+    while (rotulo.offsetHeight > 64 && rotuloTamanho > 10) {
+      rotulo.style.fontSize = --rotuloTamanho + "px";
+    }
+    const unidade = document.querySelector(".unidade");
+    let unidadeTamanho = 26;
+    unidade.style.fontSize = unidadeTamanho + "px";
+    while (unidade.offsetWidth > largura && unidadeTamanho > 12) {
+      unidade.style.fontSize = --unidadeTamanho + "px";
+    }
+    const topo = document.querySelector(".topo");
+    let topoTamanho = 17;
+    topo.style.fontSize = topoTamanho + "px";
+    while (topo.offsetWidth > 950 && topoTamanho > 10) {
+      topo.style.fontSize = --topoTamanho + "px";
+    }
+    const frase = document.querySelector(".assinatura .frase");
+    frase.style.fontSize = "34px";
+    let fraseTamanho = 34;
+    while (frase.getBoundingClientRect().width > 910 && fraseTamanho > 14) {
+      frase.style.fontSize = --fraseTamanho + "px";
+    }
+    document.body.dataset.pronto = "1";
+    return true;
+  };
+  window.atualizarPlaca(Object.fromEntries(q));
+</script>
+</body>
+</html>

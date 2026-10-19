@@ -1,0 +1,13 @@
+.tela { max-width:1440px;margin:0 auto }
+.cabecalho { display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap;padding-bottom:20px;border-bottom:1px solid var(--line) }
+.caminho { margin:0 0 12px;color:var(--ink-fraco);font:400 12px/1.5 var(--body) }
+.caminho a { color:inherit;text-underline-offset:3px }
+.descricao { max-width:660px;margin:10px 0 0;font:400 13px/1.7 var(--body);color:var(--ink-soft) }
+.loja { display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap;padding:20px 0 }
+.loja label { display:grid;gap:7px;flex:1;max-width:440px;font:500 12px/1.4 var(--body) }
+.loja select { width:100%;min-height:42px;padding:10px 12px;border:1px solid var(--line);border-radius:5px;background:var(--paper-alto);color:var(--ink);font:400 13px/1.5 var(--body) }
+.nota { margin:0 0 18px;color:var(--ink-soft);font:400 12px/1.7 var(--body) }
+.quadro { border:1px solid var(--line);border-radius:9px;overflow:hidden;background:#fffdf7 }
+.editor { display:block;width:100%;border:0;min-height:650px }
+.acoes { display:flex;gap:8px;align-items:center;flex-wrap:wrap }
+@media(max-width:600px) { .loja label{max-width:none;flex-basis:100%}.cabecalho{gap:14px} }

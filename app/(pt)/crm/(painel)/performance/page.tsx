@@ -51,9 +51,12 @@ export default async function PaginaPerformance() {
               : `${lojas.length} ${lojas.length === 1 ? "loja" : "lojas"}, ${contando} com contagem chegando, ${pagando} com a aba liberada.`}
           </p>
         </div>
-        <Link href="/crm/performance/analise" className={a.botaoAnalise}>
-          Análise das vitrines
-        </Link>
+        <div className={p.acoes}>
+          <Link href="/crm/performance/placas" className={a.botaoAnalise}>Placas de conquista</Link>
+          <Link href="/crm/performance/analise" className={a.botaoAnalise}>
+            Análise das vitrines
+          </Link>
+        </div>
       </header>
 
       {semTabela ? (

@@ -38,6 +38,7 @@ export default async function PaginaRelatorios({ params }: { params: Promise<{ l
           </h1>
           <p className={p.placar}>Um por mês. Os números saem sozinhos; a leitura e o que foi feito são seus.</p>
         </div>
+        <Link className={s.btnMini} href={`/crm/performance/placas?loja=${loja.id}`}>Criar placa desta loja</Link>
       </header>
 
       {error?.code === "42P01" ? (

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Molde de placas · Performance</title>
+<style>
+/* FONTES_EMBUTIDAS */
+:root{color-scheme:light;--verde:#173b2e;--tinta:#213b30;--papel:#f6f4ec;--linha:#dddcd1;--muted:#647367;--serif:"Cormorant Garamond",Georgia,serif;--sans:Inter,system-ui,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:var(--papel);color:var(--tinta);font:14px/1.5 var(--sans)}button,input,select{font:inherit}button,select{cursor:pointer}button{touch-action:manipulation}button:disabled{cursor:wait;opacity:.6}a{color:inherit}button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,a:focus-visible{outline:3px solid #99824c;outline-offset:4px}
+.barra{border-bottom:1px solid var(--linha);padding:20px 40px;display:flex;align-items:center;justify-content:space-between;gap:16px}.marca{display:flex;align-items:center;gap:10px;letter-spacing:.16em;text-transform:uppercase;font-size:12px;font-weight:600}.marca svg{width:27px;height:32px;fill:var(--verde)}.etiqueta{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+main{max-width:1280px;margin:auto;padding:38px 40px 48px}.intro{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:28px}h1{font:600 clamp(36px,4vw,52px)/1.03 var(--serif);letter-spacing:-.03em;margin:0 0 12px}.intro p{margin:0;color:var(--muted);max-width:500px;font-size:13px}.selo{border:1px solid var(--linha);padding:7px 12px;border-radius:30px;font-size:11px;white-space:nowrap}
+.oficina{display:grid;grid-template-columns:minmax(310px,380px) minmax(0,1fr);border:1px solid var(--linha);border-radius:16px;overflow:hidden;background:#fffdf7}.controles{padding:28px;border-right:1px solid var(--linha)}fieldset{border:0;padding:0;margin:0 0 27px;min-width:0}fieldset:disabled{opacity:.7}legend{font-weight:600;font-size:13px;margin-bottom:17px;padding:0;display:flex;align-items:center;gap:9px}.passo{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border:1px solid #b9c2b7;border-radius:50%;font-size:10px;color:var(--muted)}label{display:block;font-size:11px;font-weight:500;margin:0 0 6px}.campo{margin-bottom:15px}.campo:last-child{margin-bottom:0}input:not([type=checkbox]),select{background:#fffefb;border:1px solid #d9ddd3;border-radius:7px;color:var(--tinta);width:100%;padding:10px 11px;min-height:41px}input:hover,select:hover{border-color:#a3b0a2}input:focus,select:focus{border-color:#617e65}.dupla{display:grid;grid-template-columns:1fr 1fr;gap:12px}.ajuda{color:var(--muted);font-size:10px;margin:7px 0 0;line-height:1.6}
+.acabamentos{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}.tom{padding:0;width:100%;aspect-ratio:1;border:3px solid #fffdf7;border-radius:50%;outline:1px solid transparent;background:var(--tom);box-shadow:inset 0 1px 2px #0003}.tom[aria-pressed=true]{outline-color:var(--verde)}.nome-acabamento{font-size:11px;color:var(--muted);margin:9px 0 0}.personalizar{border-top:1px solid var(--linha);padding-top:16px;margin-top:10px}summary{cursor:pointer;font-size:12px;font-weight:500;padding-bottom:4px}details[open] summary{margin-bottom:15px}.check{display:flex;align-items:center;gap:9px;margin:14px 0}.check input{accent-color:var(--verde);width:17px;height:17px;margin:0}.check label{margin:0}.acoes{border-top:1px solid var(--linha);padding-top:22px;margin-top:22px;display:grid;gap:10px}.botao{border:1px solid #cbd2c5;border-radius:7px;background:transparent;color:var(--verde);padding:12px 16px;font-size:12px;font-weight:600}.primario{background:var(--verde);border-color:var(--verde);color:#f7f4e7}.botao:hover{filter:brightness(.94)}.redefinir{border:0;background:none;padding:9px;color:var(--muted);font-size:11px;text-decoration:underline;text-underline-offset:3px}#status{margin:2px 0 0;min-height:32px;color:var(--muted);font-size:11px;line-height:1.5}
+.previsualizacao{background:#e9ebdf;position:relative;padding:25px 38px 32px;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:19px;background-image:radial-gradient(ellipse at 60% 30%,#f8f7eb,transparent 75%)}.previa-cabecalho{width:100%;display:flex;justify-content:space-between;font-size:10px;color:#637260;letter-spacing:.1em;text-transform:uppercase}.ao-vivo{display:flex;align-items:center;gap:6px}.ao-vivo::before{content:"";width:5px;height:5px;background:#527551;border-radius:50%}.palco{position:relative;width:min(100%,365px);aspect-ratio:9/16;box-shadow:0 25px 50px -25px #19332677;overflow:hidden;border-radius:3px;background:#102a21}iframe{position:absolute;top:0;left:0;width:1080px;height:1920px;border:0;transform-origin:0 0;pointer-events:none}.legenda{font-size:10px;color:#657260;text-align:center;margin:0;max-width:340px;line-height:1.7}.rodape{display:flex;justify-content:space-between;gap:24px;font-size:10px;color:var(--muted);margin-top:19px}.rodape p{margin:0;max-width:720px}.rodape a{white-space:nowrap;text-underline-offset:3px}
+@media(min-width:1100px){.previsualizacao{position:sticky;top:0;align-self:start;min-height:850px}.oficina{align-items:start}.controles{min-height:850px}}
+@media(max-width:760px){.barra{padding:17px 20px}.barra>.etiqueta{display:none}main{padding:26px 16px}.intro{align-items:start;flex-direction:column;gap:16px;margin-bottom:22px}.oficina{grid-template-columns:1fr}.controles{padding:23px;border-right:0;border-bottom:1px solid var(--linha)}.previsualizacao{padding:24px;order:-1}.palco{width:min(100%,270px)}.rodape{flex-direction:column;gap:12px}.previa-cabecalho{max-width:450px}.selo{font-size:10px}}
+</style>
+</head>
+<body>
+<header class="barra"><div class="marca"><svg viewBox="0 0 24 24" aria-hidden="true"><path id="marca-performance" d="MARCA_PERFORMANCE"/></svg>Performance</div><span class="etiqueta">Ateliê de conquistas / Molde 01</span></header>
+<main>
+  <div class="intro"><div><h1>Cada conquista, uma placa.</h1><p>Personalize o modelo aprovado com os dados da loja. A prévia mostra exatamente a arte que você vai baixar.</p></div><span class="selo">Seta original do Performance</span></div>
+  <div class="oficina">
+    <form class="controles" id="formulario">
+      <fieldset id="dados"><legend><span class="passo">01</span> A conquista</legend>
+        <div class="campo"><label for="loja">Nome da loja</label><input id="loja" name="loja" maxlength="80" placeholder="Ex.: Japa Store" autocomplete="organization"></div>
+        <div class="campo"><label for="tipo">Tipo de conquista</label><select id="tipo" name="tipo"><option value="visitas">Pessoas na vitrine</option><option value="whatsapp">Chamadas no WhatsApp</option><option value="tempo">Tempo com a vitrine no ar</option><option value="vendas">Vendas registradas</option><option value="personalizado">Personalizar o marco</option></select></div>
+        <div class="dupla"><div class="campo"><label for="marco">Marco alcançado</label><select id="marco" name="marco"></select></div><div class="campo"><label for="data">Data da conquista</label><input id="data" name="data" type="date" min="2000-01-01" max="9999-12-31" required></div></div>
+        <p class="ajuda" id="criterio">Use o marco confirmado para esta loja.</p>
+      </fieldset>
+      <fieldset id="aparencia"><legend><span class="passo">02</span> O acabamento</legend>
+        <div class="acabamentos" role="group" aria-label="Acabamento da placa">
+          <button class="tom" type="button" data-tom="verde" style="--tom:#a8bea0" aria-label="Verde" aria-pressed="false"></button>
+          <button class="tom" type="button" data-tom="verde-claro" style="--tom:#b8c3b1" aria-label="Verde claro" aria-pressed="false"></button>
+          <button class="tom" type="button" data-tom="champanhe" style="--tom:#ddc68b" aria-label="Champanhe" aria-pressed="true"></button>
+          <button class="tom" type="button" data-tom="bronze" style="--tom:#d0a47e" aria-label="Bronze" aria-pressed="false"></button>
+          <button class="tom" type="button" data-tom="metal" style="--tom:#cfccb6" aria-label="Metal" aria-pressed="false"></button>
+          <button class="tom" type="button" data-tom="prata" style="--tom:#e5e8de" aria-label="Prata" aria-pressed="false"></button>
+          <button class="tom" type="button" data-tom="ouro" style="--tom:#d0bd87" aria-label="Ouro" aria-pressed="false"></button>
+        </div><p class="nome-acabamento">Selecionado: <strong id="nome-acabamento">Champanhe</strong></p>
+      </fieldset>
+      <details class="personalizar"><summary>Ajustar os textos da placa</summary>
+        <fieldset id="textos"><legend class="etiqueta">Detalhes da arte</legend><div class="dupla"><div class="campo"><label for="numero">Número em destaque</label><input id="numero" name="numero" maxlength="12"></div><div class="campo"><label for="unidade">Unidade</label><input id="unidade" name="unidade" maxlength="24"></div></div>
+          <div class="check"><input id="moeda" name="moeda" type="checkbox"><label for="moeda">Mostrar R$ antes do número</label></div>
+          <div class="campo"><label for="rotulo">Descrição do marco</label><input id="rotulo" name="rotulo" maxlength="90"></div>
+          <div class="campo"><label for="topo">Frase acima da placa</label><input id="topo" name="topo" maxlength="65"></div>
+          <div class="campo"><label for="frase">Frase de assinatura</label><input id="frase" name="frase" maxlength="100"></div>
+        </fieldset>
+      </details>
+      <div class="acoes"><button type="button" id="baixar" class="botao primario">Baixar arte em PNG ↓</button><button type="button" id="salvar" class="botao">Salvar meu molde editável</button><button type="button" id="restaurar" class="redefinir">Voltar ao modelo inicial</button><p id="status" role="status" aria-live="polite">Arte de 1080 × 1920 px, pronta para Status e Stories.</p></div>
+    </form>
+    <section class="previsualizacao" aria-label="Prévia da placa"><div class="previa-cabecalho"><span>Prévia da arte</span><span class="ao-vivo">Atualiza ao editar</span></div><div class="palco" id="palco"><iframe id="previa" title="Placa personalizada do Performance" tabindex="-1"></iframe></div><p class="legenda">Moldura, medalhão e seta preservados.<br>Os dados e o acabamento ficam por sua conta.</p></section>
+  </div>
+  <footer class="rodape"><p>Molde de arte digital. O preenchimento é manual; os marcos não são validados nem enviados ao painel. Para fabricar uma placa física, defina com o fornecedor as medidas, o material e a gravação.</p><a href="PLANO_LINK">Consultar o plano ↗</a></footer>
+</main>
+<script id="configuracao-salva" type="application/json">null</script>
+<script id="modelo-placa" type="application/json">MODELO_PLACA</script>
+<script id="fontes-placa" type="application/json">FONTES_PLACA</script>
+<script>/* BIBLIOTECA_EXPORTACAO */</script>
+<script>/* LOGICA_EDITOR */</script>
+</body>
+</html>
