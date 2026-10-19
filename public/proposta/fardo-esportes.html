@@ -20,14 +20,20 @@
 <!-- ============================================================
      PROPOSTA COMERCIAL · FARDO ESPORTES (vitrine digital, Erechim RS)
      No molde de 25/09/2026 (public/proposta/template.html); foi o piloto dele.
-     Condicao da Valeria (24/09): R$ 999, PAGAMENTO UNICO no Pix, sem
-     entrada e sem parcelar. Item em lib/propostas.ts ("fardo-esportes":
-     avista_pix R$ 999). Dominio fora: R$ 40 por 1 ano.
-     Cadastro de ate 60 pecas na entrega, com o fundo tratado.
-     Suporte opcional R$ 149,90/mes: ate 10 pecas/mes com fundo tratado,
-     ate 3 fotos cada; peca extra R$ 15.
-     As pranchas: scripts/capturar-pranchas.mjs fardo-esportes
-       https://fardo-esportes.vercel.app --secoes fitness,camisas
+     REFEITA em 19/10/2026, junto com o rework da vitrine no molde novo
+     (padrao Alto Giro, banners, painel do @vitrine/plataforma).
+     Condicao do Rafael (19/10): R$ 899 A VISTA no Pix, ou R$ 999 no cartao
+     em ate 12x com os juros do Mercado Pago (consultado na conta em 19/10:
+     12x = R$ 1.219,88; nunca escrever a parcela a mao). Sem entrada.
+     Itens em lib/propostas.ts ("fardo-esportes": avista_pix 899, avista_card
+     999 em 12x). Dominio fora: R$ 40 por 1 ano.
+     Cadastro de ATE 20 pecas na entrega com o fundo tratado (eram 60: o
+     Rafael achou amplo demais); acima disso, R$ 15 a cada 3 pecas (o Rafael,
+     19/10: "3 pecas por 15 reais"). Suporte opcional R$ 149,90/mes: ate 10 pecas
+     com fundo tratado, ate 3 fotos cada; peca extra R$ 15.
+     As pranchas: capturas da vitrine nova (scratchpad/capturar-secoes.cjs
+     e scripts/capturar-pranchas.mjs no dev local), em
+     public/assets/proposta/fardo-esportes/.
      ============================================================ -->
 
 <link rel="icon" type="image/png" href="/assets/favicon.png" />
@@ -146,6 +152,8 @@ img{display:block;max-width:100%}
 .valor{padding-block:clamp(72px,12vw,140px)}
 .valor-numero{font-family:var(--font-display);font-weight:900;letter-spacing:-.05em;line-height:.85;font-size:clamp(5rem,24vw,15rem);margin-top:clamp(24px,4vw,40px);white-space:nowrap}
 .valor-numero small{font-size:.28em;letter-spacing:-.02em;vertical-align:.95em;margin-right:.08em}
+.valor-ou{font-family:var(--font-display);font-weight:900;font-size:clamp(1.3rem,5vw,2.2rem);letter-spacing:-.03em;line-height:1;margin-top:18px}
+.valor-ou small{font-family:var(--font-mono);font-weight:400;font-size:clamp(12px,3.4vw,14px);letter-spacing:0;color:var(--ink-55);display:block;margin-top:8px}
 .cota{position:relative;margin-top:22px;height:14px;border-bottom:2px solid var(--emerald)}
 .cota::before,.cota::after{content:"";position:absolute;bottom:-8px;width:2px;height:16px;background:var(--emerald)}
 .cota::before{left:0}.cota::after{right:0}
@@ -166,6 +174,9 @@ img{display:block;max-width:100%}
   letter-spacing:.02em;text-transform:uppercase;transition:background-color .2s;
 }
 .btn-pay:hover{background:#0ea371}
+.btn-pay + .btn-pay{margin-top:10px}
+.btn-pay--linha{background:transparent;border:2px solid var(--black);padding:13px 20px}
+.btn-pay--linha:hover{background:var(--black);color:var(--off-white)}
 .pagar-rodape{margin-top:12px;font-family:var(--font-mono);font-size:12px;color:var(--ink-55)}
 
 /* ——— Depois da publicação ——— */
@@ -214,7 +225,7 @@ img{display:block;max-width:100%}
 
   <header class="topo">
     <div class="marca">Rafael Razeira <small>Estúdio</small></div>
-    <time datetime="2026-09-25">25/09/2026</time>
+    <time datetime="2026-10-19">19/10/2026</time>
   </header>
 
   <!-- CAPA -->
@@ -223,9 +234,9 @@ img{display:block;max-width:100%}
       <p class="capa-para">Proposta para a Valeria, da Fardo Esportes</p>
       <h1>A Fardo inteira, num link só.</h1>
       <dl class="ficha">
-        <div><dt>A vitrine</dt><dd><a href="https://fardo-esportes.vercel.app" target="_blank" rel="noopener">fardo-esportes.vercel.app</a>, já construída</dd></div>
-        <div><dt>O que entra</dt><dd>Até 60 peças cadastradas por mim, com o fundo das fotos tratado</dd></div>
-        <div><dt>Investimento</dt><dd><b>R$ 999</b>, pagamento único no Pix, sem entrada</dd></div>
+        <div><dt>A vitrine</dt><dd><a href="https://fardo-esportes.vercel.app" target="_blank" rel="noopener">fardo-esportes.vercel.app</a>, já construída e refeita com banners, cupom e painel completo</dd></div>
+        <div><dt>O que entra</dt><dd>Até 20 peças cadastradas por mim, com o fundo das fotos tratado, e o painel para você cuidar do resto</dd></div>
+        <div><dt>Investimento</dt><dd><b>R$ 899</b> à vista no Pix, ou <b>R$ 999</b> no cartão em até 12x. Sem entrada</dd></div>
         <div><dt>No ar em</dt><dd>Até 5 dias úteis depois da sua lista de peças</dd></div>
       </dl>
     </div>
@@ -245,64 +256,79 @@ img{display:block;max-width:100%}
 
     <div class="prancha" data-prancha>
       <figure>
-        <img src="/assets/proposta/fardo-esportes/topo.webp" width="1600" height="944" alt="O topo da vitrine da Fardo Esportes: duas fotos de campanha, a busca e a faixa de marcas" />
-        <span class="pin" data-n="1" style="left:22%;top:40%">1</span>
-        <span class="pin" data-n="2" style="left:64%;top:5%">2</span>
-        <span class="pin" data-n="3" style="left:50%;top:88.8%">3</span>
+        <img src="/assets/proposta/fardo-esportes/topo.webp" width="1600" height="1175" alt="O topo da vitrine da Fardo Esportes: o banner do fitness, a busca, os benefícios e a faixa de marcas" />
+        <span class="pin" data-n="1" style="left:44%;top:55.5%">1</span>
+        <span class="pin" data-n="2" style="left:60%;top:7.4%">2</span>
+        <span class="pin" data-n="3" style="left:49.8%;top:79%">3</span>
       </figure>
       <div>
-        <p class="prancha-titulo">Prancha 1 de 4<b>A abertura</b></p>
+        <p class="prancha-titulo">Prancha 1 de 5<b>A abertura</b></p>
         <ol class="notas">
-          <li data-n="1"><span class="pin">1</span><span>As fotos da sua campanha, com gente vestindo a roupa, e a frase da sua bio: "Vista o incentivo."</span></li>
-          <li data-n="2"><span class="pin">2</span><span>A busca entende o jeito de perguntar da cliente: chuteira, camisa do Grêmio, legging.</span></li>
-          <li data-n="3"><span class="pin">3</span><span>As marcas que você trabalha, com o logo oficial de cada uma, passando devagar.</span></li>
+          <li data-n="1"><span class="pin">1</span><span>Três banners de campanha com as suas fotos (o fitness, a camisa do time e a loja), trocando sozinhos. A frase e o botão de cada um você muda pelo painel.</span></li>
+          <li data-n="2"><span class="pin">2</span><span>A busca entende o jeito de perguntar da cliente: chuteira Mercurial, camisa do Grêmio, legging.</span></li>
+          <li data-n="3"><span class="pin">3</span><span>O que só a Fardo oferece, logo abaixo: a retirada na loja, a camisa com o nome da cliente. E as marcas que você trabalha, com o logo oficial, levando às peças de cada uma.</span></li>
         </ol>
       </div>
     </div>
 
     <div class="prancha prancha--inv" data-prancha>
       <figure>
-        <img src="/assets/proposta/fardo-esportes/fitness.webp" width="1600" height="1075" alt="A seção de fitness feminino, com a faixa salmão da Caju Brasil e as fotos dos looks" />
-        <span class="pin" data-n="4" style="left:24%;top:33%">4</span>
-        <span class="pin" data-n="5" style="left:50%;top:26%">5</span>
-        <span class="pin" data-n="6" style="left:23%;top:60%">6</span>
+        <img src="/assets/proposta/fardo-esportes/fitness.webp" width="1600" height="875" alt="A fileira Fardamento de treino, com os conjuntos de fitness em cartões e a cor de cada um em bolinha" />
+        <span class="pin" data-n="4" style="left:30%;top:14%">4</span>
+        <span class="pin" data-n="5" style="left:92%;top:55%">5</span>
+        <span class="pin" data-n="6" style="left:10%;top:91.5%">6</span>
       </figure>
       <div>
-        <p class="prancha-titulo">Prancha 2 de 4<b>Fardamento de treino</b></p>
+        <p class="prancha-titulo">Prancha 2 de 5<b>Fardamento de treino</b></p>
         <ol class="notas">
-          <li data-n="4"><span class="pin">4</span><span>O fitness abre a página, logo depois do topo, porque é o que você quer vender mais. Cada marca tem uma faixa na cor das peças.</span></li>
-          <li data-n="5"><span class="pin">5</span><span>Todos os looks em foto grande, como foto revelada presa com fita. Nada escondido atrás de um clique.</span></li>
-          <li data-n="6"><span class="pin">6</span><span>Cada marca tem o seu botão: a cliente pergunta direto da Caju Brasil, da Alto Giro ou da CCM.</span></li>
+          <li data-n="4"><span class="pin">4</span><span>Uma fileira por categoria, e o fitness é a primeira, porque é o que você quer vender mais. O título e a frase são seus, pelo painel.</span></li>
+          <li data-n="5"><span class="pin">5</span><span>A fileira anda sozinha e tem setas; no celular, passa com o dedo. Toda peça leva à própria página.</span></li>
+          <li data-n="6"><span class="pin">6</span><span>A cor de cada peça vira uma bolinha, lida do nome que você deu a ela. "Preto e rosa" são duas.</span></li>
         </ol>
       </div>
     </div>
 
     <div class="prancha" data-prancha>
       <figure>
-        <img src="/assets/proposta/fardo-esportes/camisas.webp" width="1600" height="1148" alt="A seção de camisas, dividida entre Grêmio e Inter" />
-        <span class="pin" data-n="7" style="left:49.6%;top:34%">7</span>
-        <span class="pin" data-n="8" style="left:57%;top:94%">8</span>
+        <img src="/assets/proposta/fardo-esportes/cupom.webp" width="1600" height="500" alt="O banner do cupom de primeira compra, com a chuteira sobre a bola" />
+        <span class="pin" data-n="7" style="left:35%;top:61%">7</span>
       </figure>
       <div>
-        <p class="prancha-titulo">Prancha 3 de 4<b>Fardamento de torcida</b></p>
+        <p class="prancha-titulo">Prancha 3 de 5<b>O cupom de primeira compra</b></p>
         <ol class="notas">
-          <li data-n="7"><span class="pin">7</span><span>Gremista ou colorado, meio a meio, de adulto e infantil. É a única parte da vitrine com azul.</span></li>
-          <li data-n="8"><span class="pin">8</span><span>O aviso de que a camisa sai com o nome nas costas, que hoje só aparece nas suas legendas.</span></li>
+          <li data-n="7"><span class="pin">7</span><span>Quem toca em "Usar o cupom" abre o seu WhatsApp já com o código escrito. O desconto é o que você decidir; entre as fileiras há mais dois banners, o do fitness e o da loja, e a arte e a frase dos três se trocam pelo painel.</span></li>
         </ol>
       </div>
     </div>
 
     <div class="prancha prancha--inv" data-prancha>
       <figure>
-        <img src="/assets/proposta/fardo-esportes/peca.webp" width="1600" height="1000" alt="A página de uma peça, com o código e o botão de pedir no WhatsApp" />
-        <span class="pin" data-n="9" style="left:66.5%;top:46.5%">9</span>
-        <span class="pin" data-n="10" style="left:95%;top:76.5%">10</span>
+        <img src="/assets/proposta/fardo-esportes/peca.webp" width="1600" height="1000" alt="A página de uma chuteira, com a numeração para escolher e o pedido pelo WhatsApp" />
+        <span class="pin" data-n="8" style="left:84%;top:69%">8</span>
+        <span class="pin" data-n="9" style="left:64%;top:92.5%">9</span>
       </figure>
       <div>
-        <p class="prancha-titulo">Prancha 4 de 4<b>A página da peça</b></p>
+        <p class="prancha-titulo">Prancha 4 de 5<b>A página da peça</b></p>
         <ol class="notas">
-          <li data-n="9"><span class="pin">9</span><span>Toda peça tem um código. Quando a cliente chama, você sabe na hora de qual ela está falando.</span></li>
-          <li data-n="10"><span class="pin">10</span><span>O pedido chega no seu WhatsApp já montado, com a peça, o código e o recado dela. Você responde com o preço e o tamanho.</span></li>
+          <li data-n="8"><span class="pin">8</span><span>A cliente marca a numeração, ou o tamanho na roupa. Como você não publica a grade, a vitrine só pergunta: quem confirma se tem é você. Quando você quiser, o estoque por tamanho entra pelo painel.</span></li>
+          <li data-n="9"><span class="pin">9</span><span>O pedido chega no seu WhatsApp já montado, com a peça, o número e o recado dela. Você responde com o preço e combina a retirada.</span></li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="prancha" data-prancha>
+      <figure>
+        <img src="/assets/proposta/fardo-esportes/painel.webp" width="1600" height="1043" alt="O painel da loja: peças, banners, textos do site, estoque, pedidos, desempenho e clientes" />
+        <span class="pin" data-n="10" style="left:9.5%;top:43%">10</span>
+        <span class="pin" data-n="11" style="left:13.5%;top:58%">11</span>
+        <span class="pin" data-n="12" style="left:9.5%;top:63%">12</span>
+      </figure>
+      <div>
+        <p class="prancha-titulo">Prancha 5 de 5<b>O seu painel</b></p>
+        <ol class="notas">
+          <li data-n="10"><span class="pin">10</span><span>Peça nova em dois minutos, pelo celular: foto, nome, preço, promoção, tamanhos e cor. E o estoque: "vendi uma", "chegou mais", e o site risca o tamanho que acabou.</span></li>
+          <li data-n="11"><span class="pin">11</span><span>Desempenho: quantas pessoas entraram, que peças olharam e quantas chamaram no WhatsApp. O básico é seu, sem mensalidade.</span></li>
+          <li data-n="12"><span class="pin">12</span><span>Clientes: quem deixou o WhatsApp para saber das novidades, ou pediu aviso de um tamanho que voltou. A lista é sua.</span></li>
         </ol>
       </div>
     </div>
@@ -310,9 +336,9 @@ img{display:block;max-width:100%}
     <div class="fora-da-tela">
       <h3>E o que não aparece na tela</h3>
       <ul>
-        <li><b>Até 60 peças cadastradas por mim</b> na entrega, com o fundo das fotos tratado. Você manda o nome, a referência e a cor; foto sua, ou eu uso a oficial da marca</li>
-        <li><b>O painel</b> para você mesma colocar e trocar peças, preço, promoção, tamanhos e destaque</li>
-        <li><b>A versão de celular</b>, para quem chega pelo Instagram</li>
+        <li><b>Até 20 peças cadastradas por mim</b> na entrega, com o fundo das fotos tratado. Você manda o nome, a referência e a cor; foto sua, ou eu uso a oficial da marca. Acima de 20, <b>R$ 15 a cada 3 peças</b></li>
+        <li><b>O painel</b> para você mesma colocar e trocar peças, banners, textos, preço, promoção, tamanhos e destaque</li>
+        <li><b>A versão de celular</b>, para quem chega pelo Instagram, e o painel também pelo celular</li>
         <li><b>O Google</b>: a Fardo aparece por nome e por "artigos esportivos em Erechim"</li>
         <li><b>O cartão do link</b>: a sua marca aparece quando alguém manda o endereço no WhatsApp</li>
         <li><b>2 rodadas de revisão</b> antes de publicar</li>
@@ -324,13 +350,14 @@ img{display:block;max-width:100%}
   <!-- INVESTIMENTO -->
   <section class="sec valor">
     <h2>O investimento</h2>
-    <p class="valor-numero"><small>R$</small>999</p>
+    <p class="valor-numero"><small>R$</small>899</p>
     <div class="cota" aria-hidden="true"></div>
-    <p class="cota-legenda">Uma vez só, no Pix, no dia da publicação. Sem entrada, sem mensalidade.</p>
+    <p class="cota-legenda">À vista no Pix, no dia da publicação. Sem entrada, sem mensalidade.</p>
+    <p class="valor-ou">ou R$ 999 no cartão, em até 12x<small>com os juros do Mercado Pago, calculados na hora, na parcela que você escolher</small></p>
 
     <div class="valor-grade">
       <div>
-        <p>A vitrine que você viu <b>já está construída</b>. O valor cobre o cadastro das suas peças com o fundo tratado, a revisão com você, a publicação e o treinamento do painel.</p>
+        <p>A vitrine que você viu <b>já está construída</b>. O valor cobre o cadastro de até 20 peças com o fundo tratado, a revisão com você, a publicação e o treinamento do painel. Quer mais peças já na entrega? <b>R$ 15 a cada 3 peças</b>.</p>
         <p>O domínio próprio, se você quiser o endereço com o nome da loja, é à parte: <b>R$ 40 por 1 ano</b>, registrado no nome da loja. Eu faço a configuração.</p>
         <div class="garantia">
           <p>Você paga <b>depois</b> de ver a vitrine publicada com as suas peças. Se ela não for o que você viu, <b>não existe cobrança</b>: nada foi adiantado.</p>
@@ -339,10 +366,12 @@ img{display:block;max-width:100%}
       <div class="pagar">
         <p class="pagar-titulo">Pagar no dia da publicação</p>
         <ul>
-          <li>QR code do Pix aqui na página, com confirmação na hora</li>
+          <li>Pix com QR code aqui na página, confirmação na hora</li>
+          <li>Ou cartão em até 12x, com a parcela calculada na tela</li>
           <li>Nada é pago antes: a vitrine sobe primeiro</li>
         </ul>
-        <button class="btn-pay" type="button" data-checkout-item="avista_pix">Pagar R$ 999 no Pix</button>
+        <button class="btn-pay" type="button" data-checkout-item="avista_pix">Pagar R$ 899 no Pix</button>
+        <button class="btn-pay btn-pay--linha" type="button" data-checkout-item="avista_card">Pagar R$ 999 no cartão, em até 12x</button>
         <p class="pagar-rodape">Processado pelo Mercado Pago, sem sair desta página.</p>
       </div>
     </div>
@@ -351,19 +380,19 @@ img{display:block;max-width:100%}
   <!-- DEPOIS DA PUBLICAÇÃO -->
   <section class="sec">
     <h2>Depois que ela estiver no ar</h2>
-    <p class="sec-intro">Você mesma consegue colocar e trocar peças pelo painel: é simples, e eu te mostro como no treinamento. Se preferir que eu cuide disso pra você todo mês, tem o plano de suporte.</p>
+    <p class="sec-intro">Você mesma consegue colocar e trocar peças pelo painel: é simples, e eu te mostro como no treinamento. Se preferir me mandar as peças e deixar as fotos comigo, tem o plano mensal.</p>
     <div class="opcoes">
       <div class="opcao">
         <h3>Você mesma cuida</h3>
         <p class="opcao-preco">R$ 0<small>/mês</small></p>
-        <p>Peça nova, foto, preço, promoção e destaque, direto do celular. Sem limite e sem pedir para ninguém.</p>
+        <p>Peça nova, foto, preço, promoção, estoque e destaque, direto do celular. Sem limite e sem pedir para ninguém.</p>
       </div>
       <div class="opcao">
         <h3>Eu cuido pra você</h3>
         <p class="opcao-preco">R$ 149,90<small>/mês</small></p>
         <p>Você me manda as peças novas pelo WhatsApp e eu trato o fundo das fotos, cadastro e atualizo. Sem fidelidade.</p>
         <ul>
-          <li><b>Até 10 peças por mês</b>, cada uma com até 3 fotos</li>
+          <li><b>Até 10 peças por mês</b>, cada uma com até 3 fotos, com o fundo tratado</li>
           <li>Trocar foto, preço, tamanhos ou cores do que já está na vitrine, e tirar o que acabou</li>
           <li>Acima de 10 peças no mês: <b>R$ 15 por peça extra</b></li>
           <li>Não acumula de um mês para o outro. Seção ou página nova é orçamento à parte</li>
@@ -378,9 +407,9 @@ img{display:block;max-width:100%}
     <p class="prazo">No ar em até 5 dias úteis depois da sua lista</p>
     <ol class="passos">
       <li><span>Você confirma o <b>aceite</b> pelo WhatsApp. Nada a pagar neste passo.</span></li>
-      <li><span>Você me manda a lista das peças, com <b>nome, referência e cor</b>, e as fotos que tiver. Me diz também quais peças da prévia ainda existem na loja (as camisas e o fitness saíram de postagens de 2022 a 2024) e, se tiver, o logo da CCM.</span></li>
+      <li><span>Você me manda a lista das peças (até 20), com <b>nome, referência e cor</b>, e as fotos que tiver. Me diz também quais peças da prévia ainda existem na loja, o desconto do cupom de primeira compra e, se tiver, o logo da CCM.</span></li>
       <li><span>Eu cadastro, trato as fotos, reviso com você e publico.</span></li>
-      <li><span>Com a Fardo no ar e aprovada, você paga os <b>R$ 999 no Pix</b>, aqui nesta página.</span></li>
+      <li><span>Com a Fardo no ar e aprovada, você paga aqui nesta página: <b>R$ 899 no Pix</b>, ou <b>R$ 999 no cartão</b> em até 12x.</span></li>
     </ol>
   </section>
 
@@ -390,8 +419,8 @@ img{display:block;max-width:100%}
     <ul>
       <li>Domínio próprio: R$ 40 por 1 ano, à parte, no nome da loja</li>
       <li>Carrinho e pagamento online: o pedido fecha no WhatsApp</li>
-      <li>Controle de estoque, ERP e nota fiscal</li>
-      <li>Tirar as fotos: a foto é sua (do celular serve) ou a oficial da marca; o tratamento do fundo é comigo</li>
+      <li>ERP e nota fiscal</li>
+      <li>Tirar as fotos: a foto é sua (do celular serve) ou a oficial da marca; o tratamento do fundo é comigo, nas 20 peças da entrega e no plano mensal</li>
       <li>Simulador de frete e de parcelamento: preço e entrega ficam para a conversa</li>
     </ul>
   </section>

@@ -204,14 +204,17 @@ export const PROPOSTAS: Record<string, Proposta> = {
       saldo_card: { label: "Saldo na entrega, no cartão em até 4x", valor: 1500, metodo: "card", maxParcelas: 4 },
     },
   },
-  /* A Fardo fecha como a Minas: pagamento único no Pix, sem entrada e
-     sem parcelar (condição passada à Valeria em 24/09). O domínio, R$ 40
-     por 1 ano, é cobrado à parte e não tem botão aqui. */
+  /* A Fardo (refeita em 19/10/2026, a condição do Rafael no mesmo dia):
+     R$ 899 À VISTA no Pix, ou R$ 999 no CARTÃO em até 12x com os juros do
+     Mercado Pago (o Brick calcula cada parcela na hora e o MP repassa de
+     uma vez: UM recebimento). Sem entrada. Antes (25/09) era R$ 999 num
+     Pix só. O domínio, R$ 40 por 1 ano, é cobrado à parte e não tem botão. */
   "fardo-esportes": {
-    titulo: "Rafael Razeira Estúdio — Vitrine Digital Fardo Esportes",
+    titulo: "Rafael Razeira Estúdio, Vitrine Digital Fardo Esportes",
     whatsapp: "5544991246187",
     itens: {
-      avista_pix: { label: "Vitrine digital, pagamento único no Pix", valor: 999, metodo: "pix" },
+      avista_pix: { label: "Vitrine digital, à vista no Pix", valor: 899, metodo: "pix" },
+      avista_card: { label: "Vitrine digital, no cartão em até 12x", valor: 999, metodo: "card", maxParcelas: 12 },
     },
   },
   /* A VAYLW abriu como a Fardo (01/10/2026): R$ 999 no Pix, sem entrada.
