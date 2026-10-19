@@ -301,15 +301,21 @@ export const PROPOSTAS: Record<string, Proposta> = {
   },
   /* A One Tênis (29/09): a Adriana disse "eu me interesso sim" e "vou fazer
      a partir do mês que vem". No WhatsApp o Rafael ofereceu 10% à vista
-     no Pix: R$ 899,10, um Pix só no aceite. A condição padrão fica ao lado. */
+     no Pix: R$ 899,10, um Pix só no aceite. A condição padrão fica ao lado.
+     19/10: refeita na condição da amostra pronta, a que ela recebeu em 14/10
+     ("R$ 899 em vez de R$ 999; R$ 199 pra começar e o resto na entrega, ou
+     no cartão em até 12x com os juros"). Os R$ 899 valem nas três formas:
+     um Pix, o cartão em até 12x (juros do MP, calculados no Brick), ou
+     R$ 199 + R$ 700 na entrega (Pix ou cartão em até 4x). Nada de 999. */
   "one-tenis": {
     titulo: "Rafael Razeira Estúdio, Vitrine Digital One Tênis",
     whatsapp: "5544991246187",
     itens: {
-      avista_pix: { label: "Vitrine digital, à vista no Pix com 10% de desconto, no aceite", valor: 899.1, metodo: "pix" },
+      avista_pix: { label: "Vitrine digital, à vista no Pix (condição da amostra pronta)", valor: 899, metodo: "pix" },
+      avista_card: { label: "Vitrine digital, no cartão em até 12x", valor: 899, metodo: "card", maxParcelas: 12 },
       entrada_pix: { label: "Entrada para início do projeto", valor: 199, metodo: "pix" },
-      saldo_pix: { label: "Saldo na entrega, no Pix", valor: 800, metodo: "pix" },
-      saldo_card: { label: "Saldo na entrega, no cartão em até 4x", valor: 800, metodo: "card", maxParcelas: 4 },
+      saldo_pix: { label: "Saldo na entrega, no Pix", valor: 700, metodo: "pix" },
+      saldo_card: { label: "Saldo na entrega, no cartão em até 4x", valor: 700, metodo: "card", maxParcelas: 4 },
     },
   },
   /* A Ciclo Skate Shop (29/09): o San disse "não está caro, mas estou um
