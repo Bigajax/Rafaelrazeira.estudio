@@ -13,7 +13,7 @@
    ============================================================ */
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { ARQUIVO_LOJA, EXTENSOES, caminhoValido, filtrarChaves, lerCheckin } from "@/lib/checkin";
+import { ARQUIVO_LOJA, EXTENSOES, caminhoValido, camposDa, filtrarChaves, lerCheckin } from "@/lib/checkin";
 import { avisarRafael, storageCheckin } from "@/lib/checkin-servidor";
 
 const Pedido = z.discriminatedUnion("acao", [
@@ -71,7 +71,8 @@ export async function POST(req: Request) {
   if (!caminhoValido(c, p.caminho)) return erro("Foto inválida.");
 
   if (p.acao === "nota") {
-    const campos = c.campos && p.campos ? filtrarChaves(c.campos, p.campos) : undefined;
+    const ficha = camposDa(c, p.caminho.split("/")[1]);
+    const campos = ficha && p.campos ? filtrarChaves(ficha, p.campos) : undefined;
     const corpo = JSON.stringify({ nota: p.nota.trim(), ...(campos ? { campos } : {}), em: new Date().toISOString() });
     const { error } = await st.upload(`${p.caminho}.json`, corpo, { contentType: "application/json", upsert: true });
     if (error) return erro("Não deu para guardar a anotação.", 502);

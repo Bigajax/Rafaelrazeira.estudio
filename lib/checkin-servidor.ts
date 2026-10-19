@@ -2,7 +2,7 @@
    abre o bucket privado, então nada daqui pode ir para o navegador. */
 
 import { createClient } from "@supabase/supabase-js";
-import { ARQUIVO_LOJA, BUCKET_CHECKIN, filtrarChaves, type Checkin } from "./checkin";
+import { ARQUIVO_LOJA, BUCKET_CHECKIN, camposDa, filtrarChaves, type Checkin } from "./checkin";
 
 export function storageCheckin() {
   const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -38,7 +38,8 @@ export async function listarFotos(c: Checkin): Promise<Record<string, FotoEnviad
           if (!blob) return vazio;
           try {
             const j = JSON.parse(await blob.text());
-            return { nota: String(j.nota ?? ""), campos: c.campos ? filtrarChaves(c.campos, j.campos ?? {}) : {} };
+            const ficha = camposDa(c, k.id);
+            return { nota: String(j.nota ?? ""), campos: ficha ? filtrarChaves(ficha, j.campos ?? {}) : {} };
           } catch {
             return vazio;
           }

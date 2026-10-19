@@ -38,12 +38,12 @@ export function PerguntasDaLoja({ token, perguntas, iniciais }: { token: string;
   return (
     <section className={s.ficha} aria-labelledby="t-loja">
       <div className={s.ficha__topo}>
-        <p className={s.ficha__num}>00</p>
+        <p className={s.ficha__num}>+</p>
         <div className={s.ficha__texto}>
           <h2 id="t-loja" className={s.ficha__nome}>
             Sobre a loja
           </h2>
-          <p className={s.ficha__dica}>Nove perguntas rápidas. O que você responder vai para o site do jeito que você escrever; o que ficar vazio não aparece.</p>
+          <p className={s.ficha__dica}>Responda o que souber. O que ficar vazio não aparece no site.</p>
         </div>
         <p className={s.contagem} aria-live="polite">
           {estado === "salvando" ? "guardando" : estado === "erro" ? "não guardou" : respondidas ? `${respondidas} de ${perguntas.length}` : "vazia"}
@@ -52,12 +52,15 @@ export function PerguntasDaLoja({ token, perguntas, iniciais }: { token: string;
       <div className={s.perguntas}>
         {perguntas.map((p) => (
           <label key={p.chave} className={`${s.nota} ${s.pergunta}`}>
-            <span>{p.rotulo}</span>
+            {/* a dica fica à vista, não no placeholder: cinza no campo parecia
+                resposta já escrita, e sumia ao começar a digitar (19/10) */}
+            <span className={s.pergunta__rotulo}>{p.rotulo}</span>
+            {p.dica && <span className={s.pergunta__dica}>{p.dica}</span>}
             <textarea
-              rows={3}
+              rows={2}
               value={respostas[p.chave] ?? ""}
               maxLength={600}
-              placeholder={p.dica ?? ""}
+              placeholder="Escreva aqui"
               onChange={(e) => setRespostas((r) => ({ ...r, [p.chave]: e.target.value }))}
               onBlur={guardar}
             />

@@ -23,9 +23,13 @@
    Para baixar no PC: npx tsx scripts/baixar-checkin.ts <slug>
    ============================================================ */
 
-export type CategoriaCheckin = { id: string; nome: string; dica: string };
-/* um campo da ficha de cada foto; `decimal` abre o teclado de número no celular */
-export type CampoCheckin = { chave: string; rotulo: string; dica?: string; modo?: "texto" | "decimal" };
+/* `campos` na categoria troca a ficha da loja só nela (19/10, Fardo: a
+   chuteira pede numeração, a legging P ao GG, a bola o tipo) */
+export type CategoriaCheckin = { id: string; nome: string; dica: string; campos?: CampoCheckin[] };
+/* um campo da ficha de cada foto; `decimal` abre o teclado de número no celular.
+   Com `opcoes`, vira botões de tocar (mais de um vale) e um "outro" escrito;
+   o valor continua um texto só, "P, M, G", e o baixar-checkin não muda */
+export type CampoCheckin = { chave: string; rotulo: string; dica?: string; modo?: "texto" | "decimal"; opcoes?: string[] };
 /* uma pergunta sobre a loja, respondida uma vez só */
 export type PerguntaCheckin = { chave: string; rotulo: string; dica?: string };
 export type Checkin = {
@@ -35,6 +39,8 @@ export type Checkin = {
   categorias: CategoriaCheckin[];
   /* a frase da abertura, na voz do estúdio para o dono; sem ela, a da M&M */
   instrucao?: string;
+  /* os passos curtos do topo, no lugar do parágrafo (Fardo, 19/10) */
+  passos?: string[];
   campos?: CampoCheckin[];
   perguntas?: PerguntaCheckin[];
 };
@@ -42,18 +48,38 @@ export type Checkin = {
 export const BUCKET_CHECKIN = "checkin";
 export const ARQUIVO_LOJA = "_loja.json";
 
-/* os campos da peça de loja de roupa e calçado: o que o painel da vitrine
-   pede no cadastro. Só o nome é obrigatório para entrar no site; o resto,
-   vazio, fica honesto (sem preço, sem tamanho) */
-const CAMPOS_PECA: CampoCheckin[] = [
-  { chave: "nome", rotulo: "Nome da peça", dica: "Ex.: Legging Alanis preta e laranja" },
-  { chave: "marca", rotulo: "Marca", dica: "Nike, Caju Brasil, CCM..." },
-  { chave: "cores", rotulo: "Cores que você tem", dica: "Ex.: preto, rosa e azul" },
-  { chave: "tamanhos", rotulo: "Tamanhos ou numerações", dica: "Ex.: P ao GG, ou 38 ao 43" },
-  { chave: "preco", rotulo: "Preço (R$)", dica: "Ex.: 189,90", modo: "decimal" },
-  { chave: "promocao", rotulo: "Preço promocional, se tiver (R$)", dica: "Deixe vazio se não tem", modo: "decimal" },
-  { chave: "obs", rotulo: "Alguma coisa sobre a peça", dica: "Tecido, caimento, para que serve. Opcional" },
-];
+/* a ficha da peça de loja de esporte (Fardo, 19/10): o que o painel da
+   vitrine pede no cadastro, enxuto. O nome leva a marca e o tipo ("Chuteira
+   society Nike Phantom"), e tamanho e cor são de tocar; o que não estiver
+   nos botões, ela escreve no "outro". Vazio fica honesto (sem preço, sem
+   tamanho). As grades são as comuns de loja de esporte: a Fardo não publica */
+export const CORES: Record<string, string> = {
+  Preto: "#141414",
+  Branco: "#ffffff",
+  Cinza: "#9a9ea1",
+  Azul: "#2f6fd6",
+  "Azul-marinho": "#1b2a4a",
+  Vermelho: "#d22b2b",
+  Rosa: "#ef8fb4",
+  Lilás: "#b59ad8",
+  Verde: "#2e9b5a",
+  Amarelo: "#f2c53d",
+  Laranja: "#f07f2d",
+  Bege: "#d9c6a5",
+};
+const ROUPA = ["PP", "P", "M", "G", "GG", "XG"];
+const INFANTIL = ["2", "4", "6", "8", "10", "12", "14", "16"].map((t) => `Inf. ${t}`);
+const numeros = (de: number, ate: number) => Array.from({ length: ate - de + 1 }, (_, i) => String(de + i));
+
+function ficha(exemplo: string, tamanhos?: { rotulo: string; opcoes: string[] }): CampoCheckin[] {
+  return [
+    { chave: "nome", rotulo: "Nome", dica: exemplo },
+    { chave: "preco", rotulo: "Preço", dica: "0,00", modo: "decimal" },
+    { chave: "promocao", rotulo: "Promoção", dica: "se tiver", modo: "decimal" },
+    ...(tamanhos ? [{ chave: "tamanhos", ...tamanhos }] : []),
+    { chave: "cores", rotulo: "Cores", opcoes: Object.keys(CORES) },
+  ];
+}
 
 export const CHECKINS: Record<string, Checkin> = {
   "6cd27f03b380346fb187d7e5": {
@@ -74,27 +100,32 @@ export const CHECKINS: Record<string, Checkin> = {
     slug: "fardo-esportes",
     loja: "Fardo Esportes",
     dono: "Valeria",
-    instrucao:
-      "Valeria, cada ficha abaixo é uma parte da vitrine. Toque em Escolher fotos, pegue da galeria e elas sobem sozinhas; se a peça tem mais de uma foto, mande as duas ou três juntas. Depois preencha embaixo de cada foto o nome, a marca, as cores, os tamanhos e o preço: é isso que vai para o site, e o que ficar vazio não aparece. O fundo da foto não importa, eu trato. Nesta entrega entram até 20 peças.",
-    campos: CAMPOS_PECA,
+    instrucao: "O fundo da foto não importa, eu trato. Nesta entrega entram até 20 peças.",
+    passos: ["Escolha a categoria", "Mande as fotos da galeria", "Preencha nome, preço, tamanho e cor"],
+    campos: ficha("Ex.: Garrafa Nike 500 ml"),
+    /* os ids antigos ficam (fitness, chuteiras, camisas, moletons,
+       tenis-e-botas, outras): são as pastas do storage */
     categorias: [
-      { id: "fitness", nome: "Fitness feminino", dica: "Caju Brasil, Alto Giro e CCM: top, legging, conjunto, cropped." },
-      { id: "chuteiras", nome: "Chuteiras", dica: "Campo, society e futsal, adulto e infantil." },
-      { id: "camisas", nome: "Camisas de time", dica: "Grêmio, Inter, Seleção e as outras. Diga a temporada no nome, se souber." },
-      { id: "moletons", nome: "Moletons e casacos", dica: "Moletom, jaqueta, fleece, corta-vento." },
-      { id: "tenis-e-botas", nome: "Tênis e botas", dica: "Tênis de corrida, de caminhada, bota." },
-      { id: "outras", nome: "Outras peças", dica: "Não sabe onde pôr? Manda aqui que eu separo." },
+      { id: "fitness", nome: "Fitness feminino", dica: "Top, legging, conjunto, cropped", campos: ficha("Ex.: Legging Caju Alanis", { rotulo: "Tamanhos", opcoes: ROUPA }) },
+      { id: "chuteiras", nome: "Chuteiras", dica: "Campo, society e futsal", campos: ficha("Ex.: Chuteira society Nike Phantom", { rotulo: "Numeração", opcoes: numeros(26, 44) }) },
+      { id: "camisas", nome: "Camisas de time", dica: "Grêmio, Inter, Seleção e outras", campos: ficha("Ex.: Camisa Grêmio 2025 torcedor", { rotulo: "Tamanhos", opcoes: [...ROUPA, ...INFANTIL] }) },
+      { id: "bolas", nome: "Bolas", dica: "Futsal, campo, society, vôlei", campos: ficha("Ex.: Bola futsal Penalty Max 500") },
+      { id: "tenis-e-botas", nome: "Tênis e botas", dica: "Corrida, caminhada, casual", campos: ficha("Ex.: Tênis Mizuno Wave Prophecy", { rotulo: "Numeração", opcoes: numeros(26, 44) }) },
+      { id: "moletons", nome: "Moletons e casacos", dica: "Moletom, jaqueta, corta-vento", campos: ficha("Ex.: Moletom Nike Club caramelo", { rotulo: "Tamanhos", opcoes: ROUPA }) },
+      { id: "shorts", nome: "Shorts e calças", dica: "Calção, bermuda, calça de treino", campos: ficha("Ex.: Calção Umbro treino", { rotulo: "Tamanhos", opcoes: ROUPA }) },
+      { id: "acessorios", nome: "Acessórios", dica: "Meião, caneleira, luva, mochila", campos: ficha("Ex.: Caneleira Adidas", { rotulo: "Tamanhos", opcoes: ["Único", "Infantil", "P", "M", "G"] }) },
+      { id: "outras", nome: "Outras peças", dica: "Não sabe onde pôr? Manda aqui" },
     ],
     perguntas: [
-      { chave: "whatsapp", rotulo: "O WhatsApp que recebe os pedidos", dica: "Hoje está o 54 99143-4166. Está certo?" },
-      { chave: "pagamento", rotulo: "Formas de pagamento que você aceita", dica: "Pix, cartão (quais bandeiras), e se parcela, em quantas vezes" },
-      { chave: "entrega", rotulo: "Entrega e envio", dica: "Só retirada na loja? Entrega em Erechim? Envia para outras cidades, como e em quanto tempo?" },
-      { chave: "troca", rotulo: "Troca", dica: "Aceita? Em quantos dias e em que condição?" },
-      { chave: "cupom", rotulo: "O desconto do cupom de primeira compra", dica: "Em porcentagem. Ex.: 10%" },
-      { chave: "personalizacao", rotulo: "A camisa com o nome nas costas", dica: "Tem custo a mais? Quanto, e em quantos dias fica pronta?" },
-      { chave: "horario", rotulo: "O horário da loja", dica: "Hoje está: seg a sex, 8h30 às 12h e 13h30 às 18h30; sábado, 8h30 às 12h. Está certo?" },
-      { chave: "contatos", rotulo: "E-mail e Instagram para o rodapé do site", dica: "Se quiser que apareçam" },
-      { chave: "previa", rotulo: "Das peças que já estão na prévia, quais ainda existem na loja?", dica: "As camisas e o fitness vieram de posts de 2022 a 2024" },
+      { chave: "whatsapp", rotulo: "WhatsApp dos pedidos", dica: "Hoje está 54 99143-4166. Está certo?" },
+      { chave: "pagamento", rotulo: "Formas de pagamento", dica: "Pix, cartão, em quantas vezes" },
+      { chave: "entrega", rotulo: "Entrega", dica: "Só retirada? Entrega em Erechim? Envia para outras cidades?" },
+      { chave: "troca", rotulo: "Troca", dica: "Aceita? Em quantos dias?" },
+      { chave: "cupom", rotulo: "Cupom de primeira compra", dica: "Ex.: 10%. Se não tiver, deixe vazio" },
+      { chave: "personalizacao", rotulo: "Nome na camisa", dica: "Quanto custa e em quantos dias fica pronta?" },
+      { chave: "horario", rotulo: "Horário", dica: "Hoje está: seg a sex, 8h30 às 12h e 13h30 às 18h30; sáb, 8h30 às 12h. Está certo?" },
+      { chave: "contatos", rotulo: "E-mail e Instagram", dica: "Se quiser no rodapé do site" },
+      { chave: "previa", rotulo: "Peças da prévia que ainda existem", dica: "As camisas e o fitness são de posts de 2022 a 2024" },
     ],
   },
 };
@@ -121,6 +152,11 @@ export function caminhoValido(c: Checkin, caminho: string) {
     /^[\w.-]+$/.test(partes[2]) &&
     !partes[2].endsWith(".json")
   );
+}
+
+/* a ficha de uma categoria: a dela, se tiver, senão a da loja */
+export function camposDa(c: Checkin, categoria: string): CampoCheckin[] | undefined {
+  return c.categorias.find((k) => k.id === categoria)?.campos ?? c.campos;
 }
 
 /* só as chaves que a loja declarou entram no JSON da foto e nas respostas */

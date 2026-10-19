@@ -49,7 +49,19 @@ export default async function PaginaCheckin({ params }: { params: Promise<{ toke
             <br />
             já separadas.
           </h1>
-          {c.instrucao ? (
+          {c.passos ? (
+            <>
+              <ol className={s.passos}>
+                {c.passos.map((p, n) => (
+                  <li key={p}>
+                    <b>{n + 1}</b>
+                    <span>{p}</span>
+                  </li>
+                ))}
+              </ol>
+              {c.instrucao && <p className={s.intro}>{c.instrucao}</p>}
+            </>
+          ) : c.instrucao ? (
             <p className={s.intro}>{c.instrucao}</p>
           ) : (
             <p className={s.intro}>
@@ -60,12 +72,13 @@ export default async function PaginaCheckin({ params }: { params: Promise<{ toke
           )}
         </header>
 
+        {/* as fotos primeiro, que são o trabalho; as perguntas da loja no fim (19/10) */}
+        <EnvioDeFotos token={token} categorias={c.categorias} campos={c.campos} iniciais={fotos} />
         {c.perguntas ? (
           <div className={s.fichas}>
             <PerguntasDaLoja token={token} perguntas={c.perguntas} iniciais={respostas} />
           </div>
         ) : null}
-        <EnvioDeFotos token={token} categorias={c.categorias} campos={c.campos} iniciais={fotos} />
 
         <footer className={s.pe}>
           <p>
