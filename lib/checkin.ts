@@ -25,7 +25,16 @@
 
 /* `campos` na categoria troca a ficha da loja só nela (19/10, Fardo: a
    chuteira pede numeração, a legging P ao GG, a bola o tipo) */
-export type CategoriaCheckin = { id: string; nome: string; dica: string; campos?: CampoCheckin[] };
+export type CategoriaCheckin = {
+  id: string;
+  nome: string;
+  dica: string;
+  campos?: CampoCheckin[];
+  /* a lista do dono (Fardo, 19/10: a Valeria escreveu à mão "chuteira salão 2,
+     campo 2, sete 2"): `grupo` é o título acima, `quantas` o que ela prometeu */
+  grupo?: string;
+  quantas?: number;
+};
 /* um campo da ficha de cada foto; `decimal` abre o teclado de número no celular.
    Com `opcoes`, vira botões de tocar (mais de um vale) e um "outro" escrito;
    o valor continua um texto só, "P, M, G", e o baixar-checkin não muda */
@@ -93,28 +102,66 @@ export const CHECKINS: Record<string, Checkin> = {
       { id: "outras", nome: "Outras fotos", dica: "Não sabe onde pôr? Manda aqui que eu separo." },
     ],
   },
-  /* a Fardo Esportes (19/10/2026): as 20 peças da entrega, com a ficha
-     completa em cada foto, e as perguntas da loja que a proposta deixou
-     em aberto (pagamento, entrega, troca, o percentual do cupom) */
+  /* a Fardo Esportes (19/10/2026): a lista que a Valeria escreveu à mão,
+     linha por linha e na ordem dela, com a quantidade de cada uma (51 peças:
+     o Rafael abriu a exceção às 20 da proposta). As perguntas da loja são o
+     que a proposta deixou em aberto (pagamento, entrega, troca, o cupom).
+     As categorias de antes (fitness, chuteiras...) saíram com o bucket vazio */
   eabcc8a507a8b121e529526b: {
     slug: "fardo-esportes",
     loja: "Fardo Esportes",
     dono: "Valeria",
-    instrucao: "O fundo da foto não importa, eu trato. Nesta entrega entram até 20 peças.",
-    passos: ["Escolha a categoria", "Mande as fotos da galeria", "Preencha nome, preço, tamanho e cor"],
+    instrucao: "Montei a lista do jeito que você escreveu. O fundo da foto não importa, eu trato.",
+    passos: ["Siga a sua lista, linha por linha", "Mande as fotos da galeria", "Preencha nome, preço, tamanho e cor"],
     campos: ficha("Ex.: Garrafa Nike 500 ml"),
-    /* os ids antigos ficam (fitness, chuteiras, camisas, moletons,
-       tenis-e-botas, outras): são as pastas do storage */
     categorias: [
-      { id: "fitness", nome: "Fitness feminino", dica: "Top, legging, conjunto, cropped", campos: ficha("Ex.: Legging Caju Alanis", { rotulo: "Tamanhos", opcoes: ROUPA }) },
-      { id: "chuteiras", nome: "Chuteiras", dica: "Campo, society e futsal", campos: ficha("Ex.: Chuteira society Nike Phantom", { rotulo: "Numeração", opcoes: numeros(26, 44) }) },
-      { id: "camisas", nome: "Camisas de time", dica: "Grêmio, Inter, Seleção e outras", campos: ficha("Ex.: Camisa Grêmio 2025 torcedor", { rotulo: "Tamanhos", opcoes: [...ROUPA, ...INFANTIL] }) },
-      { id: "bolas", nome: "Bolas", dica: "Futsal, campo, society, vôlei", campos: ficha("Ex.: Bola futsal Penalty Max 500") },
-      { id: "tenis-e-botas", nome: "Tênis e botas", dica: "Corrida, caminhada, casual", campos: ficha("Ex.: Tênis Mizuno Wave Prophecy", { rotulo: "Numeração", opcoes: numeros(26, 44) }) },
-      { id: "moletons", nome: "Moletons e casacos", dica: "Moletom, jaqueta, corta-vento", campos: ficha("Ex.: Moletom Nike Club caramelo", { rotulo: "Tamanhos", opcoes: ROUPA }) },
-      { id: "shorts", nome: "Shorts e calças", dica: "Calção, bermuda, calça de treino", campos: ficha("Ex.: Calção Umbro treino", { rotulo: "Tamanhos", opcoes: ROUPA }) },
-      { id: "acessorios", nome: "Acessórios", dica: "Meião, caneleira, luva, mochila", campos: ficha("Ex.: Caneleira Adidas", { rotulo: "Tamanhos", opcoes: ["Único", "Infantil", "P", "M", "G"] }) },
-      { id: "outras", nome: "Outras peças", dica: "Não sabe onde pôr? Manda aqui" },
+      ...[
+        ["chuteira-salao", "Chuteira de salão", "Ex.: Chuteira futsal Nike Beco"],
+        ["chuteira-campo", "Chuteira de campo", "Ex.: Chuteira campo Adidas Predator"],
+        ["chuteira-sete", "Chuteira de sete", "Ex.: Chuteira society Nike Phantom"],
+      ].map(([id, nome, ex]) => ({ id, nome, dica: "", grupo: "Futebol", quantas: 2, campos: ficha(ex, { rotulo: "Numeração", opcoes: numeros(26, 44) }) })),
+      ...[
+        ["camisa-gremio", "Grêmio", 1],
+        ["camisa-inter", "Inter", 1],
+        ["camisa-nacionais", "Times nacionais", 0],
+        ["camisa-internacionais", "Times internacionais", 1],
+        ["camisa-selecao", "Seleção Brasileira", 1],
+      ].map(([id, nome, q]) => ({
+        id: id as string,
+        nome: nome as string,
+        dica: q ? "" : "Se tiver",
+        grupo: "Camisas de time",
+        quantas: (q as number) || undefined,
+        campos: ficha("Ex.: Camisa Grêmio 2025 torcedor", { rotulo: "Tamanhos", opcoes: [...ROUPA, ...INFANTIL] }),
+      })),
+      { id: "basquete-tenis", nome: "Tênis de basquete", dica: "", grupo: "Basquete", quantas: 1, campos: ficha("Ex.: Tênis Nike Precision", { rotulo: "Numeração", opcoes: numeros(34, 44) }) },
+      { id: "basquete-bola", nome: "Bola de basquete", dica: "", grupo: "Basquete", quantas: 1, campos: ficha("Ex.: Bola Spalding NBA") },
+      { id: "basquete-regata", nome: "Regata", dica: "", grupo: "Basquete", quantas: 1, campos: ficha("Ex.: Regata Lakers", { rotulo: "Tamanhos", opcoes: ROUPA }) },
+      { id: "basquete-calcao", nome: "Calção", dica: "", grupo: "Basquete", quantas: 1, campos: ficha("Ex.: Calção de basquete Nike", { rotulo: "Tamanhos", opcoes: ROUPA }) },
+      { id: "tenis-fem", nome: "Tênis feminino", dica: "", grupo: "Tênis", quantas: 3, campos: ficha("Ex.: Tênis Mizuno Wave feminino", { rotulo: "Numeração", opcoes: numeros(33, 40) }) },
+      { id: "tenis-masc", nome: "Tênis masculino", dica: "", grupo: "Tênis", quantas: 3, campos: ficha("Ex.: Tênis Olympikus Corre", { rotulo: "Numeração", opcoes: numeros(37, 44) }) },
+      { id: "infantil-kits-licenciados", nome: "Kits licenciados", dica: "", grupo: "Infantil", quantas: 2, campos: ficha("Ex.: Kit Grêmio infantil", { rotulo: "Tamanhos", opcoes: INFANTIL }) },
+      { id: "infantil-kits-originais", nome: "Kits originais", dica: "", grupo: "Infantil", quantas: 2, campos: ficha("Ex.: Kit Inter infantil oficial", { rotulo: "Tamanhos", opcoes: INFANTIL }) },
+      { id: "infantil-tenis", nome: "Tênis infantil", dica: "", grupo: "Infantil", quantas: 2, campos: ficha("Ex.: Tênis infantil Nike", { rotulo: "Numeração", opcoes: numeros(20, 36) }) },
+      { id: "infantil-futebol", nome: "Futebol infantil", dica: "", grupo: "Infantil", quantas: 3, campos: ficha("Ex.: Chuteira infantil Penalty", { rotulo: "Tamanho ou numeração", opcoes: [...numeros(20, 36), ...INFANTIL] }) },
+      ...["CCM", "Caju", "Nike", "Alto Giro"].map((m) => ({
+        id: `fitness-fem-${m.toLowerCase().replace(/\s/g, "-")}`,
+        nome: m,
+        dica: "",
+        grupo: "Fitness feminino",
+        quantas: 2,
+        campos: ficha(`Ex.: Legging ${m}`, { rotulo: "Tamanhos", opcoes: ROUPA }),
+      })),
+      /* "Yatch" como ela escreveu: confirmar a marca com ela antes do site */
+      ...["Nike", "Puma", "New Balance", "Mizuno", "Penalty", "Fila", "Yatch"].map((m) => ({
+        id: `fitness-masc-${m.toLowerCase().replace(/\s/g, "-")}`,
+        nome: m,
+        dica: "",
+        grupo: "Fitness masculino",
+        quantas: 2,
+        campos: ficha(`Ex.: Camiseta ${m} dry`, { rotulo: "Tamanhos", opcoes: ROUPA }),
+      })),
+      { id: "outras", nome: "Outras peças", dica: "Não está na lista? Manda aqui", grupo: "Fora da lista" },
     ],
     perguntas: [
       { chave: "whatsapp", rotulo: "WhatsApp dos pedidos", dica: "Hoje está 54 99143-4166. Está certo?" },

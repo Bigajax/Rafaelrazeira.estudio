@@ -5,7 +5,7 @@
    /api/checkin entrega uma por foto; três por vez, para não engasgar o 4G.
    Quando a leva toda termina, a rota avisa o celular do Rafael. */
 
-import { useRef, useState } from "react";
+import { Fragment, useRef, useState } from "react";
 import { CORES, type CampoCheckin, type CategoriaCheckin } from "@/lib/checkin";
 import type { FotoEnviada } from "@/lib/checkin-servidor";
 import s from "./checkin.module.css";
@@ -199,11 +199,32 @@ export function EnvioDeFotos({ token, categorias, campos, iniciais }: { token: s
     }));
   }
 
+  /* com a lista do dono, o total do que ele prometeu fica no alto */
+  const prometidas = categorias.reduce((t, k) => t + (k.quantas ?? 0), 0);
+  const mandadas = categorias.reduce((t, k) => t + Math.min(itens[k.id].filter((i) => i.estado === "pronta").length, k.quantas ?? Infinity), 0);
+
   return (
     <div className={s.fichas}>
+      {prometidas > 0 && (
+        <div className={s.total} aria-live="polite">
+          <p>
+            <b>{mandadas}</b> de {prometidas} peças
+          </p>
+          <span className={s.barra} style={{ ["--p" as string]: mandadas / prometidas }} />
+        </div>
+      )}
       {categorias.map((k, n) => (
+        <Fragment key={k.id}>
+          {k.grupo && k.grupo !== categorias[n - 1]?.grupo && (
+            <h2 className={s.grupo}>
+              {k.grupo}
+              {(() => {
+                const q = categorias.filter((x) => x.grupo === k.grupo).reduce((t, x) => t + (x.quantas ?? 0), 0);
+                return q ? <span>{q} peças</span> : null;
+              })()}
+            </h2>
+          )}
         <Ficha
-          key={k.id}
           numero={n + 1}
           categoria={k}
           campos={fichaDe(k.id)}
@@ -235,6 +256,7 @@ export function EnvioDeFotos({ token, categorias, campos, iniciais }: { token: s
             )
           }
         />
+        </Fragment>
       ))}
     </div>
   );
@@ -272,17 +294,25 @@ function Ficha({
   const subindo = itens.filter((i) => i.estado === "fila" || i.estado === "subindo").length;
 
   return (
-    <section className={s.ficha} aria-labelledby={`t-${categoria.id}`}>
+    <section className={s.ficha} data-lista={categoria.quantas ? "" : undefined} data-completa={categoria.quantas && prontas >= categoria.quantas ? "" : undefined} aria-labelledby={`t-${categoria.id}`}>
       <div className={s.ficha__topo}>
         <p className={s.ficha__num}>{String(numero).padStart(2, "0")}</p>
         <div className={s.ficha__texto}>
-          <h2 id={`t-${categoria.id}`} className={s.ficha__nome}>
+          <h3 id={`t-${categoria.id}`} className={s.ficha__nome}>
             {categoria.nome}
-          </h2>
-          <p className={s.ficha__dica}>{categoria.dica}</p>
+          </h3>
+          {categoria.dica && <p className={s.ficha__dica}>{categoria.dica}</p>}
         </div>
         <p className={s.contagem} aria-live="polite">
-          {subindo ? `subindo ${subindo}` : prontas ? `${prontas} ${prontas > 1 ? "fotos" : "foto"}` : "vazia"}
+          {subindo
+            ? `subindo ${subindo}`
+            : categoria.quantas
+              ? prontas >= categoria.quantas
+                ? `✓ ${prontas} de ${categoria.quantas}`
+                : `${prontas} de ${categoria.quantas}`
+              : prontas
+                ? `${prontas} ${prontas > 1 ? "fotos" : "foto"}`
+                : "vazia"}
         </p>
       </div>
 
