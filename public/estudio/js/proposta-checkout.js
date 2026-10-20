@@ -58,6 +58,12 @@
       if (localStorage.getItem("cookie_consent") !== "declined") {
         var v = localStorage.getItem("visita_ref");
         if (v) r.ref = v;
+        /* os cookies do pixel (20/10): o Purchase sai do servidor, no aviso
+           do Mercado Pago, e é com eles que a Meta amarra a compra ao clique */
+        ["_fbp", "_fbc"].forEach(function (nome) {
+          var m = document.cookie.match(new RegExp("(?:^|; )" + nome + "=([^;]*)"));
+          if (m) r[nome.slice(1)] = decodeURIComponent(m[1]);
+        });
       }
     } catch (e) {}
     return r;
@@ -250,6 +256,14 @@
           if (j.status === "approved") {
             clearInterval(pollTimer);
             pollTimer = null;
+            /* o mesmo Purchase que o webhook manda pelo servidor, com o mesmo
+               id: a Meta junta os dois e fica com um (20/10). Só na compra
+               direta, e só onde o pixel foi carregado. */
+            if (propostaId === "vitrine-direta" && window.fbq && item) {
+              try {
+                window.fbq("track", "Purchase", { value: item.valor, currency: "BRL", content_name: "vitrine-direta" }, { eventID: "mp-" + data.id });
+              } catch (e) {}
+            }
             showSuccess(body, "pix", item);
           } else if (j.status === "cancelled" || j.status === "expired") {
             clearInterval(pollTimer);

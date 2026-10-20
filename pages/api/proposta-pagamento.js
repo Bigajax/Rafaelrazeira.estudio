@@ -126,6 +126,21 @@ export default async function handler(req, res) {
     if (typeof v === "string" && v.length <= 100 && /^[\w.:~+-]+$/.test(v))
       metadata[k === "ref" ? "visita_ref" : k] = v;
   }
+  /* ---------- o Purchase da compra direta (20/10/2026) ----------
+     O webhook avisa a Meta quando o Pix da /vitrine-v4 é aprovado
+     (lib/meta/compra.js). Sem o navegador de quem pagou, a Meta não acha o
+     clique: os cookies do pixel vêm do checkout, e o IP e o user agent são
+     lidos aqui, do pedido, nunca do corpo. Só na compra direta. */
+  if (b.proposta === "vitrine-direta") {
+    for (const k of ["fbp", "fbc"]) {
+      const v = rastro[k];
+      if (typeof v === "string" && v.length <= 255 && /^fb\.\d\.\d+\.[\w.-]+$/.test(v)) metadata[k] = v;
+    }
+    const ip = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim();
+    if (ip) metadata.client_ip = ip;
+    const ua = String(req.headers["user-agent"] || "").slice(0, 400);
+    if (ua) metadata.client_ua = ua;
+  }
   const idempotencyKey = crypto.randomUUID();
   const description = `${p.titulo} — ${item.label}`;
 

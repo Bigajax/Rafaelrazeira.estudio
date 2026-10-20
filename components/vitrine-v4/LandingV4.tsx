@@ -155,6 +155,8 @@ export function LandingV4({ oferta }: { oferta: OfertaV4Publica }) {
     ["A cliente paga na vitrine?", "Não. Ela escolhe as peças, monta a sacola e o pedido chega no seu WhatsApp com a peça, o tamanho e o link. Pagamento e entrega você combina com ela, como já faz hoje."],
     ["O que não está incluso?", "Domínio próprio (opcional, pago direto no registrador), as fotos das peças, nota fiscal e pagamento online dentro da vitrine."],
     ["E se eu não gostar?", `Você vê a primeira versão antes da publicação e tem uma rodada de ajustes incluída. Os ${reais(oferta.saldo)} só são pagos depois da sua aprovação.`],
+    /* (20/10) a devolução: os 7 dias do Código do Consumidor e o prazo que depende de mim */
+    ["E se eu desistir?", `Em até 7 dias depois do Pix, você desiste por qualquer motivo e eu devolvo os ${reais(oferta.entrada)} inteiros, no mesmo Pix. E se a primeira versão não ficar pronta em até 7 dias úteis depois que eu receber o material, você também pode pedir os ${reais(oferta.entrada)} de volta.`],
   ];
   return <>
     <a className={s.pular} href="#principal">Pular para o conteúdo</a>
@@ -213,6 +215,8 @@ export function LandingV4({ oferta }: { oferta: OfertaV4Publica }) {
             <div className={c.reciboTotal}><dt>Total</dt><dd>{reais(oferta.total)}</dd></div>
           </dl>
           <button type="button" className={c.reciboBotao} data-checkout-item="entrada_pix" data-cta="oferta_entrada_pix" data-cta-dest="checkout">Pagar {reais(oferta.entrada)} no Pix e começar<Icone tipo="seta" /></button>
+          {/* (20/10) a garantia mora no botão: é ali que o medo de pagar a um desconhecido aparece */}
+          <p className={c.reciboGarantia}><Icone tipo="check" />Desistiu em até 7 dias? Devolvo os {reais(oferta.entrada)} inteiros.</p>
           <p className={c.reciboNota}>O saldo vem na entrega, no Pix ou no cartão em até {oferta.parcelasSaldo}x, com os juros do cartão calculados no checkout. Pagamento pelo Mercado Pago: assim que ele cai, o WhatsApp abre numa conversa comigo.</p>
           <a className={c.duvida} href={duvida} target="_blank" rel="noreferrer" data-cta="oferta_duvida" data-cta-dest="whatsapp">Quero tirar uma dúvida com o Rafael ↗</a>
         </div></div>

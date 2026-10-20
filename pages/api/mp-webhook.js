@@ -54,6 +54,7 @@ import {
   registrarPerf,
   processarPagamento,
 } from "@/lib/mercadopago/processar";
+import { avisarCompra } from "@/lib/meta/compra";
 
 const MP_API = "https://api.mercadopago.com/v1/payments";
 /* Notificação com mais de dez minutos é replay: o Mercado Pago entrega em
@@ -292,7 +293,13 @@ export default async function handler(req, res) {
 
   try {
     const resultado = await processarPagamento(dono, pg);
-    return responder(res, 200, { ok: true, ...resultado });
+    /* a compra direta avisa a Meta depois da baixa, nunca antes: o
+       dinheiro já está no Caixa, e uma falha aqui é só log (20/10) */
+    const compra =
+      !resultado.ignorado && !resultado.devolucao
+        ? await avisarCompra(pg)
+        : { compra: false };
+    return responder(res, 200, { ok: true, ...resultado, ...compra });
   } catch (e) {
     console.error("mp_webhook_processamento", String(pg.id), e.message);
     return responder(res, 500, {
