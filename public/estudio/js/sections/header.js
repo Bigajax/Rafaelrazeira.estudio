@@ -48,7 +48,9 @@ export function header(){
         ${seletorIdioma()}
         <a href="/servicos" class="nav-product">SERVIÇOS</a>
         <a href="/vitrine-digital/" class="nav-product">VITRINE DIGITAL</a>
+        <a href="/e-commerce" class="nav-product">E-COMMERCE</a>
         <a href="/portfolio" class="nav-product">PORTFÓLIO</a>
+        <a href="/casos" class="nav-product">CASOS</a>
         <a href="#contato" class="nav-cta" data-cta="header" data-cta-dest="form">${b.navCta} <span class="arrow">↗</span></a>
       </nav>
     </div>

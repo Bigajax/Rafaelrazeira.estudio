@@ -265,3 +265,44 @@
 .cases__tiraTrack img:nth-child(even){transform:rotate(1deg)}
 @keyframes casesTira{to{transform:translateX(-50%)}}
 @media(prefers-reduced-motion:reduce){.cases__tiraTrack{animation:none}}
+
+/* o link do portfólio dentro da intro (a /estudio, 20/10/2026) */
+.cases__intro a{color:var(--ink);border-bottom:1px solid var(--green);padding-bottom:1px}
+@media(hover:hover) and (pointer:fine){.cases__intro a:hover{border-bottom-color:var(--ink)}}
+
+/* ============================================================
+   A TIRA COM PERSONALIDADE (a /estudio, 20/10/2026)
+   "Dê personalidade aqui": as capas eram miniaturas de uma linha de
+   altura, soltas entre as duas metades da manchete, e liam como
+   carregamento. Cada capa virou uma PEÇA (janela do navegador + captura +
+   nome da loja), e o `tiraEstilo` do config escolhe a montagem. Das três
+   mostradas paradas ao Rafael (faixa, janelas, mural) ele escolheu a
+   FAIXA: o mesmo gesto da faixa grafite do hero, torta e sangrando.
+   ============================================================ */
+.cases__tira[class*="tira--"]{height:auto;margin:.18em 0;-webkit-mask-image:none;mask-image:none;overflow:visible}
+.tira__peca{display:flex;flex-direction:column;flex:none;background:#FBF9F3;border:1.5px solid var(--ink)}
+.tira__barra{display:flex;gap:4px;align-items:center;height:14px;padding:0 7px;border-bottom:1.5px solid var(--ink);background:var(--paper)}
+.tira__barra i{width:5px;height:5px;border-radius:50%;background:var(--ink);opacity:.35}
+.tira__peca img{display:block;width:100%;height:auto;aspect-ratio:16/10;object-fit:cover;object-position:top}
+.tira__nome{
+  padding:6px 8px 7px;border-top:1.5px solid var(--ink);
+  font-family:var(--font-mono);font-stretch:100%;font-weight:700;font-size:10px;line-height:1.2;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ink);white-space:nowrap;
+}
+
+/* --- A: a faixa grafite torta, sangrando de ponta a ponta --- */
+.tira--faixa{
+  position:relative;z-index:1;
+  margin:.42em calc(-1 * (100vw - min(var(--maxw),100vw)) / 2 - var(--pad)) .5em !important;
+  padding:22px 0;background:var(--ink);transform:rotate(-2.2deg);overflow:hidden !important;
+}
+.tira--faixa .cases__tiraTrack{gap:22px}
+.tira--faixa .tira__peca{width:250px;box-shadow:6px 6px 0 var(--green-live);border-color:var(--paper)}
+.tira--faixa .tira__barra,.tira--faixa .tira__nome{border-color:var(--ink)}
+
+@media(max-width:700px){
+  .tira--faixa .tira__peca{width:180px}
+}
+/* a faixa torta passa da borda de propósito; a seção corta o que sobra,
+   senão a página ganhava 4px de rolagem para o lado no notebook */
+.cases:has(.tira--faixa){overflow-x:clip}

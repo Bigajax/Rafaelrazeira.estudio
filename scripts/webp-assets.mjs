@@ -46,6 +46,10 @@ const ARQUIVOS = [
   { origem: "public/assets/case-baixudos.jpg" },
   { origem: "public/assets/case-solourb.jpg" },
   { origem: "public/assets/case-xavier.jpg" },
+  /* Os dois casos escritos (/casos/fulltime e /casos/verit-lab) na home,
+     20/10/2026: 780x9000 como as de cima, capturadas a 390@2x. */
+  { origem: "public/assets/case-fulltime.jpg" },
+  { origem: "public/assets/case-verit.jpg" },
 ];
 
 const kb = (n) => Math.round(n / 1024);

@@ -4,3 +4,10 @@
    Este arquivo existe para overrides específicos, se precisar.
    ============================================================ */
 .pill.is-hidden{opacity:0;pointer-events:none}
+
+/* ---------- na /estudio o pill é só do celular (20/10/2026) ----------
+   No notebook ele ficava preso no canto de baixo à direita, por cima do
+   texto das seções (o parágrafo do "quem faz", a lista do "para quem é"),
+   e o topo já tem o botão "Vamos conversar" sempre à vista. A
+   /landing-page não muda: lá o pill é o botão da página. */
+@media(min-width:1024px){.pg-estudio .pill{display:none}}

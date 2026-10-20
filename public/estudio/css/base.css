@@ -374,3 +374,7 @@ section{padding-block:clamp(52px,6.6vw,92px)}
 .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
 .reveal.in{opacity:1;transform:none}
 @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+
+/* "e-commerce" não quebra no hífen (20/10/2026): no celular saía "e-" numa
+   linha e "commerce" na outra, no cartão do hero e no "para quem é". */
+.nobr{white-space:nowrap}

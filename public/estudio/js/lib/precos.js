@@ -21,7 +21,18 @@ export function initPrecos(){
   if (!form) return;
 
   const campo = form.querySelector('input[type="hidden"][name="tipo_projeto"]');
-  if (!campo) return;
+  /* Na /estudio (desde 20/10/2026, com as duas etiquetas) o tipo é o rádio
+     do passo 2: o clique na etiqueta já deixa marcada a opção dela, e a
+     pessoa ainda pode trocar. */
+  if (!campo) {
+    document.querySelectorAll(".pr__etiqueta[data-tipo]").forEach(link => {
+      link.addEventListener("click", () => {
+        const radio = [...form.querySelectorAll('input[type="radio"][name="tipo_projeto"]')].find(r => r.value === link.dataset.tipo);
+        if (radio) radio.checked = true;
+      });
+    });
+    return;
+  }
 
   const links = document.querySelectorAll(".pr__item[data-tipo], .pr__etiqueta[data-tipo]");
   links.forEach(link => {

@@ -85,6 +85,7 @@ export function cases(){
       ${it.tag ? `<div class="case__tag">${it.tag}</div>` : ""}
       <h3 class="case__name">${it.name}</h3>
       <p class="case__result">${it.result}</p>
+      ${/* o link na grade (20/10/2026): na /estudio, "ler o caso" leva ao /casos/<loja> na mesma aba; projeto no ar abre em outra */""}${it.url ? `<a class="case__link" href="${it.url}"${/^https?:/.test(it.url) ? ` target="_blank" rel="noopener"` : ""} data-cta="case_ver" data-cta-dest="${/^https?:/.test(it.url) ? "projeto" : "caso"}">${it.link || T.verNoAr} <span class="arrow" aria-hidden="true">→</span></a>` : ""}
     </article>`).join("");
   return `
   <section class="cases" id="cases">
@@ -92,7 +93,11 @@ export function cases(){
       <p class="cases__eyebrow reveal">${c.label}</p>
       ${/* as capas da tira carregam sem lazy: são 8 arquivos de ~8KB, e dentro do letreiro em movimento o lazy deixava buraco */""}${c.manchete && c.tira ? `<h2 class="cases__head cases__head--tira reveal">
         <span>${c.manchete.antes}</span>
-        <span class="cases__tira" aria-hidden="true"><span class="cases__tiraTrack">${[...c.tira, ...c.tira].map(t => `<img src="${abs(t.img)}" alt="" width="320" height="200" decoding="async" />`).join("")}</span></span>
+        <span class="cases__tira${c.tiraEstilo ? ` tira--${c.tiraEstilo}` : ""}" aria-hidden="true"><span class="cases__tiraTrack">${[...c.tira, ...c.tira].map(t => c.tiraEstilo
+          /* com estilo (a /estudio, 20/10/2026) cada capa vira uma peça: a
+             janela do navegador em cima, a captura, e o nome da loja embaixo */
+          ? `<span class="tira__peca"><span class="tira__barra"><i></i><i></i><i></i></span><img src="${abs(t.img)}" alt="" width="320" height="200" decoding="async" /><span class="tira__nome">${t.alt}</span></span>`
+          : `<img src="${abs(t.img)}" alt="" width="320" height="200" decoding="async" />`).join("")}</span></span>
         <span>${c.manchete.depois}</span>
       </h2>` : `<h2 class="cases__head reveal">${c.headline}</h2>`}
       ${c.intro ? `<p class="cases__intro reveal">${c.intro}</p>` : ""}

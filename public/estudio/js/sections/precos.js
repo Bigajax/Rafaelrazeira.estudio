@@ -50,8 +50,23 @@ export function precos(){
      na margem. É o único objeto de papel desta seção, e a etiqueta inteira
      é o link para o formulário, com o `data-tipo` que o js/lib/precos.js
      grava no campo escondido. */
-  const i = p.item;
-  const incluso = (i.incluso || []).map(t => `<li>${t}</li>`).join("");
+  /* ---------- duas etiquetas na /estudio (20/10/2026) ----------
+     A home vende duas coisas que não são degraus uma da outra (a vitrine e
+     o e-commerce), então `itens` pendura uma etiqueta para cada, lado a
+     lado no notebook. Cada uma traz a própria `entrada`, e `prefixo` ("a
+     partir de") entra miúdo acima do número. A LP segue com `item` só. */
+  const etiqueta = (i, entrada) => `
+      <a class="pr__etiqueta reveal" href="#contato" data-tipo="${i.tipoProjeto}" data-cta="precos" data-cta-dest="form">
+        <span class="et__tipo">${i.tipo}</span>
+        <span class="et__valor">${i.prefixo ? `<small>${i.prefixo}</small>` : ""}${i.valor}</span>
+        <span class="et__escopo">${i.escopo}</span>
+        <ul class="et__incluso">${(i.incluso || []).map(t => `<li>${t}</li>`).join("")}</ul>
+        <span class="et__entrada">${entrada}</span>
+        <span class="et__acao">${i.acao} <span class="arrow" aria-hidden="true">→</span></span>
+      </a>`;
+  const corpo = p.itens
+    ? `<div class="pr__etiquetas">${p.itens.map(i => etiqueta(i, i.entrada)).join("")}</div>`
+    : etiqueta(p.item, p.entrada);
 
   return `
   <section class="precos dark" id="precos">
@@ -59,14 +74,7 @@ export function precos(){
       <div class="section-label pr__label reveal">${p.label}</div>
       <h2 class="pr__head reveal">${ponto(p.headline)}</h2>
       <p class="pr__intro reveal">${p.intro}</p>
-      <a class="pr__etiqueta reveal" href="#contato" data-tipo="${i.tipoProjeto}" data-cta="precos" data-cta-dest="form">
-        <span class="et__tipo">${i.tipo}</span>
-        <span class="et__valor">${i.valor}</span>
-        <span class="et__escopo">${i.escopo}</span>
-        <ul class="et__incluso">${incluso}</ul>
-        <span class="et__entrada">${p.entrada}</span>
-        <span class="et__acao">${i.acao} <span class="arrow" aria-hidden="true">→</span></span>
-      </a>
+      ${corpo}
       <p class="pr__nota reveal">${p.nota}</p>
     </div>
   </section>`;

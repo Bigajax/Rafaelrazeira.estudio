@@ -17,7 +17,7 @@ export function footer(){
       </nav>
       <p class="footer__location">${f.location}</p>
       <div class="footer__bar">
-        <span>© ${ano} — ${f.name} — ${T.direitos}</span>
+        <span>© ${ano} ${f.name}. ${T.direitos}</span>${/* sem travessão (20/10/2026): regra da casa para texto visível */""}
         <div class="footer__legal">${legal}</div>
       </div>
     </div>
