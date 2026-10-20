@@ -38,6 +38,30 @@
   function brl(v) {
     return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
   }
+
+  /* ——— de qual anúncio veio quem paga (19/10/2026) ———
+     As UTMs do primeiro toque (sessionStorage "utm_sessao", gravado pelo
+     tracking da /vitrine-v4) e o código da visita (localStorage "visita_ref")
+     viajam no pagamento e voltam no aviso do Mercado Pago, dentro do
+     `metadata`. Sem isto, a compra direta media clique e não venda. O código
+     da visita respeita o "não rastrear" da Política de Privacidade; as UTMs
+     não identificam ninguém e vão sempre, como no formulário. */
+  function rastro() {
+    var r = {};
+    try {
+      var u = JSON.parse(sessionStorage.getItem("utm_sessao") || "{}");
+      ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"].forEach(function (k) {
+        if (typeof u[k] === "string" && u[k]) r[k] = u[k];
+      });
+    } catch (e) {}
+    try {
+      if (localStorage.getItem("cookie_consent") !== "declined") {
+        var v = localStorage.getItem("visita_ref");
+        if (v) r.ref = v;
+      }
+    } catch (e) {}
+    return r;
+  }
   function maskCpf(input) {
     input.addEventListener("input", function () {
       var d = input.value.replace(/\D/g, "").slice(0, 11);
@@ -178,6 +202,7 @@
           proposta: propostaId,
           item: item.id,
           payer: { nome: nome, email: email, cpf: cpf },
+          rastro: rastro(),
         }),
       })
         .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
@@ -301,6 +326,7 @@
                     installments: fd.installments,
                     payer: fd.payer,
                   },
+                  rastro: rastro(),
                 }),
               })
                 .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })

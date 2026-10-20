@@ -112,6 +112,20 @@ export default async function handler(req, res) {
      histórico do Mercado Pago, e o webhook tem um caminho de leitura para
      cada formato. */
   const external_reference = `crm:${b.proposta}:${b.item}:${crypto.randomUUID()}`;
+
+  /* ---------- de qual anúncio veio (19/10/2026) ----------
+     O checkout manda as UTMs da sessão e o código da visita; o MP devolve o
+     `metadata` inteiro no pagamento, e o webhook já grava o pagamento em
+     `crm_recebimentos.bruto`. Vem do browser, então só passa o que tem forma
+     de UTM: chave conhecida, texto curto, sem caractere estranho. Nunca
+     decide valor nem item, só a etiqueta de origem. */
+  const metadata = { origem: "proposta", proposta: b.proposta, item: b.item };
+  const rastro = b.rastro && typeof b.rastro === "object" ? b.rastro : {};
+  for (const k of ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "ref"]) {
+    const v = rastro[k];
+    if (typeof v === "string" && v.length <= 100 && /^[\w.:~+-]+$/.test(v))
+      metadata[k === "ref" ? "visita_ref" : k] = v;
+  }
   const idempotencyKey = crypto.randomUUID();
   const description = `${p.titulo} — ${item.label}`;
 
@@ -152,7 +166,7 @@ export default async function handler(req, res) {
           date_of_expiration: expiration,
           external_reference,
           notification_url,
-          metadata: { origem: "proposta", proposta: b.proposta, item: b.item },
+          metadata,
           payer: {
             email,
             first_name,
@@ -201,7 +215,7 @@ export default async function handler(req, res) {
         external_reference,
         notification_url,
         statement_descriptor: "RAZEIRA ESTUDIO",
-        metadata: { origem: "proposta", proposta: b.proposta, item: b.item },
+        metadata,
         payer: {
           email: payer.email,
           identification: {

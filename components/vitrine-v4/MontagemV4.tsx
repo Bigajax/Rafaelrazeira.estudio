@@ -2,13 +2,16 @@
 
 import { useEffect } from "react";
 import { ligarAncoras } from "@/components/vitrine/ancora";
-import { initTracking } from "@/components/vitrine/tracking";
+import { initTracking, utmsDaSessao } from "@/components/vitrine/tracking";
 import checkoutStyles from "./landing-v4.module.css";
 
 // A V4 cobra a entrada da tabela (lib/propostas.ts, "vitrine-direta"), com métricas próprias.
 export function MontagemV4({ valor }: { valor: number }) {
   useEffect(() => {
     initTracking({ page: "vitrine-v4", valor, currency: "BRL", lang: "pt" });
+    // Guarda as UTMs do primeiro toque já na chegada: a V4 não tem formulário, e o
+    // checkout (proposta-checkout.js) lê "utm_sessao" para levar o anúncio até o pagamento.
+    utmsDaSessao();
     const desligarAncoras = ligarAncoras();
 
     const pagina = document.getElementById("principal")?.parentElement;

@@ -52,6 +52,7 @@ export default async function PaginaPerformance() {
           </p>
         </div>
         <div className={p.acoes}>
+          <Link href="/crm/performance/criativos" className={a.botaoAnalise}>Criativos</Link>
           <Link href="/crm/performance/placas" className={a.botaoAnalise}>Placas de conquista</Link>
           <Link href="/crm/performance/analise" className={a.botaoAnalise}>
             Análise das vitrines

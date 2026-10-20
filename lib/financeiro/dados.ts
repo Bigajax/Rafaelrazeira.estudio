@@ -6,7 +6,7 @@ import { recebimentoAnulado } from "@/lib/sistema/indicadores";
 import type { Custo, Recebimento } from "./tipos";
 import type { Ocorrencia } from "./ocorrencias";
 
-async function cotacaoDolar(): Promise<{
+export async function cotacaoDolar(): Promise<{
   valor: number;
   quando: string;
 } | null> {
