@@ -25,7 +25,8 @@ export function filasAtendimento(leads: LeadPainel[], hoje: string) {
   const prioridade = (l: LeadPainel) => procurouOEstudio(l) ? 0 : l.origem === "indicacao" ? 1 : l.origem === "prospeccao" ? 3 : 2;
   const desempate = (a: LeadPainel, b: LeadPainel) => a.id.localeCompare(b.id);
   return {
-    novos: ativos.filter(novoContato).sort((a, b) => prioridade(a) - prioridade(b) || a.created_at.localeCompare(b.created_at) || desempate(a, b)),
+    // Quem acabou de chegar está quente; a espera antiga já esfriou (20/10/2026).
+    novos: ativos.filter(novoContato).sort((a, b) => prioridade(a) - prioridade(b) || b.created_at.localeCompare(a.created_at) || desempate(a, b)),
     responder: todos.filter(precisaResponder).sort((a, b) => momentoDoContato(a).localeCompare(momentoDoContato(b)) || desempate(a, b)),
     retornos: todos.filter((l) => !novoContato(l) && !precisaResponder(l) && (l.cobranca ? l.cobranca.quando <= hoje : ehAtivo(l.estagio) && (l.estagio === "geladeira" ? Boolean(l.proxima_acao_em && l.proxima_acao_em <= hoje) : !l.proxima_acao_em || l.proxima_acao_em <= hoje))).sort((a, b) => dataRetorno(a).localeCompare(dataRetorno(b)) || desempate(a, b)),
     prospeccao: ativos.filter((l) => l.origem === "prospeccao"),

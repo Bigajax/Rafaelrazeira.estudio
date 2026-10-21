@@ -27,9 +27,9 @@ testar("Primeira saída registrada encerra Novos; uma entrada não encerra", () 
   assert.equal(novoContato(lead("a", { toques: 1, toques_entrada: 1 })), true);
   assert.equal(novoContato(lead("a", { toques: 2, toques_entrada: 1, saidas_seguidas: 1 })), false);
 });
-testar("Quem procurou o estúdio vem antes do lote importado, com espera antiga primeiro", () => {
+testar("Quem procurou o estúdio vem antes do lote importado, e o que acabou de chegar no topo", () => {
   const dados = [lead("importado", { origem: "prospeccao", created_at: "2020-01-01" }), lead("indicado", { origem: "indicacao" }), lead("recente", { created_at: "2026-10-16" }), lead("esperando", { created_at: "2026-10-15" })];
-  assert.deepEqual(filasAtendimento(dados, hoje).novos.map((l) => l.id), ["esperando", "recente", "indicado", "importado"]);
+  assert.deepEqual(filasAtendimento(dados, hoje).novos.map((l) => l.id), ["recente", "esperando", "indicado", "importado"]);
 });
 testar("Resposta pendente reaparece independente da agenda futura e da origem", () => {
   const l = lead("a", { origem: "prospeccao", toques: 4, toques_entrada: 2, saidas_seguidas: 0, proxima_acao_em: "2027-01-01" });

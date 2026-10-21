@@ -71,7 +71,7 @@ export function CentralAtendimento({ painel, templates, posts = [] }: Props) {
       </nav>
       <div className={c.contexto}>
         <div><h2>{descricao.nome}</h2><p>{descricao.descricao}</p></div>
-        {aba === "novos" && <span className={c.prioridade}>Quem procurou o estúdio aparece primeiro</span>}
+        {aba === "novos" && <span className={c.prioridade}>Quem procurou o estúdio aparece primeiro, o mais recente no topo</span>}
       </div>
       {aba === "prospeccao" ? <div className={c.prospeccao}><Hoje painel={prospeccao} templates={templates} posts={posts} /></div> : <>
         <div className={c.filtros}>
