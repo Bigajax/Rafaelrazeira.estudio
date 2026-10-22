@@ -182,13 +182,13 @@ export const pt = {
     h2: <>Você manda o material.<br /><em>O resto é comigo.</em></>,
     cards: [
       ["Design personalizado", "Visual alinhado à identidade da sua loja, não um modelo pronto."],
-      ["Catálogo e produtos", "Página inicial, categorias e até 20 produtos cadastrados por mim."],
+      ["Catálogo e produtos", "Página inicial, categorias e até 60 produtos cadastrados por mim."],
       ["WhatsApp integrado", "O pedido chega com o produto já identificado."],
       ["Publicação completa", "Vitrine no ar, endereço configurado e uma rodada de ajustes."],
     ] as [string, string][],
     listaTitulo: "Ver a lista completa, item por item",
     lista: [
-      ["Até 20 produtos", "Eu cadastro todos no lançamento. Acima disso, combinamos à parte."],
+      ["Até 60 produtos", "Eu cadastro todos no lançamento. Acima disso, combinamos à parte."],
       ["Domínio e endereço", "Coloco a vitrine no ar. O domínio próprio é opcional, anual e pago direto no registrador."],
       ["Páginas de produto", "Fotos, descrição, preço, tamanhos e variações em uma página só."],
       ["Uma rodada de ajustes", "Você revisa e aponta as correções antes de a página entrar no ar."],
@@ -228,7 +228,7 @@ export const pt = {
     /* as duas portas do balcão; a segunda (à vista) é null quando não há Pix */
     parcelado: { rotulo: "PARCELADO", antes: " 4 parcelas de ", valor: centavos(v.saldo / 4), depois: "", nota: "o saldo só depois de você aprovar" },
     avista: v.avista ? { rotulo: "À VISTA NO PIX ", selo: "10% OFF", valor: centavos(v.avista), depois: " de uma vez", nota: `economiza ${R(v.total - v.avista)} e é a forma que eu prefiro receber` } : null,
-    itens: ["Design personalizado", "Página inicial e catálogo", "Páginas de produto", "WhatsApp integrado", "Até 20 produtos cadastrados", "Painel de gestão da loja", "Publicação e endereço configurado", "Uma rodada de ajustes", "Entrega em até 7 dias úteis"],
+    itens: ["Design personalizado", "Página inicial e catálogo", "Páginas de produto", "WhatsApp integrado", "Até 60 produtos cadastrados", "Painel de gestão da loja", "Publicação e endereço configurado", "Uma rodada de ajustes", "Entrega em até 7 dias úteis"],
     cta: "QUERO VER A MINHA LOJA ↓",
     garantia: `O saldo de ${R(v.saldo)} é pago somente depois que você visualizar e aprovar o projeto.`,
     tira: { label: "SUA PRÓXIMA MENSAGEM", balao: "Rafael, quero uma vitrine dessas pra minha loja", hora: "19:15" },
@@ -267,7 +267,7 @@ export const pt = {
     /* `nao` marca as respostas que começam com "não": é o que a manchete conta */
     itens: [
       { p: "A vitrine recebe pagamentos dos meus clientes?", r: "Não. A vitrine organiza o catálogo e leva o pedido pronto para o WhatsApp da loja, onde você combina pagamento e entrega.", nao: true },
-      { p: "Quantos produtos estão incluídos?", r: "A vitrine não tem limite de produtos. Os 20 primeiros eu cadastro para você, com foto, preço e tamanhos; os outros você mesmo cadastra no painel, em minutos e sem me chamar.", nao: false },
+      { p: "Quantos produtos estão incluídos?", r: "A vitrine não tem limite de produtos. Os 60 primeiros eu cadastro para você, com foto, preço e tamanhos; os outros você mesmo cadastra no painel, em minutos e sem me chamar.", nao: false },
       { p: "Existe mensalidade?", r: `Não. O projeto custa ${R(v.total)} uma única vez. Um domínio próprio é opcional e tem custo anual pago direto no registrador.`, nao: true },
       { p: "Quem atualiza a vitrine depois?", r: "Você mesmo, pelo painel que acompanha a vitrine: troca preço e foto, marca esgotado ou pronta entrega e cadastra produtos novos.", nao: false },
       { p: "Quanto tempo demora?", r: "Até 7 dias úteis depois do envio de todos os materiais da loja.", nao: false },

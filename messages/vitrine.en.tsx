@@ -169,13 +169,13 @@ export const en: VitrineMessages = {
     h2: <>You send the material.<br /><em>The rest is on me.</em></>,
     cards: [
       ["Custom design", "A look aligned with your store's identity, not a ready-made template."],
-      ["Catalog and products", "Home page, categories and up to 20 products registered by me."],
+      ["Catalog and products", "Home page, categories and up to 60 products registered by me."],
       ["WhatsApp built in", "The order arrives with the product already identified."],
       ["Full publishing", "Storefront live, address set up and one round of revisions."],
     ],
     listaTitulo: "See the full list, item by item",
     lista: [
-      ["Up to 20 products", "I register all of them at launch. Beyond that, we agree separately."],
+      ["Up to 60 products", "I register all of them at launch. Beyond that, we agree separately."],
       ["Domain and address", "I put the storefront live. Your own domain is optional, yearly, and paid directly to the registrar."],
       ["Product pages", "Photos, description, price, sizes and variations on one page."],
       ["One round of revisions", "You review and point out the fixes before the page goes live."],
@@ -214,7 +214,7 @@ export const en: VitrineMessages = {
     /* sem Pix: a primeira porta é o saldo, a segunda diz como se paga */
     parcelado: { rotulo: "THE BALANCE", antes: " ", valor: `${R(v.saldo)}.00`, depois: " after approval", nota: "the balance only after you approve the store" },
     avista: { rotulo: "HOW YOU PAY ", selo: "NO CARD HERE", valor: "By email", depois: ", after the preview", nota: "I send the payment details once you approve the design" },
-    itens: ["Custom design", "Home page and catalog", "Product pages", "WhatsApp built in", "Up to 20 products registered", "Store management panel", "Publishing and address set up", "One round of revisions", "Delivery in up to 7 business days"],
+    itens: ["Custom design", "Home page and catalog", "Product pages", "WhatsApp built in", "Up to 60 products registered", "Store management panel", "Publishing and address set up", "One round of revisions", "Delivery in up to 7 business days"],
     cta: "I WANT TO SEE MY STORE ↓",
     garantia: `The ${R(v.saldo)} balance is paid only after you see and approve the project.`,
     tira: { label: "YOUR NEXT MESSAGE", balao: "Rafael, I want a storefront like that for my store", hora: "19:15" },
@@ -249,7 +249,7 @@ export const en: VitrineMessages = {
     etiqueta: "no",
     itens: [
       { p: "Does the storefront take payments from my customers?", r: "No. The storefront organizes the catalog and delivers the order ready to the store's WhatsApp, where you settle payment and delivery.", nao: true },
-      { p: "How many products are included?", r: "The storefront has no product limit. I register the first 20 for you, with photo, price and sizes; the rest you add yourself in the panel, in minutes, without calling me.", nao: false },
+      { p: "How many products are included?", r: "The storefront has no product limit. I register the first 60 for you, with photo, price and sizes; the rest you add yourself in the panel, in minutes, without calling me.", nao: false },
       { p: "Is there a monthly fee?", r: `No. The project costs ${R(v.total)} once. Your own domain is optional and has a yearly cost paid directly to the registrar.`, nao: true },
       { p: "Who updates the storefront afterwards?", r: "You do, through the panel that comes with the storefront: change price and photo, mark sold out or in stock, and add new products.", nao: false },
       { p: "How long does it take?", r: "Up to 7 business days after all the store's material arrives.", nao: false },
