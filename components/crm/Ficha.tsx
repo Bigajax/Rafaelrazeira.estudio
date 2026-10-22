@@ -18,14 +18,19 @@ import { ClienteConectado } from "@/components/sistema/ClienteConectado";
    vezes por dia, isso é um formulário de cadastro com um histórico perdido
    no meio.
 
-   Agora são quatro blocos em coluna única, na ordem em que a cabeça
+   Agora são três blocos em coluna única, na ordem em que a cabeça
    trabalha:
 
-     1. QUEM É        o cabeçalho grafite: nome, ticket, contexto, e os
-                      dois botões que abrem conversa
+     1. QUEM É        o cabeçalho: nome, ticket, contexto, "Mandar
+                      mensagem" e o link do perfil no Instagram
      2. O QUE FAZER   estágio e próximo passo, lado a lado
-     3. O QUE FIZ     registrar toque
-     4. O QUE ROLOU   linha do tempo
+     3. O QUE ROLOU   linha do tempo
+
+   Em 22/10 saíram a Pesquisa (dossiê), o "Registrar toque" à mão, o
+   "Responder com IA" e a "Leitura da conversa": o Rafael não usava mais
+   nenhum, e eles empurravam a linha do tempo para o fim de uma rolagem
+   longa. A saída se registra sozinha pelo "Mandar mensagem", e a entrada
+   chega pelo leitor do WhatsApp. Os componentes continuam no repositório.
 
    Os dez campos de cadastro, as notas e as indicações foram para trás de um
    botão só ("Ver todos os dados"). Eles não sumiram: eles pararam de
@@ -36,57 +41,41 @@ import { ClienteConectado } from "@/components/sistema/ClienteConectado";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { apagarLead, moverLead, registrarToque } from "@/app/(pt)/crm/acoes";
+import { apagarLead, moverLead } from "@/app/(pt)/crm/acoes";
 import { mascararWhatsapp } from "@/components/telefone";
 import {
   dataCurta,
-  destinoDoToque,
   diasDesde,
   dinheiro,
   horaCurta,
-  hojeSP,
   linkInstagram,
   linkWhatsapp,
   oQueFalta,
-  PADRAO_DO_DESTINO,
-  somarDias,
   temperatura,
   type CampoExigido,
   type Passagem,
 } from "@/lib/crm/regras";
 import {
-  CANAIS,
-  EFEITO_RESPOSTA,
   ehAtivo,
   ESTAGIOS,
-  MOTIVOS_PERDA,
   NOME_CANAL,
   NOME_ESTAGIO,
   NOME_MOTIVO,
   NOME_ORIGEM,
-  NOME_RESPOSTA,
   NOME_TIPO,
   NOTA_ESTAGIO,
   ORIGENS,
-  RESPOSTAS,
   TIPOS_PROJETO,
-  type Canal,
-  type Direcao,
   type Estagio,
   type Interacao,
   type Lead,
   type LeadPainel,
-  type MotivoPerda,
-  type Resposta,
   type Template,
 } from "@/lib/crm/tipos";
 import { CampoInline, NotaInline } from "./CampoInline";
 import { ModalContrato } from "./ModalContrato";
 import { ModalMensagem } from "./ModalMensagem";
 import { ModalPassagem } from "./ModalPassagem";
-import { Pesquisa } from "./Pesquisa";
-import { SugerirResposta } from "./SugerirResposta";
-import { LeituraDaConversa } from "./LeituraDaConversa";
 import { AvisoDoisRetornos } from "./pecas";
 import { BlocoContrato } from "./BlocoContrato";
 import type { ContratoPainel } from "@/lib/crm/dados";
@@ -105,8 +94,7 @@ export type DadosFicha = {
 };
 
 export function Ficha({ lead, interacoes, indicados, quemIndicou, templates, contratos, hoje }: DadosFicha) {
-  /* false fechado; o canal diz por onde a mensagem sai. */
-  const [mensagem, setMensagem] = useState<false | Canal>(false);
+  const [mensagem, setMensagem] = useState(false);
   const [abrirDados, setAbrirDados] = useState(false);
   const [pendente, setPendente] = useState<{ estagio: Estagio; falta: CampoExigido[] } | null>(null);
   const [fechando, setFechando] = useState(false);
@@ -172,17 +160,19 @@ export function Ficha({ lead, interacoes, indicados, quemIndicou, templates, con
               saída (WhatsApp com número, direct sem). Antes ele exigia o
               número, e lead só de Instagram ficava sem porta de mensagem. */}
           {zap || insta ? (
-            <button type="button" className={s.btnAcao} onClick={() => setMensagem("whatsapp")}>
+            <button type="button" className={s.btnAcao} onClick={() => setMensagem(true)}>
               Mandar mensagem
             </button>
           ) : null}
-          {/* O "Instagram" abre o MESMO modal, saindo pelo direct (01/10):
-              ele abria só o perfil, e a mensagem do direct ia sem template
-              e sem registro. O perfil continua a um clique, dentro do modal. */}
+          {/* O "Instagram" volta a ABRIR O PERFIL (22/10). Desde 01/10 ele
+              abria o modal de mensagem saindo pelo direct, e o Rafael clicava
+              para ver a loja e caía num seletor de template. Ver o perfil e
+              mandar mensagem são dois gestos; o direct continua saindo pelo
+              "Mandar mensagem" quando o lead não tem número. */}
           {insta ? (
-            <button type="button" className={s.btnEscuro} onClick={() => setMensagem("instagram")}>
-              Instagram
-            </button>
+            <a className={s.btnEscuro} href={insta} target="_blank" rel="noopener noreferrer">
+              Instagram ↗
+            </a>
           ) : null}
           <span className={s.fichaCabOrigem}>
             {NOME_ORIGEM[lead.origem]}
@@ -297,29 +287,7 @@ export function Ficha({ lead, interacoes, indicados, quemIndicou, templates, con
           em lead sem contrato que ainda não foi ganho. */}
       <BlocoContrato lead={lead} contratos={contratos} hoje={hoje} />
 
-      {/* ============ A PESQUISA ============
-          Entre "o que fazer" e "o que fiz" de propósito: o dossiê é o que
-          informa a primeira mexida. Ele dispara sozinho quando o lead nasce
-          pelo modal, então aqui ele costuma chegar já rodando. */}
-      <Pesquisa lead={lead} aoMandarMensagem={() => setMensagem("whatsapp")} />
-
-      {/* ============ 3. O QUE FIZ ============ */}
-      <FormToque lead={lead} hoje={hoje} />
-
-      {/* ============ RESPONDER COM IA ============
-          Depois do registro do toque de propósito: o fluxo real é
-          "responderam, registro a entrada, decido o que dizer". O campo
-          nasce com o resumo da última entrada, então registrar antes deixa
-          a sugestão meio pronta. */}
-      <SugerirResposta lead={lead} interacoes={interacoes} />
-
-      {/* ============ LEITURA DA CONVERSA (01/10) ============
-          O leitor do WhatsApp no PC lê a conversa inteira e sugere etapa,
-          passo e resposta. Logo depois do "Responder com IA", que é a
-          versão de colar à mão. */}
-      <LeituraDaConversa lead={lead} />
-
-      {/* ============ 4. O QUE ROLOU ============ */}
+      {/* ============ 3. O QUE ROLOU ============ */}
       <section className={s.bloco}>
         <div className={s.blocoCab}>
           <h2>Linha do tempo</h2>
@@ -465,12 +433,7 @@ export function Ficha({ lead, interacoes, indicados, quemIndicou, templates, con
       <ApagarLead lead={lead} />
 
       {mensagem ? (
-        <ModalMensagem
-          lead={lead}
-          templates={templates}
-          saida={mensagem}
-          aoFechar={() => setMensagem(false)}
-        />
+        <ModalMensagem lead={lead} templates={templates} aoFechar={() => setMensagem(false)} />
       ) : null}
 
       {pendente ? (
@@ -570,208 +533,5 @@ function ApagarLead({ lead }: { lead: LeadPainel }) {
         </button>
       </div>
     </div>
-  );
-}
-
-/* ============================================================
-   O FORMULÁRIO RÁPIDO DE TOQUE
-
-   Irmão do ModalToque (que serve à fila do dia) e repete a regra 6: se não
-   houver retorno agendado no futuro, a pergunta do próximo passo aparece
-   aqui mesmo, no mesmo envio. Registrar um toque e marcar o retorno são o
-   mesmo pensamento, e separá-los em dois envios é como se perde metade dos
-   retornos.
-   ============================================================ */
-function FormToque({ lead, hoje }: { lead: LeadPainel; hoje: string }) {
-  const [direcao, setDirecao] = useState<Direcao>("saida");
-  const [resposta, setResposta] = useState<Resposta>("interesse");
-  const [motivo, setMotivo] = useState<MotivoPerda>("sem_interesse");
-  const [gelo, setGelo] = useState(() => somarDias(hojeSP(), PADRAO_DO_DESTINO.geladeira?.dias ?? 60));
-  /* O canal de partida é o canal que o lead TEM: sem número, a conversa
-     real está acontecendo no direct, e nascer em "WhatsApp" é um erro de
-     registro esperando um esquecimento. */
-  const [canal, setCanal] = useState<Canal>(
-    linkWhatsapp(lead.whatsapp) ? "whatsapp" : lead.instagram ? "instagram" : "whatsapp",
-  );
-  const [resumo, setResumo] = useState("");
-  const [erro, setErro] = useState<string | null>(null);
-  const [salvando, comecar] = useTransition();
-
-  const [passo, setPasso] = useState("");
-  const [data, setData] = useState(somarDias(hojeSP(), 3));
-
-  const teor = direcao === "entrada" ? resposta : undefined;
-  const destino = destinoDoToque(direcao, lead.estagio, teor);
-  const ehGeladeira = direcao === "entrada" && resposta === "depois";
-  const ehPerda = direcao === "entrada" && resposta === "nao";
-  /* Perdido não tem agenda e a geladeira tem a sua própria: a pergunta da
-     regra 6 só sobra para o caminho vivo. */
-  const precisaDePasso = !ehGeladeira && !ehPerda && (!lead.proxima_acao_em || lead.proxima_acao_em < hoje);
-
-  const enviar = (e: React.FormEvent) => {
-    e.preventDefault();
-    setErro(null);
-    comecar(async () => {
-      const r = await registrarToque(lead.id, {
-        canal,
-        direcao,
-        resumo,
-        resposta: teor,
-        motivo_perda: ehPerda ? motivo : undefined,
-        proximo_passo: ehGeladeira
-          ? PADRAO_DO_DESTINO.geladeira?.passo
-          : precisaDePasso && passo
-            ? passo
-            : undefined,
-        proxima_acao_em: ehGeladeira ? gelo : precisaDePasso && passo ? data : undefined,
-      });
-      if (r.ok) {
-        setResumo("");
-        setPasso("");
-        setResposta("interesse");
-      } else {
-        setErro("erro" in r ? r.erro : "Não foi possível registrar.");
-      }
-    });
-  };
-
-  return (
-    <section className={s.bloco}>
-      <form onSubmit={enviar}>
-        <fieldset className={s.grupo}>
-          <legend className={s.campoRot}>Registrar toque</legend>
-          <div className={s.opcoes}>
-            <button
-              type="button"
-              className={`${s.opcao} ${direcao === "saida" ? s.opcaoAtiva : ""}`}
-              onClick={() => setDirecao("saida")}
-              aria-pressed={direcao === "saida"}
-            >
-              Eu falei
-            </button>
-            <button
-              type="button"
-              className={`${s.opcao} ${direcao === "entrada" ? s.opcaoAtiva : ""}`}
-              onClick={() => setDirecao("entrada")}
-              aria-pressed={direcao === "entrada"}
-            >
-              Me responderam
-            </button>
-          </div>
-        </fieldset>
-
-        {/* O TEOR DA RESPOSTA, igual ao ModalToque e pelo mesmo motivo: sem
-            ele, um "não tenho interesse" registrado aqui promovia o lead
-            para Conversa e o devolvia na fila do dia seguinte pedindo a
-            mensagem 2. Ver a nota longa em components/crm/ModalToque.tsx. */}
-        {direcao === "entrada" ? (
-          <fieldset className={s.grupo}>
-            <legend className={s.campoRot}>Como foi a resposta</legend>
-            <div className={s.opcoes}>
-              {RESPOSTAS.map((r) => (
-                <button
-                  key={r}
-                  type="button"
-                  className={`${s.opcao} ${resposta === r ? s.opcaoAtiva : ""} ${
-                    r === "nao" && resposta === r ? s.opcaoFim : ""
-                  }`}
-                  onClick={() => setResposta(r)}
-                  aria-pressed={resposta === r}
-                >
-                  {NOME_RESPOSTA[r]}
-                </button>
-              ))}
-            </div>
-            <p className={s.efeito}>
-              {EFEITO_RESPOSTA[resposta]}
-              {destino ? (
-                <>
-                  {" "}
-                  <b>Vai para {NOME_ESTAGIO[destino]}.</b>
-                </>
-              ) : null}
-            </p>
-          </fieldset>
-        ) : null}
-
-        <div className={s.linhaToque}>
-          <select
-            value={canal}
-            onChange={(e) => setCanal(e.target.value as Canal)}
-            aria-label="Canal do toque"
-          >
-            {CANAIS.map((c) => (
-              <option key={c} value={c}>
-                {NOME_CANAL[c]}
-              </option>
-            ))}
-          </select>
-          <input
-            type="text"
-            value={resumo}
-            onChange={(e) => setResumo(e.target.value)}
-            placeholder="Pediu para retomar depois do dia 20"
-            aria-label="Resumo do toque"
-          />
-        </div>
-
-        {ehGeladeira ? (
-          <div className={s.blocoPergunta}>
-            <p className={s.perguntaTitulo}>Quando eu volto a chamar?</p>
-            <label className={s.campo}>
-              <span className={s.campoRot}>Data da reativação</span>
-              <input type="date" value={gelo} min={hoje} onChange={(e) => setGelo(e.target.value)} />
-            </label>
-          </div>
-        ) : null}
-
-        {ehPerda ? (
-          <div className={s.blocoPergunta}>
-            <p className={s.perguntaTitulo}>Por quê?</p>
-            <label className={s.campo}>
-              <span className={s.campoRot}>Motivo da perda</span>
-              <select value={motivo} onChange={(e) => setMotivo(e.target.value as MotivoPerda)} required>
-                {MOTIVOS_PERDA.map((m) => (
-                  <option key={m} value={m}>
-                    {NOME_MOTIVO[m]}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-        ) : null}
-
-        {precisaDePasso ? (
-          <div className={s.blocoPergunta}>
-            <p className={s.perguntaTitulo}>E agora, qual é o próximo passo?</p>
-            <div className={s.linhaToque}>
-              <input
-                type="date"
-                value={data}
-                onChange={(e) => setData(e.target.value)}
-                aria-label="Data do próximo passo"
-              />
-              <input
-                type="text"
-                value={passo}
-                onChange={(e) => setPasso(e.target.value)}
-                placeholder="Mandar a proposta com os dois prazos"
-                aria-label="Próximo passo"
-              />
-            </div>
-          </div>
-        ) : null}
-
-        {erro ? (
-          <p role="alert" className={s.erro}>
-            {erro}
-          </p>
-        ) : null}
-
-        <button type="submit" className={s.btn} disabled={salvando}>
-          {salvando ? "Registrando…" : "Registrar toque"}
-        </button>
-      </form>
-    </section>
   );
 }

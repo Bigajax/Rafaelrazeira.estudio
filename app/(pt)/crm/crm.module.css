@@ -4841,6 +4841,89 @@
   line-height: 1.45;
 }
 
+/* ---------- MANDAR MENSAGEM (rework 22/10) ----------
+   Lista à vista no lugar do seletor, e o texto editável no lugar da
+   prévia. Mais largo que o modal padrão porque a lista e o texto dividem a
+   tela, e um texto de três parágrafos em 440px pedia rolagem. */
+.modal.msgModal {
+  width: min(100%, 560px);
+}
+.app .msgModal p.msgCanal {
+  font: 700 10.5px var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-fraco);
+  margin: 0 0 14px;
+}
+.msgLista {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 230px;
+  overflow-y: auto;
+  border: 1.5px solid var(--line);
+  background: var(--paper);
+  padding: 6px;
+}
+.msgGrupo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 6px;
+}
+.msgGrupoRot {
+  font: 700 9.5px var(--mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-fraco);
+  padding: 4px 8px 2px;
+}
+.app button.msgItem {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+  width: 100%;
+  text-align: left;
+  font: 500 13px var(--body);
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  border-left: 2.5px solid transparent;
+  padding: 7px 9px;
+  cursor: pointer;
+}
+.app button.msgItem b {
+  font-weight: 600;
+}
+.app button.msgItem small {
+  flex-basis: 100%;
+  font: 500 11.5px var(--body);
+  color: var(--ink-soft);
+}
+@media (hover: hover) and (pointer: fine) {
+  .app button.msgItem:hover {
+    background: var(--paper-alto);
+  }
+}
+.app button.msgItemAtivo {
+  background: var(--paper-alto);
+  border-left-color: var(--green);
+}
+.msgSelo {
+  font: 700 9.5px var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--rosa);
+}
+.app textarea.msgTexto {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  min-height: 150px;
+  border-left: 2px solid var(--green);
+}
+
 /* a pré-visualização com os dados do lead: o texto que vai sair mesmo */
 .previa {
   background: var(--paper);
