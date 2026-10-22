@@ -29,6 +29,15 @@ type Respostas = {
   email?: string;
   recado?: string;
   atualizado?: string;
+  /* as partes de 22/10/2026 (o briefing completo) */
+  estrutura?: string;
+  cupom?: string;
+  cupomDesconto?: string;
+  cupomCodigo?: string;
+  vip?: string;
+  vipLink?: string;
+  pagamentos?: string;
+  quemSomos?: string;
 };
 
 export function Material({ loja }: { loja: string }) {
@@ -86,6 +95,14 @@ export function Material({ loja }: { loja: string }) {
     ["WhatsApp", r.whatsapp?.trim() || "não respondeu", !!r.whatsapp?.trim()],
     ["E-mail do painel", r.email?.trim() || "não respondeu", !!r.email?.trim()],
   ];
+  /* as partes do briefing completo só entram quando ele respondeu: os
+     checklists de antes de 22/10 não têm essas perguntas */
+  if (r.estrutura?.trim()) fatos.push(["Sessões", r.estrutura.trim().split(/\n+/).length + " na lista", true]);
+  if (r.cupom) fatos.push(["Cupom", r.cupom === "quero" ? `${r.cupomDesconto?.trim() || "?"} (${r.cupomCodigo?.trim() || "PRIMEIRACOMPRA"})` : "agora não", true]);
+  if (r.vip) fatos.push(["Grupo VIP", r.vip === "lista" ? "lista no painel" : r.vip === "grupo" ? `grupo: ${r.vipLink?.trim() || "sem link"}` : "agora não", r.vip !== "grupo" || !!r.vipLink?.trim()]);
+  if (r.pagamentos?.trim()) fatos.push(["Pagamento", r.pagamentos.trim(), true]);
+  if ((r.fotos?.["logo-loja"] || []).length) fatos.push(["Logo", "mandou o arquivo", true]);
+  if (r.quemSomos?.trim()) fatos.push(["Quem somos", "escreveu", true]);
 
   return (
     <div>

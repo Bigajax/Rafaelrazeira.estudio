@@ -101,6 +101,8 @@ for (const n of d.novas || []) {
   nomeDe[n.id] = nome;
 }
 nomeDe.logos = "logos das marcas";
+nomeDe.banners = "fotos para os banners";
+nomeDe["logo-loja"] = "logo da loja";
 
 /* ---------- as fotos ---------- */
 let baixadas = 0, jaTinha = 0;
@@ -139,6 +141,36 @@ linhas.push(`- **E-mail do painel:** ${cel(d.email) || "não respondeu"}`);
 if ((d.recado || "").trim()) linhas.push(`- **Recado:** ${cel(d.recado)}`);
 linhas.push("", "## Marcas", "", (d.marcas || "(não mandou)").trim(), "");
 
+/* o briefing completo (22/10/2026): só sai o que ele respondeu, porque os
+   checklists de antes não têm essas perguntas */
+const briefing = [
+  ["Sessões do site", d.estrutura],
+  ["Mais vendidos", d.maisVendidos],
+  ["Banner 1", d.banner1],
+  ["Banner 2", d.banner2],
+  ["Banner 3", d.banner3],
+  ["Cupom", d.cupom === "quero" ? `${d.cupomDesconto || "?"}, código ${(d.cupomCodigo || "").trim() || "PRIMEIRACOMPRA"}${(d.cupomRegras || "").trim() ? `; regras: ${d.cupomRegras.trim()}` : ""}` : d.cupom === "nao" ? "agora não" : ""],
+  ["Outras promoções", d.promocoes],
+  ["Grupo VIP", d.vip === "lista" ? "lista no painel" : d.vip === "grupo" ? `grupo do WhatsApp: ${d.vipLink || "sem link"}` : d.vip === "nao" ? "agora não" : ""],
+  ["O que ganha quem entra no VIP", d.vipOferta],
+  ["Como recebe", d.pagamentos],
+  ["Parcelas", d.parcelas],
+  ["Desconto no Pix", d.descontoPix],
+  ["Entrega", d.entrega],
+  ["Prazo de envio", d.prazoEnvio],
+  ["Trocas", d.trocas],
+  ["Quem somos", d.quemSomos],
+  ["CNPJ", d.cnpj],
+  ["E-mail de contato", d.emailContato],
+  ["Redes", d.redes],
+  ["Endereço e horário", d.enderecoLoja],
+].filter(([, v]) => String(v || "").trim());
+if (briefing.length) {
+  linhas.push("## O briefing", "");
+  for (const [k, v] of briefing) linhas.push(`- **${k}:** ${cel(String(v).trim())}`);
+  linhas.push("");
+}
+
 const tabela = (titulo, itens) => {
   linhas.push(`## ${titulo}`, "");
   linhas.push("| Peça | Tem? | Preço | Promo | Tamanhos | Cores | Fotos | Obs |");
@@ -150,7 +182,7 @@ const tabela = (titulo, itens) => {
   linhas.push("");
 };
 tabela("As peças do site", pecas.map((p) => [p.id, p.nome, d.pecas?.[p.id] || {}]));
-if ((d.novas || []).length) tabela("Peças novas", d.novas.map((n) => [n.id, n.nome || "sem nome", { ...n, nova: true }]));
+if ((d.novas || []).length) tabela("Peças novas", d.novas.map((n) => [n.id, n.nome || "sem nome", { ...n, nova: true, obs: [n.sessao && `sessão: ${n.sessao}`, n.obs].filter(Boolean).join("; ") }]));
 writeFileSync(join(destino, "RESUMO.md"), linhas.join("\n"));
 
 const respondidas = pecas.filter((p) => d.pecas?.[p.id]?.status).length;

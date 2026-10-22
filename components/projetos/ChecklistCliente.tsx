@@ -25,6 +25,14 @@ const PERGUNTAS: [string, string][] = [
   ["banners", "Aprovar os banners"],
   ["dominio", "Domínio"],
   ["contato", "WhatsApp dos pedidos e e-mail do painel"],
+  /* desde 22/10/2026, o briefing completo (Iconic Sneakers) */
+  ["guiaFotos", "Como mandar as fotos"],
+  ["estrutura", "Sessões do site e mais vendidos"],
+  ["bannersArte", "O que cada banner vende"],
+  ["cupom", "Cupom e promoções"],
+  ["vip", "Grupo VIP"],
+  ["pagamento", "Pagamento, entrega e trocas"],
+  ["loja", "Logo e textos da marca"],
 ];
 
 const mensagem = (link: string) =>

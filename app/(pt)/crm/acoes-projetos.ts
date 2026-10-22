@@ -223,6 +223,11 @@ export async function criarChecklistCliente(
     perguntas: { ...PERGUNTAS_PADRAO, ...perguntas },
     categorias: catalogo.categorias,
     pecas: catalogo.pecas,
+    /* a meta de peças e as sugestões não têm campo no formulário: quem
+       pôs foi um script (Iconic, 22/10/2026), e atualizar as peças pelo
+       botão não pode apagar */
+    ...(anterior?.meta ? { meta: anterior.meta } : {}),
+    ...(anterior?.sugestoes ? { sugestoes: anterior.sugestoes } : {}),
   });
   if (!ok)
     return { ok: false, erro: "Não consegui gravar o checklist no cofre." };

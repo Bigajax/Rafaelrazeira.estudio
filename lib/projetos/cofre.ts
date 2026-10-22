@@ -27,11 +27,22 @@ export type Perguntas = {
   banners: boolean;
   dominio: boolean;
   contato: boolean;
+  /* as partes de 22/10/2026 (o briefing da Iconic Sneakers). Opcionais no
+     tipo porque os config.json gravados antes não têm: lá elas ficam
+     desligadas, e o checklist do cliente segue como era */
+  guiaFotos?: boolean;
+  estrutura?: boolean;
+  bannersArte?: boolean;
+  cupom?: boolean;
+  vip?: boolean;
+  pagamento?: boolean;
+  loja?: boolean;
 };
 
 export const PERGUNTAS_PADRAO: Perguntas = {
   preco: true, tamanhos: true, cores: true, fotos: true, novas: true,
   marcas: true, banners: true, dominio: true, contato: true,
+  guiaFotos: true, estrutura: true, bannersArte: true, cupom: true, vip: true, pagamento: true, loja: true,
 };
 
 export type ConfigChecklist = {
@@ -44,6 +55,12 @@ export type ConfigChecklist = {
   perguntas: Perguntas;
   categorias: { slug: string; nome: string; grades: Grade[] }[];
   pecas: CatalogoLido["pecas"];
+  /* quantas peças foram combinadas na proposta (as 60 da Iconic): o
+     checklist conta as que vão entrar contra este número */
+  meta?: number;
+  /* o que o Rafael já sabe e o cliente só confirma, pelo nome do campo do
+     checklist (ex.: { estrutura: "Tênis: Corrida, ..." }) */
+  sugestoes?: Record<string, string>;
 };
 
 function storage(caminho: string, opcoes: RequestInit = {}) {

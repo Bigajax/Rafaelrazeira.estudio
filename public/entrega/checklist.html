@@ -94,6 +94,11 @@
   .bloco__num { font: 700 12px/1 "Space Mono", monospace; color: var(--cinza); }
   h2 { font: 900 26px/1.05 Archivo, sans-serif; text-transform: uppercase; margin: 8px 0 10px; }
   .bloco > p { margin: 0 0 18px; color: #3A3A36; }
+  /* as dicas das fotos: uma por linha, com o fio do lado (22/10/2026) */
+  .dicas { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .dicas li { padding: 12px 14px; background: #fff; border: 1px solid var(--fio); border-radius: 10px; font-size: 15px; color: #3A3A36; }
+  .dicas li strong { color: var(--tinta); }
+  .sub { font-weight: 700; margin: 24px 0 10px; }
   .bloco--feito > h2::after {
     content: "ok"; display: inline-block; vertical-align: middle;
     margin-left: 10px; padding: 4px 8px 3px; background: var(--verde); color: #fff;
@@ -274,6 +279,24 @@
     <p>Confira se o link veio inteiro. Se continuar assim, me chama no WhatsApp que eu mando de novo.</p>
   </section>
 
+  <!-- AS PARTES DE 22/10/2026 (Iconic Sneakers): o guia das fotos, as
+       sessões, o briefing dos banners, o cupom, o Grupo VIP, pagamento e
+       entrega, e a marca. Cada uma liga pela sua pergunta no config.json:
+       os checklists criados antes não têm a chave e seguem como eram. -->
+  <section class="bloco" id="b-guia" data-pergunta="guiaFotos" hidden>
+    <div class="bloco__num"></div>
+    <h2>Antes de tudo: as fotos</h2>
+    <p>A foto é o que vende no site. Antes de começar as peças, seis cuidados:</p>
+    <ul class="dicas">
+      <li><strong>Mande por aqui, não pelo WhatsApp.</strong> O WhatsApp reduz a foto, e ela fica borrada no site.</li>
+      <li><strong>O produto inteiro e em foco,</strong> com luz de dia ou de estúdio. Sem filtro.</li>
+      <li><strong>O mesmo fundo em todas,</strong> se puder: liso e claro. A caixa junto do tênis, tudo bem.</li>
+      <li><strong>Até 3 fotos por peça:</strong> de lado, de frente e um detalhe (a sola, a etiqueta, o tecido).</li>
+      <li><strong>Sem texto por cima.</strong> Se só tiver a arte do Instagram, com logo ou preço escrito, pode mandar: eu recorto o produto.</li>
+      <li><strong>Alguém usando o produto</strong> vale ouro para os banners. Se tiver, manda na parte dos banners.</li>
+    </ul>
+  </section>
+
   <section class="bloco" id="b-preco" data-pergunta="preco" hidden>
     <div class="bloco__num"></div>
     <h2>Preço no site</h2>
@@ -296,8 +319,17 @@
     <div class="bloco__num"></div>
     <h2>Peças que faltam</h2>
     <p>O que tem na loja e não apareceu no site. Uma por peça, com o nome e as fotos.</p>
+    <div class="nota" id="meta-pecas" hidden></div>
     <div id="lista-novas"></div>
     <button class="nova-peca" id="nova-peca" type="button">+ Adicionar uma peça</button>
+  </section>
+
+  <section class="bloco" id="b-estrutura" data-pergunta="estrutura" hidden>
+    <div class="bloco__num"></div>
+    <h2>As sessões do site</h2>
+    <p>É por elas que o cliente navega no menu e na página inicial. Uma sessão por linha, com as subcategorias depois dos dois-pontos.</p>
+    <label class="campo"><span>Como você quer organizar</span><textarea data-campo="estrutura" placeholder="Tênis: Corrida, Casual&#10;Roupas: Camisetas, Moletons"></textarea></label>
+    <label class="campo"><span>Quais modelos mais vendem?</span><small>Eles aparecem primeiro e no menu "Mais vendidos".</small><textarea data-campo="maisVendidos" placeholder="Um por linha"></textarea></label>
   </section>
 
   <section class="bloco" id="b-marcas" data-pergunta="marcas" hidden>
@@ -319,6 +351,71 @@
       <label class="item"><input type="radio" name="banners" value="trocar"><span class="bolinha"></span><span class="item__texto"><strong>Quero trocar alguma coisa</strong></span></label>
     </div>
     <label class="campo" id="banners-obs" hidden><span>O que você quer trocar?</span><textarea data-campo="bannersObs"></textarea></label>
+    <div data-so="bannersArte" hidden>
+      <p class="sub">O que cada banner vende</p>
+      <p>São três no topo, trocando sozinhos. Eu faço a arte e escrevo a frase; você me diz o assunto de cada um.</p>
+      <label class="campo"><span>Banner 1</span><small>O produto ou a linha que mais vende. Se tiver preço ou promoção, escreve.</small><input type="text" data-campo="banner1" placeholder="Ex.: Vomero Premium, 8 cores"></label>
+      <label class="campo"><span>Banner 2</span><small>Uma marca, um lançamento ou o que acabou de chegar.</small><input type="text" data-campo="banner2" placeholder="Ex.: New Balance 9060"></label>
+      <label class="campo"><span>Banner 3</span><small>A loja: o que só vocês oferecem.</small><input type="text" data-campo="banner3" placeholder="Ex.: encomenda de modelo raro"></label>
+      <span class="rotulo-campo">Fotos para as artes <em class="opcional">se tiver</em></span>
+      <div class="fotos" data-fotos="banners"></div>
+    </div>
+  </section>
+
+  <section class="bloco" id="b-cupom" data-pergunta="cupom" hidden>
+    <div class="bloco__num"></div>
+    <h2>Cupom de desconto</h2>
+    <p>O site pode ter um banner de cupom de primeira compra: quem toca nele abre o seu WhatsApp com o código já escrito. O desconto é você quem decide.</p>
+    <div class="escolhas">
+      <label class="item"><input type="radio" name="cupom" value="quero"><span class="bolinha"></span><span class="item__texto"><strong>Quero o cupom</strong></span></label>
+      <label class="item"><input type="radio" name="cupom" value="nao"><span class="bolinha"></span><span class="item__texto"><strong>Agora não</strong></span></label>
+    </div>
+    <div id="cupom-sim" hidden>
+      <label class="campo"><span>Quanto de desconto?</span><input type="text" data-campo="cupomDesconto" placeholder="Ex.: 10%"></label>
+      <label class="campo"><span>O código</span><small>Se deixar em branco, fica PRIMEIRACOMPRA.</small><input type="text" data-campo="cupomCodigo" placeholder="PRIMEIRACOMPRA" autocapitalize="characters"></label>
+      <label class="campo"><span>Alguma regra? <em class="opcional">se tiver</em></span><small>Valor mínimo, só no Pix, não vale em promoção, validade.</small><textarea data-campo="cupomRegras"></textarea></label>
+    </div>
+    <label class="campo"><span>Outras promoções que você já faz <em class="opcional">se tiver</em></span><small>Elas entram no site do jeito que você escrever.</small><textarea data-campo="promocoes" placeholder="Ex.: 10% na próxima compra para quem posta o unboxing"></textarea></label>
+  </section>
+
+  <section class="bloco" id="b-vip" data-pergunta="vip" hidden>
+    <div class="bloco__num"></div>
+    <h2>Grupo VIP</h2>
+    <p>O site pode chamar quem quer saber de lançamento e promoção. Me diz para onde essa pessoa vai.</p>
+    <div class="escolhas">
+      <label class="item"><input type="radio" name="vip" value="lista"><span class="bolinha"></span><span class="item__texto"><strong>Uma lista no meu painel</strong><span>A pessoa deixa o nome e o WhatsApp no site, e você vê todo mundo numa lista.</span></span></label>
+      <label class="item"><input type="radio" name="vip" value="grupo"><span class="bolinha"></span><span class="item__texto"><strong>O meu grupo do WhatsApp</strong><span>O botão do site abre o link do seu grupo.</span></span></label>
+      <label class="item"><input type="radio" name="vip" value="nao"><span class="bolinha"></span><span class="item__texto"><strong>Agora não</strong></span></label>
+    </div>
+    <label class="campo" id="vip-link" hidden><span>O link do grupo</span><input type="text" data-campo="vipLink" placeholder="https://chat.whatsapp.com/…" autocapitalize="off"></label>
+    <label class="campo" id="vip-oferta" hidden><span>O que a pessoa ganha ao entrar?</span><small>Ex.: os lançamentos antes de todo mundo, as promoções relâmpago. Desconto, só se você for dar mesmo.</small><input type="text" data-campo="vipOferta"></label>
+  </section>
+
+  <section class="bloco" id="b-pagamento" data-pergunta="pagamento" hidden>
+    <div class="bloco__num"></div>
+    <h2>Pagamento, entrega e trocas</h2>
+    <p>Isso aparece no rodapé do site e na página de cada peça. Escreve só o que a loja faz de verdade.</p>
+    <label class="campo"><span>Como você recebe</span><small>Pix, cartão de crédito, débito, link de pagamento.</small><input type="text" data-campo="pagamentos"></label>
+    <label class="campo"><span>Parcela no cartão?</span><small>Em até quantas vezes, e se é com ou sem juros.</small><input type="text" data-campo="parcelas" placeholder="Ex.: até 6x com juros"></label>
+    <label class="campo"><span>Dá desconto no Pix? <em class="opcional">se der</em></span><input type="text" data-campo="descontoPix" placeholder="Ex.: 5%"></label>
+    <label class="campo"><span>Como entrega e quanto custa</span><small>Correios, transportadora, motoboy, retirada; frete grátis acima de algum valor.</small><textarea data-campo="entrega"></textarea></label>
+    <label class="campo"><span>Em quanto tempo despacha?</span><input type="text" data-campo="prazoEnvio" placeholder="Ex.: em até 2 dias úteis"></label>
+    <label class="campo"><span>Troca e devolução</span><small>Em quantos dias, e como funciona.</small><textarea data-campo="trocas"></textarea></label>
+  </section>
+
+  <section class="bloco" id="b-loja" data-pergunta="loja" hidden>
+    <div class="bloco__num"></div>
+    <h2>A sua marca</h2>
+    <p>O que vai no topo, no rodapé e na página "Quem somos".</p>
+    <span class="rotulo-campo">A logo em arquivo</span>
+    <p class="nota" style="margin:0 0 10px">De preferência PNG com o fundo transparente. Se o arquivo for SVG ou PDF, me manda pelo WhatsApp: aqui só sobe imagem. Quem fez a logo costuma ter esses arquivos.</p>
+    <div class="fotos" data-fotos="logo-loja"></div>
+    <div style="height:14px"></div>
+    <label class="campo"><span>Quem somos</span><small>Duas ou três frases: como a loja começou e o que vocês fazem diferente.</small><textarea data-campo="quemSomos"></textarea></label>
+    <label class="campo"><span>CNPJ <em class="opcional">se tiver</em></span><input type="text" data-campo="cnpj" inputmode="numeric"></label>
+    <label class="campo"><span>E-mail de contato <em class="opcional">se tiver</em></span><input type="email" data-campo="emailContato" inputmode="email"></label>
+    <label class="campo"><span>Facebook e TikTok <em class="opcional">se tiver</em></span><input type="text" data-campo="redes" autocapitalize="off"></label>
+    <label class="campo"><span>Endereço e horário <em class="opcional">se atende no local</em></span><textarea data-campo="enderecoLoja"></textarea></label>
   </section>
 
   <section class="bloco" id="b-dominio" data-pergunta="dominio" hidden>
@@ -619,6 +716,7 @@
     if (nova) {
       corpo.appendChild(el("div", { style: "height:14px" }));
       corpo.appendChild(campoTexto(id, "nome", "Nome da peça", "Ex.: Moletom cinza com capuz"));
+      if (PERG.estrutura) corpo.appendChild(campoTexto(id, "sessao", "Em qual sessão", "Ex.: Tênis, Corrida"));
     } else {
       var tem = el("button", { class: "botao-sn", type: "button", "aria-pressed": String(d.status === "tem"), text: "Ainda tem" });
       var saiu = el("button", { class: "botao-sn", type: "button", "aria-pressed": String(d.status === "saiu"), text: "Já saiu" });
@@ -732,7 +830,7 @@
       i.value = estado[i.dataset.campo] || "";
       i.addEventListener("input", function () { estado[i.dataset.campo] = i.value; guardar(); });
     });
-    ["precoNoSite", "banners", "temDominio", "emailDominio"].forEach(function (nome) {
+    ["precoNoSite", "banners", "temDominio", "emailDominio", "cupom", "vip"].forEach(function (nome) {
       document.querySelectorAll('input[name="' + nome + '"]').forEach(function (r) {
         r.checked = estado[nome] === r.value;
         r.addEventListener("change", function () {
@@ -749,6 +847,9 @@
   function mostrarCondicionais() {
     document.querySelectorAll(".so-preco").forEach(function (b) { b.hidden = estado.precoNoSite !== "sim"; });
     document.getElementById("banners-obs").hidden = estado.banners !== "trocar";
+    document.getElementById("cupom-sim").hidden = estado.cupom !== "quero";
+    document.getElementById("vip-link").hidden = estado.vip !== "grupo";
+    document.getElementById("vip-oferta").hidden = estado.vip !== "lista" && estado.vip !== "grupo";
     document.getElementById("dominio-sim").hidden = estado.temDominio !== "sim";
   }
 
@@ -762,6 +863,21 @@
     if (PERG.banners) itens.push(["b-banners", !!estado.banners]);
     if (PERG.dominio) itens.push(["b-dominio", estado.temDominio === "nao" || (estado.temDominio === "sim" && !!(estado.hostgator || "").trim() && !!estado.emailDominio)]);
     if (PERG.contato) itens.push(["b-contato", !!(estado.whatsapp || "").trim() && !!(estado.email || "").trim()]);
+    if (PERG.estrutura) itens.push(["b-estrutura", !!(estado.estrutura || "").trim()]);
+    if (PERG.cupom) itens.push(["b-cupom", estado.cupom === "nao" || (estado.cupom === "quero" && !!(estado.cupomDesconto || "").trim())]);
+    if (PERG.vip) itens.push(["b-vip", estado.vip === "nao" || estado.vip === "lista" || (estado.vip === "grupo" && !!(estado.vipLink || "").trim())]);
+    if (PERG.pagamento) itens.push(["b-pagamento", !!(estado.pagamentos || "").trim() && !!(estado.entrega || "").trim()]);
+    if (PERG.loja) itens.push(["b-loja", (estado.fotos["logo-loja"] || []).length > 0 || !!(estado.quemSomos || "").trim()]);
+    /* a meta de peças (config.meta, ex.: as 60 da Iconic): as que ainda
+       têm na loja, mais as novas */
+    var meta = document.getElementById("meta-pecas");
+    if (CONFIG.meta) {
+      var vao = PECAS.filter(function (p) { var d = estado.pecas[p.id]; return !d || d.status !== "saiu"; }).length + estado.novas.length;
+      meta.hidden = false;
+      meta.textContent = vao >= CONFIG.meta
+        ? "Pronto: com as que já estão no site, são " + vao + " peças. O combinado era " + CONFIG.meta + "."
+        : "Com as que já estão no site, são " + vao + " de " + CONFIG.meta + ". Faltam " + (CONFIG.meta - vao) + ".";
+    }
     var feitos = respondidas, total = PECAS.length;
     itens.forEach(function (x) { total++; if (x[1]) feitos++; document.getElementById(x[0]).classList.toggle("bloco--feito", x[1]); });
     document.getElementById("b-pecas").classList.toggle("bloco--feito", PECAS.length > 0 && respondidas === PECAS.length);
@@ -789,6 +905,11 @@
     l.push("Fotos enviadas: " + fotos);
     if (PERG.marcas) l.push("Marcas: " + ((estado.marcas || "").trim() ? "mandei" : "ainda não"));
     if (PERG.banners) l.push("Banners: " + (estado.banners === "aprovo" ? "aprovados" : estado.banners === "trocar" ? "quero trocar" : "ainda não vi"));
+    if (PERG.estrutura) l.push("Sessões: " + ((estado.estrutura || "").trim() ? "mandei" : "ainda não"));
+    if (PERG.cupom) l.push("Cupom: " + (estado.cupom === "quero" ? (estado.cupomDesconto || "?") + " (" + ((estado.cupomCodigo || "").trim() || "PRIMEIRACOMPRA") + ")" : estado.cupom === "nao" ? "agora não" : "ainda não"));
+    if (PERG.vip) l.push("Grupo VIP: " + (estado.vip === "lista" ? "lista no painel" : estado.vip === "grupo" ? "grupo do WhatsApp" : estado.vip === "nao" ? "agora não" : "ainda não"));
+    if (PERG.pagamento) l.push("Pagamento e entrega: " + ((estado.pagamentos || "").trim() ? "mandei" : "ainda não"));
+    if (PERG.loja) l.push("Logo: " + ((estado.fotos["logo-loja"] || []).length ? "mandei" : "ainda não"));
     if (PERG.dominio) l.push("Domínio: " + (estado.temDominio === "nao" ? "não temos" : (estado.dominio || "").trim() || "ainda não"));
     if (estado.whatsapp) l.push("WhatsApp dos pedidos: " + estado.whatsapp);
     if (estado.email) l.push("E-mail do painel: " + estado.email);
@@ -832,10 +953,18 @@
     estado.fotos = estado.fotos || {};
     estado.totalPecas = PECAS.length;
     delete estado.atualizado;
+    /* o que o Rafael já sabe da loja vem escrito (config.sugestoes): o
+       cliente confirma ou muda. Só entra se a resposta ainda não existe */
+    var sug = CONFIG.sugestoes || {};
+    Object.keys(sug).forEach(function (k) { if (estado[k] === undefined) estado[k] = sug[k]; });
+    /* pedaço de uma parte que só aparece com a pergunta dele ligada */
+    document.querySelectorAll("[data-so]").forEach(function (b) { b.hidden = !PERG[b.dataset.so]; });
     ligarCampos();
     desenharPecas();
     desenharNovas();
     desenharFotos("logos");
+    desenharFotos("banners");
+    desenharFotos("logo-loja");
     atualizarProgresso();
   }
   function naoAchei() {
