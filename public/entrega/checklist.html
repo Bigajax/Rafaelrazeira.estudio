@@ -833,12 +833,22 @@
     ["precoNoSite", "banners", "temDominio", "emailDominio", "cupom", "vip"].forEach(function (nome) {
       document.querySelectorAll('input[name="' + nome + '"]').forEach(function (r) {
         r.checked = estado[nome] === r.value;
-        r.addEventListener("change", function () {
-          estado[nome] = r.value; guardar(); mostrarCondicionais();
+        var aplicar = function () {
+          guardar(); mostrarCondicionais();
           if (nome === "precoNoSite") {
             PECAS.forEach(function (p) { atualizarPeca(p.id); });
             estado.novas.forEach(function (n) { atualizarPeca(n.id); });
           }
+        };
+        r.addEventListener("change", function () { estado[nome] = r.value; aplicar(); });
+        /* tocar de novo na escolha marcada DESMARCA (22/10/2026, o Rafael
+           marcou para testar e não conseguia voltar). O clique chega antes
+           do change: se a resposta guardada já é esta, é um segundo toque */
+        r.addEventListener("click", function () {
+          if (estado[nome] !== r.value) return;
+          r.checked = false;
+          delete estado[nome];
+          aplicar();
         });
       });
     });
