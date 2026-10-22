@@ -500,4 +500,20 @@ export const PROPOSTAS: Record<string, Proposta> = {
       saldo_card: { label: "Saldo na entrega, no cartão em até 4x", valor: 800, metodo: "card", maxParcelas: 4 },
     },
   },
+  /* A Iconic Sneakers (22/10/2026), decisão do Rafael: os R$ 999 de tabela
+     em duas metades, no molde da Carina Melo e da ArraZou. R$ 500 no Pix no
+     aceite e R$ 499 depois de entregar e aprovar, no Pix ou no cartão em até
+     4x COM os juros do Mercado Pago (o Brick calcula; nada somado aqui). A
+     exceção do caso: 60 produtos cadastrados pelo estúdio (a tabela é 20),
+     oferecida na conversa pelo WhatsApp e sem custo a mais. Domínio à parte,
+     sem botão. */
+  "iconic-sneakers": {
+    titulo: "Rafael Razeira Estúdio, Vitrine Digital Iconic Sneakers",
+    whatsapp: "5544991246187",
+    itens: {
+      entrada_pix: { label: "1ª metade: início do projeto", valor: 500, metodo: "pix" },
+      saldo_pix: { label: "2ª metade: na entrega, no Pix", valor: 499, metodo: "pix" },
+      saldo_card: { label: "2ª metade: na entrega, no cartão em até 4x", valor: 499, metodo: "card", maxParcelas: 4 },
+    },
+  },
 };
