@@ -91,6 +91,15 @@ const MOMENTOS: { nome: string; rotas: Rota[] }[] = [
         nota: "a contagem",
         conta: null,
       },
+      /* 23/10: o que as lojas entregues perguntam pela aba Suporte do
+         painel. Conta as conversas esperando o estúdio, em vermelho: dono
+         esperando resposta é cobrança. */
+      {
+        href: "/crm/suporte",
+        rotulo: "Suporte",
+        nota: "as lojas perguntam",
+        conta: "suporte",
+      },
     ],
   },
   {
@@ -138,7 +147,7 @@ const MOMENTOS: { nome: string; rotas: Rota[] }[] = [
    cabia nela. Parcela vencida é literalmente cobrança, então Caixa entra na
    mesma escada de três estados. Pipeline e Templates continuam em cinza:
    são inventário, não dívida. */
-const COBRAM: readonly string[] = ["fila", "cobrar"];
+const COBRAM: readonly string[] = ["fila", "cobrar", "suporte"];
 
 const ICONES: Record<string, IconePainelNome> = {
   "/crm/clientes": "clientes",
@@ -149,6 +158,7 @@ const ICONES: Record<string, IconePainelNome> = {
   "/crm/producao": "producao",
   "/crm/projetos": "projetos",
   "/crm/performance": "performance",
+  "/crm/suporte": "suporte",
   "/crm/caixa": "caixa",
   "/crm/financeiro": "financeiro",
   "/crm/marketing": "marketing",

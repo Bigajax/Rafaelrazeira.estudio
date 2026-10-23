@@ -4,6 +4,7 @@ import { conferir } from "@/lib/sistema/consultas";
 import { avancouLead } from "@/lib/sistema/comercial";
 import { lerTodos, tabelaAusente } from "@/lib/sistema/consultas";
 import { diaLocal, mesLocal } from "@/lib/sistema/calendario";
+import { chamadosEsperando } from "@/lib/suporte/dados";
 import {
   recebimentoAnulado,
   devolucoesComLegado,
@@ -345,7 +346,7 @@ export async function contagens() {
   const supabase = await clienteServidor();
   const hoje = hojeSP();
 
-  const [{ data: leads }, { count: templates }, { data: cobrancas }, entradas] =
+  const [{ data: leads }, { count: templates }, { data: cobrancas }, entradas, suporte] =
     await Promise.all([
       conferir(
         supabase
@@ -373,6 +374,8 @@ export async function contagens() {
           .returns<ParcelaComRecebimentos[]>(),
       ),
       recebimentosDoCaixa(),
+      /* as conversas do Suporte esperando o estúdio; sem a tabela, zero */
+      chamadosEsperando(),
     ]);
   const pagamentos = pagamentosPorParcela(entradas);
 
@@ -386,6 +389,7 @@ export async function contagens() {
       .length,
     ativos: lista.length,
     templates: templates ?? 0,
+    suporte,
     /* Quem está para cobrar, pela MESMA régua do Hoje e do Caixa
        (`cobravel`, 06/10), e contando LEADS e não parcelas: o Hoje mostra
        uma carta por cliente, e o trilho dizendo "3" com duas cartas na
