@@ -495,11 +495,29 @@ const SEM_TABELA_REF = "Falta a tabela: rode o supabase/marketing-referencias.sq
 export async function carregarReferenciasIniciais(): Promise<Feito> {
   const s = await sessao();
   if (!s) return { ok: false, erro: "Sessão expirada. Entre de novo." };
-  const { count, error: erroConta } = await s.supabase.from("mkt_referencias").select("id", { count: "exact", head: true });
+  /* Desde a troca de conceito (21/10) a carga também ATUALIZA: entra o que
+     falta da lista nova, e o que não está nela é arquivado (ativo = false),
+     nunca apagado. Arquivada, a referência sai do que o time lê e volta a
+     um clique na aba. */
+  const { data: atuais, error: erroConta } = await s.supabase.from("mkt_referencias").select("id, nome, ativo");
   if (erroConta) return { ok: false, erro: SEM_TABELA_REF };
-  if (count) return { ok: false, erro: "O banco já tem referências; a carga inicial não entra de novo." };
-  const { error } = await s.supabase.from("mkt_referencias").insert(REFERENCIAS_INICIAIS.map((r) => ({ ...r, owner_id: s.usuario.id })));
-  if (error) return { ok: false, erro: `Não carreguei: ${error.message}` };
+  const nomes = new Set(REFERENCIAS_INICIAIS.map((r) => r.nome));
+  const ja = new Set((atuais ?? []).map((r: { nome: string }) => r.nome));
+  const novas = REFERENCIAS_INICIAIS.filter((r) => !ja.has(r.nome));
+  if (novas.length) {
+    const { error } = await s.supabase.from("mkt_referencias").insert(novas.map((r) => ({ ...r, owner_id: s.usuario.id })));
+    if (error)
+      return {
+        ok: false,
+        erro: /check constraint/i.test(error.message)
+          ? "O banco ainda não aceita as categorias novas: rode o supabase/marketing-conceito-2026-10-21.sql no SQL Editor."
+          : `Não carreguei: ${error.message}`,
+      };
+  }
+  const velhas = (atuais ?? []).filter((r: { nome: string; ativo: boolean | null }) => !nomes.has(r.nome) && r.ativo !== false);
+  if (velhas.length) {
+    await s.supabase.from("mkt_referencias").update({ ativo: false }).in("id", velhas.map((r: { id: string }) => r.id));
+  }
   revalidatePath("/crm/marketing/referencias");
   return { ok: true };
 }

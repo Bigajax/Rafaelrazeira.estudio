@@ -60,7 +60,18 @@ export const ORDEM_AGENTES: Agente[] = ["estrategista", "copywriter", "diretor-a
    decidiu que cada pilar tem o seu roteiro, e que o retrato dele fecha só
    Bastidor, Opinião e Oferta.
    ============================================================ */
-export type Pilar = "tendencia" | "conceito" | "comparacao" | "curadoria" | "bastidor" | "opiniao" | "case" | "oferta";
+export type Pilar =
+  | "conta"
+  | "agregado"
+  | "checklist"
+  | "tendencia"
+  | "conceito"
+  | "comparacao"
+  | "curadoria"
+  | "bastidor"
+  | "opiniao"
+  | "case"
+  | "oferta";
 
 type Passo = [TipoSlide, PapelImagem];
 
@@ -73,6 +84,16 @@ export const PILARES: Record<Pilar, { nome: string; faz: string; roteiro: Passo[
     valor,
   });
   return {
+    /* os três roteiros que nasceram com o conceito de 21/10 */
+    conta: p("A conta aberta", "a conta feita tela por tela, com a fonte oficial: quanto custa, quanto sobra", [
+      ["capa", "abertura"], ["texto", "respiro"], ["numero", "respiro"], ["numero", "respiro"], ["texto", "resposta"], ["fecho", "fecho"],
+    ]),
+    agregado: p("O agregado", "muitas lojas lidas de uma vez: o número do que se repete, sem expor ninguém", [
+      ["capa", "abertura"], ["numero", "respiro"], ["numero", "respiro"], ["texto", "zoom"], ["texto", "resposta"], ["fecho", "fecho"],
+    ]),
+    checklist: p("Checklist salvável", "o que deixar pronto, um item por tela, para salvar e conferir na própria loja", [
+      ["capa", "abertura"], ["numero", "respiro"], ["texto", "resposta"], ["texto", "resposta"], ["texto", "resposta"], ["texto", "resposta"], ["fecho", "fecho"],
+    ]),
     tendencia: p("Tendência", "o que está mudando no varejo e no digital, e o que a loja faz com isso", [
       ["capa", "abertura"], ["texto", "zoom"], ["tela", "prova"], ["texto", "respiro"], ["comparacao", "contraste"], ["fecho", "fecho"],
     ]),
@@ -101,58 +122,93 @@ export const PILARES: Record<Pilar, { nome: string; faz: string; roteiro: Passo[
 })();
 
 /* ============================================================
-   AS CATEGORIAS: do que o feed fala (01/10/2026)
+   AS CATEGORIAS: do que o feed fala (refeitas em 21/10/2026, duas vezes)
 
    O pilar diz COMO o post entrega (o roteiro dos slides); a categoria diz
-   DO QUE ele fala. São dois eixos: "Ruim × bom" cabe em E-commerce e em
-   Design e marca, e o feed só fica equilibrado quando se olha o assunto.
-   O Rafael pediu as editorias pensando no Instagram dele: quem segue é quem
-   vende pela internet ou quer vender, e a voz é de estúdio de design. Daí
-   as cinco, cada uma com a fatia do mês (`meta`, em %), e a única que pode
-   vender é Vitrines: é ela que carrega a oferta dos 80/20.
+   DO QUE ele fala.
 
-   `pilares` são os formatos que funcionam melhor naquela categoria, na
-   ordem; a tela sugere o primeiro, mas não trava.
+   Em 21/10 o conceito foi trocado duas vezes no mesmo dia. A primeira
+   troca tirou as editorias de 01/10 (tendência, design, e-commerce,
+   educacional, vitrines), que partiam do que o estúdio sabe fazer, e pôs
+   temas de VENDA com consumo comprovado (a conta da Shopee, a notícia, o
+   dado do Sebrae). O Rafael olhou os posts prontos e cortou de novo: "sei
+   lá, estes conteúdos não sei"; o que não era ele eram os TEMAS (taxa,
+   data comercial, dado de órgão). Ele escolheu os quatro de agora, todos
+   de DESIGN DA LOJA QUE VENDE, todos com consumo na pesquisa de 21/10, e é
+   neles que o estúdio quer ser conhecido. O plano mora no cofre:
+   `1 Processos/produzir-conteudo-da-marca.md`.
+
+   `cliente`: a categoria depende das lojas no ar (são poucas). Ela entra
+   no máximo a cada duas semanas, e só com loja que autorizou.
    ============================================================ */
-export type Categoria = "tendencia" | "design" | "ecommerce" | "educacional" | "vitrines";
+export type Categoria = "por_dentro" | "percepcao" | "construcao" | "antes_depois";
 
-export const CATEGORIAS: Record<Categoria, { nome: string; faz: string; exemplo: string; meta: number; pilares: Pilar[] }> = {
-  tendencia: {
-    nome: "Tendência",
-    faz: "o que está mudando no consumo, na IA e no design, e o que quem vende faz com isso",
-    exemplo: "1 em cada 3 clientes pergunta ao ChatGPT antes de comprar",
-    meta: 25,
-    pilares: ["tendencia", "opiniao", "curadoria"],
+export const CATEGORIAS: Record<
+  Categoria,
+  { nome: string; faz: string; exemplo: string; prova: string; meta: number; pilares: Pilar[]; cliente: boolean }
+> = {
+  por_dentro: {
+    nome: "A loja grande por dentro",
+    faz: "o site de uma marca que todo mundo conhece (Nike, Farm, Piet, Aesop, New Balance), o detalhe de design que faz vender, e o que ele vira numa loja de bairro",
+    exemplo: "O que a página do tênis da Nike faz que a sua loja não faz",
+    prova: "a análise de loja real é o formato que mais estoura no nicho (549 mil, @williamoliveira.iv), e ninguém do lado de quem faz a loja analisa o SITE; base: 2 Regras da casa/referencias-de-vitrine.md",
+    meta: 30,
+    pilares: ["curadoria", "comparacao", "conceito"],
+    cliente: false,
   },
-  design: {
-    nome: "Design e marca",
-    faz: "o olhar de designer aplicado à marca: foto, cor, letra, o que faz parecer cara ou confiável",
-    exemplo: "Por que a mesma camisa parece mais cara no fundo certo",
+  percepcao: {
+    nome: "Por que parece barata",
+    faz: "a percepção de valor: a mesma peça parecendo cara ou barata pela foto, pelo fundo, pelo nome, pela página",
+    exemplo: "A mesma camiseta: R$ 49 ou R$ 189?",
+    prova: "“Eu ainda não sabia o que era branding” fez 396 mil (@uana_amorim); análise de marca em 5 a 8 telas é o formato do @marcelokimuradesign",
+    meta: 30,
+    pilares: ["comparacao", "conceito", "checklist"],
+    cliente: false,
+  },
+  construcao: {
+    nome: "O estúdio construindo",
+    faz: "o bastidor de design de verdade: uma loja nascendo, a decisão de cada tela, e o estúdio rumo ao e-commerce; nunca o portfólio rolando",
+    exemplo: "Dia 1: um estúdio de uma pessoa rumo ao e-commerce",
+    prova: "a dona de atacado do Brás contando a marca voltando fez 224 mil com 28 mil seguidores (@giovannazocchio_)",
     meta: 20,
-    pilares: ["comparacao", "conceito", "curadoria"],
+    pilares: ["bastidor", "case", "oferta"],
+    cliente: true,
   },
-  ecommerce: {
-    nome: "E-commerce",
-    faz: "vender pela internet na prática: página da peça, preço, frete, WhatsApp, confiança",
-    exemplo: "Os 4 sinais que fazem a sua loja parecer golpe",
+  antes_depois: {
+    nome: "Antes e depois",
+    faz: "a loja como chega (o Instagram, o link da bio) e como fica, com a decisão de design explicada tela por tela",
+    exemplo: "A Full Time: do link da bio à vitrine, em 3 decisões",
+    prova: "antes e depois se repete nos estúdios que vendem pelo conteúdo (referências de 01/10); lá fora, redesign de loja real com número é lacuna",
     meta: 20,
-    pilares: ["conceito", "comparacao", "opiniao"],
-  },
-  educacional: {
-    nome: "Educacional",
-    faz: "a aula rápida: um passo a passo, uma ferramenta ou um fluxo que a pessoa aplica hoje",
-    exemplo: "Como tirar a foto da peça com o celular em 3 passos",
-    meta: 20,
-    pilares: ["conceito", "curadoria", "comparacao"],
-  },
-  vitrines: {
-    nome: "Vitrines",
-    faz: "o trabalho do estúdio: o case, o bastidor, o antes e depois, e a oferta",
-    exemplo: "Do Instagram à vitrine: as 68 peças da Japa",
-    meta: 15,
-    pilares: ["case", "bastidor", "oferta"],
+    pilares: ["case", "comparacao", "bastidor"],
+    cliente: true,
   },
 };
+
+/* As categorias trocadas. Peças e referências antigas ainda carregam essas
+   chaves no banco: a tela mostra o nome e o selo "antiga", mas nenhuma peça
+   nova nasce nelas. As de 01/10 e as da primeira troca de 21/10. */
+export const CATEGORIAS_ANTIGAS: Record<string, string> = {
+  tendencia: "Tendência",
+  design: "Design e marca",
+  ecommerce: "E-commerce",
+  educacional: "Educacional",
+  vitrines: "Vitrines",
+  conta: "A conta",
+  analise: "Análise de loja real",
+  noticia: "Notícia que mexe na loja",
+  historia: "A história da loja",
+};
+
+export function ehCategoria(k: unknown): k is Categoria {
+  return typeof k === "string" && k in CATEGORIAS;
+}
+
+export function nomeCategoria(k: string | null | undefined): string | null {
+  if (!k) return null;
+  if (ehCategoria(k)) return CATEGORIAS[k].nome;
+  return CATEGORIAS_ANTIGAS[k] ? `${CATEGORIAS_ANTIGAS[k]} (antiga)` : null;
+}
 
 /* ============================================================
    O PAPEL DA IMAGEM EM CADA SLIDE
@@ -539,15 +595,14 @@ export type Metricas = Partial<Record<Medida, number>> & { medido_em?: string };
 /* Quantos dias depois de postar os números já dizem alguma coisa. */
 export const DIAS_PARA_MEDIR = 7;
 
-/* A medida que diz se cada categoria cumpriu o papel dela: tendência
-   existe para circular, educacional para ser guardado, vitrines para
-   trazer conversa. */
+/* A medida que diz se cada categoria cumpriu o papel dela: a loja grande
+   existe para ser guardada, a percepção para circular, a construção para
+   trazer quem acompanha, o antes e depois para trazer conversa. */
 export const MEDIDA_DA_CATEGORIA: Record<Categoria, Medida> = {
-  tendencia: "encaminhamentos",
-  design: "salvamentos",
-  ecommerce: "encaminhamentos",
-  educacional: "salvamentos",
-  vitrines: "leads",
+  por_dentro: "salvamentos",
+  percepcao: "encaminhamentos",
+  construcao: "seguidores",
+  antes_depois: "leads",
 };
 
 /* Encaminhamento e salvamento por mil contas alcançadas: post com alcance

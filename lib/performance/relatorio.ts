@@ -14,7 +14,15 @@
 
 import { SUPABASE_ANON, SUPABASE_URL } from "@/lib/crm/supabase";
 
+export type InteresseRelatorio = {
+  liberado: boolean;
+  desde: string | null;
+  totais: { favoritos: number; sacola: number; contatos: number; sem_contato: number };
+  pecas: { produto: string; expostos: number; favoritos: number; sacola: number; contatos: number }[];
+};
+
 export type DadosRelatorio = {
+  interesse?: InteresseRelatorio | null;
   loja: string;
   mes: string;
   parcial: boolean;
@@ -45,10 +53,23 @@ export async function lerRelatorio(token: string): Promise<DadosRelatorio | null
     });
     if (!r.ok) return null;
     const texto = await r.text();
-    return texto ? (JSON.parse(texto) as DadosRelatorio | null) : null;
+    const dados = texto ? (JSON.parse(texto) as DadosRelatorio | null) : null;
+    if (dados) dados.interesse = await lerInteresseRelatorio(token);
+    return dados;
   } catch {
     return null;
   }
+}
+
+async function lerInteresseRelatorio(token: string): Promise<InteresseRelatorio | null> {
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/perf_interesse_relatorio`, {
+      method: "POST",
+      headers: { apikey: SUPABASE_ANON!, Authorization: `Bearer ${SUPABASE_ANON}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ chave_link: token }), cache: "no-store", signal: AbortSignal.timeout(4000),
+    });
+    return r.ok ? await r.json() as InteresseRelatorio | null : null;
+  } catch { return null; }
 }
 
 /* o central guarda a peça pelo slug (não tem o catálogo da loja): o nome

@@ -1,0 +1,400 @@
+/* ============================================================
+   /site-imersivo: papel e tinta, a mesma gramática da /vitrine-digital
+   (Archivo condensada 900 em caixa alta, JetBrains Mono nas etiquetas,
+   bordas de 1.5px e sombra dura deslocada, rosa só na ação), com a
+   personalidade que veio do próprio produto, o site da Monster (v2, 15/10):
+
+     - o hero é CINEMA de tela cheia: o filme atrás, o título por cima
+     - a tipografia grande é em BLOCO: face, aro e volume (a extrusão por
+       text-shadow empilhado, --extrusao), o mesmo gesto do site da Monster
+     - os benefícios são uma FAIXA torta que roda, não uma lista
+     - o argumento é um ANTES E DEPOIS: a grade de sempre contra a cena
+
+   Tokens copiados da vitrine (vitrine.module.css, .site): se um mudar lá
+   por contraste, conferir aqui.
+   ============================================================ */
+
+.site {
+  --green: #0C9159;
+  --green-dark: #076B42;
+  --green-live: #1FBF7A;
+  --rosa: #E31B62;
+  --rosa-dark: #B81250;
+  --ink: #14181A;
+  --ink-soft: #3A4144;
+  --paper: #F2EFE6;
+  --paper-2: #EAE6D9;
+  --line: #D8D3C4;
+  --line-dark: #2A3134;
+  --pad: clamp(20px, 5vw, 64px);
+  --display: var(--font-display), Arial, sans-serif;
+  --body: var(--font-body), Arial, sans-serif;
+  --mono: var(--font-mono), monospace;
+  /* (a extrusão, --extrusao, mora na regra dos elementos: var dentro de var se resolve
+     onde é declarada, e aqui --aro e --bloco ainda não existem) */
+  --extrusao-nao-usar:
+    -0.006em 0.006em 0 var(--aro), -0.012em 0.012em 0 var(--aro),
+    -0.018em 0.018em 0 var(--bloco), -0.024em 0.024em 0 var(--bloco), -0.03em 0.03em 0 var(--bloco),
+    -0.036em 0.036em 0 var(--bloco), -0.042em 0.042em 0 var(--bloco), -0.048em 0.048em 0 var(--bloco),
+    -0.054em 0.054em 0 var(--bloco), -0.06em 0.06em 0 var(--bloco), -0.066em 0.066em 0 var(--bloco),
+    -0.072em 0.072em 0 var(--bloco), -0.078em 0.078em 0 var(--bloco), -0.084em 0.084em 0 var(--bloco);
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  overflow: clip;
+}
+
+html:has(.site) { scroll-behavior: smooth }
+@media (prefers-reduced-motion: reduce) {
+  html:has(.site) { scroll-behavior: auto }
+}
+
+.site * { box-sizing: border-box }
+.site a { color: inherit }
+.site :focus-visible { outline: 2px solid var(--green); outline-offset: 3px }
+.site p, .site h1, .site h2, .site h3, .site ul, .site ol { margin: 0 }
+
+.soLeitor { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* ---------- tipografia ---------- */
+.h1, .h2, .h3, .preco, .passoN, .ladoTitulo {
+  font-family: var(--display);
+  font-weight: 900;
+  font-stretch: 78%;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+/* a extrusão: 2 passos de aro e 12 de volume, para baixo e para a esquerda.
+   --aro e --bloco mudam por elemento; a lista é uma só, declarada NELES. */
+.h1, .h2, .preco, .passoN {
+  --extrusao:
+    -0.006em 0.006em 0 var(--aro), -0.012em 0.012em 0 var(--aro),
+    -0.018em 0.018em 0 var(--bloco), -0.024em 0.024em 0 var(--bloco), -0.03em 0.03em 0 var(--bloco),
+    -0.036em 0.036em 0 var(--bloco), -0.042em 0.042em 0 var(--bloco), -0.048em 0.048em 0 var(--bloco),
+    -0.054em 0.054em 0 var(--bloco), -0.06em 0.06em 0 var(--bloco), -0.066em 0.066em 0 var(--bloco),
+    -0.072em 0.072em 0 var(--bloco), -0.078em 0.078em 0 var(--bloco), -0.084em 0.084em 0 var(--bloco);
+}
+.h2 { font-size: clamp(2.2rem, 5vw, 4.4rem); line-height: 0.9; max-width: 16ch; }
+.h3 { font-size: clamp(1.25rem, 1.8vw, 1.6rem); line-height: 1; }
+.h2 em { font-style: normal; color: var(--green); }
+.escura .h2 em { color: var(--green-live); }
+/* a letra em bloco: os títulos grandes das seções claras com volume de tinta */
+.h2 { --aro: var(--paper); --bloco: var(--ink); text-shadow: var(--extrusao); }
+.escura .h2 { --aro: var(--ink); --bloco: #000; }
+
+.etiqueta { font-family: var(--mono); font-size: 0.8125rem; color: var(--green-dark); margin-bottom: 1.1rem; }
+.escura .etiqueta, .hero .etiqueta { color: var(--green-live); }
+
+/* ---------- botões: rosa na ação, sombra dura ---------- */
+.botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 54px;
+  padding: 0.95rem 1.6rem;
+  border: 1.5px solid var(--ink);
+  border-radius: 0;
+  background: var(--rosa);
+  color: #fff;
+  font-family: var(--display);
+  font-weight: 900;
+  font-stretch: 85%;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  text-decoration: none;
+  box-shadow: 6px 6px 0 var(--ink);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.site .botao { color: #fff; }
+.botao:hover { transform: translate(2px, 2px); box-shadow: 4px 4px 0 var(--ink); }
+.botao:active { transform: translate(6px, 6px); box-shadow: 0 0 0 var(--ink); }
+.botao:disabled { opacity: 0.7; cursor: wait; }
+.escura .botao, .hero .botao { border-color: var(--paper); box-shadow: 6px 6px 0 var(--paper); }
+.escura .botao:hover, .hero .botao:hover { box-shadow: 4px 4px 0 var(--paper); }
+
+.botaoContorno {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  padding: 0.8rem 1.3rem;
+  border: 1.5px solid currentColor;
+  font-family: var(--display);
+  font-weight: 900;
+  font-stretch: 85%;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+/* ---------- topo ---------- */
+.topo {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem var(--pad);
+  color: var(--paper);
+}
+.marca {
+  font-family: var(--display);
+  font-weight: 900;
+  font-stretch: 78%;
+  font-size: 1.1rem;
+  text-decoration: none;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.marca span { color: var(--green-live); margin-left: 0.3em; }
+.topoCta {
+  font-family: var(--mono);
+  font-size: 0.8125rem;
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* ---------- hero: o cinema ---------- */
+.hero {
+  position: relative;
+  display: grid;
+  align-content: end;
+  min-height: 100svh;
+  padding: 6rem var(--pad) clamp(3rem, 7vh, 5rem);
+  background: var(--ink);
+  color: var(--paper);
+  overflow: hidden;
+}
+.heroVideo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #000;
+  /* desfocado de propósito: o filme tem letra grande própria e brigava com o título;
+     aqui ele é cor e movimento, o nítido fica no cartão "O site filme" logo abaixo */
+  filter: blur(7px) brightness(0.7);
+  transform: scale(1.06);
+}
+.heroSombra {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top, rgb(20 24 26 / 0.92) 0%, rgb(20 24 26 / 0.55) 45%, rgb(20 24 26 / 0.1) 100%),
+    linear-gradient(to right, rgb(20 24 26 / 0.6), transparent 60%);
+  pointer-events: none;
+}
+.heroTexto { position: relative; display: grid; gap: 1.2rem; max-width: 60rem; }
+/* o título em bloco: quatro linhas, as duas últimas em rosa, volume preto */
+.h1 {
+  display: grid;
+  font-size: clamp(3rem, min(8vw, 13vh), 8rem);
+  line-height: 0.84;
+  --aro: var(--paper);
+  --bloco: #000;
+  text-shadow: var(--extrusao);
+}
+.h1Linha { display: block; }
+.h1Rosa { color: var(--rosa); --aro: #ffd6e4; }
+.lead { font-size: clamp(1.0625rem, 1.5vw, 1.3rem); max-width: 36ch; color: #e6e3d9; }
+.heroAcao { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; margin-top: 0.4rem; }
+.ancora { font-family: var(--mono); font-size: 0.875rem; color: #cfccc2; }
+.ancora b { font-family: var(--display); font-weight: 900; font-stretch: 85%; font-size: 1.6rem; color: var(--paper); margin-right: 0.5rem; }
+.heroNota { position: absolute; right: var(--pad); bottom: 1rem; font-family: var(--mono); font-size: 0.7rem; color: #8f8c83; }
+
+/* ---------- a faixa que roda ---------- */
+.faixa {
+  position: relative;
+  z-index: 1;
+  margin: -1.4rem -2% 0;
+  padding: 0.7rem 0;
+  background: var(--rosa);
+  color: var(--paper);
+  rotate: -2deg;
+  overflow: hidden;
+  border-block: 1.5px solid var(--ink);
+  box-shadow: 0 8px 0 var(--ink);
+}
+.faixaTrilho { display: flex; width: max-content; animation: faixaCorre 36s linear infinite; }
+.faixaVolta { display: flex; flex: none; }
+.faixaItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding-right: 1.2rem;
+  white-space: nowrap;
+  font-family: var(--display);
+  font-weight: 900;
+  font-stretch: 85%;
+  font-size: clamp(1.4rem, 2.6vw, 2.2rem);
+  line-height: 1;
+  text-transform: uppercase;
+}
+.faixaPonto { width: 0.5em; height: 0.5em; border-radius: 999px; background: var(--ink); }
+@keyframes faixaCorre { to { transform: translateX(-50%); } }
+@media (hover: hover) and (pointer: fine) { .faixa:hover .faixaTrilho { animation-play-state: paused; } }
+
+/* ---------- antes e depois ---------- */
+.versus {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  padding: clamp(4rem, 9vw, 7.5rem) var(--pad) clamp(3rem, 7vw, 6rem);
+}
+.lado { display: grid; align-content: start; gap: 1.25rem; padding: clamp(1.5rem, 3vw, 2.5rem); }
+.ladoGrade { background: var(--paper-2); border: 1.5px solid var(--line); }
+.ladoCena { background: var(--ink); color: var(--paper); border: 1.5px solid var(--ink); box-shadow: 10px 10px 0 var(--ink); }
+.ladoTitulo { font-size: clamp(1.6rem, 2.6vw, 2.4rem); line-height: 0.95; }
+.ladoCena .ladoTitulo { color: var(--green-live); }
+.ladoFrase { font-size: clamp(1rem, 1.3vw, 1.2rem); max-width: 34ch; color: var(--ink-soft); }
+.ladoCena .ladoFrase { color: #e6e3d9; }
+/* a grade de sempre, desenhada: seis cartões cinza, iguais, sem alma */
+.grade { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.6rem; aspect-ratio: 16 / 9; }
+.gradeCartao { display: grid; align-content: end; gap: 0.35rem; padding: 0.5rem; background: #fff; border: 1px solid var(--line); }
+.gradeCartao i { display: block; flex: 1; height: 55%; background: var(--line); margin-bottom: auto; }
+.gradeCartao b { display: block; height: 0.45rem; width: 70%; background: #b9b4a5; }
+.gradeCartao u { display: block; height: 0.35rem; width: 40%; background: var(--line); }
+.cenaVideo { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; background: #000; border: 1.5px solid var(--paper); }
+
+/* ---------- seções ---------- */
+.secao { padding: clamp(4rem, 9vw, 7.5rem) var(--pad); }
+.escura { background: var(--ink); color: var(--paper); }
+
+/* passos: é sequência, então o número fica, grande e em bloco */
+.passos {
+  list-style: none;
+  padding: 0;
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1.5px solid var(--line-dark);
+}
+.passo { display: grid; align-content: start; gap: 0.8rem; padding: 1.75rem 1.5rem 0 0; }
+.passo + .passo { padding-left: 1.5rem; border-left: 1.5px solid var(--line-dark); }
+.passo p { color: #cfccc2; max-width: 30ch; }
+.passoN {
+  font-size: clamp(3.5rem, 6vw, 5.5rem);
+  line-height: 0.9;
+  color: var(--green-live);
+  --aro: var(--ink);
+  --bloco: #000;
+  text-shadow: var(--extrusao);
+}
+
+/* oferta: o preço como canhoto, em bloco; a lista como nota fiscal */
+.oferta {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  border: 1.5px solid var(--ink);
+  box-shadow: 10px 10px 0 var(--ink);
+  background: #fff;
+}
+.ofertaPreco { display: grid; align-content: start; gap: 0.75rem; padding: clamp(1.75rem, 4vw, 3rem); border-right: 1.5px dashed var(--ink); }
+.preco { font-size: clamp(4rem, 9vw, 7.5rem); line-height: 0.85; --aro: #fff; --bloco: var(--ink); text-shadow: var(--extrusao); }
+.precoParcelas { font-size: 1.125rem; }
+.precoNota { font-family: var(--mono); font-size: 0.8125rem; color: var(--green-dark); margin-bottom: 1rem; }
+.ofertaLista { display: grid; align-content: start; gap: 1rem; padding: clamp(1.75rem, 4vw, 3rem); }
+.lista { list-style: none; padding: 0; display: grid; gap: 0.6rem; margin-bottom: 0.75rem; }
+.lista li { display: grid; grid-template-columns: 1.4rem minmax(0, 1fr); gap: 0.4rem; }
+.lista li::before { content: "✓"; color: var(--green); font-weight: 700; }
+.listaFora li { color: var(--ink-soft); }
+.listaFora li::before { content: "×"; color: var(--ink-soft); }
+
+/* dúvidas */
+.duvidas { margin-top: clamp(2rem, 4vw, 3rem); max-width: 56rem; border-top: 1.5px solid var(--ink); }
+.duvida { border-bottom: 1.5px solid var(--ink); }
+.duvida summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.2rem 0;
+  font-family: var(--display);
+  font-weight: 900;
+  font-stretch: 85%;
+  font-size: clamp(1.15rem, 1.6vw, 1.4rem);
+  text-transform: uppercase;
+}
+.duvida summary::-webkit-details-marker { display: none; }
+.duvida summary::after { content: "+"; color: var(--green); }
+.duvida[open] summary::after { content: "−"; }
+.duvida p { padding: 0 0 1.4rem; max-width: 62ch; color: var(--ink-soft); }
+
+/* ---------- formulário ---------- */
+.final .h2 { max-width: 20ch; }
+.form {
+  margin-top: clamp(2rem, 4vw, 3rem);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem 1.5rem;
+  max-width: 52rem;
+}
+.campo { display: grid; gap: 0.45rem; }
+.campo span { font-family: var(--mono); font-size: 0.8125rem; color: var(--green-live); }
+.campo input {
+  min-height: 52px;
+  padding: 0.8rem 0.95rem;
+  border: 1.5px solid var(--paper);
+  border-radius: 0;
+  background: transparent;
+  color: var(--paper);
+  font: inherit;
+  font-size: 1rem;
+}
+.campo input::placeholder { color: #8b8a83; }
+.campo input[aria-invalid="true"] { border-color: var(--rosa); }
+.campoLargo { grid-column: 1 / -1; }
+.erro { color: #ff9cbf; font-size: 0.875rem; }
+.form .botao { justify-self: start; margin-top: 0.5rem; }
+
+.confirmacao { margin-top: 2rem; display: grid; gap: 1rem; justify-items: start; max-width: 40rem; }
+.confTitulo { font-family: var(--display); font-weight: 900; font-stretch: 78%; font-size: 2rem; text-transform: uppercase; }
+
+/* ---------- rodapé ---------- */
+.rodape {
+  display: grid;
+  gap: 0.5rem;
+  padding: 2rem var(--pad) 2.5rem;
+  background: var(--ink);
+  color: #a9a69c;
+  font-size: 0.875rem;
+  border-top: 1.5px solid var(--line-dark);
+}
+.rodape a { color: var(--paper); text-underline-offset: 0.2em; }
+
+/* ---------- celular ---------- */
+@media (max-width: 860px) {
+  .versus { grid-template-columns: minmax(0, 1fr); gap: 2rem; }
+  .ladoCena { box-shadow: 6px 6px 0 var(--ink); }
+  .oferta { grid-template-columns: minmax(0, 1fr); box-shadow: 6px 6px 0 var(--ink); }
+  .ofertaPreco { border-right: 0; border-bottom: 1.5px dashed var(--ink); }
+  .passos { grid-template-columns: minmax(0, 1fr); }
+  .passo + .passo { padding-left: 0; border-left: 0; border-top: 1.5px solid var(--line-dark); }
+  .passo { padding-bottom: 1.5rem; }
+}
+@media (max-width: 560px) {
+  .topoCta { display: none; }
+  .hero { padding-top: 5rem; }
+  .h1 { font-size: clamp(2.6rem, 13vw, 4rem); }
+  .heroNota { position: static; margin-top: 1.25rem; }
+  .faixa { rotate: -3deg; }
+  .form { grid-template-columns: minmax(0, 1fr); }
+  .campo input { font-size: 16px; } /* abaixo disso o iOS dá zoom no foco */
+  .botao { width: 100%; }
+}
+
+/* reduzir movimento: a faixa anda devagar em vez de parar (a regra da casa), o resto para */
+@media (prefers-reduced-motion: reduce) {
+  .botao { transition: none; }
+  .faixaTrilho { animation-duration: 120s; }
+}

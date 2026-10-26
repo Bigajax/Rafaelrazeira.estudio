@@ -1,0 +1,78 @@
+SEMANA 01 (26 a 30/10), CONCEITO DE DESIGN: OS PROMPTS DE IMAGEM
+(trocado em 21/10: os de Shopee, Sebrae e Black Friday saíram do calendário)
+
+Como usar:
+- Gere, copie a imagem, abra o post na aba Marketing, vá no slide e dê Ctrl+V.
+  Ou me mande o arquivo, que eu aplico e monto o criativo.
+- Se o gerador não tiver 4:5 (ChatGPT/GPT Image), peça 3:4.
+- Os prints da Nike, da Farm e da Full Time já estão nos slides.
+
+
+==================================================================
+SEG 26/10 · "O que a página do tênis da Nike faz que a sua loja não faz"
+==================================================================
+
+--- SLIDE 1 (capa, 4:5) ---
+
+Image, no text, no letters, no typography, no logos, no numbers. The young man holds a large brass magnifying glass up to a single black sneaker standing on a tall white plinth, studying one detail of it with a serious, curious expression. Cobalt-blue seamless backdrop, acid-green rim light on the sneaker, low angle, sharp editorial still-life mood.
+
+Composition: Full-bleed image with the headline over the BOTTOM 40%. Keep that area calm and simple, without faces or important objects; the subject lives in the rest of the frame.
+
+Aspect ratio: vertical 4:5.
+
+
+==================================================================
+TER 27/10 · "A mesma camiseta: 49 ou 189?"
+==================================================================
+
+--- SLIDE 1 (capa, 4:5) ---
+
+Image, no text, no letters, no typography, no logos, no numbers. Two identical plain black t-shirts side by side as a diptych: on the left, crumpled on an unmade bed under dim yellowish bedroom light, shot with harsh phone flash; on the right, neatly pressed and laid flat on a light grey seamless studio backdrop under clean soft light. Same shirt, opposite perceived value, playful editorial contrast, warm tomato-red tape strips holding the two halves like a collage.
+
+Composition: Full-bleed image with the headline over the BOTTOM 40%. Keep that area calm and simple, without faces or important objects; the subject lives in the rest of the frame.
+
+Aspect ratio: vertical 4:5.
+
+
+--- SLIDE 2, LADO "ASSIM NÃO" (cole primeiro) ---
+
+Vertical 4:5 image, no text, no letters, no typography, no logos. A plain black cotton t-shirt, no print, crumpled on an unmade bed with a patterned blanket, dim yellowish bedroom light, harsh phone flash, cluttered and careless, shot from above. Keep the shirt centered and fully inside the frame.
+
+
+--- SLIDE 2, LADO "ASSIM SIM" (cole depois) ---
+
+Vertical 4:5 image, no text, no letters, no typography, no logos. The same plain black cotton t-shirt, no print, neatly pressed and laid flat on a light grey seamless studio backdrop, clean soft even light, centered, crisp and premium, shot from directly above. Keep the shirt centered and fully inside the frame.
+
+
+==================================================================
+QUA 28/10 · CAPA DO REELS "Dia 1" (9:16)
+==================================================================
+
+Image, no text, no letters, no typography, no logos, no numbers. A single pair of brand-new sneakers placed exactly on a bright acid-green starting line painted across a cobalt-blue floor, like the start of a race, long dramatic shadow, early hard light, low angle close to the ground, a sense of beginning.
+
+Composition: Full-bleed image with the headline over the BOTTOM 40%. Keep that area calm and simple, without faces or important objects; the subject lives in the rest of the frame.
+
+Aspect ratio: vertical 9:16.
+
+
+==================================================================
+QUI 29/10 · "A Full Time: do Instagram à vitrine, em 3 decisões"
+==================================================================
+
+Sem prompt de propósito: a capa é a FOTO REAL da fachada da Full Time
+(a mesma do topo da vitrine deles). Antes e depois com imagem de IA
+seria inventar a loja. Só publicar com o OK da Full Time.
+O slide 2 (antes) pede o print do Instagram @fulltimeskateboards.
+
+
+==================================================================
+SEX 30/10 · "O que a Farm faz na página da peça"
+==================================================================
+
+--- SLIDE 1 (capa, 4:5) ---
+
+Image, no text, no letters, no typography, no logos, no numbers. The woman stands confidently in front of a giant oversized clothing rack made of sunflower-yellow pipes, holding a single printed skirt on a hanger out toward the camera like an offer, slight smile, playful scale, tomato-red backdrop, hard flash.
+
+Composition: Full-bleed image with the headline over the BOTTOM 40%. Keep that area calm and simple, without faces or important objects; the subject lives in the rest of the frame.
+
+Aspect ratio: vertical 4:5.

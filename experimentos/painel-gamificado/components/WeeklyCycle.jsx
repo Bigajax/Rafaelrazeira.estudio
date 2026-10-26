@@ -1,0 +1,12 @@
+import {weeklyCycle} from '../domain/cycles.mjs';
+import {Icon} from './Icons';
+export default function WeeklyCycle({state,onOpen,onNavigate}){
+  const cycle=weeklyCycle(state);
+  return <section className="weekly-cycle week-simple" aria-labelledby="week-title" data-weekly-cycle>
+    <div className="section-heading"><div><span className="eyebrow">Últimos sete dias · dados fictícios</span><h2 id="week-title">Sua semana.</h2></div><button className="text-button" onClick={()=>onNavigate('missoes')}>Ver oportunidades<Icon name="arrow"/></button></div>
+    <div className="week-overview"><div><strong data-week-found>{cycle.opportunities}</strong><h3>{cycle.opportunities===1?'oportunidade encontrada':'oportunidades encontradas'}</h3></div><p data-week-registered>{cycle.opportunities?<>Você já registrou uma ação ou decisão em <strong>{cycle.registered}</strong> delas.</>:'Nenhuma nova oportunidade encontrada neste período. Seu trabalho continua registrado.'}</p>{cycle.reviews>0&&<p className="week-attention">Entre os cuidados disponíveis ou adiados, <strong>{cycle.reviews}</strong> {cycle.reviews===1?'conferência de disponibilidade aguarda':'conferências de disponibilidade aguardam'} revisão.</p>}</div>
+    {cycle.insufficient&&<p className="data-note"><Icon name="info"/>Ainda estamos reunindo informações para identificar oportunidades nesta área. A demonstração não coleta dados reais.</p>}
+    {cycle.priorities.length>0?<details className="week-priorities"><summary>Até três ações que merecem atenção <span>Escolha o que faz sentido agora.</span></summary><ol>{cycle.priorities.map(m=><li key={m.id}><div><strong>{m.productName??state.products.find(p=>p.id===m.productId)?.name}</strong><span>{m.action}</span></div><button className="text-button" data-priority={m.id} onClick={()=>onOpen(m)}>Ver cuidado<Icon name="arrow"/></button></li>)}</ol></details>:<p className="week-quiet">{cycle.inOrder?'Nenhuma ação prioritária neste cenário. Seu nível está preservado.':'As oportunidades adiadas continuam guardadas. Retome quando fizer sentido.'} Não há tarefas obrigatórias nem perda de XP.</p>}
+    <div className="week-links">{(cycle.observing>0||cycle.results>0)&&<button className="text-button" onClick={()=>onNavigate('evolucao','acompanhamento')}>Ver acompanhamento<Icon name="arrow"/></button>}{cycle.deferred>0&&<button className="text-button" onClick={()=>onNavigate('missoes','adiadas')}>Rever oportunidades adiadas<Icon name="arrow"/></button>}</div>
+  </section>;
+}

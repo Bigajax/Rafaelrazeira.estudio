@@ -1,0 +1,14 @@
+import puppeteer from "puppeteer-core";
+import { mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
+const B = "http://127.0.0.1:3370";
+const browser = await puppeteer.launch({ executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe", headless: true, userDataDir: mkdtempSync(tmpdir() + "/mm-"), args: ["--no-first-run"] });
+const page = await browser.newPage(); page.setDefaultNavigationTimeout(120000);
+let n = 0; page.on("console", m => { if (/unique "key"/.test(m.text())) n++; });
+await page.goto(B + "/painel/login", { waitUntil: "networkidle0" });
+await page.type("input[type=password]", "molde");
+await Promise.all([page.waitForNavigation({ waitUntil: "networkidle0" }).catch(() => {}), page.keyboard.press("Enter")]);
+await page.goto(B + "/painel/pecas?v=" + Date.now(), { waitUntil: "networkidle0" });
+await new Promise(r => setTimeout(r, 2500));
+console.log("avisos de key:", n);
+await browser.close();

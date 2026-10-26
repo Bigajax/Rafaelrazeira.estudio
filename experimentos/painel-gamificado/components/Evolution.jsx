@@ -1,0 +1,13 @@
+import {isDecision} from '../domain/recognition.mjs';
+import {progress,totalXP} from '../domain/engine.mjs';
+import {Icon} from './Icons';
+import EvolutionTimeline from './EvolutionTimeline';
+import XPProgress from './XPProgress';
+import EvolutionEmblem from './EvolutionEmblem';
+import {journeyBoard} from '../domain/journeys.mjs';
+import Achievements from './Achievements';
+import ImpactPanel from './ImpactPanel';
+export default function Evolution({state,onNavigate,onAchievement,onFollowup,onEvidence}){
+  const history=state.history,p=progress(totalXP(state)),groups=journeyBoard(state),completed=groups.filter(g=>g.complete).length;
+  return <div className="evolution-v12"><div className="page-heading"><div><span className="eyebrow">Cada melhoria deixa uma marca</span><h1 id="page-title" tabIndex={-1}>Sua trajetória.</h1></div><p>{state.name} · O cuidado que virou progresso.</p></div><section className="trajectory-level"><EvolutionEmblem level={p.level}/><div><span className="eyebrow">Evolução da loja</span><XPProgress value={p}/><div className="trajectory-xp"><strong>{p.total.toLocaleString('pt-BR')}</strong><span>XP acumulados</span></div><p className="trajectory-message">{history.length?<><strong>{history.length} {history.some(isDecision)?(history.length===1?'cuidado registrado':'cuidados registrados'):(history.length===1?'melhoria registrada':'melhorias registradas')}</strong> na sua loja. Cada cuidado faz parte deste caminho.</>:'O primeiro cuidado vai deixar sua marca aqui.'}</p></div></section><Achievements state={state} onOpen={onAchievement}/>{groups.length>0&&<div className="trajectory-groups-note"><span>{completed} {completed===1?'grupo finalizado':'grupos finalizados'} · {groups.length-completed} em andamento</span><button className="text-button" onClick={()=>onNavigate('missoes')}>Ver os cuidados<Icon name="arrow"/></button></div>}<div className="section-heading"><h2>O caminho até aqui</h2><span>Melhorias, decisões e conquistas</span></div>{history.length?<EvolutionTimeline history={history} products={state.products} journeys={groups}/>:<section className="empty compact"><h2>O primeiro passo deixa sua marca.</h2><p>Uma melhoria salva aparecerá aqui automaticamente.</p><button className="button primary" onClick={()=>onNavigate('inicio')}>Ver próximo passo<Icon name="arrow"/></button></section>}<ImpactPanel key={state.generation} state={state} onNavigate={onNavigate} onFollowup={onFollowup} onEvidence={onEvidence}/><div className="closing-line"><span>Seu nível registra melhorias concluídas no painel.</span><button className="text-button" onClick={()=>onNavigate('inicio')}>Voltar ao início<Icon name="arrow"/></button></div></div>;
+}

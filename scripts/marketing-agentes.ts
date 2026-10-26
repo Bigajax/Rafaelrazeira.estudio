@@ -33,6 +33,7 @@ import marca from "../lib/marketing/marca.json";
 import {
   AGENTES,
   CATEGORIAS,
+  nomeCategoria,
   CODIGOS,
   PAPEIS,
   LAYOUTS,
@@ -177,10 +178,12 @@ function blocoMarca(agente: Agente | "pautas", p?: Peca) {
 }
 
 const VALOR =
-  "Este post é de GERAÇÃO DE VALOR. Ele ensina, mostra bastidor, opina ou faz curadoria, e a pessoa sai dele sabendo uma coisa que não sabia. " +
-  "NÃO venda: não cite a vitrine digital, o preço, a entrada, o prazo nem \"fale comigo\". O estúdio aparece pela qualidade do raciocínio, não por pedido. " +
-  "A voz é a de um ESTÚDIO DE DESIGN (Rafael Razeira Estúdio) que acompanha tendências de design, IA, marca e internet e mostra como elas mudam o trabalho: workflows, ferramentas, processo, decisão. O público é quem empreende, cria ou toca um negócio pequeno, não só dona de loja; a vitrine e o lojista são UM dos assuntos possíveis, nunca o assunto padrão. Ensine com exemplo concreto do dia a dia de quem trabalha, e só depois nomeie o conceito. " +
-  "O CTA do fecho é de valor: salvar para consultar, mandar para quem precisa, ou uma pergunta real para os comentários (nunca \"comente EU QUERO\").";
+  "Este post é de GERAÇÃO DE VALOR (conceito de 21/10/2026). Ele ensina uma coisa de DESIGN DA LOJA QUE VENDE que o lojista aplica na própria loja, e a pessoa sai sabendo uma coisa que não sabia. " +
+  "NÃO venda: não cite a vitrine digital do estúdio, o preço, a entrada, o prazo nem \"fale comigo\". O estúdio aparece pelo olho de designer e pela decisão explicada, não por pedido. " +
+  "O PÚBLICO é o dono de loja pequena de moda, tênis e acessórios. Os temas são quatro: a loja grande por dentro (o detalhe de design do site de uma marca conhecida e o que ele vira na loja de bairro), por que parece barata (percepção de valor: foto, fundo, nome, página), o estúdio construindo (o bastidor da decisão de design) e o antes e depois (a loja como chega e como fica). " +
+  "NÃO são temas: taxa de marketplace, data comercial, notícia, dado de órgão (Sebrae, Nuvemshop), dica de foto solta. O Rafael cortou esses em 21/10: não é o que o estúdio quer ser conhecido por falar. " +
+  "Toda observação de site de marca vem do que foi VISTO e anotado (referencias-de-vitrine), nunca de memória. Número só com fonte. " +
+  "O CTA do fecho é de valor e feito para ENCAMINHAR: salvar para aplicar na própria loja, ou mandar para quem tem loja";
 
 /* As regras duras da peça: formato, pilar e, sem pilar, a camada do código. */
 function espec(p: Peca) {
@@ -295,7 +298,7 @@ function secaoReferencias(categoria: Categoria | null, perfis: boolean) {
   const gerais = referencias.filter((r) => r.tipo !== "perfil");
   const deles = perfis ? referencias.filter((r) => r.tipo === "perfil" && (!categoria || r.categoria === categoria)) : [];
   const linha = (r: Referencia) =>
-    `- ${r.nome}${r.categoria && r.tipo === "perfil" ? ` (${CATEGORIAS[r.categoria].nome})` : ""}: ${r.por_que}. Copiar: ${r.copiar}. Não copiar: ${r.nao_copiar}.`;
+    `- ${r.nome}${r.categoria && r.tipo === "perfil" && nomeCategoria(r.categoria) ? ` (${nomeCategoria(r.categoria)})` : ""}: ${r.por_que}. Copiar: ${r.copiar}. Não copiar: ${r.nao_copiar}.`;
   const partes = [
     "## Referências de fora (o banco do Rafael)\n\n" +
       "Use o MECANISMO destas referências (o formato, o tipo de gancho, a estrutura), nunca o texto nem o assunto de outro perfil. Seguidor não prova que funciona; quando o feed do Rafael já mostrou o contrário, vale o feed.",
@@ -312,7 +315,7 @@ const TAREFA: Record<Agente, string> = {
   estrategista:
     "Proponha a melhor pauta para esta peça a partir do briefing: o ângulo, a persona, a ideia central e o que a pessoa leva. " +
     "Se a peça ainda não tem categoria, escolha uma em `categoria` (" + LISTA_CATEGORIAS + "). " +
-    "Se a peça ainda não tem pilar, recomende um em `pilar` (tendencia, conceito, comparacao, curadoria, bastidor, opiniao, case ou oferta), lembrando que 4 de cada 5 posts são de valor. " +
+    "Se a peça ainda não tem pilar, recomende um em `pilar` (" + (Object.keys(PILARES) as Pilar[]).join(", ") + "), de preferência um dos que combinam com a categoria, lembrando que 4 de cada 5 posts são de valor. " +
     "Escreva QUATRO opções de gancho em `opcoes_gancho`, com abordagens diferentes (pergunta, afirmação que confronta, imagem concreta do dia a dia da loja, dado real). " +
     "Em `gancho` repita a que você recomenda. O raciocínio vai em `notas`, curto.",
   copywriter:
@@ -346,14 +349,14 @@ const TAREFA: Record<Agente, string> = {
     "COMPOSIÇÃO PELO MOLDE (30/09): o roteiro diz o molde de cada slide e a composição dele (a forma da área da imagem e onde o texto cai). O editor acrescenta essa composição e a proporção SOZINHO no fim do prompt; você NÃO escreve proporção nem espaço vazio. Você escreve a CENA para funcionar dentro dela (num círculo, um assunto só e centrado; numa coluna estreita, uma cena vertical; com o texto no pé, o assunto no alto) e a cena ilustra o que o texto DAQUELE slide diz. " +
     "Em `notas`, em português, uma frase: a história que a série conta, plano a plano.",
   revisor:
-    "LINHAS VERMELHAS (qualquer uma = REJECT): número com destaque sem ser real; post de VALOR que vende (cita vitrine, preço, prazo ou pede contato); CTA fora da regra do pilar; post que não ensina nada concreto; tese que soa dogma; travessão em qualquer texto; título que não cabe (voz 1 ou voz 2 com mais de 5 palavras). " +
+    "LINHAS VERMELHAS (qualquer uma = REJECT): número com destaque sem ser real ou sem fonte; loja nomeada ou mostrada sem autorização; amostra apresentada como cliente; tour de funções do painel no lugar de uma dor de venda; post de VALOR que vende (cita vitrine, preço, prazo ou pede contato); CTA fora da regra do pilar; post que não ensina nada concreto; tese que soa dogma; travessão em qualquer texto; título que não cabe (voz 1 ou voz 2 com mais de 5 palavras). " +
     "NÃO JULGUE A COR NEM O ESTILO DA IMAGEM: desde 30/09 o feed usa as direções Pôster ácido e Colagem, com muita cor e a régua de imagem do Rafael; o papel e a tinta da seção 4.1 valem só para o site. Avalie o visual apenas por: a imagem serve à ideia do post e o texto de cada slide trabalha com o papel da imagem nele. " +
     "Avalie contra sua rubrica e emita `veredito` conforme o schema, e um resumo curto em `notas`.",
 };
 
 const SCHEMA: Record<Agente, string> = {
   estrategista:
-    '{"notas": "string", "categoria": "design", "pilar": "conceito", "opcoes_gancho": ["string","string","string","string"], "gancho": "string"}',
+    '{"notas": "string", "categoria": "por_dentro", "pilar": "curadoria", "opcoes_gancho": ["string","string","string","string"], "gancho": "string"}',
   copywriter:
     '{"notas": "string", "slides": [{"tipo": "capa", "rotulo": "string", "manchete": "string", "batida": "string", "destaque": "string", "apoio": "string", "numero": "string", "itens": ["string"], "ruim": "string", "bom": "string"}], "gancho": "string", "cta": "string", "hashtags": "string", "legenda": "string"}',
   "diretor-arte":
@@ -371,7 +374,7 @@ function montarPrompt(agente: Agente, p: Peca, anteriores: string[] = []) {
     `## Definição do agente\n\n${agenteMd(agente)}`,
   ];
   const pos = posicionamento();
-  if (pos) secoes.push(`## Posicionamento (ALICERCE: obedeça o teste da 2.5 e o "nunca entra" da 3.4)\n\n${pos}`);
+  if (pos) secoes.push(`## Posicionamento (ALICERCE: obedeça o teste de um post e o NUNCA)\n\n${pos}`);
   const bp = bestPractices(p.tipo, agente);
   if (bp) secoes.push(`## Best practices do formato\n\n${bp}`);
   if (agente === "estrategista" && SECAO_LICAO()) secoes.push(SECAO_LICAO());
@@ -442,23 +445,23 @@ function montarPromptPautas(n: number, tipo: TipoPeca | null, jaFeitas: string[]
   if (refs) secoes.push(refs);
   const pilares = (Object.keys(PILARES) as Pilar[]).map((k) => `${k} (${PILARES[k].nome}: ${PILARES[k].faz})`).join("; ");
   /* com categoria escolhida (01/10), a venda só existe se ela for Vitrines */
-  const nVenda = categoria && categoria !== "vitrines" ? 0 : Math.max(0, Math.round(n / 5));
+  const nVenda = categoria && !CATEGORIAS[categoria].cliente ? 0 : Math.max(0, Math.round(n / 5));
   const regraCategoria = categoria
     ? `TODAS as ${n} pautas são da categoria ${CATEGORIAS[categoria].nome} (${CATEGORIAS[categoria].faz}): o Rafael escolheu este assunto, e isso vence qualquer proporção de temas escrita abaixo. Varie o ângulo dentro dele, e prefira os pilares ${CATEGORIAS[categoria].pilares.join(", ")}. Em \`categoria\` vai sempre "${categoria}". `
-    : `Cada pauta também tem uma CATEGORIA, o assunto (01/10): ${LISTA_CATEGORIAS}. Espalhe as pautas pelas categorias seguindo essas fatias; a oferta só cabe em vitrines. `;
+    : `Cada pauta também tem uma CATEGORIA, o assunto (01/10): ${LISTA_CATEGORIAS}. Espalhe as pautas pelas categorias seguindo essas fatias; a oferta só cabe em construcao ou antes_depois, e essas duas dependem das poucas lojas no ar (no máximo uma a cada duas semanas, só com loja que autorizou). `;
   secoes.push(
     "## Sua tarefa\n\n" +
       `Proponha ${n} pautas para o Instagram do estúdio. A regra é 80/20: ${n - nVenda} de VALOR e ${nVenda} de venda (pilar oferta). ` +
       `Pilares: ${pilares}. Varie os pilares de valor; não repita o mesmo pilar mais de duas vezes. ` +
       regraCategoria +
-      "Conteúdo de valor mostra um estúdio de design olhando o mundo: tendências (IA, ferramentas novas, design, marca, internet), como melhorar workflows e processo, bastidores de decisões de design, opiniões sobre o mercado criativo e digital. Vitrine e loja são só UM dos temas possíveis, no máximo 1 a cada 5 pautas. " +
+      "Conteúdo de valor fala com o lojista de moda, tênis e acessórios sobre o DESIGN DA LOJA QUE VENDE (conceito de 21/10): a loja grande por dentro, por que parece barata, o estúdio construindo, o antes e depois. Nunca taxa, data comercial, notícia ou dado de órgão. " +
       "Pauta de valor não cita a vitrine nem o preço do estúdio. " +
       (tipo ? `Todas no formato ${TIPOS[tipo].nome}. ` : "Formato: carrossel na maioria; post único para tese curta; story para bastidor. ") +
       "Cada pauta: `categoria`, `pilar`, `tipo` (carrossel|post_feed|story), `briefing` (2 a 4 frases: o tema, o ângulo, o exemplo concreto e o que a pessoa leva) e `gancho` (a primeira frase). " +
       "Número só se estiver nas provas da marca ou na memória com fonte.",
   );
   secoes.push(
-    formatoSaida('{"notas": "string", "pautas": [{"categoria": "tendencia", "pilar": "conceito", "tipo": "carrossel", "briefing": "string", "gancho": "string"}]}'),
+    formatoSaida('{"notas": "string", "pautas": [{"categoria": "percepcao", "pilar": "comparacao", "tipo": "carrossel", "briefing": "string", "gancho": "string"}]}'),
   );
   return secoes.join("\n\n---\n\n");
 }

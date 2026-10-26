@@ -23,6 +23,13 @@ export interface OfertaIdioma {
   landing: { total: number; entrada: number; saldo: number };
 }
 
+/* O SITE IMERSIVO PARA MARCAS (/site-imersivo, 15/10/2026): só em português.
+   R$ 4.997 é o preço dos três primeiros projetos (preço de case, decidido pelo
+   Rafael em 15/10); depois deles a ideia é subir. Metade na entrada porque o
+   crédito de IA sai antes da entrega. 4.997 não divide por 2: a entrada leva o
+   real a mais. */
+export const IMERSIVO = { total: 4997, entrada: 2499, saldo: 2498 } as const;
+
 const fmt = (simbolo: string, locale: string) => (n: number) => `${simbolo}${n.toLocaleString(locale, { maximumFractionDigits: 0 })}`;
 
 export const OFERTA: Record<Lang, OfertaIdioma> = {

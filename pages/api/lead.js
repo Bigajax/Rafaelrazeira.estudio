@@ -189,6 +189,9 @@ const TIPO_POR_PAGINA = {
   /* as irmãs em inglês (11/09/2026): mesmo tipo de projeto, outro idioma */
   "vitrine-digital-en": "vitrine",
   "landing-page-en": "landing",
+  /* o site imersivo para marcas (15/10/2026) entra como "site" de propósito:
+     é o tipo que o CHECK do crm_leads já aceita, sem migração no banco */
+  "site-imersivo": "site",
 };
 
 /* Tráfego pago ou orgânico. A régua é a UTM: quem chega por campanha traz

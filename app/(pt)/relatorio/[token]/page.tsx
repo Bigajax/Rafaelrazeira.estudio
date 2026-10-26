@@ -318,6 +318,13 @@ export default async function PaginaRelatorio({ params }: { params: Promise<{ to
           </section>
         </div>
 
+        {R.interesse?.liberado && R.interesse.desde ? <section className={s.secao} aria-labelledby="interesse">
+          <h2 id="interesse">O interesse antes do atendimento</h2>
+          <p className={s.nota}>{br(R.interesse.totais.favoritos)} visitantes salvaram peças e {br(R.interesse.totais.sacola)} adicionaram à sacola neste mês. {br(R.interesse.totais.contatos)} clicaram no WhatsApp por uma peça ou sacola.</p>
+          <table className={s.tabela}><thead><tr><th>Peça</th><th>Salvaram</th><th>Sacola</th><th>WhatsApp</th></tr></thead><tbody>{R.interesse.pecas.slice(0,8).map(p=><tr key={p.produto}><th scope="row">{nomeDaPeca(p.produto)}</th><td>{br(p.favoritos)}</td><td>{br(p.sacola)}</td><td>{br(p.contatos)}</td></tr>)}</tbody></table>
+          <p className={s.nota}>Contagem desde {DIA.format(new Date(R.interesse.desde))}. Cada ação conta visitantes distintos; os grupos podem se sobrepor. {br(R.interesse.totais.sem_contato)} adicionaram à sacola sem clique posterior no pedido dentro deste mês. Parte ainda pode voltar. Cliques não confirmam mensagens enviadas ou vendas.</p>
+        </section> : null}
+
         {/* ── o rodapé: a assinatura e a única ação da página ── */}
         <footer className={s.rodape}>
           <p className={s.rodape__texto}>

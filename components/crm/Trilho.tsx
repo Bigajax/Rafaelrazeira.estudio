@@ -40,12 +40,7 @@ const MOMENTOS: { nome: string; rotas: Rota[] }[] = [
     rotas: [
       { href: "/crm", rotulo: "Hoje", nota: "o estúdio", conta: "fila" },
       { href: "/crm/atendimento", rotulo: "Atendimento", nota: "novos e respostas", conta: null },
-      {
-        href: "/crm/clientes",
-        rotulo: "Clientes",
-        nota: "os vínculos",
-        conta: null,
-      },
+      { href: "/crm/clientes", rotulo: "Clientes", nota: "os vínculos", conta: null },
       {
         href: "/crm/pipeline",
         /* "Funil" desde 06/10: pipeline é palavra de programador. A URL
@@ -131,6 +126,14 @@ const MOMENTOS: { nome: string; rotas: Rota[] }[] = [
         nota: "os posts",
         conta: null,
       },
+      /* 13/10: vídeo e imagem pelo OpenRouter, logo abaixo do Marketing que
+         os usa. Abre no Vídeo, que é o trabalho principal do estúdio. */
+      {
+        href: "/crm/ai-studio",
+        rotulo: "AI Studio",
+        nota: "vídeo e imagem",
+        conta: null,
+      },
       {
         href: "/crm/metricas",
         rotulo: "Indicadores",
@@ -169,21 +172,11 @@ const ICONES: Record<string, IconePainelNome> = {
 
 const PRINCIPAIS = ["/crm", "/crm/pipeline", "/crm/producao", "/crm/caixa"];
 
-export function Trilho({
-  sair,
-  contagens,
-}: {
-  sair: () => void;
-  contagens: Contagens;
-}) {
+export function Trilho({ sair, contagens }: { sair: () => void; contagens: Contagens }) {
   const caminho = usePathname() ?? "";
   const [menuAberto, setMenuAberto] = useState(false);
-  const [menuFixo, setMenuFixo] = useState(false);
-  useEffect(() => {
-    try {
-      setMenuFixo(localStorage.getItem("crm-menu-fixo") === "1");
-    } catch {}
-  }, []);
+  const [menuFixo,setMenuFixo]=useState(false);
+  useEffect(()=>{try{setMenuFixo(localStorage.getItem("crm-menu-fixo")==="1");}catch{}},[]);
   const botaoMais = useRef<HTMLButtonElement>(null);
   const menu = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -213,49 +206,17 @@ export function Trilho({
       <a href="#crm-principal" className={s.pularConteudo}>
         Pular para o conteúdo
       </a>
-      <nav
-        className={s.trilho + (menuFixo ? " " + s.trilhoFixo : "")}
-        aria-label="Seções do estúdio"
-      >
+      <nav className={s.trilho+(menuFixo?" "+s.trilhoFixo:"")} aria-label="Seções do estúdio">
         <div className={s.trilhoPainel}>
-          <Link
-            href="/crm"
-            className={s.trilhoMarca}
-            aria-label="Rafael Razeira Estúdio, início"
-          >
-            <Image
-              src="/marca/rr.webp"
-              alt=""
-              width={36}
-              height={36}
-              className={s.trilhoLogo}
-              priority
-            />
+          <Link href="/crm" className={s.trilhoMarca} aria-label="Rafael Razeira Estúdio, início">
+            <Image src="/marca/rr.webp" alt="" width={36} height={36} className={s.trilhoLogo} priority />
             <span className={s.trilhoMarcaTexto}>
               <b>Rafael Razeira</b>
 
               <small>Painel do estúdio</small>
             </span>
           </Link>
-          <button
-            type="button"
-            className={s.fixarMenu}
-            aria-pressed={menuFixo}
-            aria-label={menuFixo ? "Recolher menu" : "Manter menu aberto"}
-            title={menuFixo ? "Recolher menu" : "Manter menu aberto"}
-            onClick={() => {
-              const aberto = !menuFixo;
-              setMenuFixo(aberto);
-              try {
-                localStorage.setItem("crm-menu-fixo", aberto ? "1" : "0");
-              } catch {}
-            }}
-          >
-            <span aria-hidden="true">☰</span>
-            <span className={s.trilhoTexto}>
-              {menuFixo ? "Recolher menu" : "Manter aberto"}
-            </span>
-          </button>
+          <button type="button" className={s.fixarMenu} aria-pressed={menuFixo} aria-label={menuFixo?"Recolher menu":"Manter menu aberto"} title={menuFixo?"Recolher menu":"Manter menu aberto"} onClick={()=>{const aberto=!menuFixo;setMenuFixo(aberto);try{localStorage.setItem("crm-menu-fixo",aberto?"1":"0");}catch{}}}><span aria-hidden="true">☰</span><span className={s.trilhoTexto}>{menuFixo?"Recolher menu":"Manter aberto"}</span></button>
 
           <ul className={s.trilhoLista}>
             {MOMENTOS.flatMap(({ nome, rotas }) => [
@@ -277,10 +238,7 @@ export function Trilho({
                       aria-label={`${rotulo}${n !== null ? `, ${n} ${nota}` : ""}`}
                       title={rotulo}
                     >
-                      <IconePainel
-                        nome={ICONES[href]}
-                        className={s.trilhoIcone}
-                      />
+                      <IconePainel nome={ICONES[href]} className={s.trilhoIcone} />
                       <div className={s.trilhoTexto}>
                         <b>
                           {rotulo}
@@ -311,18 +269,11 @@ export function Trilho({
           </form>
         </div>
       </nav>
-      <nav
-        className={s.barraCelular}
-        aria-label="Navegação do estúdio no celular"
-      >
+      <nav className={s.barraCelular} aria-label="Navegação do estúdio no celular">
         {MOMENTOS.flatMap(({ rotas }) => rotas)
           .filter(({ href }) => PRINCIPAIS.includes(href))
           .map(({ href, rotulo }) => (
-            <Link
-              key={href}
-              href={href}
-              aria-current={estaAtiva(href) ? "page" : undefined}
-            >
+            <Link key={href} href={href} aria-current={estaAtiva(href) ? "page" : undefined}>
               <IconePainel nome={ICONES[href]} />
               <span>{rotulo}</span>
             </Link>
@@ -332,9 +283,7 @@ export function Trilho({
           ref={botaoMais}
           aria-expanded={menuAberto}
           aria-controls="crm-menu-celular"
-          className={
-            !PRINCIPAIS.some(estaAtiva) || menuAberto ? s.barraMaisAtivo : ""
-          }
+          className={!PRINCIPAIS.some(estaAtiva) || menuAberto ? s.barraMaisAtivo : ""}
           onClick={() => setMenuAberto((aberto) => !aberto)}
         >
           <IconePainel nome="menu" />

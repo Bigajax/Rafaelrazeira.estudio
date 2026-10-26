@@ -44,6 +44,8 @@ import {
   BUCKET,
   CATEGORIAS,
   CODIGOS,
+  ehCategoria,
+  nomeCategoria,
   ESTILO_PADRAO,
   DIRECOES,
   ORDEM_AGENTES,
@@ -414,6 +416,51 @@ export function EditorPeca({ peca, pedidos, vistoEm, hoje }: { peca: Peca; pedid
     }
   }
 
+  /* ---------- gerar aqui, pelo AI Studio (21/10/2026) ----------
+     Até 21/10 a imagem nascia no ChatGPT e voltava por Ctrl+V. Agora o
+     botão "Gerar aqui" manda o MESMO prompt (com a composição do molde) à
+     rota do AI Studio, que confere o limite do mês e o ritmo, registra o
+     custo real e guarda a imagem na galeria de lá. A imagem volta e entra
+     pelo mesmo caminho do Ctrl+V (WebP no bucket do marketing, e as cores
+     do carrossel saindo da imagem 1). O Nano Banana Pro é o único da lista
+     com 4:5 nativo, a proporção do feed. */
+  const [gerando, setGerando] = useState<string | null>(null);
+  async function gerarAqui(prompt: string, alvo: "fundo" | number) {
+    if (!prompt.trim() || gerando) return;
+    const pedida = prompt.match(/Aspect ratio:[^\d]*(\d+)\s*:\s*(\d+)/i);
+    const aceitas = ["4:5", "9:16", "1:1", "3:2", "2:3", "3:4", "4:3", "16:9"];
+    const proporcao = pedida && aceitas.includes(`${pedida[1]}:${pedida[2]}`) ? `${pedida[1]}:${pedida[2]}` : story ? "9:16" : "4:5";
+    setGerando(alvo === "fundo" ? "capa" : `extra-${alvo}`);
+    setAviso({ ok: true, txt: "Gerando a imagem no AI Studio. Leva de 20 segundos a 2 minutos." });
+    try {
+      const r = await fetch("/api/ai-studio/gerar", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          chave: crypto.randomUUID(),
+          origem: "criar",
+          prompt,
+          modelo: "google/gemini-3-pro-image",
+          qualidade: "high",
+          proporcao,
+          resolucao: "2K",
+          fundo: "auto",
+        }),
+      });
+      const corpo = (await r.json().catch(() => null)) as { ok?: boolean; erro?: string; imagem?: { url?: string | null; custo_usd?: number | null } } | null;
+      if (!r.ok || !corpo?.ok || !corpo.imagem?.url) throw new Error(corpo?.erro ?? `o AI Studio respondeu ${r.status}`);
+      const arquivo = await (await fetch(corpo.imagem.url)).blob();
+      if (alvo === "fundo") await subirFundo(arquivo);
+      else await subirExtra(arquivo, alvo);
+      const custo = corpo.imagem.custo_usd;
+      setAviso({ ok: true, txt: `Imagem gerada e aplicada${custo != null ? ` (US$ ${Number(custo).toFixed(3)})` : ""}. Ela também ficou na galeria do AI Studio.` });
+    } catch (e) {
+      setAviso({ ok: false, txt: `Não gerei: ${e instanceof Error ? e.message : "erro"}` });
+    } finally {
+      setGerando(null);
+    }
+  }
+
   async function subirDoSlide(arquivo: Blob, campo: "img" | "img2") {
     setSubindo(true);
     try {
@@ -584,7 +631,7 @@ export function EditorPeca({ peca, pedidos, vistoEm, hoje }: { peca: Peca; pedid
           {/[?!]$/.test(campos.gancho.trim()) ? null : <i className={s.ponto}>.</i>}
         </h1>
         <div className={m.pecaMeta}>
-          {peca.categoria ? <span className={m.pilarSelo}>{CATEGORIAS[peca.categoria].nome}</span> : null}
+          {nomeCategoria(peca.categoria) ? <span className={m.pilarSelo}>{nomeCategoria(peca.categoria)}</span> : null}
           {peca.pilar ? <span className={m.pilarSelo}>{PILARES[peca.pilar].nome}</span> : null}
           <label className={m.metaItem}>
             <span>Posta em</span>
@@ -1020,8 +1067,16 @@ export function EditorPeca({ peca, pedidos, vistoEm, hoje }: { peca: Peca; pedid
                           />
                           {linhaComposicao(composicaoCapa, slides[0]?.layout)}
                           <div className={m.fundoAcoes}>
+                            <button
+                              type="button"
+                              className={s.btn}
+                              disabled={!promptChat || Boolean(gerando) || subindo}
+                              onClick={() => gerarAqui(promptChat, "fundo")}
+                            >
+                              {gerando === "capa" ? "Gerando..." : "Gerar aqui"}
+                            </button>
                             <a
-                              className={`${s.btn} ${promptChat ? "" : m.desligado}`}
+                              className={`${s.btnMini} ${promptChat ? "" : m.desligado}`}
                               href={promptChat ? `https://chatgpt.com/?q=${encodeURIComponent(promptChat)}` : undefined}
                               target="_blank"
                               rel="noreferrer"
@@ -1087,7 +1142,15 @@ export function EditorPeca({ peca, pedidos, vistoEm, hoje }: { peca: Peca; pedid
                             </div>
                           ) : null}
                           <div className={m.fundoAcoes}>
-                            <button type="button" className={s.btn} disabled={!promptSlide} onClick={() => copiar(promptSlide, "Prompt")}>
+                            <button
+                              type="button"
+                              className={s.btn}
+                              disabled={!extra.prompt?.trim() || Boolean(gerando) || subindo}
+                              onClick={() => gerarAqui(promptSlide, idx - 1)}
+                            >
+                              {gerando === `extra-${idx - 1}` ? "Gerando..." : "Gerar aqui"}
+                            </button>
+                            <button type="button" className={s.btnMini} disabled={!promptSlide} onClick={() => copiar(promptSlide, "Prompt")}>
                               Copiar prompt
                             </button>
                             {peca.fundo ? (
@@ -1560,6 +1623,9 @@ export function EditorPeca({ peca, pedidos, vistoEm, hoje }: { peca: Peca; pedid
                   }
                 >
                   <option value="">Sem categoria</option>
+                  {peca.categoria && !ehCategoria(peca.categoria) ? (
+                    <option value={peca.categoria}>{nomeCategoria(peca.categoria) ?? peca.categoria}</option>
+                  ) : null}
                   {(Object.keys(CATEGORIAS) as Categoria[]).map((c) => (
                     <option key={c} value={c}>
                       {CATEGORIAS[c].nome}: {CATEGORIAS[c].faz}

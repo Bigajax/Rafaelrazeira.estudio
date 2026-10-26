@@ -7,7 +7,8 @@
 import { useRouter } from "next/navigation";
 import { useRef, useState, useTransition } from "react";
 import { arquivarReferencia, carregarReferenciasIniciais, salvarReferencia } from "@/app/(pt)/crm/acoes-marketing";
-import { CATEGORIAS, type Categoria } from "@/lib/marketing/tipos";
+import { CATEGORIAS, ehCategoria, type Categoria } from "@/lib/marketing/tipos";
+import { REFERENCIAS_INICIAIS } from "@/lib/marketing/referencias-iniciais";
 import type { Referencia } from "@/lib/marketing/referencias-iniciais";
 import m from "@/app/(pt)/crm/marketing.module.css";
 import s from "@/app/(pt)/crm/crm.module.css";
@@ -78,7 +79,7 @@ export function BancoReferencias({ refs, semTabela }: { refs: Referencia[]; semT
   if (!refs.length) {
     return (
       <div className={m.refVazio}>
-        <p>O banco está vazio. A pesquisa de 01/10 tem 23 perfis conferidos, 5 formatos e o que evitar.</p>
+        <p>O banco está vazio. A pesquisa de 21/10 tem os perfis medidos pela mediana, os formatos que se repetem e o que evitar.</p>
         <button type="button" className={s.btnAcao} disabled={pendente} onClick={() => rodar(carregarReferenciasIniciais, "Referências carregadas")}>
           {pendente ? "Carregando" : "Trazer as referências da pesquisa"}
         </button>
@@ -89,9 +90,25 @@ export function BancoReferencias({ refs, semTabela }: { refs: Referencia[]; semT
 
   const tirar = (id: string, voltar: boolean) => rodar(() => arquivarReferencia(id, voltar), voltar ? "Voltou para o time" : "Tirada do que o time lê");
   const gerais = refs.filter((r) => r.tipo !== "perfil");
+  /* o banco ainda está no conceito de 01/10 enquanto alguma referência ativa
+     estiver numa editoria antiga, ou faltar uma da pesquisa de 21/10 */
+  const desatualizado =
+    refs.some((r) => r.ativo !== false && r.categoria && !ehCategoria(r.categoria)) ||
+    REFERENCIAS_INICIAIS.some((x) => !refs.some((r) => r.nome === x.nome));
 
   return (
     <div className={`${m.refBanco} ${pendente ? m.ocupado : ""}`}>
+      {desatualizado ? (
+        <div className={m.refVazio}>
+          <p>
+            O conceito mudou em 21/10. Trazer as referências da pesquisa nova acrescenta o que falta e arquiva as antigas: elas saem do
+            que o time lê e voltam a um clique.
+          </p>
+          <button type="button" className={s.btnAcao} disabled={pendente} onClick={() => rodar(carregarReferenciasIniciais, "Referências trocadas")}>
+            {pendente ? "Trocando" : "Trocar pelas referências de 21/10"}
+          </button>
+        </div>
+      ) : null}
       {ok ? <p className={s.salvo} aria-live="polite">{ok}</p> : null}
       {erro ? <p className={s.erro}>{erro}</p> : null}
 
@@ -120,6 +137,25 @@ export function BancoReferencias({ refs, semTabela }: { refs: Referencia[]; semT
           </section>
         );
       })}
+
+      {/* as editorias de 01/10, trocadas em 21/10: a referência antiga fica
+          visível até ser arquivada, mas não guia mais as pautas */}
+      {(() => {
+        const antigas = refs.filter((r) => r.tipo === "perfil" && r.categoria && !ehCategoria(r.categoria));
+        if (!antigas.length) return null;
+        return (
+          <section aria-labelledby="ref-antigas">
+            <h2 id="ref-antigas">
+              Das editorias antigas <span>{antigas.filter((r) => r.ativo !== false).length}</span>
+            </h2>
+            <ul className={m.refLista}>
+              {antigas.map((r) => (
+                <Linha key={r.id ?? r.nome} r={r} aoTirar={tirar} />
+              ))}
+            </ul>
+          </section>
+        );
+      })()}
 
       <section aria-labelledby="ref-nova" className={m.refNova}>
         <h2 id="ref-nova">Guardar uma referência</h2>

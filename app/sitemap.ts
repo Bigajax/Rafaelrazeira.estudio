@@ -14,7 +14,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       { url: `${SITE}${en}`, lastModified: agora, alternates: { languages } },
     ];
   });
-  const soPt = ["/estudio", "/e-commerce", "/servicos"].map((p) => ({ url: `${SITE}${p}`, lastModified: agora }));
+  const soPt = ["/estudio", "/e-commerce", "/servicos", "/site-imersivo"].map((p) => ({ url: `${SITE}${p}`, lastModified: agora }));
   /* os casos (19/10/2026): o índice e uma página por loja, datada pela
      última conferência do texto */
   const doCasos = [

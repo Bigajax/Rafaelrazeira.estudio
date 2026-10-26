@@ -130,10 +130,10 @@ pasta. Contra o L08-G1-F2 é a comparação de verdade do lote: história longa 
 
 1. **O pagamento da página nunca foi testado de ponta a ponta.** Um Pix real de R$ 199
    antes de mandar tráfego.
-2. **Falta o evento de compra.** O toque no botão de pagar já conta como
+2. **(Feito em 20/10: `lib/meta/compra.js`, o Purchase sai no aviso do Mercado Pago; falta o deploy.)** **Falta o evento de compra.** O toque no botão de pagar já conta como
    InitiateCheckout; o Purchase (pagamento aprovado) ainda não é medido. Sem ele, a
    campanha não otimiza por venda.
-3. **A política de reembolso não existe** e o FAQ "E se eu não gostar?" só diz o que é
+3. **(Feito em 20/10: 7 dias para desistir e o prazo garantido, na página e na seção 06 dos termos.)** **A política de reembolso não existe** e o FAQ "E se eu não gostar?" só diz o que é
    verdade hoje.
 4. **Estrutura:** a matriz diz conjunto novo só para "produto ou oferta nova". A compra
    direta é oferta nova, então este lote ganha conjunto próprio, apontando para
@@ -169,6 +169,38 @@ mesmos textos. Muda o nome, o vídeo e a `utm_content`:
 
 A leitura do lote é longo contra simples (somar as três lojas de cada lado), e a loja só
 como desempate.
+
+### Troca para a voz do Rafael (20/10)
+
+O Rafael achou os seis "monótonos" e refez os vídeos com a voz e o rosto dele
+(`Desktop/Criativos lote 08 · finais 2026-10-20`). Nenhum dos seis tinha rodado (conta em
+Payment error), então os anúncios foram reaproveitados e os nomes e a `utm_content` mudaram
+sem perder dado. O lote virou 9, três formatos por três lojas, todos em rascunho, com os
+mesmos textos:
+
+| Anúncio | Vídeo | utm_content |
+|---|---|---|
+| L08 · 01 longo · japa | `L08-voz-01-longo-japa.mp4` (37 s) | `l08-01-longo-japa` |
+| L08 · 02 longo · full | `L08-voz-02-longo-full.mp4` (37 s) | `l08-02-longo-full` |
+| L08 · 03 longo · verit | `L08-voz-03-longo-verit.mp4` (37 s) | `l08-03-longo-verit` |
+| L08 · 04 curto · japa | `L08-voz-04-curto-japa.mp4` (19 s) | `l08-04-curto-japa` |
+| L08 · 05 curto · full | `L08-voz-05-curto-full.mp4` (19 s) | `l08-05-curto-full` |
+| L08 · 06 curto · verit | `L08-voz-06-curto-verit.mp4` (19 s) | `l08-06-curto-verit` |
+| L08 · 07 antes · japa (novo) | `L08-voz-07-antes-japa.mp4` (22 s) | `l08-07-antes-japa` |
+| L08 · 08 antes · full (novo) | `L08-voz-08-antes-full.mp4` (22 s) | `l08-08-antes-full` |
+| L08 · 09 antes · verit (novo) | `L08-voz-09-antes-verit.mp4` (22 s) | `l08-09-antes-verit` |
+
+A leitura passa a ser longo x curto x antes e depois (o "Os lotes" da aba Criativos soma por
+formato). Os originais têm ~100 MB; o envio pelo Chrome aceita 10 MB por arquivo, então
+subiram cópias em 1080x1920 a ~2 Mbps (x264 em duas passadas); a Meta entrega nessa faixa
+de qualquer jeito.
+
+> [!warning] Subir vídeo pela tela de mídia do anúncio
+> O vídeo enviado entra **selecionado junto** com o que já estava: o anúncio fica com dois
+> vídeos e a Meta alterna entre eles. Depois de cada envio, desmarcar o antigo e conferir
+> "1 of 10 selected". O envio leva uns 40 s parado numa tela "Media upload" em branco: é
+> espera, não erro. E o primeiro clique numa miniatura depois de abrir a tela costuma não
+> pegar (abre a prévia por cima): conferir a contagem e clicar de novo.
 
 Na mesma noite a conta ainda mostrava o 15 e o 17 em Payment error: publicar agora não
 entrega nada até o cartão ser resolvido. E o "Revisar e publicar" do Gerenciador publica
