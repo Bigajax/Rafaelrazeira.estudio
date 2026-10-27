@@ -7087,15 +7087,17 @@
 }
 
 /* Painel do estúdio — mesma base do molde da loja (14/10/2026).
-   Esta camada altera a ferramenta; as fontes dos criativos continuam disponíveis. */
+   Esta camada altera a ferramenta; as fontes dos criativos continuam disponíveis.
+   Fundo branco desde 27/10/2026, a pedido do Rafael: o papel creme saiu, os
+   cartões ficaram num cinza neutro bem leve para não sumirem no branco. */
 .app {
-  --paper: #f1efe6;
-  --paper-2: #eae8df;
-  --paper-alto: #fafaf5;
+  --paper: #ffffff;
+  --paper-2: #efefed;
+  --paper-alto: #f7f7f6;
   --ink: #14181a;
   --ink-soft: #555d5b;
   --ink-fraco: #616966;
-  --line: #dedbd1;
+  --line: #e2e2df;
   --pad: clamp(16px, 2.5vw, 40px);
   --painel-acento: #076b42;
   --painel-acento-suave: #e6eee3;
