@@ -42,10 +42,10 @@ const CONFIG_ESTUDIO = {
        igual à proposta da vitrine digital", e a /vitrine-digital já faz esse
        trabalho). Ela agora é o estúdio por trás, para quem pesquisa: quem é,
        o que faz, como trabalha, e a porta certa para cada produto. */
-    headline: ["O estúdio por trás de ", "mais de <em>100 lojas no ar.</em>"],
+    headline: ["Sites feitos para vender, ", "<em>todos os dias.</em>"],   // a copy escolhida pelo Rafael em 29/10, na linha da velvetica.studio
     /* o que entra no lugar do cartão do formulário (montado por js/lib/novo.js) */
     estudio: {
-      lead: "Vitrines digitais, e-commerce e landing pages, do texto ao código, feitos por uma pessoa só, em Maringá.",
+      lead: "Vitrine digital, e-commerce e landing page para marcas que querem ver pedido, não só visita.",
       acao:  { label: "Falar com o estúdio", href: "#contato" },
       olhar: { label: "Ver os projetos",     href: "#cases" },
     },

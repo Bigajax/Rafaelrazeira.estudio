@@ -403,3 +403,5 @@ body.novo .guarantee{display:none}
 /* a pílula flutuante some enquanto o hero, que tem o mesmo botão, está à vista */
 body.novo .pill{transition:opacity .25s ease,transform .25s ease}
 body.novo.hero-a-vista .pill{opacity:0;transform:translateY(16px);pointer-events:none}
+/* a batida verde do título não quebra no meio ("todos os dias." junto no celular) */
+body.novo .hero__headline em{white-space:nowrap}
