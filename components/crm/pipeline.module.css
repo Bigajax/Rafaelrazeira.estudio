@@ -1469,3 +1469,45 @@
     transition: none !important;
   }
 }
+
+/* ============================================================
+   O DESIGN NOVO DO ESTÚDIO NO FUNIL, FASE 2 (29/10/2026)
+   Régua em docs/design-estudio.md. Pílulas nos botões, nos focos e na
+   busca; colunas e indicadores de canto grande; o título na Instrument
+   Sans; o botão principal em preto. As cores das etapas e o filete de
+   urgência dos cards ficam como estão: são informação.
+   ============================================================ */
+.painel .cabecalho h1 {
+  font: 500 clamp(26px, 2.6vw, 36px)/1.1 var(--display, Arial, sans-serif);
+  letter-spacing: -0.03em;
+  color: var(--ink, #14181a);
+}
+.painel .botao,
+.painel .resultado,
+.painel .focos > button,
+.painel .filtro select,
+.painel .filtrosAvancados > summary,
+.painel .prospeccao > summary {
+  border-radius: 980px;
+}
+.painel .botaoPrimario {
+  background: var(--ink, #14181a);
+  border-color: var(--ink, #14181a);
+  box-shadow: none;
+}
+.painel .botaoPrimario:hover {
+  background: #000;
+}
+.painel .busca input,
+.painel .busca input[type="search"] {
+  border-radius: 980px;
+}
+.painel .coluna {
+  border-radius: 16px;
+}
+.painel .indicador {
+  border-radius: 16px;
+}
+.painel .card {
+  border-radius: 12px;
+}
