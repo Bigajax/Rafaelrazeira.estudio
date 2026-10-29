@@ -215,16 +215,16 @@ textarea.caixa{min-height:84px}
   <section class="abre">
     <span class="selo"><i aria-hidden="true"></i>Para o NEAM · Núcleo Empresarial dos Arquitetos de Maringá</span>
     <h1>Antes do desenho, <em>o objetivo.</em></h1>
-    <p class="lead">Antes de propor qualquer coisa, quero entender o que o núcleo quer que aconteça. São dez blocos curtos, e nenhuma pergunta é obrigatória.</p>
+    <p class="lead">Antes de propor qualquer coisa, quero entender o que o núcleo quer que aconteça. São cinco blocos curtos, e nenhuma pergunta é obrigatória.</p>
     <div class="botoes">
       <a class="pilula rosa" href="#quadro">Começar <span aria-hidden="true">↓</span></a>
     </div>
   </section>
 
   <div class="passos">
-    <div><span>01</span><b>Responda no seu ritmo</b><small>Frase solta vale. Uns 15 minutos.</small></div>
+    <div><span>01</span><b>Responda no seu ritmo</b><small>Frase solta vale. Uns 7 minutos.</small></div>
     <div><span>02</span><b>Salva sozinho</b><small>Pode parar e voltar pelo mesmo link, de qualquer aparelho.</small></div>
-    <div><span>03</span><b>Eu volto com a leitura</b><small>E o que ficar em aberto a gente fecha na reunião.</small></div>
+    <div><span>03</span><b>Eu volto com a leitura</b><small>Verba, prazo e quem aprova a gente conversa na reunião.</small></div>
   </div>
 
   <section class="quadro" id="quadro">
@@ -234,100 +234,69 @@ textarea.caixa{min-height:84px}
 
       <form id="form" novalidate>
 
-        <section class="bloco" data-nome="Quem responde">
-          <h2>Quem está respondendo</h2>
-          <p>Pode ser respondido a várias mãos. Quem abrir o link vê o que já foi escrito.</p>
-          <div class="campo"><label for="nome">Seu nome</label><input class="caixa" id="nome" name="nome" type="text" autocomplete="name" /></div>
-          <div class="campo"><label for="papel">Seu papel no núcleo</label><input class="caixa" id="papel" name="papel" type="text" placeholder="Ex.: coordenação, comunicação, associado" /></div>
-          <div class="campo"><label for="whatsapp">Seu WhatsApp</label><input class="caixa" id="whatsapp" name="whatsapp" type="tel" autocomplete="tel" inputmode="tel" placeholder="(44) 9 0000-0000" /></div>
+        <section class="bloco" data-nome="O motivo">
+          <h2>Por que <em>agora</em></h2>
+          <p>As perguntas vão da mais importante para a menos. Se precisar parar no meio, o essencial já chegou.</p>
+          <div class="campo"><label for="motivo">O que fez vocês procurarem o estúdio agora?<span class="ajuda">Um pedido pronto ("queremos um site") ou um incômodo ("ninguém acha a gente"). Do jeito que vier.</span></label><textarea class="caixa" id="motivo" name="motivo" rows="3"></textarea></div>
+          <div class="campo"><label for="data">Tem alguma data puxando isso?<span class="ajuda">Um evento, uma nova edição, troca de gestão, reunião com patrocinador.</span></label><input class="caixa" id="data" name="data" type="text" /></div>
         </section>
 
-        <section class="bloco" data-nome="O núcleo hoje">
-          <h2>O núcleo hoje</h2>
-          <div class="campo"><label for="frase">O que é o NEAM, numa frase, para quem nunca ouviu falar?</label><textarea class="caixa" id="frase" name="frase" rows="2"></textarea></div>
-          <div class="campo"><label for="quem">Quem faz parte hoje?<span class="ajuda">Quantos escritórios ou arquitetos, mais ou menos, e que perfil.</span></label><textarea class="caixa" id="quem" name="quem" rows="2"></textarea></div>
-          <div class="campo"><label for="entrar">Como alguém entra no núcleo? Tem custo, critério ou convite?</label><textarea class="caixa" id="entrar" name="entrar" rows="2"></textarea></div>
-          <div class="campo"><label for="ano">O que o núcleo fez de mais marcante até aqui?<span class="ajuda">Eventos, edições, projetos sociais, a cartilha. O que vocês mostrariam primeiro.</span></label><textarea class="caixa" id="ano" name="ano" rows="3"></textarea></div>
-        </section>
-
-        <section class="bloco" data-nome="Por que agora">
-          <h2>Por que agora</h2>
-          <div class="campo"><label for="motivo">O que fez vocês procurarem o estúdio?<span class="ajuda">Um pedido pronto ("queremos um site") ou um incômodo ("ninguém acha a gente").</span></label><textarea class="caixa" id="motivo" name="motivo" rows="3"></textarea></div>
-          <div class="campo"><label for="data">Tem alguma data puxando isso?<span class="ajuda">Um evento, uma nova edição, troca de gestão, reunião com patrocinador.</span></label><textarea class="caixa" id="data" name="data" rows="2"></textarea></div>
-        </section>
-
-        <section class="bloco" data-nome="Objetivos">
-          <h2>O que precisa <em>acontecer</em></h2>
+        <section class="bloco" data-nome="A prioridade">
+          <h2>Se só uma coisa pudesse <em>acontecer</em></h2>
           <fieldset class="campo">
-            <legend>Marque o que importa para vocês<span class="ajuda">Pode marcar mais de um.</span></legend>
+            <legend>Qual seria?<span class="ajuda">Uma só. As outras podem vir depois.</span></legend>
             <div class="chips">
-              <label class="chip"><input type="checkbox" name="objetivos" value="associados" /><span>Mais arquitetos no núcleo<small>adesão de novos associados</small></span></label>
-              <label class="chip"><input type="checkbox" name="objetivos" value="patrocinio" /><span>Vender cotas de patrocínio<small>lojas, construtoras, fornecedores</small></span></label>
-              <label class="chip"><input type="checkbox" name="objetivos" value="eventos" /><span>Encher os eventos<small>inscrições nos Talks e nas edições</small></span></label>
-              <label class="chip"><input type="checkbox" name="objetivos" value="diretorio" /><span>Dar vitrine aos associados<small>quem é quem, com o trabalho de cada um</small></span></label>
-              <label class="chip"><input type="checkbox" name="objetivos" value="institucional" /><span>Mostrar o que já foi feito<small>para a ACIM, a cidade e a imprensa</small></span></label>
-              <label class="chip"><input type="checkbox" name="objetivos" value="organizar" /><span>Organizar a casa<small>inscrição, contato e material num lugar só</small></span></label>
+              <label class="chip"><input type="radio" name="principal" value="associados" /><span>Mais arquitetos no núcleo<small>adesão de novos associados</small></span></label>
+              <label class="chip"><input type="radio" name="principal" value="patrocinio" /><span>Vender cotas de patrocínio<small>lojas, construtoras, fornecedores</small></span></label>
+              <label class="chip"><input type="radio" name="principal" value="eventos" /><span>Encher os eventos<small>inscrições nos Talks e nas edições</small></span></label>
+              <label class="chip"><input type="radio" name="principal" value="diretorio" /><span>Dar vitrine aos associados<small>quem é quem, com o trabalho de cada um</small></span></label>
+              <label class="chip"><input type="radio" name="principal" value="institucional" /><span>Mostrar o que já foi feito<small>para a ACIM, a cidade e a imprensa</small></span></label>
+              <label class="chip"><input type="radio" name="principal" value="outro" /><span>Outra coisa<small>conta no campo abaixo</small></span></label>
             </div>
           </fieldset>
-          <div class="campo"><label for="principal">Se só um desses pudesse acontecer, qual seria? Por quê?</label><textarea class="caixa" id="principal" name="principal" rows="2"></textarea></div>
-          <div class="campo"><label for="outro">Tem algum objetivo que não está na lista?</label><textarea class="caixa" id="outro" name="outro" rows="2"></textarea></div>
+          <div class="campo"><label for="porque">Por que essa e não as outras?</label><textarea class="caixa" id="porque" name="porque" rows="2"></textarea></div>
+          <fieldset class="campo">
+            <legend>Quando alguém chega até vocês, o que ela deveria fazer?<span class="ajuda">Pode marcar mais de um.</span></legend>
+            <div class="chips">
+              <label class="chip"><input type="checkbox" name="acao" value="associar" /><span>Se associar</span></label>
+              <label class="chip"><input type="checkbox" name="acao" value="inscrever" /><span>Se inscrever num evento</span></label>
+              <label class="chip"><input type="checkbox" name="acao" value="patrocinar" /><span>Pedir a cota de patrocínio</span></label>
+              <label class="chip"><input type="checkbox" name="acao" value="contratar" /><span>Achar e contratar um associado</span></label>
+            </div>
+          </fieldset>
         </section>
 
-        <section class="bloco" data-nome="Público">
-          <h2>Para quem vocês falam</h2>
-          <div class="campo"><label for="publico">Quem vocês mais precisam convencer?<span class="ajuda">O arquiteto que ainda não entrou, o patrocinador, o público dos eventos, a diretoria da ACIM.</span></label><textarea class="caixa" id="publico" name="publico" rows="3"></textarea></div>
-          <div class="campo"><label for="duvida">O que essa pessoa costuma perguntar, ou o que faz ela hesitar?</label><textarea class="caixa" id="duvida" name="duvida" rows="3"></textarea></div>
+        <section class="bloco" data-nome="Os números">
+          <h2>Os números <em>de hoje</em></h2>
+          <p>Mais ou menos vale. Sem o ponto de partida, não dá para saber depois se funcionou.</p>
+          <div class="campo"><label for="nAssociados">Quantos associados o núcleo tem hoje?</label><input class="caixa" id="nAssociados" name="nAssociados" type="text" inputmode="numeric" placeholder="Ex.: uns 40" /></div>
+          <div class="campo"><label for="nInscritos">Quantas pessoas vão, em média, num evento?</label><input class="caixa" id="nInscritos" name="nInscritos" type="text" inputmode="numeric" /></div>
+          <div class="campo"><label for="nPatrocinadores">Quantos patrocinadores vocês têm hoje?</label><input class="caixa" id="nPatrocinadores" name="nPatrocinadores" type="text" inputmode="numeric" /></div>
+          <div class="campo"><label for="meta">Daqui a seis meses, qual desses números precisa mudar, e para quanto?</label><textarea class="caixa" id="meta" name="meta" rows="2"></textarea></div>
         </section>
 
-        <section class="bloco" data-nome="Eventos">
-          <h2>Eventos e patrocínio</h2>
-          <div class="campo"><label for="inscricao">Como funciona a inscrição num evento hoje?<span class="ajuda">Sympla, formulário, WhatsApp, lista na mão.</span></label><textarea class="caixa" id="inscricao" name="inscricao" rows="2"></textarea></div>
-          <div class="campo"><label for="cotas">Como funciona o patrocínio? O que o patrocinador recebe em troca?</label><textarea class="caixa" id="cotas" name="cotas" rows="3"></textarea></div>
-          <div class="campo"><label for="proximos">Quais os próximos eventos que já têm data?</label><textarea class="caixa" id="proximos" name="proximos" rows="2"></textarea></div>
-        </section>
-
-        <section class="bloco" data-nome="O que já existe">
-          <h2>O que já existe</h2>
+        <section class="bloco" data-nome="O que existe">
+          <h2>O que existe e <em>quem cuida</em></h2>
           <fieldset class="campo">
             <legend>Vocês já têm</legend>
             <div class="chips">
-              <label class="chip"><input type="checkbox" name="existe" value="site" /><span>Site próprio</span></label>
-              <label class="chip"><input type="checkbox" name="existe" value="dominio" /><span>Domínio registrado</span></label>
               <label class="chip"><input type="checkbox" name="existe" value="logo" /><span>Logo em arquivo</span></label>
-              <label class="chip"><input type="checkbox" name="existe" value="manual" /><span>Manual de marca</span></label>
-              <label class="chip"><input type="checkbox" name="existe" value="fotos" /><span>Fotos dos eventos</span></label>
-              <label class="chip"><input type="checkbox" name="existe" value="videos" /><span>Vídeos dos Talks</span></label>
+              <label class="chip"><input type="checkbox" name="existe" value="site" /><span>Site ou domínio</span></label>
+              <label class="chip"><input type="checkbox" name="existe" value="fotos" /><span>Fotos e vídeos dos eventos</span></label>
+              <label class="chip"><input type="checkbox" name="existe" value="projetos" /><span>Autorização para mostrar projetos dos associados</span></label>
             </div>
           </fieldset>
           <div class="campo"><label for="links">Links do que já existe<span class="ajuda">Site, Linktree, pasta do Drive com fotos, o que tiver.</span></label><textarea class="caixa" id="links" name="links" rows="2"></textarea></div>
-          <div class="campo"><label for="acim">A ACIM tem regra de marca que precisa ser seguida? Quem aprova o que sai com o nome dela?</label><textarea class="caixa" id="acim" name="acim" rows="2"></textarea></div>
-        </section>
-
-        <section class="bloco" data-nome="Quem decide">
-          <h2>Quem decide e quem cuida</h2>
-          <div class="campo"><label for="decide">Quem aprova o projeto: uma pessoa, a diretoria do núcleo, a ACIM?</label><textarea class="caixa" id="decide" name="decide" rows="2"></textarea></div>
-          <fieldset class="campo">
-            <legend>Já existe verba definida para isso?</legend>
-            <div class="chips uma">
-              <label class="chip"><input type="radio" name="verba" value="sim" /><span>Sim, já existe um valor</span></label>
-              <label class="chip"><input type="radio" name="verba" value="conversar" /><span>Ainda não, vamos conversar</span></label>
-              <label class="chip"><input type="radio" name="verba" value="patrocinador" /><span>Depende de patrocinador</span></label>
-            </div>
-          </fieldset>
-          <div class="campo"><label for="cuida">Depois de pronto, quem atualiza? Muda a cada gestão?</label><textarea class="caixa" id="cuida" name="cuida" rows="2"></textarea></div>
-        </section>
-
-        <section class="bloco" data-nome="Resultado">
-          <h2>Como saber que <em>deu certo</em></h2>
-          <div class="campo"><label for="sucesso">Daqui a seis meses, o que faria vocês dizerem "valeu a pena"?<span class="ajuda">Se der para pôr número, melhor: associados, cotas vendidas, inscritos.</span></label><textarea class="caixa" id="sucesso" name="sucesso" rows="3"></textarea></div>
-          <div class="campo"><label for="prazo">Tem prazo para isso estar no ar?</label><input class="caixa" id="prazo" name="prazo" type="text" /></div>
+          <div class="campo"><label for="cuida">Depois de pronto, quem vai alimentar: foto, texto, data de evento?<span class="ajuda">E se isso muda quando troca a gestão.</span></label><textarea class="caixa" id="cuida" name="cuida" rows="2"></textarea></div>
+          <div class="campo"><label for="acim">A ACIM tem alguma regra de marca que precisa ser seguida?</label><input class="caixa" id="acim" name="acim" type="text" /></div>
         </section>
 
         <section class="bloco" data-nome="Referências">
-          <h2>Referências e o que faltou</h2>
-          <div class="campo"><label for="referencias">Algum site, núcleo, associação ou evento que vocês admiram?<span class="ajuda">Cole o link e diga o que gostou nele.</span></label><textarea class="caixa" id="referencias" name="referencias" rows="3"></textarea></div>
-          <div class="campo"><label for="evitar">E algo que vocês não querem de jeito nenhum?</label><textarea class="caixa" id="evitar" name="evitar" rows="2"></textarea></div>
-          <div class="campo"><label for="livre">Espaço livre: o que eu deveria saber e não perguntei?</label><textarea class="caixa" id="livre" name="livre" rows="3"></textarea></div>
+          <h2>Referências, e <em>quem respondeu</em></h2>
+          <div class="campo"><label for="referencias">Um site, núcleo, associação ou evento que vocês admiram<span class="ajuda">Cole o link e diga o que gostou nele.</span></label><textarea class="caixa" id="referencias" name="referencias" rows="2"></textarea></div>
+          <div class="campo"><label for="evitar">E algo que vocês não querem de jeito nenhum</label><textarea class="caixa" id="evitar" name="evitar" rows="2"></textarea></div>
+          <div class="campo"><label for="nome">Seu nome e seu papel no núcleo</label><input class="caixa" id="nome" name="nome" type="text" autocomplete="name" placeholder="Ex.: Ana, coordenação" /></div>
+          <div class="campo"><label for="whatsapp">Seu WhatsApp, para eu marcar a conversa</label><input class="caixa" id="whatsapp" name="whatsapp" type="tel" autocomplete="tel" inputmode="tel" placeholder="(44) 9 0000-0000" /></div>
         </section>
 
       </form>
