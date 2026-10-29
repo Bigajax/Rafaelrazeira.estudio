@@ -20,6 +20,7 @@ type Resposta = {
   erro?: string;
   teste?: boolean;
   amarrado_a_visita?: boolean;
+  ref_achado_no_lead?: boolean;
   registrado?: { telefone: string; valor: number; moeda: string; data: string };
   validacao?: string;
   meta?: unknown;
@@ -120,11 +121,11 @@ export default function RegistrarVenda() {
         </div>
 
         <div className={s.campo}>
-          <label htmlFor="ref">CÓDIGO DA VISITA</label>
-          <input id="ref" name="ref" autoComplete="off" placeholder="CFK7KLS8" />
+          <label htmlFor="ref">CÓDIGO DA VISITA (OPCIONAL)</label>
+          <input id="ref" name="ref" autoComplete="off" placeholder="em branco: acho pelo telefone" />
           <span className={s.dica}>
-            A última linha da mensagem que chegou, depois de &quot;Ref:&quot;. Sem ela a venda
-            ainda conta, só não amarra no anúncio que trouxe a pessoa.
+            Pode deixar em branco: desde 28/10 eu procuro o código no lead que veio do site
+            com este telefone. Só preencha se tiver o &quot;Ref:&quot; de uma mensagem antiga.
           </span>
         </div>
 
@@ -185,7 +186,7 @@ function Resultado({ r }: { r: Resposta }) {
         {/* confirmação de dinheiro se lê em real, não em "BRL 1499" */}
         <li><span>valor</span><b>{reais(r.registrado?.valor, r.registrado?.moeda)}</b></li>
         <li><span>data</span><b>{r.registrado?.data}</b></li>
-        <li><span>amarrado ao anúncio</span><b>{r.amarrado_a_visita ? "sim" : "não, só pelo telefone"}</b></li>
+        <li><span>amarrado ao anúncio</span><b>{r.amarrado_a_visita ? (r.ref_achado_no_lead ? "sim, código achado no lead" : "sim") : "não, só pelo telefone"}</b></li>
       </ul>
     </div>;
   }

@@ -53,6 +53,34 @@ const erro = (res, status, mensagem, extra = {}) => {
   res.end(JSON.stringify({ ok: false, erro: mensagem, ...extra }));
 };
 
+/* O código da visita do lead mais recente com este telefone, ou "".
+   A tabela guarda o WhatsApp formatado como a pessoa digitou ("(31)
+   99811-1317"), então a busca no banco é pelos 4 últimos dígitos e a
+   conferência do número inteiro é feita aqui, só nos dígitos. `ph` vem
+   normalizado com o 55 na frente; a linha pode ter ou não. Qualquer falha
+   devolve "" e a venda segue casada só pelo telefone, como antes. */
+async function refDoLead(ph) {
+  const url = (process.env.SUPABASE_URL || "").replace(/\/$/, "");
+  const chave = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !chave) return "";
+  const local = ph.replace(/^55/, "");
+  try {
+    const r = await fetch(
+      `${url}/rest/v1/leads?select=whatsapp,ref&whatsapp=like.*${local.slice(-4)}&ref=not.is.null&order=created_at.desc&limit=50`,
+      { headers: { apikey: chave, Authorization: `Bearer ${chave}` }, signal: AbortSignal.timeout(6000) },
+    );
+    if (!r.ok) return "";
+    const linhas = await r.json();
+    const achado = linhas.find((l) => {
+      const d = String(l.whatsapp || "").replace(/\D/g, "").replace(/^55(?=\d{10,11}$)/, "");
+      return d === local && String(l.ref || "").trim();
+    });
+    return achado ? String(achado.ref).trim() : "";
+  } catch {
+    return "";
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") return erro(res, 405, "use POST");
 
@@ -102,7 +130,20 @@ export default async function handler(req, res) {
      toLowerCase pela mesma razão do browser: os dois lados aplicam a mesma
      regra, senão os hashes divergem em silêncio. De quebra, tanto faz se
      alguém digitar o código em maiúscula ou minúscula. */
-  if (b.ref) user_data.external_id = [sha256(String(b.ref).trim().toLowerCase())];
+  /* ---------- o código achado sozinho (28/10/2026) ----------
+     Desde a /vitrine-digital redesenhada, o formulário não abre mais o
+     WhatsApp: a pessoa fica na janela das perguntas e o Rafael é quem chama.
+     A mensagem com o "Ref:" deixou de chegar, e o card do CRM não mostra o
+     código. Mas a /api/lead grava o mesmo código na coluna `ref` do lead.
+     Então, sem `ref` no corpo, a rota procura o lead mais recente com este
+     telefone e usa o código dele. Digitado à mão continua valendo e vence. */
+  let ref = String(b.ref || "").trim();
+  let refAchado = false;
+  if (!ref) {
+    ref = await refDoLead(ph);
+    refAchado = Boolean(ref);
+  }
+  if (ref) user_data.external_id = [sha256(ref.toLowerCase())];
 
   const payload = {
     data: [{
@@ -134,7 +175,7 @@ export default async function handler(req, res) {
   if (!token) {
     return erro(res, 500, "META_CAPI_ACCESS_TOKEN ausente", {
       validacao: "passou",
-      teria_enviado: { telefone: `••••${ph.slice(-4)}`, valor, data: diaISO, event_id: eventId },
+      teria_enviado: { telefone: `••••${ph.slice(-4)}`, valor, data: diaISO, event_id: eventId, amarrado_a_visita: Boolean(ref), ref_achado_no_lead: refAchado },
     });
   }
 
@@ -154,7 +195,8 @@ export default async function handler(req, res) {
       ? {
           ok: true,
           registrado: { telefone: `••••${ph.slice(-4)}`, valor, moeda: payload.data[0].custom_data.currency, data: diaISO },
-          amarrado_a_visita: Boolean(b.ref),
+          amarrado_a_visita: Boolean(ref),
+          ref_achado_no_lead: refAchado,
           /* deixa explícito se valeu ou se foi teste: num processo manual, a
              pergunta "isso contou?" precisa ter resposta na própria resposta */
           teste: Boolean(codigoTeste),
