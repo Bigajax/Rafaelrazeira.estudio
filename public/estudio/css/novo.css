@@ -347,3 +347,59 @@ body.novo :is(#hero-card.is-enviado,#form-success.show) .ok-novo path{animation:
   body.novo .ok-novo path{stroke-dashoffset:0;animation:none}
   .confete-novo{display:none}
 }
+
+/* ============================================================
+   O ESTÚDIO POR TRÁS (29/10/2026)
+   A home deixou de vender a amostra da vitrine. O hero é a frase do
+   estúdio, centrada (a exceção da régua: o trabalho real vem logo
+   embaixo, nas logos e na moldura); o cartão do formulário e o
+   "conheça mais" ficam escondidos (o hero.js é o mesmo da /landing-page).
+   ============================================================ */
+body.novo .hero .wrap{display:block;text-align:center}
+body.novo .hero .eyebrow{margin-inline:auto}
+body.novo .hero__headline{margin-inline:auto;max-width:15ch}
+body.novo .hero__bottom,body.novo .hero__cue{display:none}
+body.novo .hero-estudio__lead{max-width:46ch;margin:22px auto 0;font-size:clamp(16px,1.6vw,18px);line-height:1.55;color:var(--ink-soft)}
+body.novo .hero-estudio__acoes{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:30px}
+body.novo .hero-estudio__btn{
+  display:inline-flex;align-items:center;min-height:50px;padding:0 24px;border-radius:980px;text-decoration:none;
+  font:600 15.5px var(--body,"Inter"),system-ui,sans-serif;transition:background .15s ease,border-color .15s ease,transform .12s ease;
+}
+body.novo .hero-estudio__btn:active{transform:scale(.97)}
+body.novo .hero-estudio__btn--rosa{background:var(--rosa);color:#fff;box-shadow:inset 0 1px 0 #ffffff47,0 8px 18px -6px #e31b6273 !important}
+body.novo .hero-estudio__btn--claro{background:#fff;color:var(--ink);border:1px solid #D4D4D1}
+@media(hover:hover) and (pointer:fine){
+  body.novo .hero-estudio__btn--rosa:hover{background:var(--rosa-dark)}
+  body.novo .hero-estudio__btn--claro:hover{border-color:var(--ink)}
+}
+
+/* as quatro portas: cartões cinza de canto grande, dois por linha */
+body.novo .audience__head{max-width:18ch;margin-top:10px}
+body.novo .audience .wrap > div:has(> .aud__item){
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:clamp(28px,4vw,44px);
+}
+@media(max-width:700px){body.novo .audience .wrap > div:has(> .aud__item){grid-template-columns:minmax(0,1fr)}}
+body.novo .aud__item{
+  display:flex;flex-direction:column;gap:0;padding:clamp(22px,3vw,32px);
+  background:var(--cartao);border:0 !important;border-radius:28px;
+}
+body.novo .aud__item > div:last-child{display:flex;flex-direction:column;height:100%}
+body.novo .aud__num{display:none}
+body.novo .aud__title{font-size:clamp(22px,2.4vw,28px)}
+body.novo .aud__text{margin-top:8px;max-width:none;color:var(--ink-soft)}
+body.novo .aud__porta{
+  display:inline-flex;align-items:center;gap:6px;margin-top:auto;padding-top:22px;width:fit-content;
+  font:600 15px var(--body,"Inter"),system-ui,sans-serif;color:var(--ink);text-decoration:none;
+}
+body.novo .aud__porta span{transition:transform .2s ease}
+@media(hover:hover) and (pointer:fine){body.novo .aud__item:hover .aud__porta span{transform:translateX(4px)}}
+
+/* o título do "Como eu trabalho" */
+body.novo .process__head{max-width:18ch;margin-top:10px;font-size:clamp(32px,4.4vw,56px)}
+body.novo .audience__head{font-size:clamp(32px,4.4vw,56px)}
+
+/* o contato: sai a garantia da amostra (é a oferta da vitrine) */
+body.novo .guarantee{display:none}
+/* a pílula flutuante some enquanto o hero, que tem o mesmo botão, está à vista */
+body.novo .pill{transition:opacity .25s ease,transform .25s ease}
+body.novo.hero-a-vista .pill{opacity:0;transform:translateY(16px);pointer-events:none}

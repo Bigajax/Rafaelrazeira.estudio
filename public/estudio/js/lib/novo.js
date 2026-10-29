@@ -16,6 +16,8 @@
    menos movimento (css/novo.css).
    ============================================================ */
 
+import { CONFIG } from "../config.js";
+
 /* SÓ quem fechou (a mesma lista da /vitrine-digital, conferida no cofre em
    28/10): amostra que não virou cliente aqui seria prova falsa */
 const LOJAS = [
@@ -121,7 +123,68 @@ function aoEnviar(el, classe, mensagem) {
   }).observe(el, { attributes: true, attributeFilter: ["class"] });
 }
 
+/* ---------- o estúdio por trás (29/10) ----------
+   O hero deixa de ser o cartão da análise gratuita (a oferta da vitrine):
+   no lugar dele, uma frase do que o estúdio faz e duas portas. O cartão
+   continua no HTML, escondido pelo css/novo.css, porque o hero.js é o
+   mesmo da /landing-page. */
+function heroDoEstudio() {
+  const h = CONFIG.hero && CONFIG.hero.estudio;
+  const titulo = document.querySelector(".hero__headline");
+  if (!h || !titulo || document.querySelector(".hero-estudio")) return;
+  const div = document.createElement("div");
+  div.className = "hero-estudio";
+  div.innerHTML = `
+    <p class="hero-estudio__lead">${h.lead}</p>
+    <div class="hero-estudio__acoes">
+      <a class="hero-estudio__btn hero-estudio__btn--rosa" href="${h.acao.href}" data-cta="hero_conversar" data-cta-dest="form">${h.acao.label}</a>
+      <a class="hero-estudio__btn hero-estudio__btn--claro" href="${h.olhar.href}" data-cta="hero_projetos" data-cta-dest="projetos">${h.olhar.label}</a>
+    </div>`;
+  titulo.after(div);
+}
+
+/* as quatro portas do "o que o estúdio faz": o audience.js monta título e
+   texto, e o link de cada bloco (url e cta no config) entra aqui */
+function portas() {
+  const blocos = (CONFIG.audience && CONFIG.audience.blocks) || [];
+  document.querySelectorAll(".audience .aud__item").forEach((item, i) => {
+    const b = blocos[i];
+    if (!b || !b.url || item.querySelector(".aud__porta")) return;
+    const fora = /^https?:/.test(b.url);
+    (item.querySelector(".aud__text") || item.querySelector(".aud__title")).insertAdjacentHTML("afterend",
+      `<a class="aud__porta" href="${b.url}"${fora ? ` target="_blank" rel="noopener"` : ""} data-cta="porta_${i + 1}" data-cta-dest="${b.url.startsWith("#") ? "form" : "pagina"}">${b.cta} <span aria-hidden="true">→</span></a>`);
+  });
+}
+
+/* o process.js só tem rótulo; o título do "Como eu trabalho" entra aqui */
+function tituloDoMetodo() {
+  const t = CONFIG.process && CONFIG.process.headline;
+  const rotulo = document.querySelector(".process__label");
+  if (!t || !rotulo || document.querySelector(".process__head")) return;
+  rotulo.insertAdjacentHTML("afterend", `<h2 class="process__head reveal">${t}</h2>`);
+}
+
+/* o link do fim dos casos levava ao formulário da vitrine; agora leva ao portfólio */
+function linkDosProjetos() {
+  const a = document.querySelector(".cases__cta");
+  if (a) { a.setAttribute("href", "/portfolio"); a.dataset.ctaDest = "portfolio"; }
+}
+
+/* a pílula flutuante repetia o botão do hero na primeira tela: ela só
+   aparece depois que o hero sai da vista (o CSS lê a classe do body) */
+function pilulaDepoisDoHero() {
+  const hero = document.querySelector(".hero");
+  if (!hero || !("IntersectionObserver" in window)) return;
+  new IntersectionObserver(([e]) => document.body.classList.toggle("hero-a-vista", e.isIntersecting),
+    { rootMargin: "0px 0px -35% 0px" }).observe(hero);
+}
+
 export function initNovo() {
+  heroDoEstudio();
+  linkDosProjetos();
+  pilulaDepoisDoHero();
+  portas();
+  tituloDoMetodo();
   logosDasLojas();
   molduraDaLoja();
   aoEnviar(document.getElementById("hero-card"), "is-enviado", ".hero-ok");

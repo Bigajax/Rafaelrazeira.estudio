@@ -8,6 +8,7 @@ import { header }       from "./sections/header.js";
 import { hero }         from "./sections/hero.js";
 import { process }      from "./sections/process.js";
 import { cases }        from "./sections/cases.js";
+import { audience }     from "./sections/audience.js";
 import { founder }      from "./sections/founder.js";
 import { testimonials } from "./sections/testimonials.js";
 import { precos }       from "./sections/precos.js";
@@ -38,7 +39,11 @@ import { initNovo }       from "./lib/novo.js";
    as palavras grandes. A ordem é a da /vitrine-digital: existe? (as lojas)
    como funciona? quem faz? quanto custa? E o convite. Os módulos e o config
    das seções que saíram ficam: a /landing-page usa vários deles. */
-const page = [ hero, cases, process, founder, precos, testimonials, contact ];
+/* 29/10/2026, o estúdio por trás: a home deixou de vender a amostra (isso é da
+   /vitrine-digital). Quem pesquisa o estúdio lê o trabalho, o que o estúdio faz
+   (quatro portas, cada uma para a página do produto), o método e quem faz. Os
+   preços saíram daqui: cada produto mostra o seu na própria página. */
+const page = [ hero, cases, audience, process, founder, testimonials, contact ];
 document.body.classList.add("pg-estudio");
 
 const app = document.getElementById("app");

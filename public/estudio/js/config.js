@@ -38,7 +38,17 @@ const CONFIG_ESTUDIO = {
        que o picote quer dizer na gramática da casa. */
     tagline: "Vitrine digital · E-commerce · Landing page",
     // <em>…</em> na headline = destaque em esmeralda (css/sections/hero.css)
-    headline: ["Sua marca ", "vendendo online ", "em até <em>7 dias úteis.</em>"],
+    /* 29/10/2026: a home deixou de vender a amostra (pedido do Rafael: "está
+       igual à proposta da vitrine digital", e a /vitrine-digital já faz esse
+       trabalho). Ela agora é o estúdio por trás, para quem pesquisa: quem é,
+       o que faz, como trabalha, e a porta certa para cada produto. */
+    headline: ["O estúdio por trás de ", "mais de <em>100 lojas no ar.</em>"],
+    /* o que entra no lugar do cartão do formulário (montado por js/lib/novo.js) */
+    estudio: {
+      lead: "Vitrines digitais, e-commerce e landing pages, do texto ao código, feitos por uma pessoa só, em Maringá.",
+      acao:  { label: "Falar com o estúdio", href: "#contato" },
+      olhar: { label: "Ver os projetos",     href: "#cases" },
+    },
     // <em>…</em> no subtítulo = destaque em esmeralda (css/sections/hero.css)
     /* A frase do saldo ("o saldo você só quita depois de aprovar") saiu
        daqui em 14/08, junto com a da linha de prova. Ela continua inteira
@@ -106,18 +116,20 @@ const CONFIG_ESTUDIO = {
 
   // Como funciona — o processo em 3 passos (sequência real: briefing → design → publicação)
   process: {
-    label: "Como funciona",
+    label: "Como eu trabalho",
+    headline: "Uma pessoa só, <em>do começo ao ar.</em>",
     /* 20/10/2026: os três passos eram os de projeto sob medida (briefing,
        design, aprovação) com "entrada de 50%". O caminho de hoje é o da
        vitrine: o @, a amostra no celular, e a entrada de R$ 500, 50% desde 28/10 (lib/oferta.ts;
        mudou lá, muda aqui). É a mesma promessa da /vitrine-digital. */
     steps: [
-      { num:"01", title:"Você manda o @ da loja", text:"Eu olho o seu Instagram e monto a vitrine com as suas peças, as suas fotos e os seus preços." },
-      { num:"02", title:"Você vê pronta",         text:"A amostra chega no seu WhatsApp. Você navega no celular do jeito que a sua cliente vai navegar." },
-      { num:"03", title:"Gostou? Começa com R$500", text:"O resto só depois de aprovar. A vitrine completa vai ao ar em até 7 dias úteis." },
+      /* 29/10: o método do estúdio, não o funil da vitrine (esse mora na /vitrine-digital) */
+      { num:"01", title:"Eu olho antes de propor",     text:"Leio o Instagram, o site e o que a loja já vende antes de qualquer proposta. A conversa começa com a sua marca na tela." },
+      { num:"02", title:"Escrevo, desenho e programo", text:"Texto, design e código saem da mesma mesa. Ninguém repassa o seu projeto para outra pessoa." },
+      { num:"03", title:"Publico e entrego o painel",  text:"A loja vai ao ar no seu domínio, com um painel para você trocar preço, foto e texto sozinho." },
     ],
     // Resumo da garantia: linha curta no fim da seção, leva ao bloco completo no contato
-    note: "Entrada de R$500 · O resto depois de aprovar",
+    note: "",
   },
 
   // O que está incluso — o "romaneio" do projeto: tudo que sai do estúdio com a página
@@ -162,7 +174,7 @@ const CONFIG_ESTUDIO = {
       { img: "assets/tira/pr-grife.webp",         alt: "PR Grife" },
     ],
     intro: "Duas delas contadas por dentro, do que a loja tinha antes ao que foi ao ar. As outras estão no <a href=\"/portfolio\">portfólio</a>, todas abrindo agora.",
-    cta: "Quero a vitrine da minha loja",
+    cta: "Ver todos os projetos",   // 29/10: leva ao /portfolio (js/lib/novo.js), não à oferta da vitrine
     // video: gravação vertical (mp4) → aparece dentro de um mockup de iPhone, em loop.
     // img: captura mobile de página inteira (jpg) → rola sozinha dentro do mockup de iPhone.
     // Deixe os dois "" para exibir o placeholder estilizado.
@@ -243,14 +255,18 @@ const CONFIG_ESTUDIO = {
   },
 
   audience: {
-    label: "Para quem é este trabalho",
+    label: "O que o estúdio faz",
+    headline: "Cada trabalho tem <em>a sua página.</em>",
     /* 20/10/2026: os três públicos eram de agência ("profissionais que
        valorizam reputação"). Agora são os três casos de quem chega, e cada
        um aponta para um dos três trabalhos do picote do hero. */
     blocks: [
-      { title:"Loja que vende pelo Instagram",   text:"Você posta a peça e passa o dia respondendo preço e tamanho no direct. A vitrine responde por você, e o pedido chega pronto." },
-      { title:"Loja pronta para vender no site", text:"Quando o volume pede pagamento no próprio site, frete calculado e estoque que baixa sozinho, é a vez do <span class='nobr'>e-commerce</span>." },
-      { title:"Quem precisa de uma página só",   text:"Um serviço, um lançamento, um evento: uma landing page com uma tarefa, feita para receber o seu anúncio." },
+      /* 29/10: cada bloco é uma porta (o link é montado por js/lib/novo.js);
+         a home não vende nenhum deles, manda para a página que vende */
+      { title:"Vitrine digital",    text:"O catálogo da loja com foto, preço e tamanho, e o pedido chegando pronto no WhatsApp.", url:"/vitrine-digital", cta:"Conhecer a vitrine digital" },
+      { title:"E-commerce",         text:"A loja completa, com sacola, Pix e cartão, frete calculado e estoque que baixa sozinho.", url:"/e-commerce", cta:"Conhecer o e-commerce" },
+      { title:"Landing page",       text:"Uma página com uma tarefa só, feita para receber o seu anúncio.", url:"/landing-page", cta:"Conhecer a landing page" },
+      { title:"Projeto sob medida", text:"Um site institucional, um núcleo, um evento: o que não cabe num produto pronto começa numa conversa.", url:"#contato", cta:"Contar o projeto" },
     ],
   },
 
@@ -290,7 +306,7 @@ const CONFIG_ESTUDIO = {
        aprovar" e o preço "a partir de R$ 1.500", as duas coisas de agosto e
        as duas contra a oferta de hoje (lib/oferta.ts). Agora é a promessa da
        vitrine: ver pronta antes de pagar, R$ 500 para começar (50%, desde 28/10). */
-    scarcity: "Cada vitrine é montada por mim, uma de cada vez.",
+    scarcity: "Cada projeto é feito por mim, um de cada vez.",
     email: "rafaelrazeira.estudio@gmail.com",
     // Bloco de garantia: aparece destacado logo antes do formulário
     guarantee: {
@@ -346,7 +362,7 @@ const CONFIG_ESTUDIO = {
     ],
   },
 
-  pillText: "Analisar meu projeto",
+  pillText: "Falar com o estúdio",
 };
 
 /* ============================================================
