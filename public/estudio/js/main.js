@@ -23,7 +23,6 @@ import { pill }         from "./sections/pill.js";
 
 import { initLoader }     from "./lib/loader.js";
 import { initReveal }     from "./lib/reveal.js";
-import { initHeroFit }    from "./lib/herofit.js";
 import { initForm }       from "./lib/form.js";
 import { initHeroForm }   from "./lib/hero-form.js";
 import { initPill }       from "./lib/pill.js";
@@ -50,7 +49,9 @@ app.innerHTML =
 // Interações (rodam depois do HTML montado)
 initLoader();   // tela de carregamento — sai em pixel dissolve quando tudo pintou
 initReveal();
-initHeroFit();
+/* o herofit (uma linha do título por largura de coluna) saiu em 29/10: era o
+   cartaz em caixa alta do papel e tinta. No design novo o título corre
+   como frase. A /landing-page segue chamando o dela, em main-lp.js. */
 initForm();
 initHeroForm();   // captura curta no cartão da 1ª dobra (grava na mesma tabela)
 initPill();

@@ -27,18 +27,18 @@ const CONFIG_ESTUDIO = {
   brand: {
     name: "RAFAEL RAZEIRA",       // aparece no header e no footer
     suffix: "ESTÚDIO",            // segunda parte do logo (mais leve)
-    navCta: "VAMOS CONVERSAR",    // link no topo à direita
+    navCta: "Vamos conversar",    // link no topo à direita
   },
 
   hero: {
-    status: "AGENDA ABERTA",                                   // sinal (bolinha pulsante esmeralda)
+    status: "Agenda aberta",                                   // sinal (bolinha pulsante esmeralda)
     /* As três palavras do picote eram "posicionamento, conversão, novos
        negócios" desde agosto. Desde 20/10 são os três trabalhos que o
        estúdio entrega, na ordem do que mais sai: é fato conferível, que é o
        que o picote quer dizer na gramática da casa. */
-    tagline: "VITRINE DIGITAL · E-COMMERCE · LANDING PAGE",
+    tagline: "Vitrine digital · E-commerce · Landing page",
     // <em>…</em> na headline = destaque em esmeralda (css/sections/hero.css)
-    headline: ["SUA MARCA", "VENDENDO ONLINE", "EM ATÉ <em>7 DIAS ÚTEIS.</em>"],
+    headline: ["Sua marca ", "vendendo online ", "em até <em>7 dias úteis.</em>"],
     // <em>…</em> no subtítulo = destaque em esmeralda (css/sections/hero.css)
     /* A frase do saldo ("o saldo você só quita depois de aprovar") saiu
        daqui em 14/08, junto com a da linha de prova. Ela continua inteira
@@ -51,7 +51,7 @@ const CONFIG_ESTUDIO = {
        landing page. Hoje quem chega é loja. O index.html repete esta frase
        em HTML para o Google: mudou aqui, muda lá. */
     subheadline: "<em>Vitrines digitais e <span class='nobr'>e-commerce</span></em> para lojas: o catálogo com foto, preço e tamanho, e o pedido chegando pronto no WhatsApp.",
-    cta: "QUERO MINHA ANÁLISE GRATUITA",
+    cta: "Quero minha análise gratuita",
     /* ⬇ O CARTÃO DO HERO É UM FORMULÁRIO (14/08)
        Antes ele tinha só um botão que ROLAVA até o briefing lá no fim da
        página. Agora ele captura ali mesmo: dois campos obrigatórios e um
@@ -61,39 +61,39 @@ const CONFIG_ESTUDIO = {
        para quem decidiu na primeira tela e não vai rolar dez mil pixels.
        Os dois gravam na mesma tabela e disparam o mesmo Lead. */
     form: {
-      nome:      { label: "SEU NOME",             ph: "Como devo te chamar" },
-      whatsapp:  { label: "WHATSAPP COM DDD",     ph: "(44) 99999-9999" },
-      instagram: { label: "INSTAGRAM OU SITE",    ph: "@seuperfil (opcional)" },
-      enviar: "QUERO MINHA ANÁLISE GRATUITA",
-      enviando: "ENVIANDO…",
+      nome:      { label: "Seu nome",             ph: "Como devo te chamar" },
+      whatsapp:  { label: "WhatsApp com DDD",     ph: "(44) 99999-9999" },
+      instagram: { label: "Instagram ou site",    ph: "@seuperfil (opcional)" },
+      enviar: "Quero minha análise gratuita",
+      enviando: "Enviando…",
       errNome:  "Escreva seu nome.",
       errWhats: "Confira o número: faltou dígito.",
-      okTitulo: "RECEBI SEU CONTATO.",
+      okTitulo: "Recebi seu contato.",
       okTexto:  "Vou olhar seu negócio e te responder pelo WhatsApp em até 24 horas úteis.",
-      okCta:    "ADIANTAR PELO WHATSAPP",
+      okCta:    "Adiantar pelo WhatsApp",
       erro:     "Não consegui enviar agora. Tente de novo ou me chame no WhatsApp.",
     },
     // Linha de prova sob o CTA — responde às 3 dúvidas de quem acabou de clicar no anúncio
-    proof: "SEM COMPROMISSO · RETORNO EM ATÉ 24H",
+    proof: "Sem compromisso · Retorno em até 24h",
     // `ctaWhats` não é mais usado no hero: o link "prefiro conversar pelo
     // WhatsApp" saiu do cartão em 14/08 (era uma porta de saída ao lado do
     // botão de envio, competindo com ele). O WhatsApp continua no rodapé e
     // na confirmação de quem enviou. `whatsMsg` segue em uso pela
     // confirmação, então não apague nenhum dos dois.
-    ctaWhats: "PREFIRO CONVERSAR PELO WHATSAPP",
+    ctaWhats: "Prefiro conversar pelo WhatsApp",
     whatsMsg: "Olá, Rafael. Vi seu trabalho e quero entender como uma vitrine digital funcionaria para a minha loja.",
   },
 
   // Uma frase ("...") ou várias (["...", "..."]) — elas se alternam na faixa
   marquee: [
-    "VITRINES E LOJAS PARA QUEM VENDE DE VERDADE.",
-    "MAIS DE 100 PROJETOS NO AR.",
+    "Vitrines e lojas para quem vende de verdade.",
+    "Mais de 100 projetos no ar.",
   ],
 
-  cue: "CONHEÇA MAIS",   // convite para rolar, logo após a faixa
+  cue: "Conheça mais",   // convite para rolar, logo após a faixa
 
   about: {
-    label: "QUEM SOMOS.",
+    label: "Quem somos",
     paragraphs: [
       /* 20/10/2026: era "estúdio boutique, rigor artesanal" e "posicionamento
          de mercado", texto que serve a qualquer agência. O que este estúdio
@@ -101,40 +101,40 @@ const CONFIG_ESTUDIO = {
       "Um estúdio de <b>uma pessoa só</b>: eu escrevo, desenho e publico a sua loja.",
       "<span class='muted'>Mais de <b>100 vitrines e lojas no ar</b>, de skate shop em Curitiba a decoração autoral em Maringá. Você fala comigo do primeiro contato até o ar.</span>",
     ],
-    cta: "VAMOS CONVERSAR",
+    cta: "Vamos conversar",
   },
 
   // Como funciona — o processo em 3 passos (sequência real: briefing → design → publicação)
   process: {
-    label: "COMO FUNCIONA.",
+    label: "Como funciona",
     /* 20/10/2026: os três passos eram os de projeto sob medida (briefing,
        design, aprovação) com "entrada de 50%". O caminho de hoje é o da
        vitrine: o @, a amostra no celular, e a entrada de R$ 500, 50% desde 28/10 (lib/oferta.ts;
        mudou lá, muda aqui). É a mesma promessa da /vitrine-digital. */
     steps: [
-      { num:"01", title:"VOCÊ MANDA O @ DA LOJA", text:"Eu olho o seu Instagram e monto a vitrine com as suas peças, as suas fotos e os seus preços." },
-      { num:"02", title:"VOCÊ VÊ PRONTA",         text:"A amostra chega no seu WhatsApp. Você navega no celular do jeito que a sua cliente vai navegar." },
-      { num:"03", title:"GOSTOU? COMEÇA COM R$500", text:"O resto só depois de aprovar. A vitrine completa vai ao ar em até 7 dias úteis." },
+      { num:"01", title:"Você manda o @ da loja", text:"Eu olho o seu Instagram e monto a vitrine com as suas peças, as suas fotos e os seus preços." },
+      { num:"02", title:"Você vê pronta",         text:"A amostra chega no seu WhatsApp. Você navega no celular do jeito que a sua cliente vai navegar." },
+      { num:"03", title:"Gostou? Começa com R$500", text:"O resto só depois de aprovar. A vitrine completa vai ao ar em até 7 dias úteis." },
     ],
     // Resumo da garantia: linha curta no fim da seção, leva ao bloco completo no contato
-    note: "ENTRADA DE R$500 · O RESTO DEPOIS DE APROVAR",
+    note: "Entrada de R$500 · O resto depois de aprovar",
   },
 
   // O que está incluso — o "romaneio" do projeto: tudo que sai do estúdio com a página
   included: {
-    label: "O QUE ESTÁ INCLUSO.",
+    label: "O que está incluso",
     /* 20/10/2026: era o romaneio de uma landing page (estratégia da oferta,
        copy, mensuração). Agora é o da vitrine, com as mesmas promessas da
        /quanto-custa-site-para-loja: se uma página prometer o que a outra
        não promete, o estúdio se contradiz. */
-    headline: "TUDO O QUE A SUA LOJA PRECISA PARA VENDER ONLINE.",
+    headline: "Tudo o que a sua loja precisa para <em>vender online.</em>",
     items: [
-      { num:"01", title:"CATÁLOGO COM FOTO, PREÇO E TAMANHO", text:"Cada peça com a foto, o preço e os tamanhos que você tem. A cliente escolhe sem perguntar no direct." },
-      { num:"02", title:"PEDIDO PRONTO NO WHATSAPP",          text:"A mensagem chega com a peça já identificada. Você só confirma e combina o pagamento e a entrega." },
-      { num:"03", title:"PAINEL PARA VOCÊ ATUALIZAR",          text:"Você troca preço e foto, marca o que esgotou e cadastra peça nova pelo celular, sem pedir para ninguém." },
-      { num:"04", title:"DESENHO COM A CARA DA LOJA",          text:"As cores, a logo e o jeito da sua marca. Nada de modelo pronto com o seu nome em cima." },
-      { num:"05", title:"FEITA PARA O CELULAR",                text:"É onde a sua cliente está. A vitrine é desenhada primeiro para a tela pequena." },
-      { num:"06", title:"NO AR EM ATÉ 7 DIAS ÚTEIS",           text:"Publicada e funcionando, contados a partir do envio de todo o material da loja." },
+      { num:"01", title:"Catálogo com foto, preço e tamanho", text:"Cada peça com a foto, o preço e os tamanhos que você tem. A cliente escolhe sem perguntar no direct." },
+      { num:"02", title:"Pedido pronto no WhatsApp",          text:"A mensagem chega com a peça já identificada. Você só confirma e combina o pagamento e a entrega." },
+      { num:"03", title:"Painel para você atualizar",          text:"Você troca preço e foto, marca o que esgotou e cadastra peça nova pelo celular, sem pedir para ninguém." },
+      { num:"04", title:"Desenho com a cara da loja",          text:"As cores, a logo e o jeito da sua marca. Nada de modelo pronto com o seu nome em cima." },
+      { num:"05", title:"Feita para o celular",                text:"É onde a sua cliente está. A vitrine é desenhada primeiro para a tela pequena." },
+      { num:"06", title:"No ar em até 7 dias úteis",           text:"Publicada e funcionando, contados a partir do envio de todo o material da loja." },
     ],
   },
 
@@ -146,9 +146,9 @@ const CONFIG_ESTUDIO = {
      o link para ele (`url` + `link`). Loja que vende réplica nunca entra
      aqui (ver data/casos.ts). As capas da tira são 320x200 do /portfolio. */
   cases: {
-    label: "PROJETOS DO ESTÚDIO",
-    headline: "LOJAS DE VERDADE, NO AR AGORA.",
-    manchete: { antes: "LOJAS DE VERDADE,", depois: "NO AR AGORA." },
+    label: "Projetos do estúdio",
+    headline: "Lojas de verdade, <em>no ar agora.</em>",
+    manchete: { antes: "Lojas de verdade,", depois: "<em>no ar agora.</em>" },
     tiraEstilo: "faixa",   // ver "A TIRA COM PERSONALIDADE" em css/sections/cases.css
     tira: [
       { img: "assets/tira/fulltime.webp",         alt: "Full Time Skateboards" },
@@ -162,15 +162,15 @@ const CONFIG_ESTUDIO = {
       { img: "assets/tira/pr-grife.webp",         alt: "PR Grife" },
     ],
     intro: "Duas delas contadas por dentro, do que a loja tinha antes ao que foi ao ar. As outras estão no <a href=\"/portfolio\">portfólio</a>, todas abrindo agora.",
-    cta: "QUERO A VITRINE DA MINHA LOJA",
+    cta: "Quero a vitrine da minha loja",
     // video: gravação vertical (mp4) → aparece dentro de um mockup de iPhone, em loop.
     // img: captura mobile de página inteira (jpg) → rola sozinha dentro do mockup de iPhone.
     // Deixe os dois "" para exibir o placeholder estilizado.
     // tag: rótulo acima do título. Deixe "" para ocultar.
     items: [
-      { video:"", img:"assets/case-fulltime.jpg", tag:"", category:"VITRINE DIGITAL · SKATE SHOP EM CURITIBA", name:"Full Time Skateboards", result:"As peças moravam no feed e o preço era passado no WhatsApp. Hoje o domínio da loja abre o catálogo inteiro, com o pedido pronto.", url:"/casos/fulltime", link:"LER O CASO" },
-      { video:"", img:"assets/case-verit.jpg",    tag:"", category:"VITRINE DIGITAL · DECORAÇÃO EM MARINGÁ",   name:"vérít.lab",             result:"Espelhos e quadros feitos à mão que viviam num catálogo em PDF. Hoje cada peça única tem a sua página e a sua encomenda.", url:"/casos/verit-lab", link:"LER O CASO" },
-      { video:"", img:"assets/case-xavier.jpg",   tag:"", category:"VITRINE DIGITAL · CAMISAS DE FUTEBOL",     name:"Xavier's Sports",       result:"Camisas de clubes e seleções, atuais e retrô: o catálogo completo, com o pedido direto no WhatsApp.", url:"https://xavier-s-sports.vercel.app", link:"VER NO AR" },
+      { video:"", img:"assets/case-fulltime.jpg", tag:"", category:"Vitrine digital · Skate shop em Curitiba", name:"Full Time Skateboards", result:"As peças moravam no feed e o preço era passado no WhatsApp. Hoje o domínio da loja abre o catálogo inteiro, com o pedido pronto.", url:"/casos/fulltime", link:"Ler o caso" },
+      { video:"", img:"assets/case-verit.jpg",    tag:"", category:"Vitrine digital · Decoração em Maringá",   name:"vérít.lab",             result:"Espelhos e quadros feitos à mão que viviam num catálogo em PDF. Hoje cada peça única tem a sua página e a sua encomenda.", url:"/casos/verit-lab", link:"Ler o caso" },
+      { video:"", img:"assets/case-xavier.jpg",   tag:"", category:"Vitrine digital · Camisas de futebol",     name:"Xavier's Sports",       result:"Camisas de clubes e seleções, atuais e retrô: o catálogo completo, com o pedido direto no WhatsApp.", url:"https://xavier-s-sports.vercel.app", link:"Ver no ar" },
     ],
   },
 
@@ -185,12 +185,12 @@ const CONFIG_ESTUDIO = {
      e-commerce tem custo mensal (hospedagem, pagamento), e a proposta diz
      quanto. O `tipoProjeto` de cada uma é igual às opções do briefing. */
   precos: {
-    label: "PREÇOS",
-    headline: "O PREÇO VEM ANTES DA CONVERSA.",
+    label: "Preços",
+    headline: "O preço vem <em>antes da conversa.</em>",
     intro: "Preço fechado, dito aqui e não depois da reunião. A vitrine você ainda vê pronta antes de pagar.",
     itens: [
       {
-        tipo:"VITRINE DIGITAL",
+        tipo:"Vitrine digital",
         escopo:"O catálogo da loja com foto, preço e tamanho, e o pedido pronto no WhatsApp. Paga uma vez, sem mensalidade.",
         valor:"R$999",
         incluso:[
@@ -200,11 +200,11 @@ const CONFIG_ESTUDIO = {
           "No ar em até 7 dias úteis",
         ],
         entrada:"Começa com <b>R$500</b>. O resto depois de aprovar.",
-        acao:"QUERO A MINHA AMOSTRA",
+        acao:"Quero a minha amostra",
         tipoProjeto:"Vitrine digital (catálogo com pedido no WhatsApp)",
       },
       {
-        tipo:"E-COMMERCE",
+        tipo:"E-commerce",
         escopo:"A loja completa, com o pagamento no próprio site.",
         prefixo:"a partir de",
         valor:"R$3.499",
@@ -215,7 +215,7 @@ const CONFIG_ESTUDIO = {
           "A lista de pedidos no seu painel",
         ],
         entrada:"O valor final e o custo mensal saem na proposta, antes de começar.",
-        acao:"PEDIR A PROPOSTA",
+        acao:"Pedir a proposta",
         tipoProjeto:"Loja virtual (catálogo + checkout)",
       },
     ],
@@ -223,8 +223,8 @@ const CONFIG_ESTUDIO = {
   },
 
   founder: {
-    firstName: "RAFAEL",
-    lastName: "RAZEIRA",
+    firstName: "Rafael",
+    lastName: "Razeira",
     photo: "assets/rafael-neve.jpg",   // 20/10/2026: a foto na neve; a antiga (rafael.jpg) fica no repo
     bgWords: ["VITRINE DIGITAL", "E-COMMERCE", "MARINGÁ"],   // letreiro clarinho de fundo
     headline: "O designer por trás de mais de 100 lojas no ar",
@@ -238,25 +238,25 @@ const CONFIG_ESTUDIO = {
     /* 20/10/2026: eram "posicionamento, conversão, autoridade, diferenciação".
        Agora são as quatro coisas que a cliente da loja pergunta no direct, e
        que a vitrine responde antes de ela perguntar. */
-    words: ["FOTO", "PREÇO", "TAMANHO", "PEDIDO"],
+    words: ["Foto", "Preço", "Tamanho", "Pedido"],
     paragraph: "É tudo o que a sua cliente pergunta no direct, respondido antes de ela perguntar. <b>E o pedido chega pronto no seu WhatsApp.</b>",
   },
 
   audience: {
-    label: "PARA QUEM É ESTE TRABALHO",
+    label: "Para quem é este trabalho",
     /* 20/10/2026: os três públicos eram de agência ("profissionais que
        valorizam reputação"). Agora são os três casos de quem chega, e cada
        um aponta para um dos três trabalhos do picote do hero. */
     blocks: [
-      { title:"LOJA QUE VENDE PELO INSTAGRAM",   text:"Você posta a peça e passa o dia respondendo preço e tamanho no direct. A vitrine responde por você, e o pedido chega pronto." },
-      { title:"LOJA PRONTA PARA VENDER NO SITE", text:"Quando o volume pede pagamento no próprio site, frete calculado e estoque que baixa sozinho, é a vez do <span class='nobr'>e-commerce</span>." },
-      { title:"QUEM PRECISA DE UMA PÁGINA SÓ",   text:"Um serviço, um lançamento, um evento: uma landing page com uma tarefa, feita para receber o seu anúncio." },
+      { title:"Loja que vende pelo Instagram",   text:"Você posta a peça e passa o dia respondendo preço e tamanho no direct. A vitrine responde por você, e o pedido chega pronto." },
+      { title:"Loja pronta para vender no site", text:"Quando o volume pede pagamento no próprio site, frete calculado e estoque que baixa sozinho, é a vez do <span class='nobr'>e-commerce</span>." },
+      { title:"Quem precisa de uma página só",   text:"Um serviço, um lançamento, um evento: uma landing page com uma tarefa, feita para receber o seu anúncio." },
     ],
   },
 
   testimonials: {
     enabled: false,                 // ⬅ mude para true quando tiver os vídeos
-    label: "O QUE ESTÃO DIZENDO",
+    label: "O que estão dizendo",
     // thumb: imagem de capa (assets/…) · video: link que abre em nova aba
     items: [
       { thumb:"", video:"", name:"Nome do Cliente", role:"Cargo · Empresa" },
@@ -267,7 +267,7 @@ const CONFIG_ESTUDIO = {
   /* Projetos Fundadores — acesso antecipado ao estúdio (antes do contato).
      Tom: exclusividade e parceria — nunca desconto por necessidade. */
   founders: {
-    status: "PRIMEIROS CASES",
+    status: "Primeiros cases",
     title: "Estou selecionando os próximos cases do estúdio.",
     text: "Empresas com potencial de virar grandes cases recebem uma condição especial de lançamento, em troca da autorização para divulgar o projeto e os resultados.",
     benefits: [
@@ -279,12 +279,12 @@ const CONFIG_ESTUDIO = {
     ],
     limited: "Condição válida para um número limitado de empresas.",
     ctaLine: "Quero fazer parte dos primeiros cases",
-    cta: "SOLICITAR ANÁLISE GRATUITA",
+    cta: "Solicitar análise gratuita",
   },
 
   contact: {
-    status: "AGENDA ABERTA",
-    headline: "SEU PROJETO COMEÇA AQUI.",
+    status: "Agenda aberta",
+    headline: "Seu projeto <em>começa aqui.</em>",
     intro: "Conte sobre o seu negócio. Eu analiso e retorno pelo WhatsApp em até 24 horas úteis.",
     /* 20/10/2026: a garantia dizia "50% de entrada, devolvida se não
        aprovar" e o preço "a partir de R$ 1.500", as duas coisas de agosto e
@@ -294,15 +294,15 @@ const CONFIG_ESTUDIO = {
     email: "rafaelrazeira.estudio@gmail.com",
     // Bloco de garantia: aparece destacado logo antes do formulário
     guarantee: {
-      label: "GARANTIA",
-      title: "VOCÊ VÊ ANTES DE PAGAR.",
+      label: "Garantia",
+      title: "Você vê antes de pagar.",
       text:  "A amostra da sua vitrine chega pronta no seu celular, <b>antes de qualquer pagamento</b>. Gostou, começa com <b>R$500</b> e paga o resto só depois de aprovar. Não gostou, <b>não paga nada</b>.",
     },
     pricing: "Vitrine digital <b>R$999</b>. E-commerce a partir de <b>R$3.499</b>.",   // microcopy acima do formulário
     pricingNote: "A vitrine é paga uma vez, sem mensalidade. O e-commerce sai de uma proposta com o escopo e o valor fechados.",
     steps: [
-      { num:"01", label:"SEUS DADOS" },
-      { num:"02", label:"SOBRE O PROJETO" },
+      { num:"01", label:"Seus dados" },
+      { num:"02", label:"Sobre o projeto" },
     ],
     form: {
       nome:      { label:"Qual seu nome?",    placeholder:"Seu nome",        err:"Digite seu nome." },
@@ -321,11 +321,11 @@ const CONFIG_ESTUDIO = {
       objetivo:  { label:"Qual é o principal objetivo?", options:["Receber pedidos no WhatsApp","Vender com pagamento no site","Mostrar o catálogo da loja","Divulgar um lançamento","Outro"] },
       identidade:{ label:"Já possui identidade visual?", options:["Sim, completa","Tenho logo e algumas peças","Ainda não tenho"] },
       detalhes:  { label:"Quer contar mais algum detalhe? (opcional)", placeholder:"Prazos, referências, links: o que achar útil." },
-      continueBtn: "CONTINUAR",
+      continueBtn: "Continuar",
       backBtn: "← Voltar",
-      submit:  "ENVIAR MEU PROJETO",
+      submit:  "Enviar meu projeto",
       note:    "Sem compromisso. Seus dados serão usados apenas para responder sobre o projeto.",
-      successTitle: "PROJETO RECEBIDO!",
+      successTitle: "Projeto recebido!",
       successText:  "Vou analisar e te retorno pelo WhatsApp em até 24 horas úteis. Quer adiantar a conversa?",
     },
     /* Passo 02 — agendamento após o envio.
@@ -335,18 +335,18 @@ const CONFIG_ESTUDIO = {
   },
 
   footer: {
-    name: "RAFAEL RAZEIRA ESTÚDIO",
+    name: "Rafael Razeira Estúdio",
     email: "rafaelrazeira.estudio@gmail.com",
     instagram: { handle:"@rafaelrazeira.estudio", url:"https://www.instagram.com/rafaelrazeira.estudio/" },
     whatsapp: { display:"(44) 99124-6187", url:`https://wa.me/${WHATSAPP_NUMBER}` },
-    location: "MARINGÁ · PR · ATENDO O BRASIL INTEIRO",
+    location: "Maringá, PR · Atendo o Brasil inteiro",
     legal: [
-      { label:"TERMOS DE USO",            url:"/termos" },
-      { label:"POLÍTICA DE PRIVACIDADE",  url:"/privacidade" },
+      { label:"Termos de uso",            url:"/termos" },
+      { label:"Política de privacidade",  url:"/privacidade" },
     ],
   },
 
-  pillText: "ANALISAR MEU PROJETO",
+  pillText: "Analisar meu projeto",
 };
 
 /* ============================================================
@@ -1022,8 +1022,10 @@ const ROTULOS = {
     contaAria: "A conta do clique perdido",
     seloAria: "Carimbo: agenda aberta",
     navAria: "Navegação principal", redesAria: "Redes e contato",
-    instagram: "INSTAGRAM", email: "E-MAIL", whatsapp: "WHATSAPP",
-    direitos: "TODOS OS DIREITOS RESERVADOS",
+    /* em caixa de frase desde 29/10: a /estudio nova não põe caixa alta; o
+       rodapé da /landing-page segue em caixa alta pelo CSS dele */
+    instagram: "Instagram", email: "E-mail", whatsapp: "WhatsApp",
+    direitos: "Todos os direitos reservados",
     enviando: "Enviando…",
     erroEnvio: (email) => `Não foi possível enviar agora. Tente novamente ou escreva para ${email}`,
     msgHero: (nome) => `Olá, Rafael! Acabei de deixar meu contato no site${nome ? `, sou ${nome}` : ""}. Quero falar sobre o meu projeto.`,

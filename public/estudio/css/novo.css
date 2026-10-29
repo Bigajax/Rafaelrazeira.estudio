@@ -1,0 +1,232 @@
+/* ============================================================
+   O DESIGN NOVO DA /estudio (29/10/2026)
+
+   A régua está em docs/design-estudio.md: o design da /vitrine-digital
+   virou o oficial do estúdio, por decisão do Rafael. Branco, Instrument
+   Sans em caixa normal, botões em pílula, cartões cinza de canto grande,
+   o rosa só na ação e o verde só na batida do título.
+
+   POR QUE UMA FOLHA POR CIMA, e não reescrever as de seção: a /landing-page
+   carrega os MESMOS /css/sections/*.css e os mesmos módulos de js, e é a
+   página do tráfego pago. Ela fica no papel e tinta até migrar com medição.
+   Esta folha só entra no estudio/index.html, e tudo aqui mora em `.novo`,
+   a classe do <body> dela.
+
+   Os !important daqui são de propósito e poucos: anulam de uma vez a
+   sombra dura e a caixa alta, que estão espalhadas por dezoito arquivos.
+   ============================================================ */
+
+body.novo{
+  --paper:#FFFFFF;
+  --paper-2:#F2F2F0;
+  --linha:#E6E6E3;
+  --line:#E6E6E3;
+  --ink-soft:#4A4F52;
+  --cartao:#F2F2F0;
+  --campo:#F3F3F1;
+  --fio:#E6E6E3;
+  --suave:#6B7072;
+  --font-display:"Instrument Sans","Inter",system-ui,sans-serif;
+  --font-mono:"Inter",system-ui,sans-serif;
+  background:#fff;color:var(--ink);
+}
+
+/* ---------- o que o papel e tinta tinha e o novo não tem ---------- */
+body.novo *,
+body.novo *::before,
+body.novo *::after{text-transform:none !important;box-shadow:none !important}
+body.novo .loader{display:none}
+body.novo .hero__selo,
+body.novo .grid-lines{display:none}
+
+/* ---------- o tipo ---------- */
+body.novo :is(h1,h2,h3){
+  font-family:var(--font-display);font-stretch:normal;font-weight:500;
+  letter-spacing:-.03em;line-height:1.06;
+}
+body.novo h1{font-weight:400;letter-spacing:-.035em;line-height:1.02}
+body.novo :is(h1,h2,h3) em{font-style:normal;color:var(--green);font-size:1em;font-stretch:normal;background:none}
+/* nas seções escuras a batida usa o verde vivo, o único legível no grafite */
+body.novo .dark :is(h1,h2,h3) em{color:var(--green-live)}
+/* o ponto final rosa do papel e tinta (js/lib/ponto.js) vira parte da frase */
+body.novo .ponto{color:inherit}
+
+/* os rótulos que eram mono em caixa alta viram Inter pequena, cinza */
+body.novo :is(.eyebrow,.process__label,.audience__label,.testi__label,.cases__eyebrow,.pr__label,.founders__eyebrow,.guarantee__label){
+  font-family:var(--body,"Inter"),system-ui,sans-serif;font-size:14px;font-weight:500;letter-spacing:0;color:var(--suave);
+}
+
+/* ---------- o topo em pílula, igual ao da /vitrine-digital ---------- */
+body.novo .site-header{
+  top:10px;left:50%;right:auto;transform:translateX(-50%);
+  width:min(1120px,calc(100% - 20px));border:1px solid var(--fio);border-radius:999px;
+  background:#ffffffd9;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  box-shadow:0 10px 30px #0000000f,0 1px 2px #0000000d !important;
+}
+body.novo .site-header .wrap{height:60px;padding:0 10px 0 20px}
+/* a logo é o arquivo da marca, não o nome em texto: o texto fica para o
+   leitor de tela, com corpo zero */
+body.novo .logo{
+  display:block;width:194px;height:30px;font-size:0;color:transparent;
+  background:url(/assets/marca/rr-monograma.webp) left center/52px 28px no-repeat,
+             url(/assets/marca/rr-nome.webp) 62px center/132px 22px no-repeat;
+}
+body.novo .nav-product{
+  font:500 14.5px var(--body,"Inter"),system-ui,sans-serif;letter-spacing:0;color:var(--ink-soft);
+  border:0;padding:0;text-transform:lowercase !important;
+}
+body.novo .nav-product::first-letter{text-transform:uppercase}
+@media(hover:hover) and (pointer:fine){body.novo .nav-product:hover{color:var(--ink)}}
+body.novo .nav-cta{
+  font:600 14.5px var(--body,"Inter"),system-ui,sans-serif;letter-spacing:0;
+  background:var(--rosa);color:#fff;padding:0 18px;min-height:40px;border-radius:980px;
+  box-shadow:inset 0 1px 0 #ffffff47,0 8px 18px -6px #e31b6273 !important;
+  transition:background .15s ease,transform .12s ease;
+}
+body.novo .nav-cta:active{transform:scale(.97)}
+@media(hover:hover) and (pointer:fine){body.novo .nav-cta:hover{background:var(--rosa-dark)}}
+body.novo .nav-cta .arrow{color:#fff}
+@media(max-width:460px){
+  body.novo .site-header{top:7px;width:calc(100% - 14px)}
+  body.novo .site-header .wrap{padding:0 6px 0 14px}
+  body.novo .logo{width:150px;background-size:42px 23px,98px 16px;background-position:left center,50px center}
+}
+
+/* ---------- os botões: pílula, sem carimbo ---------- */
+body.novo :is(.btn,.btn-outline,.hero-form__btn,.btn-submit,.btn-voltar,.about__cta,.cases__cta,.et__acao,.founders__btn,.form-success__cta,.pill){
+  border-radius:980px;font-family:var(--body,"Inter"),system-ui,sans-serif;font-weight:600;letter-spacing:0;
+  transition:background .15s ease,transform .12s ease,border-color .15s ease;
+}
+body.novo :is(.btn,.btn-outline,.hero-form__btn,.btn-submit,.btn-voltar,.about__cta,.cases__cta,.et__acao,.founders__btn,.form-success__cta,.pill):active{transform:scale(.97)}
+
+/* o nome em texto da logo some para a vista, não para o leitor de tela */
+body.novo .logo > *{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- o hero ----------
+   O título corre como frase (o herofit saiu do main.js) e perde a faixa
+   preta sangrada; o cartão do formulário vira o cartão cinza de canto
+   grande, com os campos em caixa, como o modal da /vitrine-digital. */
+body.novo .hero{padding-top:calc(80px + clamp(28px,6vw,72px))}
+body.novo .hero .eyebrow{border:0;padding:0;justify-content:flex-start}
+body.novo .hero .eyebrow::before,body.novo .hero .eyebrow::after{display:none}
+body.novo .eyebrow__tagline{
+  display:inline-flex;gap:0;padding:6px 16px;border:1px solid var(--fio);border-radius:999px;background:#fff;
+  font:500 14px var(--body,"Inter"),system-ui,sans-serif;letter-spacing:0;
+}
+body.novo .eyebrow__tagline li{color:var(--ink-soft);font-weight:500}
+body.novo .eyebrow__tagline li + li::before{content:"·";margin:0 8px;color:#B5B9BA}
+body.novo .eyebrow__tagline li:first-child{color:var(--ink)}
+body.novo .hero__headline{
+  font-size:clamp(44px,6.2vw,84px);line-height:1.02;letter-spacing:-.035em;font-weight:400;max-width:12ch;
+}
+body.novo .hero__line{display:inline;white-space:normal;width:auto;font-size:inherit !important;line-height:inherit}
+body.novo .hero__faixa{display:inline;background:none;margin:0;padding:0}
+body.novo .hero__faixa .hero__line{color:inherit}
+body.novo .hero__headline em,body.novo .hero__faixa em{display:inline;font-size:1em;line-height:inherit;color:var(--green)}
+body.novo .hero__bottom{background:var(--cartao);border:0;border-radius:28px;padding:clamp(22px,3vw,32px)}
+body.novo .hero__sub{font-size:16px;color:var(--ink-soft)}
+body.novo .hero-form__campo > span{font:500 13px var(--body,"Inter"),system-ui,sans-serif;letter-spacing:0;color:var(--suave)}
+body.novo .hero-form__campo :is(input,select){
+  background:#fff;border:0;border-radius:14px;padding:13px 14px;margin-top:2px;
+  transition:box-shadow .15s ease;
+}
+body.novo .hero-form__campo :is(input,select):focus{border:0;padding:13px 14px;box-shadow:0 0 0 2px var(--rosa) !important}
+body.novo .hero-form__campo :is(input,select).is-invalid{box-shadow:0 0 0 2px var(--rosa) !important}
+body.novo .hero-form__btn{min-height:50px;font-size:15.5px;box-shadow:inset 0 1px 0 #ffffff47,0 8px 18px -6px #e31b6273 !important}
+body.novo .hero__proof{font:400 13px var(--body,"Inter"),system-ui,sans-serif;letter-spacing:0;color:var(--suave)}
+body.novo .hero__cue a,body.novo .cue a{
+  display:inline-flex;align-items:center;gap:8px;min-height:46px;padding:0 22px;border:1px solid #D4D4D1;border-radius:980px;background:#fff;
+  font:600 15px var(--body,"Inter"),system-ui,sans-serif;letter-spacing:0;color:var(--ink);
+}
+@media(hover:hover) and (pointer:fine){body.novo .hero__cue a:hover,body.novo .cue a:hover{border-color:var(--ink)}}
+
+/* ---------- os rótulos de seção: sem o traço verde na frente ---------- */
+body.novo .section-label{font:500 14px var(--body,"Inter"),system-ui,sans-serif;letter-spacing:0;color:var(--suave)}
+body.novo .section-label::before{display:none}
+body.novo .dark .section-label{color:#9BA19F}
+
+/* ---------- a faixa que rodava em rosa vira faixa cinza quieta ---------- */
+body.novo .marquee{background:var(--cartao)}
+body.novo .marquee__track span,body.novo .marquee__track{
+  font-family:var(--font-display);font-stretch:normal;font-weight:500;letter-spacing:-.02em;color:var(--ink);
+}
+
+/* ---------- o nome gigante que rola: cinza bem claro, fundo e não grito ---------- */
+body.novo .brandband__track span{font-family:var(--font-display);font-stretch:normal;font-weight:500;letter-spacing:-.04em;color:#E9E9E6}
+
+/* ---------- os preços: cartões brancos de canto grande sobre o grafite ---------- */
+body.novo .pr__etiqueta{background:#fff;border:0;border-radius:28px}
+body.novo .pr__etiqueta:active{transform:scale(.99)}
+body.novo .pr__etiqueta :is(.et__tipo){font:500 14px var(--body,"Inter"),system-ui,sans-serif;letter-spacing:0;color:var(--green-dark)}
+body.novo .pr__etiqueta .et__valor{font-family:var(--font-display);font-stretch:normal;font-weight:500;letter-spacing:-.04em}
+body.novo .pr__nota{font-family:var(--body,"Inter"),system-ui,sans-serif;letter-spacing:0}
+
+/* ---------- as palavras grandes dos valores ---------- */
+body.novo .values__words li{font-family:var(--font-display);font-stretch:normal;font-weight:500;letter-spacing:-.04em}
+
+/* ---------- os rótulos miúdos dos casos e dos links "ler o caso" ---------- */
+body.novo :is(.case__cat,.case__link,.case__rotulo,.case__tag,.tira__nome){
+  font-family:var(--body,"Inter"),system-ui,sans-serif;letter-spacing:0;font-weight:500;
+}
+
+/* ---------- ajustes da segunda passada ---------- */
+body.novo .hero .eyebrow{width:fit-content}
+body.novo .hero__sub{padding-right:0;max-width:none}
+
+/* o "vamos conversar" do quem somos vira botão preto */
+body.novo .about__cta{
+  display:inline-flex;align-items:center;gap:8px;min-height:46px;padding:0 22px;border:0;
+  background:var(--ink);color:#fff;font-size:15px;text-decoration:none;
+}
+body.novo .about__cta .arrow{color:#fff}
+@media(hover:hover) and (pointer:fine){body.novo .about__cta:hover{background:#000}}
+
+/* a faixa de lojas: sai a faixa grafite torta e a sombra verde; ficam as
+   capturas em moldura cinza de canto arredondado, como a da /vitrine-digital */
+body.novo .tira--faixa{background:none;transform:none;padding:12px 0}
+body.novo .cases__tiraTrack img,body.novo .tira__peca{transform:none !important}
+body.novo .tira__peca{border:1px solid #D6D6D3;border-radius:18px;background:#E4E4E2;padding:6px;overflow:hidden}
+body.novo .tira__peca img{border-radius:12px}
+
+/* a foto do quem faz: canto grande, sem filete */
+body.novo .founder__photo,body.novo .founder__photo img{border:0;border-radius:28px}
+body.novo .founder__name,body.novo :is(.founder__first,.founder__last){font-family:var(--font-display);font-stretch:normal;font-weight:500;letter-spacing:-.04em}
+
+/* ---------- o contato: o grafite fica, os objetos arredondam ---------- */
+body.novo .guarantee{border:0;border-radius:28px;background:#fff}
+body.novo .form-card{border:0;border-radius:28px;background:#1E2427}
+body.novo .stepper{border:0;border-radius:999px;background:#2A3134;padding:4px}
+body.novo .step{border-radius:999px}
+body.novo .step--active{background:#fff;color:var(--ink)}
+body.novo .field :is(input,textarea),body.novo .dd__btn{
+  border:0;border-radius:14px;background:#2A3134;
+  -webkit-backdrop-filter:none;backdrop-filter:none;
+}
+body.novo .field :is(input,textarea):focus,body.novo .dd__btn:focus-visible{border:0;box-shadow:0 0 0 2px var(--rosa) !important}
+body.novo .field :is(input,textarea).is-invalid{box-shadow:0 0 0 2px var(--rosa) !important}
+body.novo .dd__list{border-radius:14px;overflow:hidden}
+body.novo .btn-submit{min-height:52px;box-shadow:inset 0 1px 0 #ffffff47,0 8px 18px -6px #e31b6273 !important}
+
+/* ---------- os rótulos miúdos que sobraram em mono espaçada ---------- */
+body.novo :is(.footer__k,.footer__legal,.footer__legal a,.footer__bar,.footer__location,.contact__status,.et__entrada,.pr__head small,.status,.aud__num,.inc__num,.proc__num,.proc__note,.form-note,.step,.fstep){
+  font-family:var(--body,"Inter"),system-ui,sans-serif;letter-spacing:0;
+}
+body.novo .footer__k{font-size:13px;font-weight:500}
+body.novo :is(.footer__legal a,.footer__bar){font-size:13px;font-weight:500}
+body.novo .contact .eyebrow{justify-content:flex-start;gap:8px;font-size:14px;font-weight:500}
+body.novo .contact .status{color:var(--green-live)}
+body.novo .et__valor small{font-family:var(--body,"Inter"),system-ui,sans-serif;letter-spacing:0;font-size:13px;font-weight:500;color:var(--suave)}
+body.novo .et__acao{display:inline-flex;align-items:center;gap:8px;width:fit-content;min-height:46px;padding:0 22px;background:var(--rosa);color:#fff;border:0;font-size:15px}
+/* os apelidos antigos foram resolvidos no :root com o papel creme; aqui
+   eles passam a apontar para o branco */
+body.novo{--off-white:#FFFFFF}
+body.novo .cases__eyebrow::before{display:none}
+
+/* ---------- o celular ---------- */
+@media(max-width:460px){
+  body.novo .logo{width:146px;height:26px;background-size:38px 21px,100px 16px;background-position:left center,46px center}
+  body.novo .nav-cta{min-height:38px;padding:0 14px;font-size:13.5px}
+  body.novo .nav-cta .arrow{display:none}
+  body.novo .eyebrow__tagline{padding:6px 12px;font-size:13px;white-space:nowrap}
+  body.novo .eyebrow__tagline li + li::before{margin:0 6px}
+}
