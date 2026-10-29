@@ -230,3 +230,18 @@ body.novo .cases__eyebrow::before{display:none}
   body.novo .eyebrow__tagline{padding:6px 12px;font-size:13px;white-space:nowrap}
   body.novo .eyebrow__tagline li + li::before{margin:0 6px}
 }
+
+/* ---------- a página mais curta (29/10) ----------
+   O resumo de preço do contato repetia os cartões de preço logo acima. */
+body.novo .contact__pricing,body.novo .contact__pricing-note{display:none}
+/* no celular as três lojas empilhadas davam 2.580px: viram um carrossel
+   lateral, com o próximo cartão aparecendo para mostrar que tem mais */
+@media(max-width:759px){
+  body.novo .cases__grid{
+    display:grid;grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:80%;gap:16px;max-width:none;
+    overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:var(--pad,16px);-webkit-overflow-scrolling:touch;
+    margin-inline:calc(-1 * var(--pad,16px));padding-inline:var(--pad,16px);scrollbar-width:none;
+  }
+  body.novo .cases__grid::-webkit-scrollbar{display:none}
+  body.novo .cases__grid > .case{scroll-snap-align:start;min-width:0}
+}

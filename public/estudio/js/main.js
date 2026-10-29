@@ -6,15 +6,9 @@
    ============================================================ */
 import { header }       from "./sections/header.js";
 import { hero }         from "./sections/hero.js";
-import { marquee }      from "./sections/marquee.js";
-import { about }        from "./sections/about.js";
-import { brandband }    from "./sections/brandband.js";
 import { process }      from "./sections/process.js";
-import { included }     from "./sections/included.js";
 import { cases }        from "./sections/cases.js";
-import { values }       from "./sections/values.js";
 import { founder }      from "./sections/founder.js";
-import { audience }     from "./sections/audience.js";
 import { testimonials } from "./sections/testimonials.js";
 import { precos }       from "./sections/precos.js";
 import { contact }      from "./sections/contact.js";
@@ -36,7 +30,14 @@ import { initPrecos }     from "./lib/precos.js";
    cases") saíram, porque o estúdio passou de 100 projetos no ar; o config
    deles fica. Os preços entraram depois dos cases: a pessoa vê as lojas
    antes de ver o número. */
-const page = [ hero, marquee, about, brandband, process, included, cases, precos, audience, values, founder, testimonials, contact, marquee ];
+/* 29/10/2026, a página mais curta (pedido do Rafael, "ta muito longo"): eram
+   10.372px no desktop e 10.877px no celular. Saíram as duas faixas que
+   rodavam, o "quem somos" (o quem faz, com a foto, diz o mesmo), o nome
+   gigante, o "incluso" (os cartões de preço já listam), o "para quem é" e
+   as palavras grandes. A ordem é a da /vitrine-digital: existe? (as lojas)
+   como funciona? quem faz? quanto custa? E o convite. Os módulos e o config
+   das seções que saíram ficam: a /landing-page usa vários deles. */
+const page = [ hero, cases, process, founder, precos, testimonials, contact ];
 document.body.classList.add("pg-estudio");
 
 const app = document.getElementById("app");
@@ -45,6 +46,9 @@ app.innerHTML =
   `<main id="top">${ page.map(s => s()).join("") }</main>` +
   footer() +
   pill();
+/* o "Conheça mais" do hero apontava para o #about, que saiu em 29/10: agora
+   leva às lojas no ar, a seção seguinte. O hero.js fica igual (a LP tem #about). */
+app.querySelector('.hero__cue a[href="#about"]')?.setAttribute("href", "#cases");
 
 // Interações (rodam depois do HTML montado)
 initLoader();   // tela de carregamento — sai em pixel dissolve quando tudo pintou
