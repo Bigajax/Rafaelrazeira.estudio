@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Onboarding NEAM · Rafael Razeira Estúdio</title>
+<meta name="theme-color" content="#F2EFE6" />
+
+<meta property="og:image" content="https://rafaelrazeira.com.br/assets/og-rr.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Rafael Razeira Estúdio" />
+<meta property="og:title" content="Onboarding · NEAM" />
+<meta property="og:description" content="Antes de desenhar qualquer coisa: o que o núcleo quer que aconteça." />
+<meta property="og:url" content="https://rafaelrazeira.com.br/onboarding/neam-acim" />
+
+<!-- ============================================================
+     O ONBOARDING DO NEAM (29/10/2026)
+
+     O Núcleo Empresarial dos Arquitetos de Maringá (@neam.acim, da ACIM)
+     não é loja: não tem produto nem pedido. Antes de propor qualquer
+     peça, o estúdio precisa saber o que o núcleo quer que aconteça.
+
+     As respostas vão para o bucket privado `material`, em
+     neam-acim/respostas.json, pela mesma /api/material do checklist das
+     lojas (o "neam-acim" está no LOJAS de pages/api/material.js).
+     Baixar com:  node scripts/material-cliente.mjs neam-acim
+     Salva sozinho a cada pausa de digitação e guarda cópia no aparelho.
+     Quem abrir o link de outro aparelho vê o que já foi respondido.
+     ============================================================ -->
+
+<link rel="icon" type="image/png" href="/assets/favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..100,800..900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+
+<style>
+:root{
+  --paper:#F2EFE6;
+  --paper-2:#EAE6D9;
+  --ink:#14181A;
+  --ink-soft:#3A4144;
+  --green:#0C9159;
+  --green-dark:#076B42;
+  --rosa:#E31B62;
+  --rosa-dark:#B81250;
+  --linha:#D8D3C4;
+  --maxw:880px;
+  --pad:clamp(16px,5vw,48px);
+  --font-display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --font-body:"Inter",system-ui,-apple-system,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--font-body);background:var(--paper);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:clip}
+b{font-weight:600}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--green-dark);outline-offset:3px}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--pad)}
+
+.rotulo{font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--green-dark)}
+
+/* ——— Cabeçalho ——— */
+.topo{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding-block:22px;border-bottom:1px solid var(--linha)}
+.marca{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(14px,4vw,18px);letter-spacing:-.01em;white-space:nowrap;text-decoration:none}
+.marca small{font-size:1em;font-weight:800;color:var(--ink-soft)}
+
+/* ——— O cartaz ——— */
+.cartaz{padding-block:clamp(40px,9vw,96px) clamp(32px,6vw,64px)}
+.cartaz h1{
+  margin-top:18px;font-family:var(--font-display);font-weight:900;font-stretch:72%;text-transform:uppercase;
+  font-size:clamp(2.8rem,12vw,6.6rem);line-height:.9;letter-spacing:-.02em;
+}
+.cartaz h1 em{font-style:normal;color:var(--green)}
+.cartaz p{margin-top:24px;max-width:56ch;font-size:clamp(1rem,3.9vw,1.15rem);color:var(--ink-soft)}
+.cartaz ul{list-style:none;margin-top:28px;border-top:2px solid var(--ink);max-width:560px}
+.cartaz li{display:grid;grid-template-columns:120px minmax(0,1fr);gap:16px;padding-block:12px;border-bottom:1px solid var(--linha);font-size:.98rem}
+.cartaz li span{font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);padding-top:4px}
+@media(max-width:420px){.cartaz li{grid-template-columns:minmax(0,1fr);gap:2px}}
+
+/* ——— A ficha ——— */
+.ficha{
+  position:relative;background:var(--paper);border:2px solid var(--ink);
+  box-shadow:8px 8px 0 var(--paper-2),8px 8px 0 2px var(--ink);
+  padding:clamp(22px,5vw,44px);margin-bottom:clamp(36px,6vw,56px);
+}
+.ficha-num{font-family:var(--font-display);font-weight:900;font-stretch:62%;font-size:clamp(2.6rem,9vw,3.6rem);line-height:.8;color:var(--green)}
+.ficha h2{margin-top:12px;font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.5rem,5.6vw,2.2rem);line-height:.95;letter-spacing:-.02em}
+.ficha-intro{margin-top:10px;color:var(--ink-soft);max-width:58ch}
+
+.campo{margin-top:clamp(24px,4vw,32px)}
+.campo > label,.campo > legend{display:block;font-weight:600;font-size:1.02rem;line-height:1.4}
+.campo .ajuda{display:block;margin-top:4px;font-size:.92rem;color:var(--ink-soft);font-weight:400}
+fieldset.campo{border:0}
+input[type=text],input[type=tel],input[type=url],textarea{
+  width:100%;margin-top:8px;font:inherit;font-size:16px;color:var(--ink);
+  background:transparent;border:0;border-bottom:2px solid var(--ink);border-radius:0;
+  padding:10px 2px;resize:vertical;
+}
+textarea{min-height:3.2em;line-height:1.5}
+input::placeholder,textarea::placeholder{color:#8A8F88}
+input:focus,textarea:focus{outline:none;border-bottom-color:var(--green)}
+
+.opcoes{display:grid;gap:8px;margin-top:12px}
+@media(min-width:640px){.opcoes.duas{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.opcao{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1px solid var(--linha);background:#F7F5EE;cursor:pointer;line-height:1.4}
+.opcao input{flex:none;width:18px;height:18px;margin-top:2px;accent-color:var(--green)}
+.opcao:has(input:checked){border-color:var(--ink);background:#fff}
+.opcao small{display:block;color:var(--ink-soft);font-size:.88rem;margin-top:2px}
+
+/* ——— O envio ——— */
+.envio{padding-bottom:clamp(64px,10vw,120px)}
+.envio p{color:var(--ink-soft);max-width:56ch}
+.botao{
+  display:inline-flex;align-items:center;gap:10px;margin-top:22px;
+  font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:1.05rem;letter-spacing:.01em;
+  color:#fff;background:var(--rosa);border:2px solid var(--ink);padding:16px 26px;cursor:pointer;text-decoration:none;
+  box-shadow:5px 5px 0 var(--ink);transition:transform .12s ease-out,box-shadow .12s ease-out;
+}
+.botao:active{transform:translate(5px,5px);box-shadow:0 0 0 var(--ink)}
+@media(hover:hover){.botao:hover{background:var(--rosa-dark)}}
+.botao[disabled]{opacity:.6;cursor:wait}
+.botao.claro{background:var(--paper);color:var(--ink)}
+@media(hover:hover){.botao.claro:hover{background:#fff}}
+.feito{display:none;margin-top:28px;padding:20px 22px;border:2px solid var(--green);background:#fff}
+.feito.ver{display:block}
+.feito b{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:1.25rem;display:block}
+
+/* o selo de salvamento, fixo no canto */
+.salvo{
+  position:fixed;right:16px;bottom:16px;z-index:5;
+  font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  background:var(--ink);color:var(--paper);padding:9px 12px;opacity:0;transform:translateY(6px);
+  transition:opacity .2s ease-out,transform .2s ease-out;pointer-events:none;
+}
+.salvo.ver{opacity:1;transform:none}
+.salvo.erro{background:var(--rosa-dark);color:#fff}
+@media(prefers-reduced-motion:reduce){.salvo,.botao{transition:none}}
+</style>
+</head>
+<body>
+
+<header class="wrap topo">
+  <a class="marca" href="/">Rafael Razeira <small>Estúdio</small></a>
+  <span class="rotulo">Onboarding</span>
+</header>
+
+<main class="wrap">
+
+  <section class="cartaz">
+    <p class="rotulo">Para o NEAM · Núcleo Empresarial dos Arquitetos de Maringá</p>
+    <h1>Antes do desenho,<br /><em>o objetivo.</em></h1>
+    <p>Antes de propor qualquer peça, eu preciso entender o que o núcleo quer que aconteça. São nove blocos curtos. Responda do jeito que falaria numa conversa: frase solta vale, e campo em branco também. O que ficar em aberto a gente fecha na reunião.</p>
+    <ul>
+      <li><span>Tempo</span>uns 15 minutos</li>
+      <li><span>Salva</span>sozinho, a cada pausa. Pode parar e voltar pelo mesmo link</li>
+      <li><span>Quem</span>pode ser respondido a várias mãos: quem abrir o link vê o que já foi escrito</li>
+    </ul>
+  </section>
+
+  <form id="form" novalidate>
+
+    <section class="ficha" aria-labelledby="t0">
+      <p class="ficha-num">00</p>
+      <h2 id="t0">Quem está respondendo</h2>
+      <div class="campo">
+        <label for="nome">Seu nome</label>
+        <input id="nome" name="nome" type="text" autocomplete="name" />
+      </div>
+      <div class="campo">
+        <label for="papel">Seu papel no núcleo</label>
+        <input id="papel" name="papel" type="text" placeholder="Ex.: coordenação, comunicação, associado" />
+      </div>
+      <div class="campo">
+        <label for="whatsapp">Seu WhatsApp</label>
+        <input id="whatsapp" name="whatsapp" type="tel" autocomplete="tel" inputmode="tel" placeholder="(44) 9 0000-0000" />
+      </div>
+    </section>
+
+    <section class="ficha" aria-labelledby="t1">
+      <p class="ficha-num">01</p>
+      <h2 id="t1">O núcleo hoje</h2>
+      <div class="campo">
+        <label for="frase">O que é o NEAM, numa frase, para alguém que nunca ouviu falar?</label>
+        <textarea id="frase" name="frase" rows="2"></textarea>
+      </div>
+      <div class="campo">
+        <label for="quem">Quem faz parte hoje?
+          <span class="ajuda">Quantos escritórios ou arquitetos, mais ou menos, e que perfil.</span></label>
+        <textarea id="quem" name="quem" rows="2"></textarea>
+      </div>
+      <div class="campo">
+        <label for="entrar">Como alguém entra no núcleo? Tem custo, critério ou convite?</label>
+        <textarea id="entrar" name="entrar" rows="2"></textarea>
+      </div>
+      <div class="campo">
+        <label for="ano">O que o núcleo fez de mais marcante até aqui?
+          <span class="ajuda">Eventos, edições, projetos sociais, a cartilha. O que vocês mostrariam primeiro.</span></label>
+        <textarea id="ano" name="ano" rows="3"></textarea>
+      </div>
+    </section>
+
+    <section class="ficha" aria-labelledby="t2">
+      <p class="ficha-num">02</p>
+      <h2 id="t2">Por que agora</h2>
+      <div class="campo">
+        <label for="motivo">O que fez vocês procurarem o estúdio?
+          <span class="ajuda">Um pedido pronto ("queremos um site") ou um incômodo ("ninguém acha a gente").</span></label>
+        <textarea id="motivo" name="motivo" rows="3"></textarea>
+      </div>
+      <div class="campo">
+        <label for="data">Tem alguma data puxando isso?
+          <span class="ajuda">Um evento, uma nova edição, troca de gestão, reunião com patrocinador.</span></label>
+        <textarea id="data" name="data" rows="2"></textarea>
+      </div>
+    </section>
+
+    <section class="ficha" aria-labelledby="t3">
+      <p class="ficha-num">03</p>
+      <h2 id="t3">O que precisa acontecer</h2>
+      <fieldset class="campo">
+        <legend>Marque o que importa para vocês
+          <span class="ajuda">Pode marcar mais de um.</span></legend>
+        <div class="opcoes duas">
+          <label class="opcao"><input type="checkbox" name="objetivos" value="associados" /><span>Trazer mais arquitetos para o núcleo<small>adesão de novos associados</small></span></label>
+          <label class="opcao"><input type="checkbox" name="objetivos" value="patrocinio" /><span>Vender cotas de patrocínio<small>lojas, construtoras, fornecedores</small></span></label>
+          <label class="opcao"><input type="checkbox" name="objetivos" value="eventos" /><span>Encher os eventos<small>inscrições nos Talks e nas edições</small></span></label>
+          <label class="opcao"><input type="checkbox" name="objetivos" value="diretorio" /><span>Dar vitrine aos associados<small>quem é quem, com o trabalho de cada um</small></span></label>
+          <label class="opcao"><input type="checkbox" name="objetivos" value="institucional" /><span>Mostrar o que o núcleo já fez<small>para a ACIM, a cidade e a imprensa</small></span></label>
+          <label class="opcao"><input type="checkbox" name="objetivos" value="organizar" /><span>Organizar a casa<small>inscrição, contato e material num lugar só</small></span></label>
+        </div>
+      </fieldset>
+      <div class="campo">
+        <label for="principal">Se só um desses pudesse acontecer, qual seria? Por quê?</label>
+        <textarea id="principal" name="principal" rows="2"></textarea>
+      </div>
+      <div class="campo">
+        <label for="outro">Tem algum objetivo que não está na lista?</label>
+        <textarea id="outro" name="outro" rows="2"></textarea>
+      </div>
+    </section>
+
+    <section class="ficha" aria-labelledby="t4">
+      <p class="ficha-num">04</p>
+      <h2 id="t4">Para quem vocês falam</h2>
+      <div class="campo">
+        <label for="publico">Quem vocês mais precisam convencer?
+          <span class="ajuda">O arquiteto que ainda não entrou, o patrocinador, o público dos eventos, a diretoria da ACIM.</span></label>
+        <textarea id="publico" name="publico" rows="3"></textarea>
+      </div>
+      <div class="campo">
+        <label for="duvida">O que essa pessoa costuma perguntar, ou o que faz ela hesitar?</label>
+        <textarea id="duvida" name="duvida" rows="3"></textarea>
+      </div>
+    </section>
+
+    <section class="ficha" aria-labelledby="t5">
+      <p class="ficha-num">05</p>
+      <h2 id="t5">Eventos e patrocínio</h2>
+      <div class="campo">
+        <label for="inscricao">Como funciona a inscrição num evento hoje?
+          <span class="ajuda">Sympla, formulário, WhatsApp, lista na mão.</span></label>
+        <textarea id="inscricao" name="inscricao" rows="2"></textarea>
+      </div>
+      <div class="campo">
+        <label for="cotas">Como funciona o patrocínio? O que o patrocinador recebe em troca?</label>
+        <textarea id="cotas" name="cotas" rows="3"></textarea>
+      </div>
+      <div class="campo">
+        <label for="proximos">Quais os próximos eventos que já têm data?</label>
+        <textarea id="proximos" name="proximos" rows="2"></textarea>
+      </div>
+    </section>
+
+    <section class="ficha" aria-labelledby="t6">
+      <p class="ficha-num">06</p>
+      <h2 id="t6">O que já existe</h2>
+      <fieldset class="campo">
+        <legend>Vocês já têm</legend>
+        <div class="opcoes duas">
+          <label class="opcao"><input type="checkbox" name="existe" value="site" /><span>Site próprio</span></label>
+          <label class="opcao"><input type="checkbox" name="existe" value="dominio" /><span>Domínio registrado</span></label>
+          <label class="opcao"><input type="checkbox" name="existe" value="logo" /><span>Logo em arquivo (vetor ou PNG)</span></label>
+          <label class="opcao"><input type="checkbox" name="existe" value="manual" /><span>Manual de marca</span></label>
+          <label class="opcao"><input type="checkbox" name="existe" value="fotos" /><span>Fotos dos eventos em boa resolução</span></label>
+          <label class="opcao"><input type="checkbox" name="existe" value="videos" /><span>Vídeos dos Talks ou das edições</span></label>
+        </div>
+      </fieldset>
+      <div class="campo">
+        <label for="links">Links do que já existe
+          <span class="ajuda">Site, Linktree, pasta do Drive com fotos, o que tiver.</span></label>
+        <textarea id="links" name="links" rows="2"></textarea>
+      </div>
+      <div class="campo">
+        <label for="acim">A ACIM tem regra de marca que precisa ser seguida? Quem aprova o que sai com o nome dela?</label>
+        <textarea id="acim" name="acim" rows="2"></textarea>
+      </div>
+    </section>
+
+    <section class="ficha" aria-labelledby="t7">
+      <p class="ficha-num">07</p>
+      <h2 id="t7">Quem decide e quem cuida</h2>
+      <div class="campo">
+        <label for="decide">Quem aprova o projeto: uma pessoa, a diretoria do núcleo, a ACIM?</label>
+        <textarea id="decide" name="decide" rows="2"></textarea>
+      </div>
+      <fieldset class="campo">
+        <legend>Já existe verba definida para isso?</legend>
+        <div class="opcoes">
+          <label class="opcao"><input type="radio" name="verba" value="sim" /><span>Sim, já existe um valor</span></label>
+          <label class="opcao"><input type="radio" name="verba" value="conversar" /><span>Ainda não, vamos conversar</span></label>
+          <label class="opcao"><input type="radio" name="verba" value="patrocinador" /><span>Depende de patrocinador</span></label>
+        </div>
+      </fieldset>
+      <div class="campo">
+        <label for="cuida">Depois de pronto, quem atualiza? Muda a cada gestão?</label>
+        <textarea id="cuida" name="cuida" rows="2"></textarea>
+      </div>
+    </section>
+
+    <section class="ficha" aria-labelledby="t8">
+      <p class="ficha-num">08</p>
+      <h2 id="t8">Como saber que deu certo</h2>
+      <div class="campo">
+        <label for="sucesso">Daqui a seis meses, o que faria vocês dizerem "valeu a pena"?
+          <span class="ajuda">Se der para pôr número, melhor: associados, cotas vendidas, inscritos.</span></label>
+        <textarea id="sucesso" name="sucesso" rows="3"></textarea>
+      </div>
+      <div class="campo">
+        <label for="prazo">Tem prazo para isso estar no ar?</label>
+        <input id="prazo" name="prazo" type="text" />
+      </div>
+    </section>
+
+    <section class="ficha" aria-labelledby="t9">
+      <p class="ficha-num">09</p>
+      <h2 id="t9">Referências e o que faltou</h2>
+      <div class="campo">
+        <label for="referencias">Algum site, núcleo, associação ou evento que vocês admiram?
+          <span class="ajuda">Cole o link e diga o que gostou nele.</span></label>
+        <textarea id="referencias" name="referencias" rows="3"></textarea>
+      </div>
+      <div class="campo">
+        <label for="evitar">E algo que vocês não querem de jeito nenhum?</label>
+        <textarea id="evitar" name="evitar" rows="2"></textarea>
+      </div>
+      <div class="campo">
+        <label for="livre">Espaço livre: o que eu deveria saber e não perguntei?</label>
+        <textarea id="livre" name="livre" rows="3"></textarea>
+      </div>
+    </section>
+
+  </form>
+
+  <section class="envio">
+    <p class="rotulo">Pronto por agora?</p>
+    <p style="margin-top:10px">Tudo já está salvo. O botão abaixo só me avisa que vocês terminaram, e eu volto com a leitura e o próximo passo.</p>
+    <button class="botao" id="enviar" type="button">Enviar ao estúdio →</button>
+    <div class="feito" id="feito" role="status">
+      <b>Recebido.</b>
+      <p style="margin-top:6px">As respostas chegaram. Se quiser, me avise também pelo WhatsApp.</p>
+      <a class="botao claro" id="zap" href="https://wa.me/5544991246187" target="_blank" rel="noopener">Avisar no WhatsApp</a>
+    </div>
+  </section>
+
+</main>
+
+<div class="salvo" id="salvo" aria-live="polite"></div>
+
+<script>
+(function () {
+  var LOJA = "neam-acim";
+  var API = "/api/material";
+  var LOCAL = "onboarding-" + LOJA;
+  var form = document.getElementById("form");
+  var selo = document.getElementById("salvo");
+  var timer = null, seloTimer = null;
+
+  function ler() {
+    var d = {};
+    Array.prototype.forEach.call(form.elements, function (el) {
+      if (!el.name) return;
+      if (el.type === "checkbox") {
+        d[el.name] = d[el.name] || [];
+        if (el.checked) d[el.name].push(el.value);
+      } else if (el.type === "radio") {
+        if (el.checked) d[el.name] = el.value;
+        else if (!(el.name in d)) d[el.name] = "";
+      } else d[el.name] = el.value;
+    });
+    return d;
+  }
+
+  function preencher(d) {
+    if (!d) return;
+    Array.prototype.forEach.call(form.elements, function (el) {
+      if (!el.name || !(el.name in d)) return;
+      var v = d[el.name];
+      if (el.type === "checkbox") el.checked = Array.isArray(v) && v.indexOf(el.value) > -1;
+      else if (el.type === "radio") el.checked = v === el.value;
+      else el.value = v || "";
+    });
+  }
+
+  function avisar(texto, erro) {
+    selo.textContent = texto;
+    selo.className = "salvo ver" + (erro ? " erro" : "");
+    clearTimeout(seloTimer);
+    seloTimer = setTimeout(function () { selo.className = "salvo" + (erro ? " erro" : ""); }, 2200);
+  }
+
+  function guardarLocal(d) {
+    try { localStorage.setItem(LOCAL, JSON.stringify({ respostas: d, em: Date.now() })); } catch (e) {}
+  }
+
+  function salvar(extra) {
+    var respostas = ler();
+    guardarLocal(respostas);
+    var dados = { respostas: respostas };
+    if (extra) for (var k in extra) dados[k] = extra[k];
+    else if (window.__enviado) dados.enviado = window.__enviado;
+    return fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ loja: LOJA, acao: "salvar", dados: dados })
+    }).then(function (r) { return r.json(); }).then(function (j) {
+      if (!j.ok) throw new Error(j.erro || "falhou");
+      avisar("Salvo");
+      return j;
+    }).catch(function (e) {
+      avisar("Salvo só neste aparelho", true);
+      throw e;
+    });
+  }
+
+  form.addEventListener("input", function () {
+    guardarLocal(ler());
+    clearTimeout(timer);
+    timer = setTimeout(function () { salvar().catch(function () {}); }, 1200);
+  });
+  window.addEventListener("pagehide", function () { guardarLocal(ler()); });
+
+  /* abrir: o que está no servidor, a não ser que o aparelho tenha algo mais novo */
+  var local = null;
+  try { local = JSON.parse(localStorage.getItem(LOCAL) || "null"); } catch (e) {}
+  fetch(API + "?loja=" + LOJA, { cache: "no-store" })
+    .then(function (r) { return r.json(); })
+    .then(function (j) {
+      var remoto = j && j.ok && j.respostas;
+      window.__enviado = remoto && remoto.enviado;
+      var emRemoto = remoto && remoto.atualizado ? Date.parse(remoto.atualizado) : 0;
+      if (local && local.em > emRemoto) preencher(local.respostas);
+      else if (remoto && remoto.respostas) preencher(remoto.respostas);
+      else if (local) preencher(local.respostas);
+    })
+    .catch(function () { if (local) preencher(local.respostas); });
+
+  var botao = document.getElementById("enviar");
+  botao.addEventListener("click", function () {
+    botao.disabled = true;
+    clearTimeout(timer);
+    var quem = (document.getElementById("nome").value || "").trim();
+    window.__enviado = { em: new Date().toISOString(), por: quem };
+    salvar({ enviado: window.__enviado }).then(function () {
+      var msg = "Oi Rafael, " + (quem ? "aqui é " + quem + ". " : "") + "Terminamos o onboarding do NEAM.";
+      document.getElementById("zap").href = "https://wa.me/5544991246187?text=" + encodeURIComponent(msg);
+      document.getElementById("feito").classList.add("ver");
+      botao.style.display = "none";
+    }).catch(function () {
+      botao.disabled = false;
+      avisar("Não consegui enviar. Tente de novo.", true);
+    });
+  });
+})();
+</script>
+</body>
+</html>
