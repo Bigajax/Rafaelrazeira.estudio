@@ -9,6 +9,7 @@ import {
   Fraunces,
   Instrument_Serif,
   Inter,
+  Instrument_Sans,
   JetBrains_Mono,
   Oswald,
   Playfair_Display,
@@ -20,6 +21,10 @@ import s from "./crm.module.css";
    Helvetica ao lado de um site em Archivo condensada seriam duas empresas. */
 const display = Archivo({ subsets: ["latin"], axes: ["wdth"], variable: "--font-display" });
 const body = Inter({ subsets: ["latin"], variable: "--font-body" });
+/* os títulos da ferramenta na Instrument Sans desde 29/10/2026, a régua do
+   estúdio (docs/design-estudio.md). A Archivo segue no --font-display porque
+   os posts do Marketing desenham com ela. */
+const titulo = Instrument_Sans({ subsets: ["latin"], variable: "--font-titulo" });
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
 /* A serifa leve é a primeira voz do título dos posts do Marketing (a
    segunda é a Archivo condensada). Só os posts usam; a ferramenta não. */
@@ -52,7 +57,7 @@ export const dynamic = "force-dynamic";
 
 export default function LayoutCRM({ children }: { children: React.ReactNode }) {
   return (
-    <div className={`${s.app} ${display.variable} ${body.variable} ${mono.variable} ${serif.variable} ${titulos}`}>
+    <div className={`${s.app} ${display.variable} ${titulo.variable} ${body.variable} ${mono.variable} ${serif.variable} ${titulos}`}>
       {children}
     </div>
   );

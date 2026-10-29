@@ -8580,3 +8580,72 @@
     grid-template-rows: none;
   }
 }
+
+/* ============================================================
+   O DESIGN NOVO DO ESTÚDIO NO CRM, FASE 1 (29/10/2026)
+   A régua é docs/design-estudio.md (o design da /vitrine-digital virou
+   o oficial). Esta camada vem por último e mexe só no que é base:
+   - os títulos na Instrument Sans (o --font-display continua Archivo,
+     porque os posts do Marketing desenham com ela);
+   - os botões em pílula e os cartões e campos de canto maior;
+   - o botão de ação principal sai do verde para o PRETO, o "seguir" da
+     régua. Não vai para o rosa de propósito: aqui o rosa quer dizer
+     "atrasado", e um botão rosa em cada tela apagaria esse aviso.
+   O que NÃO muda: o filete de urgência na margem e o tom de temperatura
+   das fichas. São informação, não decoração.
+   ============================================================ */
+.app {
+  --display: var(--font-titulo), var(--font-body), Arial, sans-serif;
+  --painel-raio: 16px;
+  --painel-campo-raio: 12px;
+  --paper-alto: #f6f6f4;
+}
+.app h1,
+.app h2 {
+  font-family: var(--display);
+  font-stretch: normal;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+.app h1 em,
+.app h2 em {
+  font-style: normal;
+  color: var(--green);
+}
+.app input,
+.app select,
+.app textarea {
+  border-radius: var(--painel-campo-raio);
+}
+.app .btn,
+.app .btnMini,
+.app .btnAcao,
+.app .btnEscuro,
+.app .btnMiniEscuro,
+.app .btnMiniForte {
+  border-radius: 980px;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.12s ease;
+}
+.app .btn:active,
+.app .btnMini:active,
+.app .btnAcao:active,
+.app .btnEscuro:active {
+  transform: scale(0.97);
+}
+.app .btnAcao {
+  background: var(--ink);
+  border-color: var(--ink);
+}
+@media (hover: hover) and (pointer: fine) {
+  .app .btnAcao:hover {
+    background: #000;
+    border-color: #000;
+  }
+  .app .btn:hover,
+  .app .btnMini:hover {
+    border-color: var(--ink);
+  }
+}
+.app .ficha {
+  border-radius: 14px;
+}
