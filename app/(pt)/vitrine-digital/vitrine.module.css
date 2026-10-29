@@ -2453,7 +2453,8 @@ html:has(.site) { scroll-behavior: smooth }
   .molduraTela { padding: 7px; border-radius: 22px }
   .molduraTela .browserBar { border-radius: 15px 15px 0 0 }
   .molduraCover { aspect-ratio: 4 / 5; border-radius: 0 0 15px 15px }
-  .molduraShot { --dur: 44s }
+  /* 24s para a captura curta (29/10) andar na mesma velocidade dos 44s da inteira */
+  .molduraShot { --dur: 24s }
 }
 @media (prefers-reduced-motion: reduce) { .molduraShot { animation: none } }
 /* sobe e cresce enquanto entra na tela, como na referência. Só onde o
