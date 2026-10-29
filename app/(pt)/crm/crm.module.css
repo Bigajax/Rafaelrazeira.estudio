@@ -8652,3 +8652,11 @@
 .app .loteBotao {
   border-radius: 980px;
 }
+/* o acento do painel (botão principal, aba ativa, opção escolhida) era o
+   verde; pela régua, o marcado é o preto. São 31 usos em todas as telas, e
+   só um quer dizer "feito" (o marco da Produção), que segue verde lá */
+.app {
+  --painel-acento: #14181a;
+  --painel-acento-suave: #ececea;
+  --painel-borda-ativa: #cfcfcb;
+}

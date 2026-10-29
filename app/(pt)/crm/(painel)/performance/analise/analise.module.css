@@ -48,3 +48,6 @@
 .botaoAnalise { display: inline-flex; align-items: center; min-height: 40px; padding: 8px 14px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper-alto); font: 500 13.5px/1.3 var(--body); color: var(--ink); text-decoration: none }
 .botaoAnalise:hover { border-color: var(--ink-fraco) }
 .botaoAnalise:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px }
+/* o design novo do estúdio (29/10/2026): os atalhos em pílula */
+.botaoAnalise { border-radius: 980px; padding-inline: 16px }
+.botaoAnalise:hover { border-color: var(--ink) }

@@ -119,7 +119,7 @@ export function Lojas({ lojas, leads }: { lojas: LojaNaLista[]; leads: Lead[] })
         </label>
 
         <button type="submit" className={s.btn} disabled={enviando}>
-          {enviando ? "ABRINDO…" : "ABRIR A FICHA"}
+          {enviando ? "Abrindo…" : "Abrir a ficha"}
         </button>
       </form>
       {erro && (

@@ -204,7 +204,7 @@ export function TabelaProdutos({
             )}
             {inferidas && !!escolhidas.length && <em>sugeridas pela medição, ainda não confirmadas</em>}
             <button type="button" className={s.btnMini} onClick={medirEEscolher} disabled={medindo}>
-              {medindo ? "MEDINDO…" : "ESCOLHER SOZINHO"}
+              {medindo ? "Medindo…" : "Escolher sozinho"}
             </button>
           </p>
 
@@ -281,7 +281,7 @@ export function TabelaProdutos({
             })
           }
         >
-          {criando ? "CRIANDO…" : "+ PRODUTO À MÃO"}
+          {criando ? "Criando…" : "+ Produto à mão"}
         </button>
       )}
     </section>

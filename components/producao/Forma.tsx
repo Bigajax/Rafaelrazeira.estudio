@@ -255,7 +255,7 @@ export function Forma({
         </h2>
         <span className={p.blocoRot}>o que o catálogo exige</span>
         <button type="button" className={s.btnMini} onClick={lerFotos} disabled={lendo || !ativos.length}>
-          {lendo ? "MEDINDO AS FOTOS…" : "LER A FORMA DAS FOTOS"}
+          {lendo ? "Medindo as fotos…" : "Ler a forma das fotos"}
         </button>
       </div>
 
@@ -550,7 +550,7 @@ export function Forma({
           })
         }
       >
-        {salvando ? "GUARDANDO…" : "GUARDAR A FORMA"}
+        {salvando ? "Guardando…" : "Guardar a forma"}
       </button>
     </section>
   );

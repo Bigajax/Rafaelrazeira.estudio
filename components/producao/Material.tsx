@@ -67,7 +67,7 @@ export function Material({
         </h2>
         <span className={p.blocoRot}>do cliente</span>
         <button type="button" className={s.btnMini} disabled={subindo} onClick={() => entrada.current?.click()}>
-          {subindo ? "SUBINDO…" : "+ SUBIR ARQUIVO"}
+          {subindo ? "Subindo…" : "+ Subir arquivo"}
         </button>
       </div>
 

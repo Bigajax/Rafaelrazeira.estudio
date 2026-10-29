@@ -819,3 +819,12 @@
   .tela .semDia { grid-template-columns: 1fr }
   .tela .timeCab { padding: 16px }
 }
+
+/* O DESIGN NOVO DO ESTÚDIO NO MARKETING (29/10/2026), régua em docs/design-estudio.md:
+   abas e botões em pílula; a cor do ativo vem do --painel-acento, preto desde então */
+.tela .abasMkt, .tela .abas, .tela .estados, .tela .segmento { border-radius: 980px }
+.tela .abasMkt a, .tela .aba, .tela .estado, .tela .segmento button { border-radius: 980px }
+.tela .ligarTime, .tela .mesSeta { border-radius: 980px }
+.tela :is(.bandeja, .time, .painel, .prodColuna, .perfilGrade, .semDia, .numeros, .papelBloco) { border-radius: 16px }
+.tela .grade { border-radius: 16px }
+.tela .semDia * { text-transform: none }

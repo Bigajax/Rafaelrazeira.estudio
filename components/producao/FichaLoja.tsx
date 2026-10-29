@@ -219,7 +219,7 @@ export function FichaLoja({
           onClick={() => disparar("colher")}
           disabled={!!rodando}
         >
-          {rodando === "colher" ? "COLHENDO…" : ativos.length ? "COLHER DE NOVO" : "COLHER DO INSTAGRAM"}
+          {rodando === "colher" ? "Colhendo…" : ativos.length ? "Colher de novo" : "Colher do Instagram"}
         </button>
         <button
           type="button"
@@ -230,7 +230,7 @@ export function FichaLoja({
              vazia depois de uma espera de minutos. */
           title={semImagem ? "Colha as fotos primeiro" : undefined}
         >
-          {rodando === "catalogo" ? "LENDO…" : produtos.length ? "LER O CATÁLOGO DE NOVO" : "LER O CATÁLOGO"}
+          {rodando === "catalogo" ? "Lendo…" : produtos.length ? "Ler o catálogo de novo" : "Ler o catálogo"}
         </button>
         {produtos.length > 0 && loja.status !== "pronta" && (
           <button
@@ -351,7 +351,7 @@ function Apagar({ id, arroba }: { id: string; arroba: string }) {
           })
         }
       >
-        {indo ? "APAGANDO…" : `APAGAR @${arroba} E AS FOTOS`}
+        {indo ? "Apagando…" : `Apagar @${arroba} e as fotos`}
       </button>
       <button type="button" className={s.btnMini} onClick={() => setConfirmando(false)}>
         CANCELAR

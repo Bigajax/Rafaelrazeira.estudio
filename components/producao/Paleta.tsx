@@ -486,7 +486,7 @@ export function Paleta({
         </h2>
         <span className={p.blocoRot}>das fotos</span>
         <button type="button" className={s.btnMini} onClick={extrair} disabled={lendo || !ativos.length}>
-          {lendo ? "LENDO AS FOTOS…" : "LER AS CORES DAS FOTOS"}
+          {lendo ? "Lendo as fotos…" : "Ler as cores das fotos"}
         </button>
       </div>
 
@@ -706,7 +706,7 @@ export function Paleta({
           })
         }
       >
-        {salvando ? "SALVANDO…" : "SALVAR A FICHA"}
+        {salvando ? "Salvando…" : "Salvar a ficha"}
       </button>
     </section>
   );

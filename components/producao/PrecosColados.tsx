@@ -69,7 +69,7 @@ export function PrecosColados({ loja_id }: { loja_id: string }) {
           })
         }
       >
-        {aplicando ? "CASANDO…" : "APLICAR NO CATÁLOGO"}
+        {aplicando ? "Casando…" : "Aplicar no catálogo"}
       </button>
 
       {recado && <p className={p.aviso}>{recado}</p>}

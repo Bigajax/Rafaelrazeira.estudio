@@ -307,7 +307,7 @@ export function Conceito({
           disabled={!legendas.length}
           title={legendas.length ? undefined : "sem legendas na bancada"}
         >
-          {legendas.length ? "LER A VOZ DAS LEGENDAS" : "SEM LEGENDAS NA BANCADA"}
+          {legendas.length ? "Ler a voz das legendas" : "Sem legendas na bancada"}
         </button>
       </div>
 
@@ -520,7 +520,7 @@ export function Conceito({
           })
         }
       >
-        {salvando ? "GUARDANDO…" : "GUARDAR O CONCEITO"}
+        {salvando ? "Guardando…" : "Guardar o conceito"}
       </button>
       {recado && <p className={p.aviso}>{recado}</p>}
     </section>

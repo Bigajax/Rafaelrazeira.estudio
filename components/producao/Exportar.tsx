@@ -130,7 +130,7 @@ export function Exportar({
               <em>{a.destino}</em>
             </span>
             <button type="button" className={`${s.btnMini} ${p.btnGrafite}`} onClick={() => copiar(a.chave, a.texto())}>
-              {copiado === a.chave ? "COPIADO" : "COPIAR"}
+              {copiado === a.chave ? "Copiado" : "Copiar"}
             </button>
             <button type="button" className={`${s.btnMini} ${p.btnGrafite}`} onClick={() => baixar(a.nome, a.tipo, a.texto())}>
               BAIXAR

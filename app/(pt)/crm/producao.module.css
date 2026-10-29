@@ -2130,3 +2130,41 @@
   .tabela { min-width: 680px }
   .divisor em { flex-basis: 100% }
 }
+
+/* ============================================================
+   O DESIGN NOVO DO ESTÚDIO NA PRODUÇÃO (29/10/2026)
+   Régua em docs/design-estudio.md. O botão que move o trabalho (abrir a
+   ficha, a vez) sai do verde do painel para o preto em pílula, e os
+   rótulos dos botões saíram da caixa alta nos componentes. O verde
+   continua no que é estado: marco feito, escolha marcada.
+   Especificidade triplicada pelo mesmo motivo da `.entrada.entrada`
+   acima: a camada do painel no fim deste arquivo já empata com o
+   `.app .btn` da casa, e esta precisa vencer as duas.
+   ============================================================ */
+.entrada.entrada.entrada button,
+.acoes.acoes .aVez.aVez,
+.btnGrafite.btnGrafite.aVez {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+  border-radius: 980px;
+  text-transform: none;
+}
+.entrada.entrada.entrada button:hover:not(:disabled),
+.acoes.acoes .aVez.aVez:hover:not(:disabled),
+.btnGrafite.btnGrafite.aVez:hover:not(:disabled) {
+  background: #000;
+  border-color: #000;
+}
+.btnGrafite.btnGrafite.btnGrafite {
+  border-radius: 980px;
+}
+.entrada.entrada {
+  border-radius: 16px;
+}
+.modo,
+.baseOpcao {
+  border-radius: 12px;
+}
+/* o marco concluído é o único uso do acento que quer dizer "feito": verde */
+.marcoFeito.marcoFeito i { background: var(--green) }

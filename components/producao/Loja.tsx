@@ -228,7 +228,7 @@ export function Loja({ loja }: { loja: TipoLoja }) {
           })
         }
       >
-        {salvando ? "GUARDANDO…" : "GUARDAR AS RESPOSTAS"}
+        {salvando ? "Guardando…" : "Guardar as respostas"}
       </button>
       {recado && <p className={p.aviso}>{recado}</p>}
     </section>

@@ -241,7 +241,7 @@ export function Prompt({
           onClick={gerar}
           disabled={!pronto || gerando}
         >
-          {gerando ? "GERANDO…" : ajuste ? "GERAR O AJUSTE" : "GERAR O PROMPT"}
+          {gerando ? "Gerando…" : ajuste ? "Gerar o ajuste" : "Gerar o prompt"}
         </button>
         {markdown && (
           <>
