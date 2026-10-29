@@ -116,17 +116,17 @@ const CONFIG_ESTUDIO = {
 
   // Como funciona — o processo em 3 passos (sequência real: briefing → design → publicação)
   process: {
-    label: "Como eu trabalho",
-    headline: "Uma pessoa só, <em>do começo ao ar.</em>",
+    label: "Como funciona",
+    headline: "Do primeiro contato <em>ao ar.</em>",
     /* 20/10/2026: os três passos eram os de projeto sob medida (briefing,
        design, aprovação) com "entrada de 50%". O caminho de hoje é o da
        vitrine: o @, a amostra no celular, e a entrada de R$ 500, 50% desde 28/10 (lib/oferta.ts;
        mudou lá, muda aqui). É a mesma promessa da /vitrine-digital. */
     steps: [
       /* 29/10: o método do estúdio, não o funil da vitrine (esse mora na /vitrine-digital) */
-      { num:"01", title:"Eu olho antes de propor",     text:"Leio o Instagram, o site e o que a loja já vende antes de qualquer proposta. A conversa começa com a sua marca na tela." },
-      { num:"02", title:"Escrevo, desenho e programo", text:"Texto, design e código saem da mesma mesa. Ninguém repassa o seu projeto para outra pessoa." },
-      { num:"03", title:"Publico e entrego o painel",  text:"A loja vai ao ar no seu domínio, com um painel para você trocar preço, foto e texto sozinho." },
+      { num:"01", title:"Você mostra a sua marca",  text:"Eu estudo o que você já vende antes de propor qualquer coisa." },
+      { num:"02", title:"Você aprova o desenho",    text:"O site chega no seu celular e só vai ao ar quando você aprovar." },
+      { num:"03", title:"Você assume o controle",   text:"No ar no seu domínio, com um painel para mudar preço, foto e texto sozinho." },
     ],
     // Resumo da garantia: linha curta no fim da seção, leva ao bloco completo no contato
     note: "",
@@ -159,8 +159,8 @@ const CONFIG_ESTUDIO = {
      aqui (ver data/casos.ts). As capas da tira são 320x200 do /portfolio. */
   cases: {
     label: "Projetos do estúdio",
-    headline: "Lojas de verdade, <em>no ar agora.</em>",
-    manchete: { antes: "Lojas de verdade,", depois: "<em>no ar agora.</em>" },
+    headline: "Feitas para vender. <em>Já no ar.</em>",   // 29/10: o tom do hero
+    manchete: { antes: "Feitas para vender.", depois: "<em>Já no ar.</em>" },
     tiraEstilo: "faixa",   // ver "A TIRA COM PERSONALIDADE" em css/sections/cases.css
     tira: [
       { img: "assets/tira/fulltime.webp",         alt: "Full Time Skateboards" },
@@ -173,7 +173,7 @@ const CONFIG_ESTUDIO = {
       { img: "assets/tira/star-point.webp",       alt: "Star Point" },
       { img: "assets/tira/pr-grife.webp",         alt: "PR Grife" },
     ],
-    intro: "Duas delas contadas por dentro, do que a loja tinha antes ao que foi ao ar. As outras estão no <a href=\"/portfolio\">portfólio</a>, todas abrindo agora.",
+    intro: "Duas contadas por dentro, e mais de 100 projetos no <a href=\"/portfolio\">portfólio</a>.",
     cta: "Ver todos os projetos",   // 29/10: leva ao /portfolio (js/lib/novo.js), não à oferta da vitrine
     // video: gravação vertical (mp4) → aparece dentro de um mockup de iPhone, em loop.
     // img: captura mobile de página inteira (jpg) → rola sozinha dentro do mockup de iPhone.
@@ -239,10 +239,10 @@ const CONFIG_ESTUDIO = {
     lastName: "Razeira",
     photo: "assets/rafael-neve.jpg",   // 20/10/2026: a foto na neve; a antiga (rafael.jpg) fica no repo
     bgWords: ["VITRINE DIGITAL", "E-COMMERCE", "MARINGÁ"],   // letreiro clarinho de fundo
-    headline: "O designer por trás de mais de 100 lojas no ar",
+    headline: "O designer <em>por trás.</em>",
     paragraphs: [
-      "Eu escrevo, desenho e publico cada vitrine. Você fala comigo do primeiro contato até a loja no ar, sem atendente no meio.",
-      "Moro em Maringá e atendo lojas do Brasil inteiro, de Erechim, no Rio Grande do Sul, a Natal, no Rio Grande do Norte.",
+      "Rafael Razeira, designer. Mais de 100 projetos no ar, de skate shop em Curitiba a decoração autoral em Maringá.",
+      "Marcas do Brasil inteiro, de Erechim, no Rio Grande do Sul, a Natal, no Rio Grande do Norte.",
     ],
   },
 
@@ -256,17 +256,17 @@ const CONFIG_ESTUDIO = {
 
   audience: {
     label: "O que o estúdio faz",
-    headline: "Cada trabalho tem <em>a sua página.</em>",
+    headline: "Escolha por onde <em>começar.</em>",
     /* 20/10/2026: os três públicos eram de agência ("profissionais que
        valorizam reputação"). Agora são os três casos de quem chega, e cada
        um aponta para um dos três trabalhos do picote do hero. */
     blocks: [
       /* 29/10: cada bloco é uma porta (o link é montado por js/lib/novo.js);
          a home não vende nenhum deles, manda para a página que vende */
-      { title:"Vitrine digital",    text:"O catálogo da loja com foto, preço e tamanho, e o pedido chegando pronto no WhatsApp.", url:"/vitrine-digital", cta:"Conhecer a vitrine digital" },
-      { title:"E-commerce",         text:"A loja completa, com sacola, Pix e cartão, frete calculado e estoque que baixa sozinho.", url:"/e-commerce", cta:"Conhecer o e-commerce" },
-      { title:"Landing page",       text:"Uma página com uma tarefa só, feita para receber o seu anúncio.", url:"/landing-page", cta:"Conhecer a landing page" },
-      { title:"Projeto sob medida", text:"Um site institucional, um núcleo, um evento: o que não cabe num produto pronto começa numa conversa.", url:"#contato", cta:"Contar o projeto" },
+      { title:"Vitrine digital",    text:"Seu catálogo com foto, preço e tamanho, e o pedido pronto no WhatsApp.", url:"/vitrine-digital", cta:"Conhecer a vitrine digital" },
+      { title:"E-commerce",         text:"Sua loja completa: sacola, Pix, cartão e frete, funcionando sozinha.", url:"/e-commerce", cta:"Conhecer o e-commerce" },
+      { title:"Landing page",       text:"Uma página, uma tarefa: transformar o anúncio em contato.", url:"/landing-page", cta:"Conhecer a landing page" },
+      { title:"Projeto sob medida", text:"O que não cabe num modelo pronto começa numa conversa.", url:"#contato", cta:"Contar o projeto" },
     ],
   },
 
@@ -300,13 +300,13 @@ const CONFIG_ESTUDIO = {
 
   contact: {
     status: "Agenda aberta",
-    headline: "Seu projeto <em>começa aqui.</em>",
-    intro: "Conte sobre o seu negócio. Eu analiso e retorno pelo WhatsApp em até 24 horas úteis.",
+    headline: "O seu site vendendo <em>começa aqui.</em>",
+    intro: "Conta da sua marca. Eu respondo pelo WhatsApp em até 24 horas úteis.",
     /* 20/10/2026: a garantia dizia "50% de entrada, devolvida se não
        aprovar" e o preço "a partir de R$ 1.500", as duas coisas de agosto e
        as duas contra a oferta de hoje (lib/oferta.ts). Agora é a promessa da
        vitrine: ver pronta antes de pagar, R$ 500 para começar (50%, desde 28/10). */
-    scarcity: "Cada projeto é feito por mim, um de cada vez.",
+    scarcity: "Agenda aberta para novos projetos.",
     email: "rafaelrazeira.estudio@gmail.com",
     // Bloco de garantia: aparece destacado logo antes do formulário
     guarantee: {
