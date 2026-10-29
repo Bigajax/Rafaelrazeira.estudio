@@ -1,15 +1,19 @@
 import type { Metadata } from "next";
-import { Archivo, Inter, JetBrains_Mono } from "next/font/google";
-import { Analytics, BrandBand, FAQ, FinalCTA, Header, Hero, HowItWorks, Included, MobileBar, Offer, PainSolution, Panel, Process, Projects, QuemFaz } from "@/components/vitrine/sections";
+import { Instrument_Sans, Inter } from "next/font/google";
+import { Analytics, FAQ, Header, Hero, MobileBar } from "@/components/vitrine/sections";
+import { Depoimentos, Etapas, FimNovo, LojasNoAr, Placar, Preco, QuemFazCurto, Rodape } from "@/components/vitrine/mobbin";
 import { SemAncoraDoAnuncio } from "@/components/vitrine/SemAncoraDoAnuncio";
 import { LangProvider } from "@/components/i18n";
 import { alternatesPara } from "@/lib/idiomas";
 import { pt } from "@/messages/vitrine.pt";
 import styles from "./vitrine.module.css";
 
-const display = Archivo({ subsets: ["latin"], axes: ["wdth"], variable: "--font-display" });
 const body = Inter({ subsets: ["latin"], variable: "--font-body" });
-const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
+/* a Archivo (88KB) e a JetBrains Mono saíram em 28/10: medido na página,
+   a primeira não desenhava nenhuma letra e a mono só cinco rótulos, que
+   passaram para a mono do sistema (ver `.semFontesExtras` no CSS) */
+/* as manchetes na Instrument Sans desde 28/10, ver `.tipoTitulo` no CSS */
+const titulo = Instrument_Sans({ subsets: ["latin"], variable: "--font-titulo" });
 
 /* o título e a descrição moram no dicionário desde 11/09/2026, junto com o
    resto do texto da página; `alternates` aponta a irmã em inglês */
@@ -42,51 +46,27 @@ export const metadata: Metadata = {
 export default function VitrineDigitalPage() {
   /* o provider entrega o dicionário pt aos componentes (useT); a
      /en/vitrine-digital faz o mesmo com o en */
-  return <LangProvider lang="pt" messages={pt}><div className={`${styles.site} ${display.variable} ${body.variable} ${mono.variable}`}>
+  return <LangProvider lang="pt" messages={pt}><div className={`${styles.site} ${styles.botoesApple} ${styles.tipoTitulo} ${styles.estruturaCentro} ${styles.semFontesExtras} ${titulo.variable} ${body.variable}`}>
     {/* apaga o #hero-form/#contratar que vem do anúncio antes de o navegador pular (ver o componente) */}
     <SemAncoraDoAnuncio />
     <Header />
     <main>
+      {/* a ordem de 28/10 (pedido do Rafael, "reestruture"): a ordem das perguntas
+          de quem chega frio do anúncio. Existe? (números, lojas, o Luciano logo
+          depois da Iconic aparecer na fila) Como funciona? Quem faz? Quanto custa?
+          O convite final, e o FAQ por último, para quem procura uma resposta
+          pontual; o botão do topo segue à vista durante ele. */}
       <Hero />
-      <QuemFaz />
-      <BrandBand />
-      <PainSolution />
-      <HowItWorks />
-      <Projects />
-      <Included />
-      {/* ---------- a garantia passou na frente do preço (23/08) ----------
-          A ordem era `Included → Panel → Offer → Process`, ou seja, a
-          pessoa recebia o preço e o formulário ANTES do motivo pelo qual
-          o preço é seguro. A `Process` inteira é essa resposta ("Você vê
-          a loja pronta antes de pagar o resto"), e ela chegava tarde
-          demais para servir de alguma coisa.
-
-          Quem cedeu o lugar foi a `Panel`, e ela ganha com a troca: a
-          manchete dela é "Depois de publicada, a vitrine é sua", que é
-          resposta a uma pergunta de DEPOIS do preço ("e aí, fico preso a
-          você?"). O painel como item de escopo já está dito antes, na
-          lista dos 9 itens da `Included`.
-
-          Por que não foi uma reordenação maior, que é o que a auditoria
-          de 23/08 pedia: a página alterna papel e grafite e nunca encosta
-          duas seções escuras. `Projects`, `Panel`, `QuemFaz` e `Process`
-          são todas escuras, e só sobra uma seção clara no miolo para
-          separá-las. Qualquer arranjo mais ambicioso exigiria clarear uma
-          seção, e as duas candidatas usam `--green-live`, `--mint` e
-          `--line-dark`, que são tokens de grafite: no papel eles violam a
-          paleta. Esta troca é a única que põe a garantia antes do preço
-          sem tocar em cor nenhuma.
-
-          A `QuemFaz` não se move por um terceiro motivo, além da cor: a
-          copy dela diz "a loja que rola no celular AÍ EM CIMA, e as duas
-          de clientes LOGO ABAIXO", o que a prende entre o Hero e a
-          `Projects`. */}
-      <Process />
-      <Offer />
-      <Panel />
+      <Placar />
+      <LojasNoAr />
+      <Depoimentos />
+      <Etapas />
+      <QuemFazCurto />
+      <Preco />
+      <FimNovo />
       <FAQ />
-      <FinalCTA />
     </main>
+    <Rodape />
     <MobileBar />
     <Analytics />
   </div></LangProvider>;

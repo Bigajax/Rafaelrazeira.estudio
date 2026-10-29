@@ -109,15 +109,15 @@ const CONFIG_ESTUDIO = {
     label: "COMO FUNCIONA.",
     /* 20/10/2026: os três passos eram os de projeto sob medida (briefing,
        design, aprovação) com "entrada de 50%". O caminho de hoje é o da
-       vitrine: o @, a amostra no celular, e a entrada de R$ 199 (lib/oferta.ts;
+       vitrine: o @, a amostra no celular, e a entrada de R$ 500, 50% desde 28/10 (lib/oferta.ts;
        mudou lá, muda aqui). É a mesma promessa da /vitrine-digital. */
     steps: [
       { num:"01", title:"VOCÊ MANDA O @ DA LOJA", text:"Eu olho o seu Instagram e monto a vitrine com as suas peças, as suas fotos e os seus preços." },
       { num:"02", title:"VOCÊ VÊ PRONTA",         text:"A amostra chega no seu WhatsApp. Você navega no celular do jeito que a sua cliente vai navegar." },
-      { num:"03", title:"GOSTOU? COMEÇA COM R$199", text:"O resto só depois de aprovar. A vitrine completa vai ao ar em até 7 dias úteis." },
+      { num:"03", title:"GOSTOU? COMEÇA COM R$500", text:"O resto só depois de aprovar. A vitrine completa vai ao ar em até 7 dias úteis." },
     ],
     // Resumo da garantia: linha curta no fim da seção, leva ao bloco completo no contato
-    note: "ENTRADA DE R$199 · O RESTO DEPOIS DE APROVAR",
+    note: "ENTRADA DE R$500 · O RESTO DEPOIS DE APROVAR",
   },
 
   // O que está incluso — o "romaneio" do projeto: tudo que sai do estúdio com a página
@@ -199,7 +199,7 @@ const CONFIG_ESTUDIO = {
           "Painel para você atualizar pelo celular",
           "No ar em até 7 dias úteis",
         ],
-        entrada:"Começa com <b>R$199</b>. O resto depois de aprovar.",
+        entrada:"Começa com <b>R$500</b>. O resto depois de aprovar.",
         acao:"QUERO A MINHA AMOSTRA",
         tipoProjeto:"Vitrine digital (catálogo com pedido no WhatsApp)",
       },
@@ -289,14 +289,14 @@ const CONFIG_ESTUDIO = {
     /* 20/10/2026: a garantia dizia "50% de entrada, devolvida se não
        aprovar" e o preço "a partir de R$ 1.500", as duas coisas de agosto e
        as duas contra a oferta de hoje (lib/oferta.ts). Agora é a promessa da
-       vitrine: ver pronta antes de pagar, R$ 199 para começar. */
+       vitrine: ver pronta antes de pagar, R$ 500 para começar (50%, desde 28/10). */
     scarcity: "Cada vitrine é montada por mim, uma de cada vez.",
-    email: "rafael.rbarbon@gmail.com",
+    email: "rafaelrazeira.estudio@gmail.com",
     // Bloco de garantia: aparece destacado logo antes do formulário
     guarantee: {
       label: "GARANTIA",
       title: "VOCÊ VÊ ANTES DE PAGAR.",
-      text:  "A amostra da sua vitrine chega pronta no seu celular, <b>antes de qualquer pagamento</b>. Gostou, começa com <b>R$199</b> e paga o resto só depois de aprovar. Não gostou, <b>não paga nada</b>.",
+      text:  "A amostra da sua vitrine chega pronta no seu celular, <b>antes de qualquer pagamento</b>. Gostou, começa com <b>R$500</b> e paga o resto só depois de aprovar. Não gostou, <b>não paga nada</b>.",
     },
     pricing: "Vitrine digital <b>R$999</b>. E-commerce a partir de <b>R$3.499</b>.",   // microcopy acima do formulário
     pricingNote: "A vitrine é paga uma vez, sem mensalidade. O e-commerce sai de uma proposta com o escopo e o valor fechados.",
@@ -336,7 +336,7 @@ const CONFIG_ESTUDIO = {
 
   footer: {
     name: "RAFAEL RAZEIRA ESTÚDIO",
-    email: "rafael.rbarbon@gmail.com",
+    email: "rafaelrazeira.estudio@gmail.com",
     instagram: { handle:"@rafaelrazeira.estudio", url:"https://www.instagram.com/rafaelrazeira.estudio/" },
     whatsapp: { display:"(44) 99124-6187", url:`https://wa.me/${WHATSAPP_NUMBER}` },
     location: "MARINGÁ · PR · ATENDO O BRASIL INTEIRO",
@@ -731,7 +731,7 @@ const CONFIG_LP = {
        limita quantas cabem na semana. Escassez que se explica sozinha não
        precisa de "vagas limitadas". */
     scarcity: "Cada prévia é montada por mim, uma de cada vez. Por isso eu pego poucas por semana.",
-    email: "rafael.rbarbon@gmail.com",
+    email: "rafaelrazeira.estudio@gmail.com",
     /* A mesma caixa que na /estudio é a GARANTIA aqui descreve a prévia.
        Ela é o que faz o formulário valer o preenchimento, então diz as
        três coisas na ordem: o que chega, quando, e o que acontece nos
@@ -772,7 +772,7 @@ const CONFIG_LP = {
 
   footer: {
     name: "RAFAEL RAZEIRA ESTÚDIO",
-    email: "rafael.rbarbon@gmail.com",
+    email: "rafaelrazeira.estudio@gmail.com",
     instagram: { handle:"@rafaelrazeira.estudio", url:"https://www.instagram.com/rafaelrazeira.estudio/" },
     whatsapp: { display:"(44) 99124-6187", url:`https://wa.me/${WHATSAPP_NUMBER}` },
     location: "MARINGÁ · PR · ATENDO O BRASIL INTEIRO",
@@ -820,7 +820,7 @@ const CONFIG_LP = {
    são PLACEHOLDER A CONFIRMAR (os mesmos de lib/oferta.ts: ao mudar lá,
    mudar aqui).
    ============================================================ */
-const EMAIL_ESTUDIO = "rafael.rbarbon@gmail.com";
+const EMAIL_ESTUDIO = "rafaelrazeira.estudio@gmail.com";
 const CONFIG_LP_EN = {
   brand: {
     name: "RAFAEL RAZEIRA", suffix: "STUDIO", navCta: "I WANT TO SEE MINE",

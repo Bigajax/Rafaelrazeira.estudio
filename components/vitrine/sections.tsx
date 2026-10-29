@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { cloneElement, CSSProperties, FormEvent, isValidElement, useEffect, useRef, useState } from "react";
 import s from "@/app/(pt)/vitrine-digital/vitrine.module.css";
 import { CampoIsca, useGuardaDeFormulario } from "@/components/form-guarda";
 import { mascararWhatsapp, whatsappValido } from "@/components/telefone";
@@ -15,6 +15,7 @@ import { focarSemContar, initTracking } from "@/components/vitrine/tracking";
 import { projetos } from "@/data/portfolio";
 import { SeletorIdioma } from "@/components/idioma/SeletorIdioma";
 import { useLang, useT } from "@/components/i18n";
+import { PerguntasDaPrevia } from "@/components/vitrine/obrigado";
 import { PARES, preencher } from "@/lib/idiomas";
 import { OFERTA } from "@/lib/oferta";
 import type { VitrineMessages } from "@/messages/vitrine.pt";
@@ -45,7 +46,7 @@ const PAGINA_PT = "/vitrine-digital";
    Agora os três leem daqui, com a mesma régua do /portfolio: vale o projeto
    que tem endereço público, porque "no ar" é exatamente isso. No dia em que
    entrar o décimo primeiro, os três se corrigem sozinhos. */
-const NO_AR = projetos.filter(p => p.url).length;
+export const NO_AR = projetos.filter(p => p.url).length;
 
 /* ============================================================
    O WHATSAPP SAIU DO CAMINHO DE LEITURA (13/08)
@@ -108,7 +109,7 @@ const Button = ({ href, children, outline = false, onClick, cta, dest }: { href?
    lojista. O confere (✓ cinza sem resposta, ✓✓ azul lida) carrega o
    argumento. Cada balão revela no scroll com "digitando…"; sem JS ou com
    reduced motion o texto já vem visível, então nada fica escondido. */
-function Bubble({ out = false, time, tick, delay = 0, children }: { out?: boolean; time: string; tick?: "sent" | "read"; delay?: number; children: React.ReactNode }) {
+export function Bubble({ out = false, time, tick, delay = 0, children }: { out?: boolean; time: string; tick?: "sent" | "read"; delay?: number; children: React.ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
   const [typing, setTyping] = useState(false);
   useEffect(() => {
@@ -242,27 +243,127 @@ export function InstaDoEstudio() {
   </a>;
 }
 
+/* ---------- o Instagram virou só o símbolo (28/10) ----------
+   O bloco de cima (foto, @ e a palavra) saiu do meio do header da
+   /vitrine-digital a pedido do Rafael: ficou um ícone discreto no canto
+   direito, depois do botão. A /vitrine-v2 continua com o InstaDoEstudio. */
+/* os dois símbolos nas cores das marcas (28/10): o do Instagram no degradê
+   radial do app, o do WhatsApp no verde dele. O id do degradê é por uso,
+   porque dois <svg> com o mesmo id na página brigam pelo mesmo gradiente. */
+/* os dois símbolos no desenho do ÍCONE DO APP (28/10, à tarde): o Rafael
+   achou o contorno fino do Instagram ruim. O do Instagram é o quadrado
+   arredondado cheio do degradê, com a câmera em branco; o do WhatsApp, o
+   círculo verde com o balão e o telefone em branco, no contorno da marca
+   (Simple Icons, CC0). É o desenho que se reconhece de relance.
+   O id do degradê é por uso: dois <svg> com o mesmo id na página brigam pelo
+   mesmo gradiente. */
+export function IconeInstagram({ id, size = 24 }: { id: string; size?: number }) {
+  return <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden focusable="false">
+    <defs>
+      <radialGradient id={id} cx="30%" cy="107%" r="150%">
+        <stop offset="0" stopColor="#fdf497" /><stop offset=".05" stopColor="#fdf497" />
+        <stop offset=".45" stopColor="#fd5949" /><stop offset=".6" stopColor="#d6249f" /><stop offset=".9" stopColor="#285aeb" />
+      </radialGradient>
+    </defs>
+    <rect width="24" height="24" rx="6.5" fill={`url(#${id})`} />
+    <rect x="5.5" y="5.5" width="13" height="13" rx="4" fill="none" stroke="#fff" strokeWidth="1.7" />
+    <circle cx="12" cy="12" r="3.1" fill="none" stroke="#fff" strokeWidth="1.7" />
+    <circle cx="15.9" cy="8.1" r="1" fill="#fff" />
+  </svg>;
+}
+export function IconeWhatsApp({ size = 24 }: { size?: number }) {
+  return <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden focusable="false">
+    <circle cx="12" cy="12" r="12" fill="#25D366" />
+    <path fill="#fff" transform="translate(4.6 4.6) scale(.617)" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+  </svg>;
+}
+
+function InstaIcone() {
+  const { insta } = useVit().header;
+  const url = `https://www.instagram.com/${insta.handle.replace(/^@/, "")}/`;
+  return <a className={s.instaIcone} href={url} target="_blank" rel="noopener" aria-label={insta.aria} data-cta="instagram_header" data-cta-dest="instagram">
+    <IconeInstagram id="insta-degrade" />
+  </a>;
+}
+
+/* true quando o botão do hero já passou para baixo da barra do topo. Sem o
+   botão do hero na página, o do topo fica sempre à vista. A margem de -80px
+   em cima é a altura da pílula: o botão "sai" quando some atrás dela. */
+function useCtaDoTopo() {
+  const [mostrar, setMostrar] = useState(false);
+  useEffect(() => {
+    const alvo = document.querySelector('[data-cta="hero_abrir"]');
+    if (!alvo) { setMostrar(true); return; }
+    const io = new IntersectionObserver(([x]) => setMostrar(!x.isIntersecting && x.boundingClientRect.top < 80), { rootMargin: "-80px 0px 0px 0px" });
+    io.observe(alvo);
+    return () => io.disconnect();
+  }, []);
+  return mostrar;
+}
+
 export function Header() {
   const t = useVit();
+  const ctaNoTopo = useCtaDoTopo();
   return <header className={s.header}>
     {/* a logo volta ao hero desta página, não para /estudio: quem chega do
         anúncio e toca no topo quer recomeçar a leitura, não trocar de site */}
-    <a className={s.brand} href="#topo"><b>{t.marca.nome}</b><span>{t.marca.sufixo}</span></a>
-    <InstaDoEstudio />
+    {/* o monograma RR (28/10) fica no lazy padrão, sem `priority` nem
+        `loading="eager"`: os dois emitem um preload que entra na fila ANTES
+        da imagem do hero, o mesmo que saiu desta página em 05/08 (ver
+        app/(pt)/vitrine-digital/page.tsx). Medido: com eager o preload volta.
+        O 51x30 é o tamanho desenhado, para o srcset não pedir 384px.
+        ---------- a logo oficial (28/10, à tarde) ----------
+        O Rafael mandou o arquivo da marca (Desktop/Estúdio/marca/LOGO RR/
+        RR.png): monograma em cima e o nome embaixo, vertical. A 60px de
+        pílula o nome sairia com 6px, então os DOIS PEDAÇOS do próprio
+        arquivo vão lado a lado (recortados pelas faixas de tinta, sem
+        redesenhar nada); o nome digitado em Archivo saiu, porque a logo é
+        o arquivo e nunca texto (2 Regras da casa/feedback-sem-texto-vazado).
+        O nome da marca vai no aria-label, já que as duas imagens são alt="". */}
+    <a className={`${s.brand} ${s.brandComRR}`} href="#topo" aria-label={`${t.marca.nome} ${t.marca.sufixo}`}>
+      {/* o encaixe do RR (28/10): o monograma é um R espelhado encostado
+          num R. O mesmo arquivo entra duas vezes, cada cópia recortada numa
+          metade, e as duas chegam dos lados até se encontrarem; depois o
+          nome sai de dentro dele. Ver `.brandMono` no CSS. */}
+      <span className={s.brandMono}>
+        <Image className={`${s.brandRR} ${s.rrEsq}`} src="/assets/marca/rr-monograma.webp" width={55} height={30} alt="" />
+        <Image className={`${s.brandRR} ${s.rrDir}`} src="/assets/marca/rr-monograma.webp" width={55} height={30} alt="" />
+      </span>
+      <Image className={s.brandNome} src="/assets/marca/rr-nome.webp" width={150} height={25} alt="" />
+    </a>
     {/* O seletor de idioma e o CTA andam juntos (11/09/2026): à esquerda
         do botão, onde todo site põe, e visível também no celular, senão
         quem não fala português nunca acha. Ver components/idioma. */}
+    {/* ---------- os links no meio da pílula (28/10/2026) ----------
+        O centro estava vazio. Três atalhos para quem chega do anúncio e quer
+        pular direto para as lojas, o passo a passo ou o preço. Só no
+        desktop: no celular não cabem e a barra fixa do rodapé já leva ao
+        formulário. */}
+    <nav className={s.headNav} aria-label={t.header.navAria}>
+      {t.header.nav.map(([href, rotulo]) =>
+        <a key={href} href={href} data-cta={`header_nav_${href.slice(1)}`} data-cta-dest={href.slice(1)}>{rotulo}</a>)}
+    </nav>
     <div className={s.headRight}>
-      <SeletorIdioma atual={useLang()} ptHref={PAGINA_PT} enHref={PARES[PAGINA_PT]} />
-      {/* encurtado em 13/08: "QUERO MINHA PRÉVIA ↓" e a logo somavam mais
-          que os 350px úteis de uma tela de 390, e os dois quebravam em duas
-          linhas cada um, deixando o cabeçalho com o dobro da altura */}
-      <a className={s.headCta} href="#hero-form" data-cta="header" data-cta-dest="form">{t.header.cta}</a>
+      <SeletorIdioma atual={useLang()} ptHref={PAGINA_PT} enHref={PARES[PAGINA_PT]} className={s.idiomaSuave} />
+      <InstaIcone />
+      {/* o botão por último, na ponta direita, onde o olho termina a barra;
+          rosa e com o mesmo texto do botão do hero, porque é a mesma ação
+          (28/10: era grafite e dizia "Ver minha loja"). Some em ≤520px.
+          Desde 28/10 (pedido do Rafael) ele só entra depois que o botão do
+          hero passa para baixo da barra: os dois juntos na primeira tela
+          disputavam o olho com a mesma frase. Ver `useCtaDoTopo`. */}
+      <a className={`${s.headCta} ${ctaNoTopo ? "" : s.headCtaOculto}`} href="#hero-form" data-cta="header" data-cta-dest="form"
+        aria-hidden={!ctaNoTopo} tabIndex={ctaNoTopo ? undefined : -1}>{t.header.cta}</a>
     </div>
   </header>;
 }
 
-/* Demonstração no mockup do hero (07/08): a VITRINE COMPLETA da Sölo Urb
+/* 28/10/2026: o celular passou a rolar a Iconic Sneakers (pedido do Rafael),
+   capturada pelo mesmo script com a URL e o destino por argumento. O --dur
+   segue o RITMO que a Sölo tinha (16188px em 96s, ~169px/s da imagem), não a
+   régua do script, que sugeria 17s e faria a loja correr na tela.
+
+   Demonstração no mockup do hero (07/08): a VITRINE COMPLETA da Sölo Urb
    rolando em loop dentro do aparelho, do topo ao rodapé, no lugar do vídeo da
    Xavier's. Pedido do Rafael: a primeira coisa que a página mostra passa a
    ser uma loja inteira, não um recorte de jornada. Captura e derivados por
@@ -286,12 +387,12 @@ function VitrineDemo() {
     return () => window.removeEventListener("load", ligar);
   }, []);
   return <div className={s.screen}>
-    <Image className={s.shot} src="/assets/demo/solourb-hero-still.jpg" width={500} height={1082} sizes="300px" priority alt="" />
+    <Image className={s.shot} src="/assets/demo/iconic-hero-still.jpg" width={500} height={1082} sizes="300px" priority alt="" />
     {montar && <picture>
-      <source type="image/avif" srcSet="/assets/demo/solourb-vitrine.avif" />
-      <source type="image/webp" srcSet="/assets/demo/solourb-vitrine.webp" />
+      <source type="image/avif" srcSet="/assets/demo/iconic-vitrine.avif" />
+      <source type="image/webp" srcSet="/assets/demo/iconic-vitrine.webp" />
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img className={s.phoneShot} src="/assets/demo/solourb-vitrine.jpg" width={500} height={16188} style={{ "--dur": "96s" } as React.CSSProperties} alt="" />
+      <img className={s.phoneShot} src="/assets/demo/iconic-vitrine.jpg" width={500} height={7503} style={{ "--dur": "44s" } as React.CSSProperties} alt="" />
     </picture>}
   </div>;
 }
@@ -319,12 +420,46 @@ function VitrineDemo() {
    Lead com cta_position "hero_form", gravação antes de qualquer navegação,
    WhatsApp só como fallback. O botão de submit NÃO tem data-cta: o Lead
    deste caminho sai do submit, senão o mesmo envio contaria duas vezes. */
+/* ---------- o confete do pedido (28/10, ideia do Rafael) ----------
+   Uma chuva curta de papel caindo do topo da JANELA, na largura toda, junto
+   com o ✓ se desenhando. A primeira versão era uma explosão saindo do ✓:
+   no vídeo do Rafael ela ficava presa num canto, a borda de cima cortava o
+   leque e o resto parecia pó (papel pequeno sumindo em 1s). Agora: 44
+   papéis nas cores da página, maiores, que caem balançando e virando
+   (rotate3d dá o efeito de papel girando no ar) e somem em ~1,8s, por
+   cima das perguntas, sem bloquear o toque. Sem biblioteca: cada papel é
+   um <i> com o caminho em variáveis CSS, sorteado uma vez na montagem (só
+   existe depois do envio, então não há hidratação a casar). Quem pede
+   menos movimento não vê nenhum (CSS). */
+const CORES_CONFETE = ["#0a8a55", "#e31b62", "#14181a", "#25d366", "#f4b740"];
+function Confete() {
+  const [papeis] = useState(() => Array.from({ length: 44 }, (_, i) => {
+    const redondo = i % 5 === 0;
+    const larg = redondo ? 7 : 6 + Math.random() * 4;
+    return {
+      left: `${2 + Math.random() * 96}%`,
+      width: `${larg}px`,
+      height: `${redondo ? 7 : larg * (1.4 + Math.random() * .6)}px`,
+      "--cai": `${240 + Math.random() * 200}px`,
+      "--balanco": `${(Math.random() - .5) * 70}px`,
+      "--giro": `${(Math.random() < .5 ? -1 : 1) * (360 + Math.random() * 540)}deg`,
+      "--atraso": `${180 + Math.random() * 420}ms`,
+      "--dur": `${1300 + Math.random() * 600}ms`,
+      background: CORES_CONFETE[i % CORES_CONFETE.length],
+      borderRadius: redondo ? "50%" : "1.5px",
+    } as CSSProperties;
+  }));
+  return <span className={s.confete} aria-hidden>{papeis.map((st, i) => <i key={i} style={st} />)}</span>;
+}
+
 function HeroForm() {
   const t = useVit();
   const lang = useLang();
+  const [leadDetalhes, setLeadDetalhes] = useState<{ id: string; whatsapp: string } | null>(null);
   const [linkWa, setLinkWa] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [enviado, setEnviado] = useState(false);
+  const [festa, setFesta] = useState(false);
   const [telInvalido, setTelInvalido] = useState(false);
   /* o e-mail é o contato obrigatório da versão em inglês (11/09/2026) */
   const [emailInvalido, setEmailInvalido] = useState(false);
@@ -371,7 +506,7 @@ function HeroForm() {
     const diag = diagnosticoDoArroba(String(f.get("instagram") || ""));
     if (diag) { setInstaDiag(diag); return; }
     setEnviando(true);
-    const { salvo, linkWa: link, arrobaInvalido, loja: lojaAchada } = await enviarLeadVitrine({
+    const { salvo, linkWa: link, arrobaInvalido, loja: lojaAchada, id: leadId } = await enviarLeadVitrine({
       nome: String(f.get("nome") || ""),
       whatsapp: String(f.get("whatsapp") || ""),
       email: String(f.get("email") || ""),
@@ -388,172 +523,41 @@ function HeroForm() {
     if (arrobaInvalido) { setInstaInvalido(String(f.get("instagram") || "")); setRecusas(n => n + 1); return; }
     setLoja(lojaAchada);
     setLinkWa(link);
-    if (salvo) setEnviado(true);
+    if (salvo) {
+      setEnviado(true);
+      /* o confete e a vibração curta só no envio gravado de verdade (o
+         suspeito também cai na confirmação, mas sem festa) */
+      setFesta(true);
+      if (!matchMedia("(prefers-reduced-motion: reduce)").matches) navigator.vibrate?.(28);
+    }
+    /* ---------- a continuação no modal (28/10, pedido do Rafael) ----------
+       Com o lead gravado, a confirmação traz as quatro perguntas opcionais
+       logo abaixo, na mesma janela (ver `PerguntasDaPrevia`). Guarda o id e
+       o WhatsApp, que a rota de detalhes confere juntos. Só no pt. */
+    if (salvo && lang === "pt") setLeadDetalhes(leadId ? { id: leadId, whatsapp: String(f.get("whatsapp") || "") } : null);
   }
   /* a confirmação ocupa a própria porta: estado do React, sem navegação,
      então aparece igual no navegador interno do Instagram */
   {/* o id fica também na confirmação: o CTA do topo desce para cá por
       âncora, e sem isso quem já enviou clicaria num link morto */}
-  if (enviado) return <div id="hero-form" className={`${s.tag} ${s.tagConfirm}`} role="status">
-    {/* ---------- o alfinete ----------
-        Quarto objeto a ocupar este canto (cordão, fita crepe, clipe,
-        alfinete) e o primeiro que pertence ao mundo da cliente: é com
-        alfinete que se prende etiqueta de preço em peça de roupa. O
-        porquê de cada troca está por extenso em `.tagPin`, no CSS.
-
-        Montado de baixo para cima, na ordem em que a luz o encontra:
-        a sombra de contato onde a agulha entra no papel, a agulha em
-        rosé, a base acrílica translúcida e o fio de luz na quina dela.
-
-        A base é `#ffffff8c`, não branco cheio: é acrílico, então a borda
-        de tinta do cartão tem que aparecer POR BAIXO. Sem a translucidez
-        ele viraria um adesivo branco.
-
-        Decoração, e por isso aria-hidden. */}
-    <svg className={s.tagPin} viewBox="0 0 30 42" fill="none" aria-hidden>
-      <defs>
-        {/* ---------- rosa no plástico, aço na agulha ----------
-            O alfinete passou por cobre e por rosé antes de chegar aqui.
-            O rosé tinha um problema de matemática: a rampa cruzava o
-            marrom no meio, e a 2,4px de espessura o olho só vê o
-            meio-tom, então a agulha lia como cobre sujo.
-
-            Agora a cor vai onde ela existe de verdade num percevejo: o
-            PLÁSTICO é colorido e a AGULHA é aço. Separar os dois
-            materiais é o que impede a peça de virar um borrão de uma cor
-            só, e é também o que a faz ler como objeto e não como ícone.
-
-            SOBRE OS 10% DA PALETA: este é o quarto rosa da página, depois
-            do botão, da barra fixa e da faixa diagonal. Continua valendo
-            porque a regra é de ATENÇÃO, não de contagem: o alfinete tem
-            uns 30px, é material de um objeto e não sinal de ação, e o
-            botão segue sendo o único rosa cheio cercado de branco no
-            centro da tela. Se um dia essa conta virar, quem muda é o
-            alfinete, nunca o botão.
-
-            O acrílico fica em `--rosa` a ~66% para continuar translúcido:
-            a borda de tinta do cartão tem que aparecer POR BAIXO dele,
-            que é o que separa plástico de adesivo. */}
-        <linearGradient id="agulhaAco" x1="0" y1="0" x2="1" y2=".3">
-          <stop offset="0" stopColor="#cbd1d5" />
-          <stop offset=".4" stopColor="#7d858a" />
-          <stop offset=".74" stopColor="#b0b7bc" />
-          <stop offset="1" stopColor="#767e83" />
-        </linearGradient>
-        <linearGradient id="colarAco" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stopColor="#d5dade" />
-          <stop offset=".5" stopColor="#828a8f" />
-          <stop offset="1" stopColor="#b6bdc1" />
-        </linearGradient>
-      </defs>
-      {/* A ORDEM DAS PEÇAS, de baixo para cima, é a de um alfinete
-          ESPETADO: sombra de contato, agulha entrando no papel, saia
-          apoiada na superfície, cintura e cabeça virada para quem olha.
-          Na primeira versão a saia estava para cima e a coisa lia como
-          taça de vinho: quando o alfinete está cravado, a parte larga
-          encosta no PAPEL e a cabeça fica do lado de cá. */}
-      <ellipse cx="16.4" cy="38" rx="6" ry="1.8" fill="#00000022" />
-      {/* a agulha some dentro do papel, então a ponta não é desenhada */}
-      <path d="M15.3 27 16.4 38.2" stroke="url(#agulhaAco)" strokeWidth="2.4" strokeLinecap="round" />
-      {/* a saia cônica apoiada no papel */}
-      <path d="M5.8 27.4c0-5.3 4-8 5.8-8.8h6.8c1.8.8 5.8 3.5 5.8 8.8 0 1.9-18.4 1.9-18.4 0Z"
-            fill="#E31B62a8" stroke="#8f0f3d4d" strokeWidth=".9" />
-      {/* a cintura */}
-      <path d="M12.2 12.4h5.6v7h-5.6z" fill="#E31B6294" stroke="#8f0f3d40" strokeWidth=".8" />
-      {/* a cabeça, que é onde o dedo empurra */}
-      <rect x="5.6" y="4.2" width="19" height="9" rx="2.4"
-            fill="#E31B62b8" stroke="#8f0f3d4d" strokeWidth=".9" />
-      {/* o colar de metal aparecendo na junta da agulha com a saia */}
-      <path d="M13.4 27.2h5.4" stroke="url(#colarAco)" strokeWidth="2.6" strokeLinecap="round" />
-      {/* fios de luz na quina de cima à esquerda, a mesma direção de luz
-          do resto da página. Branco puro sobre o rosa translúcido é o que
-          faz o plástico brilhar em vez de parecer pintado. */}
-      <path d="M8 6.4h9.6" stroke="#ffffffcc" strokeWidth="1.6" strokeLinecap="round" />
-      <path d="M9.6 24.4c.4-2.6 1.8-4.4 3-5.4" stroke="#ffffff9e" strokeWidth="1.3" strokeLinecap="round" />
-    </svg>
+  /* com as perguntas embaixo, o "Pedido recebido" vira uma linha com o ✓
+     pequeno ao lado (28/10): grande, ele empurrava a janela para fora da
+     tela do celular */
+  if (enviado) return <div id="hero-form" className={`${s.tag} ${s.tagConfirm}${leadDetalhes ? ` ${s.tagConfirmCurta}` : ""}`} role="status">
+    {/* o alfinete saiu em 28/10, a pedido do Rafael (a anatomia dele está no histórico do git) */}
+    {/* o ✓ que se desenha (28/10): a confirmação no desenho da página, no
+        lugar do título em caixa alta e do mono */}
+    <span className={s.okIcone} aria-hidden><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.5 10 17.5 19 7" /></svg></span>
+    {festa && <Confete />}
     <p className={s.formTitle}>{t.form.okTitulo}<br /><span>{t.form.okSub}</span></p>
     <LojaAchada loja={loja} />
+    {leadDetalhes && <PerguntasDaPrevia id={leadDetalhes.id} whatsapp={leadDetalhes.whatsapp} />}
     {/* o único WhatsApp que sobrou no hero, e só depois do envio: aqui o
         Contact já disparou, então a saída não custa mais conversão nenhuma */}
     <ReabrirCta href={linkWa} rotulo={t.form.okCta} />
   </div>;
   return <form id="hero-form" className={s.tag} onSubmit={submit}>
-    {/* ---------- o alfinete ----------
-        Quarto objeto a ocupar este canto (cordão, fita crepe, clipe,
-        alfinete) e o primeiro que pertence ao mundo da cliente: é com
-        alfinete que se prende etiqueta de preço em peça de roupa. O
-        porquê de cada troca está por extenso em `.tagPin`, no CSS.
-
-        Montado de baixo para cima, na ordem em que a luz o encontra:
-        a sombra de contato onde a agulha entra no papel, a agulha em
-        rosé, a base acrílica translúcida e o fio de luz na quina dela.
-
-        A base é `#ffffff8c`, não branco cheio: é acrílico, então a borda
-        de tinta do cartão tem que aparecer POR BAIXO. Sem a translucidez
-        ele viraria um adesivo branco.
-
-        Decoração, e por isso aria-hidden. */}
-    <svg className={s.tagPin} viewBox="0 0 30 42" fill="none" aria-hidden>
-      <defs>
-        {/* ---------- rosa no plástico, aço na agulha ----------
-            O alfinete passou por cobre e por rosé antes de chegar aqui.
-            O rosé tinha um problema de matemática: a rampa cruzava o
-            marrom no meio, e a 2,4px de espessura o olho só vê o
-            meio-tom, então a agulha lia como cobre sujo.
-
-            Agora a cor vai onde ela existe de verdade num percevejo: o
-            PLÁSTICO é colorido e a AGULHA é aço. Separar os dois
-            materiais é o que impede a peça de virar um borrão de uma cor
-            só, e é também o que a faz ler como objeto e não como ícone.
-
-            SOBRE OS 10% DA PALETA: este é o quarto rosa da página, depois
-            do botão, da barra fixa e da faixa diagonal. Continua valendo
-            porque a regra é de ATENÇÃO, não de contagem: o alfinete tem
-            uns 30px, é material de um objeto e não sinal de ação, e o
-            botão segue sendo o único rosa cheio cercado de branco no
-            centro da tela. Se um dia essa conta virar, quem muda é o
-            alfinete, nunca o botão.
-
-            O acrílico fica em `--rosa` a ~66% para continuar translúcido:
-            a borda de tinta do cartão tem que aparecer POR BAIXO dele,
-            que é o que separa plástico de adesivo. */}
-        <linearGradient id="agulhaAco" x1="0" y1="0" x2="1" y2=".3">
-          <stop offset="0" stopColor="#cbd1d5" />
-          <stop offset=".4" stopColor="#7d858a" />
-          <stop offset=".74" stopColor="#b0b7bc" />
-          <stop offset="1" stopColor="#767e83" />
-        </linearGradient>
-        <linearGradient id="colarAco" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stopColor="#d5dade" />
-          <stop offset=".5" stopColor="#828a8f" />
-          <stop offset="1" stopColor="#b6bdc1" />
-        </linearGradient>
-      </defs>
-      {/* A ORDEM DAS PEÇAS, de baixo para cima, é a de um alfinete
-          ESPETADO: sombra de contato, agulha entrando no papel, saia
-          apoiada na superfície, cintura e cabeça virada para quem olha.
-          Na primeira versão a saia estava para cima e a coisa lia como
-          taça de vinho: quando o alfinete está cravado, a parte larga
-          encosta no PAPEL e a cabeça fica do lado de cá. */}
-      <ellipse cx="16.4" cy="38" rx="6" ry="1.8" fill="#00000022" />
-      {/* a agulha some dentro do papel, então a ponta não é desenhada */}
-      <path d="M15.3 27 16.4 38.2" stroke="url(#agulhaAco)" strokeWidth="2.4" strokeLinecap="round" />
-      {/* a saia cônica apoiada no papel */}
-      <path d="M5.8 27.4c0-5.3 4-8 5.8-8.8h6.8c1.8.8 5.8 3.5 5.8 8.8 0 1.9-18.4 1.9-18.4 0Z"
-            fill="#E31B62a8" stroke="#8f0f3d4d" strokeWidth=".9" />
-      {/* a cintura */}
-      <path d="M12.2 12.4h5.6v7h-5.6z" fill="#E31B6294" stroke="#8f0f3d40" strokeWidth=".8" />
-      {/* a cabeça, que é onde o dedo empurra */}
-      <rect x="5.6" y="4.2" width="19" height="9" rx="2.4"
-            fill="#E31B62b8" stroke="#8f0f3d4d" strokeWidth=".9" />
-      {/* o colar de metal aparecendo na junta da agulha com a saia */}
-      <path d="M13.4 27.2h5.4" stroke="url(#colarAco)" strokeWidth="2.6" strokeLinecap="round" />
-      {/* fios de luz na quina de cima à esquerda, a mesma direção de luz
-          do resto da página. Branco puro sobre o rosa translúcido é o que
-          faz o plástico brilhar em vez de parecer pintado. */}
-      <path d="M8 6.4h9.6" stroke="#ffffffcc" strokeWidth="1.6" strokeLinecap="round" />
-      <path d="M9.6 24.4c.4-2.6 1.8-4.4 3-5.4" stroke="#ffffff9e" strokeWidth="1.3" strokeLinecap="round" />
-    </svg>
+    {/* o alfinete saiu em 28/10, a pedido do Rafael (a anatomia dele está no histórico do git) */}
     {/* ---------- o carimbo ----------
         SEM mês e SEM contagem de vagas de propósito. "AGOSTO" apodrece
         sozinho no dia 1º de setembro, e um número de vagas que não seja
@@ -571,23 +575,7 @@ function HeroForm() {
         já promete, e "MARINGÁ · PR" é o que o Quem Faz já diz.
         `role="img"` + `aria-label`: o leitor de tela anuncia o selo como
         uma coisa só, em vez de soletrar as quatro linhas soltas. */}
-    <svg className={s.tagStamp} viewBox="0 0 100 100" role="img" aria-label={t.etiqueta.selo.aria}>
-      <defs>
-        {/* semicírculo da esquerda para a direita passando POR CIMA
-            (varredura 1 = horário): é o que mantém as letras do arco em
-            pé. Com varredura 0 elas sairiam de cabeça para baixo. */}
-        <path id="seloArcoDoTopo" d="M50 50 m-34.5 0 a34.5 34.5 0 0 1 69 0" fill="none" />
-      </defs>
-      <circle cx="50" cy="50" r="47" fill="none" stroke="currentColor" strokeWidth="2.6" />
-      <circle cx="50" cy="50" r="40.5" fill="none" stroke="currentColor" strokeWidth="1" />
-      <text fontSize="6.6" letterSpacing=".45">
-        <textPath href="#seloArcoDoTopo" startOffset="50%" textAnchor="middle">{t.etiqueta.selo.arco}</textPath>
-      </text>
-      <text x="50" y="48.5" fontSize="14" letterSpacing=".4" textAnchor="middle">{t.etiqueta.selo.l1}</text>
-      <text x="50" y="62.5" fontSize="14" letterSpacing=".4" textAnchor="middle">{t.etiqueta.selo.l2}</text>
-      <line x1="31" y1="69.5" x2="69" y2="69.5" stroke="currentColor" strokeWidth="1" />
-      <text x="50" y="79.5" fontSize="7.2" letterSpacing=".5" textAnchor="middle">{t.etiqueta.selo.rodape}</text>
-    </svg>
+    {/* o carimbo "AGENDA ABERTA" saiu em 28/10, a pedido do Rafael, junto com o alfinete */}
     {/* ---------- a etiqueta parou de ser fatura (23/08) ----------
         O corpo do cartão era a CONTA: R$199 em corpo 48, "+ 4 parcelas de
         R$200,00", "= no total R$999,00". Três linhas amarradas por sinal
@@ -632,7 +620,12 @@ function HeroForm() {
         para o selo, é o que cabe em duas linhas num celular de 390px
         sem virar três. */}
     <p className={s.tagLead}>{t.etiqueta.lead}</p>
-    {/* ---------- o aparte (28/08) ----------
+    {/* ---------- o aparte SAIU (28/10) ----------
+        A pedido do Rafael, na revisão do cartão: "de graça" repetia o
+        "A prévia é por minha conta" do `.tagMicro`, a três linhas dali.
+        O histórico de quando ele quis manter fica abaixo.
+
+        ---------- o aparte (28/08) ----------
         A frase é do Rafael e FICA: ele gosta dela, e ela diz o preço e a
         saída na mesma respiração. O que mudou foi o lugar e o corpo, não o
         conteúdo. No fim de uma linha de prosa de 13,5px ela morria de
@@ -656,7 +649,6 @@ function HeroForm() {
         duas. O trabalho fino de desarmar o dedo continua sendo do
         `.tagMicro`, a uma tela de distância, perto do botão. */}
     <p className={s.tagSub}>{t.etiqueta.sub}</p>
-    <p className={s.tagAparte}>{t.etiqueta.aparte}</p>
     <hr className={s.tagRule} />
     <div className={s.tagCampos}>
       {/* rótulo visível E placeholder, que não é contradição: o rótulo é
@@ -684,7 +676,9 @@ function HeroForm() {
           {emailInvalido && <small className={s.tagErro} role="alert">{t.form.errEmail}</small>}
         </>
         : <>
-          <label><span>{t.form.whatsapp}</span><input name="whatsapp" type="tel" autoComplete="tel" placeholder={t.form.whatsappPh} required maxLength={16}
+          {/* o rótulo virou o símbolo do WhatsApp na cor dele (28/10); o nome
+              do campo passa para o aria-label, senão o leitor de tela fica sem */}
+          <label><span className={s.campoIcone} aria-hidden><IconeWhatsApp /></span><input name="whatsapp" aria-label={t.form.whatsapp} type="tel" autoComplete="tel" placeholder={t.form.whatsappPh} required maxLength={16}
                  onInput={e => { e.currentTarget.value = mascararWhatsapp(e.currentTarget.value); if (telInvalido) setTelInvalido(false); }} /></label>
           {telInvalido && <small className={s.tagErro} role="alert">{t.form.errTel}</small>}
         </>}
@@ -727,7 +721,8 @@ function HeroForm() {
           nenhum para quem ouve a página. O `<span>` fica `aria-hidden`
           para o leitor de tela não anunciar o símbolo duas vezes. */}
       <label>
-        <span aria-hidden>@</span>
+        {/* o @ virou o símbolo do Instagram no degradê dele (28/10) */}
+        <span className={s.campoIcone} aria-hidden><IconeInstagram id="insta-degrade-campo" /></span>
         <input name="instagram" aria-label={t.etiqueta.instaAria} autoCapitalize="off" autoCorrect="off" spellCheck={false} required placeholder={t.etiqueta.instaPh}
                onInput={e => { e.currentTarget.value = e.currentTarget.value.replace(/^\s*(?:https?:\/\/)?(?:www\.)?instagram\.com\//i, "").replace(/[@\s]/g, "").replace(/\/.*$/, ""); if (instaInvalido) setInstaInvalido(""); if (instaDiag) setInstaDiag(null); }} />
         {/* o "opcional" saiu em 26/08: o cartão logo acima passou a
@@ -752,7 +747,7 @@ function HeroForm() {
         diz quem faz, em que ordem e quando.
         A manchete virou pergunta e perdeu o imperativo; o botão é onde
         ele volta, agora na voz de quem clica. */}
-    <button className={`${s.button} ${s.acao}`} disabled={enviando}>{enviando ? t.form.enviando : t.form.enviar}</button>
+    <button className={`${s.button} ${s.acao}`} disabled={enviando}>{enviando ? t.etiqueta.enviando : t.etiqueta.enviar}</button>
     {linkWa
       ? <Pendente href={linkWa} />
       : <small className={s.tagMicro}>
@@ -813,15 +808,57 @@ function HeroForm() {
    pediu de volta para perto do aparelho: o balão só faz sentido saindo
    da tela da loja.) Decorativo para leitor de tela: a frase já está no
    lead. */
-function Pedido({ className }: { className?: string }) {
+export function Pedido({ className }: { className?: string }) {
   const t = useVit();
+  /* desde 28/10 é uma NOTIFICAÇÃO do WhatsApp, como a do celular: o ícone
+     do app, o título e a hora numa linha, a mensagem embaixo. Era um balão
+     de borda preta e sombra dura, a gramática de carimbo que a página largou */
   return <div className={`${s.pedido} ${className ?? ""}`} aria-hidden>
-    <span className={s.pedidoK}>{t.hero.pedido.k}</span>
+    <span className={s.pedidoTopo}><IconeWhatsApp size={20} /><span className={s.pedidoK}>{t.hero.pedido.k}</span><i>{t.hero.pedido.hora}</i></span>
     <p>{t.hero.pedido.texto}</p>
-    <i>{t.hero.pedido.hora}</i>
   </div>;
 }
 
+/* ---------- a manchete que aparece letra por letra (28/10/2026) ----------
+   A animação da velvetica.studio, pedida pelo Rafael: cada letra nasce
+   desfocada e transparente e fica nítida, uma depois da outra, e o resto da
+   frase espera escondido no desfoque. Lá é GSAP com SplitType; aqui a quebra
+   é feita NO RENDER (o HTML do servidor já sai em letras) e a animação é
+   CSS puro, então não depende de JavaScript para começar nem pisca.
+   Cada palavra é um bloco que não quebra, para a linha nunca partir no
+   meio de uma palavra. O <em> (a batida verde) é preservado: a quebra entra
+   nos filhos dele. O índice da letra vai em --i e vira o atraso no CSS. */
+export function textoDe(n: React.ReactNode): string {
+  if (typeof n === "string" || typeof n === "number") return String(n);
+  if (Array.isArray(n)) return n.map(textoDe).join("");
+  if (isValidElement<{ children?: React.ReactNode }>(n)) return textoDe(n.props.children);
+  return "";
+}
+export function letraALetra(n: React.ReactNode, cont = { i: 0 }): React.ReactNode {
+  if (typeof n === "string") {
+    return n.split(/(\s+)/).map((pedaco, k) => /^\s+$/.test(pedaco) || !pedaco ? pedaco
+      : <span key={k} className={s.palavra}>{[...pedaco].map((letra, j) =>
+          <span key={j} className={s.letra} style={{ "--i": cont.i++ } as React.CSSProperties}>{letra}</span>)}</span>);
+  }
+  if (Array.isArray(n)) return n.map((x, k) => <span key={k} style={{ display: "contents" }}>{letraALetra(x, cont)}</span>);
+  if (isValidElement<{ children?: React.ReactNode }>(n)) return cloneElement(n, undefined, letraALetra(n.props.children, cont));
+  return n;
+}
+
+/* as logos das lojas no ar, no hero: [arquivo em /assets/lojas, largura a 56px de altura] */
+export const LOJAS_DA_FAIXA: [string, number][] = [["iconic", 188], ["japa", 316], ["arena", 91], ["sneakerspot", 201], ["jk", 94], ["fulltime", 85], ["mm", 54], ["fardo", 191]];
+/* o site de cada loja (28/10, pedido do Rafael): todos abertos com curl no
+   mesmo dia, o domínio próprio quando a loja tem. A JK fica SEM link: o
+   jkimports.vercel.app cai em "Pagamento pendente" (o saldo em aberto), e
+   mandar um visitante para lá seria mostrar a loja bloqueada. Quando ela
+   quitar, é só pôr o endereço aqui. */
+export const LOJAS_LINKS: Record<string, string> = {
+  iconic: "https://iconicsneakers.com.br", japa: "https://www.japamodasurf.com.br",
+  arena: "https://www.arenaimportsfloripa.com", sneakerspot: "https://sneakerspotbr.com.br",
+  fulltime: "https://fulltimeskateboards.com.br", mm: "https://mm-calcados.vercel.app",
+  fardo: "https://fardoesportes.com.br",
+};
+export const LOJAS_NOMES: Record<string, string> = { iconic: "Iconic Sneakers", japa: "Japa Modas", arena: "Arena Imports", sneakerspot: "SneakerSpot", jk: "JK Imports", fulltime: "Full Time Skateboards", mm: "M&M Calçados", fardo: "Fardo Esportes" };
 export function Hero() {
   const t = useVit();
   return <section className={s.hero} id="topo">
@@ -835,7 +872,9 @@ export function Hero() {
             úteis de uma tela de 390px. O rabo "· SEUS PRODUTOS EM UM
             LINK SÓ" saiu por estourar exatamente esse limite, então aqui
             não entra mais nada sem sair outra coisa. */}
-        <Eyebrow>{t.hero.eyebrow}</Eyebrow>
+        {/* a etiqueta virou selo claro (28/10): o símbolo do Instagram na frente,
+            a frase em caixa de frase; era bloco preto em mono, torto */}
+        <p className={`${s.eyebrow} ${s.seloHero}`}><IconeInstagram id="insta-degrade-selo" size={16} />{t.hero.eyebrow}</p>
         {/* ---------- a manchete virou a OFERTA (26/08) ----------
             Aqui morava a pergunta do direct ("quantas vendas você perdeu
             essa semana"), que era o hook H01 do lote 01 palavra por
@@ -868,7 +907,8 @@ export function Hero() {
             página como o lugar em que ela clicou. E anotar a data no doc
             do lote (docs/matriz-anuncios-vitrine.md), senão o CPL de
             antes e o de depois viram a mesma média. */}
-        <h1>{t.hero.h1}</h1>
+        {/* a frase nítida para o leitor de tela; a quebrada em letras, só visual */}
+        <h1><span className={s.soLeitor}>{textoDe(t.hero.h1)}</span><span aria-hidden>{letraALetra(t.hero.h1)}</span></h1>
         {/* encurtado em 13/08: a versão anterior tinha 27 palavras e ocupava
             cinco linhas num celular de 390px, empurrando a etiqueta para
             fora da dobra. Depois caiu de três linhas para DUAS, para
@@ -903,35 +943,184 @@ export function Hero() {
             da etiqueta e na oferta; aqui seriam a terceira repetição.
             8 repetições e percurso de -50% no keyframe: a trilha precisa
             conter o conteúdo DUAS vezes para o laço fechar sem emenda. */}
-        <div className={s.heroBand} aria-hidden>
-          <div className={s.heroBandTrack}>
-            {Array.from({ length: 8 }, (_, i) => <span key={i}>{t.hero.faixa}</span>)}
-          </div>
-        </div>
+        {/* a faixa rosa saiu do hero em 28/10: virou a fileira de logos
+            logo abaixo do formulário (ver `.logosLojas`) */}
         {/* ---------- uma porta só (13/08) ----------
             Aqui ficavam duas portas lado a lado, a segunda abrindo o
             WhatsApp, mais a linha de preço e a faixa de prova soltas. Agora
             é a etiqueta e nada mais: o preço virou o corpo dela, a prova
             virou o canhoto, e a porta que ninguém atravessava saiu. O
             porquê em números está na nota no topo deste arquivo. */}
-        <HeroForm />
-      </div>
-      <div className={s.heroVisual}>
-        <div className={s.phoneWrap}>
-          <div className={s.phone} role="img" aria-label={t.hero.phoneAria}>
-            <VitrineDemo />
-          </div>
-          {/* o chip colado na base do aparelho: a bolinha marca que a loja
-              está no ar, o nome diz de quem é, e o rótulo leva para a seção
-              com os projetos de clientes */}
-          <Pedido />
-          <a className={s.liveTag} href="#projetos" data-cta="hero_projetos" data-cta-dest="projetos">
-            <i aria-hidden /> {t.hero.liveTag}
-          </a>
+        {/* ---------- dois botões no lugar do formulário (28/10/2026) ----------
+            A estrutura do mobbin.com, pedida pelo Rafael: título, texto, um
+            botão cheio e um contornado, as logos e o site grande. O formulário
+            saiu da primeira tela e abre num modal por cima (ver o <dialog>
+            no fim do Hero). Custo conhecido: um toque a mais antes do
+            formulário, que é o Contact da campanha. Se o Contact cair, é o
+            primeiro suspeito. */}
+        <div className={s.heroAcoes}>
+          <a className={`${s.button} ${s.acao}`} href="#hero-form" data-cta="hero_abrir" data-cta-dest="form">{t.hero.cta}</a>
+          <a className={`${s.button} ${s.outline}`} href="#projetos" data-cta="hero_lojas" data-cta-dest="projetos">{t.hero.cta2}</a>
         </div>
+        {/* ---------- as lojas que já estão no ar (28/10/2026) ----------
+            Pedido do Rafael, no molde do "Trusted by" de site de produto:
+            uma legenda pequena e as logos em cinza, paradas, sobre o branco.
+            SÓ quem fechou: Arena, Iconic, Japa, JK, SneakerSpot, Full Time
+            (conferidas no cofre) e M&M e Fardo (confirmadas por ele). Amostra
+            que não virou cliente aqui seria prova falsa.
+            Os arquivos são as logos reais de cada vitrine tingidas pelo alfa
+            (a da Japa é o nome recortado do selo, que tem onda, sol e
+            telefone); o cinza sai do CSS, então o mesmo arquivo serve claro
+            e escuro. A legenda diz "no ar", não "vendem": venda não medi. */}
+        <div className={s.logosLojas}>
+          <p>{t.hero.lojas}</p>
+          {/* no celular a fileira roda numa linha só (28/10, pedido do Rafael:
+              "não quero 2 linhas"); a segunda volta (`copia`) só existe para o
+              laço não ter emenda, some no desktop e fica fora do leitor de tela */}
+          <div>
+            {[0, 1].flatMap(copia => LOJAS_DA_FAIXA.map(([k, w]) => {
+              /* eslint-disable-next-line @next/next/no-img-element */
+              const logo = <img src={`/assets/lojas/${k}-branca.webp`} width={w} height={56} alt={copia ? "" : LOJAS_NOMES[k]} loading="lazy" decoding="async" />;
+              const extra = copia ? { className: s.logosCopia, "aria-hidden": true, tabIndex: -1 } : {};
+              return LOJAS_LINKS[k]
+                ? <a key={`${copia}-${k}`} href={LOJAS_LINKS[k]} target="_blank" rel="noopener" data-cta={`hero_logo_${k}`} data-cta-dest="loja" {...extra}>{logo}</a>
+                : <span key={`${copia}-${k}`} {...extra}>{logo}</span>;
+            }))}
+          </div>
+        </div>
+        {/* a seta que pede a rolagem (28/10): fina, cinza, descendo e voltando
+            devagar. É link para a moldura logo abaixo, então também serve de
+            atalho; parada para quem pede menos movimento */}
+        <a className={s.setaRolar} href="#vitrine-no-ar" aria-label={t.hero.rolar} data-cta="hero_seta" data-cta-dest="vitrine">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M6 9l6 6 6-6" /></svg>
+        </a>
       </div>
     </div>
+    {/* ---------- a moldura grande no lugar do celular (28/10/2026) ----------
+        Pedido do Rafael, com a velvetica.studio de referência: título e
+        texto centrados, e o site inteiro numa moldura larga logo abaixo.
+        O formulário NÃO desceu para depois dela (escolha dele, o híbrido):
+        ele é o Contact da campanha e continua na primeira tela.
+        A moldura é o mesmo navegador dos projetos (barra, pontos, NO AR e a
+        página rolando por pageScroll); no celular ela troca a captura de
+        desktop pela de celular, que a 350px é a única que se lê.
+        Lazy e com prioridade baixa: fica abaixo do formulário, e a primeira
+        pintura continua sendo o texto. */}
+    {/* ---------- a cena em volta da moldura (28/10/2026) ----------
+        A velvetica.studio de novo, pedida pelo Rafael: o site fica numa
+        paisagem, com morros atrás e uma colina na frente cobrindo a base, e
+        ao rolar ele sobe de trás da colina. Lá é foto 3D de folhagem; aqui é
+        SVG em esmeralda, minimalista: leve, nítido em qualquer largura e sem
+        mais uma imagem pesada na primeira tela. As camadas são só desenho
+        (aria-hidden); o movimento está no CSS (.cena). */}
+    <div className={s.cena}>
+    <CenaFundo />
+    <div className={s.moldura} id="vitrine-no-ar">
+      <div className={s.molduraTela} role="img" aria-label={t.hero.phoneAria}>
+        <div className={s.browserBar}>
+          <span className={s.dots} aria-hidden><i /><i /><i /></span>
+          <span className={s.urlChip}>iconicsneakers.com.br</span>
+          <span className={s.live}><i aria-hidden /> {t.projetos.live}</span>
+        </div>
+        <div className={s.molduraCover}>
+          <picture>
+            <source media="(max-width: 720px)" type="image/avif" srcSet="/assets/demo/iconic-vitrine.avif" />
+            <source media="(max-width: 720px)" type="image/webp" srcSet="/assets/demo/iconic-vitrine.webp" />
+            {/* a de 1100px desde 28/10: a moldura mostra no máximo 1040px, e a de
+                1440 custava 368KB na primeira tela do desktop */}
+            <source type="image/avif" sizes="min(1040px, 72vw)" srcSet="/assets/case-iconic-desk-1100.avif 1100w, /assets/case-iconic-desk.avif 1440w" />
+            <source type="image/webp" sizes="min(1040px, 72vw)" srcSet="/assets/case-iconic-desk-1100.webp 1100w, /assets/case-iconic-desk.webp 1440w" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className={s.molduraShot} src="/assets/case-iconic-desk.jpg" width={1440} height={6470} alt="" loading="lazy" decoding="async" fetchPriority="low" />
+          </picture>
+        </div>
+      </div>
+      <Pedido />
+      <a className={s.liveTag} href="#projetos" data-cta="hero_projetos" data-cta-dest="projetos">
+        <i aria-hidden /> {t.hero.liveTag}
+      </a>
+    </div>
+    <CenaFrente />
+    </div>
+    <ModalDoFormulario />
   </section>;
+}
+
+/* as duas camadas da paisagem, geradas pelo Rafael em 28/10 (eram SVG):
+   o fundo, morros esmeralda na névoa com o céu branco em cima (o céu é o
+   branco da página, então a cena não tem borda); e a frente, a colina de
+   musgo com o topo transparente e a base no grafite #14181A do Quem Faz.
+   O halo verde-limão da crista, sobra do recorte do gerador, foi limpo
+   antes de converter. Arquivos em /assets/cena, AVIF e WebP em dois tamanhos.
+   Lazy: a cena só espia na primeira tela, e o texto pinta antes.
+   À tarde o Rafael trocou pela versão noturna (noite-*): morros escuros sob
+   céu verde-acinzentado e a vegetação em U, que abraça o site pelos lados.
+   A versão clara (morros.*, colina.*) continua em /assets/cena.
+   No celular (28/10, ainda): duas imagens próprias, geradas pelo Rafael em
+   1300x1210, quase quadradas, porque a colina larga mostrava só o meio do U
+   numa tela de 360 e os matinhos viravam uma tira escura. O `sizes` de 55vw
+   é de propósito (28/10): numa tela de 3x ele faz o celular escolher a de
+   760px e não a de 1300px, que custava 160KB a mais num fundo decorativo.
+   Entram pelo
+   `media` do <picture>; o desktop segue com as de cima. */
+function CenaFundo() {
+  return <picture className={s.cenaFundo} aria-hidden>
+    <source media="(max-width: 720px)" type="image/avif" sizes="(max-width: 720px) 55vw" srcSet="/assets/cena/noite-morros-celular-760.avif 760w, /assets/cena/noite-morros-celular.avif 1300w" />
+    <source media="(max-width: 720px)" type="image/webp" sizes="(max-width: 720px) 55vw" srcSet="/assets/cena/noite-morros-celular-760.webp 760w, /assets/cena/noite-morros-celular.webp 1300w" />
+    <source type="image/avif" sizes="100vw" srcSet="/assets/cena/noite-morros-900.avif 900w, /assets/cena/noite-morros.avif 1672w" />
+    <source type="image/webp" sizes="100vw" srcSet="/assets/cena/noite-morros-900.webp 900w, /assets/cena/noite-morros.webp 1672w" />
+    {/* eslint-disable-next-line @next/next/no-img-element */}
+    {/* sem lazy desde 28/10: medido em produção, os morros são o maior elemento da
+        primeira tela (o LCP), no celular e no desktop, e o lazy os deixava
+        para depois; a versão do celular tem 27KB */}
+    <img src="/assets/cena/noite-morros.webp" width={1672} height={941} alt="" decoding="async" />
+  </picture>;
+}
+function CenaFrente() {
+  return <picture className={s.cenaFrente} aria-hidden>
+    <source media="(max-width: 720px)" type="image/avif" sizes="(max-width: 720px) 55vw" srcSet="/assets/cena/noite-colina-celular-760.avif 760w, /assets/cena/noite-colina-celular.avif 1300w" />
+    <source media="(max-width: 720px)" type="image/webp" sizes="(max-width: 720px) 55vw" srcSet="/assets/cena/noite-colina-celular-760.webp 760w, /assets/cena/noite-colina-celular.webp 1300w" />
+    <source type="image/avif" sizes="max(100vw, 900px)" srcSet="/assets/cena/noite-colina-1086.avif 1086w, /assets/cena/noite-colina.avif 2172w" />
+    <source type="image/webp" sizes="max(100vw, 900px)" srcSet="/assets/cena/noite-colina-1086.webp 1086w, /assets/cena/noite-colina.webp 2172w" />
+    {/* eslint-disable-next-line @next/next/no-img-element */}
+    <img src="/assets/cena/noite-colina.webp" width={2172} height={724} alt="" loading="lazy" decoding="async" />
+  </picture>;
+}
+
+/* ---------- o formulário num modal (28/10/2026) ----------
+   O mesmo HeroForm de antes (WhatsApp e @, o Contact da campanha), dentro de
+   um <dialog> nativo: Esc fecha, o foco fica preso nele e o leitor de tela o
+   anuncia como diálogo, sem biblioteca.
+   Quem abre: todo link para #hero-form (o botão do hero, o CTA da pílula do
+   topo e o do Quem Faz). O clique é interceptado na CAPTURA e só leva
+   preventDefault, nunca stopPropagation: o ClickCTA do tracking escuta o
+   mesmo clique no document e precisa recebê-lo.
+   O foco vai para o campo do WhatsApp por focarSemContar: abrir o modal não
+   pode contar como "começou a preencher".
+   O #contratar (o formulário da oferta, mais abaixo) continua onde está. */
+function ModalDoFormulario() {
+  const t = useVit();
+  const ref = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const abrir = (e: MouseEvent) => {
+      const a = (e.target as HTMLElement)?.closest?.('a[href="#hero-form"]');
+      if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+      e.preventDefault();
+      const d = ref.current;
+      if (!d || d.open) return;
+      d.showModal();
+      focarSemContar(d.querySelector("input"));
+    };
+    document.addEventListener("click", abrir, true);
+    return () => document.removeEventListener("click", abrir, true);
+  }, []);
+  return <dialog ref={ref} className={s.modalForm} aria-label={t.hero.modalAria}
+    onClick={e => { if (e.target === e.currentTarget) e.currentTarget.close(); }}>
+    <button type="button" className={s.modalFechar} aria-label={t.hero.modalFechar} onClick={() => ref.current?.close()}>
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden><path d="M6 6l12 12M18 6L6 18" /></svg>
+    </button>
+    <HeroForm />
+  </dialog>;
 }
 
 /* ---------- quem faz (07/08) ----------
@@ -951,21 +1140,19 @@ export function QuemFaz() {
   const t = useVit();
   return <section className={s.quem}>
     <div className={s.quemPhoto}>
-      {/* Foto trocada em 13/08 a pedido do Rafael. O arquivo continua P&B
-          puro (gerado por `node scripts/foto-quemfaz.mjs <caminho>`, que
-          faz resize para 1100px + grayscale): o duotone grafite/papel é
-          feito em CSS pelo `.quemPhoto`, e é isso que permite trocar a
-          paleta da página sem regerar o asset.
-          GOTCHA ao trocar a imagem: o nome do arquivo não muda, então o
-          otimizador do Next continua servindo a versão antiga do cache.
-          Apagar `.next/cache/images` depois de rodar o script. */}
+      {/* A foto voltou a ser COLORIDA em 28/10, a pedido do Rafael: a
+          mesma da neve, sem o grayscale e sem o duotone do `.quemShot`.
+          Arquivo novo (`rafael-quemfaz-cor.webp`) e não o
+          `rafael-quemfaz.jpg`, que segue P&B na /e-commerce; o nome novo
+          também fura o cache do otimizador do Next, que serve a versão
+          antiga quando o arquivo é trocado com o mesmo nome. */}
       {/* `.quemShot` é a janela do impresso e NÃO é embrulho decorativo:
           ela dá à foto um fundo grafite próprio. Sem ele, o pedaço do
           retrato que sobe por cima da borda da seção ficaria sobre papel,
           e o `mix-blend-mode: screen` do duotone estouraria ali em branco.
           Ver a nota longa em `.quem`, no CSS. */}
       <div className={s.quemShot}>
-        <Image src="/assets/rafael-quemfaz.jpg" fill sizes="(max-width: 900px) 92vw, 34vw" alt={t.quem.alt} />
+        <Image src="/assets/rafael-quemfaz-cor.webp" fill sizes="(max-width: 900px) 92vw, 34vw" alt={t.quem.alt} />
       </div>
       {/* fora da janela e dentro da margem do impresso: era uma linha
           vertical branca por cima da imagem, e com a foto de neve virou
@@ -1021,7 +1208,7 @@ export function QuemFaz() {
           Ela também é o corpo C1 dos anúncios ("a vitrine da Sölo Urb
           rolando do topo ao rodapé"), então quem chega por um C1 precisa
           reencontrar o nome dentro da página. */}
-      <p>{preencher(t.quem.p2, { n: NO_AR - 3 })}</p>
+      <p>{preencher(t.quem.p2, { n: NO_AR - 2 })}</p>
       {/* AQUI NÃO ENTRA UMA LINHA DE DEFESA. Existiu por meia hora um
           terceiro parágrafo respondendo "uma pessoa só dá conta?" com o
           prazo e a condição de pagamento, e o Rafael cortou.
@@ -1311,8 +1498,13 @@ export function HowItWorks() {
 /* o que não traduz (capturas, endereços, nomes, ids de CTA) fica aqui; o
    texto de cada card está em t.projetos.itens, na mesma ordem */
 const projects = [
-  { img: "/assets/case-xavier-desk.jpg", w: 1440, h: 8965, dur: "36s", url: "https://xavier-s-sports.vercel.app/", dom: "xavier-s-sports.vercel.app", name: "XAVIER'S SPORTS", ctaId: "case_xavier" },
-  { img: "/assets/case-prgrife-desk.jpg", w: 1440, h: 5559, dur: "22s", url: "https://pr-grife.vercel.app/", dom: "pr-grife.vercel.app", name: "PR GRIFE", ctaId: "case_prgrife" },
+  /* a Iconic entrou no lugar da Xavier's em 28/10, a pedido do Rafael: loja
+     paga, entregue e no domínio dela. Captura de iconicsneakers.com.br a
+     1440px, derivados pelo scripts/webp-assets.mjs */
+  { img: "/assets/case-iconic-desk.jpg", w: 1440, h: 6470, dur: "26s", url: "https://iconicsneakers.com.br/", dom: "iconicsneakers.com.br", name: "ICONIC SNEAKERS", ctaId: "case_iconic" },
+  /* e a Japa Modas no lugar da PR Grife, no mesmo dia: a loja dos criativos
+     do lote 13, no domínio dela. 12.483px a ~250px/s dão os 50s */
+  { img: "/assets/case-japa-desk.jpg", w: 1440, h: 12483, dur: "50s", url: "https://www.japamodasurf.com.br/", dom: "japamodasurf.com.br", name: "JAPA MODAS", ctaId: "case_japa" },
 ];
 export function Projects() {
   const t = useVit();
@@ -1561,7 +1753,13 @@ export function Offer() {
   const [emailInvalido, setEmailInvalido] = useState(false);
   const envioSuspeito = useGuardaDeFormulario();
   const formRef = useRef<HTMLFormElement>(null);
-  /* ---------- a entrada caiu de R$500 para R$199 (20/08) ----------
+  /* ---------- a entrada voltou para R$500, os 50% (28/10/2026) ----------
+     Decisão do Rafael, com o histórico abaixo à vista: o argumento de
+     20/08 era que R$500 espera o fim do mês e o lead esfria ali. Se o
+     Contact ou o fechamento caírem depois desta troca, é o primeiro
+     suspeito. Os números moram em lib/oferta.ts.
+
+     ---------- a entrada caiu de R$500 para R$199 (20/08) ----------
      O TOTAL NÃO MUDOU, e não é para mudar: R$999 é o número que separa
      esta página de agência, e "sem mensalidade" é o argumento mais
      repetido do site (canhoto da etiqueta, cabeçalho do card, FAQ), então
@@ -1917,99 +2115,28 @@ export function Process() {
   </section>;
 }
 
-/* ============================================================
-   A MANCHETE DESTA SEÇÃO CONTA OS "NÃO" DAQUI DE DENTRO.
-
-   Ela diz "três destas respostas começam com não", e hoje são
-   exatamente três: pagamento (1ª), mensalidade (3ª) e pagar tudo
-   antes (6ª). Quem lê confere em dez segundos, que é o motivo de a
-   frase funcionar, e seria também o motivo de ela ser perigosa.
-
-   POR ISSO O NÚMERO NÃO ESTÁ ESCRITO NA MANCHETE: ele é contado
-   desta lista a cada render, por `NAOS_DA_FAQ` logo abaixo. Item
-   novo que comece com "Não", ou item que saia, e a manchete se
-   corrige sozinha, incluindo a concordância do verbo.
-
-   Esse tipo de conta já quebrou uma vez nesta página: o Quem Faz
-   dizia "as duas lojas desta página e os outros sete projetos"
-   depois que uma terceira loja entrou no hero, e a soma passou a
-   dar dez num portfólio de nove. Aquela ficou de manutenção manual
-   porque as peças moram em quatro lugares diferentes; esta não
-   precisa, porque a lista está aqui do lado.
-   ============================================================ */
-/* As perguntas moram no dicionário (t.faq.itens), com `nao: true` nas que
-   começam com "Não.": é essa marca que a manchete conta, nos dois idiomas.
-   Duas notas de copy que ficam com a lista:
-   • "Quantos produtos": a resposta dizia "Novos cadastros podem ser combinados depois", e
-     "combinados" quer dizer contratados de novo: ela transformava o limite
-     de 20 num teto pago, que é a leitura mais cara possível para uma loja
-     de semijoia com 200 SKUs. O que acontece de verdade é o contrário, e
-     já está provado duas seções à frente, na `Panel`: o cadastro é do
-     painel e não é serviço. O limite dos 20 é do MEU trabalho de cadastrar,
-     não da vitrine.
-   • "Por que R$999": quem pediu orçamento de agência ouviu R$4 mil ou R$8 mil, e preço
-     muito abaixo do mercado não tranquiliza, assusta: a pergunta que fica
-     é "o que vem faltando aí?". A resposta não defende o preço com
-     adjetivo, ela mostra a conta de onde ele sai. */
-/* ---------- a manchete que conta, por idioma ----------
-   Por extenso porque é manchete: numeral em algarismo no meio de uma frase
-   em caixa alta lê como preço, não como quantidade. A lista `numeros` do
-   dicionário precisa ter uma posição a mais que o número de itens da FAQ,
-   porque o índice 0 existe e nunca é usado.
-   O singular e o plural são duas frases inteiras no dicionário (a
-   concordância muda de jeito diferente em cada língua), e a quebra de
-   linha fica entre as duas metades, como sempre ficou. */
-function FaqManchete({ n }: { n: number }) {
-  const t = useVit();
-  const m = t.faq.manchete;
-  const l1 = n > 1 ? preencher(m.variosL1, { n: t.faq.numeros[n] ?? String(n) }) : m.umL1;
-  const l2 = n > 1 ? m.variosL2 : m.umL2;
-  return <h2 className={s.h2Duplo}>{l1}<br />{l2} <em>{m.fim}</em></h2>;
-}
+/* ---------- o FAQ em duas colunas (28/10, pedido do Rafael) ----------
+   A manchete que contava os "não" ("Três destas respostas começam com não")
+   pedia conta para ser entendida, e as etiquetas em caixinha mono liam como
+   carimbo; saíram as duas, e o "Não." continua no começo de cada resposta,
+   que é onde convence. À esquerda o título e a saída para o WhatsApp (presa
+   enquanto a lista rola); à direita a lista, em corpo menor. A resposta
+   abre deslizando e o + gira para virar x. As perguntas moram no
+   dicionário (t.faq.itens); o campo `nao` ficou sem uso. */
 export function FAQ() {
   const t = useVit();
-  const faq = t.faq.itens;
-  const NAOS_DA_FAQ = faq.filter(i => i.nao).length;
-  return <section className={s.section} id="faq">
-    <div className={s.wrap}>
-      {/* eram dois rótulos empilhados ("DÚVIDAS FREQUENTES" e "Antes de
-          contratar."), nenhum dos dois dizendo nada. O rótulo desceu para
-          o eyebrow, que é o lugar de rótulo, e a manchete passou a fazer
-          trabalho: ela conta os "não" da lista logo abaixo.
-          Por que contar os "não" é o melhor argumento disponível aqui:
-          numa página que promete o tempo todo, esta é a única dobra onde
-          o que aparece são os LIMITES do que se compra, e dizê-los antes
-          de a pessoa perguntar é a prova mais barata de que o resto é
-          verdade. De quebra, número que dá para conferir faz abrir os
-          acordeões, que é exatamente o que uma FAQ fechada precisa.
-          A contagem tem manutenção: ver a nota grande junto da lista. */}
-      <Eyebrow>{t.faq.eyebrow}</Eyebrow>
-      <FaqManchete n={NAOS_DA_FAQ} />
-      {/* ---------- a manchete passou a ser conferível na hora ----------
-          Ela promete que três respostas começam com "não", e até 13/08 a
-          única forma de verificar isso era abrir os seis acordeões. Numa
-          página cujo argumento inteiro é fato conferível, deixar a própria
-          manchete precisando de seis cliques para se provar era o pior
-          lugar possível para esconder uma informação.
-
-          Agora a etiqueta marca quais são, e ela sai do MESMO teste que
-          conta o número na manchete (`resposta.startsWith("Não.")`), não
-          de uma lista escrita à mão. Reescrever uma resposta para começar
-          com "não", ou tirar o "não" de outra, muda a contagem e as
-          etiquetas juntas. Duas fontes de verdade aqui viravam um erro
-          silencioso na primeira revisão de copy.
-
-          E o argumento não se perde por ser revelado: quem lê já sabia
-          que existem três, a etiqueta só diz ONDE. O que ela ganha é
-          quem passa batido pela dobra sem abrir nada, que é a maioria. */}
-      <div className={s.faq}>{faq.map(({ p: pergunta, r: resposta, nao }) => <details key={pergunta}>
-        <summary>
-          <span className={s.faqPergunta}>
-            {pergunta}
-            {nao && <i className={s.faqNao}>{t.faq.etiqueta}</i>}
-          </span>
-        </summary>
-        <p>{resposta}</p>
+  const lang = useLang();
+  const d = t.faq.duvida;
+  const ajuda = lang === "en" ? linkEmail(d.msg) : linkWhatsApp(d.msg);
+  return <section className={`${s.section} ${s.faqSecao}`} id="faq">
+    <div className={s.faqGrade}>
+      <div className={s.faqLado}>
+        <h2>{t.faq.titulo}</h2>
+        <p>{d.texto} <a href={ajuda} target={lang === "en" ? undefined : "_blank"} rel="noopener" data-cta="faq_duvida" data-cta-dest={lang === "en" ? "email" : "whatsapp"}>{d.link}</a></p>
+      </div>
+      <div className={`${s.faq} ${s.faqLista}`}>{t.faq.itens.map(({ p: pergunta, r: resposta }) => <details key={pergunta}>
+        <summary><span className={s.faqPergunta}>{pergunta}</span></summary>
+        <div className={s.faqResposta}><p>{resposta}</p></div>
       </details>)}</div>
     </div>
   </section>;
@@ -2087,11 +2214,19 @@ export function MobileBar() {
     const end = document.getElementById("fim");
     let focused = false, inOffer = false, inEnd = false, cedo = true;
     const update = () => setHidden(focused || inOffer || inEnd || cedo);
+    /* desde 28/10 a pílula entra quando o botão do hero passa para cima da
+       tela, a mesma regra do botão do topo no desktop (`useCtaDoTopo`): os
+       dois juntos na primeira tela disputariam o olho com a mesma frase.
+       Sem o botão do hero, vale a regra antiga das 0,85 telas. */
+    const ctaHero = document.querySelector('[data-cta="hero_abrir"]');
+    const heroIO = ctaHero && new IntersectionObserver(([x]) => { cedo = x.isIntersecting || x.boundingClientRect.top > 0; update(); });
+    if (ctaHero && heroIO) heroIO.observe(ctaHero);
     const onFocus = (e: FocusEvent) => { focused = !!(e.target as HTMLElement)?.closest?.("form"); update(); };
     const onBlur = () => { focused = false; update(); };
     document.addEventListener("focusin", onFocus);
     document.addEventListener("focusout", onBlur);
     const medir = () => {
+      if (ctaHero) return;
       const passou = window.scrollY > window.innerHeight * ROLAGEM_PARA_BARRA;
       if (passou !== cedo) return;   // cedo é o inverso de passou: nada mudou
       cedo = !passou;
@@ -2104,7 +2239,7 @@ export function MobileBar() {
     if (offer && offerIO) offerIO.observe(offer);
     const endIO = end && new IntersectionObserver(([x]) => { inEnd = x.isIntersecting; update(); }, { rootMargin: "-10% 0px" });
     if (end && endIO) endIO.observe(end);
-    return () => { document.removeEventListener("focusin", onFocus); document.removeEventListener("focusout", onBlur); window.removeEventListener("scroll", medir); window.removeEventListener("resize", medir); offerIO?.disconnect(); endIO?.disconnect(); };
+    return () => { document.removeEventListener("focusin", onFocus); document.removeEventListener("focusout", onBlur); window.removeEventListener("scroll", medir); window.removeEventListener("resize", medir); offerIO?.disconnect(); endIO?.disconnect(); heroIO?.disconnect(); };
   }, []);
   /* a barra passa a levar o preço no lugar do prazo: ela é a única peça que
      acompanha a pessoa a página inteira, e "pronta em 7 dias" já é um dos
@@ -2118,12 +2253,14 @@ export function MobileBar() {
 
      Rosa porque é a terceira e última superfície dos 10% da paleta: sobre
      grafite, é a única coisa desta barra que o olho precisa achar. */
+  /* ---------- só a pílula, flutuando (28/10, pedido do Rafael) ----------
+     A faixa com "GRÁTIS / Sua vitrine criada" (e depois "Prévia em 24h / sem
+     custo") dividia o olho em duas metades, e o texto pequeno repetia o que
+     a página já disse. Agora é só o botão, na largura da tela, solto acima
+     da borda; o equivalente no celular do botão do topo, que some ali. */
   return <div className={`${s.bar} ${hidden ? s.barHidden : ""}`}>
-    {/* em 26/08 o preço saiu daqui: a barra é a única peça que acompanha
-        a pessoa a página inteira, e o que decide passou a ser o RISCO, não
-        o valor. "GRÁTIS" cabe exatamente onde "R$999" cabia; frase maior
-        estoura a barra ao lado do botão em 390px. */}
-    <span className={s.barCopy}><b>{t.barra.destaque}</b><span>{t.barra.sub}</span></span>
-    <a className={`${s.button} ${s.acao}`} href="#contratar" data-cta="sticky_mobile" data-cta-dest="form">{t.barra.cta}</a>
+    {/* "#hero-form" desde 28/10: o "#contratar" (o formulário da oferta antiga)
+        não existe mais nesta página, e o toque na barra não fazia NADA */}
+    <a className={`${s.button} ${s.acao}`} href="#hero-form" data-cta="sticky_mobile" data-cta-dest="form">{t.barra.cta}</a>
   </div>;
 }

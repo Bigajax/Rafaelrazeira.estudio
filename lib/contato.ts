@@ -8,7 +8,7 @@
    ============================================================ */
 export const WHATSAPP = "5544991246187";
 export const WHATSAPP_EXIBIDO = "(44) 99124-6187";
-export const EMAIL = "rafael.rbarbon@gmail.com";
+export const EMAIL = "rafaelrazeira.estudio@gmail.com";
 
 export function linkWhatsApp(mensagem: string): string {
   return `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(mensagem)}`;

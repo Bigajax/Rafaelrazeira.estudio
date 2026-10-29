@@ -449,7 +449,8 @@ const DESTINO_WHATSAPP = "whatsapp";
 /* `arroba_ajuda` (12/09) é o "me chama que eu te ajudo a achar o @" de quem
    teve o @ recusado duas vezes: é socorro, não intenção de compra, e a
    campanha não pode aprender com ele. */
-const FORA_DO_LEAD = new Set(["reabrir_whats", "arroba_ajuda"]);
+/* `faq_duvida` (28/10): o "Me chama no WhatsApp" do FAQ é dúvida, não contratação */
+const FORA_DO_LEAD = new Set(["reabrir_whats", "arroba_ajuda", "faq_duvida", "rodape_contato"]);
 
 /* os únicos caminhos que são contratação de verdade, e não intenção: o
    formulário da oferta e, desde 07/08, o mini-formulário do hero */

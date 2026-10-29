@@ -34,6 +34,9 @@ export type RespostaLead = {
   arroba?: "ok" | "invalido" | "desconhecido" | "nao_conferido";
   repetido?: boolean;
   loja?: LojaEncontrada | null;
+  /* o id da linha em `leads` (28/10): a página de obrigado usa para mandar
+     as respostas opcionais para o mesmo lead (ver pages/api/lead-detalhes.js) */
+  id?: string | null;
 };
 
 export async function salvarLeadDetalhado(dados: LeadPayload): Promise<RespostaLead> {
@@ -48,7 +51,7 @@ export async function salvarLeadDetalhado(dados: LeadPayload): Promise<RespostaL
     });
     if (!r.ok) return { ok: false };
     const corpo = (await r.json().catch(() => null)) as Partial<RespostaLead> | null;
-    return { ok: true, arroba: corpo?.arroba, repetido: !!corpo?.repetido, loja: corpo?.loja ?? null };
+    return { ok: true, arroba: corpo?.arroba, repetido: !!corpo?.repetido, loja: corpo?.loja ?? null, id: corpo?.id != null ? String(corpo.id) : null };
   } catch {
     /* rede caída, aba fechando, timeout: tudo cai no mesmo lugar */
     return { ok: false };

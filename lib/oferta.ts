@@ -1,8 +1,8 @@
 /* ============================================================
    A OFERTA POR IDIOMA: moeda, símbolo e os números
 
-   Os preços em português são os de sempre (vitrine R$999 com entrada de
-   R$199, landing R$497 com entrada de R$97). Os de inglês são a conversão
+   Os preços em português: vitrine R$999 com entrada de R$500 (50%, desde
+   28/10/2026; era R$199 desde 20/08) e landing R$497 com entrada de R$97. Os de inglês são a conversão
    arredondada para número de prateleira, mantendo a proporção da entrada
    (~20%). São PLACEHOLDER A CONFIRMAR com o Rafael antes de a versão em
    inglês receber anúncio: ele decidiu converter os de hoje, não fixou o
@@ -37,7 +37,10 @@ export const OFERTA: Record<Lang, OfertaIdioma> = {
     moeda: "BRL",
     simbolo: "R$",
     preco: fmt("R$", "pt-BR"),
-    vitrine: { total: 999, entrada: 199, saldo: 800, avista: 899 },
+    /* 50% de entrada desde 28/10/2026, decisão do Rafael. 999 não divide
+       por 2 sem centavo: a entrada leva o real a mais, como no IMERSIVO.
+       As propostas já enviadas seguem com os R$ 199 delas (lib/propostas.ts). */
+    vitrine: { total: 999, entrada: 500, saldo: 499, avista: 899 },
     landing: { total: 497, entrada: 97, saldo: 400 },
   },
   en: {

@@ -1,0 +1,100 @@
+/* As perguntas da prévia na continuação do modal (28/10/2026). Mora na
+   janela da confirmação, abaixo do "Pedido recebido": um fio separa os dois
+   passos, e o bloco entra subindo logo depois do ✓, como a segunda etapa
+   da mesma conversa. Depois disso, movimento só como resposta ao toque (o
+   chip marcado, o bloco virando "Anotado"). */
+.cartao {
+  --ink: #14181a; --texto: #4a4f52; --suave: #6b7072; --fio: #e6e6e3; --papel: #f6f6f4; --verde: #0a8a55; --rosa: #e31b62;
+  margin-top: 22px; padding-top: 22px; border-top: 1px solid var(--fio); text-align: left;
+  font: 400 15px/1.5 var(--body, "Inter"), system-ui, sans-serif; color: var(--ink);
+  animation: sobe .6s cubic-bezier(.2, .7, .2, 1) .55s both;
+}
+.cartao button:focus-visible, .cartao input:focus-visible { outline: 2px solid var(--rosa); outline-offset: 3px }
+.cartao h3 { margin: 0; font: 500 20px/1.2 var(--font-titulo, inherit), sans-serif; letter-spacing: -.02em; color: var(--ink) }
+.chip {
+  min-height: 40px; padding: 0 15px; border: 1px solid var(--fio); border-radius: 999px; background: #fff;
+  font: 500 14px var(--body, "Inter"), sans-serif; color: var(--ink); cursor: pointer;
+  transition: background .15s ease, border-color .15s ease, color .15s ease, transform .12s ease;
+}
+.chip:active { transform: scale(.96) }
+.chip[aria-pressed="true"], .chip[aria-checked="true"] { background: var(--ink); border-color: var(--ink); color: #fff }
+@media (hover: hover) and (pointer: fine) { .chip:hover { border-color: var(--ink) } }
+.campo {
+  display: block; width: 100%; margin-top: 9px; padding: 12px 14px; border: 1px solid var(--fio); border-radius: 14px; background: var(--papel);
+  font: 400 15px var(--body, "Inter"), sans-serif; color: var(--ink); animation: sobe .3s ease both;
+}
+.campo:focus { outline: 2px solid var(--rosa); outline-offset: 1px; background: #fff }
+.erro { margin: 10px 0 0; font-size: 13.5px; color: #b42318; text-align: center }
+.feito { display: flex; align-items: center; gap: 14px; animation: sobe .4s cubic-bezier(.2, .7, .2, 1) both }
+.feito p { margin: 2px 0 0; color: var(--suave); font-size: 14.5px }
+.okPequeno { display: grid; place-items: center; flex: none; width: 42px; height: 42px; border-radius: 50%; background: #e3f5ec; color: var(--verde) }
+.okPequeno path { stroke-dasharray: 24; stroke-dashoffset: 24; animation: traco .45s cubic-bezier(.4, 0, .2, 1) .15s forwards }
+
+@keyframes traco { to { stroke-dashoffset: 0 } }
+@keyframes sobe { from { opacity: 0; transform: translateY(14px) } to { opacity: 1; transform: none } }
+@media (prefers-reduced-motion: reduce) {
+  .cartao, .feito, .campo { animation: none }
+  .okPequeno path { animation: none; stroke-dashoffset: 0 }
+  .chip { transition: none }
+}
+
+/* ---------- uma pergunta por vez (28/10, pedido do Rafael) ----------
+   A cabeça com o "1 de 4", a barra de quatro trechos que enche a cada
+   passo, a pergunta que entra deslizando (da direita indo, da esquerda
+   voltando) e o rodapé com Voltar e Pular em texto. */
+.barra { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; margin-top: 12px }
+.barra i { height: 3px; border-radius: 3px; background: var(--fio); position: relative; overflow: hidden }
+.barra i::after { content: ""; position: absolute; inset: 0; background: var(--verde); transform: scaleX(0); transform-origin: left; transition: transform .35s cubic-bezier(.2, .7, .2, 1) }
+.barra i.cheio::after { transform: none }
+.entraFrente { animation: entraFrente .35s cubic-bezier(.2, .7, .2, 1) both }
+.entraTras { animation: entraTras .35s cubic-bezier(.2, .7, .2, 1) both }
+@keyframes entraFrente { from { opacity: 0; transform: translateX(28px) } to { opacity: 1; transform: none } }
+@keyframes entraTras { from { opacity: 0; transform: translateX(-28px) } to { opacity: 1; transform: none } }
+.rodape { display: flex; justify-content: space-between; margin-top: 14px }
+.texto {
+  min-height: 40px; padding: 0 4px; border: 0; background: none; cursor: pointer;
+  font: 500 14px var(--body, "Inter"), sans-serif; color: var(--suave);
+  text-decoration: underline; text-underline-offset: 3px; text-decoration-color: transparent; transition: color .15s ease, text-decoration-color .15s ease;
+}
+@media (hover: hover) and (pointer: fine) { .texto:hover { color: var(--ink); text-decoration-color: currentColor } }
+@media (prefers-reduced-motion: reduce) {
+  .entraFrente, .entraTras { animation: none }
+  .barra i::after { transition: none }
+}
+/* dentro do modal, as regras dos campos do formulário (.modalForm .tag
+   input, com cinco classes) venciam e o campo do link perdia a caixa:
+   o !important aqui é só para este campo, que mora no mesmo .tag */
+.cartao input.campo {
+  width: 100% !important; margin-top: 9px !important; padding: 12px 14px !important;
+  border: 1px solid var(--fio) !important; border-radius: 14px !important; background: var(--papel) !important;
+  font: 400 15px var(--body, "Inter"), sans-serif !important; outline: none !important;
+}
+.cartao input.campo:focus { border-color: var(--rosa) !important; background: #fff !important; box-shadow: 0 0 0 3px #e31b6222 !important }
+
+/* ---------- a arrumação (28/10, "o que da pra melhorar?") ----------
+   A pergunta do passo é o título; a barra abre o bloco, sem linha acima da
+   barra; os chips numa grade de 3 colunas; Voltar, Pular e Continuar numa
+   linha só, o Continuar preto e pequeno (o rosa ficava brigando com o
+   WhatsApp logo abaixo), sempre presente e apagado até ter resposta, para
+   a janela não pular de altura. */
+.barra { margin-top: 0 }
+.pergunta { margin-top: 18px; min-height: 146px }
+.pergunta > h3 { margin: 0 0 12px; font: 500 20px/1.25 var(--font-titulo, inherit), sans-serif; letter-spacing: -.02em; color: var(--ink) }
+.pergunta > h3 span { display: block; margin-top: 3px; font: 400 13px/1.4 var(--body, "Inter"), sans-serif; letter-spacing: 0; color: var(--suave) }
+.chips { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px }
+.chip { padding: 0 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.rodape { align-items: center; margin-top: 18px; gap: 8px }
+.acoes { display: flex; align-items: center; gap: 6px }
+.seguir {
+  min-height: 42px; padding: 0 20px; border: 0; border-radius: 999px; cursor: pointer;
+  background: var(--ink); color: #fff; font: 600 14.5px var(--body, "Inter"), sans-serif;
+  transition: opacity .2s ease, transform .12s ease;
+}
+.seguir:active { transform: scale(.97) }
+.seguir:disabled { opacity: .22; cursor: default }
+.texto:disabled { opacity: .4; cursor: default }
+@media (prefers-reduced-motion: reduce) { .seguir { transition: none } }
+/* em 360px a coluna do chip tem ~92px e "Acessórios" não cabia: menos
+   folga lateral e meio ponto a menos só nas telas estreitas */
+@media (max-width: 380px) { .chip { padding: 0 3px; font-size: 13.5px } }
+@media (max-width: 340px) { .chips { grid-template-columns: repeat(2, minmax(0, 1fr)) } }

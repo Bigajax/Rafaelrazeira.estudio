@@ -30,25 +30,48 @@ export const pt = {
   lang: "pt" as Lang,
   meta: {
     title: "Vitrine Digital para lojas",
-    description: "Eu desenho a sua vitrine antes de você pagar. Catálogo com foto, preço e tamanho, pedido pronto no WhatsApp, projeto completo por R$999.",
+    description: "Eu desenho a prévia da sua vitrine sem custo. Catálogo com foto, preço e tamanho, pedido pronto no WhatsApp, projeto completo por R$999.",
   },
   marca: { nome: "RAFAEL RAZEIRA", sufixo: "ESTÚDIO" },
   header: {
-    cta: "VER A MINHA LOJA ↓",
+    /* sem a seta desde 28/10: o botão abre o modal, não desce a página */
+    cta: "Quero ver a minha loja",
+    navAria: "Seções da página",
+    nav: [["#projetos", "Lojas no ar"], ["#como", "Como funciona"], ["#oferta", "Preço"]] as [string, string][],
     insta: { handle: "@rafaelrazeira.estudio", linha: "Instagram", aria: "Abrir o Instagram do estúdio, @rafaelrazeira.estudio" },
   },
 
   hero: {
-    eyebrow: "PARA LOJAS DO INSTAGRAM E WHATSAPP",
-    h1: <>SUA LOJA PRONTA ANTES DE <em>VOCÊ PAGAR.</em></>,
-    lead: <><b>Foto, preço e tamanho</b> de cada peça num link só. O cliente escolhe e o pedido chega montado no WhatsApp, sem você responder um por um.</>,
+    /* 28/10: era "PARA LOJAS DO INSTAGRAM E WHATSAPP", que lia como loja que
+       pertence ao Instagram; o Rafael disse que não fazia sentido. O que a
+       etiqueta diz é PARA QUEM é a página */
+    eyebrow: "Para lojas que vendem pelo Instagram",
+    /* em caixa normal desde 28/10: o CSS põe em caixa alta (como já fazia com
+       os h2), e o teste da Geist precisa da frase escrita como se fala */
+    /* ---------- a manchete mudou com a entrada de 50% (28/10/2026) ----------
+       "Sua loja pronta antes de você pagar" deixou de ser verdade: com R$ 500
+       de entrada, a pessoa paga ANTES de a loja ser feita. O que ela vê sem
+       pagar é a prévia. "Antes de decidir" guarda o argumento (você vê
+       primeiro) e é verdade: decidir não é pagar. Escolha do Rafael entre
+       três caminhos (a dor do direct e o resultado curto ficaram de fora). */
+    h1: <>Veja sua loja pronta antes de <em>decidir.</em></>,
+    lead: <>Mando a prévia com as suas peças em até 24h. Gostou, ela vai ao ar com o pedido chegando montado no seu WhatsApp.</>,
     faixa: "Pronta em 7 dias úteis · Sem mensalidade · Você mesmo atualiza ·",
-    phoneAria: "A loja completa da Sölo Urb rolando do topo ao rodapé dentro de um celular: catálogo, páginas de produto e pedido pelo WhatsApp",
-    liveTag: "NO AR: SÖLO URB · VER LOJAS QUE JÁ USAM ↓",
+    phoneAria: "A loja completa da Iconic Sneakers rolando do topo ao rodapé dentro de uma janela de navegador: catálogo, páginas de produto e pedido pelo WhatsApp",
+    /* 28/10: as logos são só quem PAGOU, e o canhoto conta todas as vitrines
+       com link (as amostras incluídas). Com "no ar" nos dois, 8 e 108 pareciam
+       se contradizer; agora um diz cliente e o outro diz desenhadas */
+    lojas: "Lojas que já são clientes do estúdio",
+    rolar: "Rolar até a vitrine da Iconic",
+    cta: "Quero ver a minha loja",
+    cta2: "Ver lojas no ar",
+    modalAria: "Pedir a prévia da sua loja",
+    modalFechar: "Fechar",
+    liveTag: "No ar: Iconic Sneakers · Ver lojas que já usam ↓",
     pedido: {
-      k: "PEDIDO NO SEU WHATSAPP",
-      texto: <>Oi, Sölo! Quero o <b>New Balance 9060</b>, tam <b>41</b>. Pode separar?</>,
-      hora: "14:07 ✓✓",
+      k: "Pedido no seu WhatsApp",
+      texto: <>Oi, Iconic! Quero o <b>New Balance 9060</b>, tam <b>41</b>. Pode separar?</>,
+      hora: "agora",
     },
   },
 
@@ -57,13 +80,14 @@ export const pt = {
     enviando: "ENVIANDO…",
     enviar: "QUERO VER A MINHA LOJA",
     /* a confirmação, quando o lead está gravado */
-    okTitulo: "RECEBI SEUS DADOS",
-    okSub: "Te chamo no WhatsApp ainda hoje.",
-    okCta: "QUER AGILIZAR? ME CHAMA AGORA ↗",
+    okTitulo: "Pedido recebido.",
+    /* 24h, a mesma promessa da página (era "ainda hoje", 28/10) */
+    okSub: "Vou olhar sua loja e te mando a prévia no WhatsApp em até 24h.",
+    okCta: "Me chama no WhatsApp agora",
     /* o "Falta um toque": a gravação falhou e o WhatsApp abriu no lugar */
     pendenteTitulo: "Falta um toque.",
     pendenteTexto: <>Abri o WhatsApp com sua mensagem pronta. Toque em <b>enviar</b> lá para eu receber, senão ela não chega.</>,
-    pendenteCta: "ABRIR O WHATSAPP ↗",
+    pendenteCta: "Abrir o WhatsApp",
     /* os campos */
     nome: "NOME",
     whatsapp: "WHATSAPP",
@@ -93,25 +117,41 @@ export const pt = {
 
   etiqueta: {
     selo: { aria: "Carimbo: agenda aberta", arco: "RAFAEL RAZEIRA ESTÚDIO", l1: "AGENDA", l2: "ABERTA", rodape: "MARINGÁ · PR" },
-    lead: <>Eu desenho.<br />Você decide.</>,
-    sub: "Manda o seu @ e eu te mostro a sua loja pronta em 24h.",
-    aparte: "De graça, sem compromisso.",
+    /* 28/10: o cartão inteiro revisto com o Rafael. O título fala da loja
+       dela, não de mim; a linha diz o que é a prévia e por onde ela chega
+       (é o motivo de pedir o WhatsApp); o "loja pronta" saiu, porque o que
+       sai em 24h é a prévia e a loja leva os 7 dias úteis do canhoto. O canhoto
+       chegou a ganhar "LOJA EM" na frente do 7, e saiu no mesmo dia: quebrava
+       a linha única em duas ou três (medido em 360, 390 e 1440), e a linha
+       de cima já não promete loja em 24h, então não há o que desempatar */
+    lead: <>Sua loja, com<br />as suas peças.</>,
+    sub: "Manda o @ da loja. Eu monto a prévia com o que já está no seu Instagram e te mando pelo WhatsApp em até 24h.",
     instaAria: "Sua loja no Instagram",
-    instaPh: "sualoja",
-    micro: <><b>A prévia é por minha conta.</b> Se gostar: <b>{R(v.total)}</b> no total, começando com <b>{R(v.entrada)}</b>. Se não gostar, me diz sem dó.</>,
+    /* o @ no exemplo (28/10): o símbolo do Instagram ao lado não dizia que o
+       campo pede o @; o campo tira o @ se a pessoa digitar */
+    instaPh: "@sualoja",
+    /* o botão do modal, em caixa de frase (o form.enviar é da oferta) */
+    enviar: "Quero ver a minha loja",
+    enviando: "Enviando…",
+    micro: <><b>A prévia é por minha conta.</b> Gostou? <b>{R(v.total)}</b> no total: <b>{R(v.entrada)}</b> para começar e o resto só depois de aprovar. Não gostou? Me diz sem dó.</>,
     /* o canhoto: {n} é o placar de projetos no ar */
-    stub: { projetos: "PROJETOS NO AR", prazo: "7", prazoRotulo: "DIAS ÚTEIS", mensal: `${o.simbolo}0`, mensalRotulo: "DE MENSALIDADE" },
+    /* "criadas" e não "desenhadas" (28/10): para o Rafael, desenhada soa
+       feita à mão. Vale nos quatro lugares em que o número aparece. */
+    stub: { projetos: "VITRINES CRIADAS", prazo: "7", prazoRotulo: "DIAS ÚTEIS", mensal: `${o.simbolo}0`, mensalRotulo: "DE MENSALIDADE" },
   },
 
   quem: {
-    alt: "Rafael Razeira de óculos escuros esportivos, em preto e branco, com montanhas nevadas ao fundo",
+    alt: "Rafael Razeira de óculos esportivos e jaqueta preta, com montanhas nevadas ao fundo",
     legenda: "MARINGÁ · PR · EST. 2026",
     eyebrow: "QUEM FAZ",
     h2: <>Do primeiro oi<br />até a loja no ar:<br /><em>sou eu.</em></>,
+    /* em duas partes para a animação letra a letra do Quem Faz curto (28/10) */
+    h2a: "Do primeiro oi até a loja no ar:", h2b: "sou eu.",
     p1: "Rafael Razeira. Desenho, desenvolvo e publico cada vitrine, e é comigo que você fala no WhatsApp. Sem fila de atendimento, sem gerente de conta, sem telefone que ninguém atende.",
-    /* {n} é o resto do portfólio (os projetos no ar menos os três nomeados) */
-    p2: "A Sölo Urb, que rola no celular aí em cima, e as duas lojas de clientes logo abaixo? Saíram desta mesa, junto com os outros {n} projetos do portfólio.",
-    fatos: { cidade: "MARINGÁ · PR", projetos: "{n} PROJETOS NO AR", resposta: "RESPOSTA NO MESMO DIA" },
+    /* {n} é o resto do portfólio (os projetos no ar menos os DOIS nomeados:
+       desde 28/10 a Iconic rola no celular e também está nos projetos) */
+    p2: "A Iconic Sneakers, rodando aí em cima, e a Japa Modas, mais abaixo? As duas são lojas de clientes e saíram desta mesa, junto com os outros {n} projetos do portfólio.",
+    fatos: { cidade: "MARINGÁ · PR", projetos: "{n} VITRINES CRIADAS", resposta: "RESPOSTA NO MESMO DIA" },
     cta: "QUERO VER A MINHA LOJA ↑",
   },
 
@@ -154,23 +194,23 @@ export const pt = {
   projetos: {
     eyebrow: "PROJETOS NO AR",
     h2: <>Não acredite em mim.<br /><em>Abra as duas.</em></>,
-    lead: "A Xavier's Sports vende camisas esportivas. A PR Grife é multimarcas e tem loja física em Maringá. As duas estão no ar, com produto e preço reais, e abrem no seu celular agora.",
+    lead: "A Iconic Sneakers vende tênis de Florianópolis para todo o Brasil. A Japa Modas veste o homem e tem loja de rua em Ribeirão Preto. As duas estão no ar, com produto e preço reais, e abrem no seu celular agora.",
     live: "NO AR",
     tipo: "LOJA DE CLIENTE",
     abrir: "Abrir o site do projeto {nome} em nova aba",
     alt: "Página completa da vitrine da {nome}",
     itens: [
       {
-        tag: "CAMISAS ESPORTIVAS",
-        copy: "Vitrine no ar, navegável agora. Abra pelo celular e faça o caminho que o cliente faz.",
-        fatos: ["Catálogo por clubes e seleções", "Página para cada produto", "Controle de pronta entrega", "Pedido direto no WhatsApp"],
-        cta: "ABRIR A VITRINE DA XAVIER'S ↗",
+        tag: "SNEAKERS",
+        copy: "Estoque próprio e importação sob encomenda, de Florianópolis para todo o Brasil. Entreguei a vitrine e o painel: o dono sobe preço e estoque sozinho.",
+        fatos: ["Catálogo por Corrida, Streetwear e Icônicos", "Página para cada par", "Sob encomenda com orçamento", "Pedido direto no WhatsApp"],
+        cta: "ABRIR A VITRINE DA ICONIC ↗",
       },
       {
-        tag: "MULTIMARCAS DE ALTO PADRÃO",
-        copy: "Loja com ponto físico em Maringá. Entreguei a vitrine e o painel: o dono publica peça e ajusta o estoque sozinho.",
-        fatos: ["Catálogo por marca e categoria", "Página para cada produto", "Painel de estoque para o dono", "Pedido com forma de pagamento escolhida"],
-        cta: "ABRIR A VITRINE DA PR GRIFE ↗",
+        tag: "MODA MASCULINA",
+        copy: "Loja de rua em Ribeirão Preto. Entreguei a vitrine e o painel: o dono publica peça e ajusta o estoque sozinho.",
+        fatos: ["Uma vitrine para cada categoria", "Página para cada produto", "Ofertas com o preço riscado", "Pedido direto no WhatsApp"],
+        cta: "ABRIR A VITRINE DA JAPA ↗",
       },
     ],
     portfolio: "VER OS {n} PROJETOS NO PORTFÓLIO ↗",
@@ -246,7 +286,9 @@ export const pt = {
 
   processo: {
     eyebrow: "DO SIM À LOJA NO AR",
-    h2: <>Você vê a loja pronta<br /><em>antes de pagar nada.</em></>,
+    /* "prévia" e não "loja" desde 28/10: com 50% de entrada a loja é feita
+       DEPOIS do primeiro pagamento; sem pagar nada, o que se vê é a prévia */
+    h2: <>Você vê a prévia pronta<br /><em>antes de pagar nada.</em></>,
     passos: [
       ["Prévia", "Você me manda o seu @. Eu desenho a sua vitrine e te mostro pronta, sem custo nenhum."],
       ["Reserva", `Gostou? Aí sim: ${R(v.entrada)} e o material da loja.`],
@@ -259,20 +301,23 @@ export const pt = {
   },
 
   faq: {
-    eyebrow: "ANTES DE CONTRATAR",
-    /* a manchete conta os "não" da lista; {n} é o número por extenso */
-    manchete: { umL1: "Uma desta resposta", umL2: "começa com", variosL1: "{n} destas respostas", variosL2: "começam com", fim: "não." },
-    numeros: ["nenhuma", "Uma", "Duas", "Três", "Quatro", "Cinco", "Seis", "Sete", "Oito"],
-    etiqueta: "não",
-    /* `nao` marca as respostas que começam com "não": é o que a manchete conta */
+    /* 28/10 (pedido do Rafael): a manchete que contava os "não" e as
+       etiquetas em caixinha saíram; título simples e a saída para o WhatsApp
+       ao lado da lista */
+    /* enxuto desde 28/10 (pedido do Rafael): saíram as que a página já responde
+       (mensalidade: o cartão R$0 por mês; prazo: o passo 03; quem atualiza: o
+       cartão do painel; pagar tudo antes: o trilho do preço) */
+    titulo: "Perguntas antes de contratar",
+    duvida: { texto: "Não achou a sua?", link: "Me chama no WhatsApp", msg: "Oi Rafael, tenho uma dúvida sobre a vitrine digital." },
     itens: [
       { p: "A vitrine recebe pagamentos dos meus clientes?", r: "Não. A vitrine organiza o catálogo e leva o pedido pronto para o WhatsApp da loja, onde você combina pagamento e entrega.", nao: true },
       { p: "Quantos produtos estão incluídos?", r: "A vitrine não tem limite de produtos. Os 60 primeiros eu cadastro para você, com foto, preço e tamanhos; os outros você mesmo cadastra no painel, em minutos e sem me chamar.", nao: false },
-      { p: "Existe mensalidade?", r: `Não. O projeto custa ${R(v.total)} uma única vez. Um domínio próprio é opcional e tem custo anual pago direto no registrador.`, nao: true },
-      { p: "Quem atualiza a vitrine depois?", r: "Você mesmo, pelo painel que acompanha a vitrine: troca preço e foto, marca esgotado ou pronta entrega e cadastra produtos novos.", nao: false },
-      { p: "Quanto tempo demora?", r: "Até 7 dias úteis depois do envio de todos os materiais da loja.", nao: false },
-      { p: `Por que ${R(v.total)} e não R$5 mil?`, r: "Porque não tem agência no meio. Você fala comigo do primeiro oi até a loja no ar, sem atendimento, sem gerente de projeto e sem repasse. O processo é o mesmo em todos os projetos, então o que sobra de custo é o meu tempo.", nao: false },
-      { p: "Preciso pagar tudo antes?", r: `Não. São ${R(v.entrada)} para começar e ${R(v.saldo)} somente depois da apresentação e da sua aprovação, em até 4x no cartão. Quem prefere pagar à vista no Pix fecha por ${R(v.avista ?? v.total)}.`, nao: true },
+      /* as três de 28/10: as respostas são as dos termos (public/termos.html,
+         seção 06) e a do Google é a da nota "fechar e receber" do cofre */
+      { p: "O que eu preciso mandar?", r: "A logo, as fotos das peças e a lista delas com preço e tamanhos. O prazo de 7 dias úteis conta a partir do dia em que tudo isso chega.", nao: false },
+      { p: `Por que ${R(v.total)} e não R$5 mil?`, r: "Porque não tem agência no meio. Você fala comigo do primeiro oi até a loja no ar, sem atendimento, sem gerente de projeto e sem repasse. O processo é o mesmo em todos os projetos, então o que sobra de custo é o meu tempo.", nao: false },
+      { p: "E se eu desistir?", r: `Em até 7 dias depois de pagar a entrada, você desiste por qualquer motivo e recebe os ${R(v.entrada)} inteiros de volta, no mesmo Pix. E se a primeira versão não ficar pronta no prazo, a entrada também volta.`, nao: false },
+      { p: "A vitrine aparece no Google?", r: "Aparece pelo nome da loja: cada peça tem a sua página, com nome, preço e foto que o Google lê. O que ela não faz é ganhar de loja grande numa busca genérica, tipo \"tênis Nike\". Prometer posição no Google seria mentir.", nao: false },
     ],
   },
 
@@ -282,6 +327,115 @@ export const pt = {
     lead: `Deixa o seu @ que eu desenho a sua vitrine e te mostro pronta, de graça. Se você já decidiu, começa com ${R(v.entrada)}.`,
     cta: "QUERO VER A MINHA LOJA ↑",
     ghost: "VER O QUE ESTÁ INCLUSO",
+  },
+
+  /* ---------- a página simplificada (28/10/2026), ver components/vitrine/mobbin.tsx ----------
+     Os depoimentos são frases copiadas das conversas do WhatsApp que o
+     Rafael mandou em 28/10; nada aqui foi escrito por mim. `k` é a loja
+     com ícone; sem `k`, o lead aparece pelo estado (o DDD do número). */
+  mb: {
+    /* o quem faz desta página (28/10): fatos no lugar dos três "sem". {c} é a
+       mesma centena do placar (as vitrines no ar), para os dois números baterem.
+       Maringá já está no site (a legenda da foto e a /landing). */
+    quem: { texto: "Rafael Razeira, de Maringá. Criei cada uma das mais de {c} vitrines do estúdio, do layout ao endereço no ar. E a conversa é no meu WhatsApp, do primeiro oi à entrega.", assinatura: "Rafael Razeira" },
+    /* o rodapé desta página (28/10): a frase é a mesma promessa do selo do hero */
+    rodape: { frase: "Vitrines digitais para lojas que vendem pelo Instagram. Maringá, PR.", navAria: "Rodapé", copy: "© 2026 Rafael Razeira Estúdio", contato: "Fale comigo", msg: "Oi Rafael, vim pelo site do estúdio." },
+    placar: {
+      /* os três números empurram para a prévia (28/10): o "8 lojas clientes"
+         saiu, porque ao lado do 108 convidava a pergunta errada; quem são
+         os clientes está nas logos do hero. O R$0 é o argumento do botão
+         dito como fato: a prévia é sem custo. */
+      rotulo: "Como funciona, em três números",
+      /* "+100" e não "108" (28/10, pedido do Rafael): {c} é a centena cheia
+         abaixo do total, e o componente conta de 0 até ela */
+      itens: [["+{c}", "vitrines criadas"], ["24h", "até a prévia"], [R(0), "para ver a sua"]] as [string, string][],
+    },
+    lojasAr: {
+      /* em duas partes (28/10): o componente monta o <h2> com o <em> e
+         quebra em letras; o elemento pronto do dicionário não passava no
+         isValidElement da quebra (o do hero passa; causa não achada) */
+      /* era "Veja lojas no ar em segundos." até 28/10: lido rápido, o "em
+         segundos" soava como prazo de entrega (o real é 7 dias úteis) */
+      h2a: "Lojas que já recebem", h2b: "pedido no WhatsApp.",
+      lead: "Vitrines de clientes do estúdio, com produto e preço reais. Toque numa para abrir.",
+      abasAria: "Filtrar por tipo de loja",
+      abas: [["todas", "Todas"], ["sneakers", "Sneakers"], ["moda", "Moda"], ["esporte", "Esporte"], ["skate", "Skate"]] as [string, string][],
+      abrir: "Abrir a vitrine da {nome} em nova aba",
+    },
+    jornada: {
+      h2: <>Do Instagram ao pedido. <em>Nenhum passo é seu.</em></>,
+      zapNome: "Loja · WhatsApp",
+      cartoes: [
+        { t: "O cliente escolhe sozinho", p: "Foto, preço e tamanho de cada peça num link só, na bio. As perguntas que hoje chegam no seu direct, respondidas antes de ele digitar." },
+        { t: "O pedido chega montado no WhatsApp", p: "A mensagem já vem com a peça escolhida. Você só confirma e combina o pagamento." },
+      ],
+    },
+    etapas: {
+      h2: <>Da prévia <em>à loja no ar.</em></>,
+      h2a: "Da prévia", h2b: "à loja no ar.",
+      itens: [
+        { n: "01", t: "Prévia em até 24h, sem custo", p: "Você manda o @ da loja. Eu desenho a sua vitrine com as suas peças e te mostro pronta.", chip: "Oi! A vitrine da @sualoja ficou pronta. Dá uma olhada:" },
+        { n: "02", t: `Gostou? ${R(v.entrada)} para começar`, p: "Aí você manda o material da loja e eu monto o catálogo inteiro. O saldo só depois de aprovar.", chip: `${R(v.entrada)} agora · ${R(v.saldo)} na entrega` },
+        { n: "03", t: "No ar em até 7 dias úteis, com o painel seu", p: "Troca preço, foto e estoque sozinho, pelo celular. Sem mensalidade.", chip: "" },
+      ],
+      /* o bento (28/10): quatro cartões com tela de verdade, abaixo da linha
+         dos passos. O painel é o da Xavier's Sports, a captura que a página
+         antiga já usava; a mensagem da prévia é a que o Rafael manda de
+         verdade (print de 28/10), com o @ trocado pelo genérico. */
+      bento: {
+        painel: { t: "O painel é seu", p: ["Troca preço e foto na hora", "Marca esgotado ou pronta entrega", "Cadastra peça nova e ela entra na vitrine no mesmo minuto"], alt: "O painel da loja cadastrando uma peça: a foto, o nome, a categoria, o preço e os tamanhos, e a peça aparecendo na lista", legenda: "O painel cadastrando uma peça, de verdade. É o mesmo em todas as lojas." },
+        previa: { t: "A prévia chega no seu WhatsApp", p: "Em até 24h, sem custo.", msg: "Oi! A vitrine da @sualoja ficou pronta, montei com as fotos que você mandou:", link: "sualoja.vercel.app" },
+        pedido: { t: "O pedido chega montado", p: "Com a peça e o tamanho. Você só confirma." },
+        mensal: { t: "Sem mensalidade", valor: R(0), sufixo: "por mês", p: "Domínio próprio opcional, anual e pago direto no registrador.", meses: ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"] },
+      },
+    },
+    preco: {
+      eyebrow: "Sem mensalidade",
+      h2: <>Vitrine completa por <em>{R(v.total)}.</em></>,
+      h2a: "Vitrine completa por", h2b: `${R(v.total)}.`,
+      lead: "Metade para começar, metade na entrega. O saldo só depois de você aprovar.",
+      linhas: [[R(v.entrada), "para começar"], [R(v.saldo), "na entrega, depois de aprovar"]] as [string, string][],
+      /* o R$899 à vista saiu do cartão em 28/10 (decisão do Rafael): é o
+         degrau 1 de desconto da negociação (cofre, 1 Processos/fechar-e-receber),
+         e publicado ele vira o preço de todo mundo; e não tinha botão para pagar */
+      pix: null as string | null,
+      /* a lista do incluso em três grupos (28/10): os números são posições
+         em `oferta.itens`, para o texto de cada item continuar num lugar só */
+      grupos: [["O site", [0, 1, 2, 4]], ["O painel", [5, 3]], ["A entrega", [6, 7, 8]]] as [string, number[]][],
+      cta: "Quero ver a minha loja",
+      /* a compra direta no cartão (28/10, pedido do Rafael): quem não quer
+         esperar a prévia paga a entrada ali mesmo. O botão abre o checkout
+         da /vitrine-v4 (lib/propostas.ts, "vitrine-direta", entrada_pix): o
+         VALOR COBRADO vem de lá, este texto só exibe. Se a entrada mudar em
+         lib/oferta.ts, mudar lá também. `null` some com o bloco.
+         Desde 28/10 é um link discreto e não um botão do tamanho do rosa: a
+         prévia é o caminho que a página promete, e este é o atalho de quem já
+         decidiu. A desistência em 7 dias está no FAQ e nos termos. */
+      direto: { texto: "Já decidiu?", botao: `Pague a entrada de ${R(v.entrada)} no Pix` } as { texto: string; botao: string } | null,
+      nota: "A prévia é sem custo. Você só paga se gostar.",
+      termos: "Ver escopo e termos",
+    },
+    depo: {
+      h2: <>O que dizem <em>no WhatsApp.</em></>,
+      /* o nome da seção em texto puro, para o aria-label (o h2 saiu da tela em 28/10) */
+      titulo: "O que dizem no WhatsApp",
+      lead: "Mensagens reais, copiadas da conversa: de clientes e de lojistas que viram a prévia.",
+      cliente: "Cliente", previa: "Viu a prévia", pontosAria: "Escolher o depoimento",
+      /* só o Luciano, da Iconic (28/10, pedido do Rafael), com a foto dele;
+         as outras seis frases ficaram guardadas na conversa de 28/10 */
+      itens: [
+        { q: ["Parabéns pelo trabalho! Parabéns pela agilidade e prestatividade! Você se antecipou em várias coisas que não tínhamos pedido e principalmente em fazer uma entrega com rapidez.", "Para nós ajudou muito, pois já tínhamos desistido de pegar esta Black Friday, mas ainda deu tempo hábil por causa do seu empenho!"], quem: "Luciano", loja: "Iconic Sneakers", cliente: true, k: "iconic", foto: "/assets/depo/luciano.webp",
+          /* o destaque (28/10): um trecho EXATO da segunda frase, com as reticências dizendo que é recorte; a mensagem inteira continua embaixo */
+          destaque: "…já tínhamos desistido de pegar esta Black Friday, mas ainda deu tempo hábil por causa do seu empenho!", site: "https://iconicsneakers.com.br", dominio: "iconicsneakers.com.br", tela: "/assets/demo/iconic-vitrine" },
+      ] as { q: string[]; quem: string; loja?: string; cliente: boolean; k?: string; foto?: string; destaque?: string; site?: string; dominio?: string; tela?: string }[],
+    },
+    fim: {
+      h2: <>Sua loja pode ser <em>a próxima.</em></>,
+      h2a: "Sua loja pode ser", h2b: "a próxima.",
+      lead: "Deixa o @ que eu desenho a prévia da sua vitrine em até 24h, sem custo.",
+      cta: "Quero ver a minha loja",
+      cta2: "Ver o preço",
+    },
   },
 
   rodape: {
@@ -296,7 +450,8 @@ export const pt = {
     copyright: "© 2026 RAFAEL RAZEIRA ESTÚDIO",
   },
 
-  barra: { destaque: "GRÁTIS", sub: "Sua vitrine desenhada", cta: "QUERO VER A MINHA LOJA" },
+  /* desde 28/10 a barra do celular é só a pílula: o texto ao lado saiu */
+  barra: { cta: "Quero ver a minha loja" },
 
   /* a mensagem que abre no WhatsApp (pt) ou o assunto do e-mail (en) */
   contato: { abertura: "Oi Rafael! Quero uma vitrine para minha loja.", nome: "Nome", loja: "Loja", plano: "Plano", ref: "Ref" },

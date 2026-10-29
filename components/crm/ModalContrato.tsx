@@ -90,7 +90,7 @@ export function ModalContrato({
      caminho do Pix na chave direta e da venda que nunca passou por
      proposta nenhuma. */
   const [total, setTotal] = useState("999");
-  const [entrada, setEntrada] = useState("199");
+  const [entrada, setEntrada] = useState("500"); /* 50% de entrada desde 28/10/2026 */
   const [vezes, setVezes] = useState("1");
   const [primeiro, setPrimeiro] = useState(hoje);
 

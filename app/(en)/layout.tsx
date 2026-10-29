@@ -13,7 +13,9 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://rafaelrazeira.com.br"),
   title: { default: "Rafael Razeira Studio", template: "%s — Rafael Razeira Studio" },
   description: "Design, strategy and development for brands that want to sell better.",
-  icons: { icon: "/assets/favicon.png" },
+  /* o ícone da aba em 48px (2KB) e o do iPhone em 180px (28/10): o
+     favicon.png de 512px pesava 66KB em toda abertura de página */
+  icons: { icon: "/assets/favicon-48.png", apple: "/assets/apple-touch-icon.png" },
   openGraph: {
     siteName: "Rafael Razeira Studio",
     type: "website",

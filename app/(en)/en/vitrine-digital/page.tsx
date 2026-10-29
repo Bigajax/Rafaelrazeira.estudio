@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { Archivo, Inter, JetBrains_Mono } from "next/font/google";
-import { Analytics, BrandBand, FAQ, FinalCTA, Header, Hero, HowItWorks, Included, MobileBar, Offer, PainSolution, Panel, Process, Projects, QuemFaz } from "@/components/vitrine/sections";
+import { Instrument_Sans, Inter } from "next/font/google";
+import { Analytics, FAQ, Header, Hero, MobileBar } from "@/components/vitrine/sections";
+import { Depoimentos, Etapas, FimNovo, LojasNoAr, Placar, Preco, QuemFazCurto, Rodape } from "@/components/vitrine/mobbin";
 import { SemAncoraDoAnuncio } from "@/components/vitrine/SemAncoraDoAnuncio";
 import { LangProvider } from "@/components/i18n";
 import { alternatesPara, SITE } from "@/lib/idiomas";
@@ -20,9 +21,12 @@ import styles from "@/app/(pt)/vitrine-digital/vitrine.module.css";
    no lugar do wa.me, e o `pagina` "vitrine-digital-en" na rota. O
    tracking recebe a página, o valor em US$ e a moeda pelo <Analytics />.
    ============================================================ */
-const display = Archivo({ subsets: ["latin"], axes: ["wdth"], variable: "--font-display" });
 const body = Inter({ subsets: ["latin"], variable: "--font-body" });
-const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
+/* a Archivo (88KB) e a JetBrains Mono saíram em 28/10: medido na página,
+   a primeira não desenhava nenhuma letra e a mono só cinco rótulos, que
+   passaram para a mono do sistema (ver `.semFontesExtras` no CSS) */
+/* as manchetes na Instrument Sans desde 28/10, ver `.tipoTitulo` no CSS */
+const titulo = Instrument_Sans({ subsets: ["latin"], variable: "--font-titulo" });
 
 export const metadata: Metadata = {
   title: en.meta.title,
@@ -55,23 +59,26 @@ const jsonLd = {
 export default function VitrineDigitalEnPage() {
   return <LangProvider lang="en" messages={en}>
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-    <div className={`${styles.site} ${display.variable} ${body.variable} ${mono.variable}`}>
+    <div className={`${styles.site} ${styles.botoesApple} ${styles.tipoTitulo} ${styles.estruturaCentro} ${styles.semFontesExtras} ${titulo.variable} ${body.variable}`}>
       <SemAncoraDoAnuncio />
       <Header />
       <main>
+        {/* a ordem de 28/10 (pedido do Rafael, "reestruture"): a ordem das perguntas
+            de quem chega frio do anúncio. Existe? (números, lojas, o Luciano logo
+            depois da Iconic aparecer na fila) Como funciona? Quem faz? Quanto custa?
+            O convite final, e o FAQ por último, para quem procura uma resposta
+            pontual; o botão do topo segue à vista durante ele. */}
         <Hero />
-        <QuemFaz />
-        <BrandBand />
-        <PainSolution />
-        <HowItWorks />
-        <Projects />
-        <Included />
-        <Process />
-        <Offer />
-        <Panel />
+        <Placar />
+        <LojasNoAr />
+        <Depoimentos />
+        <Etapas />
+        <QuemFazCurto />
+        <Preco />
+        <FimNovo />
         <FAQ />
-        <FinalCTA />
       </main>
+      <Rodape />
       <MobileBar />
       <Analytics />
     </div>

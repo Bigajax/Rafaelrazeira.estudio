@@ -11,6 +11,7 @@
  * ~560px reais; os 780px capturados cobrem com folga sem inflar o arquivo.
  *
  *   node scripts/capture-solourb-hero.mjs
+ *   node scripts/capture-solourb-hero.mjs <url> <destino.jpg>   (outra loja, 28/10: a Iconic)
  *
  * Depois de rodar, conferir o --dur do .phoneCover no hero: a régua da página
  * é ~250px de rolagem por segundo na altura EXIBIDA (o script imprime a conta).
@@ -20,17 +21,21 @@ import puppeteer from "puppeteer-core";
 import sharp from "sharp";
 
 const CHROME = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
-const URL = "https://s-lo-urb.vercel.app/";
+const URL = process.argv[2] ?? "https://s-lo-urb.vercel.app/";
 const LARGURA = 390;
 const DOBRA = 844;
 const DSF = 2;
-const DESTINO = "public/assets/demo/solourb-vitrine.jpg";
+const DESTINO = process.argv[3] ?? "public/assets/demo/solourb-vitrine.jpg";
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const browser = await puppeteer.launch({ executablePath: CHROME, headless: "new" });
 const page = await browser.newPage();
 await page.setViewport({ width: LARGURA, height: DOBRA, deviceScaleFactor: DSF });
 await page.goto(URL, { waitUntil: "networkidle0", timeout: 90000 });
+/* 4º argumento opcional: CSS a injetar antes de capturar. Nasceu na Iconic
+   (28/10): a foto dos banners entra com fade (.foto-chega a opacidade 0) e a
+   captura gravava o meio do caminho, em cinza. */
+if (process.argv[4]) await page.addStyleTag({ content: process.argv[4] });
 /* rolagem completa antes de capturar: carrega lazy e dispara reveals */
 await page.evaluate(async () => {
   for (let y = 0; y < document.body.scrollHeight; y += 600) {

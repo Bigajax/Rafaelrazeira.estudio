@@ -23,39 +23,47 @@ export const en: VitrineMessages = {
   lang: "en",
   meta: {
     title: "Digital Storefront for shops",
-    description: `I design your storefront before you pay. Catalog with photo, price and size, orders arriving ready on WhatsApp, full project for ${R(v.total)}.`,
+    description: `I design a preview of your storefront at no cost. Catalog with photo, price and size, orders arriving ready on WhatsApp, full project for ${R(v.total)}.`,
   },
   marca: { nome: "RAFAEL RAZEIRA", sufixo: "STUDIO" },
   header: {
-    cta: "SEE MY STORE ↓",
+    cta: "I want to see my store",
+    navAria: "Page sections",
+    nav: [["#projetos", "Live stores"], ["#como", "How it works"], ["#oferta", "Pricing"]] as [string, string][],
     insta: { handle: "@rafaelrazeira.estudio", linha: "Instagram", aria: "Open the studio Instagram, @rafaelrazeira.estudio" },
   },
 
   hero: {
-    eyebrow: "FOR INSTAGRAM AND WHATSAPP SHOPS",
-    h1: <>YOUR STORE, READY BEFORE <em>YOU PAY.</em></>,
-    lead: <><b>Photo, price and size</b> of every item in one link. The customer picks, and the order lands on WhatsApp already assembled, without you answering one by one.</>,
+    eyebrow: "For stores that sell on Instagram",
+    h1: <>See your store ready before you <em>decide.</em></>,
+    lead: <>I email you a preview built from your products within 24h. Like it, and it goes live with orders landing ready on your WhatsApp.</>,
     faixa: "Ready in 7 business days · No monthly fee · You update it yourself ·",
-    phoneAria: "The complete Sölo Urb store scrolling top to bottom inside a phone: catalog, product pages and WhatsApp ordering",
-    liveTag: "LIVE: SÖLO URB · SEE STORES ALREADY USING IT ↓",
+    phoneAria: "The complete Iconic Sneakers store scrolling top to bottom inside a browser window: catalog, product pages and WhatsApp ordering",
+    lojas: "Stores that are already studio clients",
+    rolar: "Scroll to the Iconic storefront",
+    cta: "I want to see my store",
+    cta2: "See live stores",
+    modalAria: "Request your store preview",
+    modalFechar: "Close",
+    liveTag: "Live: Iconic Sneakers · See stores already using it ↓",
     pedido: {
-      k: "ORDER ON YOUR WHATSAPP",
-      texto: <>Hi, Sölo! I want the <b>New Balance 9060</b>, size <b>41</b>. Can you hold it?</>,
-      hora: "14:07 ✓✓",
+      k: "Order on your WhatsApp",
+      texto: <>Hi, Iconic! I want the <b>New Balance 9060</b>, size <b>41</b>. Can you hold it?</>,
+      hora: "now",
     },
   },
 
   form: {
     enviando: "SENDING…",
     enviar: "I WANT TO SEE MY STORE",
-    okTitulo: "GOT YOUR DETAILS",
-    okSub: "I'll email you today.",
-    okCta: "PREFER EMAIL? WRITE ME NOW ↗",
+    okTitulo: "Request received.",
+    okSub: "I'll look at your store and email you the preview within 24h.",
+    okCta: "In a hurry? Email me now",
     /* no en o "falta um toque" é a gravação que falhou: sem WhatsApp para
        abrir, a saída é escrever direto */
     pendenteTitulo: "One more step.",
     pendenteTexto: <>I couldn't save your request just now. Email me directly and I'll <b>start your preview</b> from there.</>,
-    pendenteCta: "EMAIL ME ↗",
+    pendenteCta: "Email me",
     nome: "NAME",
     whatsapp: "WHATSAPP",
     whatsappPh: "+1 555 123 4567",
@@ -83,23 +91,25 @@ export const en: VitrineMessages = {
        rodapé do selo tem lugar para uma palavra a 7.2px, e "BRAZIL ·
        WORLDWIDE" saía do círculo */
     selo: { aria: "Stamp: books open", arco: "RAFAEL RAZEIRA STUDIO", l1: "BOOKS", l2: "OPEN", rodape: "WORLDWIDE" },
-    lead: <>I design.<br />You decide.</>,
-    sub: "Send me your @ and I'll show you your store, ready, in 24h.",
-    aparte: "Free, no strings attached.",
+    lead: <>Your store,<br />your products.</>,
+    sub: "Send me your store's @. I'll build the preview from what's already on your Instagram and email it to you within 24h.",
     instaAria: "Your store on Instagram",
-    instaPh: "yourstore",
-    micro: <><b>The preview is on me.</b> Like it: <b>{R(v.total)}</b> in total, starting with <b>{R(v.entrada)}</b>. Don't like it, just say so.</>,
-    stub: { projetos: "PROJECTS LIVE", prazo: "7", prazoRotulo: "BUSINESS DAYS", mensal: `${o.simbolo}0`, mensalRotulo: "MONTHLY FEE" },
+    instaPh: "@yourstore",
+    enviar: "I want to see my store",
+    enviando: "Sending…",
+    micro: <><b>The preview is on me.</b> Like it? <b>{R(v.total)}</b> in total: <b>{R(v.entrada)}</b> to start and the rest only after you approve. Don't like it? Just say so.</>,
+    stub: { projetos: "STOREFRONTS DESIGNED", prazo: "7", prazoRotulo: "BUSINESS DAYS", mensal: `${o.simbolo}0`, mensalRotulo: "MONTHLY FEE" },
   },
 
   quem: {
-    alt: "Rafael Razeira in sports sunglasses, in black and white, with snowy mountains behind",
+    alt: "Rafael Razeira in sports sunglasses and a black jacket, with snowy mountains behind",
     legenda: "MARINGÁ · BRAZIL · EST. 2026",
     eyebrow: "WHO MAKES IT",
     h2: <>From the first hello<br />to the store live:<br /><em>it's me.</em></>,
+    h2a: "From the first hello to the store live:", h2b: "it's me.",
     p1: "Rafael Razeira. I design, build and publish every storefront, and I'm the one you email. No support queue, no account manager, no phone nobody answers.",
-    p2: "Sölo Urb, scrolling on the phone up there, and the two client stores right below? They came off this desk, along with the other {n} projects in the portfolio.",
-    fatos: { cidade: "BRAZIL · WORKING WORLDWIDE", projetos: "{n} PROJECTS LIVE", resposta: "SAME-DAY REPLY" },
+    p2: "Iconic Sneakers, scrolling up there, and Japa Modas, further down? Both are client stores, and they came off this desk along with the other {n} projects in the portfolio.",
+    fatos: { cidade: "BRAZIL · WORKING WORLDWIDE", projetos: "{n} STOREFRONTS DESIGNED", resposta: "SAME-DAY REPLY" },
     cta: "I WANT TO SEE MY STORE ↑",
   },
 
@@ -141,23 +151,23 @@ export const en: VitrineMessages = {
   projetos: {
     eyebrow: "PROJECTS LIVE",
     h2: <>Don't take my word for it.<br /><em>Open both.</em></>,
-    lead: "Xavier's Sports sells sports jerseys. PR Grife is a multi-brand store with a physical shop in Maringá, Brazil. Both are live, with real products and prices, and open on your phone right now.",
+    lead: "Iconic Sneakers sells sneakers from Florianópolis to all of Brazil. Japa Modas dresses men and has a street shop in Ribeirão Preto, Brazil. Both are live, with real products and prices, and open on your phone right now.",
     live: "LIVE",
     tipo: "CLIENT STORE",
     abrir: "Open the {nome} project website in a new tab",
     alt: "Full page of the {nome} storefront",
     itens: [
       {
-        tag: "SPORTS JERSEYS",
-        copy: "Storefront live, browsable now. Open it on your phone and walk the path the customer walks.",
-        fatos: ["Catalog by clubs and national teams", "A page for every product", "In-stock control", "Orders straight to WhatsApp"],
-        cta: "OPEN XAVIER'S STOREFRONT ↗",
+        tag: "SNEAKERS",
+        copy: "Own stock and made-to-order imports, from Florianópolis to all of Brazil. I delivered the storefront and the panel: the owner updates prices and stock alone.",
+        fatos: ["Catalog by Running, Streetwear and Icons", "A page for every pair", "Made-to-order with a quote", "Orders straight to WhatsApp"],
+        cta: "OPEN ICONIC'S STOREFRONT ↗",
       },
       {
-        tag: "PREMIUM MULTI-BRAND",
-        copy: "A store with a physical shop in Maringá. I delivered the storefront and the panel: the owner publishes items and adjusts stock alone.",
-        fatos: ["Catalog by brand and category", "A page for every product", "Stock panel for the owner", "Orders with the payment method chosen"],
-        cta: "OPEN PR GRIFE'S STOREFRONT ↗",
+        tag: "MENSWEAR",
+        copy: "A street shop in Ribeirão Preto. I delivered the storefront and the panel: the owner publishes items and adjusts stock alone.",
+        fatos: ["A storefront for each category", "A page for every product", "Deals with the old price struck out", "Orders straight to WhatsApp"],
+        cta: "OPEN JAPA'S STOREFRONT ↗",
       },
     ],
     portfolio: "SEE ALL {n} PROJECTS IN THE PORTFOLIO ↗",
@@ -230,7 +240,7 @@ export const en: VitrineMessages = {
 
   processo: {
     eyebrow: "FROM YES TO THE STORE LIVE",
-    h2: <>You see the store ready<br /><em>before paying anything.</em></>,
+    h2: <>You see the preview ready<br /><em>before paying anything.</em></>,
     passos: [
       ["Preview", "You send me your @. I design your storefront and show it to you ready, at no cost."],
       ["Deposit", `Like it? Then: ${R(v.entrada)} and the store's material.`],
@@ -243,18 +253,14 @@ export const en: VitrineMessages = {
   },
 
   faq: {
-    eyebrow: "BEFORE YOU HIRE",
-    manchete: { umL1: "One of these answers", umL2: "starts with", variosL1: "{n} of these answers", variosL2: "start with", fim: "no." },
-    numeros: ["none", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight"],
-    etiqueta: "no",
+    titulo: "Questions before you hire",
+    duvida: { texto: "Didn't find yours?", link: "Email me", msg: "A question about the digital storefront" },
     itens: [
       { p: "Does the storefront take payments from my customers?", r: "No. The storefront organizes the catalog and delivers the order ready to the store's WhatsApp, where you settle payment and delivery.", nao: true },
       { p: "How many products are included?", r: "The storefront has no product limit. I register the first 60 for you, with photo, price and sizes; the rest you add yourself in the panel, in minutes, without calling me.", nao: false },
-      { p: "Is there a monthly fee?", r: `No. The project costs ${R(v.total)} once. Your own domain is optional and has a yearly cost paid directly to the registrar.`, nao: true },
-      { p: "Who updates the storefront afterwards?", r: "You do, through the panel that comes with the storefront: change price and photo, mark sold out or in stock, and add new products.", nao: false },
-      { p: "How long does it take?", r: "Up to 7 business days after all the store's material arrives.", nao: false },
+      { p: "What do I need to send?", r: "Your logo, photos of the products and a list of them with price and sizes. The 7 business days start on the day all of that arrives.", nao: false },
       { p: `Why ${R(v.total)} and not ${R(1000)}?`, r: "Because there's no agency in the middle. You talk to me from the first hello to the store live, with no support desk, no project manager and no markup. The process is the same in every project, so what's left of the cost is my time.", nao: false },
-      { p: "Do I have to pay everything up front?", r: `No. It's ${R(v.entrada)} to start and ${R(v.saldo)} only after the presentation and your approval. We settle the payment by email, and there's no card on this page.`, nao: true },
+      { p: "Will it show up on Google?", r: "It shows up for your store's name: every product has its own page, with name, price and photo that Google reads. What it won't do is beat a big retailer on a generic search like \"Nike sneakers\". Promising a Google ranking would be a lie.", nao: false },
     ],
   },
 
@@ -264,6 +270,79 @@ export const en: VitrineMessages = {
     lead: `Leave your @ and I'll design your storefront and show it to you ready, for free. If you've already decided, it starts with ${R(v.entrada)}.`,
     cta: "I WANT TO SEE MY STORE ↑",
     ghost: "SEE WHAT'S INCLUDED",
+  },
+
+  mb: {
+    quem: { texto: "Rafael Razeira, from Maringá, Brazil. I built every one of the studio's {c}+ storefronts, from the layout to the live address. And you talk to me, by email, from the first hello to delivery.", assinatura: "Rafael Razeira" },
+    rodape: { frase: "Digital storefronts for stores that sell on Instagram. Maringá, Brazil.", navAria: "Footer", copy: "© 2026 Rafael Razeira Estúdio", contato: "Talk to me", msg: "A question from the studio site" },
+    placar: {
+      rotulo: "How it works, in three numbers",
+      itens: [["+{c}", "storefronts designed"], ["24h", "to the preview"], [R(0), "to see yours"]] as [string, string][],
+    },
+    lojasAr: {
+      h2a: "See live stores", h2b: "in seconds.",
+      lead: "Storefronts of the studio's clients, with real products and prices. Tap one to open it on your phone.",
+      abasAria: "Filter by store type",
+      abas: [["todas", "All"], ["sneakers", "Sneakers"], ["moda", "Fashion"], ["esporte", "Sports"], ["skate", "Skate"]] as [string, string][],
+      abrir: "Open the {nome} storefront in a new tab",
+    },
+    jornada: {
+      h2: <>From Instagram to the order. <em>None of the steps is yours.</em></>,
+      zapNome: "Store · WhatsApp",
+      cartoes: [
+        { t: "The customer chooses alone", p: "Photo, price and size of every item in one link, in your bio. The questions that land in your DMs today, answered before they type." },
+        { t: "The order lands ready on WhatsApp", p: "The message already comes with the chosen item. You just confirm and settle the payment." },
+      ],
+    },
+    etapas: {
+      h2: <>From the preview <em>to the store live.</em></>,
+      h2a: "From the preview", h2b: "to the store live.",
+      itens: [
+        { n: "01", t: "Preview within 24h, at no cost", p: "You send me your store's @. I design your storefront with your products and show it to you ready.", chip: "Hi! The @yourstore storefront is ready. Take a look:" },
+        { n: "02", t: `Like it? ${R(v.entrada)} to start`, p: "Then you send the store's material and I build the whole catalog. The balance only after approval.", chip: `${R(v.entrada)} now · ${R(v.saldo)} on delivery` },
+        { n: "03", t: "Live within 7 business days, with the panel yours", p: "Change price, photo and stock yourself, from your phone. No monthly fee.", chip: "" },
+      ],
+      bento: {
+        painel: { t: "The panel is yours", p: ["Change price and photo on the spot", "Mark sold out or in stock", "Add a new item and it's on the storefront the same minute"], alt: "The store panel adding an item: photo, name, category, price and sizes, then the item showing up in the list", legenda: "The real panel, adding an item. It is the same in every store." },
+        previa: { t: "The preview lands on your WhatsApp", p: "Within 24h, at no cost.", msg: "Hi! The @yourstore storefront is ready, built with the photos you sent:", link: "yourstore.vercel.app" },
+        pedido: { t: "The order arrives ready", p: "With the item and the size. You just confirm." },
+        mensal: { t: "No monthly fee", valor: R(0), sufixo: "per month", p: "Your own domain is optional, yearly, and paid directly to the registrar.", meses: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"] },
+      },
+    },
+    preco: {
+      eyebrow: "No monthly fee",
+      h2: <>Complete storefront for <em>{R(v.total)}.</em></>,
+      h2a: "Complete storefront for", h2b: `${R(v.total)}.`,
+      lead: "Half to start, half on delivery. The balance only after you approve.",
+      linhas: [[R(v.entrada), "to start"], [R(v.saldo), "on delivery, after approval"]] as [string, string][],
+      pix: null as string | null,
+      grupos: [["The site", [0, 1, 2, 4]], ["The panel", [5, 3]], ["Delivery", [6, 7, 8]]] as [string, number[]][],
+      cta: "I want to see my store",
+      /* sem compra direta em inglês: o checkout é Pix, em reais */
+      direto: null as { texto: string; botao: string } | null,
+      nota: "The preview is free. You only pay if you like it.",
+      termos: "See scope and terms",
+    },
+    depo: {
+      h2: <>What they say <em>on WhatsApp.</em></>,
+      titulo: "What they say on WhatsApp",
+      lead: "Real messages, copied from the conversation: from clients and from store owners who saw the preview. In Portuguese, as written.",
+      cliente: "Client", previa: "Saw the preview", pontosAria: "Choose the testimonial",
+      /* só o Luciano, da Iconic (28/10, pedido do Rafael), com a foto dele;
+         as outras seis frases ficaram guardadas na conversa de 28/10 */
+      itens: [
+        { q: ["Parabéns pelo trabalho! Parabéns pela agilidade e prestatividade! Você se antecipou em várias coisas que não tínhamos pedido e principalmente em fazer uma entrega com rapidez.", "Para nós ajudou muito, pois já tínhamos desistido de pegar esta Black Friday, mas ainda deu tempo hábil por causa do seu empenho!"], quem: "Luciano", loja: "Iconic Sneakers", cliente: true, k: "iconic", foto: "/assets/depo/luciano.webp",
+          /* o destaque (28/10): um trecho EXATO da segunda frase, com as reticências dizendo que é recorte; a mensagem inteira continua embaixo */
+          destaque: "…já tínhamos desistido de pegar esta Black Friday, mas ainda deu tempo hábil por causa do seu empenho!", site: "https://iconicsneakers.com.br", dominio: "iconicsneakers.com.br", tela: "/assets/demo/iconic-vitrine" },
+      ] as { q: string[]; quem: string; loja?: string; cliente: boolean; k?: string; foto?: string; destaque?: string; site?: string; dominio?: string; tela?: string }[],
+    },
+    fim: {
+      h2: <>Your store could be <em>the next one.</em></>,
+      h2a: "Your store could be", h2b: "the next one.",
+      lead: "Leave your @ and I'll design your storefront preview within 24h, at no cost.",
+      cta: "I want to see my store",
+      cta2: "See the price",
+    },
   },
 
   rodape: {
@@ -276,7 +355,7 @@ export const en: VitrineMessages = {
     copyright: "© 2026 RAFAEL RAZEIRA STUDIO",
   },
 
-  barra: { destaque: "FREE", sub: "Your storefront, designed", cta: "I WANT TO SEE MY STORE" },
+  barra: { cta: "I want to see my store" },
 
   contato: { abertura: "Digital storefront preview for my store", nome: "Name", loja: "Store", plano: "Plan", ref: "Ref" },
 };

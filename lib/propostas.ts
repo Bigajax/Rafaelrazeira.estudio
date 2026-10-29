@@ -477,11 +477,14 @@ export const PROPOSTAS: Record<string, Proposta> = {
      só a entrada da tabela, R$ 199 no Pix, e os R$ 800 vêm na entrega pela
      página de entrega da loja, como em toda proposta (lib/oferta.ts). A
      vitrine-v2 acima segue intacta, com o R$ 997 do teste antigo. */
+  /* 28/10/2026: a entrada da tabela passou para os 50%, R$ 500 (lib/oferta.ts),
+     e os R$ 499 vêm na entrega. Esta é a única do arquivo que segue a tabela
+     em vez de uma proposta enviada, então é a única que muda. */
   "vitrine-direta": {
     titulo: "Rafael Razeira Estúdio, Vitrine Digital",
     whatsapp: "5544991246187",
     itens: {
-      entrada_pix: { label: "Vitrine digital: entrada para início do projeto", valor: 199, metodo: "pix" },
+      entrada_pix: { label: "Vitrine digital: entrada para início do projeto", valor: 500, metodo: "pix" },
     },
   },
   /* A HG Surf Wear (06/10/2026), decisão do Rafael: duas formas na mesma

@@ -33,6 +33,8 @@ import sharp from "sharp";
 const ARQUIVOS = [
   { origem: "public/assets/case-xavier-desk.jpg", mob: 900 },
   { origem: "public/assets/case-prgrife-desk.jpg", mob: 900 },
+  { origem: "public/assets/case-iconic-desk.jpg", mob: 900 },
+  { origem: "public/assets/case-japa-desk.jpg", mob: 900 },
   { origem: "public/assets/demo/xavier-painel.jpg" },
   { origem: "public/assets/demo/xavier-painel-mob.jpg" },
   /* As capturas de celular dos cases da /estudio e da /landing-page

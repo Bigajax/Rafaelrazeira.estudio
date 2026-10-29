@@ -3,94 +3,276 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Termos de Uso — Rafael Razeira Estúdio</title>
+<title>Termos de uso | Rafael Razeira Estúdio</title>
 <meta name="description" content="Termos de uso do site do Rafael Razeira Estúdio: finalidade, propriedade intelectual e responsabilidades." />
 <link rel="icon" type="image/png" href="/assets/favicon.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="/css/base.css" />
-<link rel="stylesheet" href="/css/legal.css" />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<!--
+  OS TERMOS NO DESENHO DA /vitrine-digital (28/10/2026, pedido do Rafael)
+  Era o legal.css antigo (grade de fundo, Archivo em caixa alta, mono). Agora
+  a página tem o próprio estilo, o mesmo da vitrine-digital: branco, a
+  Instrument Sans nos títulos, a Inter no corpo, a pílula do topo com a logo
+  em arquivo e o rodapé claro. O legal.css segue só na /privacidade.
+  Animação: o título sobe palavra por palavra, uma barra verde fina no topo
+  mostra quanto da leitura já foi, e o índice lateral acende a seção que
+  está na tela. Tudo parado para quem pede menos movimento.
+  O TEXTO foi posto em dia com a vitrine-digital no mesmo dia: a seção 02 falava
+  em landing pages e "formulário de briefing" e dizia que só se contrata por
+  proposta, o que contradizia a compra direta da 06; agora ela traz a prévia sem
+  custo e os dois jeitos de contratar. A numeração ficou a mesma, porque a página
+  e o cofre citam a "seção 06". Nenhum "—" em texto visível (regra da casa).
+-->
+<style>
+  :root {
+    --ink: #14181a; --texto: #4a4f52; --suave: #6b7072; --fio: #e6e6e3; --papel: #f6f6f4;
+    --verde: #0a8a55; --rosa: #e31b62;
+    --titulo: "Instrument Sans", "Inter", system-ui, sans-serif;
+    --corpo: "Inter", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box }
+  html { scroll-behavior: smooth; overflow-x: clip }
+  body { margin: 0; background: #fff; color: var(--ink); font: 400 16px/1.65 var(--corpo); -webkit-font-smoothing: antialiased; overflow-x: clip }
+  a { color: inherit }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--rosa); outline-offset: 3px; border-radius: 6px }
+
+  /* a barra de leitura */
+  .progresso { position: fixed; z-index: 30; left: 0; top: 0; height: 3px; width: 100%; background: var(--verde); transform: scaleX(0); transform-origin: left }
+
+  /* a pílula do topo */
+  .topo {
+    position: sticky; top: 10px; z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    max-width: 1040px; margin: 10px auto 0; padding: 10px 12px 10px 20px;
+    background: #ffffffe6; -webkit-backdrop-filter: saturate(1.6) blur(14px); backdrop-filter: saturate(1.6) blur(14px);
+    border: 1px solid var(--fio); border-radius: 999px; box-shadow: 0 8px 30px #0000000d;
+  }
+  .marca { display: inline-flex; align-items: center; gap: 9px; text-decoration: none; position: relative }
+  .marca::before { content: ""; position: absolute; inset: -10px -6px }
+  .marca img { display: block }
+  .voltar {
+    display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 16px;
+    border-radius: 999px; background: var(--papel); text-decoration: none; font: 500 14px var(--corpo); color: var(--ink);
+    transition: background .15s ease;
+  }
+  .voltar:hover { background: #ececea }
+
+  /* a abertura */
+  .abertura { max-width: 1040px; margin: 0 auto; padding: clamp(56px, 8vw, 104px) 20px clamp(32px, 4vw, 48px) }
+  .data { margin: 0 0 16px; font: 500 13.5px var(--corpo); color: var(--suave) }
+  h1 { margin: 0; max-width: 14ch; font: 400 clamp(40px, 6vw, 76px)/1.02 var(--titulo); letter-spacing: -.04em; text-wrap: balance }
+  h1 em { font-style: normal; color: var(--verde) }
+  .intro { margin: 22px 0 0; max-width: 52ch; font-size: clamp(16px, 1.3vw, 18px); color: var(--texto) }
+  .palavra { display: inline-block; white-space: pre; animation: sobe .7s cubic-bezier(.2, .7, .2, 1) both; animation-delay: calc(var(--i) * 70ms + 80ms) }
+  .data, .intro { animation: aparece .8s cubic-bezier(.2, .7, .2, 1) both }
+  .intro { animation-delay: .55s }
+  @keyframes sobe { from { opacity: 0; transform: translateY(.35em); filter: blur(8px) } to { opacity: 1; transform: none; filter: blur(0) } }
+  @keyframes aparece { from { opacity: 0; transform: translateY(14px) } to { opacity: 1; transform: none } }
+
+  /* o corpo: índice à esquerda, texto à direita */
+  .doc { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: clamp(32px, 6vw, 88px); max-width: 1040px; margin: 0 auto; padding: 0 20px clamp(56px, 7vw, 96px); align-items: start }
+  .indice { position: sticky; top: 100px; border-left: 1px solid var(--fio) }
+  .indice ol { list-style: none; margin: 0; padding: 0 }
+  .indice a {
+    position: relative; display: block; padding: 7px 0 7px 16px; text-decoration: none;
+    font: 400 14px/1.35 var(--corpo); color: var(--suave); transition: color .2s ease;
+  }
+  .indice a::before {
+    content: ""; position: absolute; left: -1px; top: 6px; bottom: 6px; width: 2px; background: var(--verde);
+    transform: scaleY(0); transition: transform .3s cubic-bezier(.2, .7, .2, 1);
+  }
+  .indice a:hover { color: var(--ink) }
+  .indice a.ativo { color: var(--ink); font-weight: 500 }
+  .indice a.ativo::before { transform: scaleY(1) }
+
+  .secao { padding: 28px 0; border-top: 1px solid var(--fio); scroll-margin-top: 90px }
+  .secao:first-child { border-top: 0; padding-top: 0 }
+  .secao h2 { display: flex; align-items: baseline; gap: 12px; margin: 0 0 12px; font: 500 clamp(20px, 2vw, 24px)/1.25 var(--titulo); letter-spacing: -.02em }
+  .secao h2 span { font: 500 13px var(--corpo); color: var(--verde); letter-spacing: 0 }
+  .secao p { margin: 0; max-width: 64ch; color: var(--texto) }
+  .secao p + p { margin-top: 12px }
+  .secao b { color: var(--ink); font-weight: 600 }
+  .secao a { color: var(--verde); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: #0a8a5566 }
+
+  /* a compra direta é a seção que quem paga lê: num cartão claro */
+  .secao.destaque { margin: 8px 0; padding: 26px; border: 0; border-radius: 22px; background: var(--papel) }
+  .secao.destaque + .secao { border-top: 0 }
+
+  .nota { margin: 28px 0 0; padding-top: 20px; border-top: 1px solid var(--fio); max-width: 64ch; font-size: 13.5px; color: var(--suave) }
+
+  /* o rodapé, o mesmo da vitrine-digital */
+  .rodape { background: var(--papel); border-top: 1px solid var(--fio); padding: 40px 20px 32px }
+  .rodape div { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 28px; max-width: 1040px; margin: 0 auto }
+  .rodape nav { display: flex; flex-wrap: wrap; gap: 4px 22px }
+  .rodape nav a { padding: 8px 0; text-decoration: none; font-size: 14px; color: var(--texto) }
+  .rodape nav a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px }
+  .rodape small { display: block; max-width: 1040px; margin: 24px auto 0; padding-top: 16px; border-top: 1px solid var(--fio); font-size: 12.5px; color: var(--suave) }
+
+  @media (max-width: 820px) {
+    .doc { grid-template-columns: minmax(0, 1fr) }
+    .indice { display: none }
+    .topo { margin: 10px 12px 0; padding-left: 16px }
+  }
+  @media (max-width: 400px) {
+    .marca .nome { width: 100px; height: 16px }
+    .marca .rr { width: 40px; height: 22px }
+    .voltar { padding: 0 13px; font-size: 13.5px }
+    .secao.destaque { padding: 20px; margin-inline: -4px }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto }
+    .palavra, .data, .intro { animation: none }
+    .indice a::before { transition: none }
+    .progresso { display: none }
+  }
+</style>
 </head>
 <body>
 
-<div class="grid-lines" aria-hidden="true">
-  <span></span><span></span><span></span><span></span><span></span>
-</div>
+<div class="progresso" aria-hidden="true"></div>
 
-<header class="legal-top">
-  <a class="brand" href="/">RAFAEL RAZEIRA <small>ESTÚDIO</small></a>
-  <a class="back" href="/">← VOLTAR AO SITE</a>
+<header class="topo">
+  <a class="marca" href="/vitrine-digital" aria-label="Rafael Razeira Estúdio, voltar à vitrine digital">
+    <img class="rr" src="/assets/marca/rr-monograma.webp" width="46" height="25" alt="" />
+    <img class="nome" src="/assets/marca/rr-nome.webp" width="120" height="19" alt="" />
+  </a>
+  <a class="voltar" href="/vitrine-digital">Voltar ao site</a>
 </header>
 
-<main class="legal-doc">
-  <p class="l-meta"><b>TERMOS DE USO</b> — ÚLTIMA ATUALIZAÇÃO: 20/10/2026</p>
-  <h1>AS REGRAS DE USO DESTE SITE.</h1>
-  <p class="l-intro">Ao navegar por este site, você concorda com os termos abaixo. Eles foram escritos em <b>linguagem simples</b>, para que você saiba exatamente o que esperar.</p>
+<section class="abertura">
+  <p class="data">Termos de uso, atualizados em 28/10/2026</p>
+  <h1 data-palavras>As regras de uso <em>deste site.</em></h1>
+  <p class="intro">Ao navegar por este site, você concorda com os termos abaixo. Eles foram escritos em linguagem simples, para que você saiba exatamente o que esperar.</p>
+</section>
 
-  <section class="l-sec">
-    <span class="l-num">01</span>
-    <h2>QUEM SOMOS</h2>
-    <p>Este site pertence ao <b>Rafael Razeira Estúdio</b>, operado por <b>Rafael Razeira Barbon</b> (CPF 425.291.858-83), com atuação em Maringá/PR. Contato: <a href="mailto:rafael.rbarbon@gmail.com">rafael.rbarbon@gmail.com</a>.</p>
-  </section>
+<div class="doc">
+  <nav class="indice" aria-label="Seções dos termos">
+    <ol>
+      <li><a href="#quem-somos">Quem somos</a></li>
+      <li><a href="#para-que-serve">O site e a prévia sem custo</a></li>
+      <li><a href="#propriedade">Propriedade intelectual</a></li>
+      <li><a href="#disponibilidade">Disponibilidade e responsabilidades</a></li>
+      <li><a href="#privacidade">Privacidade e dados pessoais</a></li>
+      <li><a href="#compra-direta">Compra direta da vitrine digital</a></li>
+      <li><a href="#foro">Foro</a></li>
+      <li><a href="#alteracoes">Alterações destes termos</a></li>
+    </ol>
+  </nav>
 
-  <section class="l-sec">
-    <span class="l-num">02</span>
-    <h2>PARA QUE SERVE ESTE SITE</h2>
-    <p>O site apresenta os serviços do estúdio — estratégia, copy e design de landing pages — e permite que você entre em contato pelo formulário de briefing.</p>
-    <p><b>O envio do formulário não constitui contratação.</b> Ele é apenas uma solicitação de contato: a contratação de qualquer serviço acontece somente mediante proposta comercial específica, aceite formal e contrato entre as partes, com escopo, prazo e valores definidos caso a caso.</p>
-  </section>
+  <main>
+    <section class="secao" id="quem-somos">
+      <h2><span>01</span>Quem somos</h2>
+      <p>Este site pertence ao <b>Rafael Razeira Estúdio</b>, operado por <b>Rafael Razeira Barbon</b> (CPF 425.291.858-83), com atuação em Maringá/PR. Contato: <a href="mailto:rafaelrazeira.estudio@gmail.com">rafaelrazeira.estudio@gmail.com</a>.</p>
+    </section>
 
-  <section class="l-sec">
-    <span class="l-num">03</span>
-    <h2>PROPRIEDADE INTELECTUAL</h2>
-    <p>Os textos, o design, o código e a identidade visual deste site pertencem ao Rafael Razeira Estúdio e não podem ser copiados, reproduzidos ou usados comercialmente sem autorização prévia por escrito.</p>
-    <p>Os projetos exibidos na seção de cases foram <b>desenvolvidos pelo Rafael Razeira Estúdio</b> para negócios reais. As marcas, nomes e produtos de terceiros eventualmente citados ou retratados nesses projetos <b>pertencem aos seus respectivos titulares</b>, e sua exibição tem finalidade exclusiva de portfólio.</p>
-  </section>
+    <section class="secao" id="para-que-serve">
+      <h2><span>02</span>O site e a prévia sem custo</h2>
+      <p>O site apresenta os serviços do estúdio, como a vitrine digital para lojas que vendem pelo Instagram, e permite que você peça uma prévia da sua vitrine ou entre em contato.</p>
+      <p><b>A prévia não custa nada e não obriga a nada.</b> Você informa o @ da sua loja e o seu WhatsApp, e recebe a prévia em até 24h. Depois de ver, você decide se quer seguir.</p>
+      <p><b>Pedir a prévia não é contratação.</b> A contratação acontece de um destes dois jeitos: pela proposta comercial aceita por você, com escopo, prazo e valores definidos, ou pelo pagamento da entrada na compra direta, descrita na seção 06.</p>
+    </section>
 
-  <section class="l-sec">
-    <span class="l-num">04</span>
-    <h2>DISPONIBILIDADE E RESPONSABILIDADES</h2>
-    <p>Trabalhamos para manter o site sempre no ar, mas ele pode ficar temporariamente indisponível por manutenção, atualizações ou falhas de infraestrutura de terceiros — sem que isso gere qualquer responsabilidade ao estúdio.</p>
-    <p>O conteúdo do site tem caráter informativo e comercial e pode ser alterado a qualquer momento, sem aviso prévio. Valores, prazos e condições apresentados aqui são referências iniciais e só se tornam vinculantes quando formalizados em proposta e contrato.</p>
-  </section>
+    <section class="secao" id="propriedade">
+      <h2><span>03</span>Propriedade intelectual</h2>
+      <p>Os textos, o design, o código e a identidade visual deste site pertencem ao Rafael Razeira Estúdio e não podem ser copiados, reproduzidos ou usados comercialmente sem autorização prévia por escrito.</p>
+      <p>As lojas, capturas e depoimentos exibidos no site são de projetos <b>desenvolvidos pelo Rafael Razeira Estúdio</b> para negócios reais. As marcas, nomes e produtos de terceiros eventualmente citados ou retratados nesses projetos <b>pertencem aos seus respectivos titulares</b>, e sua exibição tem finalidade exclusiva de portfólio.</p>
+    </section>
 
-  <section class="l-sec">
-    <span class="l-num">05</span>
-    <h2>PRIVACIDADE E DADOS PESSOAIS</h2>
-    <p>O tratamento dos dados pessoais coletados neste site — incluindo o formulário de briefing e as tecnologias de mensuração de anúncios — está descrito na nossa <a href="/privacidade">Política de Privacidade</a>, que faz parte destes termos.</p>
-  </section>
+    <section class="secao" id="disponibilidade">
+      <h2><span>04</span>Disponibilidade e responsabilidades</h2>
+      <p>Trabalhamos para manter o site sempre no ar, mas ele pode ficar temporariamente indisponível por manutenção, atualizações ou falhas de infraestrutura de terceiros, sem que isso gere qualquer responsabilidade ao estúdio.</p>
+      <p>O conteúdo do site tem caráter informativo e comercial e pode ser alterado a qualquer momento, sem aviso prévio. Valores, prazos e condições valem como publicados no momento da sua contratação, pela proposta aceita ou pela compra direta.</p>
+    </section>
 
-  <section class="l-sec">
-    <span class="l-num">06</span>
-    <h2>COMPRA DIRETA DA VITRINE DIGITAL</h2>
-    <p>Na página da vitrine digital, a contratação acontece com o pagamento da <b>entrada de R$ 199</b> no Pix. O <b>saldo de R$ 800</b> é pago na entrega, só depois que você aprovar a vitrine.</p>
-    <p><b>Desistência em 7 dias.</b> Em até 7 dias corridos depois do pagamento da entrada, você pode desistir por qualquer motivo e recebe os R$ 199 inteiros de volta, no mesmo Pix, em até 7 dias, como garante o Código de Defesa do Consumidor (art. 49).</p>
-    <p><b>Prazo.</b> A primeira versão fica pronta em até 7 dias úteis depois que o estúdio recebe todo o material da loja: logo, fotos e a lista das peças. Se esse prazo não for cumprido, você pode pedir os R$ 199 de volta, inteiros.</p>
-    <p><b>Aprovação.</b> Você vê a primeira versão antes da publicação e tem uma rodada de ajustes incluída. Se você não aprovar, a vitrine não é publicada e o saldo de R$ 800 não é cobrado; fora dos casos acima, a entrada cobre o trabalho feito até ali.</p>
-    <p>Para pedir a devolução, basta uma mensagem no WhatsApp (44) 99124-6187 ou no e-mail rafael.rbarbon@gmail.com.</p>
-  </section>
+    <section class="secao" id="privacidade">
+      <h2><span>05</span>Privacidade e dados pessoais</h2>
+      <p>O tratamento dos dados pessoais coletados neste site, incluindo o pedido de prévia, o pagamento e as tecnologias de mensuração de anúncios, está descrito na nossa <a href="/privacidade">Política de Privacidade</a>, que faz parte destes termos.</p>
+    </section>
 
-  <section class="l-sec">
-    <span class="l-num">07</span>
-    <h2>FORO</h2>
-    <p>Estes termos são regidos pelas leis brasileiras. Para qualquer controvérsia decorrente do uso deste site, fica eleito o foro da comarca de <b>Maringá/PR</b>, com renúncia a qualquer outro, por mais privilegiado que seja.</p>
-  </section>
+    <section class="secao destaque" id="compra-direta">
+      <h2><span>06</span>Compra direta da vitrine digital</h2>
+      <p>Na página da vitrine digital, a contratação acontece com o pagamento da <b>entrada de R$ 500</b> no Pix. O <b>saldo de R$ 499</b> é pago na entrega, só depois que você aprovar a vitrine.</p>
+      <p><b>Desistência em 7 dias.</b> Em até 7 dias corridos depois do pagamento da entrada, você pode desistir por qualquer motivo e recebe os R$ 500 inteiros de volta, no mesmo Pix, em até 7 dias, como garante o Código de Defesa do Consumidor (art. 49).</p>
+      <p><b>Prazo.</b> A primeira versão fica pronta em até 7 dias úteis depois que o estúdio recebe todo o material da loja: logo, fotos e a lista das peças. Se esse prazo não for cumprido, você pode pedir os R$ 500 de volta, inteiros.</p>
+      <p><b>Aprovação.</b> Você vê a primeira versão antes da publicação e tem uma rodada de ajustes incluída. Se você não aprovar, a vitrine não é publicada e o saldo de R$ 499 não é cobrado; fora dos casos acima, a entrada cobre o trabalho feito até ali.</p>
+      <p>Para pedir a devolução, basta uma mensagem no WhatsApp <a href="https://wa.me/5544991246187">(44) 99124-6187</a> ou no e-mail <a href="mailto:rafaelrazeira.estudio@gmail.com">rafaelrazeira.estudio@gmail.com</a>.</p>
+    </section>
 
-  <section class="l-sec">
-    <span class="l-num">08</span>
-    <h2>ALTERAÇÕES DESTES TERMOS</h2>
-    <p>Estes termos podem ser atualizados a qualquer momento. A data da última atualização aparece no topo da página, e a versão publicada aqui é sempre a vigente.</p>
-  </section>
+    <section class="secao" id="foro">
+      <h2><span>07</span>Foro</h2>
+      <p>Estes termos são regidos pelas leis brasileiras. Para qualquer controvérsia decorrente do uso deste site, fica eleito o foro da comarca de <b>Maringá/PR</b>, com renúncia a qualquer outro, por mais privilegiado que seja.</p>
+    </section>
 
-  <p class="l-note">Este documento tem caráter informativo e foi escrito em linguagem simples para facilitar a leitura. Ele não substitui aconselhamento jurídico profissional.</p>
-</main>
+    <section class="secao" id="alteracoes">
+      <h2><span>08</span>Alterações destes termos</h2>
+      <p>Estes termos podem ser atualizados a qualquer momento. A data da última atualização aparece no topo da página, e a versão publicada aqui é sempre a vigente.</p>
+    </section>
 
-<footer class="legal-footer">
-  <a href="/">RAFAEL RAZEIRA ESTÚDIO</a>
-  <a href="/privacidade">POLÍTICA DE PRIVACIDADE</a>
-  <a href="mailto:rafael.rbarbon@gmail.com">RAFAEL.RBARBON@GMAIL.COM</a>
+    <p class="nota">Este documento tem caráter informativo e foi escrito em linguagem simples para facilitar a leitura. Ele não substitui aconselhamento jurídico profissional.</p>
+  </main>
+</div>
+
+<footer class="rodape">
+  <div>
+    <a class="marca" href="/vitrine-digital" aria-label="Rafael Razeira Estúdio">
+      <img class="rr" src="/assets/marca/rr-monograma.webp" width="46" height="25" alt="" />
+      <img class="nome" src="/assets/marca/rr-nome.webp" width="120" height="19" alt="" />
+    </a>
+    <nav aria-label="Rodapé">
+      <a href="/vitrine-digital">Vitrine digital</a>
+      <a href="/privacidade">Política de privacidade</a>
+      <a href="mailto:rafaelrazeira.estudio@gmail.com">rafaelrazeira.estudio@gmail.com</a>
+    </nav>
+  </div>
+  <small>© 2026 Rafael Razeira Estúdio</small>
 </footer>
 
+<script>
+  (function () {
+    var parado = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    /* o título palavra por palavra (o texto continua inteiro para o leitor de tela) */
+    var h1 = document.querySelector("[data-palavras]");
+    if (h1 && !parado) {
+      var i = 0;
+      h1.setAttribute("aria-label", h1.textContent);
+      (function quebrar(no) {
+        Array.prototype.slice.call(no.childNodes).forEach(function (filho) {
+          if (filho.nodeType === 3) {
+            var frag = document.createDocumentFragment();
+            filho.textContent.split(/(\s+)/).forEach(function (parte) {
+              if (!parte) return;
+              if (/^\s+$/.test(parte)) { frag.appendChild(document.createTextNode(parte)); return; }
+              var s = document.createElement("span");
+              s.className = "palavra"; s.setAttribute("aria-hidden", "true");
+              s.style.setProperty("--i", i++); s.textContent = parte;
+              frag.appendChild(s);
+            });
+            no.replaceChild(frag, filho);
+          } else if (filho.nodeType === 1) quebrar(filho);
+        });
+      })(h1);
+    }
+
+    /* a barra de leitura */
+    var barra = document.querySelector(".progresso");
+    function ler() {
+      var total = document.documentElement.scrollHeight - innerHeight;
+      if (barra) barra.style.transform = "scaleX(" + (total > 0 ? Math.min(1, scrollY / total) : 0) + ")";
+    }
+    addEventListener("scroll", ler, { passive: true }); addEventListener("resize", ler); ler();
+
+    /* o índice acende a seção que está na tela */
+    var links = {};
+    document.querySelectorAll(".indice a").forEach(function (a) { links[a.getAttribute("href").slice(1)] = a; });
+    var io = new IntersectionObserver(function (entradas) {
+      entradas.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        Object.keys(links).forEach(function (id) { links[id].classList.toggle("ativo", id === e.target.id); });
+      });
+    }, { rootMargin: "-30% 0px -60% 0px" });
+    document.querySelectorAll(".secao").forEach(function (s) { io.observe(s); });
+  })();
+</script>
 </body>
 </html>

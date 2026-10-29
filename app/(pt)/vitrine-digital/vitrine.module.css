@@ -77,12 +77,14 @@
   --mint: #CDEFDD;
   --ink: #14181A;
   --ink-soft: #3A4144;
-  --paper: #F2EFE6;
-  --paper-2: #EAE6D9;
-  --line: #D8D3C4;
+  /* fundo branco desde 28/10, a pedido do Rafael (era o papel creme #F2EFE6);
+     a sombra deslocada e o filete saíram do bege para cinza neutro junto */
+  --paper: #FFFFFF;
+  --paper-2: #ECECEA;
+  --line: #DCDCD9;
   --line-dark: #2A3134;
   /* material autêntico das conversas: papel de parede e bolha do WhatsApp */
-  --wa-paper: #ece5dd;
+  --wa-paper: #efeae2;
   --wa-bubble: #dcf8c6;
   --wa-tick: #53bdeb;
   --pad: clamp(20px, 5vw, 64px);
@@ -292,12 +294,25 @@ html:has(.site) { scroll-behavior: smooth }
 .header {
   height: 64px; position: sticky; top: 0; z-index: 50;
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
-  padding: 0 var(--pad); background: #f2efe6e8; backdrop-filter: blur(10px);
+  padding: 0 var(--pad); background: #ffffffeb; backdrop-filter: blur(10px);
   box-shadow: 0 1.5px 0 var(--ink), 0 4px 0 var(--line);
 }
 .brand { font-family: var(--display); font-stretch: 62%; font-weight: 900; font-size: 21px; line-height: .86; letter-spacing: .004em }
 .brand b, .brand span { display: block }
 .brand span { font: 400 8.5px var(--mono); letter-spacing: .42em; color: var(--green-dark); margin-top: 3px }
+/* o monograma RR à esquerda do nome, só no header (28/10), na altura das
+   duas linhas do logotipo. O `.brand` puro segue no rodapé e na /vitrine-v2,
+   que dividem este arquivo: por isso o modificador e não a regra-base. */
+.brandComRR { display: inline-flex; align-items: center; gap: 10px; flex: none }
+/* as duas medidas fixas, não `width: auto`: o 373x218 dá 51,3px e o Next
+   acusa no console a largura arredondada como "só um lado modificado" */
+.brandRR { display: block; width: 51px; height: 30px; object-fit: contain }
+/* o envelope do nome também é span e pegaria a regra do "ESTÚDIO" acima */
+.brandComRR > span { font: inherit; letter-spacing: inherit; color: inherit; margin-top: 0 }
+@media (max-width: 400px) {
+  .brandComRR { gap: 8px }
+  .brandRR { width: 44px; height: 26px }
+}
 
 /* ---------- o Instagram do estúdio (09/10/2026) ----------
    No vão entre a logo e o botão, onde morava o "RESPOSTA NO MESMO DIA"
@@ -331,6 +346,22 @@ html:has(.site) { scroll-behavior: smooth }
     display: grid; place-items: center; background: var(--ink); color: #fff; border: 1.5px solid var(--paper);
   }
   .instaSelo svg { width: 9px; height: 9px }
+}
+/* o Instagram só como símbolo no canto direito (28/10): no degradê do
+   próprio app (o gradiente mora no SVG), sem moldura, 40px de área de toque */
+.site .instaIcone { display: grid; place-items: center; flex: none; width: 40px; height: 40px; margin-right: -8px; transition: transform .15s ease }
+@media (hover: hover) and (pointer: fine) {
+  .site .instaIcone:hover { transform: scale(1.08) }
+}
+.site .instaIcone:focus-visible { outline: 2px solid var(--rosa); outline-offset: 2px; border-radius: 8px }
+/* em 360, logo com o RR, pill e ícone somavam 338px numa linha de 320 e o
+   ícone saía 2px da tela (medido em 28/10): abaixo de 400 o nome desce
+   para 19px, os vãos encolhem e o alvo do ícone fica em 36px */
+@media (max-width: 400px) {
+  .header { gap: 10px }
+  .brandComRR { font-size: 19px }
+  .site .headRight { gap: 6px }
+  .site .instaIcone { width: 36px; height: 36px; margin-right: -6px }
 }
 /* grafite, não rosa: este botão só ROLA até a etiqueta, e o rosa está
    reservado para o envio. Ver a nota de 60/30/10 no topo do arquivo. */
@@ -746,21 +777,7 @@ html:has(.site) { scroll-behavior: smooth }
   margin-top: 9px; padding-right: 18px;
   font: 400 13.5px/1.5 var(--body); color: var(--ink-soft);
 }
-/* ---------- o aparte (28/08) ----------
-   A fala que fecha o cartão, fora da prosa: ela é a única linha aqui em
-   que EU falo, e no meio do parágrafo em corpo de leitura ela sumia.
-   Na condensada da casa, o mesmo desenho da manchete dois centímetros
-   acima, mas em corpo miúdo: parentesco sem competir.
-   Esmeralda escura e não a clara, pela régua do bloco de cor lá em cima:
-   abaixo de 18px o verde só passa no contraste em `--green-dark`.
-   Duas classes pelo mesmo motivo do `.tagLead` e do `.tagSub`: `.site p`
-   tem classe mais elemento e atropela classe simples. */
-.tag .tagAparte {
-  margin-top: 6px;
-  font-family: var(--display); font-stretch: 62%; font-weight: 900;
-  font-size: 16px; line-height: 1.15; letter-spacing: -.008em;
-  color: var(--green-dark);
-}
+/* o .tagAparte saiu em 28/10 junto com a frase (ver o comentário no componente) */
 .tagRule { border: 0; border-top: 1.5px solid var(--green); margin: 3px 0 1px }
 
 /* mesma trava da etiqueta: a pauta é UMA coluna e não pode crescer além
@@ -903,10 +920,12 @@ html:has(.site) { scroll-behavior: smooth }
      fora dele. */
   border: 1.5px solid var(--ink);
   box-shadow: 10px 12px 0 var(--paper-2), 10px 12px 0 1.5px var(--ink);
+  /* o papel de parede do WhatsApp de verdade (28/10): o bege do app e os
+     rabiscos densos e visíveis; antes eram cinco formas a 3% que sumiam */
   background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Cg fill='none' stroke='%23000' stroke-opacity='.03' stroke-width='1.4'%3E%3Cpath d='M26 26c3-6 13-4 13 3 0 5-8 9-13 13-5-4-13-8-13-13 0-7 10-9 13-3z'/%3E%3Crect x='96' y='18' width='24' height='20' rx='3'/%3E%3Cpath d='M100 18v-4a8 8 0 0 1 16 0v4'/%3E%3Cpath d='M34 104l4 9 10 1-7 7 2 10-9-5-9 5 2-10-7-7 10-1z'/%3E%3Cpath d='M100 96h16l10 10-18 18-18-18z'/%3E%3Ccircle cx='113' cy='104' r='2.4'/%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cg fill='none' stroke='%238a7a63' stroke-opacity='.2' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 18h22a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H24l-7 6v-6h-3a4 4 0 0 1-4-4V22a4 4 0 0 1 4-4z'/%3E%3Crect x='70' y='14' width='26' height='19' rx='4'/%3E%3Ccircle cx='83' cy='23.5' r='5'/%3E%3Cpath d='M76 14l3-4h8l3 4'/%3E%3Cpath d='M140 12c4-7 15-5 15 3 0 6-9 11-15 15-6-4-15-9-15-15 0-8 11-10 15-3z'/%3E%3Cpath d='M20 76c0 9 10 19 19 19l5-5-6-5-3 3c-3-1-7-5-8-8l3-3-5-6z'/%3E%3Cpath d='M84 64v20'/%3E%3Ccircle cx='79' cy='86' r='5'/%3E%3Cpath d='M84 64l12 4v6l-12-4'/%3E%3Ccircle cx='145' cy='78' r='13'/%3E%3Cpath d='M140 75h.01M150 75h.01M139 82c3 4 9 4 12 0'/%3E%3Cpath d='M30 128l4 9 10 1-7 7 2 10-9-5-9 5 2-10-7-7 10-1z'/%3E%3Ccircle cx='92' cy='138' r='13'/%3E%3Cpath d='M92 130v8l6 4'/%3E%3Cpath d='M136 128h18l8 9-17 19-17-19z'/%3E%3Cpath d='M128 137h34'/%3E%3Crect x='56' y='40' width='14' height='12' rx='2'/%3E%3Cpath d='M59 40v-3a4 4 0 0 1 8 0v3'/%3E%3Cpath d='M112 104l10-6 10 6-10 6z'/%3E%3Cpath d='M60 162a8 8 0 0 1 16 0'/%3E%3Cpath d='M164 46l4 4M168 46l-4 4'/%3E%3C/g%3E%3C/svg%3E"),
     var(--wa-paper);
-  background-size: 108px 108px, auto;
+  background-size: 180px 180px, auto;
 }
 /* ---------- a pílula de intervalo ----------
    Mesma forma da divisória de data do WhatsApp, que é o elemento que o
@@ -1032,11 +1051,9 @@ html:has(.site) { scroll-behavior: smooth }
 }
 /* a janela com fundo próprio: ver a nota longa acima */
 .quemShot { position: relative; aspect-ratio: 3 / 4; background: var(--ink); overflow: hidden }
-/* duotone grafite/papel sem tocar no arquivo: a foto P&B clareia por screen
-   (pretos viram o grafite da janela) e o véu de papel multiplica por cima
-   (brancos viram papel). Trocar a paleta nunca exige regerar o asset. */
-.quemShot img { object-fit: cover; object-position: center 22%; mix-blend-mode: screen; filter: contrast(1.08) }
-.quemShot::before { content: ""; position: absolute; inset: 0; background: var(--paper-2); mix-blend-mode: multiply; z-index: 1 }
+/* a foto em cor (28/10): saíram o duotone grafite/papel (o screen na foto
+   e o véu de papel em multiply no ::before), a pedido do Rafael */
+.quemShot img { object-fit: cover; object-position: center 22% }
 /* ---------- a legenda saiu de cima da foto ----------
    Ela era vertical, branca, colada na borda esquerda da imagem. Funcionava
    com o retrato antigo, que era escuro; com a foto de neve virou branco
@@ -2323,3 +2340,2102 @@ html:has(.site) { scroll-behavior: smooth }
    `.form.confirmado p` e vem depois, então vence nos dois formulários. */
 .site p.lojaAchada { font: 12px/1.55 var(--mono); letter-spacing: .02em; color: var(--ink-soft); margin: 0 0 12px }
 .site p.lojaAchada b { color: var(--ink); font-weight: 700 }
+
+/* ---------- TESTE (28/10): os botões em pílula, tipo Apple ----------
+   A pedido do Rafael, só na /vitrine-digital e na /en/vitrine-digital: a
+   classe `.botoesApple` vai no wrapper das duas páginas e a /vitrine-v2,
+   que divide este arquivo, fica de fora. Desligar é tirar a classe.
+   Pílula inteira, sem o carimbo de sombra dura (ele não casa com canto
+   redondo), e o toque encolhe 3% em vez de afundar 4px. A cor de cada
+   botão (rosa para agir, grafite para depois) não muda.
+   O `.botoesApple` triplicado vence o `.site .dark .acao:active` e os
+   outros estados de sombra sem `!important`. */
+.site.botoesApple.botoesApple .button,
+.site.botoesApple.botoesApple .headCta {
+  border-radius: 980px; box-shadow: none;
+  transition: background .15s ease, transform .12s ease;
+}
+.site.botoesApple.botoesApple .button:active,
+.site.botoesApple.botoesApple .headCta:active { transform: scale(.97); box-shadow: none }
+.site.botoesApple.botoesApple .button:focus-visible,
+.site.botoesApple.botoesApple .headCta:focus-visible { outline-offset: 3px; border-radius: 980px }
+
+/* os símbolos coloridos no lugar de "WHATSAPP" e do "@" no formulário do
+   hero (28/10). Continuam na coluna impressa de 78px, então a prumada dos
+   campos não se mexe; centrados na linha porque svg não tem linha de base */
+.tag label > span.campoIcone { display: flex; align-self: center; padding-bottom: 2px }
+
+/* ---------- as manchetes na Instrument Sans (28/10/2026) ----------
+   Decisão do Rafael, com a velvetica.studio de referência (ela usa a
+   Lausanne, comercial; ele não vai pagar licença). A Geist foi a primeira
+   tentativa e ele não gostou; das quatro gratuitas comparadas no hero
+   (Inter Tight, Instrument Sans, Schibsted, Host Grotesk) ficou a
+   Instrument Sans, vista primeiro só no h1 e depois aprovada para todas.
+   Caixa normal, peso regular, entreletra justa. A Archivo segue no
+   logotipo, na faixa rosa e nos números grandes, que são marca.
+   A batida em verde (o <em>) deixa de crescer 16%: aquilo era o desenho da
+   Archivo condensada em caixa alta, e em caixa normal virava uma palavra
+   maior no meio da frase. Fica só a cor.
+   Mora na classe `.tipoTitulo` do wrapper da /vitrine-digital e da /en, e
+   não no `.site h1`, porque a /vitrine-v2 divide este arquivo. */
+.site.tipoTitulo.tipoTitulo h1,
+.site.tipoTitulo.tipoTitulo h2,
+.site.tipoTitulo.tipoTitulo .tag .tagLead {
+  font-family: var(--font-titulo), var(--body);
+  font-stretch: normal; text-transform: none;
+}
+.site.tipoTitulo.tipoTitulo h1 { font-weight: 400; letter-spacing: -.035em; line-height: 1.02; font-size: clamp(40px, 5.6vw, 76px) }
+/* 500 e não 400 a partir daqui: abaixo de ~48px o regular afina demais,
+   e as seções escuras pedem um pouco mais de tinta */
+.site.tipoTitulo.tipoTitulo h2,
+.site.tipoTitulo.tipoTitulo .tag .tagLead { font-weight: 500; letter-spacing: -.03em; line-height: 1.06 }
+.site.tipoTitulo.tipoTitulo h2 em { display: inline; font-stretch: normal; font-size: 1em; line-height: inherit }
+/* o parágrafo logo abaixo da manchete colava nela com a Instrument Sans
+   (o `.site p` zera a margem do `.lead`); medido em "Não acredite em mim" */
+.site.tipoTitulo.tipoTitulo h2 + .lead { margin-top: 20px }
+/* sem o carimbo (28/10), o título do cartão não precisa mais dos 66px que
+   reservava para ele à direita */
+.site.tipoTitulo.tipoTitulo .tag .tagLead { padding-right: 0 }
+
+/* ---------- a estrutura centrada, na linha da velvetica.studio (28/10/2026) ----------
+   Pedido do Rafael. Tudo mora em `.estruturaCentro`, a classe do wrapper da
+   /vitrine-digital e da /en: a /vitrine-v2 usa `.header` e `.hero` deste
+   mesmo arquivo e fica como estava.
+   CONTRA A REGRA DA CASA, de propósito e por decisão dele: o cofre diz
+   "nada de título centrado" (2 Regras da casa/feedback-design-nao-generico).
+   O que segura o genérico aqui é a vitrine real na moldura, não a grade.
+   O formulário continua na primeira tela (o híbrido): é o Contact. */
+
+/* o topo vira uma pílula flutuante, como a barra da referência */
+.site.estruturaCentro.estruturaCentro .header {
+  top: 10px; width: min(1120px, calc(100% - 20px)); margin: 10px auto 0;
+  height: 60px; padding: 0 10px 0 20px;
+  border: 1px solid var(--line); border-radius: 999px;
+  background: #ffffffd9; backdrop-filter: blur(14px);
+  box-shadow: 0 10px 30px #0000000f, 0 1px 2px #0000000d;
+}
+@media (max-width: 400px) {
+  .site.estruturaCentro.estruturaCentro .header { padding: 0 6px 0 12px; width: calc(100% - 14px); margin-top: 7px; top: 7px }
+}
+
+/* o hero numa coluna só, centrada */
+.site.estruturaCentro.estruturaCentro .hero { padding-top: clamp(44px, 6vw, 96px) }
+.site.estruturaCentro.estruturaCentro .heroGrid { display: block; max-width: 980px }
+.site.estruturaCentro.estruturaCentro .heroCopy { text-align: center }
+.site.estruturaCentro.estruturaCentro .heroCopy h1 { margin-inline: auto; max-width: 13ch }
+.site.estruturaCentro.estruturaCentro .heroCopy .lead { margin-inline: auto; max-width: 46ch }
+/* a faixa rosa atravessa a tela inteira, e não só a coluna de 980px */
+.site.estruturaCentro.estruturaCentro .heroBand { margin-left: calc(50% - 50vw - 26px); margin-right: calc(50% - 50vw - 26px) }
+/* o cartão do formulário centrado e reto: torto ele só fazia sentido
+   pendurado no alfinete, que saiu */
+.site.estruturaCentro.estruturaCentro .tag { margin: 30px auto 0; transform: none; text-align: left }
+
+/* ---------- a moldura grande ----------
+   O aro cinza arredondado da referência em volta do navegador dos projetos.
+   No desktop a tela é 16:10 com a captura de desktop; no celular, 4:5 com a
+   captura de celular. --dur no ritmo de cada captura (~250px/s exibidos). */
+.moldura { position: relative; max-width: 1180px; margin: clamp(48px, 6vw, 84px) auto 0 }
+.molduraTela {
+  padding: 10px; border-radius: 28px;
+  background: #e4e4e2; border: 1px solid #d6d6d3;
+  box-shadow: 0 40px 80px #0000001f, 0 8px 24px #00000012;
+}
+.molduraTela .browserBar { border-radius: 18px 18px 0 0 }
+.molduraCover {
+  position: relative; overflow: hidden; container-type: size;
+  aspect-ratio: 16 / 10; border-radius: 0 0 18px 18px; background: #eef1f4;
+}
+.molduraShot {
+  display: block; width: 100%; height: auto; will-change: transform;
+  --dur: 26s; animation: pageScroll var(--dur) ease-in-out infinite alternate;
+}
+@media (max-width: 720px) {
+  .molduraTela { padding: 7px; border-radius: 22px }
+  .molduraTela .browserBar { border-radius: 15px 15px 0 0 }
+  .molduraCover { aspect-ratio: 4 / 5; border-radius: 0 0 15px 15px }
+  .molduraShot { --dur: 44s }
+}
+@media (prefers-reduced-motion: reduce) { .molduraShot { animation: none } }
+/* sobe e cresce enquanto entra na tela, como na referência. Só onde o
+   navegador tem scroll-driven animation; nos outros ela já nasce no lugar */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .molduraTela { animation: molduraSobe linear both; animation-timeline: view(); animation-range: entry 0% cover 35% }
+  }
+}
+@keyframes molduraSobe { from { transform: translateY(60px) scale(.92); opacity: .6 } to { transform: none; opacity: 1 } }
+
+/* o balão do pedido pendurado na quina esquerda da moldura, e o chip
+   "NO AR" centrado embaixo dela */
+.site.estruturaCentro.estruturaCentro .moldura .pedido { left: -28px; right: auto; bottom: 22%; top: auto; max-width: 250px }
+.site.estruturaCentro.estruturaCentro .moldura .liveTag { position: relative; inset: auto; display: flex; width: fit-content; margin: 22px auto 0 }
+@media (max-width: 900px) {
+  .site.estruturaCentro.estruturaCentro .moldura .pedido { left: 10px; bottom: 76px; max-width: 220px }
+}
+
+/* a logo oficial em dois pedaços do arquivo (28/10): as medidas fixas pelo
+   mesmo motivo do monograma antigo (o Next acusa largura arredondada) */
+.site.estruturaCentro.estruturaCentro .brandRR { width: 55px; height: 30px }
+.brandNome { display: block; width: 154px; height: 25px; object-fit: contain }
+@media (max-width: 400px) {
+  .site.estruturaCentro.estruturaCentro .brandRR { width: 44px; height: 24px }
+  .brandNome { width: 111px; height: 18px }
+}
+/* a margem do topo da pílula vazava pelo .site e mostrava o fundo do body
+   numa tira de 10px: o respiro passa a ser padding do próprio .site */
+.site.estruturaCentro.estruturaCentro { padding-top: 10px }
+.site.estruturaCentro.estruturaCentro .header { margin-top: 0 }
+@media (max-width: 400px) {
+  .site.estruturaCentro.estruturaCentro { padding-top: 7px }
+}
+/* no desktop a faixa rosa cruzava o cartão centrado pelo meio (girada, ela
+   desce nas pontas): lá ela vai para DEPOIS do formulário, entre ele e a
+   moldura. No celular continua entre o texto e o cartão, onde já cabia. */
+@media (min-width: 901px) {
+  .site.estruturaCentro.estruturaCentro .heroCopy { display: flex; flex-direction: column; align-items: center }
+  /* o desktop antigo a posicionava em absoluto a 63% da altura do hero */
+  .site.estruturaCentro.estruturaCentro .heroBand { order: 2; align-self: stretch; position: relative; inset: auto; margin-top: 64px }
+}
+
+/* a fileira das lojas no ar (28/10), no molde "Trusted by": legenda miúda
+   e as logos em cinza. O arquivo é branco; o filtro o leva a preto e a
+   opacidade faz o cinza, então nada precisa de segunda versão. */
+.logosLojas { margin-top: clamp(40px, 5vw, 64px); text-align: center }
+.site .logosLojas p { font: 400 13px var(--body); color: #8a8f91; margin: 0 0 18px }
+.logosLojas div { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 18px clamp(26px, 3.4vw, 48px) }
+.logosLojas img { display: block; width: auto; height: 22px; filter: brightness(0); opacity: .4 }
+@media (max-width: 600px) { .logosLojas img { height: 18px } .logosLojas div { gap: 16px 24px } }
+
+/* ---------- os dois botões do hero e o modal do formulário (28/10) ----------
+   Na estrutura do mobbin.com: botão cheio e botão contornado lado a lado,
+   no corpo e na caixa de frase (não no mono em caixa alta da página). */
+.heroAcoes { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 30px }
+.site.estruturaCentro.estruturaCentro .heroAcoes .button {
+  font: 600 15.5px var(--body); letter-spacing: -.005em; text-transform: none;
+  min-height: 50px; padding: 0 24px;
+}
+.site.estruturaCentro.estruturaCentro .heroAcoes .outline { border: 1px solid #d4d4d1; background: #fff; color: var(--ink) }
+@media (hover: hover) and (pointer: fine) {
+  .site.estruturaCentro.estruturaCentro .heroAcoes .outline:hover { border-color: var(--ink) }
+}
+
+/* o modal: o cartão do formulário "estoura" na frente, crescendo de 92% com
+   um passo além do tamanho final (o puff), sobre um véu desfocado */
+.modalForm {
+  width: min(460px, calc(100% - 24px)); max-height: calc(100dvh - 24px);
+  margin: auto; padding: 0; border: 0; border-radius: 24px; overflow: auto;
+  background: #fff; color: var(--ink);
+  box-shadow: 0 30px 80px #0000003d, 0 6px 20px #0000001f;
+}
+.modalForm::backdrop { background: #14181a73; backdrop-filter: blur(6px) }
+.modalForm[open] { animation: modalPuff .32s cubic-bezier(.2, 1.3, .35, 1) both }
+.modalForm[open]::backdrop { animation: modalVeu .2s ease-out both }
+@keyframes modalPuff { from { opacity: 0; transform: scale(.92) translateY(10px) } to { opacity: 1; transform: none } }
+@keyframes modalVeu { from { opacity: 0 } to { opacity: 1 } }
+@media (prefers-reduced-motion: reduce) {
+  .modalForm[open], .modalForm[open]::backdrop { animation: none }
+}
+/* dentro do modal o cartão perde a moldura de papel: o modal já é o cartão */
+.site.estruturaCentro.estruturaCentro .modalForm .tag {
+  max-width: none; margin: 0; transform: none; border: 0; box-shadow: none;
+  padding: 38px 24px 0;
+}
+.modalFechar {
+  position: absolute; top: 12px; right: 12px; z-index: 2;
+  display: grid; place-items: center; width: 38px; height: 38px;
+  border: 0; border-radius: 50%; background: #f1f1ef; color: var(--ink); cursor: pointer;
+}
+@media (hover: hover) and (pointer: fine) { .modalFechar:hover { background: #e6e6e3 } }
+.modalFechar:focus-visible { outline: 2px solid var(--rosa); outline-offset: 2px }
+
+/* ---------- o formulário do modal sem a gramática de papel (28/10) ----------
+   As sete melhorias aprovadas pelo Rafael. O cartão perdeu a moldura e a
+   sombra dura já na regra do modal; aqui o miolo:
+   1. o filete verde sob a frase sai (decoração sem trabalho);
+   2. o campo vira caixa cinza arredondada no lugar da linha, e o foco é um
+      anel rosa em volta dela;
+   3. a coluna do símbolo cai de 78px (a largura que "WHATSAPP" pedia) para
+      24px: com o símbolo, os 78 abriam um vão até o texto;
+   4. o botão vai para o corpo, em caixa de frase, 16px;
+   5. o texto miúdo sai do mono para o corpo, em cinza;
+   6. o canhoto perde o tracejado de cupom e vira uma linha quieta.
+   O formulário da oferta (#contratar) não passa por aqui. */
+.site.estruturaCentro.estruturaCentro .modalForm .tagRule { display: none }
+.site.estruturaCentro.estruturaCentro .modalForm .tagCampos { gap: 10px; margin-top: 4px }
+.site.estruturaCentro.estruturaCentro .modalForm .tag label {
+  align-items: center; gap: 12px; min-height: 54px; padding: 0 16px;
+  border: 0; border-radius: 14px; background: #f3f3f1;
+  transition: background .15s ease, box-shadow .15s ease;
+}
+.site.estruturaCentro.estruturaCentro .modalForm .tag label:focus-within {
+  border: 0; background: #fff; box-shadow: 0 0 0 2px var(--rosa);
+}
+.site.estruturaCentro.estruturaCentro .modalForm .tag label > span:first-child { width: 24px }
+.site.estruturaCentro.estruturaCentro .modalForm .tag label > span.campoIcone { padding-bottom: 0 }
+.site.estruturaCentro.estruturaCentro .modalForm .tag input { padding: 15px 0 }
+.site.estruturaCentro.estruturaCentro .modalForm .tag .acao {
+  width: 100%; min-height: 54px; margin-top: 8px;
+  font: 600 16px var(--body); letter-spacing: -.005em; text-transform: none;
+}
+.site.estruturaCentro.estruturaCentro .modalForm .tagMicro,
+.site.estruturaCentro.estruturaCentro .modalForm .tagErro { font: 400 13px/1.5 var(--body); letter-spacing: 0 }
+.site.estruturaCentro.estruturaCentro .modalForm .tagMicro { color: #6b7072 }
+.site.estruturaCentro.estruturaCentro .modalForm .tagMicro b { color: var(--ink); font-weight: 600 }
+.site.estruturaCentro.estruturaCentro .modalForm .tagStub {
+  margin: 10px -24px 0; padding: 14px 24px 18px; justify-content: center;
+  background: #fafaf9; border-top: 1px solid #ececea;
+  font: 500 11px var(--body); letter-spacing: .04em; color: #7b8082;
+}
+.site.estruturaCentro.estruturaCentro .modalForm .tagConfirm { border: 0 }
+
+/* sem barras de rolagem no modal (28/10): o cartão saía 7px mais largo que
+   o modal (a largura de 100% somada ao canhoto que vaza -24px dos lados) e
+   2px mais alto, e isso bastava para o navegador pôr as duas barras. O cartão
+   passa a medir o modal; a rolagem vertical continua possível em tela baixa,
+   só sem a barra à vista. */
+.site.estruturaCentro.estruturaCentro .modalForm .tag { width: auto; box-sizing: border-box }
+.modalForm { overflow-x: hidden; overflow-y: auto; scrollbar-width: none; overscroll-behavior: contain }
+.modalForm::-webkit-scrollbar { display: none }
+/* era isso que alargava o cartão: a animação `etiquetaAssenta`, do tempo em
+   que ele pendia do alfinete, termina girada em -0,8° e animação vence o
+   `transform: none`. Girado, ele ocupava 7px a mais de largura. */
+.site.estruturaCentro.estruturaCentro .modalForm .tag { animation: none }
+
+/* ---------- o seletor de idioma e o botão da pílula do topo (28/10) ----------
+   O seletor era bloco preto e branco com bandeiras, sobra da gramática de
+   carimbo, e era a peça que mais destoava na pílula. Vira um segmentado
+   claro (fundo cinza, a escolha ativa num botão branco), sem bandeira:
+   bandeira é país, não idioma, e a 14px só fazia ruído. A sigla continua,
+   e o aria-label de cada link segue dizendo o nome do idioma.
+   O componente é dividido com outras páginas: o visual novo entra pela
+   classe `.idiomaSuave`, que só este header passa. */
+.site.estruturaCentro.estruturaCentro .idiomaSuave {
+  height: 34px; padding: 3px; gap: 2px;
+  border: 0; border-radius: 999px; background: #f1f1ef;
+}
+.site.estruturaCentro.estruturaCentro .idiomaSuave a {
+  padding: 0 11px; border: 0; border-radius: 999px;
+  font: 600 13px var(--body); letter-spacing: 0; color: #6b7072;
+}
+.site.estruturaCentro.estruturaCentro .idiomaSuave a + a { border-left: 0 }
+.site.estruturaCentro.estruturaCentro .idiomaSuave a svg { display: none }
+.site.estruturaCentro.estruturaCentro .idiomaSuave a[aria-current] {
+  background: #fff; color: var(--ink); box-shadow: 0 1px 3px #00000024;
+}
+@media (hover: hover) and (pointer: fine) {
+  .site.estruturaCentro.estruturaCentro .idiomaSuave a:not([aria-current]):hover { background: transparent; color: var(--ink) }
+}
+/* o "Ver minha loja" da pílula no mesmo desenho dos botões do hero */
+.site.estruturaCentro.estruturaCentro .headCta {
+  font: 600 14px var(--body); letter-spacing: -.005em; text-transform: none;
+  min-height: 40px; padding: 0 18px; display: inline-flex; align-items: center;
+}
+/* o display acima religava o botão no celular, onde ele sai desde 09/10
+   (logo, idioma e Instagram não cabem com ele; a barra fixa do rodapé
+   carrega a mesma ação). Medido em 28/10: em 360 o Instagram ia para fora. */
+@media (max-width: 520px) {
+  .site.estruturaCentro.estruturaCentro .headCta { display: none }
+}
+
+/* ---------- a notificação do pedido e o chip "no ar" (28/10) ----------
+   Os dois eram carimbo (borda de tinta, sombra dura, mono em caixa alta) e
+   destoavam da moldura. A notificação imita a do celular: branca, cantos
+   de 18px, sombra macia, o ícone do WhatsApp. O chip vira pílula branca
+   com o ponto verde, no corpo. */
+.site.estruturaCentro.estruturaCentro .moldura .pedido {
+  width: 300px; max-width: 300px; padding: 12px 14px 13px;
+  background: #ffffffee; backdrop-filter: blur(12px);
+  border: 1px solid #e6e6e3; border-radius: 18px;
+  box-shadow: 0 18px 40px #0000002b, 0 2px 8px #00000014;
+  font: 400 14px/1.4 var(--body); color: var(--ink);
+}
+.pedidoTopo { display: flex; align-items: center; gap: 8px; margin-bottom: 6px }
+.pedidoTopo svg { flex: none }
+.site.estruturaCentro.estruturaCentro .moldura .pedidoK {
+  margin: 0; font: 600 12.5px var(--body); letter-spacing: 0; color: var(--ink);
+}
+.site.estruturaCentro.estruturaCentro .moldura .pedido i {
+  margin: 0 0 0 auto; font: 400 12px var(--body); color: #8a8f91;
+}
+.site.estruturaCentro.estruturaCentro .moldura .liveTag {
+  gap: 8px; padding: 9px 16px; border: 1px solid #e2e2df; border-radius: 999px;
+  background: #fff; color: var(--ink); box-shadow: 0 2px 10px #0000000f;
+  font: 500 13px var(--body); letter-spacing: 0;
+}
+.site.estruturaCentro.estruturaCentro .moldura .liveTag i { background: #22c55e }
+@media (hover: hover) and (pointer: fine) {
+  .site.estruturaCentro.estruturaCentro .moldura .liveTag:hover { border-color: var(--ink) }
+}
+@media (max-width: 900px) {
+  .site.estruturaCentro.estruturaCentro .moldura .pedido { width: 260px; max-width: calc(100% - 20px); font-size: 13px }
+}
+/* no celular a notificação caía entre a moldura e o chip, colada na borda
+   da tela: sobe para dentro da quina de baixo da moldura */
+@media (max-width: 900px) {
+  .site.estruturaCentro.estruturaCentro .moldura .pedido { left: 14px; bottom: 118px }
+}
+/* a regra antiga do celular (11/09) punha o balão em `position: static` com
+   margem negativa à esquerda, que o colava na borda da tela */
+@media (max-width: 900px) {
+  .site.estruturaCentro.estruturaCentro .moldura .pedido { position: absolute; margin: 0; border-radius: 18px; padding: 11px 13px 12px }
+}
+
+/* a seta que pede a rolagem (28/10): um círculo de filete com a seta fina,
+   descendo 6px e voltando em 2s. Cinza, para não disputar com o botão rosa */
+.site .setaRolar {
+  display: grid; place-items: center; width: 44px; height: 44px; margin: 34px auto 0;
+  border: 1px solid #dededb; border-radius: 50%; color: #8a8f91;
+  animation: setaFlutua 2s ease-in-out infinite;
+  transition: color .15s ease, border-color .15s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .site .setaRolar:hover { color: var(--ink); border-color: var(--ink) }
+}
+@keyframes setaFlutua { 0%, 100% { transform: translateY(0); opacity: .7 } 50% { transform: translateY(6px); opacity: 1 } }
+@media (prefers-reduced-motion: reduce) { .site .setaRolar { animation: none } }
+.moldura { scroll-margin-top: 90px }
+/* a logo da pílula mais discreta (28/10, pedido do Rafael): o nome de 25px
+   pesava mais que o resto da barra. Medidas fixas nas duas pontas pelo
+   mesmo motivo de antes (o Next acusa largura arredondada) */
+.site.estruturaCentro.estruturaCentro .brandRR { width: 46px; height: 25px }
+.site.estruturaCentro.estruturaCentro .brandNome { width: 120px; height: 19px }
+.site.estruturaCentro.estruturaCentro .brandComRR { gap: 9px }
+@media (max-width: 400px) {
+  .site.estruturaCentro.estruturaCentro .brandRR { width: 40px; height: 22px }
+  .site.estruturaCentro.estruturaCentro .brandNome { width: 100px; height: 16px }
+}
+/* a seta virou só o chevron, sem o círculo (28/10, pedido do Rafael); os
+   44px continuam como área de toque, invisíveis */
+.site .setaRolar { border: 0; border-radius: 0; color: #9a9ea0 }
+@media (hover: hover) and (pointer: fine) { .site .setaRolar:hover { border: 0 } }
+
+/* ---------- a etiqueta do hero como selo claro (28/10) ----------
+   Era a última peça de carimbo no topo: bloco grafite, mono espaçado em
+   caixa alta, girado 1 grau. Vira a pílula pequena dos sites de produto:
+   branca, filete cinza, o símbolo do Instagram e a frase no corpo. */
+.site.estruturaCentro.estruturaCentro .heroCopy .seloHero {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin: 0 0 22px; padding: 6px 14px 6px 8px;
+  background: #fff; color: #4a4f52;
+  border: 1px solid #e4e4e1; border-radius: 999px;
+  box-shadow: 0 1px 3px #0000000d;
+  font: 500 13.5px var(--body); letter-spacing: 0; text-transform: none;
+  transform: none;
+}
+.seloHero svg { flex: none }
+/* o texto do hero equilibra as linhas: no desktop "WhatsApp." sobrava sozinho */
+.site.estruturaCentro.estruturaCentro .heroCopy .lead { text-wrap: balance }
+
+/* ---------- a manchete letra por letra e o que vem depois (28/10) ----------
+   Cada letra: de transparente, 12px de desfoque e um quarto de linha abaixo,
+   até nítida e no lugar, em 0,7s, com 28ms entre uma e outra. A frase de 38
+   letras termina em ~1,7s; o texto e os botões sobem logo atrás. */
+.soLeitor { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0 }
+.palavra { display: inline-block; white-space: nowrap }
+.letra {
+  display: inline-block;
+  animation: letraSurge .7s cubic-bezier(.2, .7, .2, 1) both;
+  animation-delay: calc(var(--i) * 28ms + 120ms);
+}
+@keyframes letraSurge {
+  from { opacity: 0; filter: blur(12px); transform: translateY(.25em) }
+  to { opacity: 1; filter: blur(0); transform: none }
+}
+.site.estruturaCentro.estruturaCentro .heroCopy .lead,
+.site.estruturaCentro.estruturaCentro .heroAcoes,
+.site.estruturaCentro.estruturaCentro .logosLojas {
+  animation: heroSobe .8s cubic-bezier(.2, .7, .2, 1) both;
+}
+.site.estruturaCentro.estruturaCentro .heroCopy .lead { animation-delay: 1.05s }
+.site.estruturaCentro.estruturaCentro .heroAcoes { animation-delay: 1.25s }
+.site.estruturaCentro.estruturaCentro .logosLojas { animation-delay: 1.45s }
+@keyframes heroSobe { from { opacity: 0; filter: blur(6px); transform: translateY(14px) } to { opacity: 1; filter: blur(0); transform: none } }
+@media (prefers-reduced-motion: reduce) {
+  .letra,
+  .site.estruturaCentro.estruturaCentro .heroCopy .lead,
+  .site.estruturaCentro.estruturaCentro .heroAcoes,
+  .site.estruturaCentro.estruturaCentro .logosLojas { animation: none }
+}
+
+/* ---------- a hierarquia da velvetica.studio (28/10) ----------
+   Medido lá a 1440: título 65px leve (300), subtítulo 13px numa coluna de
+   376px, botão 13px com 39px de altura; o título é 5x o subtítulo e domina
+   sozinho. Aqui a mesma lógica com dois desvios: a Instrument Sans não tem
+   o 300 (o mais leve é o 400), então o título cresce em vez de afinar; e o
+   subtítulo fica em 15px (14 no celular) e não 13/12, porque quem chega do
+   anúncio lê no navegador do Instagram, num celular. A proporção ainda sai
+   maior que a deles (~6x). */
+.site.tipoTitulo.tipoTitulo.estruturaCentro .heroCopy h1 {
+  font-size: clamp(44px, 6.2vw, 88px); line-height: 1; letter-spacing: -.04em; max-width: 12.5ch;
+}
+.site.estruturaCentro.estruturaCentro .heroCopy .lead {
+  margin-top: 22px; max-width: 34ch;
+  font-size: 15px; line-height: 1.45; color: #5b6063;
+}
+.site.estruturaCentro.estruturaCentro .heroAcoes { margin-top: 30px; gap: 10px }
+.site.estruturaCentro.estruturaCentro .heroAcoes .button { min-height: 44px; padding: 0 20px; font-size: 14px }
+@media (max-width: 600px) {
+  .site.estruturaCentro.estruturaCentro .heroCopy .lead { font-size: 14px; max-width: 32ch }
+}
+/* como na velvetica: o desfoque é SÓ do título; o subtítulo, os botões e
+   as logos apenas sobem de baixo para cima, nítidos (28/10, pedido do Rafael) */
+@keyframes heroSobe { from { opacity: 0; transform: translateY(26px) } to { opacity: 1; transform: none } }
+/* a 44px o título quebrava em 3 linhas em 390; 40 é onde ele cabe em 2 */
+.site.tipoTitulo.tipoTitulo.estruturaCentro .heroCopy h1 { font-size: clamp(40px, 6.2vw, 88px) }
+
+/* ---------- o topo da moldura aparecendo na primeira tela (28/10) ----------
+   Como na referência: sem rolar, já se vê a borda de cima do site, e ela
+   convida a descer. Medido antes: a 1440x900 a moldura nascia em 908px,
+   abaixo da dobra; o grosso era o respiro em volta da seta e os 60px em que
+   a animação a fazia nascer afundada. */
+.site.estruturaCentro.estruturaCentro .hero { padding-top: clamp(32px, 4vw, 56px) }
+.site.estruturaCentro.estruturaCentro .logosLojas { margin-top: clamp(32px, 4vw, 44px) }
+.site .setaRolar { margin-top: 10px }
+.moldura { margin-top: clamp(16px, 2vw, 28px) }
+@keyframes molduraSobe { from { transform: translateY(24px) scale(.96); opacity: .7 } to { transform: none; opacity: 1 } }
+/* telas de notebook baixas (1280x720, 1366x768): o título também acompanha a
+   ALTURA da tela, e os respiros encolhem, para a moldura ainda espiar */
+@media (min-width: 901px) and (max-height: 800px) {
+  .site.estruturaCentro.estruturaCentro .hero { padding-top: 22px }
+  .site.tipoTitulo.tipoTitulo.estruturaCentro .heroCopy h1 { font-size: clamp(40px, min(6.2vw, 10vh), 88px) }
+  .site.estruturaCentro.estruturaCentro .heroCopy .seloHero { margin-bottom: 16px }
+  .site.estruturaCentro.estruturaCentro .logosLojas { margin-top: 26px }
+}
+
+/* ---------- a cena em esmeralda em volta da moldura (28/10) ----------
+   Três camadas, como na velvetica: o céu e os morros (.cenaFundo) atrás, a
+   moldura no meio e a colina (.cenaFrente) na frente, cobrindo a base do
+   site. --chao é a faixa de colina abaixo da moldura (onde mora o chip "no
+   ar"); --cobre, quanto da base da moldura a colina esconde antes de rolar.
+   A cena vai de borda a borda: em cima o céu nasce do branco da página, e
+   embaixo a colina escurece até o grafite do Quem Faz, que vem logo depois,
+   então não há borda à vista em nenhuma das pontas (era um cartão de cantos
+   redondos, e as quinas brancas brigavam com a seção escura). */
+.cena {
+  --chao: clamp(92px, 10vw, 140px);
+  --cobre: clamp(64px, 8vw, 116px);
+  position: relative; overflow: hidden; isolation: isolate;
+  margin: 0 calc(var(--pad) * -1);
+  padding: clamp(16px, 2vw, 28px) var(--pad) var(--chao);
+  background:
+    radial-gradient(60% 45% at 50% 30%, #ffffffb3, transparent 70%),
+    linear-gradient(180deg, #fff 0%, #f2faf6 22%, #ddf2e7 62%, #cdebdb 100%);
+}
+.site.estruturaCentro.estruturaCentro .hero { padding-bottom: 0 }
+.site.estruturaCentro.estruturaCentro .cena .moldura { margin-top: 0 }
+.cenaFundo { position: absolute; left: 0; right: 0; bottom: 0; z-index: 0; width: 100%; height: 78%; display: block }
+.cenaFrente {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; display: block;
+  width: 100%; height: calc(var(--chao) + var(--cobre));
+  pointer-events: none;
+}
+/* a moldura fica entre as duas camadas; a notificação e o chip, na frente
+   de tudo. O aro cinza vira vidro claro, que deixa a paisagem atravessar */
+.cena .molduraTela {
+  position: relative; z-index: 1;
+  background: #ffffff6b; border-color: #ffffffb3;
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 40px 90px #04382a40, 0 8px 24px #04382a1f;
+}
+.site.estruturaCentro.estruturaCentro.estruturaCentro .cena .moldura .pedido { z-index: 3 }
+/* o chip deita na colina, centrado no chão abaixo da moldura */
+.site.estruturaCentro.estruturaCentro.estruturaCentro .cena .moldura .liveTag {
+  position: absolute; z-index: 3; left: 50%; bottom: calc(var(--chao) * -.58); top: auto; right: auto;
+  margin: 0; translate: -50% 50%; white-space: nowrap;
+  border-color: #ffffff33; box-shadow: 0 8px 24px #0000002e;
+}
+@media (max-width: 720px) {
+  /* o chão mais alto no celular: a foto do Quem Faz sobe 22px por cima dele */
+  .cena { --chao: 104px; --cobre: 64px }
+  .cenaFundo { height: 55% }
+  .site.estruturaCentro.estruturaCentro.estruturaCentro .cena .moldura .liveTag { font-size: 12px; padding: 8px 13px }
+}
+/* o movimento, preso à rolagem da cena: o site sobe e cresce de trás da
+   colina, a colina desce até a crista encostar na base dele, e os morros
+   andam bem menos (a profundidade). Sem scroll-driven animation, ou para
+   quem pede menos movimento, a cena fica parada no começo, com a colina
+   cobrindo a base, que também é uma imagem inteira. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .cena { view-timeline: --cena block }
+    .cena .molduraTela { transform-origin: 50% 0; animation: cenaSobe linear both; animation-timeline: --cena; animation-range: cover 8% cover 48% }
+    .cenaFrente { animation: cenaDesce linear both; animation-timeline: --cena; animation-range: cover 0% cover 50% }
+    .cenaFundo { animation: cenaFundo linear both; animation-timeline: --cena; animation-range: cover 0% cover 100% }
+  }
+}
+/* o site começa pequeno (78%) e cresce até o tamanho cheio enquanto rola,
+   preso pelo topo, como na velvetica (28/10, pedido do Rafael) */
+@keyframes cenaSobe { from { transform: translateY(24px) scale(.9) } to { transform: none } }
+@keyframes cenaDesce { from { transform: none } to { transform: translateY(var(--cobre)) } }
+@keyframes cenaFundo { from { transform: translateY(24px) } to { transform: translateY(-36px) } }
+
+/* ---------- o header refinado (28/10) ----------
+   1. links no meio; 2. o botão rosa, com o texto do hero; 3. o botão na
+   ponta direita e o Instagram em cinza (a cor volta no hover), para não
+   disputar com o rosa; 5. a pílula sem borda, só uma sombra leve e vidro,
+   8px mais baixa. */
+.site.estruturaCentro.estruturaCentro .header {
+  height: 52px; padding: 0 6px 0 18px; border: 0;
+  background: #ffffffb8; backdrop-filter: blur(20px) saturate(1.6); -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  box-shadow: 0 0 0 1px #0000000a, 0 8px 28px #00000012;
+}
+.headNav { position: absolute; left: 50%; translate: -50% 0; display: flex; gap: 4px }
+.site .headNav a {
+  padding: 8px 14px; border-radius: 999px;
+  font: 500 14px var(--body); color: #4a4f52; text-decoration: none;
+  transition: color .15s ease, background .15s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .site .headNav a:hover { color: var(--ink); background: #0000000a }
+}
+.site .headNav a:focus-visible { outline: 2px solid var(--rosa); outline-offset: 2px }
+@media (max-width: 1100px) { .headNav { display: none } }
+.site.botoesApple.botoesApple.estruturaCentro .headCta { background: var(--rosa); color: #fff; min-height: 40px }
+@media (hover: hover) and (pointer: fine) {
+  .site.botoesApple.botoesApple.estruturaCentro .headCta:hover { background: var(--rosa); filter: brightness(.93) }
+}
+.site.estruturaCentro.estruturaCentro .instaIcone { margin-right: 0; filter: grayscale(1) opacity(.55); transition: filter .2s ease, transform .15s ease }
+@media (hover: hover) and (pointer: fine) {
+  .site.estruturaCentro.estruturaCentro .instaIcone:hover { filter: none }
+}
+/* no celular o botão sai e o Instagram volta a ser o último: ali ele fica
+   colorido, porque não há rosa ao lado para disputar */
+@media (max-width: 520px) {
+  .site.estruturaCentro.estruturaCentro .instaIcone { filter: none; margin-right: -4px }
+  .site.estruturaCentro.estruturaCentro .header { padding-right: 10px }
+}
+/* os atalhos do meio param a seção abaixo da pílula, e não atrás dela */
+.site.estruturaCentro section[id] { scroll-margin-top: 76px }
+
+/* ---------- a cena com as imagens do gerador (28/10) ----------
+   A colina tem a proporção 3:1 e a crista mais alta a 20,5% da LARGURA
+   acima da base. --chao sai dessa conta: a crista termina 40px acima da
+   base da moldura, que fica "assentada" no musgo. No celular a colina não
+   encolhe abaixo de 900px de largura (centrada e cortada nos lados), senão
+   viraria uma tira de 130px.
+   A colina nasce 30px abaixo da base da cena e só anda 40px na rolagem:
+   a faixa escura do arquivo (os 19% de baixo) cobre esse curso, então a
+   emenda com o Quem Faz nunca aparece. */
+.cena {
+  --imgW: max(100vw, 900px);
+  --chao: calc(var(--imgW) * .205 - 40px);
+  background: #fff;
+}
+.cenaFundo { position: absolute; inset: -40px 0; z-index: 0; display: block; width: auto; height: auto }
+.cenaFundo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 100% }
+.cenaFrente {
+  position: absolute; z-index: 2; display: block; pointer-events: none;
+  left: 50%; right: auto; bottom: -30px; width: var(--imgW); height: auto; translate: -50% 0;
+}
+.cenaFrente img { display: block; width: 100%; height: auto }
+@keyframes cenaDesce { from { transform: translateY(-24px) } to { transform: translateY(16px) } }
+
+/* ---------- a cena noturna (28/10, à tarde) ----------
+   A vegetação em U: as pontas sobem até 24% da altura e o meio desce a
+   63%, então ela abraça os lados da moldura e deixa o centro livre. --chao
+   sai do meio da crista (37% da altura, 12,3% da largura) menos 40px; no
+   celular nunca menos de 100px, por causa da foto do Quem Faz que sobe 22px.
+   O céu dos morros é escuro e faria uma borda dura sob o hero: a máscara
+   esfuma o topo da imagem até o branco da página. */
+.cena { --chao: max(100px, calc(var(--imgW) * .123 - 10px)) }
+.cenaFundo {
+  /* os 40px de cima ficam fora da cena (o inset do parallax): a máscara
+     começa transparente até passar deles, senão o topo abre um degrau */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, transparent 90px, #000 58%);
+  mask-image: linear-gradient(to bottom, transparent 0, transparent 90px, #000 58%);
+}
+/* no celular o chip encostava na foto do Quem Faz (que sobe 22px): mais chão */
+@media (max-width: 720px) { .cena { --chao: 132px } }
+
+/* as logos viram link para o site de cada loja (28/10): no hover a logo
+   sai do cinza e fica preta, sem mudar de tamanho */
+.logosLojas a, .logosLojas span { display: block; border-radius: 6px }
+.logosLojas img { transition: opacity .15s ease }
+@media (hover: hover) and (pointer: fine) {
+  .logosLojas a:hover img { opacity: .9 }
+}
+.logosLojas a:focus-visible { outline: 2px solid var(--rosa); outline-offset: 6px }
+
+/* ---------- a moldura no tamanho da velvetica (28/10) ----------
+   Medido lá a 1440x900: a moldura nasce com 70% da largura da tela, cresce
+   só 10% na rolagem e cabe INTEIRA na altura da tela. A nossa tinha 1180px
+   (1400 no monitor do Rafael), nascia em 78% e crescia até passar da tela.
+   Agora: no máximo 1040px, 72% da largura, e nunca mais alta que a tela
+   menos a pílula e o respiro (a conta pela altura usa os 16:10 da tela de
+   dentro). Crescimento de 90% para 100%, como lá. Só do celular para cima:
+   no celular a moldura continua na largura toda, senão a loja não se lê. */
+@media (min-width: 721px) {
+  .site.estruturaCentro.estruturaCentro .cena .moldura {
+    max-width: min(1040px, 72vw, calc((100svh - 200px) * 1.6));
+  }
+}
+
+/* ============================================================
+   A PÁGINA SIMPLIFICADA NA ESTRUTURA DO MOBBIN (28/10/2026)
+   As seções novas de components/vitrine/mobbin.tsx. Tudo sob `.mb` e com
+   o `.site.estruturaCentro.estruturaCentro` na frente, para vencer as
+   regras antigas de h2, .section e .lead sem !important. A /vitrine-v2
+   não usa `.mb`.
+   ============================================================ */
+.site.estruturaCentro.estruturaCentro .mb { text-align: center }
+.site.estruturaCentro.estruturaCentro .mb h2 {
+  margin: 0 auto; max-width: 20ch;
+  font-size: clamp(32px, 4.6vw, 60px); line-height: 1.04; letter-spacing: -.035em;
+}
+.site.estruturaCentro.estruturaCentro .mb h2 em { color: var(--green) }
+.site.estruturaCentro.estruturaCentro .mb .mbLead {
+  margin: 18px auto 0; max-width: 46ch;
+  font: 400 clamp(15px, 1.15vw, 17.5px)/1.5 var(--body); color: #5b6063;
+}
+.site.estruturaCentro.estruturaCentro .mb .mbEyebrow {
+  margin: 0 0 14px; font: 500 13px var(--body); letter-spacing: 0; text-transform: none; color: #8a8f91;
+}
+.site.estruturaCentro.estruturaCentro .mb h3 { margin: 18px 0 8px; font: 600 clamp(18px, 1.5vw, 22px)/1.2 var(--body); letter-spacing: -.02em; color: var(--ink) }
+.site.estruturaCentro.estruturaCentro .mb article p, .site.estruturaCentro.estruturaCentro .mb .depoCard p { font: 400 15px/1.55 var(--body); color: #5b6063; margin: 0 }
+.mbAcoes { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 26px }
+.site.estruturaCentro.estruturaCentro .mb .mbAcoes .button {
+  font: 600 15px var(--body); letter-spacing: -.005em; text-transform: none;
+  min-height: 48px; padding: 0 22px; display: inline-flex; align-items: center; gap: 8px;
+}
+.site.estruturaCentro.estruturaCentro .mb .mbAcoes .outline { border: 1px solid #d4d4d1; background: #fff; color: var(--ink) }
+
+/* ---------- 2. o placar, a noite depois da colina ---------- */
+.site.estruturaCentro.estruturaCentro .placar {
+  position: relative; overflow: hidden; isolation: isolate;
+  /* sem margem negativa: o <main> não tem o padding do hero, e a seção
+     saía 64px da tela de cada lado (medido em 28/10) */
+  padding: clamp(48px, 5vw, 72px) var(--pad) clamp(56px, 6vw, 88px);
+  background: var(--ink); color: #fff;
+}
+.site.estruturaCentro.estruturaCentro .placar .placarRotulo { margin: 0 0 18px; font: 500 14px var(--body); color: #9aa0a3 }
+.placarNumeros { list-style: none; margin: 0; padding: 0; display: grid; gap: 22px; position: relative; z-index: 1 }
+.placarNumeros li { display: grid; justify-items: center; gap: 2px }
+.placarNumeros b {
+  font: 400 clamp(52px, 8.4vw, 118px)/1 var(--font-titulo), var(--body); letter-spacing: -.045em; color: #fff;
+}
+/* só a legenda: com `span` a regra pegava as letras de dentro do número
+   e as encolhia (28/10) */
+.placarNumeros .placarLegenda { font: 400 clamp(15px, 1.3vw, 19px) var(--body); color: #b9bfc2 }
+.placarNumeros b span { font: inherit; color: inherit; letter-spacing: inherit }
+/* as faixas de ícones (28/10, terceira versão): a parede em grade lia
+   como planilha, e o Rafael não gostou. Agora três faixas rolando devagar
+   em sentidos alternados, com as pontas esmaecendo no grafite; os ícones
+   maiores e sem texto. A lista vai duas vezes no trilho e a animação anda
+   metade, então o laço não tem emenda. Pausa no hover; parada para quem
+   pede menos movimento. Só as 94 com logo própria entram. */
+.placarMiolo { position: relative; z-index: 1; display: grid; justify-items: center }
+.placarFaixas {
+  display: grid; gap: 16px; margin: clamp(40px, 5vw, 64px) calc(var(--pad) * -1) 0; overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+}
+.placarFaixa { overflow: hidden }
+/* uma faixa só, 32 ícones curados de 80px (28/10) */
+/* 56px (28/10, "diminui"): a 80 as plaquinhas pesavam mais que os números */
+.placarTrilho { display: flex; gap: 16px; width: max-content; padding: 12px 0; animation: marqueeAnda 80s linear infinite }
+.placarTrilho a { flex: none; display: block; border-radius: 22% }
+.placarTrilho img {
+  display: block; width: 56px; height: 56px; object-fit: cover; border-radius: 22%; background: #23272a;
+  box-shadow: 0 10px 24px #00000066; transition: transform .15s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .placarFaixas:hover .placarTrilho { animation-play-state: paused }
+  .placarTrilho img:hover { transform: scale(1.12) }
+}
+@media (prefers-reduced-motion: reduce) { .placarTrilho { animation: none } }
+@media (min-width: 721px) {
+  /* três colunas iguais e os números alinhados pelo topo: 108, 24h e R$0
+     têm larguras bem diferentes, e com colunas automáticas a linha bambeava */
+  .placarNumeros { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(16px, 3vw, 48px); align-items: start; width: min(100%, 880px) }
+  .placarNumeros b { font-size: clamp(48px, 7vw, 104px) }
+}
+@media (max-width: 720px) {
+  .placarTrilho { gap: 12px }
+  .placarTrilho img { width: 46px; height: 46px }
+}
+
+/* ---------- 3. as lojas no ar: abas e a fila de celulares ---------- */
+.abas { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 26px auto 0; padding: 4px; width: fit-content; max-width: 100%; border-radius: 999px; background: #f1f1ef }
+.site .aba {
+  border: 0; border-radius: 999px; padding: 8px 16px; cursor: pointer;
+  background: transparent; color: #5b6063; font: 500 14px var(--body);
+  transition: background .15s ease, color .15s ease, box-shadow .15s ease;
+}
+.site .aba[aria-selected="true"] { background: #fff; color: var(--ink); box-shadow: 0 1px 3px #0000001f }
+.site .aba:focus-visible { outline: 2px solid var(--rosa); outline-offset: 2px }
+.fones {
+  list-style: none; margin: 34px calc(var(--pad) * -1) 0; padding: 12px var(--pad) 28px;
+  display: flex; gap: clamp(12px, 1.2vw, 24px); overflow-x: auto; overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity; scroll-padding-inline: var(--pad); scrollbar-width: none;
+}
+.fones::-webkit-scrollbar { display: none }
+.fone { flex: none; width: clamp(170px, 11.9vw, 236px); scroll-snap-align: start }
+.fone[hidden] { display: none }
+.fone a { display: block; color: inherit; text-decoration: none; transition: transform .25s ease }
+@media (hover: hover) and (pointer: fine) { .fone a:hover { transform: translateY(-6px) } }
+.fone a:focus-visible { outline: 2px solid var(--rosa); outline-offset: 6px; border-radius: 30px }
+/* o aparelho: aro escuro, cantos de celular, a tela por dentro */
+.foneTela {
+  display: block; aspect-ratio: 390 / 844; overflow: hidden;
+  border: 7px solid #15171a; border-radius: 34px; background: #15171a;
+  box-shadow: 0 24px 50px #0000002b, 0 2px 6px #00000014;
+}
+.foneTela img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: 26px }
+.foneNome { display: grid; gap: 2px; margin-top: 14px; text-align: center }
+.foneNome b { font: 600 15px var(--body); color: var(--ink) }
+.foneNome small { font: 400 12.5px var(--body); color: #8a8f91 }
+/* a 1440 as sete cabem (7 x 173px + 6 x 17px = 1313px nos 1312px úteis);
+   só rola quando não cabe */
+@media (min-width: 1380px) { .fones { justify-content: center } }
+
+/* ---------- 4. a jornada: dois cartões grandes ---------- */
+.jornadaGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; max-width: 1040px; margin: 36px auto 0; text-align: left }
+.jornadaCard { min-width: 0 }
+.jornadaVisual {
+  position: relative; height: clamp(300px, 30vw, 400px); overflow: hidden;
+  border-radius: 24px; background: #f3f3f1;
+}
+.jornadaFone { display: grid; justify-items: center; padding-top: 34px }
+.jornadaFone .foneTela { width: min(68%, 250px); border-radius: 36px }
+.jornadaZap {
+  display: flex; flex-direction: column; justify-content: flex-start; gap: 10px;
+  padding: 18px 20px; background: var(--wa-paper, #efeae2);
+}
+.jornadaZapTopo { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font: 600 14px var(--body); color: var(--ink) }
+.jornadaIntervalo { align-self: center; font: 400 12px var(--body); color: #8a8f91 }
+@media (max-width: 720px) {
+  .jornadaGrid { grid-template-columns: minmax(0, 1fr) }
+  .jornadaVisual { height: 280px }
+}
+
+/* ---------- 5. as etapas: três cartões ---------- */
+.etapasGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; max-width: 1040px; margin: 36px auto 0; text-align: left }
+.etapaCard { min-width: 0; position: relative }
+.etapaVisual {
+  display: grid; place-items: center; height: 220px; overflow: hidden;
+  border-radius: 22px; background: #f3f3f1; padding: 22px;
+}
+.etapaBalao {
+  display: flex; align-items: center; gap: 10px; max-width: 100%;
+  padding: 12px 14px; border-radius: 16px 16px 16px 4px; background: #fff;
+  box-shadow: 0 6px 18px #00000014; font: 400 14px/1.4 var(--body); color: var(--ink);
+}
+.etapaBalao svg { flex: none }
+.etapaPreco {
+  padding: 14px 20px; border-radius: 999px; background: #fff; color: var(--ink);
+  box-shadow: 0 6px 18px #00000014; font: 600 15px var(--body); letter-spacing: -.01em;
+}
+.etapaPainel { display: block; width: min(72%, 200px); align-self: end; margin-bottom: -60px; border-radius: 22px 22px 0 0; overflow: hidden; box-shadow: 0 14px 34px #00000024 }
+.etapaPainel img { display: block; width: 100%; height: auto }
+.etapaN { display: block; margin-top: 18px; font: 500 12px var(--mono); letter-spacing: .14em; color: var(--green) }
+.site.estruturaCentro.estruturaCentro .mb .etapaCard h3 { margin-top: 6px }
+@media (max-width: 860px) { .etapasGrid { grid-template-columns: minmax(0, 1fr) } }
+
+/* ---------- quem faz, curto e claro ---------- */
+.quemCurtoGrid { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: clamp(28px, 5vw, 64px); align-items: center; max-width: 960px; margin: 0 auto; text-align: left }
+.site.estruturaCentro.estruturaCentro .quemCurto h2 { margin: 0; max-width: none; text-align: left; font-size: clamp(30px, 3.6vw, 48px) }
+.site.estruturaCentro.estruturaCentro .quemCurto .mbLead { margin-left: 0; text-align: left }
+.site.estruturaCentro.estruturaCentro .quemCurto .mbEyebrow { text-align: left }
+.site.estruturaCentro.estruturaCentro .quemCurto .mbAcoes { justify-content: flex-start }
+.quemCurtoFoto img { display: block; width: 100%; height: auto; border-radius: 24px; box-shadow: 0 24px 50px #0000002b }
+@media (max-width: 720px) {
+  .quemCurtoGrid { grid-template-columns: minmax(0, 1fr); text-align: center }
+  .quemCurtoFoto { width: min(62%, 260px); margin: 0 auto }
+  .site.estruturaCentro.estruturaCentro .quemCurto h2,
+  .site.estruturaCentro.estruturaCentro .quemCurto .mbLead,
+  .site.estruturaCentro.estruturaCentro .quemCurto .mbEyebrow { text-align: center; margin-inline: auto }
+  .site.estruturaCentro.estruturaCentro .quemCurto .mbAcoes { justify-content: center }
+}
+
+/* ---------- 6. o preço num cartão ---------- */
+.precoCard {
+  max-width: 560px; margin: 32px auto 0; padding: clamp(24px, 3vw, 36px);
+  border: 1px solid #e6e6e3; border-radius: 28px; background: #fff;
+  box-shadow: 0 24px 60px #0000001a; text-align: left;
+}
+.precoLinhas { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px }
+.precoLinhas li { display: grid; gap: 2px; padding: 16px; border-radius: 16px; background: #f6f6f4 }
+.precoLinhas b { font: 400 clamp(28px, 3vw, 36px)/1 var(--font-titulo), var(--body); letter-spacing: -.03em; color: var(--ink) }
+.precoLinhas span { font: 400 13px var(--body); color: #6b7072 }
+.site.estruturaCentro.estruturaCentro .mb .precoPix { margin: 14px 0 0; font: 500 14px var(--body); color: var(--green) }
+.precoItens { list-style: none; margin: 22px 0 0; padding: 22px 0 0; border-top: 1px solid #ececea; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px }
+.precoItens li { position: relative; padding-left: 22px; font: 400 14px/1.4 var(--body); color: var(--ink) }
+.precoItens li::before { content: "✓"; position: absolute; left: 0; top: 0; color: var(--green); font-weight: 700 }
+.site.estruturaCentro.estruturaCentro .precoCard .acao {
+  width: 100%; margin-top: 24px; min-height: 52px; display: inline-flex; align-items: center; justify-content: center;
+  font: 600 16px var(--body); letter-spacing: -.005em; text-transform: none;
+}
+.site.estruturaCentro.estruturaCentro .mb .precoNota { margin: 14px 0 0; text-align: center; font: 400 13px/1.5 var(--body); color: #6b7072 }
+.site.estruturaCentro.estruturaCentro .mb .precoNota a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px }
+@media (max-width: 520px) {
+  .precoLinhas, .precoItens { grid-template-columns: minmax(0, 1fr) }
+}
+
+/* ---------- 7. os depoimentos ---------- */
+.depoGrid { list-style: none; margin: 36px auto 0; padding: 0; max-width: 1040px; columns: 3; column-gap: 18px; text-align: left }
+.depoCard {
+  break-inside: avoid; margin: 0 0 18px; padding: 20px 22px;
+  border: 1px solid #e6e6e3; border-radius: 20px; background: #fff;
+}
+.depoCard p + p { margin-top: 10px }
+.depoTopo { display: flex; align-items: center; gap: 10px; margin-bottom: 12px }
+.depoTopo img, .depoAvatar { flex: none; width: 36px; height: 36px; border-radius: 10px; object-fit: cover }
+.depoAvatar { display: grid; place-items: center; background: #ecefe9; color: var(--green); font: 600 15px var(--body) }
+.depoTopo > span { display: grid; gap: 1px; min-width: 0 }
+.depoTopo b { font: 600 14px var(--body); color: var(--ink) }
+.depoTopo small { font: 400 12.5px var(--body); color: #8a8f91 }
+.depoTopo i { margin-left: auto; flex: none; font: 500 11px var(--body); padding: 4px 9px; border-radius: 999px }
+.depoCliente { background: #e3f5ec; color: #0c7a4c }
+.depoPrevia { background: #f1f1ef; color: #6b7072 }
+@media (max-width: 900px) { .depoGrid { columns: 2 } }
+@media (max-width: 600px) { .depoGrid { columns: 1 } }
+
+/* ---------- 8. o fim e a faixa de pílulas ---------- */
+.marquees { display: grid; gap: 12px; margin: clamp(44px, 6vw, 72px) calc(var(--pad) * -1) 0; overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent); }
+.marquee { overflow: hidden }
+.marqueeTrilho { display: flex; gap: 12px; width: max-content; animation: marqueeAnda 40s linear infinite }
+.marqueeInverso .marqueeTrilho { animation-direction: reverse }
+@keyframes marqueeAnda { from { transform: translateX(0) } to { transform: translateX(-50%) } }
+@media (hover: hover) and (pointer: fine) { .marquees:hover .marqueeTrilho { animation-play-state: paused } }
+@media (prefers-reduced-motion: reduce) { .marqueeTrilho { animation: none } }
+.pilulaLoja {
+  display: inline-flex; align-items: center; gap: 10px; padding: 8px 18px 8px 8px;
+  border: 1px solid #e6e6e3; border-radius: 999px; background: #fff;
+  font: 600 15px var(--body); color: var(--ink); white-space: nowrap;
+}
+.pilulaLoja img { width: 28px; height: 28px; border-radius: 8px; object-fit: cover }
+
+/* a FAQ antiga, centrada como o resto da página simplificada (28/10).
+   :global porque o CSS Module renomeia até o #id, e a regra não pegava */
+.site.estruturaCentro.estruturaCentro :global(#faq) { text-align: center }
+.site.estruturaCentro.estruturaCentro :global(#faq) .eyebrow { font: 500 13px var(--body); letter-spacing: 0; text-transform: none; color: #8a8f91 }
+.site.estruturaCentro.estruturaCentro :global(#faq) h2 { margin: 0 auto; max-width: 20ch; font-size: clamp(32px, 4.6vw, 60px); line-height: 1.04; letter-spacing: -.035em }
+.site.estruturaCentro.estruturaCentro :global(#faq) .faq { max-width: 760px; margin: 36px auto 0; text-align: left }
+
+/* ---------- a animação do placar (28/10) ----------
+   Parada até a seção entrar na tela (.placarVisto, posto pelo observador):
+   o contador nasce do desfoque, as letras de "24h" e "R$0" uma a uma, com
+   o mesmo letraSurge do hero, e as legendas sobem com o heroSobe. */
+.site.estruturaCentro.estruturaCentro .placar .letra,
+.site.estruturaCentro.estruturaCentro .placar .placarConta { animation: none; opacity: 0; filter: blur(12px) }
+.site.estruturaCentro.estruturaCentro .placar .placarLegenda { display: block; opacity: 0; transform: translateY(14px) }
+.site.estruturaCentro.estruturaCentro .placarVisto .letra { animation: letraSurge .7s cubic-bezier(.2, .7, .2, 1) both; animation-delay: calc(var(--i) * 60ms + 200ms) }
+.site.estruturaCentro.estruturaCentro .placarVisto .placarConta { animation: letraSurge .7s cubic-bezier(.2, .7, .2, 1) both; animation-delay: 100ms }
+.site.estruturaCentro.estruturaCentro .placarVisto .placarLegenda { animation: heroSobe .8s cubic-bezier(.2, .7, .2, 1) both; animation-delay: calc(var(--i) * 140ms + 500ms) }
+.placarConta { display: inline-block; font-variant-numeric: tabular-nums }
+@media (prefers-reduced-motion: reduce) {
+  .site.estruturaCentro.estruturaCentro .placar .letra,
+  .site.estruturaCentro.estruturaCentro .placar .placarConta,
+  .site.estruturaCentro.estruturaCentro .placar .placarLegenda { animation: none; opacity: 1; filter: none; transform: none }
+}
+
+/* o placar vira um bloco com os cantos de baixo redondos (28/10): o corte
+   reto de grafite para branco lia como a página trocando de cor; com o
+   raio, lê como um cartão apoiado no branco. Opção 2 das três oferecidas
+   ao Rafael (a 1 era a faixa cavalgando a emenda) */
+.site.estruturaCentro.estruturaCentro .placar { border-radius: 0 0 40px 40px }
+@media (max-width: 720px) { .site.estruturaCentro.estruturaCentro .placar { border-radius: 0 0 28px 28px } }
+
+/* as plaquinhas SEM a entrada por desfoque e SEM a flutuação (28/10, à
+   tarde): 64 elementos com filter e transform animando por cima de uma
+   faixa que já rola davam "sensação de lag" na tela do Rafael. Fica só a
+   rolagem contínua, que é uma transform por trilho. */
+
+/* o placar menor (28/10, "agora quero que diminua"): números de até 76px
+   em vez de 104, respiros pela metade e a faixa colada nos números. Na
+   tela do Rafael (1812px) a seção tinha 600px de altura para três números
+   e uma faixa. */
+.site.estruturaCentro.estruturaCentro .placar { padding: clamp(36px, 4vw, 52px) var(--pad) clamp(32px, 3.5vw, 48px) }
+.site.estruturaCentro.estruturaCentro .placar .placarRotulo { margin-bottom: 12px; font-size: 13px }
+.site.estruturaCentro.estruturaCentro .placar .placarNumeros b { font-size: clamp(40px, 5.2vw, 76px) }
+.site.estruturaCentro.estruturaCentro .placar .placarNumeros .placarLegenda { font-size: clamp(14px, 1.1vw, 16px) }
+@media (min-width: 721px) { .site.estruturaCentro.estruturaCentro .placar .placarNumeros { width: min(100%, 760px); gap: clamp(16px, 2.5vw, 40px) } }
+.site.estruturaCentro.estruturaCentro .placar .placarFaixas { margin-top: clamp(20px, 2.4vw, 32px) }
+
+/* a manchete "Veja lojas no ar em segundos" com a animação do hero (28/10):
+   parada até .mbVisto, depois cada letra sai do desfoque (28ms entre elas,
+   como no hero) e o parágrafo sobe logo atrás */
+.site.estruturaCentro.estruturaCentro .mbAnim h2 .letra { animation: none; opacity: 0; filter: blur(12px) }
+.site.estruturaCentro.estruturaCentro .mbAnim .mbLead { opacity: 0; transform: translateY(22px) }
+.site.estruturaCentro.estruturaCentro .mbAnim.mbVisto h2 .letra { animation: letraSurge .7s cubic-bezier(.2, .7, .2, 1) both; animation-delay: calc(var(--i) * 28ms + 80ms) }
+.site.estruturaCentro.estruturaCentro .mbAnim.mbVisto .mbLead { animation: heroSobe .8s cubic-bezier(.2, .7, .2, 1) both; animation-delay: .75s }
+@media (prefers-reduced-motion: reduce) {
+  .site.estruturaCentro.estruturaCentro .mbAnim h2 .letra,
+  .site.estruturaCentro.estruturaCentro .mbAnim .mbLead { animation: none; opacity: 1; filter: none; transform: none }
+}
+
+/* duas fileiras no placar (28/10): a de baixo anda ao contrário e um pouco
+   mais devagar, deslocada meio ícone para não alinhar com a de cima */
+.site.estruturaCentro.estruturaCentro .placar .placarFaixas { gap: 0 }
+.placarFaixaInversa .placarTrilho { animation-direction: reverse; animation-duration: 95s; margin-left: -36px }
+
+/* ---------- os depoimentos no desenho do Mobbin (28/10) ----------
+   Um palco claro, a frase grande em negrito à esquerda, as aspas acima
+   dela e quem falou no canto de baixo à direita. A grade de cartões
+   (.depoGrid) ficou sem uso. */
+.depoPalco {
+  position: relative; max-width: 1040px; margin: 36px auto 0;
+  padding: clamp(28px, 4vw, 56px) clamp(24px, 4vw, 64px) clamp(24px, 3vw, 40px);
+  border-radius: 28px; background: #f5f5f3; text-align: left;
+}
+.depoFig { margin: 0; min-height: 300px; display: flex; flex-direction: column; animation: depoEntra .55s cubic-bezier(.2, .7, .2, 1) both }
+@keyframes depoEntra { from { opacity: 0; transform: translateY(14px) } to { opacity: 1; transform: none } }
+.depoAspas { display: block; font: 700 72px/.6 var(--font-titulo), var(--body); color: var(--ink); margin-bottom: 26px; letter-spacing: -.04em }
+/* largura em px: em ch ela media pela fonte do bloco (16px), não da frase
+   (40px), e a citação saía uma palavra por linha */
+.depoFig blockquote { margin: 0; max-width: 680px }
+.site.estruturaCentro.estruturaCentro .mb .depoFig blockquote p {
+  margin: 0; font: 600 clamp(22px, 2.9vw, 40px)/1.18 var(--body); letter-spacing: -.03em; color: var(--ink);
+}
+.site.estruturaCentro.estruturaCentro .mb .depoFig blockquote p + p { margin-top: .6em }
+.depoQuem { display: flex; align-items: center; gap: 12px; margin: 34px 0 0 auto }
+.depoQuem img, .depoQuem .depoAvatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; flex: none }
+.depoQuem .depoAvatar { display: grid; place-items: center; background: #e3f5ec; color: var(--green); font: 600 18px var(--body) }
+.depoQuem > span { display: grid; gap: 2px }
+.depoQuem b { font: 600 15px var(--body); color: var(--ink) }
+.depoQuem small { font: 400 13.5px var(--body); color: #6b7072 }
+.depoPontos { display: flex; justify-content: center; gap: 8px; margin-top: 26px }
+.site .depoPonto { width: 8px; height: 8px; padding: 0; border: 0; border-radius: 50%; background: #d4d4d1; cursor: pointer; transition: background .15s ease, transform .15s ease }
+.site .depoPonto[aria-selected="true"] { background: var(--ink); transform: scale(1.25) }
+.site .depoPonto:focus-visible { outline: 2px solid var(--rosa); outline-offset: 3px }
+@media (prefers-reduced-motion: reduce) { .depoFig { animation: none } }
+@media (max-width: 720px) {
+  .depoFig { min-height: 0 }
+  .depoAspas { font-size: 56px; margin-bottom: 18px }
+  .depoQuem { margin-left: 0; margin-top: 26px }
+}
+
+/* a citação longa num corpo menor (28/10) */
+.site.estruturaCentro.estruturaCentro .mb .depoLonga blockquote p { font-size: clamp(19px, 2.1vw, 29px) }
+.depoLonga blockquote { max-width: 620px }
+
+/* ---------- os depoimentos, fiéis ao mobbin.com (28/10, medido) ----------
+   Faixa cinza de borda a borda (rgba(64,64,64,.06) sobre o branco), 160px
+   em cima, 100px embaixo, 160px entre a manchete e o depoimento. Grade de
+   16 colunas com 20px de vão: a frase nas colunas 2 a 9, o autor nas 12 a
+   15, alinhado ao pé. Tudo escala para baixo nas telas menores. As regras
+   anteriores (.depoPalco, .depoFig, .depoPontos) ficaram sem uso. */
+.site.estruturaCentro.estruturaCentro .depo {
+  /* sem margem negativa: o <main> não tem padding, e ela só empurrava a
+     seção para fora da tela (no celular o texto encostava na borda) */
+  /* branco e sem a manchete (28/10): o respiro de cima encolhe, já que a
+     frase é a primeira coisa da seção */
+  padding: clamp(56px, 7vw, 100px) 20px clamp(60px, 7vw, 100px);
+  background: #fff; text-align: left;
+}
+.site.estruturaCentro.estruturaCentro .depo h2 { text-align: center }
+.depoGrade {
+  display: grid; grid-template-columns: repeat(16, minmax(0, 1fr)); column-gap: 20px;
+  max-width: 1400px; margin: 0 auto;
+  animation: depoEntra .55s cubic-bezier(.2, .7, .2, 1) both;
+}
+.depoFrase { grid-column: 3 / 11; margin: 0; padding-top: 40px; display: flex; flex-direction: column; align-items: flex-start }
+/* as aspas em SVG, na posição que o glifo do Mobbin ocupa: 15px abaixo do
+   topo da caixa de 80px, e o texto 80px abaixo do topo */
+/* aspas simples: o glifo da Instrument Sans, grande, na mesma caixa de 80px */
+.depoAspas { display: block; font: 600 88px/64px var(--font-titulo), var(--body); height: 64px; margin: 8px 0 24px; color: var(--ink) }
+.site.estruturaCentro.estruturaCentro .mb .depoFrase p {
+  margin: 0; font: 600 clamp(26px, 3.05vw, 44px)/1.09 var(--body); letter-spacing: -.4px; color: var(--ink); text-wrap: pretty;
+}
+.site.estruturaCentro.estruturaCentro .mb .depoFrase p + p { margin-top: .5em }
+.site.estruturaCentro.estruturaCentro .mb .depoLonga p { font-size: clamp(21px, 2.2vw, 32px) }
+.depoQuem { grid-column: 12 / 16; align-self: end; display: flex; align-items: center; gap: 24px; margin: 0 }
+.depoFoto { position: relative; width: 48px; height: 48px; flex: none }
+.depoFoto > img, .depoFoto .depoAvatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; display: grid; place-items: center }
+.depoFoto .depoAvatar { background: #e4e4e2; color: var(--ink); font: 600 18px var(--body) }
+.depoSelo { position: absolute; right: -5px; bottom: -5px; width: 16px; height: 16px; border-radius: 3.3px; overflow: hidden; background: var(--ink); box-shadow: 0 0 0 2px #fff }
+.depoSelo img { display: block; width: 16px; height: 16px; object-fit: cover }
+.depoNome { display: flex; flex-direction: column; min-width: 0; font: 400 16px/24px var(--body); color: var(--ink) }
+.depoPapel { color: #737373 }
+@media (max-width: 900px) {
+  .depoFrase { grid-column: 1 / 17; padding-top: 0 }
+  .depoQuem { grid-column: 1 / 17; margin-top: 32px }
+  .depoAspas { font-size: 64px; line-height: 48px; height: 48px; margin: 0 0 16px }
+}
+
+/* ---------- os passos em linha e o bento (28/10) ----------
+   A linha: três passos lado a lado, só número e título. O bento: três
+   colunas; o painel ocupa duas na primeira linha, a prévia a terceira;
+   na segunda, o pedido e o R$0 (que ocupa duas). As regras antigas
+   (.etapasGrid, .etapaCard, .etapaVisual...) ficaram sem uso. */
+.passosLinha {
+  list-style: none; margin: 28px auto 0; padding: 0; max-width: 1040px;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; text-align: left;
+}
+.passosLinha li { display: grid; gap: 6px; padding: 16px 0 0; border-top: 1px solid #e6e6e3 }
+.passosLinha li b { font: 600 15px/1.3 var(--body); letter-spacing: -.01em; color: var(--ink) }
+.passosLinha .etapaN { margin: 0 }
+.bento {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: minmax(300px, auto); gap: 18px;
+  max-width: 1040px; margin: 28px auto 0; text-align: left;
+}
+.bentoCard { position: relative; overflow: hidden; display: flex; flex-direction: column; padding: 26px 26px 0; border-radius: 24px; background: #f3f3f1; min-width: 0 }
+.site.estruturaCentro.estruturaCentro .mb .bentoCard h3 { margin: 0 0 6px; font: 600 clamp(18px, 1.5vw, 21px)/1.2 var(--body); letter-spacing: -.02em }
+.site.estruturaCentro.estruturaCentro .mb .bentoCard > p { margin: 0; font: 400 14.5px/1.5 var(--body); color: #5b6063; max-width: 36ch }
+.bentoPainel { grid-column: span 2 }
+.bentoMensal { grid-column: span 2; padding-bottom: 26px }
+.bentoLista { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; max-width: 46ch }
+.bentoLista li { position: relative; padding-left: 18px; font: 400 14.5px/1.5 var(--body); color: #5b6063 }
+.bentoLista li::before { content: ""; position: absolute; left: 0; top: .62em; width: 8px; height: 8px; border-radius: 50%; background: var(--green) }
+/* a tela do painel: entra pela base do cartão como um navegador, cortada embaixo */
+.bentoTela { margin: 22px 0 0; flex: 1; min-height: 240px; position: relative }
+.bentoTela picture { position: absolute; inset: 0 -26px 0 0; display: block; border-radius: 14px 0 0 0; overflow: hidden; box-shadow: 0 18px 44px #00000024; background: #fff }
+.bentoTela img { display: block; width: 110%; height: auto }
+.bentoTela figcaption { position: absolute; left: 0; bottom: 0; transform: translateY(100%); font: 400 11.5px var(--body); color: #8a8f91; padding: 8px 0 }
+.bentoCard.bentoPainel { padding-bottom: 34px }
+/* a prévia: o celular espiando pela base e o balão por cima */
+.bentoZap { position: relative; flex: 1; min-height: 220px; margin-top: 16px }
+.bentoZap .foneTela { position: absolute; left: 50%; top: 24px; width: 62%; translate: -50% 0; border-radius: 28px }
+.bentoBalao {
+  position: absolute; left: -6px; right: -6px; bottom: 18px; display: flex; gap: 10px; align-items: flex-start;
+  padding: 12px 14px; border-radius: 16px 16px 16px 4px; background: #fff; box-shadow: 0 10px 28px #0000001f;
+  font: 400 13.5px/1.4 var(--body); color: var(--ink);
+}
+.bentoBalao svg { flex: none; margin-top: 2px }
+.bentoBalao u { color: #0b7a4b; text-decoration-color: #0b7a4b88 }
+/* o pedido: o balão do hero, reto e centrado */
+.bentoPedidoBalao { flex: 1; display: grid; place-items: center; padding: 16px 0 30px }
+.site.estruturaCentro.estruturaCentro .bentoPedidoBalao .bentoNotif { position: static; width: 100%; max-width: 300px; margin: 0; transform: none; border-radius: 18px; padding: 12px 14px 13px;
+  background: #fff; border: 1px solid #e6e6e3; box-shadow: 0 18px 40px #0000001f; font: 400 14px/1.4 var(--body); color: var(--ink) }
+/* o R$0 */
+.site.estruturaCentro.estruturaCentro .mb .bentoZero { display: flex; align-items: baseline; gap: 10px; margin: 10px 0 8px; max-width: none }
+.bentoZero b { font: 400 clamp(56px, 6vw, 84px)/1 var(--font-titulo), var(--body); letter-spacing: -.04em; color: var(--ink) }
+.bentoZero span { font: 400 18px var(--body); color: #5b6063 }
+@media (max-width: 900px) {
+  .passosLinha { grid-template-columns: minmax(0, 1fr); gap: 10px }
+  .bento { grid-template-columns: minmax(0, 1fr); grid-auto-rows: auto }
+  .bentoPainel, .bentoMensal { grid-column: auto }
+  .bentoTela { min-height: 200px }
+  .bentoZap { min-height: 240px }
+}
+/* o balão do pedido dentro do bento herda o desenho da notificação do hero
+   (o cabeçalho vinha no mono em caixa alta da regra antiga de .pedidoK) */
+.site.estruturaCentro.estruturaCentro .bentoNotif .pedidoK { margin: 0; font: 600 12.5px var(--body); letter-spacing: 0; text-transform: none; color: var(--ink) }
+.site.estruturaCentro.estruturaCentro .bentoNotif i { margin: 0 0 0 auto; font: 400 12px var(--body); color: #8a8f91; font-style: normal }
+.site.estruturaCentro.estruturaCentro .bentoNotif .pedidoTopo { display: flex; align-items: center; gap: 8px; margin-bottom: 6px }
+/* as duas classes existiam só no componente (o módulo devolvia undefined) */
+.bentoPrevia { padding-bottom: 0 }
+.bentoPedido { padding-bottom: 0 }
+/* as classes de seção que só existiam no componente (28/10): sem regra, o
+   módulo devolvia undefined e a classe saía como "undefined" no HTML */
+.etapas { scroll-margin-top: 76px }
+.preco { scroll-margin-top: 76px }
+.fimNovo { scroll-margin-top: 76px }
+
+/* o vídeo do painel no cartão grande (28/10): inteiro, sem corte lateral,
+   com o cartão mais alto para o quadro de 16:10 caber */
+.bentoTela { min-height: 330px }
+.bentoTela picture, .bentoTela .bentoVideo { position: absolute; inset: 0; display: block; width: 100%; height: 100%; border-radius: 14px 14px 0 0; overflow: hidden; box-shadow: 0 18px 44px #00000024; background: #fff }
+.bentoVideo { object-fit: cover; object-position: top left }
+@media (max-width: 900px) { .bentoTela { min-height: 230px } }
+
+/* a animação dos títulos vale para toda seção .mbAnim (28/10): as lojas, as
+   etapas, o quem faz, o preço e o fim. O Quem Faz tem o título à esquerda
+   em três linhas; a quebra em letras respeita as palavras, então ele
+   continua quebrando no lugar certo. */
+.mbAnim { scroll-margin-top: 76px }
+
+/* ---------- os carretéis de ícones no fim (28/10, medido no mobbin.com) ----------
+   A grade: carretel · miolo · carretel, com o miolo centrado. O carretel
+   mede 141,6 x 318,4 (o do Mobbin a 1440); abaixo de 1200 ele encolhe por
+   escala, e no celular some, ficando só o texto, como lá. A mola da
+   transição é a cubic-bezier com sobressalto (o Motion usa spring; a curva
+   passa de 1 e volta, que é o que se vê). O `.carretelAndando` só liga a
+   transição depois do primeiro quadro, para os ícones não "voarem" até a
+   posição inicial ao montar. */
+.site.estruturaCentro.estruturaCentro .fimNovo { padding: clamp(80px, 11vw, 160px) var(--pad) clamp(100px, 13vw, 200px); overflow: hidden }
+.fimGrade { display: grid; grid-template-columns: 141.6px minmax(0, 1fr) 141.6px; align-items: center; gap: clamp(24px, 4vw, 64px); max-width: 1180px; margin: 0 auto }
+.fimMiolo { min-width: 0 }
+.carretel { position: relative; width: 141.6px; height: 318.4px; isolation: isolate; justify-self: center }
+.carretelIcone { position: absolute; left: 0; top: 0; width: 99.2px; height: 99.2px; transform-origin: 0 0; will-change: transform, opacity, filter; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px #00000014 }
+.carretelIcone img { display: block; width: 100%; height: 100%; object-fit: cover }
+.carretelAndando .carretelIcone { transition: transform .55s cubic-bezier(.34, 1.3, .64, 1), opacity .45s ease, filter .5s ease }
+@media (max-width: 1200px) {
+  .fimGrade { grid-template-columns: 113px minmax(0, 1fr) 113px }
+  .carretel { transform: scale(.8); transform-origin: 50% 50%; margin: -32px 0 }
+}
+@media (max-width: 900px) {
+  .fimGrade { grid-template-columns: minmax(0, 1fr) }
+  .carretel { display: none }
+}
+
+/* ---------- a fila dos celulares rolando para o lado (28/10) ----------
+   A janela corta nas bordas com a mesma máscara das faixas; o trilho leva
+   as 7 duas vezes e anda metade em 60s (uma transform só, leve). Pausa no
+   mouse; com filtro (.fonesRolando ausente) para e centra. Quem pede
+   menos movimento vê a fila parada e rola à mão. */
+.fonesJanela {
+  margin: 34px calc(var(--pad) * -1) 0; overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+}
+.site.estruturaCentro.estruturaCentro .fonesJanela .fones {
+  margin: 0; padding: 12px var(--pad) 28px; justify-content: center; overflow-x: auto; scrollbar-width: none;
+}
+.site.estruturaCentro.estruturaCentro .fonesRolando .fones {
+  width: max-content; justify-content: flex-start; overflow: visible; padding-inline: 0;
+  /* 40px/s como no Mobbin: 7 cartões de 576 + 6 vãos de 20 = 4152px por cópia, 104s */
+  animation: marqueeAnda 104s linear infinite;
+}
+@media (hover: hover) and (pointer: fine) { .fonesRolando:hover .fones { animation-play-state: paused } }
+@media (prefers-reduced-motion: reduce) {
+  .site.estruturaCentro.estruturaCentro .fonesRolando .fones { animation: none; width: auto; overflow-x: auto; padding-inline: var(--pad) }
+}
+
+/* ---------- os cartões da fila no desenho do Mobbin (28/10, medido) ----------
+   Cartão 576x384, cinza rgba(64,64,64,.06), cantos 32; a tela a 32px do
+   topo e da esquerda, cantos 8, cortada pelo cartão; o ícone de 63px no
+   canto, cantos 30%. A captura de celular (390x844) é alta: a 512px de
+   largura ela ocupa o cartão inteiro e só o topo da loja aparece, que é o
+   que se quer. As regras antigas do aparelho (.foneTela com aro) ficam
+   vencidas pelas daqui, com o seletor triplicado. */
+.site.estruturaCentro.estruturaCentro .fones { gap: 20px; padding: 12px 0 24px }
+.site.estruturaCentro.estruturaCentro .fone { width: 576px }
+.site.estruturaCentro.estruturaCentro .fone a {
+  position: relative; display: block; height: 384px; overflow: hidden;
+  border-radius: 32px; background: rgba(64, 64, 64, .06); transition: none;
+}
+@media (hover: hover) and (pointer: fine) { .site.estruturaCentro.estruturaCentro .fone a:hover { transform: none; background: rgba(64, 64, 64, .09) } }
+.site.estruturaCentro.estruturaCentro .fone .foneTela {
+  position: absolute; top: 32px; left: 32px; width: 512px; height: auto; aspect-ratio: auto;
+  border: 0; border-radius: 8px; background: #fff; overflow: hidden;
+  filter: drop-shadow(0 9px 13.5px rgba(0, 0, 0, .04)); box-shadow: none;
+}
+.site.estruturaCentro.estruturaCentro .fone .foneTela img { display: block; width: 100%; height: auto; border-radius: 8px; object-fit: fill; object-position: top }
+.foneIcone { position: absolute; top: 20px; left: 20px; width: 63px; height: 63px; border-radius: 30%; object-fit: cover; box-shadow: 0 4px 12px rgba(0, 0, 0, .18), 0 0 0 1px rgba(0, 0, 0, .06) }
+@media (max-width: 767px) {
+  .site.estruturaCentro.estruturaCentro .fone { width: 440px }
+  .site.estruturaCentro.estruturaCentro .fone a { height: 308px; border-radius: 24px }
+  .site.estruturaCentro.estruturaCentro .fone .foneTela { top: 24px; left: 24px; width: 392px }
+  .foneIcone { width: 48px; height: 48px; top: 14px; left: 14px }
+}
+/* a tela de desktop no cartão (28/10): 512x320 como no Mobbin, e o ícone
+   no canto do CARTÃO, não por cima da logo da loja */
+.site.estruturaCentro.estruturaCentro .fone .foneTela { width: 512px; height: 320px; aspect-ratio: 512 / 320 }
+.site.estruturaCentro.estruturaCentro .fone .foneTela img { height: 100%; object-fit: cover }
+.foneIcone { top: 16px; left: 16px; width: 44px; height: 44px; border-radius: 30%; z-index: 2 }
+@media (max-width: 767px) {
+  .site.estruturaCentro.estruturaCentro .fone .foneTela { width: 392px; height: 245px }
+  .foneIcone { width: 36px; height: 36px; top: 12px; left: 12px }
+}
+
+/* ---------- o encaixe do RR (28/10, pedido do Rafael) ----------
+   A logo pedia uma animação que fizesse sentido, e o sentido está no próprio
+   desenho: um R espelhado encostado num R. As duas metades do MESMO arquivo
+   (nada redesenhado) chegam de 9px para fora e se encaixam no centro; depois o
+   nome sai de dentro do monograma, como se o RR o escrevesse. Uma vez só, no
+   carregamento, terminando em ~1,2s, junto com a manchete. No hover as
+   metades se afastam 2px: é o aviso de que a logo é link. Usa `translate` e
+   não `transform`, para o hover não brigar com a animação que fica `both`. */
+.brandMono { position: relative; display: block; flex: none }
+.brandMono .rrDir { position: absolute; top: 0; left: 0 }
+.rrEsq { clip-path: inset(0 50% 0 0); animation: rrEsq .85s cubic-bezier(.2, .7, .2, 1) .1s both }
+.rrDir { clip-path: inset(0 0 0 50%); animation: rrDir .85s cubic-bezier(.2, .7, .2, 1) .1s both }
+@keyframes rrEsq { from { opacity: 0; transform: translateX(-9px) } to { opacity: 1; transform: none } }
+@keyframes rrDir { from { opacity: 0; transform: translateX(9px) } to { opacity: 1; transform: none } }
+.site.estruturaCentro.estruturaCentro .brandNome { animation: nomeSai .7s cubic-bezier(.2, .7, .2, 1) .55s both }
+@keyframes nomeSai {
+  from { clip-path: inset(0 100% 0 0); transform: translateX(-8px) }
+  to { clip-path: inset(0 0 0 0); transform: none }
+}
+@media (hover: hover) {
+  .rrEsq, .rrDir { transition: translate .25s cubic-bezier(.2, .7, .2, 1) }
+  .brandComRR:hover .rrEsq { translate: -2px 0 }
+  .brandComRR:hover .rrDir { translate: 2px 0 }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rrEsq, .rrDir, .site.estruturaCentro.estruturaCentro .brandNome { animation: none }
+  .rrEsq, .rrDir { transition: none }
+}
+
+/* ---------- o placar mínimo (28/10, "diminui, mais minimalista e moderno") ----------
+   Os 76px ainda gritavam numa faixa que só confirma o que o hero já disse.
+   Agora os números vão a no máximo 44px, a legenda pequena e cinza colada
+   embaixo, e um fio de 1px separa as três colunas: o fio diz que são três
+   fatos separados, e com ele o centro não precisa de vão largo. No celular
+   ficam também em três colunas (cabem a 360: "+100" a 30px tem ~70px). */
+.site.estruturaCentro.estruturaCentro .placar { padding: clamp(28px, 3vw, 40px) var(--pad) clamp(24px, 2.6vw, 36px) }
+.site.estruturaCentro.estruturaCentro .placar .placarRotulo { margin-bottom: 18px; font-size: 12.5px; color: #7f8588 }
+.site.estruturaCentro.estruturaCentro .placar .placarNumeros {
+  grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; align-items: start; width: min(100%, 620px);
+}
+.site.estruturaCentro.estruturaCentro .placar .placarNumeros li { gap: 6px; padding: 2px 8px }
+.site.estruturaCentro.estruturaCentro .placar .placarNumeros li + li { border-left: 1px solid #ffffff1f }
+.site.estruturaCentro.estruturaCentro .placar .placarNumeros b { font-size: clamp(30px, 3.2vw, 44px); letter-spacing: -.035em }
+.site.estruturaCentro.estruturaCentro .placar .placarNumeros .placarLegenda { font-size: 13px; line-height: 1.3; color: #8d9396; text-align: center }
+@media (max-width: 400px) {
+  .site.estruturaCentro.estruturaCentro .placar .placarNumeros .placarLegenda { font-size: 12px }
+}
+
+/* ---------- o "Da prévia à loja no ar" encenado (28/10, pedido do Rafael) ----------
+   O título já tinha as letras; o resto estava parado. Nada repete o desfoque:
+   cada parte encena o que diz, uma vez só.
+   1. Os passos são uma sequência de verdade, então o fio de cima se desenha
+      da esquerda para a direita, um passo depois do outro, e cada passo
+      acende quando o fio chega nele. Dispara com a seção (.mbVisto).
+   2 a 4. Cada cartão dispara quando ELE entra na tela (.cartaoVisto, ver
+      `Cartao` em mobbin.tsx): a prévia chega no WhatsApp (o celular sobe,
+      "digitando", a mensagem), o pedido cai como notificação, e o R$0 roda
+      num odômetro até parar no zero.
+   O painel fica quieto de propósito: o vídeo do cadastro já se move ali. */
+.passosLinha li { position: relative }
+.passosLinha li::before {
+  content: ""; position: absolute; left: 0; right: 0; top: -1px; height: 1px;
+  background: var(--green); transform: scaleX(0); transform-origin: left;
+}
+.site.estruturaCentro.estruturaCentro .etapas .passosLinha li > * { opacity: .3; transition: opacity .4s ease }
+.mbVisto .passosLinha li::before { animation: fioDesenha .5s cubic-bezier(.5, 0, .3, 1) both; animation-delay: calc(var(--i) * .45s + .6s) }
+.site.estruturaCentro.estruturaCentro .etapas.mbVisto .passosLinha li > * { animation: passoAcende .4s ease both; animation-delay: calc(var(--i) * .45s + .95s) }
+@keyframes fioDesenha { to { transform: scaleX(1) } }
+@keyframes passoAcende { from { opacity: .3 } to { opacity: 1 } }
+
+/* 2. a prévia chegando */
+.bentoZap .foneTela { opacity: 0; transform: translateY(48px) }
+.cartaoVisto .bentoZap .foneTela { animation: foneSobe .9s cubic-bezier(.2, .7, .2, 1) .1s both }
+@keyframes foneSobe { from { opacity: 0; transform: translateY(48px) } to { opacity: 1; transform: none } }
+.digitando {
+  position: absolute; left: -6px; bottom: 18px; display: flex; gap: 4px; align-items: center;
+  padding: 12px 14px; border-radius: 16px 16px 16px 4px; background: #fff; box-shadow: 0 10px 28px #0000001f;
+  opacity: 0; transform-origin: bottom left;
+}
+.digitando i { width: 6px; height: 6px; border-radius: 50%; background: #9aa0a3 }
+.cartaoVisto .digitando { animation: digitandoVive 1.4s ease .6s both }
+.cartaoVisto .digitando i { animation: pontoPula .9s ease-in-out infinite }
+.cartaoVisto .digitando i:nth-child(2) { animation-delay: .15s }
+.cartaoVisto .digitando i:nth-child(3) { animation-delay: .3s }
+@keyframes digitandoVive {
+  0% { opacity: 0; transform: scale(.8) }
+  15%, 85% { opacity: 1; transform: none }
+  100% { opacity: 0; transform: scale(.9) }
+}
+@keyframes pontoPula { 0%, 60%, 100% { transform: none; opacity: .5 } 30% { transform: translateY(-3px); opacity: 1 } }
+.bentoBalao { opacity: 0; transform-origin: bottom left }
+.cartaoVisto .bentoBalao { animation: balaoChega .45s cubic-bezier(.3, 1.3, .5, 1) 1.95s both }
+@keyframes balaoChega { from { opacity: 0; transform: translateY(8px) scale(.94) } to { opacity: 1; transform: none } }
+
+/* 3. o pedido cai como notificação */
+.site.estruturaCentro.estruturaCentro .bentoPedidoBalao .bentoNotif { opacity: 0 }
+.site.estruturaCentro.estruturaCentro .cartaoVisto .bentoPedidoBalao .bentoNotif { animation: notifCai .7s cubic-bezier(.3, 1.35, .5, 1) .25s both }
+@keyframes notifCai { from { opacity: 0; transform: translateY(-36px) scale(.96) } to { opacity: 1; transform: none } }
+
+/* 4. o zero no odômetro: a coluna 9..0 sobe 90% e para no 0 */
+.bentoZero b { display: inline-flex; align-items: flex-start }
+.rolo { display: inline-block; height: 1em; overflow: hidden; line-height: 1; font-variant-numeric: tabular-nums }
+.rolo > span { display: flex; flex-direction: column; transform: translateY(0) }
+.rolo > span > span { display: block; height: 1em }
+.cartaoVisto .rolo > span { animation: roloGira 1.6s cubic-bezier(.2, .6, .1, 1) .3s both }
+@keyframes roloGira { from { transform: translateY(0) } to { transform: translateY(-90%) } }
+
+@media (prefers-reduced-motion: reduce) {
+  .passosLinha li::before { transform: scaleX(1); animation: none !important }
+  .site.estruturaCentro.estruturaCentro .etapas .passosLinha li > * { opacity: 1; animation: none !important }
+  .bentoZap .foneTela, .bentoBalao, .site.estruturaCentro.estruturaCentro .bentoPedidoBalao .bentoNotif { opacity: 1; transform: none; animation: none !important }
+  .digitando { display: none }
+  .rolo > span { transform: translateY(-90%); animation: none !important }
+}
+/* os spans do rolo herdam o número: a regra `.bentoZero span` (o "por mês",
+   18px) pegava também os de dentro do <b> e encolhia o zero */
+.bentoZero b span { font: inherit; color: inherit; letter-spacing: inherit }
+/* bloco com overflow hidden tem a linha de base na borda de baixo, e o zero
+   subia ~10px acima do "R$"; pelo topo, os dois dividem a mesma linha de 1em */
+.rolo { vertical-align: top }
+
+/* ---------- os botões rosa com destino e profundidade (28/10, pedido do Rafael) ----------
+   "Falta algo": a pílula era chapada e não dizia para onde levava.
+   1. A SETA: só nos que levam a uma âncora da página (href="#..."), que é
+      descer até o formulário; aponta para baixo e no hover dá um passo
+      nessa direção. Os de enviar formulário e os de abrir loja não ganham:
+      a seta para baixo mentiria neles.
+   2. A PROFUNDIDADE: um brilho de 1px no topo da pílula, o rosa um pouco
+      mais claro em cima, e uma sombra rosa difusa embaixo. No hover sobe
+      1px e a sombra cresce; no toque volta e encolhe (o scale(.97) de antes).
+      `translate` e não `transform`, para não brigar com o scale do toque.
+   3. O BRILHO: só no CTA da pílula do topo, uma faixa de luz que atravessa
+      a cada 7s. Um botão só, para não espalhar movimento pela página. */
+.site.botoesApple.botoesApple.estruturaCentro :is(.acao, .headCta) {
+  background: linear-gradient(180deg, #ffffff26, #ffffff00 60%), var(--rosa);
+  box-shadow: inset 0 1px 0 #ffffff47, 0 1px 2px #b8125038, 0 8px 18px -6px #e31b6273;
+  transition: background .15s ease, translate .2s cubic-bezier(.2, .7, .2, 1), box-shadow .2s ease, transform .12s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .site.botoesApple.botoesApple.estruturaCentro :is(.acao, .headCta):hover {
+    background: linear-gradient(180deg, #ffffff2e, #ffffff00 60%), var(--rosa); filter: none;
+    translate: 0 -1px; box-shadow: inset 0 1px 0 #ffffff52, 0 2px 4px #b8125038, 0 14px 26px -8px #e31b6299;
+  }
+}
+.site.botoesApple.botoesApple.estruturaCentro :is(.acao, .headCta):active {
+  translate: 0 0; box-shadow: inset 0 1px 0 #ffffff33, 0 1px 2px #b8125038;
+}
+.site.botoesApple.botoesApple.estruturaCentro :is(.acao, .headCta):disabled { background: var(--rosa-dark); box-shadow: none; translate: 0 0 }
+
+.site.botoesApple.botoesApple.estruturaCentro :is(.acao, .headCta)[href^="#"]::after {
+  content: ""; display: inline-block; flex: none; width: 15px; height: 15px; margin-left: 8px; vertical-align: -3px;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 3v10M3.5 8.5 8 13l4.5-4.5'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 3v10M3.5 8.5 8 13l4.5-4.5'/%3E%3C/svg%3E") center / contain no-repeat;
+  transition: translate .25s cubic-bezier(.2, .7, .2, 1);
+}
+@media (hover: hover) and (pointer: fine) {
+  .site.botoesApple.botoesApple.estruturaCentro :is(.acao, .headCta)[href^="#"]:hover::after { translate: 0 2px }
+}
+
+.site.botoesApple.botoesApple.estruturaCentro .headCta { position: relative; overflow: hidden; isolation: isolate }
+.site.botoesApple.botoesApple.estruturaCentro .headCta::before {
+  content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 45%; pointer-events: none;
+  background: linear-gradient(100deg, #ffffff00, #ffffff47 50%, #ffffff00);
+  transform: translateX(-130%) skewX(-18deg);
+  animation: brilhoCta 7s cubic-bezier(.4, 0, .2, 1) 1.8s infinite;
+}
+@keyframes brilhoCta {
+  0% { transform: translateX(-130%) skewX(-18deg) }
+  14%, 100% { transform: translateX(330%) skewX(-18deg) }
+}
+@media (prefers-reduced-motion: reduce) {
+  .site.botoesApple.botoesApple.estruturaCentro .headCta::before { animation: none; display: none }
+  .site.botoesApple.botoesApple.estruturaCentro :is(.acao, .headCta),
+  .site.botoesApple.botoesApple.estruturaCentro :is(.acao, .headCta)::after { translate: none !important }
+}
+
+/* ---------- o CTA do topo entra depois do hero (28/10, pedido do Rafael) ----------
+   Fechado, ele não ocupa lugar: largura, respiro e o vão da fileira vão a
+   zero, então o Instagram encosta na ponta e não sobra buraco. Ao entrar, a
+   largura abre e o botão cresce de 92% a inteiro; o brilho recomeça junto,
+   porque a animação só roda com o botão visível (a primeira passada é a
+   chegada dele). */
+.site.botoesApple.botoesApple.estruturaCentro.estruturaCentro .headCta {
+  max-width: 260px; white-space: nowrap;
+  transition: max-width .45s cubic-bezier(.2, .7, .2, 1), padding .45s cubic-bezier(.2, .7, .2, 1), margin .45s cubic-bezier(.2, .7, .2, 1),
+    opacity .3s ease, scale .45s cubic-bezier(.2, .7, .2, 1), background .15s ease, translate .2s cubic-bezier(.2, .7, .2, 1), box-shadow .2s ease, transform .12s ease;
+}
+.site.botoesApple.botoesApple.estruturaCentro .headCta.headCtaOculto {
+  max-width: 0; padding-left: 0; padding-right: 0; margin-left: -10px;
+  opacity: 0; scale: .92; box-shadow: none; pointer-events: none;
+}
+.site.botoesApple.botoesApple.estruturaCentro .headCta.headCtaOculto::before { animation: none }
+@media (prefers-reduced-motion: reduce) {
+  .site.estruturaCentro.estruturaCentro .headCta { transition: opacity .2s ease }
+}
+
+/* a chegada do CTA do topo (28/10, "para não ficar seco"): enquanto a
+   largura abre, o botão desliza 14px da direita saindo de um desfoque leve;
+   a seta cai no lugar logo depois, e o brilho passa uma vez na chegada (o
+   atraso de 1,8s do carregamento vira 0,55s). Fechado, as três animações
+   ficam em `none`, e é isso que as faz recomeçar a cada vez que ele entra. */
+.site.botoesApple.botoesApple.estruturaCentro.estruturaCentro .headCta:not(.headCtaOculto) { animation: ctaChega .55s cubic-bezier(.2, .7, .2, 1) both }
+.site.botoesApple.botoesApple.estruturaCentro.estruturaCentro .headCta:not(.headCtaOculto)::after { animation: setaCai .45s cubic-bezier(.3, 1.4, .5, 1) .28s both }
+.site.botoesApple.botoesApple.estruturaCentro.estruturaCentro .headCta:not(.headCtaOculto)::before { animation-delay: .55s }
+.site.botoesApple.botoesApple.estruturaCentro.estruturaCentro .headCta.headCtaOculto,
+.site.botoesApple.botoesApple.estruturaCentro.estruturaCentro .headCta.headCtaOculto::after { animation: none }
+@keyframes ctaChega { from { opacity: 0; filter: blur(4px); transform: translateX(14px) } to { opacity: 1; filter: blur(0); transform: none } }
+@keyframes setaCai { from { opacity: 0; transform: translateY(-7px) } to { opacity: 1; transform: none } }
+@media (prefers-reduced-motion: reduce) {
+  .site.botoesApple.botoesApple.estruturaCentro.estruturaCentro .headCta { transition: opacity .2s ease; animation: none !important }
+  .site.botoesApple.botoesApple.estruturaCentro.estruturaCentro .headCta::after { animation: none !important }
+}
+
+/* ---------- o cartão do preço refeito (28/10, pedido do Rafael) ----------
+   1. O TRILHO: R$500 e R$499 em duas caixas iguais liam como dois preços.
+      Agora dois pontos ligados por um fio: o primeiro cheio (é o começo), o
+      segundo vazado (é depois de aprovar). O fio verde se desenha sobre um
+      trilho cinza quando a seção entra, como o dos passos lá em cima.
+   3. OS GRUPOS: nove itens soltos em duas colunas sobravam um sozinho e
+      quebravam um em dois; em três grupos curtos (o site, o painel, a
+      entrega) cada coluna lê como uma coisa só.
+   4. OS ✓ SE DESENHAM: um a um, da esquerda para a direita, logo depois do
+      fio; é o "tudo isso está incluso" encenado.
+   5. A NOTA equilibrada, para o "termos" não sobrar sozinho. */
+.precoTrilho {
+  list-style: none; margin: 0; padding: 0; position: relative;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px;
+}
+.precoTrilho::before, .precoTrilho::after {
+  content: ""; position: absolute; top: 5px; left: 6px; width: calc(50% + 12px); height: 2px; border-radius: 2px;
+}
+.precoTrilho::before { background: #e6e6e3 }
+.precoTrilho::after { background: var(--green); transform: scaleX(0); transform-origin: left }
+.precoTrilho li { position: relative; display: grid; gap: 4px; padding-top: 26px }
+.precoTrilho li::before {
+  content: ""; position: absolute; top: 0; left: 0; width: 12px; height: 12px; border-radius: 50%;
+  background: var(--green); box-sizing: border-box; z-index: 1;
+}
+.precoTrilho li + li::before { background: #fff; border: 2px solid var(--green) }
+.precoTrilho b { font: 400 clamp(32px, 3.4vw, 42px)/1 var(--font-titulo), var(--body); letter-spacing: -.035em; color: var(--ink) }
+.precoTrilho span { font: 400 13.5px/1.35 var(--body); color: #6b7072 }
+.mbVisto .precoTrilho::after { animation: fioDesenha .9s cubic-bezier(.5, 0, .3, 1) .5s both }
+.site.estruturaCentro.estruturaCentro .mb .precoPix { margin-top: 18px }
+
+.precoGrupos {
+  margin-top: 22px; padding-top: 22px; border-top: 1px solid #ececea;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px 22px;
+}
+.site.estruturaCentro.estruturaCentro .mb .precoGrupoT { margin: 0 0 10px; font: 600 13px var(--body); color: #8a8f91; letter-spacing: 0 }
+.precoGrupos .precoItens { margin: 0; padding: 0; border: 0; grid-template-columns: minmax(0, 1fr); gap: 8px }
+.precoGrupos .precoItens li { font-size: 13.5px }
+.precoGrupos .precoItens li::before {
+  content: ""; top: .2em; width: 14px; height: 14px; background: var(--green);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 8.5 6.5 12 13 4.5'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 8.5 6.5 12 13 4.5'/%3E%3C/svg%3E") center / contain no-repeat;
+  clip-path: inset(0 100% 0 0);
+}
+.mbVisto .precoGrupos .precoItens li::before { animation: checkDesenha .35s cubic-bezier(.4, 0, .2, 1) both; animation-delay: calc(var(--k) * 70ms + 1.1s) }
+@keyframes checkDesenha { from { clip-path: inset(0 100% 0 0) } to { clip-path: inset(0 0 0 0) } }
+.site.estruturaCentro.estruturaCentro .mb .precoNota { text-wrap: balance }
+
+@media (max-width: 720px) {
+  .precoGrupos { grid-template-columns: minmax(0, 1fr); gap: 18px }
+}
+@media (prefers-reduced-motion: reduce) {
+  .precoTrilho::after { transform: none; animation: none !important }
+  .precoGrupos .precoItens li::before { clip-path: none; animation: none !important }
+}
+/* com os três grupos, os 560px do cartão espremiam cada coluna a ~150px e
+   quase todo item quebrava em dois; a 760px cabem em uma linha (só o
+   "Publicação e endereço configurado" ainda quebra). Abaixo de 860px de
+   tela os grupos empilham. */
+.precoCard { max-width: 760px }
+.precoGrupos { column-gap: 28px }
+@media (max-width: 860px) {
+  .precoGrupos { grid-template-columns: minmax(0, 1fr); gap: 18px }
+}
+
+/* a compra direta no cartão do preço (28/10): abaixo do caminho da prévia,
+   separada por um "ou" entre dois fios. O botão é grafite e não rosa: a
+   prévia continua sendo o caminho que a página promete, e o rosa é dela. */
+.precoDireto { margin-top: 20px }
+.site.estruturaCentro.estruturaCentro .mb .precoOu {
+  display: flex; align-items: center; gap: 12px; margin: 0 0 16px;
+  font: 400 13px var(--body); color: #8a8f91;
+}
+.precoOu::before, .precoOu::after { content: ""; flex: 1; height: 1px; background: #ececea }
+.site.botoesApple.botoesApple.estruturaCentro .precoPagar {
+  width: 100%; background: var(--ink); color: #fff; border: 0; cursor: pointer;
+  box-shadow: inset 0 1px 0 #ffffff1f, 0 8px 18px -8px #0000004d;
+  transition: background .15s ease, translate .2s cubic-bezier(.2, .7, .2, 1), box-shadow .2s ease, transform .12s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .site.botoesApple.botoesApple.estruturaCentro .precoPagar:hover { background: #000; translate: 0 -1px }
+}
+.site.botoesApple.botoesApple.estruturaCentro .precoPagar:active { translate: 0 0 }
+.site.botoesApple.botoesApple.estruturaCentro .precoPagar {
+  min-height: 52px; display: inline-flex; align-items: center; justify-content: center;
+  font: 600 15px var(--body); letter-spacing: -.005em; text-transform: none;
+}
+
+/* ---------- o depoimento mais curto, com a prova ao lado (28/10, pedido do Rafael) ----------
+   1. O destaque: o trecho que vende, grande; a mensagem inteira embaixo em
+      corpo de leitura (16px), para quem quer ler tudo.
+   2. O Luciano logo abaixo do texto, alinhado com ele, e não no canto.
+   3. A metade vazia vira a vitrine da Iconic no celular, com link para o
+      site no ar; no celular ela desce para baixo do texto.
+   4. Metade do respiro, e as aspas penduradas na margem esquerda, na linha
+      do começo do destaque. */
+.site.estruturaCentro.estruturaCentro .depo { padding: clamp(40px, 4.5vw, 64px) 20px clamp(40px, 4.5vw, 64px) }
+.depoGrade.depoComTela {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center;
+  column-gap: clamp(32px, 6vw, 96px); max-width: 1040px;
+}
+.depoTexto { min-width: 0; display: flex; flex-direction: column; align-items: flex-start }
+.depoComTela .depoFrase { grid-column: auto; padding-top: 0; position: relative; max-width: 600px }
+.depoComTela .depoAspas {
+  position: absolute; left: -.62em; top: -.02em; height: auto; margin: 0;
+  font-size: clamp(48px, 5vw, 72px); line-height: 1; color: var(--green);
+}
+.site.estruturaCentro.estruturaCentro .mb .depoFrase .depoDestaque {
+  margin: 0 0 18px; font: 600 clamp(24px, 2.7vw, 36px)/1.15 var(--body); letter-spacing: -.02em; color: var(--ink); text-wrap: balance;
+}
+.site.estruturaCentro.estruturaCentro .mb .depoComDestaque .depoInteira p {
+  font: 400 16px/1.55 var(--body); letter-spacing: 0; color: #5b6063; max-width: 56ch;
+}
+.site.estruturaCentro.estruturaCentro .mb .depoComDestaque .depoInteira p + p { margin-top: .5em }
+.depoComTela .depoQuem { grid-column: auto; align-self: flex-start; margin: 24px 0 0; gap: 14px }
+.depoTela { display: grid; justify-items: center; gap: 12px; text-decoration: none; color: inherit }
+.depoFone {
+  display: block; width: clamp(190px, 18vw, 240px); aspect-ratio: 9 / 18.5; overflow: hidden;
+  border: 7px solid var(--ink); border-radius: 34px; background: #fff;
+  box-shadow: 0 30px 60px -20px #00000040;
+  transition: translate .3s cubic-bezier(.2, .7, .2, 1), box-shadow .3s ease;
+}
+.depoFone img { display: block; width: 100%; height: auto }
+.depoDominio { display: inline-flex; align-items: center; gap: 7px; font: 500 13px var(--body); color: #5b6063 }
+.depoDominio i { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 0 3px #22c55e2e }
+@media (hover: hover) and (pointer: fine) {
+  .depoTela:hover .depoFone { translate: 0 -4px; box-shadow: 0 36px 70px -22px #00000052 }
+  .depoTela:hover .depoDominio { color: var(--ink); text-decoration: underline; text-underline-offset: 3px }
+}
+.depoTela:focus-visible { outline: 2px solid var(--rosa); outline-offset: 6px; border-radius: 36px }
+@media (max-width: 760px) {
+  .depoGrade.depoComTela { grid-template-columns: minmax(0, 1fr); row-gap: 36px }
+  .depoComTela .depoAspas { position: static; display: block; margin: 0 0 4px; font-size: 56px; line-height: .8; height: 36px }
+  .depoFone { width: 200px }
+}
+/* no celular o aparelho somava ~430px a uma seção que já tinha de encolher:
+   menor e mais curto, só a primeira tela da Iconic */
+@media (max-width: 760px) {
+  .depoFone { width: 160px; aspect-ratio: 9 / 15; border-width: 6px; border-radius: 28px }
+  .depoGrade.depoComTela { row-gap: 28px }
+}
+
+/* ---------- o quem faz mais curto e assinado (28/10, pedido do Rafael) ----------
+   Sem o "QUEM FAZ" em cima, metade do respiro, o parágrafo com fatos no lugar
+   dos três "sem", e a assinatura: o monograma RR com o encaixe do topo da
+   página, tocando quando a seção entra (antes disso, invisível). */
+.site.estruturaCentro.estruturaCentro .quemCurto { padding-top: clamp(32px, 4vw, 56px); padding-bottom: clamp(32px, 4vw, 56px) }
+.rrEspera { opacity: 0 }
+.brandMono .rrSegunda { position: absolute; top: 0; left: 0 }
+.site.estruturaCentro.estruturaCentro .mb .quemAssina {
+  display: flex; align-items: center; gap: 10px; margin: 18px 0 0;
+  font: 500 13.5px var(--body); color: #6b7072;
+}
+.quemAssina .brandRR { width: 46px; height: 25px }
+.quemAssina + .mbAcoes { margin-top: 26px }
+@media (prefers-reduced-motion: reduce) { .rrEspera { opacity: 1 } }
+@media (max-width: 720px) { .site.estruturaCentro.estruturaCentro .mb .quemAssina { justify-content: center } }
+
+/* ---------- o FAQ em duas colunas (28/10, pedido do Rafael) ----------
+   À esquerda o título e o "Me chama no WhatsApp", presos enquanto a lista
+   rola; à direita as perguntas em 17px semibold, sem os fios pretos grossos
+   de antes. A resposta abre deslizando (a altura anima onde o navegador
+   sabe animar `::details-content`; em todo lugar o texto entra subindo) e
+   o + gira 45 graus e vira x. */
+.site.estruturaCentro.estruturaCentro :global(#faq).faqSecao { text-align: left; padding-top: clamp(40px, 5vw, 72px); padding-bottom: clamp(40px, 5vw, 72px) }
+.faqGrade {
+  display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: clamp(28px, 6vw, 96px);
+  max-width: 1040px; margin: 0 auto; padding: 0 var(--pad); align-items: start;
+}
+.faqLado { position: sticky; top: 100px }
+.site.estruturaCentro.estruturaCentro :global(#faq) .faqLado h2 {
+  margin: 0; max-width: 12ch; text-align: left;
+  font-size: clamp(30px, 3.4vw, 44px); line-height: 1.05; letter-spacing: -.03em;
+}
+.site.estruturaCentro.estruturaCentro :global(#faq) .faqLado p { margin: 16px 0 0; font: 400 15px/1.5 var(--body); color: #5b6063 }
+.faqLado a { color: var(--green); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: #0a8a5566 }
+.faqLado a:hover { text-decoration-color: currentColor }
+.faqLado a:focus-visible { outline: 2px solid var(--rosa); outline-offset: 3px; border-radius: 4px }
+
+.site.estruturaCentro.estruturaCentro :global(#faq) .faqLista { max-width: none; margin: 0; border-top: 1px solid #e6e6e3; interpolate-size: allow-keywords }
+.faqLista details, .faqLista details:last-child { border-bottom: 1px solid #e6e6e3 }
+.faqLista summary {
+  align-items: center; padding: 18px 0;
+  font: 600 17px/1.35 var(--body); letter-spacing: -.01em; color: var(--ink);
+}
+.faqLista summary:focus-visible { outline: 2px solid var(--rosa); outline-offset: 4px; border-radius: 6px }
+.faqLista summary::after {
+  content: ""; width: 14px; height: 14px; background: var(--ink); opacity: .55;
+  -webkit-mask: linear-gradient(#000 0 0) center / 100% 1.6px no-repeat, linear-gradient(#000 0 0) center / 1.6px 100% no-repeat;
+  mask: linear-gradient(#000 0 0) center / 100% 1.6px no-repeat, linear-gradient(#000 0 0) center / 1.6px 100% no-repeat;
+  transition: rotate .3s cubic-bezier(.2, .7, .2, 1), opacity .2s ease;
+}
+.faqLista details[open] summary::after { content: ""; rotate: 45deg; opacity: 1 }
+@media (hover: hover) and (pointer: fine) { .faqLista summary:hover::after { opacity: 1 } }
+.faqLista details::details-content {
+  block-size: 0; overflow: hidden;
+  transition: block-size .35s cubic-bezier(.2, .7, .2, 1), content-visibility .35s allow-discrete;
+}
+.faqLista details[open]::details-content { block-size: auto }
+.site.estruturaCentro.estruturaCentro :global(#faq) .faqResposta p { padding: 0 32px 20px 0; margin: 0; max-width: 60ch; font: 400 15px/1.6 var(--body); color: #5b6063 }
+.faqLista details[open] .faqResposta { animation: respostaSobe .35s cubic-bezier(.2, .7, .2, 1) both }
+@keyframes respostaSobe { from { opacity: 0; transform: translateY(-6px) } to { opacity: 1; transform: none } }
+@media (max-width: 820px) {
+  .faqGrade { grid-template-columns: minmax(0, 1fr); gap: 24px }
+  .faqLado { position: static }
+}
+@media (prefers-reduced-motion: reduce) {
+  .faqLista details::details-content { transition: none }
+  .faqLista details[open] .faqResposta { animation: none }
+  .faqLista summary::after { transition: none }
+}
+/* o título cabia em três linhas ("Perguntas / antes / de contratar") e o
+   link quebrava no meio ("Me chama no / WhatsApp") */
+.site.estruturaCentro.estruturaCentro :global(#faq) .faqLado h2 { max-width: 14ch; text-wrap: balance }
+.faqLado a { white-space: nowrap }
+.site.estruturaCentro.estruturaCentro :global(#faq) .faqLado h2 { font-size: clamp(28px, 2.9vw, 38px) }
+
+/* ---------- o rodapé claro (28/10, pedido do Rafael) ----------
+   Fundo do papel claro da página e um fio em cima; três colunas: a logo
+   (arquivo, verde original) com a frase, os links em caixa normal (o
+   dicionário guarda em caixa alta para o rodapé antigo; aqui vai minúscula
+   com a inicial maiúscula), e o contato. O copyright embaixo, pequeno. */
+.site.estruturaCentro.estruturaCentro .footer.rodapeNovo {
+  display: block; background: #f6f6f4; color: var(--ink); border-top: 1px solid #e6e6e3;
+  padding: clamp(36px, 4vw, 56px) var(--pad) calc(28px + env(safe-area-inset-bottom));
+}
+.rodapeTopo {
+  display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr); gap: 32px;
+  max-width: 1040px; margin: 0 auto; align-items: start;
+}
+.rodapeMarca a { display: inline-flex; align-items: center; gap: 9px; border-radius: 6px }
+.rodapeRR { display: block; width: 46px; height: 25px; object-fit: contain }
+.rodapeNome { display: block; width: 120px; height: 19px; object-fit: contain }
+.site.estruturaCentro.estruturaCentro .rodapeNovo .rodapeMarca p { margin: 14px 0 0; max-width: 30ch; font: 400 14px/1.5 var(--body); color: #5b6063 }
+.site.estruturaCentro.estruturaCentro .rodapeNovo nav { display: grid; gap: 10px; font: 400 14px var(--body) }
+.site.estruturaCentro.estruturaCentro .rodapeNovo nav a {
+  display: inline-block; justify-self: start; padding: 0; color: #4a4f52; text-decoration: none;
+  text-transform: lowercase; letter-spacing: 0;
+}
+.rodapeNovo nav a::first-letter { text-transform: uppercase }
+.rodapeContato { display: grid; gap: 10px; justify-items: start }
+.site.estruturaCentro.estruturaCentro .rodapeNovo .rodapeContato p { margin: 0 0 2px; font: 600 13px var(--body); color: #8a8f91 }
+.rodapeContato a { display: inline-flex; align-items: center; gap: 8px; font: 500 14px var(--body); color: var(--ink); text-decoration: none }
+@media (hover: hover) and (pointer: fine) {
+  .site.estruturaCentro.estruturaCentro .rodapeNovo nav a:hover, .rodapeContato a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px }
+}
+.rodapeNovo a:focus-visible { outline: 2px solid var(--rosa); outline-offset: 3px; border-radius: 4px }
+.site.estruturaCentro.estruturaCentro .rodapeNovo small {
+  display: block; max-width: 1040px; margin: 36px auto 0; padding-top: 18px; border-top: 1px solid #e6e6e3;
+  font: 400 12.5px var(--body); color: #8a8f91; letter-spacing: 0;
+}
+@media (max-width: 760px) {
+  .rodapeTopo { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px 20px }
+  .rodapeMarca { grid-column: 1 / -1 }
+}
+/* em 360 o "@rafaelrazeira.estudio" passava da coluna e era cortado pela tela */
+@media (max-width: 760px) {
+  .rodapeTopo { grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); column-gap: 16px }
+  .rodapeContato a { font-size: 13.5px }
+}
+/* com o FAQ por último a barra fixa do celular volta a aparecer no fim da
+   página (ela só some no convite final), e cobria o copyright */
+@media (max-width: 720px) {
+  .site.estruturaCentro.estruturaCentro .footer.rodapeNovo { padding-bottom: calc(96px + env(safe-area-inset-bottom)) }
+}
+/* com o FAQ logo depois do convite final (28/10), os 200px de baixo do
+   convite somados ao respiro do FAQ abriam um vão de ~280px de branco */
+.site.estruturaCentro.estruturaCentro .fimNovo { padding-top: clamp(64px, 8vw, 120px); padding-bottom: clamp(48px, 6vw, 88px) }
+
+/* ============================================================
+   A REVISÃO DO CELULAR (28/10, pedido do Rafael: "meu público é mobile")
+   Medido em 320, 360, 375, 390, 414 e 430, e em 360 com a raiz em 20 e
+   24px (5 Armadilhas/fonte-grande-do-android): nada passava da tela. O que
+   saiu da revisão está aqui embaixo.
+   ============================================================ */
+
+/* 1. A BARRA FIXA no desenho da página: fundo claro translúcido, o texto em
+      caixa normal e a pílula rosa com a seta (a mesma de todo botão que
+      desce até o formulário). Era grafite com mono em caixa alta. */
+@media (max-width: 720px) {
+  .site.estruturaCentro.estruturaCentro .bar {
+    background: #ffffffe6; color: var(--ink);
+    -webkit-backdrop-filter: saturate(1.6) blur(14px); backdrop-filter: saturate(1.6) blur(14px);
+    border-top: 1px solid #e6e6e3; box-shadow: 0 -8px 24px #0000000f;
+    padding: 10px 14px calc(10px + env(safe-area-inset-bottom)); gap: 12px;
+  }
+  .site.estruturaCentro.estruturaCentro .barCopy b { font: 600 13.5px/1.2 var(--body); letter-spacing: 0; color: var(--ink) }
+  .site.estruturaCentro.estruturaCentro .barCopy span { font: 400 12.5px/1.2 var(--body); letter-spacing: 0; color: #6b7072 }
+  .site.botoesApple.botoesApple.estruturaCentro .bar .acao {
+    min-height: 46px; padding: 0 18px; display: inline-flex; align-items: center;
+    font: 600 14.5px var(--body); letter-spacing: -.005em; text-transform: none; white-space: nowrap;
+  }
+}
+@media (max-width: 340px) {
+  .site.botoesApple.botoesApple.estruturaCentro .bar .acao { padding: 0 14px; font-size: 13.5px }
+  .site.estruturaCentro.estruturaCentro .barCopy b { font-size: 12.5px }
+}
+
+/* 2. OS FILTROS DAS LOJAS numa linha só: no celular a pílula quebrava em
+      duas ("Skate" sozinho embaixo). Agora rolam de lado, com as pontas
+      esmaecendo, e cada aba tem 40px de altura para o dedo. */
+@media (max-width: 720px) {
+  .site.estruturaCentro.estruturaCentro .abas {
+    flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; scrollbar-width: none;
+    width: auto; max-width: calc(100% + 2 * var(--pad)); margin-inline: calc(-1 * var(--pad));
+    padding: 4px var(--pad); border-radius: 0; background: transparent;
+    -webkit-mask: linear-gradient(90deg, transparent, #000 var(--pad), #000 calc(100% - var(--pad)), transparent);
+    mask: linear-gradient(90deg, transparent, #000 var(--pad), #000 calc(100% - var(--pad)), transparent);
+  }
+  .site.estruturaCentro.estruturaCentro .abas::-webkit-scrollbar { display: none }
+  .site.estruturaCentro.estruturaCentro .aba { flex: none; min-height: 40px; background: #f1f1ef }
+  .site.estruturaCentro.estruturaCentro .aba[aria-selected="true"] { background: var(--ink); color: #fff; box-shadow: none }
+}
+
+/* 3. O BOTÃO DA COMPRA DIRETA sem o "Pix" sozinho na segunda linha */
+@media (max-width: 480px) {
+  .site.botoesApple.botoesApple.estruturaCentro .precoPagar { font-size: 14px; padding: 10px 18px; text-wrap: balance; line-height: 1.25 }
+}
+
+/* 4. OS ALVOS DE TOQUE: os que mediam menos de 40px ganham área invisível
+      (o desenho não muda). PT/EN e o Instagram do topo, as logos do hero,
+      os links de texto do preço, do FAQ e do rodapé. */
+.site.estruturaCentro.estruturaCentro .idiomaSuave a,
+.site.estruturaCentro.estruturaCentro .instaIcone,
+.logosLojas a,
+.site.estruturaCentro.estruturaCentro .brandComRR { position: relative }
+.site.estruturaCentro.estruturaCentro .idiomaSuave a::before,
+.site.estruturaCentro.estruturaCentro .instaIcone::before,
+.logosLojas a::before,
+.site.estruturaCentro.estruturaCentro .brandComRR::before { content: ""; position: absolute; inset: -8px -3px }
+.logosLojas a::before { inset: -12px -6px }
+.site.estruturaCentro.estruturaCentro .brandComRR::before { inset: -10px -6px }
+.site.estruturaCentro.estruturaCentro .mb .precoNota a,
+.faqLado a { padding-block: 12px; margin-block: -12px }
+@media (max-width: 760px) {
+  .site.estruturaCentro.estruturaCentro .rodapeNovo nav { gap: 2px }
+  .site.estruturaCentro.estruturaCentro .rodapeNovo nav a { padding: 8px 0 }
+  .rodapeContato { gap: 2px }
+  .rodapeContato a { padding: 8px 0 }
+}
+
+/* 5. a legenda do vídeo do painel estava em 11,5px */
+.bentoTela figcaption { font-size: 12.5px }
+/* 6. os acabamentos de 320 a 360: o texto da barra numa linha, o botão do
+      cartão do preço sem quebrar, e o selo do hero menor */
+@media (max-width: 720px) { .site.estruturaCentro.estruturaCentro .barCopy b, .site.estruturaCentro.estruturaCentro .barCopy span { white-space: nowrap } }
+@media (max-width: 360px) {
+  .site.estruturaCentro.estruturaCentro .precoCard .acao { padding: 0 14px; font-size: 15px; white-space: nowrap }
+  .site.estruturaCentro.estruturaCentro .heroCopy .seloHero { font-size: 12.5px; padding: 5px 12px 5px 7px; gap: 6px }
+}
+
+/* ---------- a pílula flutuante do celular (28/10, pedido do Rafael) ----------
+   Sem faixa e sem texto ao lado: o contêiner fica transparente e não pega
+   toque (só o botão pega), e a pílula ocupa a largura com 16px de margem,
+   solta 12px acima da borda (mais a área do gesto do iPhone). Entra
+   deslizando de baixo com um leve quique e sai descendo. */
+@media (max-width: 720px) {
+  .site.estruturaCentro.estruturaCentro .bar {
+    background: transparent; border: 0; box-shadow: none;
+    -webkit-backdrop-filter: none; backdrop-filter: none;
+    padding: 0 16px calc(12px + env(safe-area-inset-bottom)); pointer-events: none;
+    transition: transform .45s cubic-bezier(.3, 1.25, .5, 1), opacity .25s ease;
+  }
+  .site.estruturaCentro.estruturaCentro .bar.barHidden {
+    transform: translateY(calc(100% + 24px)); opacity: 0;
+    transition: transform .3s cubic-bezier(.4, 0, .6, 1), opacity .2s ease, visibility 0s .3s;
+  }
+  .site.botoesApple.botoesApple.estruturaCentro .bar .acao {
+    pointer-events: auto; flex: 1; justify-content: center; min-height: 52px; padding: 0 20px;
+    font-size: 15.5px;
+    box-shadow: inset 0 1px 0 #ffffff47, 0 2px 4px #b8125038, 0 14px 30px -8px #e31b6299;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .site.estruturaCentro.estruturaCentro .bar, .site.estruturaCentro.estruturaCentro .bar.barHidden { transition: opacity .2s ease }
+}
+
+/* ---------- o depoimento entra em cena (28/10, pedido do Rafael) ----------
+   Parado até a seção entrar na tela (.depoVisto). As aspas chegam primeiro,
+   a frase em destaque sobe palavra por palavra (sem o desfoque do título,
+   para não repetir a mesma animação), a mensagem inteira e o Luciano logo
+   atrás, e o celular da Iconic sobe por último, como prova do que ele diz. */
+.depoGrade { animation: none }
+.depo .depoAspas, .depo .depoPalavra, .depo .depoInteira, .depo .depoQuem, .depo .depoTela { opacity: 0 }
+.depoPalavra { display: inline-block; white-space: pre }
+.depoVisto .depoAspas { animation: aspasChegam .5s cubic-bezier(.3, 1.4, .5, 1) .05s both }
+.depoVisto .depoPalavra { animation: palavraSobe .55s cubic-bezier(.2, .7, .2, 1) both; animation-delay: calc(var(--i) * 45ms + .2s) }
+.depoVisto .depoInteira { animation: heroSobe .7s cubic-bezier(.2, .7, .2, 1) 1.05s both }
+.depoVisto .depoQuem { animation: heroSobe .7s cubic-bezier(.2, .7, .2, 1) 1.25s both }
+.depoVisto .depoTela { animation: telaSobe .9s cubic-bezier(.2, .7, .2, 1) .5s both }
+@keyframes aspasChegam { from { opacity: 0; transform: scale(.6) translateY(8px) } to { opacity: 1; transform: none } }
+@keyframes palavraSobe { from { opacity: 0; transform: translateY(.45em) } to { opacity: 1; transform: none } }
+@keyframes telaSobe { from { opacity: 0; transform: translateY(60px) rotate(2deg) } to { opacity: 1; transform: none } }
+@media (prefers-reduced-motion: reduce) {
+  .depo .depoAspas, .depo .depoPalavra, .depo .depoInteira, .depo .depoQuem, .depo .depoTela { opacity: 1; animation: none !important }
+}
+
+/* ---------- os passos no celular como linha do tempo vertical (28/10) ----------
+   Em coluna, os três passos com fio em cima de cada um somavam ~200px; agora
+   o número fica ao lado do texto, numa linha, e um fio vertical à esquerda
+   liga um passo ao outro. A animação é a mesma do desktop, de pé: o fio
+   verde desce sobre o cinza e cada passo acende quando ele chega. */
+@media (max-width: 900px) {
+  .passosLinha { gap: 0; max-width: 520px; margin-top: 22px }
+  .passosLinha li {
+    display: flex; align-items: baseline; gap: 12px;
+    padding: 7px 0 7px 22px; border-top: 0;
+  }
+  .passosLinha li::after { content: ""; position: absolute; left: 4px; top: 0; bottom: 0; width: 2px; background: #e6e6e3 }
+  .passosLinha li::before {
+    left: 4px; right: auto; top: 0; bottom: 0; width: 2px; height: auto; z-index: 1;
+    transform: scaleY(0); transform-origin: top;
+  }
+  .passosLinha li:first-child::after, .passosLinha li:first-child::before { top: 50% }
+  .passosLinha li:last-child::after, .passosLinha li:last-child::before { bottom: 50% }
+  .mbVisto .passosLinha li::before { animation-name: fioDesce; animation-duration: .4s; animation-delay: calc(var(--i) * .4s + .5s) }
+  .site.estruturaCentro.estruturaCentro .etapas.mbVisto .passosLinha li > * { animation-delay: calc(var(--i) * .4s + .7s) }
+  .passosLinha li b { font-size: 14.5px }
+  .passosLinha .etapaN { flex: none; position: relative; z-index: 2 }
+  .passosLinha .etapaN::before {
+    content: ""; position: absolute; left: -22px; top: 50%; width: 10px; height: 10px; margin-top: -5px;
+    border-radius: 50%; background: #fff; border: 2px solid var(--green); box-sizing: border-box;
+  }
+}
+@keyframes fioDesce { to { transform: scaleY(1) } }
+@media (max-width: 900px) and (prefers-reduced-motion: reduce) {
+  .passosLinha li::before { transform: scaleY(1) }
+}
+/* as pontas do fio presas nas bolinhas (que ficam na altura da primeira
+   linha, a 17px do topo do passo): com o 03 em duas linhas, "bottom: 50%"
+   deixava o fio passando da última bolinha */
+@media (max-width: 900px) {
+  .passosLinha li:first-child::after, .passosLinha li:first-child::before { top: 17px }
+  .passosLinha li:last-child::after, .passosLinha li:last-child::before { bottom: auto; height: 17px }
+  .passosLinha li b { text-wrap: balance }
+}
+
+/* ============================================================
+   O CELULAR MAIS CURTO (28/10, segunda rodada do Rafael no mobile)
+   ============================================================ */
+
+/* 1. AS LOGOS DO HERO numa linha só, rodando devagar. A lista vai duas
+      vezes e anda metade, então o laço não tem emenda; o vão vai em
+      margem e não em `gap`, senão a metade não bate com uma volta exata.
+      Parada para quem pede menos movimento (aí rola de lado). */
+.logosCopia { display: none !important }
+@media (max-width: 720px) {
+  .logosLojas > div {
+    flex-wrap: nowrap !important; justify-content: flex-start !important; gap: 0 !important;
+    width: max-content; animation: logosAndam 34s linear infinite;
+  }
+  .logosLojas { overflow: hidden; margin-inline: calc(-1 * var(--pad));
+    -webkit-mask: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+    mask: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent) }
+  .logosLojas > div > a, .logosLojas > div > span { margin-right: 28px; flex: none }
+  .logosLojas .logosCopia { display: block !important }
+  .logosLojas > p { padding-inline: var(--pad) }
+}
+@keyframes logosAndam { to { transform: translateX(-50%) } }
+@media (max-width: 720px) and (prefers-reduced-motion: reduce) {
+  .logosLojas > div { animation: none }
+  .logosLojas { overflow-x: auto }
+}
+
+/* 2. A NOTIFICAÇÃO DO PEDIDO sai de cima da vitrine: no celular ela pendura
+      na borda de baixo da moldura, centrada, cobrindo só a faixa do rodapé
+      do navegador */
+@media (max-width: 900px) {
+  .site.estruturaCentro.estruturaCentro .moldura .pedido {
+    position: relative; left: auto; right: auto; bottom: auto; top: auto; z-index: 3;
+    width: min(300px, calc(100% - 32px)); max-width: none; margin: -26px auto 0;
+  }
+}
+
+/* 3. OS CARTÕES DO "DA PRÉVIA À LOJA NO AR" deslizam de lado no celular, com
+      o próximo aparecendo na borda: eram quatro cartões empilhados, quase
+      três telas de rolagem. Cada cartão anima quando entra (o mesmo
+      observador, agora disparado pelo deslize). */
+@media (max-width: 900px) {
+  .bento {
+    display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none;
+    margin-inline: calc(-1 * var(--pad)); padding: 0 var(--pad) 6px; scroll-padding-inline: var(--pad);
+    align-items: stretch;
+  }
+  .bento::-webkit-scrollbar { display: none }
+  .bento > .bentoCard { flex: 0 0 84%; scroll-snap-align: start; min-height: 420px }
+  .bentoTela { min-height: 180px }
+  .bentoZap { min-height: 250px }
+}
+
+/* 4. O QUE ESTÁ INCLUSO no cartão do preço: os três grupos deslizam de lado
+      no celular, cada um num cartãozinho cinza, em vez de nove linhas
+      empilhadas */
+@media (max-width: 720px) {
+  .precoGrupos {
+    display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none;
+    margin-inline: calc(-1 * clamp(24px, 3vw, 36px)); padding: 18px clamp(24px, 3vw, 36px) 4px;
+    scroll-padding-inline: clamp(24px, 3vw, 36px); border-top: 0;
+  }
+  .precoGrupos::-webkit-scrollbar { display: none }
+  .precoGrupos > div { flex: 0 0 78%; scroll-snap-align: start; padding: 14px; border-radius: 14px; background: #f6f6f4 }
+}
+
+/* 5. O CONVITE FINAL ganha os ícones de volta no celular: o primeiro
+      carretel deitado em cima do título (girado 90 graus, com os ícones
+      girados de volta), o segundo fica só no desktop */
+@media (max-width: 700px) {
+  .fimGrade > .carretel:first-child {
+    display: block; order: -1; justify-self: center;
+    transform: rotate(-90deg) scale(.72); margin: -112px 0 -96px;
+  }
+  .fimGrade > .carretel:first-child .carretelIcone img { rotate: 90deg }
+}
+
+/* ---------- os doze meses do "Sem mensalidade" (28/10, pedido do Rafael) ----------
+   Uma tira de 12 casas, cada uma com o mês e o R$0; no desktop numa linha
+   (o cartão ocupa duas colunas), no celular em 3 x 4. Quando o cartão entra
+   na tela, as casas acendem em sequência (o fio verde em cima de cada uma),
+   como um ano passando sem cobrança. */
+.meses {
+  list-style: none; margin: auto 0 0; padding: 22px 0 26px;
+  display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 6px;
+}
+.meses li {
+  position: relative; display: grid; gap: 4px; justify-items: center; padding: 10px 2px 9px;
+  border-radius: 10px; background: #fff; overflow: hidden;
+}
+.meses li::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: var(--green); transform: scaleX(0); transform-origin: left }
+.meses span { font: 500 11.5px var(--body); color: #8a8f91; text-transform: lowercase }
+.meses b { font: 600 13px var(--body); letter-spacing: -.01em; color: var(--ink) }
+.cartaoVisto .meses li::before { animation: fioDesenha .3s ease both; animation-delay: calc(var(--k) * 90ms + .5s) }
+.meses li { opacity: .45 }
+.cartaoVisto .meses li { animation: mesAcende .3s ease both; animation-delay: calc(var(--k) * 90ms + .5s) }
+@keyframes mesAcende { to { opacity: 1 } }
+@media (max-width: 900px) {
+  .meses { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; padding-bottom: 24px }
+  .meses li { padding: 11px 2px 10px }
+}
+@media (prefers-reduced-motion: reduce) {
+  .meses li { opacity: 1; animation: none !important }
+  .meses li::before { transform: none; animation: none !important }
+}
+
+/* a legenda do vídeo do painel saía cortada pela borda de baixo do cartão
+   no carrossel do celular: ela pendurava fora da figura (translateY 100%) */
+@media (max-width: 900px) {
+  .bentoTela { display: flex; flex-direction: column; min-height: 0 }
+  .bentoTela picture, .bentoTela .bentoVideo { position: relative; inset: auto }
+  .bentoTela figcaption { position: static; transform: none; padding: 10px 0 0 }
+  .bentoCard.bentoPainel { padding-bottom: 22px }
+}
+@media (max-width: 900px) { .bentoTela .bentoVideo, .bentoTela picture { height: auto; aspect-ratio: 16 / 10; border-radius: 12px } }
+
+/* ---------- o cartão do preço com uma história só (28/10, pedido do Rafael) ----------
+   Saiu o R$899 (degrau de negociação) e o botão preto do tamanho do rosa:
+   a compra direta virou uma linha "Já decidiu? Pague a entrada de R$500 no
+   Pix", centrada embaixo da nota, com o botão desenhado como link. */
+.site.estruturaCentro.estruturaCentro .mb .precoDireto {
+  margin: 18px 0 0; padding-top: 16px; border-top: 1px solid #ececea;
+  text-align: center; font: 400 14px/1.5 var(--body); color: #6b7072; text-wrap: balance;
+}
+.site.botoesApple.botoesApple.estruturaCentro .precoDireto .precoPagar {
+  all: unset; display: inline; cursor: pointer;
+  font: 600 14px/1.5 var(--body); color: var(--ink);
+  text-decoration: underline; text-underline-offset: 3px; text-decoration-color: #0000004d;
+  padding-block: 12px; margin-block: -12px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .site.botoesApple.botoesApple.estruturaCentro .precoDireto .precoPagar:hover { text-decoration-color: currentColor }
+}
+.site.botoesApple.botoesApple.estruturaCentro .precoDireto .precoPagar:focus-visible { outline: 2px solid var(--rosa); outline-offset: 3px; border-radius: 4px }
+
+/* ---------- os matinhos no celular (28/10, pedido do Rafael) ----------
+   A colina tinha 900px de largura no mínimo, centrada: em 360 só se via o
+   MEIO do U (a parte mais baixa), e as duas pontas que abraçam a moldura
+   ficavam fora da tela; os matinhos viravam uma tira escura no pé. Agora,
+   no celular, ela tem 165% da largura da tela: as pontas entram e sobem
+   pelos lados da base da moldura, e o vale fica embaixo do chip. */
+@media (max-width: 720px) {
+  .cena { --imgW: 165vw }
+  .cenaFrente { bottom: -18px }
+}
+
+/* ---------- a cena do celular com as imagens próprias (28/10, à noite) ----------
+   Os arbustos em U (1300x1209) na largura da tela: as pontas sobem até ~9%
+   da altura e o fundo do vale fica a ~48%, então as pontas abraçam a base da
+   moldura e o vale fica embaixo da notificação. O pé do arquivo já é o
+   grafite sólido da faixa dos números. Substitui o ajuste provisório dos
+   165vw, que ainda cortava as pontas. */
+@media (max-width: 720px) {
+  .cena { --imgW: 100vw; --chao: 150px }
+  .cenaFrente { bottom: -24px }
+  .cenaFundo img { object-position: 50% 100% }
+}
+
+/* ---------- a confirmação do formulário no desenho da página (28/10) ----------
+   Era "RECEBI SEUS DADOS" em caixa alta, o texto em mono e um botão preto
+   com seta. Agora: um círculo verde com o ✓ que se desenha, o título em
+   caixa normal, o que acontece agora no corpo, e o WhatsApp numa pílula
+   clara com o símbolo. O "Falta um toque" (a gravação que falhou) ganha o
+   mesmo corpo de texto. */
+.site.estruturaCentro.estruturaCentro .modalForm .tagConfirm { padding: 34px 24px 26px; text-align: center }
+.okIcone {
+  display: grid; place-items: center; width: 56px; height: 56px; margin: 0 auto 16px; border-radius: 50%;
+  background: #e3f5ec; color: var(--green);
+  animation: okSurge .45s cubic-bezier(.3, 1.4, .5, 1) both;
+}
+.okIcone path { stroke-dasharray: 24; stroke-dashoffset: 24; animation: okTraco .45s cubic-bezier(.4, 0, .2, 1) .25s forwards }
+@keyframes okSurge { from { transform: scale(.6); opacity: 0 } to { transform: none; opacity: 1 } }
+@keyframes okTraco { to { stroke-dashoffset: 0 } }
+.site.estruturaCentro.estruturaCentro .modalForm .tagConfirm .formTitle {
+  margin: 0; font: 500 26px/1.15 var(--font-titulo), var(--body); letter-spacing: -.025em; color: var(--ink); text-transform: none;
+}
+.site.estruturaCentro.estruturaCentro .modalForm .tagConfirm .formTitle span {
+  display: block; margin-top: 10px; font: 400 15px/1.5 var(--body); letter-spacing: 0; color: #5b6063; text-wrap: balance;
+}
+.site.estruturaCentro.estruturaCentro .modalForm .tagConfirm .lojaAchada {
+  margin: 16px 0 0; padding: 12px 14px; border-radius: 14px; background: #f6f6f4;
+  font: 400 13.5px/1.5 var(--body); letter-spacing: 0; color: #4a4f52; text-align: left;
+}
+.site.botoesApple.botoesApple.estruturaCentro .modalForm :is(.tagConfirm, .pendente) .primary {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 50px; margin-top: 20px;
+  padding: 0 20px; border-radius: 999px; border: 1px solid #d9e9df; background: #fff; color: var(--ink);
+  font: 600 15px var(--body); letter-spacing: 0; text-transform: none; box-shadow: none;
+}
+.site.botoesApple.botoesApple.estruturaCentro .modalForm :is(.tagConfirm, .pendente) .primary[data-cta-dest="whatsapp"]::before {
+  content: ""; width: 18px; height: 18px; flex: none; background: #25d366;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+@media (hover: hover) and (pointer: fine) {
+  .site.botoesApple.botoesApple.estruturaCentro .modalForm :is(.tagConfirm, .pendente) .primary:hover { border-color: #25d366; background: #f3fbf6 }
+}
+.site.estruturaCentro.estruturaCentro .modalForm .pendente { border: 0; border-radius: 16px; background: #f6f6f4; padding: 16px }
+.site.estruturaCentro.estruturaCentro .modalForm .pendente > b { font: 600 16px var(--body); letter-spacing: 0 }
+.site.estruturaCentro.estruturaCentro .modalForm .pendente p { font: 400 14px/1.55 var(--body); color: #4a4f52 }
+@media (prefers-reduced-motion: reduce) {
+  .okIcone, .okIcone path { animation: none; stroke-dashoffset: 0 }
+}
+/* a confirmação curta (28/10): com as perguntas da prévia logo abaixo, o ✓
+   vai para o lado do título e o conjunto alinha à esquerda, como as
+   perguntas. Economiza uns 110px, o que traz o X de volta para dentro da
+   tela do celular. */
+.site.estruturaCentro.estruturaCentro .modalForm .tagConfirm.tagConfirmCurta {
+  display: grid; grid-template-columns: 44px minmax(0, 1fr); column-gap: 14px; align-items: center;
+  padding: 26px 22px 22px; text-align: left;
+}
+.tagConfirmCurta > :not(.okIcone):not(.formTitle) { grid-column: 1 / -1 }
+.site.estruturaCentro.estruturaCentro .modalForm .tagConfirmCurta .okIcone { width: 44px; height: 44px; margin: 0 }
+.tagConfirmCurta .okIcone svg { width: 22px; height: 22px }
+.site.estruturaCentro.estruturaCentro .modalForm .tagConfirm.tagConfirmCurta .formTitle { font-size: 20px }
+.site.estruturaCentro.estruturaCentro .modalForm .tagConfirm.tagConfirmCurta .formTitle span { margin-top: 3px; font-size: 14px; line-height: 1.45; text-wrap: pretty }
+
+/* ---------- a página mais leve (28/10, "o site mais rápido possível") ----------
+   Sem a Archivo e a JetBrains Mono: o que ainda pedir --display cai na
+   Instrument Sans, e o que pedir --mono (o endereço e o "NO AR" da moldura,
+   os 01/02/03 dos passos) usa a mono que o sistema já tem, sem download. */
+.semFontesExtras {
+  --display: var(--font-titulo), var(--font-body), Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+/* ---------- o título e o texto do hero não pulam na troca de fonte (28/10) ----------
+   Medido em produção com 4G lento: o CLS era 0,121, e 0,094 dele era o
+   título passando de 3 para 2 linhas quando a Instrument Sans chegava (e o
+   texto de baixo, de 3 para 2, com a Inter). As fontes reserva do Next já
+   têm a largura quase igual; o que mudava era a CAIXA: as larguras máximas
+   estavam em `ch`, que é a largura do "0" da fonte que estiver na tela, então
+   a caixa encolhia na troca. Os mesmos valores em `em`, medidos com a fonte
+   real (12,5ch = 8,33em; 34ch a 15px = 21,45em; 32ch a 14px = 20,19em): o
+   desenho não muda e a caixa fica parada. */
+.site.tipoTitulo.tipoTitulo.estruturaCentro .heroCopy h1 { max-width: 8.33em }
+.site.estruturaCentro.estruturaCentro .heroCopy .lead { max-width: 21.45em }
+@media (max-width: 600px) {
+  .site.estruturaCentro.estruturaCentro .heroCopy .lead { max-width: 20.19em }
+}
+/* em 360px o "Me chama no WhatsApp agora" quebrava em duas linhas */
+@media (max-width: 380px) {
+  .site.botoesApple.botoesApple.estruturaCentro .modalForm :is(.tagConfirm, .pendente) .primary { padding: 0 12px; font-size: 14.5px; white-space: nowrap }
+}
+@media (max-width: 340px) {
+  .site.botoesApple.botoesApple.estruturaCentro .modalForm :is(.tagConfirm, .pendente) .primary { white-space: normal }
+}
+
+/* o confete do pedido (28/10): uma chuva curta caindo do topo da janela,
+   na largura toda. A camada cobre a confirmação inteira (que ganha
+   position relative) e não recebe toque; a janela (overflow hidden) é o
+   limite, então nada vaza para a página. Os papéis nascem acima da borda
+   e caem balançando para um lado e virando no ar. */
+.site.estruturaCentro.estruturaCentro .modalForm .tagConfirm { position: relative }
+.confete { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 2; border-radius: inherit }
+.confete i {
+  position: absolute; top: -16px; opacity: 0; will-change: transform;
+  animation: confete var(--dur) cubic-bezier(.25, .5, .45, 1) var(--atraso) forwards;
+}
+@keyframes confete {
+  0% { opacity: 1; transform: translate3d(0, 0, 0) rotate3d(1, .4, .2, 0deg) }
+  50% { transform: translate3d(var(--balanco), calc(var(--cai) * .55), 0) rotate3d(1, .4, .2, calc(var(--giro) * .55)) }
+  78% { opacity: 1 }
+  100% { opacity: 0; transform: translate3d(calc(var(--balanco) * -.4), var(--cai), 0) rotate3d(1, .4, .2, var(--giro)) }
+}
+@media (prefers-reduced-motion: reduce) { .confete { display: none } }
+/* o título fica à frente dos papéis (o confete é absoluto e pintaria por cima) */
+.site.estruturaCentro.estruturaCentro .modalForm .tagConfirm .formTitle { position: relative; z-index: 1 }

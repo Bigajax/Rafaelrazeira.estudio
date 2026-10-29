@@ -89,7 +89,7 @@ export async function enviarLeadVitrine(d: {
   plano?: string;
   ctaPosition: "form" | "hero_form";
   lang: Lang;
-}): Promise<{ salvo: boolean; linkWa: string; arrobaInvalido: boolean; loja: LojaEncontrada | null }> {
+}): Promise<{ salvo: boolean; linkWa: string; arrobaInvalido: boolean; loja: LojaEncontrada | null; id?: string | null }> {
   /* ---------- o Lead saiu de antes para DEPOIS da gravação (10/09) ----------
      Ele era disparado aqui em cima, antes de qualquer coisa, e o motivo era
      bom: não perder o evento numa navegação. Mas a navegação só acontece no
@@ -133,7 +133,7 @@ export async function enviarLeadVitrine(d: {
       trackLead({ ctaPosition: d.ctaPosition, plano: d.plano, nome: d.nome, whatsapp: d.whatsapp, email: d.email, abriuWhats: false });
     }
     mpTrack("LeadSalvo", { cta_position: d.ctaPosition, plano: d.plano, repetido: !!resposta.repetido });
-    return { salvo: true, linkWa, arrobaInvalido: false, loja: resposta.loja ?? null };
+    return { salvo: true, linkWa, arrobaInvalido: false, loja: resposta.loja ?? null, id: resposta.id ?? null };
   }
 
   /* Fallback: o comportamento inteiro de antes da inversão de 06/08. O Lead
