@@ -67,8 +67,12 @@ async function lojaValida(loja) {
   return { ok: !!config, config };
 }
 
+/* o carimbo na leitura fura o cache do Storage: sem ele, o respostas.json
+   voltava a versão de até uma hora antes, e quem abria o link de outro
+   aparelho não via o que já tinha sido escrito (onboarding do NEAM, 29/10).
+   O cache-control na gravação faz o mesmo do outro lado. */
 async function lerRespostas(loja) {
-  const r = await storage(`object/${BUCKET}/${loja}/respostas.json`);
+  const r = await storage(`object/${BUCKET}/${loja}/respostas.json?v=${Date.now()}`, { cache: "no-store" });
   if (!r.ok) return {};
   return r.json().catch(() => ({}));
 }
@@ -122,7 +126,7 @@ export default async function handler(req, res) {
       if (texto.length > LIMITE_RESPOSTAS) return erro(res, 413, "respostas grandes demais");
       const r = await storage(`object/${BUCKET}/${loja}/respostas.json`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "x-upsert": "true" },
+        headers: { "Content-Type": "application/json", "x-upsert": "true", "cache-control": "no-cache" },
         body: texto,
       });
       if (!r.ok) return erro(res, 502, "não consegui salvar");
