@@ -245,3 +245,105 @@ body.novo .contact__pricing,body.novo .contact__pricing-note{display:none}
   body.novo .cases__grid::-webkit-scrollbar{display:none}
   body.novo .cases__grid > .case{scroll-snap-align:start;min-width:0}
 }
+
+/* ============================================================
+   AS ANIMAÇÕES (29/10/2026), montadas por js/lib/novo.js
+   Vieram da /vitrine-digital; os nomes dos keyframes de lá estão citados.
+   ============================================================ */
+
+/* 1. as logos das lojas clientes, logo abaixo do hero (`logosAndam`) */
+body.novo .logos-lojas{grid-column:1/-1;margin-top:clamp(36px,5vw,56px);text-align:center}
+body.novo .logos-lojas p{font:400 13px var(--body,"Inter"),system-ui,sans-serif;color:#8A8F91;margin:0 0 18px}
+body.novo .logos-lojas > div{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:18px clamp(26px,3.4vw,48px)}
+body.novo .logos-lojas img{display:block;width:auto;height:22px;filter:brightness(0);opacity:.4;transition:opacity .2s ease}
+@media(hover:hover) and (pointer:fine){body.novo .logos-lojas a:hover img{opacity:.75}}
+body.novo .logos-copia{display:none !important}
+@media(max-width:720px){
+  body.novo .logos-lojas{overflow:hidden;margin-inline:calc(-1 * var(--pad,16px));
+    -webkit-mask:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
+    mask:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+  body.novo .logos-lojas > p{padding-inline:var(--pad,16px)}
+  body.novo .logos-lojas > div{flex-wrap:nowrap;justify-content:flex-start;gap:0;width:max-content;animation:logosAndam 34s linear infinite}
+  body.novo .logos-lojas > div > :is(a,span){margin-right:28px;flex:none}
+  body.novo .logos-lojas img{height:18px}
+  body.novo .logos-lojas .logos-copia{display:block !important}
+}
+@keyframes logosAndam{to{transform:translateX(-50%)}}
+
+/* 2. a moldura com a loja rolando (`molduraSobe` + `pageScroll`); a faixa
+   de capturas sai, e o título volta a ser uma frase só */
+body.novo .cases__head--tira > .cases__tira{display:none}
+body.novo .cases__head--tira > span{display:inline}
+body.novo .moldura-loja{max-width:1100px;margin:clamp(32px,5vw,56px) auto clamp(40px,6vw,72px)}
+body.novo .moldura-loja__tela{
+  padding:10px;border-radius:28px;background:#E4E4E2;border:1px solid #D6D6D3;
+  box-shadow:0 40px 80px #0000001f,0 8px 24px #00000012 !important;
+}
+body.novo .moldura-loja__barra{
+  display:flex;align-items:center;gap:12px;padding:9px 13px;border-radius:18px 18px 0 0;
+  background:linear-gradient(#f7f7f8,#eaeaec);border-bottom:1px solid #d2d2d6;
+}
+body.novo .moldura-loja__pontos{display:flex;gap:6px;flex:none}
+body.novo .moldura-loja__pontos i{width:9px;height:9px;border-radius:50%}
+body.novo .moldura-loja__pontos i:nth-child(1){background:#ff5f57}
+body.novo .moldura-loja__pontos i:nth-child(2){background:#febc2e}
+body.novo .moldura-loja__pontos i:nth-child(3){background:#28c840}
+body.novo .moldura-loja__url{
+  flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font:400 11px var(--body,"Inter"),system-ui,sans-serif;color:#5c5e63;
+  background:#fff;border:1px solid #dcdce1;border-radius:100px;padding:5px 12px;
+}
+body.novo .moldura-loja__ar{display:inline-flex;align-items:center;gap:6px;font:600 11px var(--body,"Inter"),system-ui,sans-serif;color:var(--green-dark);white-space:nowrap}
+body.novo .moldura-loja__ar i{width:6px;height:6px;border-radius:50%;background:var(--green);animation:livePulseNovo 1.6s infinite}
+@keyframes livePulseNovo{50%{opacity:.35}}
+body.novo .moldura-loja__capa{position:relative;overflow:hidden;container-type:size;aspect-ratio:16/10;border-radius:0 0 18px 18px;background:#eef1f4}
+body.novo .moldura-loja__shot{display:block;width:100%;height:auto;will-change:transform;animation:pageScrollNovo 26s ease-in-out infinite alternate}
+@keyframes pageScrollNovo{0%,2.5%{transform:translateY(0)}97.5%,100%{transform:translateY(calc(100cqh - 100%))}}
+@media(max-width:720px){
+  body.novo .moldura-loja__tela{padding:7px;border-radius:22px}
+  body.novo .moldura-loja__barra{border-radius:15px 15px 0 0}
+  body.novo .moldura-loja__capa{aspect-ratio:4/5;border-radius:0 0 15px 15px}
+  body.novo .moldura-loja__shot{animation-duration:24s}
+}
+@supports (animation-timeline: view()){
+  @media (prefers-reduced-motion: no-preference){
+    body.novo .moldura-loja__tela{animation:molduraSobeNovo linear both;animation-timeline:view();animation-range:entry 0% cover 35%}
+  }
+}
+@keyframes molduraSobeNovo{from{transform:translateY(60px) scale(.92);opacity:.6}to{transform:none;opacity:1}}
+
+/* 3. os passos acendendo (`fioDesenha` + `passoAcende`): cada linha entra
+   com o .in do reveal; o fio de cima se desenha da esquerda e o número
+   sai do cinza para o verde */
+body.novo .proc__step{position:relative;border-top-color:transparent}
+body.novo .proc__step::before{
+  content:"";position:absolute;left:0;right:0;top:-1px;height:1px;background:var(--ink);
+  transform:scaleX(0);transform-origin:left;transition:transform .9s cubic-bezier(.2,.7,.2,1);
+}
+body.novo .proc__step.in::before{transform:none}
+body.novo .proc__step :is(.proc__num,.proc__num *){color:#D2D2CF;transition:color .6s ease .35s}
+body.novo .proc__step.in :is(.proc__num,.proc__num *){color:var(--green)}
+
+/* 4. o ✓ que se desenha e o confete do envio (`okTraco` + `confete`) */
+body.novo .ok-novo{display:grid;place-items:center;width:52px;height:52px;margin-bottom:14px;border-radius:50%;background:#E3F5EC;color:var(--green)}
+body.novo .ok-novo path{stroke-dasharray:24;stroke-dashoffset:24}
+body.novo :is(#hero-card.is-enviado,#form-success.show) .ok-novo path{animation:okTracoNovo .45s cubic-bezier(.4,0,.2,1) .15s forwards}
+@keyframes okTracoNovo{to{stroke-dashoffset:0}}
+.confete-novo{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:200}
+.confete-novo i{position:absolute;top:-16px;opacity:0;will-change:transform;animation:confeteNovo var(--dur) cubic-bezier(.25,.5,.45,1) var(--atraso) forwards}
+@keyframes confeteNovo{
+  0%{opacity:1;transform:translate3d(0,0,0) rotate3d(1,.4,.2,0deg)}
+  50%{transform:translate3d(var(--balanco),calc(var(--cai) * .55),0) rotate3d(1,.4,.2,calc(var(--giro) * .55))}
+  78%{opacity:1}
+  100%{opacity:0;transform:translate3d(calc(var(--balanco) * -.4),var(--cai),0) rotate3d(1,.4,.2,var(--giro))}
+}
+
+/* quem pede menos movimento vê tudo parado e no lugar */
+@media(prefers-reduced-motion:reduce){
+  body.novo .logos-lojas > div,body.novo .moldura-loja__shot,body.novo .moldura-loja__ar i{animation:none}
+  body.novo .logos-lojas{overflow-x:auto}
+  body.novo .proc__step::before{transform:none;transition:none}
+  body.novo .proc__step :is(.proc__num,.proc__num *){color:var(--green);transition:none}
+  body.novo .ok-novo path{stroke-dashoffset:0;animation:none}
+  .confete-novo{display:none}
+}

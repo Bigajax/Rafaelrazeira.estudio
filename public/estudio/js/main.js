@@ -23,6 +23,7 @@ import { initPill }       from "./lib/pill.js";
 import { initCaseVideos } from "./lib/videos.js";
 import { initTracking }   from "./lib/tracking.js";
 import { initPrecos }     from "./lib/precos.js";
+import { initNovo }       from "./lib/novo.js";
 
 // Ordem das seções DENTRO do <main> (não inclui header/footer/pill)
 // (o cue "conheça mais" agora vive dentro do hero: js/sections/hero.js)
@@ -49,6 +50,7 @@ app.innerHTML =
 /* o "Conheça mais" do hero apontava para o #about, que saiu em 29/10: agora
    leva às lojas no ar, a seção seguinte. O hero.js fica igual (a LP tem #about). */
 app.querySelector('.hero__cue a[href="#about"]')?.setAttribute("href", "#cases");
+initNovo();   // as animações do design novo: logos, moldura, ✓ e confete (29/10)
 
 // Interações (rodam depois do HTML montado)
 initLoader();   // tela de carregamento — sai em pixel dissolve quando tudo pintou
