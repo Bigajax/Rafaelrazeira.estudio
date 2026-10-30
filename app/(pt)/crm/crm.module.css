@@ -8645,3 +8645,22 @@
     display: none;
   }
 }
+
+/* O período dos Indicadores (7, 30, 90 dias) no seletor em pílula, igual
+   aos anos do Plano e aos segmentos do AI Studio (30/10/2026). */
+.app .periodo {
+  gap: 4px;
+  padding: 4px;
+  border-radius: 980px;
+  background: #f2f2f0;
+}
+.app .periodo a {
+  border: 0;
+  border-radius: 980px;
+  background: transparent;
+  color: var(--ink-soft);
+}
+.app .periodo a.periodoAtivo {
+  background: var(--ink);
+  color: #fff;
+}
