@@ -548,3 +548,84 @@
 .slotImg.slotAtivo {
   border-color: var(--ink);
 }
+
+/* O resto do AI Studio na régua (30/10/2026), por cima da camada .estudio:
+   as abas viram o seletor em pílula e perdem o "01 02 03 04" (Vídeo,
+   Imagem, Editar e Projetos não são uma sequência, são lugares); o palco,
+   os controles, o consumo e os vazios ganham o canto grande; a mono sai
+   da estimativa e da moldura vazia. */
+.estudio .abas {
+  background: #f2f2f0;
+  border: 0;
+  border-radius: 980px;
+}
+.estudio .abas a {
+  border-radius: 980px;
+}
+.estudio .abas .abaAtiva {
+  background: var(--ink);
+  color: #fff;
+}
+.estudio .abas a i {
+  display: none;
+}
+.estudio .consumoBtn {
+  border-color: #e6e6e3;
+  border-radius: 16px;
+  background: #fff;
+}
+.estudio .controles,
+.estudio .palco,
+.estudio .visor {
+  border-radius: 20px;
+}
+.estudio .modelos,
+.estudio .ref,
+.estudio .refPrincipal,
+.estudio .seletor,
+.estudio .versao,
+.estudio .projeto,
+.estudio .quadro,
+.estudio .cartaoVideo,
+.estudio .abertoInfo,
+.estudio .soltar,
+.estudio .vazioGaleria,
+.estudio .novoProjeto,
+.estudio .quadroNovo {
+  border-radius: 16px;
+}
+.estudio .projetoCapa,
+.estudio .quadroImg,
+.estudio .cartaoMidia {
+  border-radius: 16px 16px 0 0;
+}
+.estudio .recado {
+  border-radius: 12px;
+}
+.estudio .moldura {
+  border-radius: 12px;
+  font: 400 12px/1.5 var(--body);
+  letter-spacing: 0;
+}
+.estudio .estimativa,
+.estudio .rot small {
+  font: 400 12px/1.5 var(--body);
+  letter-spacing: 0;
+}
+.estudio .palcoPe .btnClaro,
+.estudio .visorInfo .btnClaro,
+.estudio .fecharVisor,
+.fecharVisor {
+  border-radius: 980px;
+}
+.consumo {
+  border-radius: 20px;
+}
+.consumo .totais {
+  border-radius: 12px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .estudio .palcoPe .btnClaroForte:hover {
+    background: #000;
+  }
+}
