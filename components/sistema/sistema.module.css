@@ -605,3 +605,9 @@
 .dialogo::backdrop {
   background: #14181a66;
 }
+/* e o mesmo respiro quando o que vem depois do formulário é um cartão
+   (Clientes) */
+.form + .painel,
+.form + section {
+  margin-top: 20px;
+}

@@ -78,9 +78,15 @@ export default async function PaginaProjetos({
         </p>
       </header>
       <nav className={p.atalhos} aria-label="Filtrar entregas">
-        <Link href="/crm/projetos">Todas</Link>
-        <Link href="/crm/projetos?estado=aberto">Em andamento</Link>
-        <Link href="/crm/projetos?estado=bloqueado">Bloqueadas</Link>
+        <Link href="/crm/projetos" aria-current={!filtros.estado ? "page" : undefined}>
+          Todas
+        </Link>
+        <Link href="/crm/projetos?estado=aberto" aria-current={filtros.estado === "aberto" ? "page" : undefined}>
+          Em andamento
+        </Link>
+        <Link href="/crm/projetos?estado=bloqueado" aria-current={filtros.estado === "bloqueado" ? "page" : undefined}>
+          Bloqueadas
+        </Link>
       </nav>
 
       {semTabela ? (

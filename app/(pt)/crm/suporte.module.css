@@ -86,3 +86,12 @@
   .editorLinha { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) }
   .mensagens li { max-width: 92% }
 }
+
+/* Na régua (30/10/2026): cartões de canto 16, o filtro em pílula com o
+   escolhido em tinta, os selos em pílula. */
+.fila, .conversa, .ranking, .faq > li, .editor { border-radius: 16px }
+.mensagens li { border-radius: 14px }
+.filtro { border-radius: 980px; background: #f2f2f0; border: 0; padding: 4px }
+.filtro button { border-radius: 980px }
+.estado { border-radius: 980px }
+.filtro button[aria-pressed="true"] { background: var(--ink); color: #fff; box-shadow: none }
