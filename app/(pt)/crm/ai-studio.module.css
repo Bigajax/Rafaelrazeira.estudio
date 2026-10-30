@@ -484,3 +484,67 @@
   .estudio .palcoPe { flex-wrap: wrap; gap: 10px }
   .estudio .visor { border-radius: 0; max-height: 100dvh }
 }
+
+/* ============================================================
+   O AI STUDIO NA RÉGUA (30/10/2026)
+   Os controles ainda eram o papel e tinta: régua de segmentos quadrada,
+   ficha de modelos com borda de 1,5px e quadradinho, chips retos. A classe
+   dobrada vence o `.app button` do crm.module.css sem !important.
+   - os segmentos (resolução, proporção, duração) viram o seletor em
+     pílula: trilho cinza, o escolhido em tinta;
+   - os modelos, uma lista de canto 16 com o ponto redondo de rádio;
+   - as sugestões de cena em pílula; os quadros com canto 12.
+   ============================================================ */
+.segmentos.segmentos {
+  gap: 4px;
+  padding: 4px;
+  border-radius: 980px;
+  background: #f2f2f0;
+}
+.seg.seg {
+  margin: 0;
+  border: 0;
+  border-radius: 980px;
+  background: transparent;
+  color: var(--ink-soft);
+  padding: 8px 10px;
+}
+.seg.segAtivo {
+  background: var(--ink);
+  color: #fff;
+}
+.modelos.modelos {
+  border: 1px solid #e6e6e3;
+  border-radius: 16px;
+  overflow: hidden;
+}
+.modelo.modelo {
+  border-radius: 0;
+  background: #fff;
+}
+.modelo + .modelo {
+  border-top: 1px solid #eeeeec;
+}
+.modelo.modelo::before {
+  border-radius: 50%;
+}
+.modelo.modeloAtivo {
+  background: #f2f2f0;
+}
+.chip.chip {
+  border: 1px solid #e6e6e3;
+  border-radius: 980px;
+}
+.chip.chipAtivo {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+.slotImg.slotImg {
+  border: 1.5px dashed #cfcfcb;
+  border-radius: 12px;
+}
+.slotImg.slotImg:hover,
+.slotImg.slotAtivo {
+  border-color: var(--ink);
+}

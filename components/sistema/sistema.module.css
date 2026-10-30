@@ -553,3 +553,55 @@
   font-weight: 500;
   letter-spacing: -0.025em;
 }
+
+/* ============================================================
+   FASE 3 NO SISTEMA (30/10/2026)
+   A fase 2 pôs a pílula no .botao, mas o `.app button` do crm.module.css
+   pesa mais (classe + elemento) e devolvia o canto de 5px: o "+ Recebi" e
+   o "Consultar período" do Caixa nunca viraram pílula. A classe dobrada
+   (.botao.botao) ganha sem !important. E o verde que sobrou como acento
+   (aba ativa, link, foco, o resumo das tabelas) vai para a tinta; fica
+   verde só o que é dado: o .verde dos valores e as barras dos gráficos.
+   ============================================================ */
+.botao.botao,
+.abas a.abas a,
+.abas.abas a {
+  border-radius: 980px;
+}
+.abas.abas a[aria-current="page"] {
+  background: var(--ink, #14181a);
+  border-color: var(--ink, #14181a);
+  color: #fff;
+}
+.links a,
+.tabela a,
+.detalhes summary {
+  color: var(--ink, #14181a);
+}
+.botao:focus-visible,
+.abas a:focus-visible,
+.tabela a:focus-visible,
+.fila a:focus-visible,
+.form input:focus-visible,
+.form select:focus-visible,
+.form textarea:focus-visible {
+  outline-color: var(--ink, #14181a);
+}
+.numero {
+  background: #f2f2f0;
+  color: var(--ink, #14181a);
+  border-radius: 980px;
+}
+/* o formulário do período encostava nos cartões do Caixa */
+.form + .kpis {
+  margin-top: 20px;
+}
+.dialogo {
+  border-color: #e6e6e3;
+  border-radius: 16px;
+  background: #fff;
+  color: var(--ink, #14181a);
+}
+.dialogo::backdrop {
+  background: #14181a66;
+}
