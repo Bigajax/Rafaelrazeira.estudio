@@ -3,7 +3,7 @@
 .hero { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 20px; padding: 24px; margin-bottom: 20px; border: 1px solid var(--line,#dedbd1); border-radius: 10px; background: var(--paper-alto,#fafaf5); align-items: center }
 .hero h2 { margin: 5px 0 8px; font-size: clamp(23px,3vw,34px); line-height: 1.15; letter-spacing: -.025em }
 .hero p, .nota { color: var(--ink-soft,#555d5b); font-size: 13px; line-height: 1.6; margin: 0 }
-.sobretitulo { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #076b42 }
+.sobretitulo { font-size: 11px; font-weight: 700; color: #076b42 }
 .pendencias { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; margin-top: 16px }
 .pendencia { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 15px; border: 1px solid var(--line,#dedbd1); border-radius: 7px; color: inherit; text-decoration: none; min-width: 0 }
 .pendencia:hover { border-color: #076b42 }

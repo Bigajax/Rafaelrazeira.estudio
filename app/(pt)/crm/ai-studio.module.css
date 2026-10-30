@@ -29,14 +29,14 @@
   display: grid; gap: 2px; justify-items: end; text-align: right;
   background: none; border: 0; padding: 4px 0; cursor: pointer; color: var(--ink);
 }
-.consumoBtn small { font: 700 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-fraco) }
-.consumoBtn b { font: 800 20px var(--display); font-stretch: 85% }
+.consumoBtn small { font: 600 12px var(--body); color: var(--ink-fraco) }
+.consumoBtn b { font: 600 20px var(--display) }
 .consumoBtn span { font: 11px var(--mono); color: var(--ink-fraco); border-bottom: 1px solid var(--line) }
 @media (hover: hover) and (pointer: fine) { .consumoBtn:hover span { color: var(--ink); border-color: var(--ink) } }
 
 .abas { display: flex; flex-wrap: wrap; gap: 6px 26px; margin-bottom: 20px }
 .abas a {
-  font: 700 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-fraco);
+  font: 600 12px var(--body); color: var(--ink-fraco);
   padding-bottom: 6px; border-bottom: 3px solid transparent;
 }
 .abas a i { font-style: normal; color: var(--ink-fraco); margin-right: 8px; font-weight: 400 }
@@ -46,7 +46,7 @@
 
 /* o recado de configuração: chave ausente, tabela ausente */
 .recado { border-left: 3px solid var(--rosa); background: var(--paper-alto); padding: 14px 16px; margin-bottom: 18px }
-.recado b { display: block; font: 900 15px var(--display); font-stretch: 88%; text-transform: uppercase; margin-bottom: 6px }
+.recado b { display: block; font: 600 15px var(--display); margin-bottom: 6px }
 .recado p, .recado li { font-size: 13px; color: var(--ink-soft); line-height: 1.55 }
 .recado ol { margin: 6px 0 0; padding-left: 18px }
 .recado code { font: 12px var(--mono); background: var(--paper-2); padding: 1px 5px; color: var(--ink) }
@@ -59,7 +59,7 @@
 .secao { display: grid; gap: 8px }
 .rot {
   display: flex; justify-content: space-between; align-items: baseline; gap: 8px;
-  font: 700 10.5px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft);
+  font: 600 12px var(--body); color: var(--ink-soft);
 }
 .rot small { font: 400 10.5px var(--mono); letter-spacing: .04em; text-transform: none; color: var(--ink-fraco) }
 .nota { font-size: 12px; color: var(--ink-fraco); line-height: 1.45 }
@@ -73,7 +73,7 @@
 }
 .modelo + .modelo { border-top: 1.5px solid var(--line) }
 .modelo::before { content: ""; width: 10px; height: 10px; border: 1.5px solid var(--ink-fraco); transform: translateY(1px) }
-.modelo b { font: 800 13px var(--display); font-stretch: 88%; text-transform: uppercase; letter-spacing: .02em }
+.modelo b { font: 600 13px var(--display) }
 .modelo span { grid-column: 2; font-size: 12px; color: var(--ink-fraco); line-height: 1.4 }
 .modeloAtivo { background: var(--paper) }
 .modeloAtivo::before { background: var(--ink); border-color: var(--ink) }
@@ -83,7 +83,7 @@
 .segmentos { display: flex; flex-wrap: wrap }
 .seg {
   flex: 1 1 auto; min-width: 46px;
-  font: 700 10px var(--mono); letter-spacing: .06em; text-transform: uppercase;
+  font: 600 12px var(--body);
   padding: 9px 6px; cursor: pointer;
   background: var(--paper-alto); color: var(--ink-soft); border: 1.5px solid var(--line); margin: 0 -1.5px -1.5px 0;
 }
@@ -93,7 +93,7 @@
 
 .medida { display: flex; gap: 10px; align-items: baseline; font: 11px var(--mono); color: var(--ink-fraco) }
 .medida b { color: var(--ink); font-weight: 700 }
-.experimental { font: 700 9.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--rosa-dark); border: 1px solid currentColor; padding: 1px 5px }
+.experimental { font: 600 12px var(--body); color: var(--rosa-dark); border: 1px solid currentColor; padding: 1px 5px }
 
 .prompt textarea { width: 100%; min-height: 168px; font-size: 14px; line-height: 1.55 }
 .contador { font: 10.5px var(--mono); color: var(--ink-fraco); text-align: right }
@@ -106,7 +106,7 @@
 /* a variação: o "de onde veio" acima do prompt */
 .origemChip { display: flex; gap: 10px; align-items: center; border: 1.5px solid var(--ink); background: var(--paper-alto); padding: 6px }
 .origemChip img { width: 44px; height: 44px; object-fit: cover; display: block }
-.origemChip span { flex: 1; font: 700 10.5px var(--mono); letter-spacing: .08em; text-transform: uppercase }
+.origemChip span { flex: 1; font: 600 12px var(--body) }
 
 /* ============================================================
    AS REFERÊNCIAS
@@ -116,7 +116,7 @@
   border: 1.5px dashed var(--ink-fraco); background: var(--paper-2); padding: 16px 12px;
   transition: border-color .15s ease, background .15s ease;
 }
-.soltar b { font: 700 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink) }
+.soltar b { font: 600 12px var(--body); color: var(--ink) }
 .soltar span { font-size: 12px; color: var(--ink-fraco) }
 .soltar:hover, .soltarAtivo { border-color: var(--ink); background: var(--paper-alto) }
 .soltarGrande { min-height: 320px }
@@ -131,7 +131,7 @@
   background: var(--ink); color: var(--paper); border: 0; cursor: pointer; font: 700 13px var(--mono); line-height: 1;
 }
 .refSubindo img { opacity: .4 }
-.refSubindo::after { content: "subindo…"; position: absolute; inset: 0 0 34px; display: grid; place-items: center; font: 700 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink) }
+.refSubindo::after { content: "subindo…"; position: absolute; inset: 0 0 34px; display: grid; place-items: center; font: 600 12px var(--body); color: var(--ink) }
 .refErro { border-color: var(--rosa) }
 
 /* ============================================================
@@ -151,14 +151,14 @@
   border: 1.5px dashed var(--line-dark); width: min(100%, 560px); max-height: 62dvh;
   color: var(--sobre-ink-fraco); font: 11px var(--mono); letter-spacing: .06em; padding: 16px;
 }
-.moldura b { font: 800 clamp(16px, 2vw, 22px) var(--display); font-stretch: 85%; text-transform: uppercase; color: var(--sobre-ink) }
+.moldura b { font: 600 clamp(16px, 2vw, 22px) var(--display); color: var(--sobre-ink) }
 .molduraViva { border-style: solid; border-color: var(--sobre-ink-fraco); animation: respira 1.8s ease-in-out infinite }
 @keyframes respira { 50% { border-color: var(--line-dark) } }
-.relogio { display: flex; gap: 8px; align-items: center; justify-content: center; font: 700 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--sobre-ink) }
+.relogio { display: flex; gap: 8px; align-items: center; justify-content: center; font: 600 12px var(--body); color: var(--sobre-ink) }
 .relogio i { width: 7px; height: 7px; border-radius: 50%; background: var(--green-live); animation: vivo 1.6s infinite }
 @keyframes vivo { 50% { opacity: .25 } }
 .falha { max-width: 460px; text-align: left; border-left: 3px solid var(--rosa-live); padding: 4px 0 4px 14px }
-.falha b { display: block; font: 900 15px var(--display); font-stretch: 88%; text-transform: uppercase; color: #fff; margin-bottom: 6px }
+.falha b { display: block; font: 600 15px var(--display); color: #fff; margin-bottom: 6px }
 .falha p { color: var(--sobre-ink); font-size: 13px; margin-bottom: 12px }
 
 .palcoPe {
@@ -170,7 +170,7 @@
 .acoesPalco { display: flex; flex-wrap: wrap; gap: 6px }
 .estudio .btnClaro {
   display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 7px 11px; cursor: pointer;
-  font: 700 10px var(--mono); letter-spacing: .08em; text-transform: uppercase;
+  font: 600 12px var(--body);
   background: transparent; color: var(--sobre-ink); border: 1.5px solid var(--line-dark);
 }
 @media (hover: hover) and (pointer: fine) { .estudio .btnClaro:hover { border-color: var(--sobre-ink); color: #fff } }
@@ -193,7 +193,7 @@
 .filtros { display: flex; flex-wrap: wrap; gap: 8px; align-items: center }
 .filtros select { font-size: 12px; padding: 6px 24px 6px 8px }
 .chip {
-  font: 700 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; cursor: pointer;
+  font: 600 12px var(--body); cursor: pointer;
   padding: 7px 10px; background: transparent; border: 1.5px solid var(--line); color: var(--ink-soft);
 }
 .chipAtivo { background: var(--ink); border-color: var(--ink); color: var(--paper) }
@@ -206,13 +206,13 @@
 .peca img { width: 100%; height: auto; display: block }
 .peca span {
   position: absolute; left: 0; right: 0; bottom: 0; padding: 18px 8px 6px; text-align: left;
-  font: 700 9.5px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: #fff;
+  font: 600 12px var(--body); color: #fff;
   background: linear-gradient(transparent, #14181acc); opacity: 0; transition: opacity .15s ease;
 }
 @media (hover: hover) and (pointer: fine) { .peca:hover span { opacity: 1 } }
 @media (hover: none) { .peca span { opacity: 1 } }
 .vazioGaleria { border: 1.5px dashed var(--line); background: var(--paper-alto); padding: 26px; font-size: 13px; color: var(--ink-fraco) }
-.vazioGaleria b { display: block; font: 900 15px var(--display); font-stretch: 88%; text-transform: uppercase; color: var(--ink); margin-bottom: 4px }
+.vazioGaleria b { display: block; font: 600 15px var(--display); color: var(--ink); margin-bottom: 4px }
 
 /* ============================================================
    O VISUALIZADOR
@@ -232,12 +232,12 @@
 .visorInfo h2 { color: #fff; font-size: 18px }
 .visorInfo .promptTexto { font-size: 13px; line-height: 1.55; color: var(--sobre-ink); white-space: pre-wrap; max-height: 220px; overflow-y: auto }
 .dados { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 5px 12px; font: 11px var(--mono) }
-.dados dt { color: var(--sobre-ink-fraco); text-transform: uppercase; letter-spacing: .08em }
+.dados dt { color: var(--sobre-ink-fraco) }
 .dados dd { margin: 0; color: var(--sobre-ink) }
 .visorAcoes { display: flex; flex-wrap: wrap; gap: 6px }
 .visorLinha { display: flex; gap: 6px; align-items: center; flex-wrap: wrap }
 .visorLinha select { background-color: var(--ink); color: var(--sobre-ink); border-color: var(--line-dark); font-size: 12px; padding: 7px 24px 7px 8px; flex: 1; min-width: 0 }
-.visorRot { font: 700 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--sobre-ink-fraco); margin-bottom: 6px }
+.visorRot { font: 600 12px var(--body); color: var(--sobre-ink-fraco); margin-bottom: 6px }
 .estudio .fecharVisor, .fecharVisor {
   position: absolute; top: 8px; right: 8px; z-index: 2; width: 34px; height: 34px; display: grid; place-items: center;
   background: var(--ink); color: var(--sobre-ink); border: 1.5px solid var(--line-dark); cursor: pointer; font: 700 15px var(--mono);
@@ -253,15 +253,15 @@
    ============================================================ */
 .comparar { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; background: var(--ink); min-height: min(64dvh, 720px) }
 .lado { display: grid; grid-template-rows: auto minmax(0, 1fr); min-width: 0 }
-.ladoRot { display: flex; justify-content: space-between; gap: 8px; padding: 9px 12px; font: 700 10px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--sobre-ink-fraco); border-bottom: 1px solid var(--line-dark) }
+.ladoRot { display: flex; justify-content: space-between; gap: 8px; padding: 9px 12px; font: 600 12px var(--body); color: var(--sobre-ink-fraco); border-bottom: 1px solid var(--line-dark) }
 .ladoRot b { color: var(--sobre-ink) }
 .ladoImg { display: grid; place-items: center; padding: 14px; min-height: 280px }
 .ladoImg img { max-width: 100%; max-height: min(58dvh, 660px); object-fit: contain; display: block }
 .versoes { display: flex; gap: 8px; overflow-x: auto; padding: 12px 0 4px; scrollbar-width: thin }
 .versao { flex: none; display: grid; gap: 4px; padding: 0; border: 1.5px solid var(--line); background: var(--paper-alto); cursor: pointer; text-align: left }
 .versao img { width: 84px; height: 84px; object-fit: cover; display: block }
-.versao span { font: 700 9.5px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-fraco); padding: 0 5px 4px }
-.versaoAtiva { border-color: var(--ink); box-shadow: 3px 3px 0 var(--ink) }
+.versao span { font: 600 12px var(--body); color: var(--ink-fraco); padding: 0 5px 4px }
+.versaoAtiva { border-color: var(--ink); box-shadow: 0 0 0 1px var(--ink) }
 .versaoEntrada span { color: var(--rosa-dark) }
 
 .chips { display: flex; flex-wrap: wrap; gap: 6px }
@@ -273,9 +273,9 @@
 .projetos { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px }
 .projeto { display: grid; grid-template-rows: auto 1fr; background: var(--paper-alto); border: 1.5px solid var(--line); color: var(--ink) }
 .projeto:hover { border-color: var(--ink) }
-.projetoCapa { aspect-ratio: 4 / 3; background: var(--paper-2) center / cover no-repeat; display: grid; place-items: center; font: 700 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-fraco) }
+.projetoCapa { aspect-ratio: 4 / 3; background: var(--paper-2) center / cover no-repeat; display: grid; place-items: center; font: 600 12px var(--body); color: var(--ink-fraco) }
 .projetoTexto { padding: 10px 12px 12px; display: grid; gap: 3px }
-.projetoTexto b { font: 900 16px var(--display); font-stretch: 85%; text-transform: uppercase; line-height: 1 }
+.projetoTexto b { font: 600 16px var(--display); line-height: 1 }
 .projetoTexto span { font: 11px var(--mono); color: var(--ink-fraco) }
 .novoProjeto { display: grid; gap: 8px; align-content: start; border: 1.5px dashed var(--ink-fraco); padding: 14px; background: var(--paper) }
 .novoProjeto input, .novoProjeto textarea { width: 100% }
@@ -288,7 +288,7 @@
 .linhaBotoes { display: flex; flex-wrap: wrap; gap: 6px; align-items: center }
 .editarProjeto { display: grid; gap: 8px; max-width: 560px; margin: 8px 0 12px }
 .editarProjeto input, .editarProjeto textarea { width: 100% }
-.voltar { font: 700 10.5px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-fraco); display: inline-block; margin-bottom: 10px }
+.voltar { font: 600 12px var(--body); color: var(--ink-fraco); display: inline-block; margin-bottom: 10px }
 .voltar:hover { color: var(--ink) }
 
 /* ============================================================
@@ -302,13 +302,13 @@
   flex: none; width: 196px; display: grid; grid-template-rows: auto auto; text-align: left; scroll-snap-align: start;
   padding: 0; border: 1.5px solid var(--line); background: var(--paper-alto); cursor: pointer; color: var(--ink);
 }
-.quadroAtivo { border-color: var(--ink); box-shadow: 4px 4px 0 var(--ink) }
-.quadroImg { aspect-ratio: 16 / 10; background: var(--ink) center / cover no-repeat; display: grid; place-items: center; font: 700 9.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--sobre-ink-fraco) }
+.quadroAtivo { border-color: var(--ink); box-shadow: 0 0 0 1px var(--ink) }
+.quadroImg { aspect-ratio: 16 / 10; background: var(--ink) center / cover no-repeat; display: grid; place-items: center; font: 600 12px var(--body); color: var(--sobre-ink-fraco) }
 .quadroTexto { display: grid; gap: 2px; padding: 7px 9px 9px }
 .quadroTexto i { font: 700 10px var(--mono); font-style: normal; letter-spacing: .1em; color: var(--rosa) }
-.quadroTexto b { font: 800 13px var(--display); font-stretch: 88%; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.quadroTexto b { font: 600 13px var(--display); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
 .quadroTexto span { font: 10.5px var(--mono); color: var(--ink-fraco) }
-.quadroNovo { flex: none; width: 130px; border: 1.5px dashed var(--ink-fraco); background: transparent; cursor: pointer; font: 700 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft) }
+.quadroNovo { flex: none; width: 130px; border: 1.5px dashed var(--ink-fraco); background: transparent; cursor: pointer; font: 600 12px var(--body); color: var(--ink-soft) }
 .quadroNovo:hover { border-color: var(--ink); color: var(--ink) }
 
 .aberto { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(300px, 1fr); gap: 22px; align-items: start; margin-top: 8px }
@@ -316,12 +316,12 @@
 .abertoImg img { max-width: 100%; max-height: 62dvh; object-fit: contain; display: block }
 .abertoInfo { display: grid; gap: 16px; align-content: start }
 .abertoInfo .nomeQuadro { display: flex; gap: 6px }
-.abertoInfo .nomeQuadro input { flex: 1; font: 800 16px var(--display); font-stretch: 88%; text-transform: uppercase }
+.abertoInfo .nomeQuadro input { flex: 1; font: 600 16px var(--display) }
 .promptUsado { font-size: 13px; color: var(--ink-soft); white-space: pre-wrap; max-height: 140px; overflow-y: auto; border-left: 2px solid var(--line); padding-left: 10px }
 .refPrincipal { display: flex; gap: 10px; align-items: center; border: 1.5px solid var(--line); background: var(--paper-alto); padding: 6px }
 .refPrincipal img { width: 64px; height: 64px; object-fit: cover; display: block }
 .refPrincipal div { flex: 1; display: grid; gap: 2px; min-width: 0 }
-.refPrincipal b { font: 700 10.5px var(--mono); letter-spacing: .08em; text-transform: uppercase }
+.refPrincipal b { font: 600 12px var(--body) }
 .refPrincipal span { font-size: 12px; color: var(--ink-fraco) }
 .seletor { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 6px; max-height: 240px; overflow-y: auto; border: 1.5px solid var(--line); padding: 6px; background: var(--paper-alto) }
 .seletor button { padding: 0; border: 1.5px solid transparent; background: none; cursor: pointer }
@@ -331,14 +331,14 @@
 /* ============================================================
    O CONSUMO
    ============================================================ */
-.consumo { width: min(100%, 720px); max-height: calc(100dvh - 32px); overflow-y: auto; background: var(--paper-alto); border: 1.5px solid var(--ink); box-shadow: 6px 6px 0 var(--ink); padding: clamp(18px, 3vw, 26px); position: relative }
+.consumo { width: min(100%, 720px); max-height: calc(100dvh - 32px); overflow-y: auto; background: var(--paper-alto); border: 1px solid var(--line); box-shadow: var(--painel-sombra); padding: clamp(18px, 3vw, 26px); position: relative; border-radius: var(--painel-raio) }
 .consumo h2 { margin-bottom: 4px }
 .totais { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1.5px solid var(--line); margin: 14px 0 }
 .totais div { background: var(--paper-alto); padding: 10px 12px; display: grid; gap: 2px }
-.totais small { font: 700 9.5px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-fraco) }
-.totais b { font: 900 22px var(--display); font-stretch: 85% }
+.totais small { font: 600 12px var(--body); color: var(--ink-fraco) }
+.totais b { font: 600 22px var(--display) }
 .tabela { width: 100%; border-collapse: collapse; font: 11.5px var(--mono) }
-.tabela th { text-align: left; font-weight: 700; font-size: 9.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-fraco); border-bottom: 1.5px solid var(--ink); padding: 6px 8px 6px 0 }
+.tabela th { text-align: left; font-weight: 700; font-size: 9.5px; color: var(--ink-fraco); border-bottom: 1.5px solid var(--ink); padding: 6px 8px 6px 0 }
 .tabela td { border-bottom: 1px solid var(--line); padding: 6px 8px 6px 0; color: var(--ink-soft) }
 .tabela td:last-child, .tabela th:last-child { text-align: right; padding-right: 0 }
 .rolarTabela { max-height: 260px; overflow-y: auto }
@@ -348,7 +348,7 @@
 
 /* o modal de confirmação usa o .modal da casa; só a ficha é daqui */
 .resumo { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 5px 14px; font: 12px var(--mono); margin: 4px 0 12px }
-.resumo dt { color: var(--ink-fraco); text-transform: uppercase; letter-spacing: .08em; font-size: 10.5px }
+.resumo dt { color: var(--ink-fraco); font-size: 10.5px }
 .resumo dd { margin: 0; color: var(--ink) }
 
 
@@ -360,7 +360,7 @@
 .slotImg {
   position: relative; aspect-ratio: 16 / 9; display: grid; place-items: center; text-align: center; cursor: pointer;
   border: 1.5px dashed var(--ink-fraco); background: var(--paper-2) center / cover no-repeat; padding: 6px;
-  font: 700 9.5px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft);
+  font: 600 12px var(--body); color: var(--ink-soft);
 }
 .slotImg:hover, .slotAtivo { border-color: var(--ink); background-color: var(--paper-alto) }
 .slotCheio { border: 1.5px solid var(--ink); color: transparent }
@@ -376,15 +376,15 @@
   border: 1.5px solid var(--line); background: var(--paper-alto);
 }
 .cartaoVideo:hover { border-color: var(--ink) }
-.cartaoAtivo { border-color: var(--ink); box-shadow: 4px 4px 0 var(--ink) }
+.cartaoAtivo { border-color: var(--ink); box-shadow: 0 0 0 1px var(--ink) }
 .cartaoMidia { aspect-ratio: 16 / 9; background: var(--ink) center / cover no-repeat; display: grid; place-items: center; overflow: hidden }
 .cartaoMidia video { width: 100%; height: 100%; object-fit: cover; display: block }
-.cartaoMidia span { font: 700 9.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--sobre-ink); background: #14181acc; padding: 4px 7px }
+.cartaoMidia span { font: 600 12px var(--body); color: var(--sobre-ink); background: #14181acc; padding: 4px 7px }
 .cartaoTexto { display: grid; gap: 3px; padding: 8px 10px 10px }
-.cartaoTexto b { font: 800 12.5px var(--display); font-stretch: 88%; text-transform: uppercase; letter-spacing: .02em }
+.cartaoTexto b { font: 600 12.5px var(--display) }
 .cartaoTexto span { font: 10.5px var(--mono); color: var(--ink-fraco) }
 .cartaoTexto p { font-size: 12px; color: var(--ink-soft); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden }
-.estado { font: 700 9.5px var(--mono); letter-spacing: .1em; text-transform: uppercase }
+.estado { font: 600 12px var(--body) }
 .estadoVivo { color: var(--green-dark) }
 .estadoFalhou { color: var(--rosa-dark) }
 

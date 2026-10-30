@@ -63,7 +63,7 @@ export function CentralAtendimento({ painel, templates, posts = [] }: Props) {
   return (
     <div className={c.central} data-atendimento>
       <header className={c.cabecalho}>
-        <div><span className={c.sobretitulo}>RELACIONAMENTO / VENDAS</span><h1>Atendimento<span>.</span></h1><p>Quem chegou, quem espera sua resposta e qual é o próximo passo.</p></div>
+        <div><span className={c.sobretitulo}>Relacionamento e vendas</span><h1>Atendimento<span>.</span></h1><p>Quem chegou, quem espera sua resposta e qual é o próximo passo.</p></div>
         <div className={c.acoes}><Link className={c.botao} href="/crm/pipeline">Ver funil</Link><button className={`${c.botao} ${c.primario}`} type="button" onClick={() => setNovo(true)}>+ Novo contato</button></div>
       </header>
       <nav className={c.abas} aria-label="Filas de atendimento">

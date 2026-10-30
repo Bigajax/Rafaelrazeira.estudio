@@ -25,7 +25,7 @@
 .atalhos { display: flex; gap: 6px; flex-wrap: wrap }
 .voltar {
   display: inline-block; margin-bottom: 14px;
-  font: 700 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-fraco); text-decoration: none;
+  font: 600 12px var(--body); color: var(--ink-fraco); text-decoration: none;
 }
 .voltar:hover { color: var(--ink) }
 
@@ -58,7 +58,7 @@
 .reguaGrande .estacaoMarca { width: 18px; height: 18px; border-width: 3px }
 .estacaoTexto { display: block; margin-top: 10px; padding-right: 8px }
 .estacaoTexto b {
-  display: block; font: 700 15px/1.1 var(--display); font-stretch: 112%; color: var(--ink-fraco);
+  display: block; font: 700 15px/1.1 var(--display); color: var(--ink-fraco);
 }
 .estacaoTexto i { font: 11px var(--mono); font-style: normal; color: var(--ink-fraco); letter-spacing: .06em }
 .estacaoPronta .estacaoTexto b { color: var(--ink) }
@@ -74,7 +74,7 @@
 }
 @media (hover: hover) and (pointer: fine) { .linhaLink:hover { background: var(--paper-alto) } }
 .linha .linhaNome h2 {
-  font: 800 clamp(20px, 2.2vw, 28px)/1 var(--display); font-stretch: 112%;
+  font: 600 clamp(20px, 2.2vw, 28px)/1 var(--display);
   text-transform: none; letter-spacing: -.01em; margin: 0; overflow-wrap: anywhere;
 }
 .linhaNome span { display: block; font: 12px var(--mono); color: var(--ink-fraco); margin-top: 6px }
@@ -82,7 +82,7 @@
 .linhaEtapa { display: block; font-size: 13.5px; color: var(--ink-soft); margin-top: 10px; line-height: 1.4 }
 .linhaEtapa b { color: var(--ink) }
 .linhaDinheiro { text-align: right }
-.linhaDinheiro b { display: block; font: 800 20px var(--display); font-stretch: 112% }
+.linhaDinheiro b { display: block; font: 600 20px var(--display) }
 .linhaDinheiro span { display: block; font: 12px var(--mono); color: var(--ink-fraco); margin-top: 4px }
 .linhaDinheiro .quitado { color: var(--green-dark); font-weight: 700 }
 .linhaDinheiro .semContrato { color: var(--rosa) }
@@ -103,10 +103,10 @@
 .etapaAtual { border-color: var(--green); box-shadow: inset 3px 0 0 var(--green) }
 .etapaPronta { background: transparent }
 .etapaCabeca { display: flex; align-items: baseline; gap: 10px }
-.etapa .etapaCabeca h2 { font: 800 20px/1 var(--display); font-stretch: 112%; text-transform: none; margin: 0; flex: 1 }
+.etapa .etapaCabeca h2 { font: 600 20px/1 var(--display); text-transform: none; margin: 0; flex: 1 }
 .etapaNum, .etapaConta { font: 700 11px var(--mono); letter-spacing: .08em; color: var(--ink-fraco) }
 .etapaPronta .etapaConta { color: var(--green-dark) }
-.etapaNota { font: 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-fraco); margin: 4px 0 10px }
+.etapaNota { font: 12px var(--body); color: var(--ink-fraco); margin: 4px 0 10px }
 
 .itens { list-style: none; margin: 0; padding: 0 }
 .item { display: flex; align-items: flex-start; gap: 10px; padding: 7px 0; border-top: 1px dashed var(--line) }
@@ -127,10 +127,10 @@
 .itemFeito .itemTexto { color: var(--ink-fraco); text-decoration: line-through; text-decoration-color: var(--line) }
 .etiqueta {
   display: inline-block; margin-left: 8px; padding: 2px 5px 1px; vertical-align: 1px;
-  font: 700 9.5px var(--mono); letter-spacing: .08em; text-transform: uppercase;
+  font: 600 12px var(--body);
   border: 1px solid var(--line); color: var(--ink-fraco); text-decoration: none;
 }
-.irCaixa { font: 700 11px var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--rosa); text-decoration: none; margin-left: auto }
+.irCaixa { font: 600 12px var(--body); color: var(--rosa); text-decoration: none; margin-left: auto }
 .tirar {
   flex: none; border: 0; background: none; cursor: pointer; font-size: 18px; line-height: 1; color: var(--ink-fraco); padding: 0 4px;
 }
@@ -146,19 +146,19 @@
 @media (max-width: 1000px) { .lado { position: static } }
 .painel { background: var(--paper-alto); border: 1px solid var(--line); border-radius: 8px; padding: 20px }
 .painel .painelTitulo {
-  font: 700 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-fraco); margin: 0 0 12px;
+  font: 600 12px var(--body); color: var(--ink-fraco); margin: 0 0 12px;
 }
 
 .materialVazio { font-size: 14px; color: var(--ink-soft); margin: 0 0 10px }
 .materialQuando { font: 12px var(--mono); color: var(--ink-fraco); margin: 0 0 10px }
 .materialLink {
-  display: inline-block; margin-top: 10px; font: 700 11px var(--mono); letter-spacing: .08em; text-transform: uppercase;
+  display: inline-block; margin-top: 10px; font: 600 12px var(--body);
   color: var(--green-dark); text-decoration: none; border-bottom: 1.5px solid currentColor;
 }
 .fatos { margin: 0; display: grid; gap: 0 }
 .fatos > div { display: grid; grid-template-columns: 118px 1fr; gap: 10px; padding: 6px 0; border-top: 1px dashed var(--line) }
 .fatos > div:first-child { border-top: 0 }
-.fatos dt { font: 11px var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-fraco); padding-top: 2px }
+.fatos dt { font: 12px var(--body); color: var(--ink-fraco); padding-top: 2px }
 .fatos dd { margin: 0; font-size: 13.5px; color: var(--ink-soft); overflow-wrap: anywhere }
 .fatos .fatoOk dd { color: var(--ink) }
 .fatos .fatoOk dt { color: var(--green-dark) }
@@ -168,7 +168,7 @@
 .comando { font-size: 13px; color: var(--ink-soft); margin: 12px 0 0 }
 
 .campos { display: grid; gap: 12px }
-.campo span { display: flex; justify-content: space-between; font: 700 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-fraco); margin-bottom: 5px }
+.campo span { display: flex; justify-content: space-between; font: 600 12px var(--body); color: var(--ink-fraco); margin-bottom: 5px }
 .campo input, .campo textarea {
   width: 100%; padding: 9px 10px; border: 1px solid var(--line); background: #fff;
   font: 14px var(--body); color: var(--ink); resize: vertical;
@@ -180,7 +180,7 @@
 
 .entregueBloco { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line) }
 .btnEntregue, .btnSecundario {
-  padding: 10px 14px; font: 700 12px/1.2 var(--mono); letter-spacing: .08em; text-transform: uppercase; cursor: pointer;
+  padding: 10px 14px; font: 600 12px/1.2 var(--body); cursor: pointer;
   box-sizing: border-box; min-height: 40px; display: inline-flex; align-items: center;
   border: 2px solid var(--ink);
 }
@@ -201,13 +201,13 @@
 .linkAcoes a { text-decoration: none; display: inline-flex }
 .btnLeve {
   background: none; border: 0; padding: 8px 2px; cursor: pointer;
-  font: 700 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-fraco);
+  font: 600 12px var(--body); color: var(--ink-fraco);
   text-decoration: underline; text-underline-offset: 3px;
 }
 .btnLeve:hover { color: var(--ink) }
 .criar { display: grid; gap: 12px; margin-bottom: 14px }
 .perguntas { border: 0; margin: 0; padding: 0; display: grid; gap: 6px }
-.perguntas legend { font: 700 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-fraco); margin-bottom: 6px; padding: 0 }
+.perguntas legend { font: 600 12px var(--body); color: var(--ink-fraco); margin-bottom: 6px; padding: 0 }
 .perguntas label { display: flex; align-items: center; gap: 10px; font-size: 14px; cursor: pointer }
 .perguntas input { position: absolute; opacity: 0; pointer-events: none }
 .perguntas input:checked + .caixinha { background: var(--green); border-color: var(--green) }

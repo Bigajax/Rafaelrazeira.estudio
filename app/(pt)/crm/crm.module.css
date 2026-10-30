@@ -152,9 +152,7 @@
 .app h2,
 .app h3 {
   font-family: var(--display);
-  font-stretch: 78%;
-  font-weight: 900;
-  text-transform: uppercase;
+  font-weight: 600;
   letter-spacing: -0.012em;
   margin: 0;
 }
@@ -327,12 +325,9 @@
 .trilhoMarca b {
   display: block;
   font-family: var(--display);
-  font-stretch: 72%;
-  font-weight: 900;
-  text-transform: uppercase;
+  font-weight: 600;
   font-size: 18px;
   line-height: 0.86;
-  letter-spacing: 0.004em;
 }
 .trilhoMarca .ponto {
   color: var(--rosa);
@@ -375,9 +370,7 @@
   position: relative;
   z-index: 1;
   padding: 11px 20px 3px 40px;
-  font: 700 9.5px var(--mono);
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--sobre-ink-fraco);
 }
 .trilhoMomento:first-child {
@@ -459,12 +452,9 @@
   justify-content: space-between;
   gap: 8px;
   font-family: var(--display);
-  font-stretch: 88%;
-  font-weight: 900;
-  text-transform: uppercase;
+  font-weight: 600;
   font-size: 16.5px;
   line-height: 1;
-  letter-spacing: 0.02em;
   color: var(--sobre-ink);
   transition: color 0.15s ease;
 }
@@ -498,9 +488,7 @@
    de contraste, ou seja: existia no HTML e não existia na tela. */
 .trilhoLink span {
   display: block;
-  font: 500 11px var(--mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font: 500 12px var(--body);
   color: var(--sobre-ink-fraco);
   margin-top: 3px;
 }
@@ -535,9 +523,7 @@
   border: 0;
   padding: 6px 0;
   cursor: pointer;
-  font: 700 10.5px var(--mono);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--sobre-ink-fraco);
   transition: color 0.15s ease;
 }
@@ -723,9 +709,7 @@
    Aqui ele carrega a data por extenso, que numa fila diária é informação e
    não enfeite. */
 .eyebrow {
-  font: 10.5px var(--mono);
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
+  font: 12px var(--body);
   color: var(--ink-soft);
   margin: 0 0 10px;
 }
@@ -811,9 +795,7 @@
   align-items: center;
   gap: 9px;
   flex: none;
-  font: 700 10.5px var(--mono);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   white-space: nowrap;
 }
 .faixaNum {
@@ -869,10 +851,8 @@
   align-items: center;
   justify-content: center;
   gap: 7px;
-  font-family: var(--mono);
+  font-family: var(--body);
   font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
   line-height: 1.2;
   box-sizing: border-box;
   cursor: pointer;
@@ -930,7 +910,7 @@
   background: var(--rosa);
   color: #fff;
   border: 0;
-  box-shadow: 3px 3px 0 var(--ink);
+  box-shadow: none;
 }
 @media (hover: hover) and (pointer: fine) {
   .app .btnAcao:hover {
@@ -938,8 +918,8 @@
   }
 }
 .app .btnAcao:active {
-  transform: translate(3px, 3px);
-  box-shadow: 0 0 0 var(--ink);
+  transform: scale(0.97);
+  box-shadow: none;
 }
 
 .app .btnVerde {
@@ -989,12 +969,10 @@
   gap: 10px;
   flex-wrap: wrap;
   font-family: var(--display);
-  font-stretch: 78%;
-  font-weight: 900;
+  font-weight: 600;
   font-size: clamp(15px, 1.5vw, 18px);
   line-height: 1;
   letter-spacing: -0.005em;
-  text-transform: uppercase;
   color: var(--ink);
   margin: clamp(26px, 3vw, 38px) 0 12px;
 }
@@ -1149,8 +1127,7 @@
 }
 .fichaNome {
   font-family: var(--display);
-  font-stretch: 78%;
-  font-weight: 900;
+  font-weight: 600;
   font-size: 16px;
   line-height: 1.05;
   letter-spacing: -0.01em;
@@ -1166,8 +1143,7 @@
 .fichaValor {
   flex: none;
   font-family: var(--display);
-  font-stretch: 78%;
-  font-weight: 900;
+  font-weight: 600;
   font-size: 14px;
   line-height: 1.05;
   letter-spacing: -0.01em;
@@ -1286,9 +1262,7 @@
 .sinal {
   display: block;
   margin-top: 8px;
-  font: 700 10.5px var(--mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
 }
 .sinalAlerta {
   color: var(--rosa);
@@ -1325,9 +1299,7 @@
   line-height: 1.4;
 }
 .aviso b {
-  font: 700 10.5px var(--mono);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--rosa);
   flex: none;
 }
@@ -1412,12 +1384,9 @@
    ser cinza com margem zero. */
 .app .gavetaTitulo {
   font-family: var(--display);
-  font-stretch: 88%;
-  font-weight: 900;
-  text-transform: uppercase;
+  font-weight: 600;
   font-size: 13px;
   line-height: 1;
-  letter-spacing: 0.015em;
   color: var(--ink);
   margin: 0 0 9px;
 }
@@ -1434,9 +1403,7 @@
   margin-bottom: 11px;
 }
 .gavetaRot {
-  font: 700 10px var(--mono);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-soft);
 }
 /* O chip da coluna do celular em tamanho de linha de ficha. */
@@ -1551,9 +1518,7 @@
    `--green-live` sobre grafite, sempre. */
 .vezSinal {
   display: block;
-  font: 700 11.5px var(--mono);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
 }
 
 /* ---------- O CALOR NA CARTA ----------
@@ -1570,9 +1535,7 @@
   margin: 0;
 }
 .vezVeredito {
-  font: 700 10.5px var(--mono);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--sobre-ink-fraco);
   padding-left: 12px;
   border-left: 1.5px solid #4a5350;
@@ -1646,15 +1609,12 @@
   gap: 3px;
 }
 .vezFatoRot {
-  font: 700 10px var(--mono);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--sobre-ink-fraco);
 }
 .vezFatoVal {
   font-family: var(--display);
-  font-stretch: 78%;
-  font-weight: 900;
+  font-weight: 600;
   font-size: clamp(17px, 1.5vw, 21px);
   line-height: 1.05;
   letter-spacing: -0.012em;
@@ -1672,9 +1632,7 @@
   color: var(--sobre-ink-fraco);
 }
 .vezFatoNota {
-  font: 500 11px var(--mono);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font: 500 12px var(--body);
   color: var(--sobre-ink);
 }
 
@@ -1810,9 +1768,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font: 700 10px var(--mono);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   padding: 6px 10px;
   min-height: 28px;
   cursor: pointer;
@@ -1839,7 +1795,7 @@
    botão perderia o carimbo justo na tela em que ele é o único rosa. Aqui a
    sombra é da cor da voz de trás, e o clique continua afundando nela. */
 .vezFolha .btnAcao {
-  box-shadow: 3px 3px 0 var(--sobre-ink-fraco);
+  box-shadow: none;
 }
 .vezFolha .btnAcao:active {
   box-shadow: 0 0 0 var(--sobre-ink-fraco);
@@ -1855,16 +1811,15 @@
    Agora cada tecla carrega o NOME de para onde ela leva, e isso mata a
    tira: "Pular" não dizia nada, "→ Studio Ana Paula" diz quem é o próximo.
 
-   ---------- por que sombra dura ----------
-   É o carimbo do `.btnAcao`, e a razão é a mesma: numa tela que se varre
-   com a mão, os dois controles apertados o dia inteiro precisam PARECER
-   teclas. Elas afundam 3px no clique e a sombra colapsa, que é o gesto
-   físico que o `.btn` de contorno não tem. Sem cor nenhuma: o rosa da carta
-   é o que se deve apertar, e uma tecla rosa disputaria com ele.
+   ---------- por que pílula, e não mais a sombra dura ----------
+   Até 29/10 era o carimbo do `.btnAcao`: tecla com sombra de 3px que
+   afundava no clique. Na fase 3 do design novo (30/10) a sombra saiu com o
+   resto do papel e tinta; as teclas são pílulas de fio que encolhem um
+   pouco no clique. Continuam sem cor: o rosa da carta é o que se deve
+   apertar, e uma tecla rosa disputaria com ele.
 
-   A desabilitada perde a sombra em vez de perder opacidade. Botão apagado
-   por transparência continua parecendo apertável e some junto com o texto;
-   sem sombra ele deitou no papel, e isso se lê antes de qualquer palavra.
+   A desabilitada perde o fio escuro e o tom do texto, não a opacidade:
+   botão apagado por transparência continua parecendo apertável.
    ============================================================ */
 /* Sem filete próprio: a borda de baixo da folha de tinta já é a linha que
    separa o objeto do dia das duas teclas, e nenhum filete de papel compete
@@ -1908,12 +1863,13 @@
   cursor: pointer;
   background: var(--paper-alto);
   color: var(--ink);
-  border: 1.5px solid var(--ink);
-  box-shadow: 3px 3px 0 var(--ink);
+  border: 1px solid var(--line);
+  box-shadow: none;
   transition:
     transform 0.1s ease,
     box-shadow 0.1s ease,
     background 0.15s ease;
+  border-radius: var(--painel-raio);
 }
 @media (hover: hover) and (pointer: fine) {
   .app .vezSeta:hover {
@@ -1921,8 +1877,8 @@
   }
 }
 .app .vezSeta:active {
-  transform: translate(3px, 3px);
-  box-shadow: 0 0 0 var(--ink);
+  transform: scale(0.97);
+  box-shadow: none;
 }
 .app .vezSeta:disabled {
   cursor: not-allowed;
@@ -1936,8 +1892,7 @@
   flex: none;
   font-style: normal;
   font-family: var(--display);
-  font-stretch: 78%;
-  font-weight: 900;
+  font-weight: 600;
   font-size: 22px;
   line-height: 1;
 }
@@ -1947,9 +1902,7 @@
   min-width: 0;
 }
 .vezSetaRot {
-  font: 700 9.5px var(--mono);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-fraco);
 }
 /* Uma linha, cortada com reticências: o nome aqui é uma placa de destino,
@@ -1957,8 +1910,7 @@
    o próximo lead, e as duas parariam de ser um par. */
 .vezSetaNome {
   font-family: var(--display);
-  font-stretch: 78%;
-  font-weight: 900;
+  font-weight: 600;
   font-size: 15px;
   line-height: 1.05;
   letter-spacing: -0.01em;
@@ -1980,9 +1932,7 @@
 }
 
 .vezPosicao {
-  font: 700 11px var(--mono);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-fraco);
   flex: none;
 }
@@ -2033,9 +1983,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font: 700 10.5px var(--mono);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-fraco);
   background: none;
   border: 0;
@@ -2220,9 +2168,10 @@
   max-height: 340px;
   overflow-y: auto;
   background: var(--paper-alto);
-  border: 1.5px solid var(--ink);
-  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.45);
+  border: 1px solid var(--line);
+  box-shadow: var(--painel-sombra);
   padding: 8px;
+  border-radius: var(--painel-raio);
 }
 .app .diaLinha {
   display: flex;
@@ -2271,9 +2220,7 @@
   text-overflow: ellipsis;
 }
 .diaEtapa {
-  font: 700 9.5px var(--mono);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-fraco);
   flex: none;
 }
@@ -2290,9 +2237,7 @@
   flex: none;
 }
 .app button.riscadosPuxador {
-  font: 700 10px var(--mono);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-fraco);
   border-bottom-color: var(--ink-fraco);
 }
@@ -2332,11 +2277,8 @@
 .vazio b {
   display: block;
   font-family: var(--display);
-  font-stretch: 88%;
-  font-weight: 900;
-  text-transform: uppercase;
+  font-weight: 600;
   font-size: 15.5px;
-  letter-spacing: 0.012em;
   margin-bottom: 6px;
 }
 .vazio p {
@@ -2386,9 +2328,7 @@
 .diaLimpo > b {
   display: block;
   font-family: var(--display);
-  font-stretch: 78%;
-  font-weight: 900;
-  text-transform: uppercase;
+  font-weight: 600;
   font-size: clamp(17px, 1.8vw, 21px);
   line-height: 1;
   letter-spacing: -0.008em;
@@ -2428,9 +2368,7 @@
    ============================================================ */
 .horizonteRot {
   display: block;
-  font: 10.5px var(--mono);
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
+  font: 12px var(--body);
   color: var(--ink-soft);
   margin: clamp(18px, 2.2vw, 24px) 0 0;
 }
@@ -2481,9 +2419,7 @@
   display: flex;
   justify-content: space-between;
   margin-top: 7px;
-  font: 700 10px var(--mono);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-fraco);
 }
 
@@ -2500,9 +2436,7 @@
   display: inline-flex;
   align-items: baseline;
   gap: 8px;
-  font: 700 10.5px var(--mono);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-soft);
 }
 .horizonteFato b {
@@ -2713,11 +2647,8 @@
    largura (88%) e trocar o tracking para positivo. */
 .colunaNome {
   font-family: var(--display);
-  font-stretch: 88%;
-  font-weight: 900;
-  text-transform: uppercase;
+  font-weight: 600;
   font-size: 15.5px;
-  letter-spacing: 0.015em;
   color: #fff;
   min-width: 0;
   overflow-wrap: anywhere;
@@ -2754,9 +2685,7 @@
    quem já sabia o que ela dizia. */
 .colunaNota {
   display: block;
-  font: 500 10.5px var(--mono);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font: 500 12px var(--body);
   color: var(--sobre-ink-fraco);
   margin-top: 6px;
   overflow: hidden;
@@ -2958,9 +2887,7 @@
 .placaNome {
   display: block;
   font-family: var(--display);
-  font-stretch: 78%;
-  font-weight: 900;
-  text-transform: uppercase;
+  font-weight: 600;
   font-size: 14.5px;
   letter-spacing: -0.005em;
   color: var(--ink);
@@ -2970,8 +2897,7 @@
 .placaNum {
   display: block;
   font-family: var(--display);
-  font-stretch: 78%;
-  font-weight: 900;
+  font-weight: 600;
   font-size: 34px;
   line-height: 1;
   letter-spacing: -0.03em;
@@ -2980,9 +2906,7 @@
 }
 .placaSoma {
   display: block;
-  font: 700 10.5px var(--mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-soft);
 }
 /* As duas saídas também respondem na mão, e elas são justamente as que mais
@@ -3031,7 +2955,7 @@
 @media (hover: hover) and (pointer: fine) {
   .app .placa:hover {
     background: #fff;
-    box-shadow: 3px 3px 0 var(--ink);
+    box-shadow: none;
   }
 }
 /* Alvo de arrasto e estado aberto usam o mesmo carimbo de tinta: os dois
@@ -3039,7 +2963,7 @@
 .app .placaAlvo,
 .app .placaAberta {
   background: var(--ink);
-  box-shadow: 3px 3px 0 var(--line);
+  box-shadow: 0 0 0 1px var(--line);
 }
 .placaAlvo .placaNome,
 .placaAberta .placaNome {
@@ -3068,9 +2992,7 @@
   grid-template-columns: repeat(auto-fill, minmax(238px, 1fr));
 }
 .app .recolher {
-  font: 700 10px var(--mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-soft);
   background: none;
   border: 0;
@@ -3101,15 +3023,12 @@
   gap: 12px;
   writing-mode: vertical-rl;
   padding: 14px 0;
-  font: 700 10px var(--mono);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-soft);
 }
 .lombada b {
   font-family: var(--display);
-  font-stretch: 78%;
-  font-weight: 900;
+  font-weight: 600;
   font-size: 13px;
   letter-spacing: 0.02em;
   color: var(--ink);
@@ -3164,7 +3083,7 @@
    é o papel já levantado e torto, parado. O estado continua legível sem o
    movimento, que é a única forma honesta de respeitar movimento reduzido. */
 .cardVoo {
-  box-shadow: 6px 6px 0 var(--ink);
+  box-shadow: var(--painel-sombra);
   cursor: grabbing;
   transform: rotate(-1.2deg);
   animation: levantar 140ms cubic-bezier(0.2, 0.7, 0.2, 1);
@@ -3172,7 +3091,7 @@
 @keyframes levantar {
   from {
     transform: rotate(0deg);
-    box-shadow: 2px 2px 0 var(--ink);
+    box-shadow: none;
   }
 }
 
@@ -3191,9 +3110,7 @@
   margin: 10px -13px -11px;
   padding: 7px 13px 8px;
   background: var(--ink);
-  font: 700 10.5px var(--mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--rosa-live);
 }
 
@@ -3212,7 +3129,7 @@
 @keyframes assentar {
   from {
     transform: translate(-5px, -5px);
-    box-shadow: 5px 5px 0 var(--ink);
+    box-shadow: none;
   }
   to {
     transform: none;
@@ -3268,9 +3185,7 @@
 }
 .chip {
   flex: none;
-  font: 700 10px var(--mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   padding: 9px 12px;
   border: 1.5px solid var(--line);
   background: var(--paper-alto);
@@ -3340,9 +3255,7 @@
    de volta numa caixa, e é o que amarra a busca ao resto do vocabulário. */
 .buscaRot {
   flex: none;
-  font: 700 10.5px var(--mono);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: #fff;
   background: var(--ink);
   padding: 6px 9px 7px;
@@ -3405,9 +3318,7 @@
 }
 .filtroRot {
   flex: none;
-  font: 700 10.5px var(--mono);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-soft);
 }
 .app .filtro select {
@@ -3450,9 +3361,7 @@
   align-items: center;
   gap: 8px;
   margin-left: auto;
-  font: 500 10.5px var(--mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font: 500 12px var(--body);
   color: var(--ink-soft);
 }
 .placarBusca b {
@@ -3554,9 +3463,7 @@
 }
 .app .opcao {
   flex: 1;
-  font: 700 10.5px var(--mono);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   padding: 11px 12px;
   cursor: pointer;
   background: var(--paper-alto);
@@ -3623,20 +3530,15 @@
 }
 .perguntaTitulo {
   font-family: var(--display);
-  font-stretch: 88%;
-  font-weight: 900;
-  text-transform: uppercase;
+  font-weight: 600;
   font-size: 13.5px;
-  letter-spacing: 0.015em;
   color: var(--ink);
   margin-bottom: 10px;
 }
 
 .campoRot {
   display: block;
-  font: 700 10.5px var(--mono);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-soft);
   margin-bottom: 5px;
 }
@@ -3680,14 +3582,13 @@
   max-height: calc(100dvh - 32px);
   overflow-y: auto;
   background: var(--paper-alto);
-  border: 1.5px solid var(--ink);
-  box-shadow: 6px 6px 0 var(--ink);
+  border: 1px solid var(--line);
+  box-shadow: var(--painel-sombra);
   padding: clamp(18px, 3vw, 26px);
+  border-radius: var(--painel-raio);
 }
 .modalRot {
-  font: 700 10.5px var(--mono);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--rosa);
   margin-bottom: 8px;
 }
@@ -3738,10 +3639,11 @@
   max-height: calc(100dvh - 40px);
   overflow-y: auto;
   background: var(--paper);
-  border: 1.5px solid var(--ink);
-  box-shadow: 8px 8px 0 var(--ink);
+  border: 1px solid var(--line);
+  box-shadow: var(--painel-sombra);
   padding: 0 clamp(16px, 2.6vw, 26px) clamp(18px, 2.6vw, 26px);
   animation: subir 0.18s cubic-bezier(0.2, 0.7, 0.2, 1);
+  border-radius: var(--painel-raio);
 }
 @keyframes subir {
   from {
@@ -3811,8 +3713,7 @@
 .fichaCabValor {
   flex: none;
   font-family: var(--display);
-  font-stretch: 78%;
-  font-weight: 900;
+  font-weight: 600;
   font-size: clamp(17px, 2vw, 22px);
   line-height: 1;
   letter-spacing: -0.01em;
@@ -3832,9 +3733,7 @@
   margin-top: clamp(14px, 2vw, 18px);
 }
 .fichaCabOrigem {
-  font: 500 10.5px var(--mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font: 500 12px var(--body);
   color: var(--sobre-ink-fraco);
   margin-left: auto;
 }
@@ -3845,9 +3744,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font: 700 10.5px var(--mono);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   padding: 11px 16px;
   background: transparent;
   color: #fff;
@@ -3878,9 +3775,7 @@
 }
 .campoNota {
   display: block;
-  font: 500 10.5px var(--mono);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font: 500 12px var(--body);
   color: var(--ink-soft);
   margin-top: 6px;
 }
@@ -3905,9 +3800,7 @@
   border: 0;
   padding: 2px 0;
   cursor: pointer;
-  font: 700 10px var(--mono);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-soft);
   transition: color 0.15s ease;
 }
@@ -3951,8 +3844,9 @@
 /* O bloco de próximo passo é o único com filete de tinta cheio: é a única
    coisa desta tela que, faltando, quebra a regra 1. */
 .blocoPasso {
-  border: 1.5px solid var(--ink);
-  box-shadow: 4px 4px 0 var(--line);
+  border: 1px solid var(--line);
+  box-shadow: none;
+  border-radius: var(--painel-raio);
 }
 
 .atalhos {
@@ -4008,9 +3902,7 @@
   align-items: baseline;
   gap: 8px;
   flex-wrap: wrap;
-  font: 700 10.5px var(--mono);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-soft);
 }
 .toqueDir {
@@ -4038,11 +3930,9 @@
 
 .app .estagioSelect {
   width: 100%;
-  font-family: var(--mono);
+  font-family: var(--body);
   font-weight: 700;
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: 12px;
   padding: 11px;
 }
 
@@ -4072,9 +3962,7 @@
   font-size: 13px;
 }
 .listaFichas li > span {
-  font: 700 10.5px var(--mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-soft);
 }
 
@@ -4106,9 +3994,7 @@
   align-items: center;
 }
 .dado > span {
-  font: 700 10.5px var(--mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-soft);
 }
 /* O campo e o seu sinal de gravação dividem a mesma célula: o sinal entra à
@@ -4141,20 +4027,16 @@
 
 /* o salvo automático: um sinal de vida, não um alerta */
 .salvo {
-  font: 700 10.5px var(--mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--green-dark);
 }
 .erro {
-  font: 700 10.5px var(--mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--rosa);
 }
 .app .blocoErro {
   border-color: var(--rosa);
-  box-shadow: 4px 4px 0 var(--rosa);
+  box-shadow: none;
 }
 
 /* ============================================================
@@ -4202,16 +4084,13 @@
 }
 .placarCel span {
   display: block;
-  font: 700 10.5px var(--mono);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--sobre-ink);
 }
 .placarNum {
   display: block;
   font-family: var(--display);
-  font-stretch: 78%;
-  font-weight: 900;
+  font-weight: 600;
   font-size: clamp(27px, 3.2vw, 38px);
   line-height: 1;
   letter-spacing: -0.02em;
@@ -4361,9 +4240,7 @@
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  font: 700 10px var(--mono);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-soft);
   white-space: nowrap;
 }
@@ -4437,9 +4314,7 @@
   align-items: center;
 }
 .barraRot {
-  font: 700 10.5px var(--mono);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-soft);
 }
 .barraTrilho {
@@ -4498,11 +4373,8 @@
    condensada abaixo de 18px, a mesma das placas do quadro. */
 .funilNome {
   font-family: var(--display);
-  font-stretch: 88%;
-  font-weight: 900;
-  text-transform: uppercase;
+  font-weight: 600;
   font-size: 14.5px;
-  letter-spacing: 0.015em;
   overflow-wrap: anywhere;
 }
 .funilTrilho {
@@ -4589,9 +4461,7 @@
   margin-top: 4px;
 }
 .periodo a {
-  font: 700 10px var(--mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   padding: 9px 13px;
   border: 1.5px solid var(--line);
   color: var(--ink-soft);
@@ -4634,9 +4504,7 @@
 }
 /* a categoria é etiqueta, não título: mono miúda em papel escurecido */
 .categoria {
-  font: 700 10px var(--mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-soft);
   background: var(--paper-2);
   padding: 3px 7px;
@@ -4698,9 +4566,7 @@
   border-left: 3px solid var(--ink);
 }
 .dossieVeredito b {
-  font: 700 10.5px var(--mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink);
   margin-right: 4px;
 }
@@ -4724,9 +4590,7 @@
 }
 .dossieRot {
   display: block;
-  font: 700 10px var(--mono);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-fraco);
   margin-bottom: 3px;
 }
@@ -4809,9 +4673,7 @@
   width: 100%;
   text-align: center;
   cursor: pointer;
-  font: 700 10.5px var(--mono);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--green-dark);
   background: var(--paper-alto);
   border: 1.5px dashed var(--green);
@@ -4849,9 +4711,7 @@
   width: min(100%, 560px);
 }
 .app .msgModal p.msgCanal {
-  font: 700 10.5px var(--mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-fraco);
   margin: 0 0 14px;
 }
@@ -4872,9 +4732,7 @@
   margin-top: 6px;
 }
 .msgGrupoRot {
-  font: 700 9.5px var(--mono);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-fraco);
   padding: 4px 8px 2px;
 }
@@ -4911,9 +4769,7 @@
   border-left-color: var(--green);
 }
 .msgSelo {
-  font: 700 9.5px var(--mono);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--rosa);
 }
 .app textarea.msgTexto {
@@ -4963,11 +4819,8 @@
 }
 .app .loginAssina {
   font-family: var(--display);
-  font-weight: 900;
-  font-stretch: 78%;
-  text-transform: uppercase;
+  font-weight: 600;
   font-size: 15px;
-  letter-spacing: 0.02em;
   color: var(--paper);
   line-height: 1;
 }
@@ -4990,9 +4843,7 @@
 }
 .app .loginFrente {
   font-family: var(--display);
-  font-weight: 900;
-  font-stretch: 62%;
-  text-transform: uppercase;
+  font-weight: 600;
   font-size: clamp(56px, 9.2vw, 148px);
   line-height: 0.84;
   letter-spacing: -0.01em;
@@ -5425,8 +5276,7 @@
 .app .dividaNome {
   display: block;
   font-family: var(--display);
-  font-stretch: 88%;
-  font-weight: 900;
+  font-weight: 600;
   font-size: 15px;
   letter-spacing: -0.005em;
   color: var(--ink);
@@ -5453,17 +5303,14 @@
    valores, número que dança é número que não se compara. */
 .dividaValor {
   font-family: var(--display);
-  font-stretch: 78%;
-  font-weight: 900;
+  font-weight: 600;
   font-size: 21px;
   letter-spacing: -0.02em;
   color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
 .dividaSinal {
-  font: 700 10px var(--mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--rosa);
   white-space: nowrap;
 }
@@ -5521,8 +5368,7 @@
 .orfaoValor {
   display: block;
   font-family: var(--display);
-  font-stretch: 78%;
-  font-weight: 900;
+  font-weight: 600;
   font-size: 23px;
   line-height: 1;
   letter-spacing: -0.02em;
@@ -5570,8 +5416,7 @@
 }
 .contratoTotal {
   font-family: var(--display);
-  font-stretch: 78%;
-  font-weight: 900;
+  font-weight: 600;
   font-size: 22px;
   letter-spacing: -0.02em;
   color: var(--ink);
@@ -5625,9 +5470,7 @@
   font-variant-numeric: tabular-nums;
 }
 .parcelaSinal {
-  font: 700 10px var(--mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-fraco);
 }
 .parcelaVencida {
@@ -5764,9 +5607,7 @@
    e sem ela "R$ 1.398" é um número sem período. */
 .caixaMes {
   display: block;
-  font: 700 10.5px var(--mono);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--sobre-ink-fraco);
   margin-bottom: 12px;
 }
@@ -5787,8 +5628,7 @@
    `.app .gavetaTitulo` deste arquivo. */
 .app .caixaNumero {
   font-family: var(--display);
-  font-stretch: 78%;
-  font-weight: 900;
+  font-weight: 600;
   font-size: clamp(38px, 6.4vw, 76px);
   line-height: 0.92;
   letter-spacing: -0.035em;
@@ -5853,9 +5693,7 @@
   flex-wrap: wrap;
   gap: 6px 18px;
   margin-top: 10px;
-  font: 700 10px var(--mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--sobre-ink-fraco);
 }
 .caixaLegendaRegua span {
@@ -5909,7 +5747,7 @@
 }
 .app .caixaVazio .btnAcao {
   margin-top: clamp(18px, 2.2vw, 24px);
-  box-shadow: 3px 3px 0 var(--sobre-ink-fraco);
+  box-shadow: none;
 }
 .app .caixaVazio .btnAcao:active {
   box-shadow: 0 0 0 var(--sobre-ink-fraco);
@@ -5976,9 +5814,7 @@
   list-style: none;
   padding: 12px 0;
   border-top: 1.5px solid var(--line);
-  font: 700 10.5px var(--mono);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-soft);
 }
 /* O triângulo padrão do navegador não é desta casa, e ele muda de desenho
@@ -6026,9 +5862,7 @@
   margin-bottom: -4px;
 }
 .anuncioCab b {
-  font: 700 10px var(--mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-fraco);
   text-align: right;
 }
@@ -6088,9 +5922,7 @@
   font-size: 15px;
 }
 .vezVeioDe {
-  font: 700 11.5px var(--mono);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--rosa-live);
 }
 .vezVeioDe code {
@@ -6202,8 +6034,7 @@
 }
 .pipe .colunaCont {
   font-family: var(--display);
-  font-stretch: 118%;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 26px;
   line-height: 1;
   letter-spacing: -0.02em;
@@ -6219,7 +6050,6 @@
 }
 .pipe .colunaNome {
   font-family: var(--display);
-  font-stretch: 112%;
   font-weight: 700;
   font-size: 13px;
   letter-spacing: 0;
@@ -6461,8 +6291,7 @@
 }
 .wrapVez .vezMonteNum {
   font-family: var(--display);
-  font-stretch: 118%;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 14px;
   letter-spacing: -0.01em;
   line-height: 1;
@@ -6572,8 +6401,7 @@
 }
 .wrapVez .vezPosicao b {
   font-family: var(--display);
-  font-stretch: 118%;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 18px;
   letter-spacing: -0.02em;
 }
@@ -6585,8 +6413,7 @@
 }
 .vezFolha .faixaNum {
   font-family: var(--display);
-  font-stretch: 118%;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 15px;
   letter-spacing: -0.01em;
   font-variant-numeric: tabular-nums;
@@ -6627,7 +6454,6 @@
 }
 .trilho .trilhoLink b {
   font-family: var(--display);
-  font-stretch: 112%;
   font-weight: 700;
   text-transform: none;
   font-size: 15px;
@@ -6636,8 +6462,7 @@
 }
 .trilho .trilhoCont {
   font-family: var(--display);
-  font-stretch: 118%;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 14px;
   letter-spacing: -0.01em;
   line-height: 1;
@@ -6697,10 +6522,11 @@
   padding: 4px 0;
   list-style: none;
   background: var(--paper, #f3efe6);
-  border: 1.5px solid var(--ink);
-  box-shadow: 4px 4px 0 var(--ink);
+  border: 1px solid var(--line);
+  box-shadow: var(--painel-sombra);
   max-height: 360px;
   overflow-y: auto;
+  border-radius: var(--painel-raio);
 }
 .app button.vezBuscaItem,
 .vezBuscaItem {
@@ -6935,8 +6761,7 @@
 }
 .vezIndiceBotao b {
   font-family: var(--display);
-  font-stretch: 118%;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 14px;
   text-decoration: none;
   font-variant-numeric: tabular-nums;
@@ -6981,11 +6806,8 @@
   gap: 14px;
   margin: 0 0 12px;
   font-family: var(--display);
-  font-stretch: 88%;
-  font-weight: 900;
+  font-weight: 600;
   font-size: 22px;
-  text-transform: uppercase;
-  letter-spacing: 0.01em;
   color: var(--ink);
 }
 .vezIndiceTitulo span {
@@ -7031,8 +6853,7 @@
 }
 .vezIndiceItem b {
   font-family: var(--display);
-  font-stretch: 118%;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 14px;
   font-variant-numeric: tabular-nums;
   color: var(--ink);
@@ -7856,9 +7677,7 @@
     border-bottom: 1px solid var(--line);
   }
   .app .menuCelularGrupo p {
-    font: 600 10px/1.5 var(--mono);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+    font: 600 12px/1.5 var(--body);
     margin-bottom: 6px;
   }
   .menuCelularGrupo a {
@@ -8603,7 +8422,6 @@
 .app h1,
 .app h2 {
   font-family: var(--display);
-  font-stretch: normal;
   font-weight: 500;
   letter-spacing: -0.03em;
 }
@@ -8659,4 +8477,87 @@
   --painel-acento: #14181a;
   --painel-acento-suave: #ececea;
   --painel-borda-ativa: #cfcfcb;
+}
+
+/* ============================================================
+   O DESIGN NOVO DO ESTÚDIO NO CRM, FASE 3 (30/10/2026)
+   Sai a voz do papel e tinta, nas regras de origem e não por cima:
+   - nenhum rótulo em caixa alta com entreletra aberta: Inter 600, caixa
+     normal, no mínimo 12px (a mono ficou só onde é número);
+   - nenhuma sombra dura: o escolhido ganha um anel de 1px na cor que a
+     sombra tinha, o que flutua (modal, ficha, busca) a --painel-sombra,
+     e o resto deita no papel;
+   - a moldura de tinta de 1,5px que segurava a sombra vira o cartão da
+     régua: fio --line e canto --painel-raio;
+   - os títulos que eram Archivo 900 condensada ficam em 600 na
+     Instrument Sans (o --display do .app já apontava para ela).
+   As artes dos posts (components/marketing/post.module.css) não entram:
+   ali a Archivo e a caixa alta são do post, não do painel.
+   ============================================================ */
+
+/* ---------- o menu na régua (30/10/2026) ----------
+   O trilho era o último lugar com o verde de "você está aqui" e o canto de
+   5px. Pela régua o marcado é o tom, não a cor: a rota atual vira a
+   pílula cinza do cartão com o nome em tinta, e o verde fica só para o
+   "em dia" do contador, que é sinal de feito. O fundo do painel vai para
+   o branco da página, separado só pelo fio. Na barra do celular, a
+   mesma coisa: tinta e um traço de tinta em cima, sem fundo verde. */
+.app .trilhoPainel,
+.app .barraCelular,
+.app .menuCelular {
+  background: #fff;
+}
+.app .trilhoMarcaTexto b {
+  font: 600 15px/1.2 var(--font-titulo), var(--body);
+  letter-spacing: -0.02em;
+}
+.app .trilho .trilhoLink,
+.app .fixarMenu,
+.app .trilho .trilhoSair,
+.app .menuCelularGrupo a {
+  border-radius: 12px;
+}
+.app .trilho .trilhoAtivo,
+.app .menuCelularGrupo a[aria-current="page"] {
+  background: #f2f2f0;
+  color: var(--ink);
+}
+.app .trilho .trilhoAtivo b {
+  color: var(--ink);
+  font-weight: 600;
+}
+@media (hover: hover) and (pointer: fine) {
+  .app .trilho .trilhoLink:hover,
+  .app .fixarMenu:hover,
+  .app .trilho .trilhoSair:hover {
+    background: #f6f6f4;
+    color: var(--ink);
+  }
+  .app .trilho .trilhoAtivo:hover {
+    background: #f2f2f0;
+  }
+}
+.app .trilho .trilhoCont {
+  border-radius: 980px;
+  padding: 1px 8px;
+  background: #f2f2f0;
+}
+.app .trilho .trilhoAtivo .trilhoCont {
+  background: #fff;
+}
+.app .trilho .trilhoCobra {
+  background: #fbe6ed;
+}
+.app .trilho .trilhoEmDia {
+  background: #e6eee3;
+}
+.app .barraCelular a[aria-current="page"],
+.app .barraCelular .barraMaisAtivo {
+  color: var(--ink);
+  background: none;
+}
+.app .barraCelular a[aria-current="page"]::before,
+.app .barraCelular .barraMaisAtivo::before {
+  background: var(--ink);
+  border-radius: 0 0 3px 3px;
 }

@@ -37,14 +37,14 @@
 
 .tela .erro { background: #FDE7EF; border: 1.5px solid var(--rosa); color: var(--rosa-dark); padding: 10px 12px; margin-bottom: 16px; font-size: 14px }
 .aviso { border: 1.5px dashed var(--ink-fraco); padding: 18px; background: var(--paper-alto); margin-top: 20px }
-.aviso b { display: block; font: 900 18px var(--display); font-stretch: 88%; margin-bottom: 6px }
+.aviso b { display: block; font: 600 18px var(--display); margin-bottom: 6px }
 .aviso code { font: 13px var(--mono) }
 
 .btn {
   font: 700 13px var(--body); background: var(--ink); color: var(--paper);
   border: 1.5px solid var(--ink); padding: 9px 14px; cursor: pointer;
 }
-.btn:hover { box-shadow: 3px 3px 0 var(--azul) }
+.btn:hover { box-shadow: none }
 .mini { font: 600 12.5px var(--body); background: none; color: var(--ink-soft); border: 1.5px solid var(--line); padding: 4px 9px; cursor: pointer }
 .mini:hover { border-color: var(--ink); color: var(--ink) }
 
@@ -53,10 +53,10 @@
    ============================================================ */
 .topo { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(320px, .9fr); gap: clamp(22px, 4vw, 56px); align-items: start; margin-bottom: 44px }
 .frase { display: grid; gap: 14px; padding-top: 6px }
-.tela .fraseGrande { font: 900 clamp(30px, 3.6vw, 50px)/1.02 var(--display); font-stretch: 76%; color: var(--ink); text-wrap: balance }
+.tela .fraseGrande { font: 600 clamp(30px, 3.6vw, 50px)/1.02 var(--display); color: var(--ink); text-wrap: balance }
 .entrou { color: var(--azul) }
 .saiu { text-decoration: underline 4px var(--ink); text-underline-offset: 6px }
-.tela .veredito { font: 900 clamp(20px, 2.2vw, 28px)/1.15 var(--display); font-stretch: 78% }
+.tela .veredito { font: 600 clamp(20px, 2.2vw, 28px)/1.15 var(--display) }
 .tela .veredito.azul { color: var(--azul) }
 .tela .veredito.vermelho { color: var(--vermelho) }
 .tela .nota { font-size: 13.5px; color: var(--ink-fraco) }
@@ -115,7 +115,7 @@
   margin-top: 12px; padding-top: 10px; border-top: 3px double var(--ink);
 }
 .final span { font-weight: 700; color: var(--ink) }
-.final b { font: 900 clamp(26px, 3vw, 36px)/1 var(--display); font-stretch: 72% }
+.final b { font: 600 clamp(26px, 3vw, 36px)/1 var(--display) }
 .tela .cupomPe { text-align: center; font: 500 12.5px var(--body); color: var(--ink-fraco); margin-top: 10px }
 
 /* ============================================================
@@ -189,18 +189,18 @@
 .viradaPerguntas label { display: grid; gap: 6px; align-content: start; padding: 14px 16px; background: var(--paper-alto); border: 1.5px solid var(--ink) }
 .viradaPerguntas label > span:first-child { font: 600 13.5px var(--body); color: var(--ink-soft) }
 .viradaPerguntas em { font: 400 12.5px/1.4 var(--body); font-style: normal; color: var(--ink-fraco) }
-.campoDinheiro { display: flex; align-items: baseline; gap: 6px; font: 900 28px var(--display); font-stretch: 76% }
+.campoDinheiro { display: flex; align-items: baseline; gap: 6px; font: 600 28px var(--display) }
 .tela .campoDinheiro input[type] {
-  width: 5.2em; font: 900 34px/1 var(--display); font-stretch: 76%; color: var(--azul);
+  width: 5.2em; font: 600 34px/1 var(--display); color: var(--azul);
   background: none; border: 0; border-bottom: 2px dashed var(--azul); padding: 0 2px;
 }
 .tela .campoDinheiro input[type]:focus { outline: none; border-bottom-style: solid }
-.custoFixo { font: 900 34px/1 var(--display); font-stretch: 76%; color: var(--ink) }
+.custoFixo { font: 600 34px/1 var(--display); color: var(--ink) }
 
 .viradaNumeros { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px }
 .viradaNumeros > div { display: flex; align-items: center; gap: 14px; padding: 14px 18px; border: 1.5px solid var(--ink); background: var(--paper-alto) }
-.viradaNumeros b { font: 900 clamp(56px, 7vw, 88px)/.85 var(--display); font-stretch: 70%; color: var(--ink) }
-.viradaNumeros span { display: grid; gap: 4px; font: 800 19px/1.15 var(--display); font-stretch: 85% }
+.viradaNumeros b { font: 600 clamp(56px, 7vw, 88px)/.85 var(--display); color: var(--ink) }
+.viradaNumeros span { display: grid; gap: 4px; font: 600 19px/1.15 var(--display) }
 .viradaNumeros em { font: 400 13px/1.4 var(--body); font-style: normal; color: var(--ink-soft) }
 .viradaNumeros > .viradaMeta { background: var(--azul); border-color: var(--azul); color: #fff }
 .viradaMeta b, .viradaMeta span { color: #fff }

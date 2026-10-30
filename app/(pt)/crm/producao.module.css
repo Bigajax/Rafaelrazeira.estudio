@@ -74,9 +74,7 @@
   border-radius: 50%;
 }
 .marco span {
-  font: 500 8.5px var(--mono);
-  letter-spacing: .1em;
-  text-transform: uppercase;
+  font: 500 12px var(--body);
   color: var(--ink-fraco);
   white-space: nowrap;
 }
@@ -155,11 +153,8 @@
 .fichaNome { display: grid; gap: 1px; min-width: 0 }
 .fichaNome b {
   font-family: var(--display);
-  font-stretch: 88%;
-  font-weight: 900;
-  text-transform: uppercase;
+  font-weight: 600;
   font-size: 15px;
-  letter-spacing: .01em;
   line-height: 1.05;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -174,17 +169,14 @@
 .num { display: grid; gap: 0 }
 .num b {
   font-family: var(--display);
-  font-stretch: 78%;
-  font-weight: 900;
+  font-weight: 600;
   font-size: 21px;
   line-height: 1.05;
   color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
 .num span {
-  font: 500 9px var(--mono);
-  letter-spacing: .12em;
-  text-transform: uppercase;
+  font: 500 12px var(--body);
   color: var(--ink-fraco);
 }
 /* Zero não merece tinta cheia: ele é ausência, e ausência em cinza conta a
@@ -194,9 +186,7 @@
 /* ---------- o estado, em duas alturas de voz ---------- */
 .estado { display: grid; gap: 2px; min-width: 0 }
 .estado b {
-  font: 700 10px var(--mono);
-  letter-spacing: .14em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink);
 }
 .estado small {
@@ -270,11 +260,8 @@
   border: 2px double var(--green);
   color: var(--green);
   font-family: var(--display);
-  font-stretch: 78%;
-  font-weight: 900;
+  font-weight: 600;
   font-size: 13px;
-  letter-spacing: .16em;
-  text-transform: uppercase;
   opacity: .82;
   pointer-events: none;
 }
@@ -307,11 +294,8 @@
 .vazio b {
   display: block;
   font-family: var(--display);
-  font-stretch: 88%;
-  font-weight: 900;
-  text-transform: uppercase;
+  font-weight: 600;
   font-size: 15px;
-  letter-spacing: .012em;
   margin-bottom: 6px;
 }
 .vazio p { margin: 0 auto; font-size: 12.5px; line-height: 1.55; color: var(--ink-soft); max-width: 56ch }
@@ -332,17 +316,12 @@
 .blocoCab h2 {
   margin: 0;
   font-family: var(--display);
-  font-stretch: 78%;
-  font-weight: 900;
-  text-transform: uppercase;
+  font-weight: 600;
   font-size: 22px;
   line-height: 1;
-  letter-spacing: .008em;
 }
 .blocoRot {
-  font: 700 9.5px var(--mono);
-  letter-spacing: .18em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-fraco);
 }
 .blocoCab button { margin-left: auto }
@@ -367,8 +346,7 @@
 }
 .nota b {
   font-family: var(--display);
-  font-stretch: 78%;
-  font-weight: 900;
+  font-weight: 600;
   font-size: 30px;
   line-height: 1;
   font-variant-numeric: tabular-nums;
@@ -449,9 +427,7 @@
 .tabela th {
   text-align: left;
   padding: 0 8px 8px;
-  font: 700 9px var(--mono);
-  letter-spacing: .16em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-fraco);
   border-bottom: 1px solid var(--ink);
 }
@@ -534,9 +510,7 @@
 }
 .precos summary {
   cursor: pointer;
-  font: 700 10px var(--mono);
-  letter-spacing: .14em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink);
 }
 .precos textarea { width: 100%; margin: 12px 0; font-size: 13px; font-family: var(--mono) }
@@ -563,9 +537,7 @@
 .saidas li:last-child { border-left: 3px solid var(--ink) }
 .saidaNome {
   flex: 1;
-  font: 700 10.5px var(--mono);
-  letter-spacing: .14em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink);
 }
 
@@ -633,9 +605,7 @@
 .entradaRot {
   grid-column: 1 / -1;
   margin: 0;
-  font: 700 9.5px var(--mono);
-  letter-spacing: .2em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-fraco);
 }
 
@@ -649,8 +619,7 @@
 }
 .campoArroba i {
   font-family: var(--display);
-  font-stretch: 78%;
-  font-weight: 900;
+  font-weight: 600;
   font-style: normal;
   font-size: 30px;
   line-height: 1;
@@ -666,8 +635,7 @@
   padding: 0 0 2px;
   width: 100%;
   font-family: var(--display);
-  font-stretch: 88%;
-  font-weight: 900;
+  font-weight: 600;
   font-size: 26px;
   line-height: 1.05;
   letter-spacing: -.01em;
@@ -680,9 +648,7 @@
 
 .campoLead { display: grid; gap: 5px; align-content: end }
 .campoLead span {
-  font: 700 9.5px var(--mono);
-  letter-spacing: .16em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-fraco);
 }
 .entrada .campoLead select {
@@ -808,9 +774,7 @@
   width: fit-content;
 }
 .whats span {
-  font: 700 9px var(--mono);
-  letter-spacing: .16em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-fraco);
 }
 .cabecalhoTxt .whats a {
@@ -846,9 +810,7 @@
   align-items: baseline;
   gap: 10px;
   margin: 18px 0 14px;
-  font: 700 9.5px var(--mono);
-  letter-spacing: .18em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-fraco);
 }
 .perguntasRot b { color: var(--ink); font-variant-numeric: tabular-nums; letter-spacing: .06em }
@@ -914,9 +876,7 @@
 .cartela { display: grid; gap: 16px; margin: 4px 0 22px }
 .cartelaRot {
   margin: 0 0 6px;
-  font: 700 9.5px var(--mono);
-  letter-spacing: .16em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink);
 }
 .cartelaRot em {
@@ -935,10 +895,8 @@
 .paletaEditavel { align-items: start }
 .tinta, .apoio { display: grid; gap: 4px; justify-items: center }
 .tinta em, .apoio em {
-  font: 700 8px var(--mono);
+  font: 600 12px var(--body);
   font-style: normal;
-  letter-spacing: .14em;
-  text-transform: uppercase;
   color: var(--ink-fraco);
 }
 .tinta em { color: var(--ink) }
@@ -952,9 +910,7 @@
   padding: 16px 10px;
   border: 1px solid var(--line);
   cursor: pointer;
-  font: 700 9.5px var(--mono);
-  letter-spacing: .14em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
 }
 .fundo_claro { background: var(--paper-alto); color: var(--ink) }
 .fundo_escuro { background: var(--line-dark); color: var(--sobre-ink) }
@@ -1057,8 +1013,7 @@
 .tipo:hover { border-color: var(--ink) }
 .tipo b {
   font-family: var(--display);
-  font-stretch: 88%;
-  font-weight: 900;
+  font-weight: 600;
   font-size: 13px;
   letter-spacing: .01em;
   color: var(--ink);
@@ -1101,21 +1056,16 @@
 }
 .provaEscura { background: var(--line-dark); border-color: var(--line-dark) }
 .provaRot {
-  font: 700 8.5px var(--mono);
-  letter-spacing: .2em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-fraco);
   margin-bottom: 4px;
 }
 .provaEscura .provaRot { color: var(--sobre-ink-fraco) }
 .prova b {
   font-family: var(--display);
-  font-stretch: 78%;
-  font-weight: 900;
-  text-transform: uppercase;
+  font-weight: 600;
   font-size: 21px;
   line-height: 1;
-  letter-spacing: .01em;
   color: var(--ink);
 }
 .provaEscura b { color: var(--sobre-ink) }
@@ -1123,8 +1073,7 @@
 .provaEscura .provaPeca { color: var(--sobre-ink-fraco) }
 .provaPreco {
   font-family: var(--display);
-  font-stretch: 88%;
-  font-weight: 900;
+  font-weight: 600;
   font-size: 19px;
   line-height: 1;
   font-variant-numeric: tabular-nums;
@@ -1132,9 +1081,7 @@
 .provaBotao {
   margin-top: 6px;
   padding: 9px 14px;
-  font: 700 10px var(--mono);
-  letter-spacing: .14em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
 }
 
 /* O texto de leitura ganha largura de leitura: 1600px de textarea promete
@@ -1250,9 +1197,7 @@
 .fatoNovo input:focus { outline: none }
 .fatoNovo:focus-within { border-bottom-color: var(--ink) }
 .fatoNovo span {
-  font: 500 9px var(--mono);
-  letter-spacing: .12em;
-  text-transform: uppercase;
+  font: 500 12px var(--body);
   color: var(--ink-fraco);
   white-space: nowrap;
 }
@@ -1314,11 +1259,9 @@
 }
 .tipo b {
   display: block;
-  font-family: var(--mono);
-  font-size: 9.5px;
+  font-family: var(--body);
+  font-size: 12px;
   font-weight: 700;
-  letter-spacing: .12em;
-  text-transform: uppercase;
   color: var(--ink-fraco);
   padding-top: 8px;
   border-top: 1px solid var(--line);
@@ -1334,9 +1277,7 @@
 .grupoTipo { margin-top: 16px }
 .grupoRot {
   margin: 0 0 8px;
-  font: 700 9px var(--mono);
-  letter-spacing: .2em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-fraco);
   padding-bottom: 5px;
   border-bottom: 1px solid var(--line);
@@ -1400,9 +1341,7 @@
   font-style: normal;
   margin: 8px 0 6px;
   padding: 4px 8px;
-  font: 700 9px var(--mono);
-  letter-spacing: .12em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink);
   border: 1px solid var(--line);
 }
@@ -1469,9 +1408,7 @@
 .pendencias { margin: 0 0 20px; padding-left: 14px; border-left: 2px solid #ffffff26 }
 .pendencias p {
   margin: 0 0 6px;
-  font: 700 9.5px var(--mono);
-  letter-spacing: .16em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--sobre-ink-fraco);
 }
 .pendencias ul { list-style: none; padding: 0; margin: 0 }
@@ -1513,9 +1450,7 @@
 .volume.volume input[type="number"]:focus { outline: none; border-bottom-color: var(--rosa) }
 .faixa {
   padding: 3px 9px;
-  font: 700 9.5px var(--mono);
-  letter-spacing: .16em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink);
   background: var(--paper-2);
   border: 1px solid var(--line);
@@ -1594,8 +1529,7 @@
 .wireframe { width: 100%; height: auto; margin-bottom: 7px; display: block }
 .arquetipo b {
   font-family: var(--display);
-  font-stretch: 88%;
-  font-weight: 900;
+  font-weight: 600;
   font-size: 13px;
   letter-spacing: .01em;
   color: var(--ink);
@@ -1662,8 +1596,7 @@
 .modo:hover { border-color: var(--sobre-ink-fraco) }
 .modo b {
   font-family: var(--display);
-  font-stretch: 88%;
-  font-weight: 900;
+  font-weight: 600;
   font-size: 14px;
   color: var(--sobre-ink);
 }
@@ -1703,8 +1636,7 @@
   cursor: pointer;
   padding: 3px 9px;
   font-family: var(--display);
-  font-stretch: 88%;
-  font-weight: 900;
+  font-weight: 600;
   font-size: 11.5px;
   letter-spacing: .04em;
   color: var(--sobre-ink);
@@ -1748,8 +1680,6 @@
 .versoes li i {
   font-style: normal;
   font-size: 10.5px;
-  letter-spacing: .14em;
-  text-transform: uppercase;
   color: var(--sobre-ink-fraco);
 }
 .versoes li button { margin-left: auto }
@@ -1775,19 +1705,14 @@
 }
 .divisor span {
   font-family: var(--display);
-  font-stretch: 88%;
-  font-weight: 900;
+  font-weight: 600;
   font-size: 15px;
-  letter-spacing: .01em;
-  text-transform: uppercase;
   color: var(--ink);
   white-space: nowrap;
 }
 .divisor i {
   font-style: normal;
-  font: 700 9.5px var(--mono);
-  letter-spacing: .18em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-fraco);
   white-space: nowrap;
 }
@@ -1821,9 +1746,7 @@
   gap: 10px;
   flex-wrap: wrap;
   margin: 0 0 10px;
-  font: 700 9.5px var(--mono);
-  letter-spacing: .18em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-fraco);
 }
 .escolhasRot b { font-size: 13px; letter-spacing: .06em; color: var(--ink); font-variant-numeric: tabular-nums }
@@ -1940,9 +1863,7 @@
 .familiaRot {
   margin: 0 0 8px;
   padding-bottom: 5px;
-  font: 700 9.5px var(--mono);
-  letter-spacing: .18em;
-  text-transform: uppercase;
+  font: 600 12px var(--body);
   color: var(--ink-soft);
   border-bottom: 1px solid var(--line);
 }
@@ -1972,9 +1893,7 @@
 .cta.cta input[type="text"], .cta.cta input:not([type]) {
   width: 26ch;
   max-width: 100%;
-  font: 700 13px var(--mono);
-  letter-spacing: .06em;
-  text-transform: uppercase;
+  font: 600 13px var(--body);
   color: var(--ink);
   background: none;
   border: 0;
@@ -2046,7 +1965,7 @@
 .ficha { gap: 12px; padding: 14px 15px 13px 15px; border: 1px solid var(--line); border-left-width: 3px }
 .ficha:hover { border-color: var(--ink) }
 .fichaNome b {
-  font-family: var(--display); font-stretch: 112%; font-weight: 700;
+  font-family: var(--display); font-weight: 700;
   text-transform: none; font-size: 15px; letter-spacing: 0; line-height: 1.1;
 }
 .fichaNome small { font: 500 12px var(--body); color: var(--ink-fraco) }
@@ -2055,14 +1974,14 @@
 .numeros { gap: 18px; padding-top: 10px; border-top: 1px solid var(--paper-2) }
 .num { gap: 1px }
 .num b {
-  font-family: var(--display); font-stretch: 118%; font-weight: 800;
+  font-family: var(--display); font-weight: 600;
   font-size: 22px; letter-spacing: -.02em; line-height: 1;
 }
 .num span { font: 500 11px var(--body); letter-spacing: 0; text-transform: none; color: var(--ink-fraco) }
 
 .estado b { font: 600 12px var(--body); letter-spacing: 0; text-transform: none }
 .estado b::first-letter { text-transform: uppercase }
-.vazio b { font-family: var(--display); font-stretch: 112%; font-weight: 700; text-transform: none; letter-spacing: 0 }
+.vazio b { font-family: var(--display); font-weight: 700; text-transform: none; letter-spacing: 0 }
 .entradaRot, .campoLead span { font: 600 11.5px var(--body); letter-spacing: 0; text-transform: none; color: var(--ink-fraco) }
 
 
