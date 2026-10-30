@@ -17,5 +17,22 @@ export async function moldePlacas(nome?: string): Promise<string> {
       body[data-ambiente="crm"] .rodape { display:none }
       body[data-ambiente="crm"] main { padding:0;max-width:none }
       body[data-ambiente="crm"] .oficina { border:0;border-radius:0 }
+      /* os controles na régua do estúdio (30/10/2026): no CRM o editor saía
+         creme e verde, com botões de canto 7; a placa em si (a arte, os
+         acabamentos) segue com as cores do Performance */
+      body[data-ambiente="crm"] { --papel:#ffffff; --tinta:#14181a; --linha:#e6e6e3; --muted:#6b7072; background:#ffffff; color:#14181a }
+      body[data-ambiente="crm"] .oficina { background:#ffffff }
+      body[data-ambiente="crm"] input:not([type=checkbox]), body[data-ambiente="crm"] select { background:#ffffff; border-color:#e6e6e3; border-radius:12px; color:#14181a }
+      body[data-ambiente="crm"] input:hover, body[data-ambiente="crm"] select:hover, body[data-ambiente="crm"] input:focus, body[data-ambiente="crm"] select:focus { border-color:#14181a }
+      body[data-ambiente="crm"] .passo { border-color:#e6e6e3; color:#6b7072 }
+      body[data-ambiente="crm"] .botao { border-color:#e6e6e3; border-radius:980px; color:#14181a; background:#ffffff; font-size:13px }
+      body[data-ambiente="crm"] .primario { background:#14181a; border-color:#14181a; color:#ffffff }
+      body[data-ambiente="crm"] .tom[aria-pressed=true] { outline-color:#14181a }
+      body[data-ambiente="crm"] .check input { accent-color:#14181a }
+      body[data-ambiente="crm"] .previsualizacao { background:#f6f6f4 }
+      body[data-ambiente="crm"] .previa-cabecalho { color:#6b7072; letter-spacing:0; text-transform:none; font-size:12px }
+      body[data-ambiente="crm"] .ao-vivo::before { background:#0c9159 }
+      body[data-ambiente="crm"] .legenda { color:#6b7072 }
+      body[data-ambiente="crm"] button:focus-visible, body[data-ambiente="crm"] input:focus-visible, body[data-ambiente="crm"] select:focus-visible, body[data-ambiente="crm"] summary:focus-visible { outline-color:#14181a }
     </style></head>`);
 }

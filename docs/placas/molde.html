@@ -307,7 +307,7 @@ main{max-width:1280px;margin:auto;padding:38px 40px 48px}.intro{display:flex;jus
           <div class="campo"><label for="frase">Frase de assinatura</label><input id="frase" name="frase" maxlength="100"></div>
         </fieldset>
       </details>
-      <div class="acoes"><button type="button" id="baixar" class="botao primario">Baixar arte em PNG ↓</button><button type="button" id="salvar" class="botao">Salvar meu molde editável</button><button type="button" id="restaurar" class="redefinir">Voltar ao modelo inicial</button><p id="status" role="status" aria-live="polite">Arte de 1080 × 1920 px, pronta para Status e Stories.</p></div>
+      <div class="acoes"><button type="button" id="baixar" class="botao primario">Baixar arte em PNG</button><button type="button" id="salvar" class="botao">Salvar meu molde editável</button><button type="button" id="restaurar" class="redefinir">Voltar ao modelo inicial</button><p id="status" role="status" aria-live="polite">Arte de 1080 × 1920 px, pronta para Status e Stories.</p></div>
     </form>
     <section class="previsualizacao" aria-label="Prévia da placa"><div class="previa-cabecalho"><span>Prévia da arte</span><span class="ao-vivo">Atualiza ao editar</span></div><div class="palco" id="palco"><iframe id="previa" title="Placa personalizada do Performance" tabindex="-1"></iframe></div><p class="legenda">Moldura, medalhão e seta preservados.<br>Os dados e o acabamento ficam por sua conta.</p></section>
   </div>
@@ -444,7 +444,7 @@ main{max-width:1280px;margin:auto;padding:38px 40px 48px}.intro{display:flex;jus
   function bloquear(valor) {
     ocupado = valor;
     document.querySelectorAll("fieldset, .acoes button").forEach(el => { el.disabled = valor; });
-    $("baixar").textContent = valor ? "Preparando a arte…" : "Baixar arte em PNG ↓";
+    $("baixar").textContent = valor ? "Preparando a arte…" : "Baixar arte em PNG";
   }
   $("baixar").addEventListener("click", async () => {
     if (ocupado || !pronto) return;
