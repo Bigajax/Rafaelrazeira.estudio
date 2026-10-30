@@ -143,3 +143,8 @@
 .tabelaMini th:first-child { text-align: left }
 .tabelaMini small { font-weight: 400; color: var(--ink-fraco) }
 .tabelaMini tbody tr:last-child > * { border-bottom: 0 }
+
+/* O período no seletor em pílula, igual aos Indicadores (30/10/2026). */
+.periodos { padding: 4px; border-radius: 980px; background: #f2f2f0 }
+.periodos a { border: 0; border-radius: 980px; background: transparent; min-height: 36px }
+.periodos a[aria-current="page"] { background: var(--ink); color: #fff }

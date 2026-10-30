@@ -36,7 +36,7 @@ export default async function PaginaPlacas({ searchParams }: {
       <form action="/crm/performance/placas" className={p.loja}>
         <label htmlFor="loja-placa">Loja do Performance
           <select id="loja-placa" name="loja" defaultValue={selecionada?.id ?? ""}>
-            <option value="">Molde livre — preencher manualmente</option>
+            <option value="">Molde livre: preencher à mão</option>
             {lojas.map(loja => <option key={loja.id} value={loja.id}>{loja.nome} · {loja.slug}</option>)}
           </select>
         </label>

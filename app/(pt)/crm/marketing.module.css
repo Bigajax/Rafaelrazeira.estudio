@@ -828,3 +828,11 @@
 .tela :is(.bandeja, .time, .painel, .prodColuna, .perfilGrade, .semDia, .numeros, .papelBloco) { border-radius: 16px }
 .tela .grade { border-radius: 16px }
 .tela .semDia * { text-transform: none }
+
+/* O resto do Marketing na régua (30/10/2026): a aba ativa em tinta, como
+   em todas as outras telas; os cartões de pilar, de entrega e de letra com
+   canto 16; os vazios tracejados com canto 14. */
+.tela .abasMkt .abaMktAtiva { background: var(--ink); color: #fff }
+.tela .pilarCartao, .tela .direcaoCartao, .tela .letraCartao { border-radius: 16px }
+.tela .pilarAtivo, .tela .direcaoAtiva { border-color: var(--ink); background: #fff }
+.tela .esperandoVazio, .tela .bandejaVazia, .tela .refVazio, .tela .mesaVazia, .tela .semDia { border-radius: 14px }
