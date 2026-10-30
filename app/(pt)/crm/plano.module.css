@@ -461,3 +461,16 @@
   .tela .degrauEdita { grid-template-columns: minmax(0, 1fr); }
   .tela .degrauEdita > input { min-width: 0; width: 100%; }
 }
+
+/* O Plano na régua (30/10/2026): os anos viram o seletor em pílula com o
+   ano aberto em tinta; os atalhos, o "Editar marcos" e o botão do plano em
+   pílula; os atalhos saem do verde acinzentado para os cinzas do estúdio.
+   A montanha fica como está: é ilustração, com a cor dela. */
+.tela .anos { gap: 4px; padding: 4px; border-radius: 980px; background: #f2f2f0 }
+.tela .anos a, .tela .anos b { border: 0; border-radius: 980px; min-height: 36px; padding: 7px 14px }
+.tela .anos a { background: transparent; color: var(--ink-soft) }
+.tela .anos b { background: var(--ink); color: #fff }
+.tela .btn, .tela .mini { border-radius: 980px }
+.tela .atalhos a { border-color: #e6e6e3; border-radius: 980px; color: var(--ink-soft) }
+.tela .atalhos a:hover { border-color: var(--ink); color: var(--ink) }
+.tela .subidaTexto .subidaAno { font-size: 13px; font-weight: 500; letter-spacing: 0 }

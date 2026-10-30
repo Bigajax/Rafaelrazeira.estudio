@@ -23,7 +23,7 @@ export function ResumoPlano({ ano, ate, metas, projetos, valores, operacao }: {
   const progresso = meta && realizado !== null ? Math.min(100, Math.max(0, (meta.direcao === "reduzir" ? realizado <= 0 ? 1 : meta.alvo / realizado : realizado / meta.alvo) * 100)) : 0;
   return <div className={s.resumo}>
     <section className={s.foco} aria-label="Objetivo em foco">
-      <div className={s.focoCab}><span className={s.sobretitulo}>OBJETIVO EM FOCO · {ate ? `${MESES_LONGOS[ate - 1]} de ${ano}` : `Planejamento de ${ano}`}</span>{metas.length > 1 && <label>Ver objetivo<select value={meta?.id ?? ""} onChange={(e) => setEscolhida(e.target.value)}>{metas.map((m) => <option key={m.id} value={m.id}>{m.titulo}</option>)}</select></label>}</div>
+      <div className={s.focoCab}><span className={s.sobretitulo}>Objetivo em foco, {ate ? `${MESES_LONGOS[ate - 1]} de ${ano}` : `Planejamento de ${ano}`}</span>{metas.length > 1 && <label>Ver objetivo<select value={meta?.id ?? ""} onChange={(e) => setEscolhida(e.target.value)}>{metas.map((m) => <option key={m.id} value={m.id}>{m.titulo}</option>)}</select></label>}</div>
       <h2>{meta?.titulo ?? "Defina o resultado que você quer alcançar"}</h2>
       {meta && leitura && fonte ? <>
         <p>{projetos.find((p) => p.id === meta.projeto_id)?.nome ?? "Objetivo do estúdio"} · {meta.periodo === "ano" ? "Meta anual, com realizado acumulado" : "Meta mensal"}{meta.direcao === "reduzir" ? " · Manter dentro do limite" : ""}{projetos.find((p) => p.id === meta.projeto_id)?.status === "pausado" ? " · Iniciativa pausada" : projetos.find((p) => p.id === meta.projeto_id)?.status === "encerrado" ? " · Iniciativa encerrada" : ""}</p>
@@ -35,11 +35,11 @@ export function ResumoPlano({ ano, ate, metas, projetos, valores, operacao }: {
         <div className={s.barra} role="progressbar" aria-label={`Progresso de ${meta.titulo}`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={realizado === null ? undefined : Math.round(progresso)} aria-valuetext={realizado === null ? "Medição a apurar" : undefined}><i style={{ width: `${progresso}%` }} /></div>
         <div className={s.situacao}>
           <p>{!ate ? "O ano ainda não começou. Prepare as metas; os resultados aparecem conforme os meses acontecem." : realizado === null ? "Há números a apurar. Confira a fonte ou complete as medições antes de avaliar o resultado." : meta.periodo === "ano" ? `Ritmo até ${MESES_LONGOS[ate - 1]}: ${formatar(leitura.alvo, meta.unidade)}. ${leitura.falta === 0 ? "Dentro do ritmo previsto." : `${meta.direcao === "reduzir" ? "Reduzir" : "Faltam"} ${formatar(leitura.falta, meta.unidade)} para esse ritmo.`}` : falta === 0 ? "Objetivo do período atendido. Continue acompanhando os registros." : "Use as ações abaixo para trabalhar o resultado deste mês."}</p>
-          <Link className={s.botao} href={fonte.href}>{fonte.acao} →</Link>
+          <Link className={s.botao} href={fonte.href}>{fonte.acao}</Link>
         </div>
         <span className={s.fonte}>{FONTES[meta.fonte].nome}. {FONTES[meta.fonte].ajuda}.</span>
         <EvolucaoMeta meta={meta} valores={valores[meta.id] ?? {}} ate={ate} />
-      </> : <><p>Comece com uma iniciativa e uma meta mensurável. O Plano mostrará o realizado, a diferença e onde agir.</p><a className={s.botao} href={projetos.length ? "#metas" : "#projetos"}>Definir meu primeiro objetivo →</a></>}
+      </> : <><p>Comece com uma iniciativa e uma meta mensurável. O Plano mostrará o realizado, a diferença e onde agir.</p><a className={s.botao} href={projetos.length ? "#metas" : "#projetos"}>Definir meu primeiro objetivo</a></>}
     </section>
     {ate > 0 && metas.length > 0 && <p className={s.cobertura}>{noRitmo} de {vigente.length} metas no ritmo do período{pendentes ? ` · ${pendentes} a apurar; o resultado está incompleto` : " · medições disponíveis"}. <a href="#metas">Conferir todas</a></p>}
     {operacao && <section className={s.operacao} aria-label="Ações conectadas ao plano"><div className={s.titulo}><h2>Onde agir agora</h2><span>Posição atual do estúdio</span></div><div className={s.acoes}>
