@@ -5,6 +5,7 @@ export type IconePainelNome =
   | "clientes"
   | "funil"
   | "mensagens"
+  | "templates"
   | "producao"
   | "projetos"
   | "performance"
@@ -40,6 +41,14 @@ const desenhos: Record<IconePainelNome, ReactNode> = {
     <>
       <path d="M4 4h16v13H8l-4 4Z" />
       <path d="M8 8h8M8 12h5" />
+    </>
+  ),
+  /* 30/10: a folha com o canto dobrado. Até aqui Templates usava o mesmo
+     balão do Atendimento, e no menu fechado os dois eram o mesmo ícone. */
+  templates: (
+    <>
+      <path d="M14 3H5v18h14V8Z" />
+      <path d="M14 3v5h5M9 13h6M9 17h4" />
     </>
   ),
   producao: (

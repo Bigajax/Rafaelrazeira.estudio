@@ -8561,3 +8561,51 @@
   background: var(--ink);
   border-radius: 0 0 3px 3px;
 }
+
+/* ---------- o menu em uma linha por rota (30/10/2026) ----------
+   Sem a nota embaixo do nome, cada rota é uma linha de 40px e o menu
+   inteiro cabe na tela do notebook. O número só aparece quando há algo; o
+   que cobra (Hoje, Suporte, Caixa) ganha o ponto rosa no canto do ícone,
+   que é o que se vê com o menu fechado e na barra do celular. Aberto, o
+   ponto some: o número rosa ao lado do nome já diz o mesmo. */
+.app .trilho .trilhoLink {
+  position: relative;
+  min-height: 40px;
+  padding-block: 6px;
+}
+.trilhoPonto {
+  position: absolute;
+  top: 7px;
+  left: 27px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--rosa);
+  box-shadow: 0 0 0 2px #fff;
+  pointer-events: none;
+}
+.trilho:focus-within .trilhoPonto,
+.trilhoFixo .trilhoPonto {
+  display: none;
+}
+.app .barraCelular .trilhoPonto {
+  top: 9px;
+  left: calc(50% + 5px);
+}
+.app .menuCelularGrupo a {
+  min-height: 46px;
+}
+.app .menuCelularGrupo .trilhoCont {
+  font: 600 12px/1.4 var(--body);
+  padding: 1px 8px;
+  border-radius: 980px;
+  background: #f2f2f0;
+  color: var(--ink-soft);
+}
+.app .menuCelularGrupo .trilhoCobra {
+  background: #fbe6ed;
+  color: var(--rosa-dark);
+}
+.app .menuCelularCab button {
+  border-radius: 980px;
+}

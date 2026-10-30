@@ -152,12 +152,21 @@ const MOMENTOS: { nome: string; rotas: Rota[] }[] = [
    são inventário, não dívida. */
 const COBRAM: readonly string[] = ["fila", "cobrar", "suporte"];
 
+/* O número só aparece quando há algo (30/10). Os zeros de antes, quatro
+   pílulas verdes de "em dia", viravam enfeite. Quem cobra e tem pendência
+   ganha também um ponto rosa sobre o ícone, que é o que se vê com o menu
+   fechado e na barra do celular. */
+const pendencia = (conta: keyof Contagens | null, contagens: Contagens) => {
+  const n = conta ? contagens[conta] : 0;
+  return { n: n || null, cobra: Boolean(n && conta && COBRAM.includes(conta)) };
+};
+
 const ICONES: Record<string, IconePainelNome> = {
   "/crm/clientes": "clientes",
   "/crm/atendimento": "mensagens",
   "/crm": "hoje",
   "/crm/pipeline": "funil",
-  "/crm/templates": "mensagens",
+  "/crm/templates": "templates",
   "/crm/producao": "producao",
   "/crm/projetos": "projetos",
   "/crm/performance": "performance",
@@ -227,32 +236,30 @@ export function Trilho({ sair, contagens }: { sair: () => void; contagens: Conta
                 /* "/crm" só acende em si mesmo; as outras acendem também nas
              telas que nascem delas, como /crm/lead/[id], filha do pipeline. */
                 const ativo = estaAtiva(href);
-                const n = conta ? contagens[conta] : null;
+                const { n, cobra } = pendencia(conta, contagens);
 
+                /* A nota ("o quadro", "as mensagens") saiu da vista em
+                   30/10: com ela, cada rota tinha duas linhas e o menu não
+                   cabia na tela do notebook. Fica no title, para o mouse. */
                 return (
                   <li key={href}>
                     <Link
                       href={href}
                       className={`${s.trilhoLink} ${ativo ? s.trilhoAtivo : ""}`}
                       aria-current={ativo ? "page" : undefined}
-                      aria-label={`${rotulo}${n !== null ? `, ${n} ${nota}` : ""}`}
-                      title={rotulo}
+                      aria-label={`${rotulo}${n !== null ? `, ${n}` : ""}`}
+                      title={`${rotulo}: ${nota}`}
                     >
                       <IconePainel nome={ICONES[href]} className={s.trilhoIcone} />
+                      {cobra ? <i className={s.trilhoPonto} aria-hidden /> : null}
                       <div className={s.trilhoTexto}>
                         <b>
                           {rotulo}
 
                           {n !== null ? (
-                            <i
-                              className={`${s.trilhoCont} ${conta && COBRAM.includes(conta) ? (n ? s.trilhoCobra : s.trilhoEmDia) : ""}`}
-                            >
-                              {n}
-                            </i>
+                            <i className={`${s.trilhoCont} ${cobra ? s.trilhoCobra : ""}`}>{n}</i>
                           ) : null}
                         </b>
-
-                        <span>{nota}</span>
                       </div>
                     </Link>
                   </li>
@@ -272,9 +279,10 @@ export function Trilho({ sair, contagens }: { sair: () => void; contagens: Conta
       <nav className={s.barraCelular} aria-label="Navegação do estúdio no celular">
         {MOMENTOS.flatMap(({ rotas }) => rotas)
           .filter(({ href }) => PRINCIPAIS.includes(href))
-          .map(({ href, rotulo }) => (
+          .map(({ href, rotulo, conta }) => (
             <Link key={href} href={href} aria-current={estaAtiva(href) ? "page" : undefined}>
               <IconePainel nome={ICONES[href]} />
+              {pendencia(conta, contagens).cobra ? <i className={s.trilhoPonto} aria-hidden /> : null}
               <span>{rotulo}</span>
             </Link>
           ))}
@@ -313,21 +321,21 @@ export function Trilho({ sair, contagens }: { sair: () => void; contagens: Conta
           {MOMENTOS.map(({ nome, rotas }) => (
             <div key={nome} className={s.menuCelularGrupo}>
               <p>{nome}</p>
-              {rotas.map(({ href, rotulo, nota, conta }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  aria-current={estaAtiva(href) ? "page" : undefined}
-                  onClick={() => setMenuAberto(false)}
-                >
-                  <IconePainel nome={ICONES[href]} />
-                  <span>
-                    {rotulo}
-                    <small>{nota}</small>
-                  </span>
-                  {conta ? <b>{contagens[conta]}</b> : null}
-                </Link>
-              ))}
+              {rotas.map(({ href, rotulo, conta }) => {
+                const { n, cobra } = pendencia(conta, contagens);
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    aria-current={estaAtiva(href) ? "page" : undefined}
+                    onClick={() => setMenuAberto(false)}
+                  >
+                    <IconePainel nome={ICONES[href]} />
+                    <span>{rotulo}</span>
+                    {n !== null ? <b className={`${s.trilhoCont} ${cobra ? s.trilhoCobra : ""}`}>{n}</b> : null}
+                  </Link>
+                );
+              })}
             </div>
           ))}
           <form action={sair}>
