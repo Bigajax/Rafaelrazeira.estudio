@@ -1,9 +1,12 @@
+/* Na régua do estúdio desde 30/10/2026 (docs/design-estudio.md): barras em
+   pílula, cartões brancos de canto 16 e fio neutro, colunas no cinza do
+   quadro, o indicador em tinta. O verde e o papel creme saíram. */
 .carregando {
   width: 100%;
   max-width: 1440px;
   min-width: 0;
   padding: 8px 0 24px;
-  color: var(--ink-soft, #526059);
+  color: var(--ink-soft, #555d5b);
 }
 .estado {
   display: flex;
@@ -18,15 +21,15 @@
   width: 16px;
   height: 16px;
   flex: none;
-  border: 2px solid #dce5da;
-  border-top-color: #076b42;
+  border: 2px solid #e6e6e3;
+  border-top-color: #14181a;
   border-radius: 50%;
   animation: girar 900ms linear infinite;
 }
 .estrutura span {
   display: block;
-  background: #e6e7df;
-  border-radius: 4px;
+  background: #ececea;
+  border-radius: 980px;
   height: 10px;
   width: 72%;
   max-width: 100%;
@@ -39,12 +42,12 @@
   margin-bottom: 22px;
 }
 .estrutura .titulo {
-  height: 26px;
-  width: 160px;
+  height: 30px;
+  width: 200px;
 }
 .estrutura .acao {
-  height: 34px;
-  width: 108px;
+  height: 44px;
+  width: 128px;
   flex: none;
 }
 .indicadores {
@@ -56,9 +59,9 @@
 .indicadores > div,
 .bloco {
   padding: 22px;
-  border: 1px solid var(--line, #deded4);
-  border-radius: 8px;
-  background: var(--paper-alto, #fafaf5);
+  border: 1px solid #e6e6e3;
+  border-radius: 16px;
+  background: #fff;
 }
 .indicadores span + span,
 .bloco span + span {
@@ -69,10 +72,10 @@
   width: 46%;
 }
 .lista {
-  border: 1px solid var(--line, #deded4);
-  border-radius: 8px;
+  border: 1px solid #e6e6e3;
+  border-radius: 16px;
   padding: 0 20px;
-  background: var(--paper-alto, #fafaf5);
+  background: #fff;
 }
 .linha {
   display: flex;
@@ -82,7 +85,7 @@
   padding: 24px 0;
 }
 .linha + .linha {
-  border-top: 1px solid var(--line, #deded4);
+  border-top: 1px solid #eeeeec;
 }
 .linha > div {
   flex: 1;
@@ -103,9 +106,9 @@
   gap: 28px;
   padding: 16px;
   margin-bottom: 14px;
-  border: 1px solid var(--line, #deded4);
-  border-radius: 7px;
-  background: var(--paper-alto, #fafaf5);
+  border: 1px solid #e6e6e3;
+  border-radius: 980px;
+  background: #fff;
 }
 .resumo span {
   width: 140px;
@@ -122,9 +125,9 @@
 .coluna {
   min-width: 0;
   padding: 16px 12px;
-  border: 1px solid var(--line, #deded4);
-  border-radius: 8px;
-  background: var(--paper-2, #eeeee6);
+  border: 0;
+  border-radius: 16px;
+  background: #f6f6f4;
 }
 .estrutura .colunaTitulo {
   width: 62%;
@@ -134,9 +137,9 @@
 .cartao {
   padding: 18px 12px;
   margin-bottom: 12px;
-  border: 1px solid var(--line, #deded4);
-  border-radius: 6px;
-  background: var(--paper-alto, #fafaf5);
+  border: 1px solid #e6e6e3;
+  border-radius: 12px;
+  background: #fff;
 }
 .cartao span + span {
   margin-top: 14px;
@@ -205,7 +208,7 @@
 @media (prefers-reduced-motion: reduce) {
   .indicador {
     animation: none;
-    border-color: #a9bca5;
-    border-top-color: #076b42;
+    border-color: #cfcfcb;
+    border-top-color: #14181a;
   }
 }
