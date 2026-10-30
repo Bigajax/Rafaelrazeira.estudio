@@ -102,7 +102,9 @@ const MOMENTOS: { nome: string; rotas: Rota[] }[] = [
        me deve) e cabe na barra do celular. O Financeiro é a outra metade da
        mesma pergunta (30/09): o que saiu e se sobrou. Sem número: o
        resultado do mês tem contexto só dentro da tela. */
-    nome: "Financeiro",
+    /* "Dinheiro" e não "Financeiro" desde 30/10: com o nome do grupo à
+       vista no menu, "Financeiro" em cima de "Financeiro" se repetia. */
+    nome: "Dinheiro",
     rotas: [
       { href: "/crm/caixa", rotulo: "Caixa", nota: "receber e cobrar", conta: "cobrar" },
       {
@@ -184,8 +186,6 @@ const PRINCIPAIS = ["/crm", "/crm/pipeline", "/crm/producao", "/crm/caixa"];
 export function Trilho({ sair, contagens }: { sair: () => void; contagens: Contagens }) {
   const caminho = usePathname() ?? "";
   const [menuAberto, setMenuAberto] = useState(false);
-  const [menuFixo,setMenuFixo]=useState(false);
-  useEffect(()=>{try{setMenuFixo(localStorage.getItem("crm-menu-fixo")==="1");}catch{}},[]);
   const botaoMais = useRef<HTMLButtonElement>(null);
   const menu = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -215,7 +215,9 @@ export function Trilho({ sair, contagens }: { sair: () => void; contagens: Conta
       <a href="#crm-principal" className={s.pularConteudo}>
         Pular para o conteúdo
       </a>
-      <nav className={s.trilho+(menuFixo?" "+s.trilhoFixo:"")} aria-label="Seções do estúdio">
+      {/* Sem o "Manter aberto" desde 30/10, a pedido do Rafael: o menu já
+          abre sozinho com o mouse em cima e com o teclado. */}
+      <nav className={s.trilho} aria-label="Seções do estúdio">
         <div className={s.trilhoPainel}>
           <Link href="/crm" className={s.trilhoMarca} aria-label="Rafael Razeira Estúdio, início">
             <Image src="/marca/rr.webp" alt="" width={36} height={36} className={s.trilhoLogo} priority />
@@ -225,8 +227,6 @@ export function Trilho({ sair, contagens }: { sair: () => void; contagens: Conta
               <small>Painel do estúdio</small>
             </span>
           </Link>
-          <button type="button" className={s.fixarMenu} aria-pressed={menuFixo} aria-label={menuFixo?"Recolher menu":"Manter menu aberto"} title={menuFixo?"Recolher menu":"Manter menu aberto"} onClick={()=>{const aberto=!menuFixo;setMenuFixo(aberto);try{localStorage.setItem("crm-menu-fixo",aberto?"1":"0");}catch{}}}><span aria-hidden="true">☰</span><span className={s.trilhoTexto}>{menuFixo?"Recolher menu":"Manter aberto"}</span></button>
-
           <ul className={s.trilhoLista}>
             {MOMENTOS.flatMap(({ nome, rotas }) => [
               <li key={nome} className={s.trilhoMomento} aria-hidden>

@@ -8563,15 +8563,16 @@
 }
 
 /* ---------- o menu em uma linha por rota (30/10/2026) ----------
-   Sem a nota embaixo do nome, cada rota é uma linha de 40px e o menu
-   inteiro cabe na tela do notebook. O número só aparece quando há algo; o
+   Sem a nota embaixo do nome, cada rota é uma linha de 36px. Medido em
+   30/10 com as 15 rotas e os nomes dos grupos: o painel pede 857px de
+   altura; abaixo disso a lista rola (Indicadores e Plano ficam por baixo). O número só aparece quando há algo; o
    que cobra (Hoje, Suporte, Caixa) ganha o ponto rosa no canto do ícone,
    que é o que se vê com o menu fechado e na barra do celular. Aberto, o
    ponto some: o número rosa ao lado do nome já diz o mesmo. */
 .app .trilho .trilhoLink {
   position: relative;
-  min-height: 40px;
-  padding-block: 6px;
+  min-height: 36px;
+  padding-block: 5px;
 }
 .trilhoPonto {
   position: absolute;
@@ -8608,4 +8609,39 @@
 }
 .app .menuCelularCab button {
   border-radius: 980px;
+}
+
+/* ---------- o nome dos grupos (30/10/2026) ----------
+   Fechado, cada grupo é o fio de sempre; aberto, o fio vira o nome do
+   grupo (Vendas, Entregas, Dinheiro, Crescer). A linha tem a MESMA altura
+   nos dois estados: se o nome empurrasse as rotas para baixo ao abrir, o
+   ícone fugiria do mouse no meio do gesto. */
+.app .trilhoLista .trilhoMomento {
+  display: flex;
+  align-items: center;
+  height: 22px;
+  margin: 4px 0 0;
+  padding: 0 12px;
+  font: 500 12px/1 var(--body);
+  color: transparent;
+  white-space: nowrap;
+  background: linear-gradient(var(--line), var(--line)) center / calc(100% - 8px) 1px no-repeat;
+  transition: color 120ms ease-out;
+}
+.app .trilhoLista .trilhoMomento:first-child {
+  margin-top: 0;
+  background: none;
+}
+.app .trilho:focus-within .trilhoMomento {
+  color: var(--ink-fraco);
+  background: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .app .trilho:hover .trilhoMomento {
+    color: var(--ink-fraco);
+    background: none;
+  }
+  .trilho:hover .trilhoPonto {
+    display: none;
+  }
 }
