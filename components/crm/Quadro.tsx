@@ -502,7 +502,7 @@ export function Quadro({
       <div className={p.topo}>
         <header className={p.cabecalho}>
           <div>
-            <span className={p.sobretitulo}>ESTÚDIO / VENDAS</span>
+            <span className={p.sobretitulo}>Estúdio e vendas</span>
             <h1>
               Pipeline de vendas<span>.</span>
             </h1>

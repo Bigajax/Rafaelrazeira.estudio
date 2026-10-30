@@ -95,3 +95,11 @@
 .filtro button { border-radius: 980px }
 .estado { border-radius: 980px }
 .filtro button[aria-pressed="true"] { background: var(--ink); color: #fff; box-shadow: none }
+/* Os campos do editor da FAQ não tinham borda própria e caíam na borda
+   padrão do navegador (2px preta); e o "Salvar pergunta" era um .btnEscuro,
+   feito para fundo preto, e sumia no cartão branco (30/10/2026). */
+.editor :is(input:not([type="checkbox"]), textarea) {
+  width: 100%; box-sizing: border-box; padding: 10px 12px;
+  border: 1px solid #e6e6e3; border-radius: 12px; background: #fff; color: var(--ink);
+}
+.editor :is(input, textarea):focus-visible { outline: 2px solid var(--ink); outline-offset: 1px }

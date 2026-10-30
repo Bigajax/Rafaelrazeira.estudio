@@ -185,7 +185,7 @@ function Conversa({ c, temas }: { c: SupChamado; temas: string[] }) {
           <textarea rows={4} value={texto} onChange={(e) => setTexto(e.target.value)} maxLength={2000} placeholder="Escreva como se fosse no WhatsApp: curto e com o passo a passo." />
         </label>
         <div className={u.botoes}>
-          <button type="button" className={s.btnEscuro} disabled={ocupado || !texto.trim()} onClick={() => rodar(() => responderChamado(c.id, texto, false), () => { setTexto(""); setAviso("Resposta no painel da loja. Avise pelo WhatsApp."); })}>
+          <button type="button" className={s.btnAcao} disabled={ocupado || !texto.trim()} onClick={() => rodar(() => responderChamado(c.id, texto, false), () => { setTexto(""); setAviso("Resposta no painel da loja. Avise pelo WhatsApp."); })}>
             Responder
           </button>
           <button type="button" className={s.btn} disabled={ocupado || !texto.trim()} onClick={() => rodar(() => responderChamado(c.id, texto, true), () => { setTexto(""); setAviso("Respondido e resolvido. Avise pelo WhatsApp."); })}>
@@ -338,7 +338,7 @@ function EditorFaq({
         </label>
       </div>
       <div className={u.botoes}>
-        <button type="button" className={s.btnEscuro} disabled={ocupado} onClick={() => rodar(() => salvarFaq({ ...f, id: inicial.id, chamado: chamado ?? null }))}>
+        <button type="button" className={s.btnAcao} disabled={ocupado} onClick={() => rodar(() => salvarFaq({ ...f, id: inicial.id, chamado: chamado ?? null }))}>
           Salvar pergunta
         </button>
         {inicial.id ? (

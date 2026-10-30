@@ -8664,3 +8664,10 @@
   background: var(--ink);
   color: #fff;
 }
+
+/* As janelas por cima (Anotar lead, Escrever template) com o canto 20 dos
+   cartões grandes da régua, e a do sistema (Registrar recebimento) igual
+   (30/10/2026). */
+.app .modal {
+  border-radius: 20px;
+}
