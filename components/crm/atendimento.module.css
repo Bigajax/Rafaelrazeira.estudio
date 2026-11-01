@@ -148,3 +148,8 @@
   .central .dados { gap: 12px; padding: 12px; }
   .central .formPasso { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* Os dados do contato numa linha (01/11); a campanha embaixo, inteira. */
+.central .resumo { margin: 14px 0 18px; font-size: 12px; line-height: 1.6; color: var(--suave); overflow-wrap: anywhere; }
+.central .resumo span { display: block; font-size: 11px; }
+.central .acoesAtendimento > p .linkBotao { font-size: 11px; }

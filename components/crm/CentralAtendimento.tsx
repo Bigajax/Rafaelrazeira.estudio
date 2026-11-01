@@ -10,6 +10,7 @@ import { arrobaDe, dataCurta, dinheiro, linkWhatsapp, momentoDoContato, somarDia
 import { ehAtivo, NOME_CANAL, NOME_ESTAGIO, NOME_ORIGEM, NOME_TIPO, ORIGENS, type Direcao, type LeadPainel, type Origem } from "@/lib/crm/tipos";
 import { Hoje } from "./Hoje";
 import { ModalNovoLead } from "./ModalNovoLead";
+import { ModalMensagem } from "./ModalMensagem";
 import { ModalToque } from "./ModalToque";
 import c from "./atendimento.module.css";
 
@@ -28,6 +29,10 @@ export function CentralAtendimento({ painel, templates, posts = [] }: Props) {
   const [selecionado, setSelecionado] = useState<string | null>(null);
   const [novo, setNovo] = useState(false);
   const [registro, setRegistro] = useState<{ lead: LeadPainel; direcao: Direcao } | null>(null);
+  /* O "Mandar mensagem" da ficha, aqui mesmo (01/11): o Rafael abria a ficha
+     só para chegar nele. Junto vai o próximo da fila, para onde o painel
+     anda quando a mensagem sai. */
+  const [mensagem, setMensagem] = useState<{ lead: LeadPainel; proximo: string | null } | null>(null);
   const [agora, setAgora] = useState<number | null>(null);
   const detalheRef = useRef<HTMLElement>(null);
   const filaRef = useRef<HTMLElement>(null);
@@ -84,7 +89,7 @@ export function CentralAtendimento({ painel, templates, posts = [] }: Props) {
             <div className={c.filaCabecalho}><b>{lista.length} {lista.length === 1 ? "contato" : "contatos"}</b><span>Selecione para atender</span></div>
             <ul>{lista.map((l) => <li key={l.id}><button type="button" className={c.contato} data-contato={l.id} aria-pressed={atual?.id === l.id} onClick={() => escolher(l.id)}>
               <span className={c.contatoTopo}><b>{l.nome}</b><span className={c.etapa}>{NOME_ESTAGIO[l.estagio]}</span></span>
-              <span className={c.contatoEmpresa}>{[l.empresa !== l.nome ? l.empresa : null, l.nicho].filter(Boolean).join(" · ") || "Segmento ainda não informado"}</span>
+              {[l.empresa !== l.nome ? l.empresa : null, l.nicho].some(Boolean) && <span className={c.contatoEmpresa}>{[l.empresa !== l.nome ? l.empresa : null, l.nicho].filter(Boolean).join(" · ")}</span>}
               <span className={c.contatoOrigem}>{NOME_ORIGEM[l.origem]}</span>
               <span className={c.contatoRodape}><span className={novoContato(l) || precisaResponder(l) ? c.espera : ""}>{novoContato(l) || precisaResponder(l) ? agora ? tempoDeEspera(novoContato(l) ? l.created_at : momentoDoContato(l), agora) : `Desde ${hora(l.created_at)}` : l.proxima_acao_em ? `Retorno ${dataCurta(l.proxima_acao_em)}` : "Definir próximo passo"}</span><span aria-hidden="true">→</span></span>
             </button></li>)}</ul>
@@ -92,17 +97,18 @@ export function CentralAtendimento({ painel, templates, posts = [] }: Props) {
           </section>
           <section ref={detalheRef} className={c.detalhe} tabIndex={-1} aria-label="Atendimento selecionado">
             <button type="button" className={`${c.linkBotao} ${c.voltarLista}`} onClick={() => { filaRef.current?.scrollIntoView({ block: "start", behavior: "instant" }); filaRef.current?.querySelector<HTMLButtonElement>('button[aria-pressed="true"]')?.focus({ preventScroll: true }); }}>← Voltar para a lista de contatos</button>
-            {atual ? <Atendimento key={atual.id} lead={atual} hoje={painel.hoje} aoRegistrar={(direcao) => setRegistro({ lead: atual, direcao })} /> : <div className={c.semSelecao}><span aria-hidden="true">✓</span><h3>Fila conferida</h3><p>Escolha outra aba para continuar o atendimento.</p><button type="button" className={c.botao} onClick={() => trocarAba(aba === "novos" ? "responder" : "novos")}>{aba === "novos" ? "Ver quem espera resposta" : "Ver novos contatos"}</button></div>}
+            {atual ? <Atendimento key={atual.id} lead={atual} hoje={painel.hoje} aoRegistrar={(direcao) => setRegistro({ lead: atual, direcao })} aoMandar={() => { const i = lista.findIndex((l) => l.id === atual.id); setMensagem({ lead: atual, proximo: (lista[i + 1] ?? lista[i - 1])?.id ?? null }); }} /> : <div className={c.semSelecao}><span aria-hidden="true">✓</span><h3>Fila conferida</h3><p>Escolha outra aba para continuar o atendimento.</p><button type="button" className={c.botao} onClick={() => trocarAba(aba === "novos" ? "responder" : "novos")}>{aba === "novos" ? "Ver quem espera resposta" : "Ver novos contatos"}</button></div>}
           </section>
         </div>
       </>}
       {novo && <ModalNovoLead origemInicial="inbound" pesquisarAoCriar={false} aoCriar={(id) => { trocarAba("novos"); setSelecionado(id); router.refresh(); }} aoFechar={() => setNovo(false)} />}
+      {mensagem && <ModalMensagem lead={mensagem.lead} templates={templates} aoFechar={() => setMensagem(null)} aoEnviar={(r) => { setSelecionado(mensagem.proximo); void r.finally(() => router.refresh()); }} />}
       {registro && <ModalToque lead={registro.lead} direcaoInicial={registro.direcao} exigirProximoPasso aoFechar={() => { setRegistro(null); router.refresh(); }} />}
     </div>
   );
 }
 
-function Atendimento({ lead, hoje, aoRegistrar }: { lead: LeadPainel; hoje: string; aoRegistrar: (direcao: Direcao) => void }) {
+function Atendimento({ lead, hoje, aoRegistrar, aoMandar }: { lead: LeadPainel; hoje: string; aoRegistrar: (direcao: Direcao) => void; aoMandar: () => void }) {
   const [historico, setHistorico] = useState<HistoricoAtendimento[] | null>(null);
   const [falha, setFalha] = useState<string | null>(null);
   const [tentativa, setTentativa] = useState(0);
@@ -127,10 +133,12 @@ function Atendimento({ lead, hoje, aoRegistrar }: { lead: LeadPainel; hoje: stri
       <div className={c.identificacao}><span className={c.avatar} aria-hidden="true">{lead.nome.trim().split(/\s+/).slice(0, 2).map((s) => s[0]).join("")}</span><div><span className={c.etapa}>{ehNovo ? "Primeiro atendimento pendente" : precisaResponder(lead) ? "Sua vez de responder" : NOME_ESTAGIO[lead.estagio]}</span><h2>{lead.nome}</h2><p>{[lead.empresa !== lead.nome ? lead.empresa : null, lead.nicho, lead.cidade].filter(Boolean).join(" · ") || "Complete os dados conforme conversar"}</p></div></div>
       <Link className={c.link} href={`/crm/lead/${lead.id}`}>Abrir ficha completa ↗</Link>
     </div>
-    <dl className={c.dados}><div><dt>Chegou por</dt><dd>{NOME_ORIGEM[lead.origem]}</dd></div><div><dt>Entrou no CRM</dt><dd>{hora(lead.created_at)}</dd></div><div><dt>Interesse</dt><dd>{lead.tipo_projeto ? NOME_TIPO[lead.tipo_projeto] : "Entender na conversa"}</dd></div><div><dt>Valor estimado</dt><dd>{lead.ticket_estimado == null ? "Ainda não definido" : dinheiro(lead.ticket_estimado) || "R$ 0"}</dd></div>{lead.campanha && <div><dt>Campanha</dt><dd>{lead.campanha}{lead.anuncio ? ` · ${lead.anuncio}` : ""}</dd></div>}</dl>
+    {/* Os dados numa linha só (01/11): eram um quadro de meia tela que
+        empurrava a última mensagem e o próximo passo para baixo. */}
+    <p className={c.resumo}>{[NOME_ORIGEM[lead.origem], `entrou ${hora(lead.created_at)}`, lead.tipo_projeto ? NOME_TIPO[lead.tipo_projeto] : null, lead.ticket_estimado != null ? dinheiro(lead.ticket_estimado) || null : null].filter(Boolean).join(" · ")}{lead.campanha && <span>{lead.campanha}{lead.anuncio ? ` · ${lead.anuncio}` : ""}</span>}</p>
     <div className={c.acoesAtendimento}>
-      <div className={c.acoes}>{whatsapp && <a className={`${c.botao} ${c.primario}`} href={whatsapp} target="_blank" rel="noopener noreferrer">Abrir WhatsApp ↗</a>}{instagram && <a className={c.botao} href={`https://www.instagram.com/${encodeURIComponent(instagram)}/`} target="_blank" rel="noopener noreferrer">Abrir Instagram ↗</a>}{!whatsapp && !instagram && <Link className={c.botao} href={`/crm/lead/${lead.id}`}>Completar canal de contato</Link>}<button type="button" className={c.botao} onClick={() => aoRegistrar("saida")}>Registrar atendimento</button></div>
-      <p>Depois de enviar a mensagem, registre o atendimento e combine o próximo passo.</p>
+      <div className={c.acoes}>{whatsapp || instagram ? <button type="button" className={`${c.botao} ${c.primario}`} onClick={aoMandar}>Mandar mensagem</button> : <Link className={`${c.botao} ${c.primario}`} href={`/crm/lead/${lead.id}`}>Completar canal de contato</Link>}{instagram && <a className={c.botao} href={`https://www.instagram.com/${encodeURIComponent(instagram)}/`} target="_blank" rel="noopener noreferrer">Ver Instagram ↗</a>}</div>
+      <p>A mensagem enviada fica registrada sozinha e o painel passa ao próximo contato. Conversou por fora? <button type="button" className={c.linkBotao} onClick={() => aoRegistrar("saida")}>Registrar atendimento</button></p>
     </div>
     {ultimaEntrada?.resumo && <section className={c.mensagem}><span>ÚLTIMA MENSAGEM RECEBIDA · {hora(ultimaEntrada.created_at)}</span><p>{ultimaEntrada.resumo}</p></section>}
     {lead.notas && <details className={c.notas}><summary>Informações do pedido e anotações</summary><p>{lead.notas}</p></details>}

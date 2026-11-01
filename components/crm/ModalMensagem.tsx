@@ -76,6 +76,7 @@ export function ModalMensagem({
   aoFechar,
   saida: saidaPedida,
   sugestao,
+  aoEnviar,
 }: {
   lead: LeadPainel;
   templates: Template[];
@@ -87,6 +88,10 @@ export function ModalMensagem({
      e o pedido passa na frente da etapa e da escada. É o monte "Amostra
      no ar" do Hoje (09/10) pedindo a condição única. */
   sugestao?: { titulo: string; porque: string };
+  /* Chamado só quando a mensagem SAI (fechar sem enviar não chama), com a
+     promessa do registro: o Atendimento espera ela para atualizar a fila e
+     passar ao próximo contato (01/11). */
+  aoEnviar?: (registro: Promise<unknown>) => void;
 }) {
   const pesquisaOk = lead.dossie?.status === "ok";
   const aAbertura = pesquisaOk ? (lead.dossie?.abertura ?? null) : null;
@@ -207,12 +212,13 @@ export function ModalMensagem({
 
   /* Registra e fecha, sem esperar: o link já levou a pessoa para a conversa. */
   const registrar = (canal: Canal) => {
-    void registrarToque(lead.id, {
+    const registro = registrarToque(lead.id, {
       canal,
       direcao: "saida",
       proxima_acao_em: temFuturo ? undefined : retorno,
       resumo: tituloDe(escolhido) || `Mensagem no ${NOME_CANAL[canal]}`,
     });
+    aoEnviar?.(registro);
     aoFechar();
   };
 

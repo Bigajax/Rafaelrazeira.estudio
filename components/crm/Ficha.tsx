@@ -192,7 +192,10 @@ export function Ficha({ lead, interacoes, indicados, quemIndicou, templates, con
         </p>
       ) : null}
 
-      <ClienteConectado leadId={lead.id} />
+      {/* A ficha de cliente só no topo de quem FECHOU (01/11): em lead de
+          conversa ela ocupava o lugar do estágio e não servia para nada. Nos
+          outros, ela mora na gaveta "Ver todos os dados". */}
+      {lead.estagio === "ganho" ? <ClienteConectado leadId={lead.id} /> : null}
       {/* ============ 2. O QUE FAZER ============
           Estágio e próximo passo dividem um bloco só, porque são a mesma
           pergunta em dois tempos: em que pé está, e qual é a próxima
@@ -416,6 +419,8 @@ export function Ficha({ lead, interacoes, indicados, quemIndicou, templates, con
                 ) : null}
               </>
             ) : null}
+
+            {lead.estagio !== "ganho" ? <ClienteConectado leadId={lead.id} /> : null}
           </div>
         ) : null}
       </section>
