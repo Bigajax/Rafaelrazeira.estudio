@@ -526,6 +526,9 @@ export type LeadPainel = Lead & {
   /* Quando saiu o último toque com o preço (01/11), montado em memória por
      `painelHoje()` a partir do resumo dos toques. Ver `RESUMOS_DE_PRECO`. */
   preco_em?: string | null;
+  /* A última coisa que a pessoa disse foi "quero colocar no ar" e ninguém
+     respondeu ainda (01/11). Fura as filas. */
+  quer_no_ar?: boolean;
   /* ---------- A COBRANÇA QUE VIAJA COM O LEAD (20/08) ----------
      A parcela vencida deste cliente, quando existe. Ela NÃO vem da view
      `crm_leads_painel` (view congela a lista de colunas no create, e a nota

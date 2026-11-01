@@ -73,6 +73,8 @@ type Dia = { data: string; n: number };
 
 type Painel = {
   hoje: string;
+  /* Últimos 30 dias: quantos viram o preço e quantos fecharam (01/11). */
+  resultado?: { precos: number; fechados: number };
   contatos: LeadPainel[];
   atrasados: LeadPainel[];
   paraHoje: LeadPainel[];

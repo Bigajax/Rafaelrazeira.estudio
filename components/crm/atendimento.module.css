@@ -153,3 +153,27 @@
 .central .resumo { margin: 14px 0 18px; font-size: 12px; line-height: 1.6; color: var(--suave); overflow-wrap: anywhere; }
 .central .resumo span { display: block; font-size: 11px; }
 .central .acoesAtendimento > p .linkBotao { font-size: 11px; }
+
+/* O número de resultado (01/11): uma linha, sem cartão. */
+.central .resultado { margin-top: 6px; font-size: 12px; color: var(--texto); }
+
+/* Os parados: o aviso, a revisão com a lista e o Desfazer (01/11). */
+.central .arquivo { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin: 0 0 16px; padding: 12px 16px; border-radius: 14px; background: #f6f6f4; font-size: 12px; }
+.central .arquivo > p { margin: 0; flex: 1 1 260px; line-height: 1.6; }
+.central .arquivo[data-revisando] { display: block; border: 1px solid var(--borda); background: #fff; }
+.central .arquivo[data-revisando] > p { margin-bottom: 10px; }
+.central .arquivo ul { list-style: none; margin: 0 0 12px; padding: 0; max-height: 260px; overflow-y: auto; border-top: 1px solid var(--borda); }
+.central .arquivo li { display: flex; justify-content: space-between; gap: 12px; padding: 7px 0; border-bottom: 1px solid var(--borda); font-weight: 600; overflow-wrap: anywhere; }
+.central .arquivo li span { font-weight: 400; color: var(--suave); flex: none; }
+.central .erroArquivo { margin: 0 0 16px; color: #a8331f; font-size: 12px; }
+
+/* As marcas no cartão e no detalhe: "quer colocar no ar" fala alto. */
+.central .marca { display: inline-block; margin: 2px 0 4px; padding: 3px 8px; border-radius: 980px; background: #f2f2f0; color: #4a4f52; font-size: 10px; font-weight: 700; }
+.central .marca[data-quente] { background: #fbe9e4; color: #a8331f; }
+.central .quente { margin: 14px 0 0; padding: 12px 14px; border-radius: 12px; background: #fbe9e4; color: #5c1d11; font-size: 12px; line-height: 1.6; }
+.central .quente[data-marca] { background: #f2f2f0; color: var(--texto); }
+.central .pedidos { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 12px; font-size: 11px; color: var(--suave); }
+.central .pilula { border: 1px solid var(--borda); background: #fff; color: var(--texto); border-radius: 980px; padding: 5px 11px; font: 600 11px/1.4 var(--body, Arial, sans-serif); cursor: pointer; }
+.central .pilula[aria-pressed="true"] { background: var(--texto); border-color: var(--texto); color: #fff; cursor: default; }
+.central .pilula:disabled:not([aria-pressed="true"]) { opacity: .5; cursor: default; }
+@media (max-width: 860px) { .central .arquivo li { flex-direction: column; gap: 2px; } }

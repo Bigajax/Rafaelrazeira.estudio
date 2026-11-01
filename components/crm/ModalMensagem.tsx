@@ -36,6 +36,8 @@
 
 import { useEffect, useState } from "react";
 import { registrarToque } from "@/app/(pt)/crm/acoes";
+import { lerHistoricoAtendimento } from "@/app/(pt)/crm/acoes-atendimento";
+import type { HistoricoAtendimento } from "@/lib/crm/atendimento";
 import { dadosDaOficina } from "@/app/(pt)/crm/acoes-producao";
 import {
   aplicarSaudacao,
@@ -222,6 +224,24 @@ export function ModalMensagem({
     aoFechar();
   };
 
+  /* O AVISO DE REPETIDA (01/11): a mesma abertura saiu duas vezes para
+     quatro lojas, e a entrega da Joy também; mensagem repetida lê como robô.
+     E três bolhas em minutos depois do preço (Passo Marcante, Sublime) leem
+     como pressão. O modal lê as últimas interações ao abrir e avisa; não
+     bloqueia, porque às vezes repetir é de propósito. */
+  const [historico, setHistorico] = useState<HistoricoAtendimento[]>([]);
+  useEffect(() => {
+    let vivo = true;
+    void lerHistoricoAtendimento(lead.id).then((r) => vivo && r.ok && setHistorico(r.interacoes)).catch(() => {});
+    return () => {
+      vivo = false;
+    };
+  }, [lead.id]);
+  const jaEnviada = historico.find((i) => i.direcao === "saida" && i.resumo === tituloDe(escolhido));
+  const ultima = historico[0];
+  const minutosDaUltima = ultima?.direcao === "saida" ? Math.floor((Date.now() - Date.parse(ultima.created_at)) / 60000) : null;
+  const quandoFoi = (iso: string) => new Date(iso).toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit" });
+
   const temColchete = /\[[^\]]+\]/.test(texto);
   const semNada = templates.length === 0 && !aAbertura && !daPesquisa;
 
@@ -287,6 +307,8 @@ export function ModalMensagem({
               rows={7}
             />
             {temColchete ? <p className={s.erro}>Troque o que está entre colchetes antes de enviar.</p> : null}
+            {jaEnviada ? <p className={s.erro}>Esta mensagem já foi enviada para {lead.nome} em {quandoFoi(jaEnviada.created_at)}. Repetida, ela lê como robô.</p> : null}
+            {!jaEnviada && minutosDaUltima !== null && minutosDaUltima < 24 * 60 ? <p className={s.erro}>Sua última mensagem saiu há {minutosDaUltima < 60 ? `${Math.max(1, minutosDaUltima)} min` : `${Math.floor(minutosDaUltima / 60)} h`} e não tem resposta registrada. Se a pessoa não respondeu, mais uma agora lê como pressão.</p> : null}
           </>
         )}
 

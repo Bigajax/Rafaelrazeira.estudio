@@ -1,5 +1,5 @@
 import { ehAtivo, ehNoPipeline, type Interacao, type LeadPainel } from "./tipos";
-import { momentoDoContato, procurouOEstudio } from "./regras";
+import { diasDesde, momentoDoContato, procurouOEstudio } from "./regras";
 
 export const ABAS_ATENDIMENTO = [
   { id: "novos", nome: "Novos contatos", descricao: "Quem ainda precisa do primeiro atendimento. Continua aqui até você registrar que falou." },
@@ -41,7 +41,40 @@ export const RESUMOS_DE_PRECO = [
 ] as const;
 export const RESUMO_PRECO_A_MAO = "Preço enviado (marcado à mão)";
 export const ehToqueDePreco = (resumo: string | null | undefined) => Boolean(resumo && RESUMOS_DE_PRECO.some((p) => resumo.startsWith(p)));
-export const viuOPreco = (l: LeadPainel) => Boolean(l.preco_em) || ["proposta", "negociacao"].includes(l.estagio);
+/* "QUERO COLOCAR NO AR" (01/11): o botão da amostra é o lead mais quente
+   que existe, e a leitura achou dois sem a resposta certa (Paraíso Perdido
+   sem resposta nenhuma, Carol com "qual é o @?"). O leitor do WhatsApp está
+   desligado desde 01/10, então o CRM não vê a mensagem chegar: ela é
+   marcada à mão, num clique, como entrada com este resumo. O lead fura as
+   filas até a resposta sair, e o "Mandar mensagem" já abre no template do
+   botão. */
+export const RESUMO_QUER_NO_AR = "Pediu para colocar no ar";
+export const TEMPLATE_QUER_NO_AR = "Quero colocar no ar: o botão da amostra";
+export const ehPedidoNoAr = (resumo: string | null | undefined) => Boolean(resumo?.startsWith(RESUMO_QUER_NO_AR));
+
+/* AS DUAS MARCAS (01/11): "manda um áudio" e "vou ver com o sócio". Os seis
+   do sócio morreram sem o resumo, e nenhum dos três do áudio recebeu áudio.
+   Elas moram no PRÓXIMO PASSO, para hoje, porque é isso que elas são: a
+   próxima coisa a fazer com aquele lead. Sem coluna nova no banco. */
+export const MARCAS = [
+  { id: "audio", nome: "Pediu áudio", passo: "Gravar o áudio explicando", template: null },
+  { id: "socio", nome: "Vai ver com o sócio", passo: "Mandar o resumo pro sócio", template: "Vou ver com o sócio: o resumo" },
+] as const;
+export const marcaDe = (l: Pick<LeadPainel, "proximo_passo">) => MARCAS.find((m) => l.proximo_passo?.startsWith(m.passo)) ?? null;
+
+/* OS PARADOS (01/11): 297 em Novos e 255 em Retornos não são fila, são
+   arquivo. Parado é quem está no funil sem nada acontecendo há mais de 30
+   dias, sem retorno marcado para o futuro, sem cobrança e sem pedido de
+   colocar no ar. Arquivar é passar a Perdido, "sumiu, sem resposta", com
+   desfazer na mesma tela. */
+export const DIAS_PARADO = 30;
+export function parado(l: LeadPainel, hoje: string): boolean {
+  if (!ehNoPipeline(l.estagio) || l.cobranca || l.quer_no_ar) return false;
+  if (l.proxima_acao_em && l.proxima_acao_em > hoje) return false;
+  return diasDesde(l.ultimo_toque_em ?? l.created_at, hoje) > DIAS_PARADO;
+}
+
+export const viuOPreco =(l: LeadPainel) => Boolean(l.preco_em) || ["proposta", "negociacao"].includes(l.estagio);
 export type AbaAtendimento = (typeof ABAS_ATENDIMENTO)[number]["id"];
 export type HistoricoAtendimento = Pick<Interacao, "id" | "canal" | "direcao" | "resumo" | "created_at">;
 
@@ -58,10 +91,11 @@ export function filasAtendimento(leads: LeadPainel[], hoje: string) {
   const dataRetorno = (l: LeadPainel) => [l.cobranca?.quando, l.proxima_acao_em].filter((d): d is string => Boolean(d)).sort()[0] ?? "";
   const prioridade = (l: LeadPainel) => procurouOEstudio(l) ? 0 : l.origem === "indicacao" ? 1 : l.origem === "prospeccao" ? 3 : 2;
   const desempate = (a: LeadPainel, b: LeadPainel) => a.id.localeCompare(b.id);
+  const noAr = (l: LeadPainel) => (l.quer_no_ar ? 0 : 1);
   return {
     // Quem acabou de chegar está quente; a espera antiga já esfriou (20/10/2026).
-    novos: ativos.filter(novoContato).sort((a, b) => prioridade(a) - prioridade(b) || b.created_at.localeCompare(a.created_at) || desempate(a, b)),
-    responder: todos.filter(precisaResponder).sort((a, b) => momentoDoContato(a).localeCompare(momentoDoContato(b)) || desempate(a, b)),
+    novos: ativos.filter(novoContato).sort((a, b) => noAr(a) - noAr(b) || prioridade(a) - prioridade(b) || b.created_at.localeCompare(a.created_at) || desempate(a, b)),
+    responder: todos.filter(precisaResponder).sort((a, b) => noAr(a) - noAr(b) || momentoDoContato(a).localeCompare(momentoDoContato(b)) || desempate(a, b)),
     retornos: todos.filter((l) => !novoContato(l) && !precisaResponder(l) && (l.cobranca ? l.cobranca.quando <= hoje : ehAtivo(l.estagio) && (l.estagio === "geladeira" ? Boolean(l.proxima_acao_em && l.proxima_acao_em <= hoje) : !l.proxima_acao_em || l.proxima_acao_em <= hoje))).sort((a, b) => dataRetorno(a).localeCompare(dataRetorno(b)) || desempate(a, b)),
     prospeccao: ativos.filter((l) => l.origem === "prospeccao"),
     // O preço mais recente no topo: os primeiros dias depois do valor são os que ainda fecham.

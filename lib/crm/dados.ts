@@ -23,7 +23,7 @@ import {
    ============================================================ */
 
 import { clienteServidor } from "./supabase";
-import { ehToqueDePreco } from "./atendimento";
+import { ehPedidoNoAr, ehToqueDePreco } from "./atendimento";
 import {
   amostraNoLote,
   diaEmSP,
@@ -155,20 +155,41 @@ export async function painelHoje() {
      preço. Vem das saídas inteiras e não de um filtro no banco porque os
      títulos têm "$", "%" e ":", que o filtro `or` do PostgREST pede escapados;
      são poucas centenas de linhas. */
-  const saidas = await lerTodos<{ lead_id: string; resumo: string | null; created_at: string }>(
-    supabase, "crm_interacoes", "lead_id, resumo, created_at", undefined, { direcao: "saida" },
+  const toques = await lerTodos<{ lead_id: string; direcao: string; resumo: string | null; created_at: string }>(
+    supabase, "crm_interacoes", "lead_id, direcao, resumo, created_at",
   );
   const precoPorLead = new Map<string, string>();
-  for (const s of saidas) {
-    if (!ehToqueDePreco(s.resumo)) continue;
-    const antes = precoPorLead.get(s.lead_id);
-    if (!antes || s.created_at > antes) precoPorLead.set(s.lead_id, s.created_at);
+  /* A última ENTRADA de cada lead: se ela é o "pediu para colocar no ar",
+     o lead fura a fila até alguém responder (01/11). */
+  const ultimaEntrada = new Map<string, { resumo: string | null; created_at: string }>();
+  for (const t of toques) {
+    if (t.direcao === "entrada") {
+      const antes = ultimaEntrada.get(t.lead_id);
+      if (!antes || t.created_at > antes.created_at) ultimaEntrada.set(t.lead_id, t);
+      continue;
+    }
+    if (!ehToqueDePreco(t.resumo)) continue;
+    const antes = precoPorLead.get(t.lead_id);
+    if (!antes || t.created_at > antes) precoPorLead.set(t.lead_id, t.created_at);
   }
+
+  /* O NÚMERO DE RESULTADO (01/11): nos últimos 30 dias, quantos viram o
+     preço e quantos fecharam. É a pergunta que diz se o que mudou no preço
+     está funcionando; os contadores das filas não respondem isso. */
+  const desde = `${somarDias(hoje, -30)}T00:00:00-03:00`;
+  const { count: fechados30 } = await conferir(
+    supabase.from("crm_leads").select("id", { count: "exact", head: true }).eq("estagio", "ganho").gte("fechado_em", desde.slice(0, 10)),
+  );
+  const resultado = {
+    precos: [...precoPorLead.values()].filter((d) => d >= desde).length,
+    fechados: fechados30 ?? 0,
+  };
 
   const lista = [...(leads ?? []), ...(ganhosQueDevem ?? [])].map((l) => ({
     ...l,
     previa_url: amostraPorLead.get(l.id) ?? null,
     preco_em: precoPorLead.get(l.id) ?? null,
+    quer_no_ar: ehPedidoNoAr(ultimaEntrada.get(l.id)?.resumo) && l.saidas_seguidas === 0,
     cobranca: cobrancasPorLead.get(l.id) ?? null,
   }));
 
@@ -269,6 +290,7 @@ export async function painelHoje() {
 
   return {
     hoje,
+    resultado,
     // Inteiro, independente da agenda: novos e respostas não podem sumir no futuro.
     contatos: lista,
     /* Mais atrasado primeiro: a fila é de execução, e o que espera há mais
