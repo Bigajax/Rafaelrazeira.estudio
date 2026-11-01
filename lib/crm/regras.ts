@@ -366,6 +366,8 @@ export const arrobaNaoConferido = (lead: Pick<LeadPainel, "notas">) =>
    terceiro toque. O Rafael pediu direto: quem sou, a prévia grátis já na
    primeira mensagem, e a pergunta do aparelho que mais sai. */
 export const TITULO_LOJA_DE_CELULAR = "Loja de celular:";
+/* A volta da prévia sem resposta (ver templateDaEtapa). */
+export const TITULO_PREVIA_NOVIDADE = "Prévia sem resposta:";
 const ehLojaDeCelular = (lead: Pick<LeadPainel, "nicho">) =>
   /celular|iphone/i.test(lead.nicho ?? "");
 
@@ -459,15 +461,22 @@ export function degrauDoSilencio(
    ============================================================ */
 export function templateDaEtapa(
   lead: Pick<LeadPainel, "estagio" | "saidas_seguidas">,
-): { categoria: CategoriaTemplate; indice: number; porque: string } | null {
+): { categoria: CategoriaTemplate; indice: number; titulo?: string; porque: string } | null {
   const cobrando = lead.saidas_seguidas > 0;
   switch (lead.estagio) {
     case "previa":
+      /* Com silêncio, o índice 1 da categoria é a MENSAGEM DO PREÇO (#10):
+         o modal sugeria o preço a quem nem reagiu à amostra, contra a regra
+         de que o preço só sai depois da reação. A leitura de 01/11/2026
+         (212 conversas) achou ~16 "você tem interesse?" sem uma resposta;
+         a volta é com novidade, e vai pelo título para não depender da
+         ordem da categoria, que cresceu para 17. */
       return {
         categoria: "previa",
-        indice: cobrando ? 1 : 0,
+        indice: cobrando ? 2 : 0,
+        titulo: cobrando ? TITULO_PREVIA_NOVIDADE : undefined,
         porque: cobrando
-          ? "Prévia mandada e silêncio: cobre a reação, não recomece a apresentação"
+          ? "Prévia mandada e silêncio: volte com novidade na vitrine, não com cobrança"
           : "Lead em Prévia: a mensagem da vez é a entrega da prévia",
       };
     case "proposta":

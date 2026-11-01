@@ -98,7 +98,10 @@ export function ModalMensagem({
   const degrau = degrauDoSilencio(lead);
   const daEtapa = templateDaEtapa(lead);
   const naCategoria = daEtapa ? templates.filter((t) => t.categoria === daEtapa.categoria) : [];
-  const sugeridoEtapa = naCategoria[Math.min(daEtapa?.indice ?? 0, naCategoria.length - 1)] ?? null;
+  const sugeridoEtapa =
+    (daEtapa?.titulo ? naCategoria.find((t) => t.titulo.startsWith(daEtapa.titulo!)) : null) ??
+    naCategoria[Math.min(daEtapa?.indice ?? 0, naCategoria.length - 1)] ??
+    null;
   const naEscada = degrau ? templates.filter((t) => t.categoria === degrau.categoria) : [];
   const sugeridoEscada = degrau
     ? ((degrau.titulo ? naEscada.find((t) => t.titulo.startsWith(degrau.titulo!)) : null) ??

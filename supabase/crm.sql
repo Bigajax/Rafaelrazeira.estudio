@@ -1427,3 +1427,113 @@ select t.owner_id, 'Amostra pronta: condição única R$ 899', 'whatsapp', 'prev
  where not exists (
    select 1 from public.crm_templates x
     where x.owner_id = t.owner_id and x.titulo = 'Amostra pronta: condição única R$ 899');
+
+
+-- ============================================================
+-- 01/11/2026: A LEITURA DE 212 CONVERSAS DO WHATSAPP
+-- A abertura e a entrega funcionam; o funil morre no preço (cerca de 40
+-- receberam o valor e nenhuma fechou pela conversa). O que muda:
+--   1. a abertura diz "prévia do site da sua loja" (seis lojas
+--      perguntaram "isso é site?");
+--   2. #9 e #10 alcançam o modelo da nota (a amostra honesta de 24/09 e a
+--      entrada de 50% de 28/10); o preço leva o painel junto e termina em
+--      pergunta; o 10% e a R$ 899 também em metade na entrada;
+--   3. sai prazo da proposta ("vale por 7 dias", "vence sexta"); "Quando
+--      o preço trava" corta a ENTRADA, não oferece landing page;
+--   4. seis textos novos para o que se repetiu nas conversas: o botão
+--      "quero colocar no ar" da amostra, o elogio sem pergunta, "consigo
+--      atualizar?", "dá pra comprar no site?", "vou ver com o sócio" e
+--      "é mensal?". Ordem depois dos que já existiam, para não mexer nos
+--      índices que a escada e a etapa usam.
+-- Já aplicado no banco por script; o bloco fica de registro.
+-- Ver 6 Diário/leitura-whatsapp-2026-11-01 no cofre.
+-- ============================================================
+update public.crm_templates
+   set conteudo = E'Fala, {nome}! Aqui é o Rafael, do estúdio. Você pediu a vitrine grátis da {instagram} no anúncio do Instagram, e já abri o seu perfil.\nVou montar hoje uma prévia do site da sua loja, com as fotos do seu Instagram. De graça e sem compromisso.\nSó me diz uma coisa pra eu começar certo: qual peça mais vende aí? Começo por ela.'
+ where titulo = E'Chegou pelo anúncio: quem sou e o que ela pediu';
+
+update public.crm_templates
+   set conteudo = E'Oi, {nome}! A vitrine da {empresa} ficou pronta, montei com as fotos do Instagram de vocês:\n\n{link}\n\nTem algum modelo chegando agora que vocês querem ver aí? Por enquanto é uma amostra: pra funcionar no número de vocês tem um investimento, se fizer sentido te passo como funciona.'
+ where titulo = E'Prévia pronta, mensagem 1: só o presente';
+
+update public.crm_templates
+   set conteudo = E'Funciona assim: a vitrine vai pro ar no nome de vocês, com o pedido caindo no WhatsApp da loja. Vem um painel no celular pra cadastrar, trocar preço e marcar o que vendeu, sem depender de mim.\nÉ R$ 999 uma vez só, sem mensalidade: metade pra começar e o resto na entrega.\nQuer que eu já separe a de vocês?'
+ where titulo = E'Prévia, mensagem 2: o preço (só depois que responder)';
+
+update public.crm_templates
+   set conteudo = E'Oi, {nome}! A vitrine da {instagram} que eu montei continua no ar:\n\n{link}\n\nComo ela já está pronta, fiz uma condição só pra quem tem a amostra montada: R$ 899 em vez de R$ 999. Dá pra fazer metade pra começar e o resto na entrega, ou parcelar no cartão em até 12x (com os juros do cartão). Eu ligo no WhatsApp da loja, coloco no nome de vocês e entrego um painel pra cadastrar as peças sozinhos. Sem mensalidade.\n\nFecho a de vocês, ou posso tirar do ar?'
+ where titulo = E'Amostra pronta: condição única R$ 899';
+
+update public.crm_templates
+   set conteudo = E'{nome}, consigo fazer com 10% de desconto por [o motivo deste caso]: a vitrine sai por R$ 899 em vez de R$ 999, uma vez só, sem mensalidade. Fica R$ 450 pra começar e R$ 449 na entrega, no Pix. O resto não muda: o pedido caindo no seu WhatsApp e o painel pra você trocar preço e foto sem depender de ninguém.'
+ where titulo = E'Desconto de 10% (escreva o motivo deste caso)';
+
+update public.crm_templates
+   set conteudo = E'{nome}, entendo. O valor é esse, uma vez só e sem mensalidade. Mas a entrada eu faço em R$ 100 e o resto na entrega, depois que a vitrine estiver no ar do jeito que você aprovar.'
+ where titulo = E'Quando o preço trava';
+
+update public.crm_templates
+   set conteudo = E'Prontinho, {nome}. A proposta da {empresa} está aqui: [link]. Tem o escopo item a item e as formas de pagamento no fim. Qualquer dúvida me chama por aqui mesmo que eu respondo.'
+ where titulo = E'Enviando a proposta';
+
+update public.crm_templates
+   set conteudo = E'{nome}, {saudacao}! a proposta da {empresa} continua aqui do mesmo jeito. se ficou alguma dúvida, me pergunta; e se a resposta for não, pode me dizer sem cerimônia que eu não fico chateado, de verdade.'
+ where titulo = E'Proposta sem resposta';
+
+update public.crm_templates
+   set titulo = E'Reativar contato antigo (mais de 30 dias)'
+ where titulo = E'Reativar contato antigo';
+
+insert into public.crm_templates (owner_id, titulo, canal, categoria, conteudo, ordem)
+select t.owner_id, E'Quero colocar no ar: o botão da amostra', 'whatsapp', 'previa',
+       E'Que bom! Pra colocar a da {empresa} no ar no número de vocês: R$ 999 uma vez só, sem mensalidade, metade pra começar e o resto na entrega. Te mando o Pix da entrada e já começo?',
+       14
+  from (select distinct owner_id from public.crm_templates) t
+ where not exists (
+   select 1 from public.crm_templates x
+    where x.owner_id = t.owner_id and x.titulo = E'Quero colocar no ar: o botão da amostra');
+
+insert into public.crm_templates (owner_id, titulo, canal, categoria, conteudo, ordem)
+select t.owner_id, E'Gostou e não perguntou: o próximo passo', 'whatsapp', 'previa',
+       E'Que bom que gostou! Quer que eu te passe como funciona pra ela rodar no número de vocês?',
+       15
+  from (select distinct owner_id from public.crm_templates) t
+ where not exists (
+   select 1 from public.crm_templates x
+    where x.owner_id = t.owner_id and x.titulo = E'Gostou e não perguntou: o próximo passo');
+
+insert into public.crm_templates (owner_id, titulo, canal, categoria, conteudo, ordem)
+select t.owner_id, E'Eu consigo atualizar? O painel', 'whatsapp', 'previa',
+       E'Consegue sim: vem um painel no celular. Tira a foto, coloca nome, preço e numeração, salva, e a peça aparece no site na hora. Acabou um número, é só marcar que ele some do site.',
+       16
+  from (select distinct owner_id from public.crm_templates) t
+ where not exists (
+   select 1 from public.crm_templates x
+    where x.owner_id = t.owner_id and x.titulo = E'Eu consigo atualizar? O painel');
+
+insert into public.crm_templates (owner_id, titulo, canal, categoria, conteudo, ordem)
+select t.owner_id, E'Dá pra comprar direto no site? A compra fecha no WhatsApp', 'whatsapp', 'previa',
+       E'Nessa vitrine a compra fecha no WhatsApp: o cliente escolhe a peça e o tamanho, e o pedido chega pronto pra vocês, com o modelo e o número. O pagamento vocês combinam na conversa, do jeito que já fazem hoje. Sem carrinho e sem cadastro pro cliente.',
+       17
+  from (select distinct owner_id from public.crm_templates) t
+ where not exists (
+   select 1 from public.crm_templates x
+    where x.owner_id = t.owner_id and x.titulo = E'Dá pra comprar direto no site? A compra fecha no WhatsApp');
+
+insert into public.crm_templates (owner_id, titulo, canal, categoria, conteudo, ordem)
+select t.owner_id, E'Vou ver com o sócio: o resumo pra encaminhar', 'whatsapp', 'objecao',
+       E'Pra facilitar, deixo aqui pronto pra você só encaminhar:\n\nA vitrine da {empresa}: {link}\nÉ o site da loja, com as peças, foto e preço. O cliente escolhe e o pedido chega pronto no WhatsApp. Vem um painel pra cadastrar e trocar as peças pelo celular.\nR$ 999 uma vez só, sem mensalidade: metade pra começar e o resto na entrega.\n\nVocês conversam quando? Te chamo depois disso.',
+       11
+  from (select distinct owner_id from public.crm_templates) t
+ where not exists (
+   select 1 from public.crm_templates x
+    where x.owner_id = t.owner_id and x.titulo = E'Vou ver com o sócio: o resumo pra encaminhar');
+
+insert into public.crm_templates (owner_id, titulo, canal, categoria, conteudo, ordem)
+select t.owner_id, E'É mensal? (só se a pessoa perguntar)', 'whatsapp', 'objecao',
+       E'Não é mensal: é uma vez só, você paga e acabou. O único custo à parte é o domínio, o endereço .com.br, R$ 40 por ano no registro.br, no seu nome.',
+       12
+  from (select distinct owner_id from public.crm_templates) t
+ where not exists (
+   select 1 from public.crm_templates x
+    where x.owner_id = t.owner_id and x.titulo = E'É mensal? (só se a pessoa perguntar)');
