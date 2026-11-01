@@ -129,7 +129,7 @@ export async function plano(ano: number, ate: number) {
   const operacao: OperacaoPlano | null = ano === Number(hoje.slice(0, 4)) ? {
     novos: filas.novos.length,
     respostas: filas.responder.length,
-    propostas: filas.negociacao.length,
+    propostas: contatos.filter((l) => ["proposta", "negociacao"].includes(l.estagio)).length,
     entregasPendentes: entregas.semTabela && !entregas.integrado ? null : entregas.projetos.filter((p) => !p.entregue_em && p.status_contrato !== "cancelado").length,
     taxasPendentes: apurarMes(hoje.slice(0, 7), fin.recebimentos, fin.despesas, fin.devolucoes, fin.vendas).taxasPendentes,
   } : null;

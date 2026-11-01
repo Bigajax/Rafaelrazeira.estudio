@@ -23,6 +23,7 @@ import {
    ============================================================ */
 
 import { clienteServidor } from "./supabase";
+import { ehToqueDePreco } from "./atendimento";
 import {
   amostraNoLote,
   diaEmSP,
@@ -150,9 +151,24 @@ export async function painelHoje() {
     (amostras ?? []).map((a) => [a.lead_id, a.previa_url]),
   );
 
+  /* Quem já viu o preço (01/11): o último toque de saída com um resumo de
+     preço. Vem das saídas inteiras e não de um filtro no banco porque os
+     títulos têm "$", "%" e ":", que o filtro `or` do PostgREST pede escapados;
+     são poucas centenas de linhas. */
+  const saidas = await lerTodos<{ lead_id: string; resumo: string | null; created_at: string }>(
+    supabase, "crm_interacoes", "lead_id, resumo, created_at", undefined, { direcao: "saida" },
+  );
+  const precoPorLead = new Map<string, string>();
+  for (const s of saidas) {
+    if (!ehToqueDePreco(s.resumo)) continue;
+    const antes = precoPorLead.get(s.lead_id);
+    if (!antes || s.created_at > antes) precoPorLead.set(s.lead_id, s.created_at);
+  }
+
   const lista = [...(leads ?? []), ...(ganhosQueDevem ?? [])].map((l) => ({
     ...l,
     previa_url: amostraPorLead.get(l.id) ?? null,
+    preco_em: precoPorLead.get(l.id) ?? null,
     cobranca: cobrancasPorLead.get(l.id) ?? null,
   }));
 
