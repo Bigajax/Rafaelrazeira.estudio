@@ -844,6 +844,8 @@ end;
 $$;
 revoke all on function public.perf_registrar_pagamento(uuid, text, text, numeric, int) from public;
 grant execute on function public.perf_registrar_pagamento(uuid, text, text, numeric, int) to service_role;
+-- (03/11/2026) anon e authenticated ganham EXECUTE por padrão no Supabase: fechar
+revoke execute on function public.perf_registrar_pagamento(uuid, text, text, numeric, int) from anon, authenticated;
 
 
 -- ============================================================
@@ -901,6 +903,8 @@ end;
 $$;
 revoke all on function public.perf_registrar_upgrade(uuid, text, text, numeric) from public;
 grant execute on function public.perf_registrar_upgrade(uuid, text, text, numeric) to service_role;
+-- (03/11/2026) anon e authenticated ganham EXECUTE por padrão no Supabase: fechar
+revoke execute on function public.perf_registrar_upgrade(uuid, text, text, numeric) from anon, authenticated;
 
 
 -- ============================================================

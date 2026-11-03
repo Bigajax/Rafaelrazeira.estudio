@@ -81,6 +81,8 @@ end;
 $$;
 revoke all on function public.perf_registrar_turbinar(uuid, text, text, numeric, int) from public;
 grant execute on function public.perf_registrar_turbinar(uuid, text, text, numeric, int) to service_role;
+-- (03/11/2026) anon e authenticated ganham EXECUTE por padrão no Supabase: fechar
+revoke execute on function public.perf_registrar_turbinar(uuid, text, text, numeric, int) from anon, authenticated;
 
 -- 4. O que o painel da vitrine lê: a situação do Turbinar, pela chave da loja
 -- (a mesma da perf_painel). Sem chave certa, null, e não explica nada.

@@ -61,6 +61,8 @@ begin
 end $$;
 revoke all on function public.crm_sincronizar_devolucoes(uuid,text,jsonb,text) from public;
 grant execute on function public.crm_sincronizar_devolucoes(uuid,text,jsonb,text) to service_role;
+-- (03/11/2026) anon e authenticated ganham EXECUTE por padrão no Supabase: fechar
+revoke execute on function public.crm_sincronizar_devolucoes(uuid,text,jsonb,text) from anon, authenticated;
 
 create or replace function public.crm_cancelar_contrato(p_contrato uuid) returns void
 language plpgsql security definer set search_path=pg_catalog,public as $$
@@ -99,6 +101,8 @@ begin
 end $$;
 revoke all on function public.crm_integracao_estado(uuid,text,text,text) from public;
 grant execute on function public.crm_integracao_estado(uuid,text,text,text) to service_role;
+-- (03/11/2026) anon e authenticated ganham EXECUTE por padrão no Supabase: fechar
+revoke execute on function public.crm_integracao_estado(uuid,text,text,text) from anon, authenticated;
 
 -- Ocorrências possuem vencimento próprio; o rateio anual continua apenas como equivalente mensal.
 create table if not exists public.fin_ocorrencias (
