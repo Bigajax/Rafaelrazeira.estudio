@@ -277,7 +277,9 @@ export async function registrarToque(
     ehToqueDeBlack(dados.resumo) &&
     lead.proximo_passo?.startsWith(PASSO_BLACK)
   )
-    agenda.proximo_passo = PASSO_BLACK_COBRAR;
+    /* O que vem depois do passo ("(já viu o preço)", "· antes: ...") é a
+       anotação de antes da Black, e segue junto. */
+    agenda.proximo_passo = PASSO_BLACK_COBRAR + lead.proximo_passo.slice(PASSO_BLACK.length);
   if (
     dados.ticket_estimado != null &&
     (!Number.isFinite(dados.ticket_estimado) || dados.ticket_estimado <= 0)

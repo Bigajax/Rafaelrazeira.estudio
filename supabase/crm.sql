@@ -1590,3 +1590,17 @@ update public.crm_templates
    set titulo = E'Black R$ 799 até 30/11: só a amostra',
        conteudo = E'Oi, {nome}! 🔥 A vitrine da {empresa} continua no ar:\n\n{link}\n\nNesta Black dá pra colocar ela no número de vocês, com o pedido caindo no WhatsApp da loja e um painel no celular pra cadastrar os modelos sozinhos.\n\nAté 30/11, é R$ 799 à vista no Pix, uma vez só, sem mensalidade. Ou R$ 999, com metade pra começar e o resto na entrega.\n\nQuer que eu deixe a de vocês pronta?'
  where titulo = E'Black Friday: amostra no ar, ainda não viu o preço';
+
+-- 03/11/2026, à tarde: o Rafael pediu o texto "mais simples e conversível" e
+-- todas as amostras ativas na Black (108 leads: as 16 da manhã e mais 92,
+-- fora a Camisaria VIP, que disse não, e a Pantera, já em conversa). A
+-- condição normal (R$ 999, metade na entrada) sai do texto porque vai no
+-- banner, que o "Mandar mensagem" copia junto (public/assets/crm/black-799.png).
+-- Já aplicado no banco por script.
+update public.crm_templates
+   set conteudo = E'Oi, {nome}! 🔥 Fiz uma condição de Black pra vocês: a vitrine da {empresa} no ar por R$ 799 à vista, em vez de R$ 999.\n\n{link}\n\nVale até 30/11. Bora colocar a de vocês no ar?'
+ where titulo = E'Black R$ 799 até 30/11: já viu o preço';
+
+update public.crm_templates
+   set conteudo = E'Oi, {nome}! 🔥 A vitrine da {empresa} continua pronta:\n\n{link}\n\nNa Black, ela vai pro ar no WhatsApp de vocês por R$ 799 à vista, sem mensalidade. Vale até 30/11.\n\nQuer que eu coloque a de vocês no ar?'
+ where titulo = E'Black R$ 799 até 30/11: só a amostra';
