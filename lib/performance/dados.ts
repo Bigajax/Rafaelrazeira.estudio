@@ -17,7 +17,11 @@ import { clienteServidor } from "@/lib/crm/supabase";
 import type { PerfLoja, PerfResumo } from "@/lib/crm/tipos";
 import { situacaoDaLoja, type SituacaoLoja } from "./regras";
 
+/* (03/11/2026) o gasto do Turbinar na Meta, lançado pelo estúdio, por mês ("2026-11") */
+export type GastoTurbinar = { mes: string; valor: number };
+
 export type LojaPerformance = PerfLoja & {
+  gastos: GastoTurbinar[];
   resumo: PerfResumo | null;
   lead_nome: string | null;
   /* a situação da trava, já decidida aqui para a tela não repetir a conta */
@@ -42,6 +46,18 @@ export async function lojasPerformance(): Promise<{ lojas: LojaPerformance[]; se
         .returns<{ id: string; nome: string; empresa: string | null }[]>()
     : { data: [] as { id: string; nome: string; empresa: string | null }[] };
   const nomeDoLead = new Map((leads ?? []).map((l) => [l.id, l.empresa || l.nome]));
+  /* o gasto do Turbinar: sem a tabela (o turbinar-gastos.sql não rodou), vazio */
+  const { data: gastos } = await supabase
+    .from("perf_turbinar_gastos")
+    .select("loja_id, mes, valor")
+    .order("mes", { ascending: false })
+    .returns<{ loja_id: string; mes: string; valor: number }[]>();
+  const gastosDaLoja = new Map<string, GastoTurbinar[]>();
+  for (const g of gastos ?? []) {
+    const lista = gastosDaLoja.get(g.loja_id) ?? [];
+    lista.push({ mes: g.mes.slice(0, 7), valor: Number(g.valor) });
+    gastosDaLoja.set(g.loja_id, lista);
+  }
   const porLoja = new Map(((resumo as PerfResumo[] | null) ?? []).map((r) => [r.loja_id, r]));
 
   return {
@@ -49,6 +65,7 @@ export async function lojasPerformance(): Promise<{ lojas: LojaPerformance[]; se
     lojas: (lojas ?? []).map((l) => ({
       ...l,
       resumo: porLoja.get(l.id) ?? null,
+      gastos: gastosDaLoja.get(l.id) ?? [],
       lead_nome: l.lead_id ? (nomeDoLead.get(l.lead_id) ?? null) : null,
       situacao: situacaoDaLoja(l),
     })),

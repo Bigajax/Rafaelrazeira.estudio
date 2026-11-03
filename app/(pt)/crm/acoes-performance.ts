@@ -216,3 +216,24 @@ export async function apagarRelatorio(id: string): Promise<Resultado> {
   atualizar();
   return { ok: true };
 }
+
+/**
+ * O GASTO DO TURBINAR NA META (03/11/2026, o custo por conversa na opção
+ * simples): o valor que a loja gastou em anúncios no mês, lançado à mão. O
+ * painel da loja divide pelas conversas que vieram dos anúncios (as
+ * campanhas "anuncio-...") naquele mês. Um valor por loja e por mês: lançar
+ * de novo troca o anterior.
+ */
+export async function salvarGastoTurbinar(lojaId: string, mes: string, valor: number): Promise<Resultado> {
+  await exigirSessao();
+  if (!/^d{4}-(0[1-9]|1[0-2])$/.test(mes)) return { ok: false, erro: "Qual mês? Use o formato 2026-11." };
+  const v = Math.round(Number(valor) * 100) / 100;
+  if (!Number.isFinite(v) || v < 0 || v >= 100000) return { ok: false, erro: "O valor gasto na Meta, em reais (ex.: 900)." };
+  const supabase = await clienteServidor();
+  const { error } = await supabase
+    .from("perf_turbinar_gastos")
+    .upsert({ loja_id: lojaId, mes: `${mes}-01`, valor: v, updated_at: new Date().toISOString() }, { onConflict: "loja_id,mes" });
+  if (error) return { ok: false, erro: traduzir(error) };
+  atualizar();
+  return { ok: true };
+}

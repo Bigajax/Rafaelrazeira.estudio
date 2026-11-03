@@ -85,6 +85,7 @@ grant execute on function public.perf_registrar_turbinar(uuid, text, text, numer
 revoke execute on function public.perf_registrar_turbinar(uuid, text, text, numeric, int) from anon, authenticated;
 
 -- 4. O que o painel da vitrine lê: a situação do Turbinar, pela chave da loja
+-- (03/11/2026) SUBSTITUÍDA por supabase/turbinar-gastos.sql, que acrescenta os meses.
 -- (a mesma da perf_painel). Sem chave certa, null, e não explica nada.
 create or replace function public.perf_turbinar(chave text)
 returns jsonb

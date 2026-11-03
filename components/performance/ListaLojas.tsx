@@ -17,6 +17,7 @@ import {
   liberarPerformance,
   ligarLojaPerformance,
   novaChavePerformance,
+  salvarGastoTurbinar,
 } from "@/app/(pt)/crm/acoes-performance";
 import type { LojaPerformance } from "@/lib/performance/dados";
 import s from "@/app/(pt)/crm/crm.module.css";
@@ -226,7 +227,76 @@ function Loja({ loja }: { loja: LojaPerformance }) {
           {erro}
         </p>
       ) : null}
+      {loja.turbinar_ate || loja.turbinar_contrato_id ? <GastoTurbinar loja={loja} /> : null}
     </li>
+  );
+}
+
+/* ── o gasto do Turbinar na Meta (03/11/2026): o custo por conversa na opção
+   simples. O Rafael lança o que a loja gastou no mês; o painel dela divide
+   pelas conversas que vieram das campanhas "anuncio-...". ── */
+const MES_NOME = new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric", timeZone: "UTC" });
+const BRL = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+function mesesParaLancar(): string[] {
+  const agora = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }));
+  const mes = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+  return [mes(new Date(agora.getFullYear(), agora.getMonth() - 1, 1)), mes(agora)];
+}
+const nomeDoMes = (m: string) => MES_NOME.format(new Date(`${m}-01T12:00:00Z`));
+
+function GastoTurbinar({ loja }: { loja: LojaPerformance }) {
+  const meses = mesesParaLancar();
+  const [mes, setMes] = useState(meses[0]);
+  const [valor, setValor] = useState("");
+  const [erro, setErro] = useState<string | null>(null);
+  const [salvo, setSalvo] = useState<string | null>(null);
+  const [ocupado, comecar] = useTransition();
+  const lancado = new Map(loja.gastos.map((g) => [g.mes, g.valor]));
+
+  return (
+    <div className={p.acoes}>
+      <span className={s.campoRot}>Gasto do Turbinar na Meta</span>
+      {loja.gastos.slice(0, 3).map((g) => (
+        <span key={g.mes} className={p.situacao}>
+          {nomeDoMes(g.mes)}: {BRL(g.valor)}
+        </span>
+      ))}
+      <form
+        className={p.acoes}
+        onSubmit={(e) => {
+          e.preventDefault();
+          setErro(null);
+          setSalvo(null);
+          const numero = Number(valor.replace(/./g, "").replace(",", "."));
+          comecar(async () => {
+            const r = await salvarGastoTurbinar(loja.id, mes, numero);
+            if (!r.ok) return setErro(r.erro);
+            setSalvo(`${nomeDoMes(mes)}: ${BRL(numero)} lançado.`);
+            setValor("");
+          });
+        }}
+      >
+        <select value={mes} onChange={(e) => setMes(e.target.value)} aria-label="Mês do gasto">
+          {meses.map((m) => (
+            <option key={m} value={m}>
+              {nomeDoMes(m)}
+              {lancado.has(m) ? " (trocar)" : ""}
+            </option>
+          ))}
+        </select>
+        <input inputMode="decimal" placeholder="R$ gastos na Meta" value={valor} onChange={(e) => setValor(e.target.value)} aria-label="Valor gasto na Meta" size={12} />
+        <button type="submit" className={s.btnMini} disabled={ocupado || !valor.trim()}>
+          {ocupado ? "Lançando…" : "Lançar"}
+        </button>
+      </form>
+      {salvo ? <span className={p.situacao}>{salvo}</span> : null}
+      {erro ? (
+        <span role="alert" className={p.erro}>
+          {erro}
+        </span>
+      ) : null}
+    </div>
   );
 }
 
