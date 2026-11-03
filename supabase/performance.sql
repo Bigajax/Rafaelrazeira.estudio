@@ -587,6 +587,8 @@ grant execute on function public.perf_resumo_lojas() to authenticated;
 
 -- ============================================================
 -- 9. O RECEBIMENTO QUE LIBERA: perf_ao_receber
+-- (03/11/2026) SUBSTITUÍDA por supabase/turbinar.sql, seção 5: a mesma
+-- regra, mais o ramo do contrato do Turbinar. Mudou aqui, mude lá.
 -- ============================================================
 -- Quando uma parcela de um contrato ligado a uma loja Performance fica
 -- paga por inteiro, a trava anda: liberado_ate = o maior entre o que já

@@ -191,10 +191,19 @@ async function estadoDaAssinatura(id) {
     {
       method: "PATCH",
       headers: { Prefer: "return=minimal" },
-      body: JSON.stringify({
-        mp_assinatura_id: String(ass.corpo.id),
-        assinatura_status: ass.corpo.status || null,
-      }),
+      /* (03/11/2026) a assinatura do Turbinar tem os campos dela: pausar o
+         cartão do Turbinar não pode mexer no do Performance */
+      body: JSON.stringify(
+        ref.plano.startsWith("turbinar_")
+          ? {
+              turbinar_assinatura_id: String(ass.corpo.id),
+              turbinar_assinatura_status: ass.corpo.status || null,
+            }
+          : {
+              mp_assinatura_id: String(ass.corpo.id),
+              assinatura_status: ass.corpo.status || null,
+            },
+      ),
     },
   );
   if (!gravado.ok)

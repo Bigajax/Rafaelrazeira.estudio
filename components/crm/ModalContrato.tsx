@@ -98,6 +98,9 @@ export function ModalContrato({
   const [mensal, setMensal] = useState("");
   const [mesesGerar, setMesesGerar] = useState("3");
   const [lojaPerf, setLojaPerf] = useState("");
+  /* (03/11/2026) o que a mensalidade libera: o Performance, ou o Turbinar
+     (os anúncios pelo estúdio, com o Performance junto; é o contrato do piloto) */
+  const [servicoMensal, setServicoMensal] = useState<"performance" | "turbinar">("performance");
   const [lojas, setLojas] = useState<{ id: string; nome: string; slug: string; doLead: boolean }[] | null>(
     null,
   );
@@ -142,12 +145,12 @@ export function ModalContrato({
 
   useEffect(() => {
     if (modo !== "mensal" || lojas !== null) return;
-    lojasParaContrato(lead.id).then((lista) => {
+    lojasParaContrato(lead.id, servicoMensal).then((lista) => {
       setLojas(lista);
       const doLead = lista.find((l) => l.doLead);
-      if (doLead) setLojaPerf(doLead.id);
+      setLojaPerf(doLead ? doLead.id : "");
     });
-  }, [modo, lojas, lead.id]);
+  }, [modo, lojas, lead.id, servicoMensal]);
 
   useEffect(() => {
     if (modo === "mensal" && !titulo) setTitulo("Performance");
@@ -229,6 +232,7 @@ export function ModalContrato({
         valor_ciclo: modo === "mensal" ? Number(mensal) : null,
         dia_vencimento: modo === "mensal" ? Number(primeiro.slice(8, 10)) : null,
         perf_loja_id: modo === "mensal" ? lojaPerf || null : null,
+        perf_servico: modo === "mensal" ? servicoMensal : undefined,
         parcelas: previa,
       };
       if (ganhar) {
@@ -353,6 +357,19 @@ export function ModalContrato({
                     <input type="date" value={primeiro} onChange={(e) => setPrimeiro(e.target.value)} />
                   </label>
                   <label className={s.campo}>
+                    <span className={s.campoRot}>A mensalidade libera</span>
+                    <select
+                      value={servicoMensal}
+                      onChange={(e) => {
+                        setServicoMensal(e.target.value as "performance" | "turbinar");
+                        setLojas(null);
+                      }}
+                    >
+                      <option value="performance">O Performance</option>
+                      <option value="turbinar">O Turbinar (com o Performance)</option>
+                    </select>
+                  </label>
+                  <label className={s.campo}>
                     <span className={s.campoRot}>Loja no Performance</span>
                     <select value={lojaPerf} onChange={(e) => setLojaPerf(e.target.value)}>
                       <option value="">{lojas === null ? "Carregando…" : "Nenhuma (só cobrar)"}</option>
@@ -366,8 +383,10 @@ export function ModalContrato({
                   </label>
                 </div>
                 <p className={s.campoNota}>
-                  Cada mensalidade quitada no Caixa libera a aba Desempenho da loja por um mês (e cinco dias
-                  de folga). Gere poucas: o cartão do contrato gera mais quando estiverem acabando.
+                  {servicoMensal === "turbinar"
+                    ? "Cada mensalidade quitada no Caixa liga o Turbinar e a aba Desempenho da loja por um mês (e cinco dias de folga). "
+                    : "Cada mensalidade quitada no Caixa libera a aba Desempenho da loja por um mês (e cinco dias de folga). "}
+                  Gere poucas: o cartão do contrato gera mais quando estiverem acabando.
                 </p>
               </>
             ) : modo === "proposta" ? (

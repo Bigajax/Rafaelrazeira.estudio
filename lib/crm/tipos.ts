@@ -590,6 +590,11 @@ export type PerfLoja = {
   chave_prefixo: string | null;
   liberado_ate: string | null;
   para_sempre: boolean;
+  /* o Turbinar (03/11/2026, supabase/turbinar.sql): os anúncios pelo estúdio */
+  turbinar_ate?: string | null;
+  turbinar_plano?: "turbinar_pix" | "turbinar_cartao" | "manual" | null;
+  turbinar_assinatura_status?: string | null;
+  turbinar_contrato_id?: string | null;
   ativa: boolean;
   fuso: string;
   criado_em: string;

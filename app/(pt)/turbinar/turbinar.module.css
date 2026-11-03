@@ -1,0 +1,526 @@
+/* ============================================================
+   O TURBINAR (03/11/2026), no design oficial do estúdio desde 29/10
+   (docs/design-estudio.md): branco, Instrument Sans nos títulos, Inter no
+   resto, pílula, cartão cinza de canto grande, uma batida verde no título
+   e o rosa só no botão que vende. A prova é a vitrine de verdade no
+   celular, não decoração.
+   ============================================================ */
+.pagina {
+  --branco: #ffffff;
+  --cartao: #f2f2f0;
+  --fio: #e6e6e3;
+  --ink: #14181a;
+  --texto: #4a4f52;
+  --suave: #6b7072;
+  --verde: #0c9159;
+  --rosa: #e31b62;
+  --rosa-dark: #b81250;
+  --entra: cubic-bezier(0.2, 0.7, 0.2, 1);
+  min-height: 100vh;
+  overflow-x: clip;
+  background: var(--branco);
+  color: var(--texto);
+  font-family: var(--font-corpo), system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+.pagina * {
+  box-sizing: border-box;
+}
+.pagina em {
+  font-style: normal;
+  color: var(--verde);
+}
+
+/* ── o topo em pílula ── */
+.topo {
+  position: sticky;
+  top: 10px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: min(1120px, calc(100% - 20px));
+  height: 60px;
+  margin: 10px auto 0;
+  padding: 0 10px 0 20px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 10px 30px #0000000f, 0 1px 2px #0000000d;
+}
+.marca {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.marcaNome {
+  height: auto;
+}
+@media (max-width: 420px) {
+  .marcaNome {
+    display: none;
+  }
+}
+
+/* ── o botão ── */
+.botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50px;
+  padding: 0 1.5rem;
+  border-radius: 980px;
+  font: 600 15px/1.2 var(--font-corpo), system-ui, sans-serif;
+  text-align: center;
+  text-decoration: none;
+  transition: transform 0.12s ease-out, background-color 0.15s ease;
+}
+.botao:active {
+  transform: scale(0.97);
+}
+.botao:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+.botaoRosa {
+  background: var(--rosa);
+  color: #fff;
+  box-shadow: inset 0 1px 0 #ffffff47, 0 8px 18px -6px #e31b6273;
+}
+.botaoPreto {
+  background: var(--ink);
+  color: #fff;
+}
+.botaoBranco {
+  background: #fff;
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px #d4d4d1;
+}
+@media (hover: hover) and (pointer: fine) {
+  .botaoRosa:hover {
+    background: var(--rosa-dark);
+  }
+  .botaoBranco:hover {
+    background: #f7f7f5;
+  }
+}
+.botaoTopo {
+  min-height: 42px;
+  padding: 0 1.1rem;
+  font-size: 14px;
+}
+
+/* ── o hero: o texto e a vitrine no celular ── */
+.hero {
+  display: grid;
+  gap: 3rem;
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 4.5rem 0 2rem;
+}
+@media (min-width: 900px) {
+  .hero {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    align-items: center;
+    padding-top: 6rem;
+  }
+}
+.heroTexto {
+  animation: entra 0.55s var(--entra) both;
+}
+.selo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 1.5rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px var(--fio);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.ponto {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--verde);
+}
+.h1 {
+  margin: 0;
+  font: 400 clamp(40px, 5.6vw, 76px) / 1.02 var(--font-titulo), system-ui, sans-serif;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+  text-wrap: balance;
+}
+.lede {
+  max-width: 36em;
+  margin: 1.5rem 0 0;
+  font-size: 18px;
+  line-height: 1.55;
+  color: var(--texto);
+  text-wrap: pretty;
+}
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+@media (max-width: 520px) {
+  .acoes .botao {
+    flex: 1 1 100%;
+  }
+}
+
+/* a prova: o celular com a vitrine, e as três etiquetas do caminho */
+.prova {
+  position: relative;
+  justify-self: center;
+  width: min(300px, 78%);
+  margin: 0;
+  animation: entra 0.6s var(--entra) 0.08s both;
+}
+.fone {
+  overflow: hidden;
+  aspect-ratio: 780 / 1300;
+  padding: 10px;
+  border-radius: 40px;
+  background: #e4e4e2;
+  box-shadow: 0 40px 80px #0000001f, 0 8px 24px #00000012;
+}
+.fone img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 30px;
+}
+.etiqueta {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.9rem 0.55rem 0.55rem;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 10px 30px #00000014, 0 1px 2px #0000000d;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.etiqueta b {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: #fff;
+  font: 600 12px/1 ui-monospace, monospace;
+}
+.etiquetaUm {
+  top: 14%;
+  left: -18%;
+}
+.etiquetaDois {
+  top: 47%;
+  right: -22%;
+}
+.etiquetaTres {
+  bottom: 12%;
+  left: -14%;
+}
+@media (max-width: 520px) {
+  .etiquetaUm {
+    left: -8%;
+  }
+  .etiquetaDois {
+    right: -10%;
+  }
+  .etiquetaTres {
+    left: -6%;
+  }
+  .etiqueta {
+    font-size: 13px;
+  }
+}
+
+/* ── as seções ── */
+.secao {
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 4rem 0 0;
+}
+.h2 {
+  margin: 0 0 2rem;
+  font: 500 clamp(30px, 3.6vw, 48px) / 1.06 var(--font-titulo), system-ui, sans-serif;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+/* o que entra todo mês: cartão cinza com a lista em duas colunas */
+.lista {
+  display: grid;
+  gap: 1.5rem 2.5rem;
+  margin: 0;
+  padding: 2rem;
+  border-radius: 28px;
+  background: var(--cartao);
+  list-style: none;
+}
+@media (min-width: 760px) {
+  .lista {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 2.5rem;
+  }
+}
+@media (max-width: 520px) {
+  .lista {
+    padding: 1.5rem;
+    border-radius: 22px;
+  }
+}
+.item {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 0.75rem;
+}
+.visto {
+  width: 22px;
+  height: 22px;
+  margin-top: 1px;
+  color: var(--verde);
+}
+.itemTitulo {
+  margin: 0;
+  font-weight: 600;
+  color: var(--ink);
+}
+.itemTexto {
+  margin: 0.25rem 0 0;
+  font-size: 15px;
+  color: var(--texto);
+}
+
+/* os passos: três colunas com o fio em cima e o número em mono verde */
+.passos {
+  display: grid;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 760px) {
+  .passos {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.passo {
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--fio);
+}
+.passoNum {
+  font: 500 13px/1 ui-monospace, monospace;
+  color: var(--verde);
+}
+.passoTitulo {
+  margin: 0.75rem 0 0;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.passoTexto {
+  margin: 0.4rem 0 0;
+  font-size: 15px;
+  color: var(--texto);
+}
+
+/* o investimento: dois cartões cinza */
+.preco {
+  display: grid;
+  gap: 1rem;
+}
+@media (min-width: 760px) {
+  .preco {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.precoCartao {
+  padding: 2rem;
+  border-radius: 28px;
+  background: var(--cartao);
+}
+@media (max-width: 520px) {
+  .precoCartao {
+    padding: 1.5rem;
+    border-radius: 22px;
+  }
+}
+.precoRotulo {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--suave);
+}
+.precoValor {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.6rem;
+  margin: 0.6rem 0 0;
+  font: 500 clamp(38px, 4.4vw, 56px) / 1 var(--font-titulo), system-ui, sans-serif;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+.precoValor span {
+  font: 500 16px/1.3 var(--font-corpo), system-ui, sans-serif;
+  letter-spacing: 0;
+  color: var(--suave);
+}
+.precoNota {
+  margin: 1rem 0 0;
+  font-size: 15px;
+  color: var(--texto);
+}
+.prazo {
+  margin: 1.25rem 0 0;
+  font-size: 15px;
+  color: var(--texto);
+}
+.prazo b {
+  color: var(--ink);
+}
+
+/* o que não entra: lista simples, com o traço cinza */
+.naoEntra {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.naoEntra li {
+  position: relative;
+  padding-left: 1.5rem;
+  color: var(--texto);
+}
+.naoEntra li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.75em;
+  width: 10px;
+  height: 1.5px;
+  border-radius: 2px;
+  background: var(--suave);
+}
+
+/* as dúvidas: sanfona com fio */
+.duvidas {
+  border-top: 1px solid var(--fio);
+}
+.duvida {
+  border-bottom: 1px solid var(--fio);
+}
+.duvida summary {
+  position: relative;
+  padding: 1.25rem 2.5rem 1.25rem 0;
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--ink);
+  list-style: none;
+  cursor: pointer;
+}
+.duvida summary::-webkit-details-marker {
+  display: none;
+}
+.duvida summary::after {
+  content: "+";
+  position: absolute;
+  right: 0.25rem;
+  top: 50%;
+  translate: 0 -50%;
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--suave);
+  transition: rotate 0.2s ease;
+}
+.duvida[open] summary::after {
+  rotate: 45deg;
+}
+.duvida summary:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+.duvida p {
+  max-width: 44em;
+  margin: 0;
+  padding: 0 0 1.25rem;
+  color: var(--texto);
+}
+
+/* o convite final */
+.fim {
+  width: min(1120px, calc(100% - 32px));
+  margin: 5rem auto 0;
+  padding: 3rem 2rem;
+  border-radius: 28px;
+  background: var(--cartao);
+  text-align: center;
+}
+.fim .h2 {
+  margin-bottom: 0;
+}
+.fim .lede {
+  margin: 1rem auto 1.75rem;
+}
+@media (max-width: 520px) {
+  .fim {
+    padding: 2.25rem 1.25rem;
+    border-radius: 22px;
+  }
+  .fim .botao {
+    width: 100%;
+  }
+}
+
+.rodape {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 3rem 1rem 3.5rem;
+  font-size: 14px;
+  color: var(--suave);
+}
+
+@keyframes entra {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .heroTexto,
+  .prova {
+    animation: none;
+  }
+  .botao {
+    transition: none;
+  }
+}
+
+/* no celular estreito o botão do topo diz só "WhatsApp": "Falar no WhatsApp"
+   cortava em 390 ao lado da logo */
+@media (max-width: 420px) {
+  .soLargo {
+    display: none;
+  }
+}

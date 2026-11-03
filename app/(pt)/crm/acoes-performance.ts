@@ -141,13 +141,14 @@ export async function salvarLojaPerformance(
  * As do lead vêm primeiro; o modal do contrato lê isto ao abrir o modo
  * Mensalidade.
  */
-export async function lojasParaContrato(leadId: string): Promise<{ id: string; nome: string; slug: string; doLead: boolean }[]> {
+export async function lojasParaContrato(leadId: string, servico: "performance" | "turbinar" = "performance"): Promise<{ id: string; nome: string; slug: string; doLead: boolean }[]> {
   await exigirSessao();
   const supabase = await clienteServidor();
+  /* (03/11/2026) o contrato do Turbinar tem a coluna dele: uma loja pode ter os dois */
   const { data } = await supabase
     .from("perf_lojas")
     .select("id, nome, slug, lead_id")
-    .is("contrato_id", null)
+    .is(servico === "turbinar" ? "turbinar_contrato_id" : "contrato_id", null)
     .eq("ativa", true)
     .order("nome")
     .returns<{ id: string; nome: string; slug: string; lead_id: string | null }[]>();

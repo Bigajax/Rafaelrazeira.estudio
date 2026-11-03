@@ -13,6 +13,8 @@
  * mesmos números em _molde/lib/oferta-performance.ts: mudou aqui, muda lá e
  * na nota do cofre (4 Máquina/performance.md).
  */
+import { TURBINAR } from "./oferta";
+
 export type PlanoPerformance = "pix_mensal" | "cartao_mensal" | "cartao_anual";
 
 export const PLANOS_PERFORMANCE: Record<
@@ -25,6 +27,25 @@ export const PLANOS_PERFORMANCE: Record<
 };
 
 export const ehPlano = (v: unknown): v is PlanoPerformance => typeof v === "string" && v in PLANOS_PERFORMANCE;
+
+/**
+ * OS PLANOS DO TURBINAR (03/11/2026): o estúdio roda os anúncios da Meta da
+ * loja, por mês, COM o Performance incluído (decisão do Rafael em 03/11: é
+ * na parte paga da Desempenho que as campanhas aparecem). Pix soma 30 dias;
+ * o cartão é assinatura do Mercado Pago, cada cobrança soma 35. O valor é o
+ * TURBINAR.gestao de lib/oferta.ts, o mesmo que a página /turbinar mostra. O
+ * piloto (R$ 397) não é plano: é contrato manual no CRM, ligado à loja em
+ * perf_lojas.turbinar_contrato_id (supabase/turbinar.sql). Quem soma os dias
+ * é a função perf_registrar_turbinar.
+ */
+export type PlanoTurbinar = "turbinar_pix" | "turbinar_cartao";
+
+export const PLANOS_TURBINAR: Record<PlanoTurbinar, { rotulo: string; valor: number; dias: number; metodo: "pix" | "assinatura"; descricao: string }> = {
+  turbinar_pix: { rotulo: "Pix, mês a mês", valor: TURBINAR.gestao, dias: 30, metodo: "pix", descricao: "Turbinar: 30 dias (Pix)" },
+  turbinar_cartao: { rotulo: "Cartão, todo mês", valor: TURBINAR.gestao, dias: 35, metodo: "assinatura", descricao: "Turbinar: assinatura mensal" },
+};
+
+export const ehTurbinar = (v: unknown): v is PlanoTurbinar => typeof v === "string" && v in PLANOS_TURBINAR;
 
 /**
  * OS UPGRADES DA VITRINE (07/10/2026). Os valores são os que o Rafael

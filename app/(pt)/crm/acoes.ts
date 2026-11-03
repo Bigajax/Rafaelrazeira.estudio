@@ -697,6 +697,8 @@ export async function fecharContrato(
     valor_ciclo?: number | null;
     dia_vencimento?: number | null;
     perf_loja_id?: string | null;
+    /* (03/11/2026) o que a mensalidade libera: o Turbinar liga pelo turbinar_contrato_id */
+    perf_servico?: "performance" | "turbinar";
     parcelas: {
       numero: number;
       de: number | null;
@@ -788,7 +790,7 @@ export async function fecharContrato(
   if (recorrencia && dados.perf_loja_id) {
     await supabase
       .from("perf_lojas")
-      .update({ contrato_id: contrato.id })
+      .update(dados.perf_servico === "turbinar" ? { turbinar_contrato_id: contrato.id } : { contrato_id: contrato.id })
       .eq("id", dados.perf_loja_id);
   }
 

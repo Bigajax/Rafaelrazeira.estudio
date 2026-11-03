@@ -51,7 +51,8 @@ function avisarPainel(msg: { tipo: "perf-altura"; h: number } | { tipo: "perf-pa
   }
 }
 
-export function Checkout({ loja, planos, inicial, renovaSozinho, embutida = false, upgradeNome }: { loja: string; planos: Plano[]; inicial: Plano["id"]; renovaSozinho: boolean; embutida?: boolean; upgradeNome?: string }) {
+/* (03/11/2026) o Turbinar usa o mesmo checkout: `turbinar` só troca o que se diz depois de pagar */
+export function Checkout({ loja, planos, inicial, renovaSozinho, embutida = false, upgradeNome, turbinar = false }: { loja: string; planos: Plano[]; inicial: Plano["id"]; renovaSozinho: boolean; embutida?: boolean; upgradeNome?: string; turbinar?: boolean }) {
   const [escolha, setEscolha] = useState<Plano["id"]>(inicial);
   const plano = planos.find((p) => p.id === escolha)!;
   const d = descontoDoAnual(planos);
@@ -89,9 +90,9 @@ export function Checkout({ loja, planos, inicial, renovaSozinho, embutida = fals
       {escolha === "cartao_mensal" && renovaSozinho ? (
         <p className={s.aviso}>Esta loja já tem a assinatura no cartão ativa. Ela renova sozinha: não precisa assinar de novo.</p>
       ) : plano.metodo === "pix" ? (
-        <Pix key={plano.id} loja={loja} plano={plano} upgradeNome={upgradeNome} />
+        <Pix key={plano.id} loja={loja} plano={plano} upgradeNome={upgradeNome} turbinar={turbinar} />
       ) : (
-        <Cartao key={plano.id} loja={loja} plano={plano} upgradeNome={upgradeNome} />
+        <Cartao key={plano.id} loja={loja} plano={plano} upgradeNome={upgradeNome} turbinar={turbinar} />
       )}
     </section>
   );
@@ -99,7 +100,7 @@ export function Checkout({ loja, planos, inicial, renovaSozinho, embutida = fals
 
 /* ── o Pix ─────────────────────────────────────────────────── */
 
-function Pix({ loja, plano, upgradeNome }: { loja: string; plano: Plano; upgradeNome?: string }) {
+function Pix({ loja, plano, upgradeNome, turbinar = false }: { loja: string; plano: Plano; upgradeNome?: string; turbinar?: boolean }) {
   const [dados, setDados] = useState({ nome: "", email: "", cpf: "" });
   const [estado, setEstado] = useState<"form" | "gerando" | "qr" | "pago" | "erro">("form");
   const [erro, setErro] = useState("");
@@ -131,7 +132,7 @@ function Pix({ loja, plano, upgradeNome }: { loja: string; plano: Plano; upgrade
     setEstado("qr");
   }
 
-  if (estado === "pago") return <Pago upgradeNome={upgradeNome} />;
+  if (estado === "pago") return <Pago upgradeNome={upgradeNome} turbinar={turbinar} />;
 
   if (estado === "qr" && qr) {
     return (
@@ -204,7 +205,7 @@ function carregarSdk() {
   return sdk;
 }
 
-function Cartao({ loja, plano, upgradeNome }: { loja: string; plano: Plano; upgradeNome?: string }) {
+function Cartao({ loja, plano, upgradeNome, turbinar = false }: { loja: string; plano: Plano; upgradeNome?: string; turbinar?: boolean }) {
   const [estado, setEstado] = useState<"carregando" | "pronto" | "pago" | "analise" | "erro">("carregando");
   const [erro, setErro] = useState("");
   const montado = useRef<{ unmount: () => void } | null>(null);
@@ -268,12 +269,12 @@ function Cartao({ loja, plano, upgradeNome }: { loja: string; plano: Plano; upgr
     };
   }, [loja, plano, id]);
 
-  if (estado === "pago") return <Pago assinatura={plano.metodo === "assinatura"} upgradeNome={upgradeNome} />;
+  if (estado === "pago") return <Pago assinatura={plano.metodo === "assinatura"} upgradeNome={upgradeNome} turbinar={turbinar} />;
   if (estado === "analise")
     return (
       <div className={s.fluxo}>
         <p className={s.passo}>Pagamento em análise</p>
-        <p>{upgradeNome ? "O banco está conferindo o pagamento. Assim que aprovar, o estúdio recebe a confirmação para começar o seu upgrade." : "O banco está conferindo a compra. Assim que aprovar, o Performance liga sozinho no seu painel."}</p>
+        <p>{upgradeNome ? "O banco está conferindo o pagamento. Assim que aprovar, o estúdio recebe a confirmação para começar o seu upgrade." : turbinar ? "O banco está conferindo a compra. Assim que aprovar, o estúdio recebe o aviso e chama você no WhatsApp para começar os anúncios." : "O banco está conferindo a compra. Assim que aprovar, o Performance liga sozinho no seu painel."}</p>
       </div>
     );
 
@@ -292,13 +293,13 @@ function Cartao({ loja, plano, upgradeNome }: { loja: string; plano: Plano; upgr
   );
 }
 
-function Pago({ assinatura = false, upgradeNome }: { assinatura?: boolean; upgradeNome?: string }) {
+function Pago({ assinatura = false, upgradeNome, turbinar = false }: { assinatura?: boolean; upgradeNome?: string; turbinar?: boolean }) {
   useEffect(() => avisarPainel({ tipo: "perf-pago" }), []);
   return (
     <div className={`${s.fluxo} ${s.pago}`}>
       <p className={s.passo}>Pago</p>
-      <h2>{upgradeNome ? "Pagamento confirmado." : "O Performance está ligado."}</h2>
-      <p>{upgradeNome ? `O estúdio recebeu o pagamento de ${upgradeNome} e avisa no WhatsApp quando estiver pronto.` : <>{assinatura ? "A assinatura renova sozinha todo mês. " : ""}Abra a aba Desempenho do seu painel: os números completos já aparecem.</>}</p>
+      <h2>{upgradeNome ? "Pagamento confirmado." : turbinar ? "O Turbinar está contratado." : "O Performance está ligado."}</h2>
+      <p>{upgradeNome ? `O estúdio recebeu o pagamento de ${upgradeNome} e avisa no WhatsApp quando estiver pronto.` : turbinar ? <>{assinatura ? "A assinatura renova sozinha todo mês. " : ""}O estúdio chama você no WhatsApp para pedir o acesso à sua conta de anúncios e começar. A parte completa da aba Desempenho já está aberta no seu painel.</> : <>{assinatura ? "A assinatura renova sozinha todo mês. " : ""}Abra a aba Desempenho do seu painel: os números completos já aparecem.</>}</p>
     </div>
   );
 }

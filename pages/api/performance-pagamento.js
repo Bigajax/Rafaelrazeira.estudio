@@ -9,6 +9,8 @@
        pix_mensal    → Pix de 30 minutos, com QR
        cartao_anual  → pagamento único em até 12x
        cartao_mensal → assinatura (preapproval) que cobra sozinha todo mês
+       turbinar_pix, turbinar_cartao → o Turbinar (03/11/2026), os mesmos
+         dois jeitos; soma os dias pela perf_registrar_turbinar
 
    A referência é `perf:<loja>:<plano>:<uuid>`. O webhook (mp-webhook.js) lê
    o prefixo `perf:` e soma os dias pela função perf_registrar_pagamento,
@@ -16,7 +18,7 @@
    cada cobrança chega como `subscription_authorized_payment`.
    ============================================================ */
 import crypto from "crypto";
-import { DEGRAUS, PLANOS_PERFORMANCE, UPGRADES, ehPlano, ehUpgrade } from "@/lib/oferta-performance";
+import { DEGRAUS, PLANOS_PERFORMANCE, PLANOS_TURBINAR, UPGRADES, ehPlano, ehTurbinar, ehUpgrade } from "@/lib/oferta-performance";
 import { supabaseREST, supabaseSelect } from "@/lib/supabase-rest";
 
 const MP = "https://api.mercadopago.com";
@@ -61,7 +63,7 @@ export default async function handler(req, res) {
     }
     const l = await acharLoja(loja);
     if (!l) return json(res, 404, { error: "loja não encontrada" });
-    return json(res, 200, { publicKey, loja: { nome: l.nome, liberado_ate: l.liberado_ate, para_sempre: l.para_sempre, plano: l.plano } });
+    return json(res, 200, { publicKey, loja: { nome: l.nome, liberado_ate: l.liberado_ate, para_sempre: l.para_sempre, plano: l.plano, turbinar_ate: l.turbinar_ate, turbinar_plano: l.turbinar_plano } });
   }
 
   if (req.method !== "POST") return json(res, 405, { error: "method not allowed" });
@@ -70,11 +72,18 @@ export default async function handler(req, res) {
   /* (07/10) os upgrades da vitrine passam pela mesma rota: Pix ou cartão
      único, o valor de lib/oferta-performance.ts, sem somar dias */
   const upgrade = ehUpgrade(b.plano);
-  if (!ehPlano(b.plano) && !upgrade) return json(res, 400, { error: "plano inválido" });
-  const plano = upgrade ? UPGRADES[b.plano] : PLANOS_PERFORMANCE[b.plano];
+  /* (03/11) o Turbinar passa pela mesma rota, com os planos dele */
+  const turbinar = ehTurbinar(b.plano);
+  if (!ehPlano(b.plano) && !upgrade && !turbinar) return json(res, 400, { error: "plano inválido" });
+  const plano = upgrade ? UPGRADES[b.plano] : turbinar ? PLANOS_TURBINAR[b.plano] : PLANOS_PERFORMANCE[b.plano];
   const l = await acharLoja(b.loja);
   if (!l) return json(res, 404, { error: "loja não encontrada" });
-  if (!upgrade && l.para_sempre) return json(res, 400, { error: "Esta loja já tem o Performance para sempre." });
+  if (!upgrade && !turbinar && l.para_sempre) return json(res, 400, { error: "Esta loja já tem o Performance para sempre." });
+  /* duas assinaturas do Turbinar na mesma loja cobrariam duas vezes */
+  if (turbinar && plano.metodo === "assinatura" && l.turbinar_plano === "turbinar_cartao" && l.turbinar_assinatura_status === "authorized") {
+    return json(res, 400, { error: "Esta loja já tem o Turbinar no cartão, renovando sozinho." });
+  }
+  const origem = upgrade ? "upgrade" : turbinar ? "turbinar" : "performance";
   if (upgrade && (l.upgrade === "loja" || l.upgrade === plano.degrau)) {
     return json(res, 400, { error: `${DEGRAUS[plano.degrau].nome}: esta loja já pagou. O estúdio está fazendo.` });
   }
@@ -103,7 +112,7 @@ export default async function handler(req, res) {
           date_of_expiration: expira,
           external_reference,
           notification_url,
-          metadata: { origem: upgrade ? "upgrade" : "performance", loja: l.id, plano: b.plano },
+          metadata: { origem, loja: l.id, plano: b.plano },
           payer: {
             email,
             first_name: partes[0],
@@ -138,7 +147,7 @@ export default async function handler(req, res) {
           payer_email: payer.email,
           card_token_id: c.token,
           status: "authorized",
-          back_url: `${(process.env.SITE_URL || "https://rafaelrazeira.com.br").replace(/\/$/, "")}/assinar/${l.id}`,
+          back_url: `${(process.env.SITE_URL || "https://rafaelrazeira.com.br").replace(/\/$/, "")}/assinar/${l.id}${turbinar ? "?servico=turbinar" : ""}`,
           auto_recurring: { frequency: 1, frequency_type: "months", transaction_amount: plano.valor, currency_id: "BRL" },
         }),
       });
@@ -150,7 +159,11 @@ export default async function handler(req, res) {
       await supabaseREST(`perf_lojas?id=eq.${l.id}`, {
         method: "PATCH",
         headers: { Prefer: "return=minimal" },
-        body: JSON.stringify({ mp_assinatura_id: String(r.corpo.id), assinatura_status: r.corpo.status || "authorized", plano: "cartao_mensal" }),
+        body: JSON.stringify(
+          turbinar
+            ? { turbinar_assinatura_id: String(r.corpo.id), turbinar_assinatura_status: r.corpo.status || "authorized", turbinar_plano: "turbinar_cartao" }
+            : { mp_assinatura_id: String(r.corpo.id), assinatura_status: r.corpo.status || "authorized", plano: "cartao_mensal" },
+        ),
       }).catch((e) => console.error("perf_assinatura_gravar", e && e.message));
       return json(res, 200, { assinatura: r.corpo.id, status: r.corpo.status === "authorized" ? "approved" : r.corpo.status });
     }
@@ -176,7 +189,7 @@ export default async function handler(req, res) {
         external_reference,
         notification_url,
         statement_descriptor: "RAZEIRA ESTUDIO",
-        metadata: { origem: upgrade ? "upgrade" : "performance", loja: l.id, plano: b.plano },
+        metadata: { origem, loja: l.id, plano: b.plano },
         payer: { email: payer.email, identification: { type: (payer.identification && payer.identification.type) || "CPF", number: doc } },
       }),
     });

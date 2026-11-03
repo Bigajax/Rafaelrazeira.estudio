@@ -30,6 +30,25 @@ export interface OfertaIdioma {
    real a mais. */
 export const IMERSIVO = { total: 4997, entrada: 2499, saldo: 2498 } as const;
 
+/* O TURBINAR (/turbinar, 03/11/2026): o estúdio roda os anúncios da Meta
+   da loja que já tem a vitrine, por mês. A verba vai direto da loja para a
+   Meta, no cartão dela; o estúdio cobra só a gestão. Números SUGERIDOS em
+   03/11 a partir da pesquisa de mercado da sessão (freelancer iniciante
+   cobra R$ 500 a R$ 1.200 por conta pequena; agência, cerca de R$ 1.500;
+   verba mais citada para negócio local, R$ 30 a R$ 50 por dia, piso de
+   R$ 20): o Rafael confirma depois do piloto com as 2 primeiras lojas. */
+export const TURBINAR = {
+  gestao: 497,
+  /* o preço de piloto, nos primeiros meses, em troca de usar os números como caso */
+  piloto: 397,
+  mesesPiloto: 3,
+  /* a verba mínima e a recomendada, por dia, pagas à Meta */
+  verbaDia: 20,
+  verbaRecomendadaDia: 30,
+  /* o prazo de começo, o tempo de o anúncio aprender e dar para medir */
+  prazoMeses: 3,
+} as const;
+
 const fmt = (simbolo: string, locale: string) => (n: number) => `${simbolo}${n.toLocaleString(locale, { maximumFractionDigits: 0 })}`;
 
 export const OFERTA: Record<Lang, OfertaIdioma> = {

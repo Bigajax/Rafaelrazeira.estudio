@@ -127,6 +127,14 @@ function Loja({ loja }: { loja: LojaPerformance }) {
           {sit.rotulo}
           {loja.situacao === "liberada" && loja.liberado_ate ? ` até ${DATA.format(new Date(loja.liberado_ate))}` : ""}
         </span>
+        {/* (03/11/2026) o Turbinar, quando a loja já teve: até quando, e se renova sozinho */}
+        {loja.turbinar_ate ? (
+          <span className={p.situacao}>
+            {new Date(loja.turbinar_ate).getTime() > Date.now()
+              ? `Turbinar ${loja.turbinar_plano === "turbinar_cartao" && loja.turbinar_assinatura_status === "authorized" ? "no cartão, renova sozinho" : `até ${DATA.format(new Date(loja.turbinar_ate))}`}`
+              : `Turbinar acabou em ${DATA.format(new Date(loja.turbinar_ate))}`}
+          </span>
+        ) : null}
       </div>
 
       <div className={p.acoes}>
