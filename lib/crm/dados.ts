@@ -23,7 +23,7 @@ import {
    ============================================================ */
 
 import { clienteServidor } from "./supabase";
-import { ehPedidoNoAr, ehToqueDePreco } from "./atendimento";
+import { ehPedidoNoAr, ehToqueDeBlack, ehToqueDePreco } from "./atendimento";
 import {
   amostraNoLote,
   diaEmSP,
@@ -159,6 +159,7 @@ export async function painelHoje() {
     supabase, "crm_interacoes", "lead_id, direcao, resumo, created_at",
   );
   const precoPorLead = new Map<string, string>();
+  const blackPorLead = new Map<string, string>();
   /* A última ENTRADA de cada lead: se ela é o "pediu para colocar no ar",
      o lead fura a fila até alguém responder (01/11). */
   const ultimaEntrada = new Map<string, { resumo: string | null; created_at: string }>();
@@ -167,6 +168,10 @@ export async function painelHoje() {
       const antes = ultimaEntrada.get(t.lead_id);
       if (!antes || t.created_at > antes.created_at) ultimaEntrada.set(t.lead_id, t);
       continue;
+    }
+    if (ehToqueDeBlack(t.resumo)) {
+      const antesBlack = blackPorLead.get(t.lead_id);
+      if (!antesBlack || t.created_at > antesBlack) blackPorLead.set(t.lead_id, t.created_at);
     }
     if (!ehToqueDePreco(t.resumo)) continue;
     const antes = precoPorLead.get(t.lead_id);
@@ -189,6 +194,7 @@ export async function painelHoje() {
     ...l,
     previa_url: amostraPorLead.get(l.id) ?? null,
     preco_em: precoPorLead.get(l.id) ?? null,
+    black_em: blackPorLead.get(l.id) ?? null,
     quer_no_ar: ehPedidoNoAr(ultimaEntrada.get(l.id)?.resumo) && l.saidas_seguidas === 0,
     cobranca: cobrancasPorLead.get(l.id) ?? null,
   }));

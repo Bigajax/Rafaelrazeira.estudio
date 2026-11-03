@@ -7,6 +7,7 @@ export const ABAS_ATENDIMENTO = [
   { id: "retornos", nome: "Retornos", descricao: "Acompanhamentos vencidos, de hoje e contatos que precisam de um próximo passo." },
   { id: "prospeccao", nome: "Prospecção", descricao: "Trabalhe seus contatos por segmento e mantenha o acompanhamento em dia." },
   { id: "preco", nome: "Viu o preço", descricao: "Quem já recebeu o valor ou está em proposta. É aqui que o funil trava: o preço mais recente no topo." },
+  { id: "black", nome: "Black", descricao: "As amostras que recebem a condição de Black: R$ 799 à vista no Pix até 30/11. Quem ainda não recebeu fica no topo." },
 ] as const;
 
 /* ============================================================
@@ -38,6 +39,7 @@ export const RESUMOS_DE_PRECO = [
   "Proposta sem resposta",
   "Proposta comercial",
   "Preço enviado",
+  "Black R$ 799",
 ] as const;
 export const RESUMO_PRECO_A_MAO = "Preço enviado (marcado à mão)";
 export const ehToqueDePreco = (resumo: string | null | undefined) => Boolean(resumo && RESUMOS_DE_PRECO.some((p) => resumo.startsWith(p)));
@@ -74,6 +76,21 @@ export function parado(l: LeadPainel, hoje: string): boolean {
   return diasDesde(l.ultimo_toque_em ?? l.created_at, hoje) > DIAS_PARADO;
 }
 
+/* A BLACK (03/11/2026): o Rafael decidiu que o R$ 799 à vista, que era o
+   último degrau da escada, vira a oferta de Black até 30/11, sempre ao lado
+   do normal (R$ 999, metade na entrada). Quem entra na lista leva o passo
+   PASSO_BLACK; quando o template sai, o resumo começa com "Black R$ 799",
+   conta como preço visto e o passo vira "cobrar a resposta" (registrarToque).
+   Sem coluna nova no banco, como as marcas. O template se escolhe pelo
+   preço: quem já viu o valor recebe o "já viu", quem só tem a amostra recebe
+   o outro. Quando a Black passar (01/12), decidir com o Rafael se a aba sai. */
+export const PASSO_BLACK = "Black: mandar a oferta de R$ 799";
+export const PASSO_BLACK_COBRAR = "Black: cobrar a resposta";
+export const TEMPLATE_BLACK_VIU = "Black R$ 799 até 30/11: já viu o preço";
+export const TEMPLATE_BLACK_AMOSTRA = "Black R$ 799 até 30/11: só a amostra";
+export const ehToqueDeBlack = (resumo: string | null | undefined) => Boolean(resumo?.startsWith("Black R$ 799"));
+export const naBlack = (l: Pick<LeadPainel, "proximo_passo" | "black_em">) => Boolean(l.black_em) || Boolean(l.proximo_passo?.startsWith("Black:"));
+
 export const viuOPreco =(l: LeadPainel) => Boolean(l.preco_em) || ["proposta", "negociacao"].includes(l.estagio);
 export type AbaAtendimento = (typeof ABAS_ATENDIMENTO)[number]["id"];
 export type HistoricoAtendimento = Pick<Interacao, "id" | "canal" | "direcao" | "resumo" | "created_at">;
@@ -100,6 +117,8 @@ export function filasAtendimento(leads: LeadPainel[], hoje: string) {
     prospeccao: ativos.filter((l) => l.origem === "prospeccao"),
     // O preço mais recente no topo: os primeiros dias depois do valor são os que ainda fecham.
     preco: ativos.filter(viuOPreco).sort((a, b) => (b.preco_em ?? "").localeCompare(a.preco_em ?? "") || (a.proxima_acao_em || "").localeCompare(b.proxima_acao_em || "") || desempate(a, b)),
+    // Quem ainda não recebeu a Black primeiro; depois, a mandada há mais tempo (é a que pede cobrança).
+    black: ativos.filter(naBlack).sort((a, b) => Number(Boolean(a.black_em)) - Number(Boolean(b.black_em)) || (a.black_em ?? "").localeCompare(b.black_em ?? "") || (b.preco_em ?? "").localeCompare(a.preco_em ?? "") || desempate(a, b)),
   } satisfies Record<AbaAtendimento, LeadPainel[]>;
 }
 

@@ -526,6 +526,8 @@ export type LeadPainel = Lead & {
   /* Quando saiu o último toque com o preço (01/11), montado em memória por
      `painelHoje()` a partir do resumo dos toques. Ver `RESUMOS_DE_PRECO`. */
   preco_em?: string | null;
+  /* A última saída com o template da Black (03/11), para a aba Black. */
+  black_em?: string | null;
   /* A última coisa que a pessoa disse foi "quero colocar no ar" e ninguém
      respondeu ainda (01/11). Fura as filas. */
   quer_no_ar?: boolean;

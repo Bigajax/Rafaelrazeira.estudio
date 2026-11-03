@@ -26,6 +26,7 @@ import { dataValida } from "@/lib/sistema/calendario";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { clienteServidor, usuarioAtual } from "@/lib/crm/supabase";
+import { ehToqueDeBlack, PASSO_BLACK, PASSO_BLACK_COBRAR } from "@/lib/crm/atendimento";
 import { centavos, gerarMensalidades, somar } from "@/lib/crm/financeiro";
 import {
   destinoDoToque,
@@ -268,6 +269,15 @@ export async function registrarToque(
     agenda.proxima_acao_em = dados.proxima_acao_em || null;
   if (agenda.proxima_acao_em && !dataValida(agenda.proxima_acao_em))
     return { ok: false, falta: ["proxima_acao_em"] };
+  /* A Black saiu (03/11): o passo "mandar a oferta" vira "cobrar a resposta",
+     senão a ficha continua pedindo uma mensagem que já foi. */
+  if (
+    dados.direcao === "saida" &&
+    agenda.proximo_passo === undefined &&
+    ehToqueDeBlack(dados.resumo) &&
+    lead.proximo_passo?.startsWith(PASSO_BLACK)
+  )
+    agenda.proximo_passo = PASSO_BLACK_COBRAR;
   if (
     dados.ticket_estimado != null &&
     (!Number.isFinite(dados.ticket_estimado) || dados.ticket_estimado <= 0)

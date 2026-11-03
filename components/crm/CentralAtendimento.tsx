@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { definirPasso, registrarToque } from "@/app/(pt)/crm/acoes";
 import { arquivarParados, desfazerArquivo, lerHistoricoAtendimento, type ComoEstava } from "@/app/(pt)/crm/acoes-atendimento";
-import { ABAS_ATENDIMENTO, DIAS_PARADO, filasAtendimento, MARCAS, marcaDe, novoContato, parado, precisaResponder, RESUMO_PRECO_A_MAO, RESUMO_QUER_NO_AR, TEMPLATE_QUER_NO_AR, tempoDeEspera, type AbaAtendimento, type HistoricoAtendimento } from "@/lib/crm/atendimento";
+import { ABAS_ATENDIMENTO, DIAS_PARADO, filasAtendimento, MARCAS, marcaDe, novoContato, parado, precisaResponder, naBlack, RESUMO_PRECO_A_MAO, RESUMO_QUER_NO_AR, TEMPLATE_BLACK_AMOSTRA, TEMPLATE_BLACK_VIU, TEMPLATE_QUER_NO_AR, tempoDeEspera, type AbaAtendimento, type HistoricoAtendimento } from "@/lib/crm/atendimento";
 import { arrobaDe, dataCurta, diaEmSP, diasDesde, dinheiro, linkWhatsapp, momentoDoContato, somarDias } from "@/lib/crm/regras";
 import { ehAtivo, NOME_CANAL, NOME_ESTAGIO, NOME_ORIGEM, NOME_TIPO, ORIGENS, type Direcao, type LeadPainel, type Origem } from "@/lib/crm/tipos";
 import { Hoje } from "./Hoje";
@@ -34,8 +34,22 @@ function precoHa(l: LeadPainel, hoje: string) {
 /* O template que o "Mandar mensagem" abre já escolhido: o do botão da
    amostra para quem pediu para colocar no ar, o resumo para quem vai ver
    com o sócio. Sem pedido, o modal decide pela etapa e pela escada. */
+/* "Black há 3 dias, sem resposta", como o precoHa; quem ainda não recebeu
+   mostra o que falta fazer. */
+function blackHa(l: LeadPainel, hoje: string) {
+  if (!l.black_em) return "Mandar a Black";
+  const d = diasDesde(l.black_em, hoje);
+  const quando = d === 0 ? "Black mandada hoje" : `Black há ${d} ${d === 1 ? "dia" : "dias"}`;
+  return l.saidas_seguidas > 0 ? `${quando}, sem resposta` : quando;
+}
+
 function sugestaoDe(l: LeadPainel) {
   if (l.quer_no_ar) return { titulo: TEMPLATE_QUER_NO_AR, porque: "Pediu para colocar no ar: responda com o Pix da entrada" };
+  /* O preço que saiu por fora do CRM não tem toque: a lista da Black traz
+     "(já viu o preço)" no passo, conferido no WhatsApp em 03/11. */
+  if (naBlack(l) && !l.black_em) return l.preco_em || l.proximo_passo?.includes("já viu o preço")
+    ? { titulo: TEMPLATE_BLACK_VIU, porque: "Na lista da Black e já viu o preço: a condição de R$ 799 até 30/11" }
+    : { titulo: TEMPLATE_BLACK_AMOSTRA, porque: "Na lista da Black, só com a amostra: o preço pela primeira vez, já com a Black" };
   const marca = marcaDe(l);
   return marca?.template ? { titulo: marca.template, porque: `${marca.nome}: o resumo pronto pra encaminhar` } : undefined;
 }
@@ -83,7 +97,7 @@ export function CentralAtendimento({ painel, templates, posts = [] }: Props) {
     return () => { clearInterval(timer); document.removeEventListener("visibilitychange", atualizar); };
   }, [router]);
 
-  const parados = useMemo(() => aba === "prospeccao" ? [] : filas[aba].filter((l) => parado(l, painel.hoje)), [filas, aba, painel.hoje]);
+  const parados = useMemo(() => aba === "prospeccao" || aba === "black" ? [] : filas[aba].filter((l) => parado(l, painel.hoje)), [filas, aba, painel.hoje]);
   function arquivar() {
     setErroArquivo(null);
     comecarArquivo(async () => {
@@ -139,10 +153,10 @@ export function CentralAtendimento({ painel, templates, posts = [] }: Props) {
             <div className={c.filaCabecalho}><b>{lista.length} {lista.length === 1 ? "contato" : "contatos"}</b><span>Selecione para atender</span></div>
             <ul>{lista.map((l) => <li key={l.id}><button type="button" className={c.contato} data-contato={l.id} aria-pressed={atual?.id === l.id} onClick={() => escolher(l.id)}>
               <span className={c.contatoTopo}><b>{l.nome}</b><span className={c.etapa}>{NOME_ESTAGIO[l.estagio]}</span></span>
-              {l.quer_no_ar ? <span className={c.marca} data-quente>Quer colocar no ar</span> : marcaDe(l) ? <span className={c.marca}>{marcaDe(l)!.nome}</span> : null}
+              {l.quer_no_ar ? <span className={c.marca} data-quente>Quer colocar no ar</span> : marcaDe(l) ? <span className={c.marca}>{marcaDe(l)!.nome}</span> : naBlack(l) && aba !== "black" ? <span className={c.marca}>Black</span> : null}
               {[l.empresa !== l.nome ? l.empresa : null, l.nicho].some(Boolean) && <span className={c.contatoEmpresa}>{[l.empresa !== l.nome ? l.empresa : null, l.nicho].filter(Boolean).join(" · ")}</span>}
               <span className={c.contatoOrigem}>{NOME_ORIGEM[l.origem]}</span>
-              <span className={c.contatoRodape}><span className={novoContato(l) || precisaResponder(l) ? c.espera : ""}>{novoContato(l) || precisaResponder(l) ? agora ? tempoDeEspera(novoContato(l) ? l.created_at : momentoDoContato(l), agora) : `Desde ${hora(l.created_at)}` : aba === "preco" ? precoHa(l, painel.hoje) : l.proxima_acao_em ? `Retorno ${dataCurta(l.proxima_acao_em)}` : "Definir próximo passo"}</span><span aria-hidden="true">→</span></span>
+              <span className={c.contatoRodape}><span className={novoContato(l) || precisaResponder(l) ? c.espera : ""}>{novoContato(l) || precisaResponder(l) ? agora ? tempoDeEspera(novoContato(l) ? l.created_at : momentoDoContato(l), agora) : `Desde ${hora(l.created_at)}` : aba === "preco" ? precoHa(l, painel.hoje) : aba === "black" ? blackHa(l, painel.hoje) : l.proxima_acao_em ? `Retorno ${dataCurta(l.proxima_acao_em)}` : "Definir próximo passo"}</span><span aria-hidden="true">→</span></span>
             </button></li>)}</ul>
             {!lista.length && <div className={c.vazio}><b>{busca || origem ? "Nenhum contato neste filtro" : "Nenhum contato pendente nesta aba"}</b><p>{busca || origem ? "Ajuste a busca ou limpe os filtros." : "Confira as outras filas. Novas entradas aparecerão aqui automaticamente."}</p></div>}
           </section>

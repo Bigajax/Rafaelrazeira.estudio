@@ -1537,3 +1537,56 @@ select t.owner_id, E'É mensal? (só se a pessoa perguntar)', 'whatsapp', 'objec
  where not exists (
    select 1 from public.crm_templates x
     where x.owner_id = t.owner_id and x.titulo = E'É mensal? (só se a pessoa perguntar)');
+
+-- ============================================================
+-- 01/11/2026: A VOLTA DA BLACK FRIDAY (sazonal, apagar depois de 18/11)
+-- Para as amostras no ar sem fechamento. Nada de "promoção de Black":
+-- o preço não muda (o lote de R$ 899 de outubro teve uma resposta, e cortar
+-- o total confirma que o número é mole). A Black entra como a data em que
+-- a loja quer estar no ar: urgência da loja, não do relógio. 18/11 é o
+-- último dia para receber as peças e entregar até 26/11 (5 dias úteis, com
+-- o feriado de 20/11), véspera da Black de 27/11.
+-- Duas versões porque o CRM não registra quem já viu o preço: a A puxa a
+-- mensagem 2 normal; a B termina na pergunta que fecha a mensagem do preço.
+-- Já aplicado no banco por script; o bloco fica de registro.
+-- Ver 6 Diário/leitura-anuncios-2026-11-01 no cofre.
+-- ============================================================
+insert into public.crm_templates (owner_id, titulo, canal, categoria, conteudo, ordem)
+select t.owner_id, E'Black Friday: amostra no ar, ainda não viu o preço', 'whatsapp', 'previa',
+       E'Oi, {nome}! A vitrine da {empresa} continua no ar:\n\n{link}\n\nSe quiserem ela rodando no número de vocês pra Black Friday, ainda dá tempo: fica pronta em 5 dias úteis depois que vocês me passam as peças. E o aviso do topo vocês mesmos trocam pelo painel, dá pra colocar a oferta de Black sem depender de mim.\n\nQuer que eu te passe como funciona?',
+       18
+  from (select distinct owner_id from public.crm_templates) t
+ where not exists (
+   select 1 from public.crm_templates x
+    where x.owner_id = t.owner_id and x.titulo = E'Black Friday: amostra no ar, ainda não viu o preço');
+
+insert into public.crm_templates (owner_id, titulo, canal, categoria, conteudo, ordem)
+select t.owner_id, E'Black Friday: amostra no ar, já viu o preço', 'whatsapp', 'previa',
+       E'Oi, {nome}! A vitrine da {empresa} continua no ar:\n\n{link}\n\nLembrei de vocês por causa da Black Friday: se quiserem ela rodando no número da loja até lá, ainda dá tempo. Eu entrego em 5 dias úteis depois que vocês me passam as peças.\n\nQuer que eu já separe a de vocês?',
+       19
+  from (select distinct owner_id from public.crm_templates) t
+ where not exists (
+   select 1 from public.crm_templates x
+    where x.owner_id = t.owner_id and x.titulo = E'Black Friday: amostra no ar, já viu o preço');
+
+-- ============================================================
+-- 03/11/2026: A BLACK VIRA R$ 799 (substitui o bloco de 01/11 acima)
+-- O Rafael decidiu que o R$ 799 à vista, último degrau da escada, vira a
+-- oferta de Black até 30/11, sempre ao lado do normal (R$ 999, metade na
+-- entrada). Caso que causou: a Pantera Sneakers e a Paraíso Perdido pediram
+-- condição de Black. Os dois templates de 01/11 trocam de título e de texto;
+-- o título novo começa com "Black R$ 799", que o CRM lê como preço visto e
+-- como Black enviada (lib/crm/atendimento.ts). A aba Black do Atendimento
+-- lista quem tem o passo "Black: ..." (16 lojas marcadas em 03/11).
+-- Já aplicado no banco por script; o bloco fica de registro.
+-- Regra no cofre: 2 Regras da casa/entrada-199-regra, "A condição de Black".
+-- ============================================================
+update public.crm_templates
+   set titulo = E'Black R$ 799 até 30/11: já viu o preço',
+       conteudo = E'Oi, {nome}! 🔥 Fiz uma condição de Black pra quem já tem a amostra pronta, e lembrei de vocês:\n\n{link}\n\nA vitrine da {empresa} no ar no número de vocês por R$ 799 à vista no Pix, em vez de R$ 999. Se preferir dividir, fica o normal: metade pra começar e o resto na entrega.\n\nVale até 30/11. Quer que eu separe a de vocês?'
+ where titulo = E'Black Friday: amostra no ar, já viu o preço';
+
+update public.crm_templates
+   set titulo = E'Black R$ 799 até 30/11: só a amostra',
+       conteudo = E'Oi, {nome}! 🔥 A vitrine da {empresa} continua no ar:\n\n{link}\n\nNesta Black dá pra colocar ela no número de vocês, com o pedido caindo no WhatsApp da loja e um painel no celular pra cadastrar os modelos sozinhos.\n\nAté 30/11, é R$ 799 à vista no Pix, uma vez só, sem mensalidade. Ou R$ 999, com metade pra começar e o resto na entrega.\n\nQuer que eu deixe a de vocês pronta?'
+ where titulo = E'Black Friday: amostra no ar, ainda não viu o preço';
