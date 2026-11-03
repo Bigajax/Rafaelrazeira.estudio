@@ -37,7 +37,7 @@
 import { useEffect, useState } from "react";
 import { registrarToque } from "@/app/(pt)/crm/acoes";
 import { lerHistoricoAtendimento } from "@/app/(pt)/crm/acoes-atendimento";
-import type { HistoricoAtendimento } from "@/lib/crm/atendimento";
+import { ehToqueDeBlack, IMAGEM_BLACK, type HistoricoAtendimento } from "@/lib/crm/atendimento";
 import { dadosDaOficina } from "@/app/(pt)/crm/acoes-producao";
 import {
   aplicarSaudacao,
@@ -206,6 +206,21 @@ export function ModalMensagem({
     }
   };
 
+  /* A IMAGEM DA BLACK (03/11): o wa.me não leva anexo, então o banner vai
+     para a área de transferência e o Rafael cola na conversa (Ctrl+V). O
+     Blob entra como promessa para o clique continuar valendo como gesto. */
+  const ehBlack = ehToqueDeBlack(tituloDe(escolhido));
+  const [imagemCopiada, setImagemCopiada] = useState<"sim" | "erro" | null>(null);
+  const copiarImagem = async () => {
+    try {
+      const blob = fetch(IMAGEM_BLACK).then((r) => r.blob());
+      await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+      setImagemCopiada("sim");
+    } catch {
+      setImagemCopiada("erro");
+    }
+  };
+
   useEffect(() => {
     const aoTeclar = (e: KeyboardEvent) => e.key === "Escape" && aoFechar();
     document.addEventListener("keydown", aoTeclar);
@@ -319,13 +334,21 @@ export function ModalMensagem({
           <button type="button" className={s.btn} onClick={copiar} disabled={!texto}>
             {copiado ? "Copiado" : "Copiar texto"}
           </button>
+          {ehBlack ? (
+            <button type="button" className={s.btn} onClick={() => void copiarImagem()}>
+              {imagemCopiada === "sim" ? "Imagem copiada" : "Copiar a imagem da Black"}
+            </button>
+          ) : null}
           {saida === "whatsapp" && zap ? (
             <a
               className={s.btnAcao}
               href={zap}
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => registrar("whatsapp")}
+              onClick={() => {
+                if (ehBlack) void copiarImagem();
+                registrar("whatsapp");
+              }}
             >
               Abrir no WhatsApp
             </a>
@@ -348,6 +371,13 @@ export function ModalMensagem({
           ) : null}
         </div>
 
+        {ehBlack ? (
+          <p className={s.nota}>
+            {imagemCopiada === "erro"
+              ? <>O navegador não deixou copiar a imagem. <a href={IMAGEM_BLACK} target="_blank" rel="noopener noreferrer">Abra o banner</a> e arraste para a conversa.</>
+              : "O banner da Black vai copiado junto: na conversa, cole com Ctrl+V e o texto vira a legenda."}
+          </p>
+        ) : null}
         {/* Dito antes de acontecer: o botão também grava e marca a data. */}
         {saida ? (
           <p className={s.nota}>

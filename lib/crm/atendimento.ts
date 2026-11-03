@@ -88,7 +88,10 @@ export const PASSO_BLACK = "Black: mandar a oferta de R$ 799";
 export const PASSO_BLACK_COBRAR = "Black: cobrar a resposta";
 export const TEMPLATE_BLACK_VIU = "Black R$ 799 até 30/11: já viu o preço";
 export const TEMPLATE_BLACK_AMOSTRA = "Black R$ 799 até 30/11: só a amostra";
-export const ehToqueDeBlack = (resumo: string | null | undefined) => Boolean(resumo?.startsWith("Black R$ 799"));
+/* O banner da Black (03/11), que vai como imagem com o texto de legenda. O
+   wa.me só leva texto: o modal copia a imagem para colar na conversa. */
+export const IMAGEM_BLACK = "/assets/crm/black-799.png";
+export const ehToqueDeBlack =(resumo: string | null | undefined) => Boolean(resumo?.startsWith("Black R$ 799"));
 export const naBlack = (l: Pick<LeadPainel, "proximo_passo" | "black_em">) => Boolean(l.black_em) || Boolean(l.proximo_passo?.startsWith("Black:"));
 
 export const viuOPreco =(l: LeadPainel) => Boolean(l.preco_em) || ["proposta", "negociacao"].includes(l.estagio);
