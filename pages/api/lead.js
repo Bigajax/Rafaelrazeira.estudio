@@ -449,7 +449,10 @@ export default async function handler(req, res) {
      precisa vir com o canal, senão não há o que montar nem como chamar a
      pessoa; o nome de gente chega na primeira resposta do WhatsApp. O
      fallback para o card e o e-mail é o próprio canal, mais abaixo. */
+  /* nome sem letra nem número ("." ou "-") conta como vazio (04/11/2026):
+     um "." virou o nome do card e da mensagem. Vazio, ele cai no @ abaixo. */
   let nome = texto(b.nome);
+  if (nome && !/[\p{L}\p{N}]/u.test(nome)) nome = null;
   const whatsapp = texto(b.whatsapp, 40);
   const pagina = texto(b.pagina) || "e-commerce";
   /* ---------- as páginas em inglês (11/09/2026) ----------
@@ -468,7 +471,7 @@ export default async function handler(req, res) {
   } else {
     if (!whatsapp) return erro(res, 400, "whatsapp é obrigatório");
   }
-  if (!nome && !texto(b.canal)) return erro(res, 400, "nome ou site/instagram é obrigatório");
+  if (!nome && !/[\p{L}\p{N}]/u.test(texto(b.canal) || "")) return erro(res, 400, "nome ou site/instagram é obrigatório");
   /* a MESMA régua do formulário (components/telefone.ts): DDD válido, 10-11
      dígitos, celular começando com 9, sem repetição nem escada. Validar só no
      cliente seria decorativo, esta rota é pública e qualquer POST chega aqui.

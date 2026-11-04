@@ -70,8 +70,10 @@ function pareceSite(v: string): boolean {
 /* A régua do próprio Instagram: até 30 caracteres, letras, números, ponto e
    sublinhado. Um e-mail tem @ no meio e cai aqui; "Gráfica leão" tem
    espaço e acento e cai aqui. Nenhum dos dois precisa de rede para ser
-   recusado. */
-const FORMATO = /^[a-z0-9._]{1,30}$/;
+   recusado. E precisa de pelo menos uma letra ou número (04/11/2026): "."
+   passou como @ e virou card com nome e Instagram ".", porque a Meta
+   respondeu com erro e o @ entrou como "desconhecido". */
+const FORMATO = /^(?=[._]*[a-z0-9])[a-z0-9._]{1,30}$/;
 
 export async function conferirArroba(bruto: string): Promise<Conferencia> {
   const cru = String(bruto || "").trim();
