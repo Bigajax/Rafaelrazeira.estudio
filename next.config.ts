@@ -49,6 +49,9 @@ const nextConfig: NextConfig = {
          o CSS e os módulos da /estudio pelos dois mapas abaixo, então a
          página nova não duplica uma linha de layout. */
       { source: "/landing-page", destination: "/landing-page/index.html" },
+      /* A Black (04/11/2026): só o topo, com o pagamento ("black-799" em
+         lib/propostas.ts). O link do botão da transmissão do WhatsApp. */
+      { source: "/black", destination: "/black/index.html" },
       /* A versão em inglês da mesma página (11/09/2026): outro index.html
          em public/en/landing-page, os mesmos /css e /js dos mapas abaixo. */
       { source: "/en/landing-page", destination: "/en/landing-page/index.html" },

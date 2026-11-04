@@ -487,6 +487,22 @@ export const PROPOSTAS: Record<string, Proposta> = {
       entrada_pix: { label: "Vitrine digital: entrada para início do projeto", valor: 500, metodo: "pix" },
     },
   },
+  /* A Black (04/11/2026), decisão do Rafael: a página /black
+     (public/black/index.html), o link da transmissão comercial do WhatsApp
+     para as amostras. R$ 799 inteiros na frente, no Pix ou no cartão em até
+     12x COM os juros do Mercado Pago (o Brick calcula; nada somado aqui),
+     e a condição normal ao lado, como no banner: R$ 500 de entrada no Pix e
+     R$ 499 na entrega. Vale até 30/11 (2 Regras da casa/entrada-199-regra).
+     Em 01/12, tirar a página do ar e estas linhas, ou decidir com o Rafael. */
+  "black-799": {
+    titulo: "Rafael Razeira Estúdio, Vitrine Digital (Black)",
+    whatsapp: "5544991246187",
+    itens: {
+      avista_pix: { label: "Vitrine digital na Black: R$ 799 à vista no Pix", valor: 799, metodo: "pix" },
+      avista_card: { label: "Vitrine digital na Black: R$ 799 no cartão em até 12x", valor: 799, metodo: "card", maxParcelas: 12 },
+      entrada_pix: { label: "Vitrine digital: entrada de R$ 500 (o resto, R$ 499, na entrega)", valor: 500, metodo: "pix" },
+    },
+  },
   /* A HG Surf Wear (06/10/2026), decisão do Rafael: duas formas na mesma
      página. À vista no Pix, R$ 899, um recebimento só (o desconto de pagar
      de uma vez, sem bloco de condição especial). Ou os R$ 999 de tabela em
