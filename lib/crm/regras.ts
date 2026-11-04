@@ -934,7 +934,16 @@ export function numeroWhatsapp(bruto: string | null): string | null {
 export function linkWhatsapp(bruto: string | null, texto?: string): string | null {
   const n = numeroWhatsapp(bruto);
   if (!n) return null;
-  return `https://wa.me/${n}${texto ? `?text=${encodeURIComponent(texto)}` : ""}`;
+  /* Com texto, NUNCA pelo wa.me nem pelo api.whatsapp.com (04/11): os dois
+     passam o texto pelo servidor do WhatsApp, que troca emoji de 4 bytes
+     por "�" (o 🔥 da Black chegou como "Oi! �"; conferido com curl). O
+     web.whatsapp.com/send lê o texto no navegador e mantém o emoji
+     (conferido no WhatsApp Web do Rafael). No celular, o whatsapp://send
+     abre o app direto, sem passar pelo servidor. */
+  if (!texto) return `https://wa.me/${n}`;
+  const q = `phone=${n}&text=${encodeURIComponent(texto)}`;
+  const celular = typeof navigator !== "undefined" && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  return celular ? `whatsapp://send?${q}` : `https://web.whatsapp.com/send?${q}`;
 }
 
 /** Aceita "@loja", "loja" ou a URL inteira colada, e devolve sempre a URL. */

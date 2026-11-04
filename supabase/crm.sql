@@ -1604,3 +1604,10 @@ update public.crm_templates
 update public.crm_templates
    set conteudo = E'Oi, {nome}! 🔥 A vitrine da {empresa} continua pronta:\n\n{link}\n\nNa Black, ela vai pro ar no WhatsApp de vocês por R$ 799 à vista, sem mensalidade. Vale até 30/11.\n\nQuer que eu coloque a de vocês no ar?'
  where titulo = E'Black R$ 799 até 30/11: só a amostra';
+
+-- 04/11/2026 (pedido do Rafael): os dois textos da Black ficam iguais ao da
+-- transmissão comercial do WhatsApp, sem nome (muitos leads só têm o @).
+-- JÁ APLICADO no banco em 04/11; fica aqui como registro.
+update crm_templates
+   set conteudo = E'Oi! 🔥 Fiz uma condição de Black pra vocês: a vitrine que eu montei da loja de vocês vai pro ar por R$ 799 à vista, em vez de R$ 999.\n\n{link}\n\nVale até 30/11.'
+ where titulo in (E'Black R$ 799 até 30/11: já viu o preço', E'Black R$ 799 até 30/11: só a amostra');
