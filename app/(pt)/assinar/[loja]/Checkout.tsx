@@ -299,7 +299,20 @@ function Pago({ assinatura = false, upgradeNome, turbinar = false }: { assinatur
     <div className={`${s.fluxo} ${s.pago}`}>
       <p className={s.passo}>Pago</p>
       <h2>{upgradeNome ? "Pagamento confirmado." : turbinar ? "O Turbinar está contratado." : "O Performance está ligado."}</h2>
-      <p>{upgradeNome ? `O estúdio recebeu o pagamento de ${upgradeNome} e avisa no WhatsApp quando estiver pronto.` : turbinar ? <>{assinatura ? "A assinatura renova sozinha todo mês. " : ""}O estúdio chama você no WhatsApp para pedir o acesso à sua conta de anúncios e começar. A parte completa da aba Desempenho já está aberta no seu painel.</> : <>{assinatura ? "A assinatura renova sozinha todo mês. " : ""}Abra a aba Desempenho do seu painel: os números completos já aparecem.</>}</p>
+      {turbinar && !upgradeNome ? (
+        /* (04/11/2026) o que acontece agora, em passos: a dona sabe o que esperar */
+        <>
+          {assinatura ? <p>A assinatura renova sozinha todo mês.</p> : null}
+          <ol className={s.passosPago}>
+            <li><b>O estúdio chama você no WhatsApp</b> para começar.</li>
+            <li><b>Você libera o acesso à sua conta de anúncios.</b> O estúdio manda o passo a passo e ajuda a criar a conta, se ainda não tiver.</li>
+            <li><b>O estúdio monta os primeiros anúncios</b> com as peças da sua vitrine.</li>
+          </ol>
+          <p>A parte completa da aba Desempenho já está aberta no seu painel.</p>
+        </>
+      ) : (
+        <p>{upgradeNome ? `O estúdio recebeu o pagamento de ${upgradeNome} e avisa no WhatsApp quando estiver pronto.` : <>{assinatura ? "A assinatura renova sozinha todo mês. " : ""}Abra a aba Desempenho do seu painel: os números completos já aparecem.</>}</p>
+      )}
     </div>
   );
 }

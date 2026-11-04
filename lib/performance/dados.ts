@@ -22,6 +22,8 @@ export type GastoTurbinar = { mes: string; valor: number };
 
 export type LojaPerformance = PerfLoja & {
   gastos: GastoTurbinar[];
+  /* (04/11/2026) a última vez que a dona abriu o pagamento do Turbinar no painel */
+  olhou_turbinar: string | null;
   resumo: PerfResumo | null;
   lead_nome: string | null;
   /* a situação da trava, já decidida aqui para a tela não repetir a conta */
@@ -58,6 +60,16 @@ export async function lojasPerformance(): Promise<{ lojas: LojaPerformance[]; se
     lista.push({ mes: g.mes.slice(0, 7), valor: Number(g.valor) });
     gastosDaLoja.set(g.loja_id, lista);
   }
+  /* quem abriu o pagamento do Turbinar: sem a tabela (o turbinar-interesse.sql
+     não rodou), ninguém. Vem do mais novo para o mais antigo: o primeiro de cada loja vale */
+  const { data: olhadas } = await supabase
+    .from("perf_turbinar_olhadas")
+    .select("loja_id, criado_em")
+    .order("criado_em", { ascending: false })
+    .limit(500)
+    .returns<{ loja_id: string; criado_em: string }[]>();
+  const olhouPorLoja = new Map<string, string>();
+  for (const o of olhadas ?? []) if (!olhouPorLoja.has(o.loja_id)) olhouPorLoja.set(o.loja_id, o.criado_em);
   const porLoja = new Map(((resumo as PerfResumo[] | null) ?? []).map((r) => [r.loja_id, r]));
 
   return {
@@ -66,6 +78,7 @@ export async function lojasPerformance(): Promise<{ lojas: LojaPerformance[]; se
       ...l,
       resumo: porLoja.get(l.id) ?? null,
       gastos: gastosDaLoja.get(l.id) ?? [],
+      olhou_turbinar: olhouPorLoja.get(l.id) ?? null,
       lead_nome: l.lead_id ? (nomeDoLead.get(l.lead_id) ?? null) : null,
       situacao: situacaoDaLoja(l),
     })),

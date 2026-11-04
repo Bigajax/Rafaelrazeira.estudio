@@ -136,6 +136,10 @@ function Loja({ loja }: { loja: LojaPerformance }) {
               : `Turbinar acabou em ${DATA.format(new Date(loja.turbinar_ate))}`}
           </span>
         ) : null}
+        {/* (04/11/2026) a dona abriu o pagamento do Turbinar e não está com ele ligado: lead quente */}
+        {loja.olhou_turbinar && !(loja.turbinar_ate && new Date(loja.turbinar_ate).getTime() > Date.now()) ? (
+          <span className={p.situacao}>Abriu o pagamento do Turbinar em {DATA.format(new Date(loja.olhou_turbinar))}</span>
+        ) : null}
       </div>
 
       <div className={p.acoes}>

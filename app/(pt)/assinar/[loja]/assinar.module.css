@@ -184,3 +184,8 @@
 /* o fundo da página inteira também branco: embutida, a janela do painel
    mostrava o bege do body abaixo do conteúdo (04/11/2026) */
 :global(html):has(.pagina), :global(body):has(.pagina) { background: #fff; }
+/* os passos depois de pagar o Turbinar (04/11/2026) */
+.passosPago { display: grid; gap: 0.7rem; margin: 0.25rem 0; padding: 0; list-style: none; counter-reset: passo; }
+.passosPago li { position: relative; padding-left: 2.25rem; font-size: 0.9375rem; line-height: 1.5; color: var(--ink-soft); counter-increment: passo; }
+.passosPago li::before { content: counter(passo); position: absolute; left: 0; top: 0; display: grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 50%; background: var(--ink); color: #fff; font: 600 0.75rem/1 var(--font-body), sans-serif; }
+.passosPago b { font-weight: 600; color: var(--ink); }
