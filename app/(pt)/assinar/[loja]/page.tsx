@@ -17,7 +17,7 @@
    ============================================================ */
 
 import type { Metadata } from "next";
-import { Archivo, Inter, JetBrains_Mono } from "next/font/google";
+import { Archivo, Inter, Instrument_Sans, JetBrains_Mono } from "next/font/google";
 import { notFound } from "next/navigation";
 import { Selo } from "@/components/performance/Selo";
 import { PLANOS_PERFORMANCE, PLANOS_TURBINAR, ehPlano, ehTurbinar } from "@/lib/oferta-performance";
@@ -27,6 +27,8 @@ import s from "./assinar.module.css";
 const display = Archivo({ subsets: ["latin"], axes: ["wdth"], variable: "--font-display" });
 const corpo = Inter({ subsets: ["latin"], variable: "--font-body" });
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
+/* a régua do estúdio (04/11/2026): o título e o preço na Instrument Sans */
+const titulo = Instrument_Sans({ subsets: ["latin"], variable: "--font-titulo" });
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Assinar o Performance", robots: { index: false, follow: false } };
@@ -79,7 +81,7 @@ export default async function PaginaAssinar({ params, searchParams }: { params: 
   const planos = (Object.keys(PLANOS_PERFORMANCE) as (keyof typeof PLANOS_PERFORMANCE)[]).map((k) => ({ id: k, ...PLANOS_PERFORMANCE[k] }));
 
   return (
-    <main className={`${s.pagina} ${embutida ? s.embutida : ""} ${display.variable} ${corpo.variable} ${mono.variable}`}>
+    <main className={`${s.pagina} ${embutida ? s.embutida : ""} ${display.variable} ${corpo.variable} ${mono.variable} ${titulo.variable}`}>
       <div className={s.folha}>
         {embutida ? (
           <p className={s.situacaoEmbutida}>{situacao}</p>
@@ -133,7 +135,7 @@ function Turbinar({ loja, plano, embutida }: { loja: Loja; plano?: string; embut
   }));
 
   return (
-    <main className={`${s.pagina} ${embutida ? s.embutida : ""} ${display.variable} ${corpo.variable} ${mono.variable}`}>
+    <main className={`${s.pagina} ${embutida ? s.embutida : ""} ${display.variable} ${corpo.variable} ${mono.variable} ${titulo.variable}`}>
       <div className={s.folha}>
         {embutida ? (
           <p className={s.situacaoEmbutida}>{situacao}</p>

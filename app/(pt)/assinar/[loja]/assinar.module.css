@@ -123,3 +123,64 @@
 @media (min-width: 640px) { .planos[data-opcoes="2"] { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 399px) { .embutida { padding: 0.875rem; } .fluxo { padding: 1rem; } .carimbo { width: 100%; } }
 @media (hover: hover) and (pointer: fine) { .carimbo:hover:not(:disabled) { background: #055436; } }
+
+/* ============================================================
+   NA RÉGUA DO ESTÚDIO (04/11/2026, pedido do Rafael ao ver a janela de
+   pagamento do Turbinar ainda bege e verde dentro do painel novo): o branco,
+   o cartão cinza de canto grande, o campo cinza que fica branco com o anel
+   rosa no foco, a pílula, e o rosa só na ação (gerar o Pix, pagar). O
+   escolhido ganha o anel de tinta. Vale para o Performance e para o
+   Turbinar, que dividem a página. Régua: docs/design-estudio.md.
+   ============================================================ */
+.pagina {
+  --paper: #ffffff;
+  --ficha: #f2f2f0;
+  --linha: #e6e6e3;
+  --ink-soft: #4a4f52;
+  --suave: #6b7072;
+  --green: #0c9159;
+  background: #fff;
+}
+.pagina :where(button, input, a):focus-visible { outline: 2px solid var(--rosa); outline-offset: 3px; }
+.titulo { font-family: var(--font-titulo), var(--font-body), sans-serif; font-variation-settings: normal; font-weight: 400; letter-spacing: -0.035em; }
+.rotulo { font: 500 0.875rem/1.3 var(--font-body), sans-serif; letter-spacing: 0; text-transform: none; color: var(--suave); }
+.situacao, .situacaoEmbutida { font-size: 0.9375rem; line-height: 1.55; color: var(--ink-soft); }
+
+/* os jeitos de pagar: o cartão cinza; o escolhido fica branco com o anel */
+.plano { gap: 0.4rem; padding: 1.15rem 1.2rem 1.25rem; border: 0; border-radius: 22px; background: var(--ficha); box-shadow: none; transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease-out; }
+@media (hover: hover) and (pointer: fine) { .plano:hover { background: #ebebe8; } }
+.plano:active { transform: scale(0.99); }
+.plano[data-selecionado] { background: #fff; box-shadow: 0 0 0 2px var(--ink), 0 10px 30px #0000000f; }
+.plano input { width: 20px; height: 20px; accent-color: var(--ink); }
+.planoNome { font: 600 0.875rem/1.4 var(--font-body), sans-serif; color: var(--ink); }
+.planoPreco { font-family: var(--font-titulo), var(--font-body), sans-serif; font-variation-settings: normal; font-weight: 500; font-size: 1.75rem; line-height: 1.1; letter-spacing: -0.03em; }
+.planoDiz { font-size: 0.8125rem; line-height: 1.5; color: var(--suave); }
+.planoCheio { color: var(--suave); }
+.selo { padding: 0.2rem 0.6rem; border-radius: 999px; background: #e3f3ea; color: var(--green); font: 500 0.75rem/1.4 var(--font-body), sans-serif; }
+
+/* quem paga e o pagamento: o cartão cinza, os campos brancos dentro dele */
+.fluxo { gap: 1rem; padding: 1.4rem 1.3rem; border: 0; border-radius: 22px; background: var(--ficha); }
+.passo { padding-bottom: 0; border: 0; font: 600 1rem/1.3 var(--font-titulo), var(--font-body), sans-serif; letter-spacing: -0.01em; color: var(--ink); }
+.campos span { font: 500 0.8125rem/1.4 var(--font-body), sans-serif; color: var(--ink-soft); }
+.campos input { min-height: 3.1rem; padding: 0 1rem; border: 0; border-radius: 14px; background: #fff; transition: box-shadow 0.15s ease; }
+.campos input:focus { outline: none; box-shadow: 0 0 0 2px var(--rosa); }
+
+/* a ação: a pílula rosa com a sombra macia; o secundário branco com fio */
+.carimbo { justify-self: stretch; min-height: 50px; padding: 0.8rem 1.5rem; border-radius: 999px; background: var(--rosa); box-shadow: inset 0 1px 0 #ffffff47, 0 8px 18px -6px #e31b6273; font: 600 0.9375rem/1.2 var(--font-body), sans-serif; transition: background-color 0.15s ease, transform 0.12s ease-out; }
+@media (hover: hover) and (pointer: fine) { .carimbo:hover:not(:disabled) { background: var(--rosa-dark); } }
+.carimbo:active:not(:disabled) { transform: scale(0.97); box-shadow: inset 0 1px 0 #ffffff47, 0 8px 18px -6px #e31b6273; }
+.carimbo:disabled { background: #e6e6e3; color: var(--suave); box-shadow: none; }
+.botaoLinha { min-height: 46px; padding: 0.7rem 1.25rem; border: 1px solid #d4d4d1; border-radius: 999px; background: #fff; font: 600 0.875rem/1.2 var(--font-body), sans-serif; }
+.botaoLinha:active { transform: scale(0.97); }
+
+.qr img { border: 0; border-radius: 14px; }
+.erro { border: 0; border-radius: 14px; background: #fdecee; color: var(--vermelho); }
+.aviso { border: 0; border-radius: 14px; background: #e3f3ea; color: var(--ink); }
+.pago { background: #fff; box-shadow: 0 0 0 2px var(--green); }
+.pago h2 { font-family: var(--font-titulo), var(--font-body), sans-serif; font-variation-settings: normal; font-weight: 500; letter-spacing: -0.03em; }
+.rodape a { color: var(--ink); }
+@media (max-width: 399px) { .plano { border-radius: 18px; } .fluxo { border-radius: 18px; padding: 1.1rem 1rem; } }
+@media (prefers-reduced-motion: reduce) { .plano, .carimbo, .botaoLinha, .campos input { transition: none; } .plano:active, .carimbo:active, .botaoLinha:active { transform: none; } }
+/* o fundo da página inteira também branco: embutida, a janela do painel
+   mostrava o bege do body abaixo do conteúdo (04/11/2026) */
+:global(html):has(.pagina), :global(body):has(.pagina) { background: #fff; }
