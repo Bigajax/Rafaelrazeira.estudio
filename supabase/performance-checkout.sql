@@ -7,16 +7,20 @@
 --   checkout_dados     nome, e-mail, WhatsApp e CPF válidos (o preenchimento)
 --   checkout_entrega   a entrega escolhida e o endereço completo
 --   checkout_pagar     o pedido reservado: foi para o pagamento
---   checkout_pago      a página do pedido mostrou o pagamento confirmado
+--   checkout_pago      o banco da loja confirmou o pagamento (mandado pelo SERVIDOR da loja,
+--                      nunca pelo navegador: o Pix pago com a página fechada também conta)
+-- E um passo antes da sacola:
+--   peca_aberta        a página da peça aberta (a base da taxa de adição à sacola;
+--                      a exposicao conta o cartão visto na lista)
 -- Com eles, e com o sacola_adicionada que já existe, o Performance calcula:
 -- adição ao carrinho, checkout iniciado, preenchimento, abandono e conversão.
--- Limite conhecido: o checkout_pago vem do navegador; o Pix pago com a página
--- fechada só conta quando a pessoa volta ao pedido (o painel da loja tem o real).
+-- Limite conhecido: o navegador do dono e quem não é medido (sem Performance) não
+-- levam o código de visitante ao pedido, e o pago dessas pessoas não conta aqui.
 begin;
 
 alter table public.perf_interesses drop constraint if exists perf_interesses_acao_check;
 alter table public.perf_interesses add constraint perf_interesses_acao_check check (acao in (
-  'exposicao','favorito','favorito_removido','sacola_adicionada','sacola_removida','sacola_quantidade','sacola_aberta','whatsapp','whatsapp_sacola',
+  'exposicao','peca_aberta','favorito','favorito_removido','sacola_adicionada','sacola_removida','sacola_quantidade','sacola_aberta','whatsapp','whatsapp_sacola',
   'checkout_iniciado','checkout_dados','checkout_entrega','checkout_pagar','checkout_pago'));
 
 create or replace function public.perf_registrar_interesse(chave text,e jsonb)
@@ -31,7 +35,7 @@ begin
   l:=public.perf_loja_da_chave(chave); if l.id is null then return; end if;
   if e is null or jsonb_typeof(e)<>'object' or octet_length(e::text)>12000 then return; end if;
   if v is null or v!~'^[a-z0-9]{8,24}$' then return; end if;
-  if a is null or a not in ('exposicao','favorito','favorito_removido','sacola_adicionada','sacola_removida','sacola_quantidade','sacola_aberta','whatsapp','whatsapp_sacola',
+  if a is null or a not in ('exposicao','peca_aberta','favorito','favorito_removido','sacola_adicionada','sacola_removida','sacola_quantidade','sacola_aberta','whatsapp','whatsapp_sacola',
     'checkout_iniciado','checkout_dados','checkout_entrega','checkout_pagar','checkout_pago') then return; end if;
   begin eid:=(e->>'evento')::uuid; q:=(e->>'quantidade')::int; exception when others then return; end;
   if eid is null or (q is not null and (q<0 or q>20)) then return; end if;
@@ -83,6 +87,7 @@ as $$
     'dias',least(greatest(coalesce(dias,30),1),400),
     'visitantes',(select count(distinct visitante) from ev),
     'viram_peca',(select count(distinct visitante) from ev where acao='exposicao'),
+    'abriram_peca',(select count(distinct visitante) from ev where acao='peca_aberta'),
     'sacola',(select count(distinct visitante) from ev where acao='sacola_adicionada'),
     'iniciado',(select count(distinct visitante) from ev where acao='checkout_iniciado'),
     'dados',(select count(distinct visitante) from ev where acao='checkout_dados'),
