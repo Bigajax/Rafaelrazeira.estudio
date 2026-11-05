@@ -11,20 +11,25 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { clienteServidor } from "@/lib/crm/supabase";
 import { Relatorios, type RelatorioLinha } from "@/components/performance/Relatorios";
+import { FunilCheckout } from "@/components/performance/FunilCheckout";
+import { PERIODOS, lerFunilCheckout } from "@/lib/performance/funil-checkout";
 import s from "@/app/(pt)/crm/crm.module.css";
 import p from "@/app/(pt)/crm/performance.module.css";
 
 export const metadata: Metadata = { title: "Relatórios do Performance" };
 export const dynamic = "force-dynamic";
 
-export default async function PaginaRelatorios({ params }: { params: Promise<{ loja: string }> }) {
-  const { loja: lojaId } = await params;
+export default async function PaginaRelatorios({ params, searchParams }: { params: Promise<{ loja: string }>; searchParams: Promise<{ dias?: string }> }) {
+  const [{ loja: lojaId }, sp] = await Promise.all([params, searchParams]);
+  const dias = (PERIODOS as readonly number[]).includes(Number(sp.dias)) ? Number(sp.dias) : 30;
   const supabase = await clienteServidor();
   const [{ data: loja }, { data: relatorios, error }] = await Promise.all([
     supabase.from("perf_lojas").select("id, nome, slug").eq("id", lojaId).maybeSingle(),
     supabase.from("perf_relatorios").select("id, mes, token, leitura, feito, updated_at").eq("loja_id", lojaId).order("mes", { ascending: false }),
   ]);
+  /* a loja só existe aqui se o login do CRM a enxerga (RLS): o funil, com a chave de serviço, vem depois disso */
   if (!loja) notFound();
+  const funil = await lerFunilCheckout(loja.id as string, dias);
 
   return (
     <div className={p.tela}>
@@ -46,6 +51,8 @@ export default async function PaginaRelatorios({ params }: { params: Promise<{ l
           A tabela dos relatórios ainda não existe. Rode a seção 10 do <code>supabase/performance.sql</code> no SQL Editor.
         </p>
       ) : null}
+
+      <FunilCheckout funil={funil} dias={dias} lojaId={loja.id as string} />
 
       <Relatorios lojaId={loja.id as string} relatorios={(relatorios ?? []) as RelatorioLinha[]} />
     </div>

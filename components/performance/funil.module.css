@@ -1,0 +1,31 @@
+/* O funil da loja online (05/11/2026): a régua do CRM, uma cor só (o acento do painel) */
+.funil { margin-top: 28px; padding: 22px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper-alto); display: grid; gap: 20px; min-width: 0 }
+.topo { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap }
+.topo h2 { margin: 0; font: 650 18px/1.4 var(--body) }
+.topo p { margin: 4px 0 0; font-size: 13.5px; color: var(--ink-soft); line-height: 1.5 }
+.periodos { display: flex; gap: 4px }
+.periodos a { padding: 6px 10px; border: 1px solid var(--line); border-radius: 999px; font-size: 12.5px; color: var(--ink-soft); text-decoration: none; min-height: 32px; display: inline-flex; align-items: center }
+.periodos a[aria-current="true"] { border-color: var(--painel-borda-ativa); background: var(--painel-acento-suave); color: var(--painel-acento); font-weight: 600 }
+.aviso { margin: 0; padding: 14px 16px; border: 1px dashed var(--ink-fraco); border-radius: 6px; font-size: 14px; line-height: 1.5 }
+.aviso code { font: 12.5px var(--mono) }
+
+.taxas { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 12px }
+.taxas li { padding: 14px 16px; border-radius: 6px; background: var(--paper); border: 1px solid var(--line); display: grid; gap: 4px; align-content: start; min-width: 0 }
+.taxaNome { font-size: 12.5px; color: var(--ink-soft) }
+.taxas b { font: 650 24px/1.2 var(--body); color: var(--ink) }
+.taxas li[data-poucos] b { color: var(--ink-soft) }
+.taxaBase { font-size: 12px; color: var(--ink-fraco); line-height: 1.45 }
+
+.degraus { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px }
+.degraus li { display: grid; grid-template-columns: minmax(0, 170px) minmax(0, 1fr) minmax(0, 150px); gap: 14px; align-items: center }
+.degrauNome { font-size: 13.5px; color: var(--ink) }
+.trilho { display: block; height: 10px; border-radius: 4px; background: color-mix(in srgb, var(--line) 55%, transparent) }
+.barra { display: block; height: 100%; border-radius: 4px; background: var(--painel-acento) }
+.degrauNumero { display: flex; align-items: baseline; gap: 8px; justify-content: flex-end; text-align: right }
+.degrauNumero b { font: 650 15px var(--body); color: var(--ink) }
+.degrauNumero span { font-size: 12px; color: var(--ink-fraco) }
+
+@media (max-width: 640px) {
+  .degraus li { grid-template-columns: minmax(0, 1fr) auto; gap: 6px 10px }
+  .trilho { grid-column: 1 / -1; grid-row: 2 }
+}
