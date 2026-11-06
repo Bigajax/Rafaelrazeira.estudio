@@ -1611,3 +1611,33 @@ update public.crm_templates
 update crm_templates
    set conteudo = E'Oi! 🔥 Fiz uma condição de Black pra vocês: a vitrine que eu montei da loja de vocês vai pro ar por R$ 799 à vista, em vez de R$ 999.\n\n{link}\n\nVale até 30/11.'
  where titulo in (E'Black R$ 799 até 30/11: já viu o preço', E'Black R$ 799 até 30/11: só a amostra');
+
+-- ============================================================
+-- 06/11/2026: A ABERTURA FRIA DA LOJA ONLINE
+-- O Rafael achou fraco o primeiro contato da prospecção ativa. A sugerida
+-- da pesquisa para a Silvana Pelegrini fingia ser cliente ("queria ver as
+-- peças antes de passar aí"), o que a regra de 01/10 proíbe. Depois de uma
+-- pesquisa (mensagem curta, o motivo dito, um pedido só, uma saída leve), ele
+-- escolheu duas aberturas que falam da Loja online e um segundo toque. A
+-- amostra só é montada DEPOIS do sim: montar loja para quem não pediu dá
+-- trabalho demais. Nenhuma cita caso nem número, porque o checkout ainda não
+-- está no ar em loja nenhuma. Ordem 3, 4 e 4: não mexe no índice 0 de cada
+-- categoria. Já aplicado no banco por script; o bloco fica de registro.
+-- ============================================================
+insert into public.crm_templates (owner_id, titulo, canal, categoria, conteudo, ordem)
+select t.owner_id, v.titulo, 'whatsapp', v.categoria, v.conteudo, v.ordem
+  from (select distinct owner_id from public.crm_templates) t
+ cross join (values
+   ('Loja online: o que eu faço, com saída', 'abertura_fria',
+    E'Oi, {saudacao}! Aqui é o Rafael, de Maringá.\nEu faço loja online pra loja como a sua: a cliente escolhe a peça e o tamanho, paga no Pix ou no cartão, e o pedido cai no seu painel.\n\nPosso te mostrar como ficaria com as suas peças? Se não for a hora, tranquilo.',
+    3),
+   ('Loja online: achei no Google', 'abertura_fria',
+    E'Oi, {saudacao}! Achei a sua loja procurando {nicho} em {cidade}.\nEu faço loja online pra cliente pagar direto no site, sem passar pelo direct.\n\nPosso te mostrar como funciona?',
+    4),
+   ('Loja online: depois do sim, a amostra', 'segundo_toque',
+    E'Então deixa eu montar uma amostra com as suas peças, aí você vê como fica antes de decidir.\n\nQual peça mais sai aí? Começo por ela.',
+    4)
+ ) as v(titulo, categoria, conteudo, ordem)
+ where not exists (
+   select 1 from public.crm_templates x
+    where x.owner_id = t.owner_id and x.titulo = v.titulo);
