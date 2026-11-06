@@ -43,6 +43,8 @@ import {
   aplicarSaudacao,
   type DadosOficina,
   degrauDoSilencio,
+  ehLojaDeCelular,
+  ehLojaDeCelularTitulo,
   hojeSP,
   somarDias,
   linkDirectInstagram,
@@ -124,7 +126,10 @@ export function ModalMensagem({
     if (sugeridoPedido) return { id: sugeridoPedido.id, porque: sugestao?.porque };
     if (sugeridoEtapa) return { id: sugeridoEtapa.id, porque: daEtapa?.porque };
     if (lead.toques_entrada > 0 && daPesquisa) return { id: ID_PESQUISA, porque: "Já respondeu: segue a conversa" };
-    if (degrau?.categoria === "abertura_fria" && aAbertura) return { id: ID_ABERTURA, porque: "Primeiro toque" };
+    /* Até 06/11 a abertura da pesquisa passava na frente da escada no
+       primeiro toque. Ela fingia ser cliente ("queria ver as peças antes",
+       Silvana Pelegrini e Néia Modas), e o Rafael escolheu a da Loja online
+       como a sugerida. A da pesquisa segue na lista do momento. */
     if (sugeridoEscada) return { id: sugeridoEscada.id, porque: degrau?.porque };
     if (aAbertura) return { id: ID_ABERTURA, porque: "Primeiro toque" };
     if (daPesquisa) return { id: ID_PESQUISA };
@@ -168,9 +173,36 @@ export function ModalMensagem({
     setEditado(null);
   };
 
-  /* A lista à vista: a sugerida sozinha no topo, as da pesquisa, e o resto
-     por categoria na ordem do funil. A sugerida não se repete embaixo. */
-  const fora = (id: string) => id !== partida?.id;
+  /* ---------- a lista em duas camadas (06/11/2026) ----------
+     O Rafael achou o seletor confuso: todos os templates de todas as
+     etapas numa caixa de cinco linhas, só o título à vista, e a mensagem 2
+     da pesquisa num primeiro contato. Agora a lista mostra só o MOMENTO
+     (a sugerida e as irmãs da mesma categoria, mais a da pesquisa que
+     serve agora), cada uma com o começo do texto. O resto fica atrás de
+     "Ver todas as mensagens". */
+  const categoriaDoMomento: string | null =
+    partida?.id === ID_ABERTURA
+      ? "abertura_fria"
+      : partida?.id === ID_PESQUISA
+        ? "segundo_toque"
+        : (templates.find((t) => t.id === partida?.id)?.categoria ?? null);
+  const jaRespondeu = lead.toques_entrada > 0;
+  const celular = ehLojaDeCelular(lead);
+  const doMomento: Item[] = [
+    ...templates
+      .filter((t) => categoriaDoMomento && t.categoria === categoriaDoMomento && t.id !== partida?.id)
+      /* a abertura de celular só aparece agora para loja de celular */
+      .filter((t) => celular || !ehLojaDeCelularTitulo(t.titulo))
+      .map((t) => ({ id: t.id, titulo: t.titulo })),
+    ...(aAbertura && !jaRespondeu && partida?.id !== ID_ABERTURA
+      ? [{ id: ID_ABERTURA, titulo: "Escrita pela pesquisa para esta loja" }]
+      : []),
+    ...(daPesquisa && jaRespondeu && partida?.id !== ID_PESQUISA
+      ? [{ id: ID_PESQUISA, titulo: "Escrita pela pesquisa para esta loja" }]
+      : []),
+  ];
+  const noTopo = new Set([partida?.id, ...doMomento.map((i) => i.id)]);
+  const fora = (id: string) => !noTopo.has(id);
   const grupos: { rotulo: string; itens: Item[] }[] = [];
   const daLoja = [aAbertura ? ID_ABERTURA : null, daPesquisa ? ID_PESQUISA : null]
     .filter((id): id is string => Boolean(id) && fora(id!))
@@ -182,6 +214,38 @@ export function ModalMensagem({
   }
   const semCategoria = templates.filter((t) => !t.categoria && fora(t.id));
   if (semCategoria.length) grupos.push({ rotulo: "Outras", itens: semCategoria });
+  const totalOutras = grupos.reduce((n, g) => n + g.itens.length, 0);
+  const [verTodas, setVerTodas] = useState(false);
+
+  /* ---------- o texto abre DENTRO da opção (06/11/2026, segunda volta) ----------
+     A primeira versão mostrava o começo do texto debaixo de cada título E a
+     caixa de texto embaixo da lista: o Rafael leu a mesma mensagem duas
+     vezes. Agora cada opção é uma linha com o nome, e a escolhida se abre
+     ali mesmo na caixa editável. O texto existe num lugar só. */
+  const opcao = (id: string, titulo: string, selo?: boolean) => {
+    const aberta = escolhido === id;
+    return (
+      <div key={id} className={`${s.msgOpcao} ${aberta ? s.msgOpcaoAberta : ""}`}>
+        <button type="button" className={s.msgItem} aria-expanded={aberta} onClick={() => escolher(id)}>
+          <span className={s.msgBolinha} aria-hidden="true" />
+          <b>{titulo}</b>
+          {selo ? <span className={s.msgSelo}>Sugerida</span> : null}
+        </button>
+        {aberta ? (
+          <>
+            <textarea
+              className={s.msgTexto}
+              value={texto}
+              onChange={(e) => setEditado(e.target.value)}
+              aria-label="Texto da mensagem"
+              rows={6}
+            />
+            {avisos}
+          </>
+        ) : null}
+      </div>
+    );
+  };
 
   /* O CANAL, sem pergunta. */
   const zap = linkWhatsapp(lead.whatsapp, texto);
@@ -259,6 +323,14 @@ export function ModalMensagem({
 
   const temColchete = /\[[^\]]+\]/.test(texto);
   const semNada = templates.length === 0 && !aAbertura && !daPesquisa;
+  /* Os avisos moram junto do texto aberto, não soltos no pé. */
+  const avisos = (
+    <>
+      {temColchete ? <p className={s.erro}>Troque o que está entre colchetes antes de enviar.</p> : null}
+      {jaEnviada ? <p className={s.erro}>Esta mensagem já foi enviada para {lead.nome} em {quandoFoi(jaEnviada.created_at)}. Repetida, ela lê como robô.</p> : null}
+      {!jaEnviada && minutosDaUltima !== null && minutosDaUltima < 24 * 60 ? <p className={s.erro}>Sua última mensagem saiu há {minutosDaUltima < 60 ? `${Math.max(1, minutosDaUltima)} min` : `${Math.floor(minutosDaUltima / 60)} h`} e não tem resposta registrada. Se a pessoa não respondeu, mais uma agora lê como pressão.</p> : null}
+    </>
+  );
 
   return (
     <div className={s.fundo} onMouseDown={(e) => e.target === e.currentTarget && aoFechar()}>
@@ -281,49 +353,28 @@ export function ModalMensagem({
           <p>Você ainda não tem template nenhum. Crie o primeiro em Templates e ele aparece aqui.</p>
         ) : (
           <>
-            <div className={s.msgLista} role="listbox" aria-label="Templates">
-              {partida ? (
-                <button
-                  type="button"
-                  role="option"
-                  aria-selected={escolhido === partida.id}
-                  className={`${s.msgItem} ${escolhido === partida.id ? s.msgItemAtivo : ""}`}
-                  onClick={() => escolher(partida.id)}
-                >
-                  <span className={s.msgSelo}>Sugerida</span>
-                  <b>{tituloDe(partida.id)}</b>
-                  {partida.porque ? <small>{partida.porque}</small> : null}
-                </button>
-              ) : null}
-              {grupos.map((g) => (
-                <div key={g.rotulo} className={s.msgGrupo}>
-                  <span className={s.msgGrupoRot}>{g.rotulo}</span>
-                  {g.itens.map((t) => (
-                    <button
-                      key={t.id}
-                      type="button"
-                      role="option"
-                      aria-selected={escolhido === t.id}
-                      className={`${s.msgItem} ${escolhido === t.id ? s.msgItemAtivo : ""}`}
-                      onClick={() => escolher(t.id)}
-                    >
-                      <b>{t.titulo}</b>
-                    </button>
-                  ))}
-                </div>
-              ))}
+            <div className={s.msgLista}>
+              {partida ? opcao(partida.id, tituloDe(partida.id), true) : null}
+              {doMomento.map((i) => opcao(i.id, i.titulo))}
+              {verTodas
+                ? grupos.map((g) => (
+                    <div key={g.rotulo} className={s.msgGrupo}>
+                      <span className={s.msgGrupoRot}>{g.rotulo}</span>
+                      {g.itens.map((t) => opcao(t.id, t.titulo))}
+                    </div>
+                  ))
+                : null}
             </div>
-
-            <textarea
-              className={s.msgTexto}
-              value={texto}
-              onChange={(e) => setEditado(e.target.value)}
-              aria-label="Texto da mensagem"
-              rows={7}
-            />
-            {temColchete ? <p className={s.erro}>Troque o que está entre colchetes antes de enviar.</p> : null}
-            {jaEnviada ? <p className={s.erro}>Esta mensagem já foi enviada para {lead.nome} em {quandoFoi(jaEnviada.created_at)}. Repetida, ela lê como robô.</p> : null}
-            {!jaEnviada && minutosDaUltima !== null && minutosDaUltima < 24 * 60 ? <p className={s.erro}>Sua última mensagem saiu há {minutosDaUltima < 60 ? `${Math.max(1, minutosDaUltima)} min` : `${Math.floor(minutosDaUltima / 60)} h`} e não tem resposta registrada. Se a pessoa não respondeu, mais uma agora lê como pressão.</p> : null}
+            {totalOutras > 0 ? (
+              <button type="button" className={s.msgVerTodas} onClick={() => {
+                  /* Fechar a lista com uma das escondidas aberta voltaria a
+                     esconder o texto que vai sair: volta para a sugerida. */
+                  if (verTodas && !noTopo.has(escolhido) && partida) escolher(partida.id);
+                  setVerTodas((v) => !v);
+                }} aria-expanded={verTodas}>
+                {verTodas ? "Mostrar menos" : `Ver todas as mensagens (${totalOutras})`}
+              </button>
+            ) : null}
           </>
         )}
 

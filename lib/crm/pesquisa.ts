@@ -436,7 +436,8 @@ SÃO DUAS MENSAGENS, E ESSA SEPARAÇÃO É A REGRA MAIS IMPORTANTE DAQUI. Na lis
 - NENHUM link, NENHUMA URL, nem "vercel.app", nem "instagram.com/...". Nenhum.
 - Nenhuma apresentação: não diga quem você é, não diga "estúdio", "web design", "site", "vitrine" nem o que você faz. Quem pergunta não se apresenta.
 - Nenhuma oferta, nenhuma prévia, nenhum elogio de venda ("que trabalho lindo", "adorei o perfil").
-- O assunto é o NEGÓCIO da pessoa, nunca o site dela. Pergunte como cliente que tentou algo e travou, porque geralmente é verdade: o link da bio que abre três destinos, o cardápio que não abre no celular, a dúvida de onde ver a grade ou o preço.
+- O assunto é o NEGÓCIO da pessoa, nunca o site dela: o que você olhou e quer saber de verdade (até que numeração vai a grade, se enviam pra fora da cidade, se o link da bio que abre três destinos é assim mesmo).
+- NUNCA finja ser cliente. Nada de "queria ver as peças antes de passar aí", "vou passar na loja", "entrei procurando X pra comprar". A segunda mensagem revela que o Rafael faz site, e a mentira queima o lead na hora (regra da casa desde 01/10/2026, reforçada em 06/11/2026). Pergunte como quem estudou o negócio, não como quem vai comprar.
 - Escrita como alguém digita no celular: pode começar em minúscula, sem pontuação caprichada, sem ponto final obrigatório. Texto impecável em cinco frases denuncia texto copiado.
 - Uma pergunta só, respondível em uma palavra.
 - Se a pergunta for sobre algo que você VIU e não tem certeza, pergunte de verdade ("é assim mesmo ou tá quebrado?"). Honestidade aqui é o que faz a mensagem funcionar: é uma dúvida real.

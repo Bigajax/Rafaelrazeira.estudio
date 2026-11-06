@@ -366,9 +366,15 @@ export const arrobaNaoConferido = (lead: Pick<LeadPainel, "notas">) =>
    terceiro toque. O Rafael pediu direto: quem sou, a prévia grátis já na
    primeira mensagem, e a pergunta do aparelho que mais sai. */
 export const TITULO_LOJA_DE_CELULAR = "Loja de celular:";
+/* A abertura fria de todo lead que não é de celular (06/11/2026). Até
+   aqui a escada caía no índice 0, o "Primeiro toque, só a pergunta", que
+   fingia ser cliente ("entrei no perfil procurando..."). O Rafael escolheu
+   a da Loja online: diz quem é, o que faz, e pede licença para mostrar. */
+export const TITULO_LOJA_ONLINE_FRIA = "Loja online: o que eu faço";
+export const ehLojaDeCelularTitulo = (titulo: string) => titulo.startsWith(TITULO_LOJA_DE_CELULAR);
 /* A volta da prévia sem resposta (ver templateDaEtapa). */
 export const TITULO_PREVIA_NOVIDADE = "Prévia sem resposta:";
-const ehLojaDeCelular = (lead: Pick<LeadPainel, "nicho">) =>
+export const ehLojaDeCelular = (lead: Pick<LeadPainel, "nicho">) =>
   /celular|iphone/i.test(lead.nicho ?? "");
 
 export function degrauDoSilencio(
@@ -417,7 +423,12 @@ export function degrauDoSilencio(
         porque: "Loja de celular que ninguém chamou ainda: a prévia grátis já na primeira mensagem",
       };
     }
-    return { categoria: "abertura_fria", indice: 0, porque: "Ninguém falou com este lead ainda" };
+    return {
+      categoria: "abertura_fria",
+      indice: 0,
+      titulo: TITULO_LOJA_ONLINE_FRIA,
+      porque: "Ninguém falou com este lead ainda",
+    };
   }
   if (n === 1) {
     return {
