@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<title>Painel simulado</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,600..800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/* O painel da loja simulado para o vídeo da /loja-online (07/11/2026), no
+   desenho do painel real (a capa do vídeo da Loja Modelo): o pedido pago
+   chegando, aberto, marcado como enviado, e o estoque do tamanho baixando.
+   Desenhado por tempo: render(t) põe a cena no segundo t. */
+:root{--papel:#f8f7f3;--cartao:#fffefb;--fio:#e4e0d4;--tinta:#14181a;--apoio:#5c5c5c;--verde:#0b6b45;--verde-c:#e2f1e8;--verm:#a4221a;--ambar:#9a5b00;--ambar-c:#fbefd9}
+*{box-sizing:border-box;margin:0}
+html,body{width:960px;height:600px;overflow:hidden;background:var(--papel);font-family:Inter,sans-serif;color:var(--tinta);-webkit-font-smoothing:antialiased}
+.app{display:grid;grid-template-columns:186px 1fr;height:600px}
+.lado{border-right:1px solid var(--fio);padding:14px 8px;background:var(--papel)}
+.loja{display:flex;gap:9px;align-items:center;padding:4px 6px 14px;border-bottom:1px solid var(--fio);margin-bottom:10px}
+.loja img{width:34px;height:34px;border-radius:9px}
+.loja b{display:block;font-size:13px}.loja small{font-size:10.5px;color:var(--apoio)}
+.grupo{font:500 9px/1 'JetBrains Mono',monospace;letter-spacing:.12em;color:#8a8a84;margin:14px 8px 6px}
+.item{display:flex;align-items:center;gap:9px;padding:8px;border-radius:8px;font-size:12.5px;color:#2b2f31}
+.item i{width:14px;height:14px;border:1.6px solid currentColor;border-radius:4px;opacity:.75}
+.item.at{background:#e9efe9;color:var(--verde);font-weight:600}
+.item .bolinha{margin-left:auto;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--verde);color:#fff;font-size:10.5px;font-weight:700;display:grid;place-items:center;transform:scale(0)}
+.main{position:relative;padding:22px 26px;overflow:hidden}
+.rot{font:500 9.5px/1 'JetBrains Mono',monospace;letter-spacing:.12em;color:var(--verde);margin-bottom:6px}
+h1{font:800 34px/1 Archivo,sans-serif;font-stretch:80%;letter-spacing:-.01em}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);margin:16px 0 14px;border:1px solid var(--fio);border-radius:10px;background:var(--cartao)}
+.kpi{padding:11px 14px;border-right:1px solid var(--fio)}.kpi:last-child{border:0}
+.kpi small{font:500 9px/1 'JetBrains Mono',monospace;letter-spacing:.1em;color:#8a8a84}
+.kpi b{display:block;font:800 24px/1.1 Archivo,sans-serif;font-stretch:85%;margin-top:6px}
+.lista{border:1px solid var(--fio);border-radius:10px;background:var(--cartao);overflow:hidden}
+.lin{display:grid;grid-template-columns:44px 1.6fr .9fr .8fr 90px;gap:12px;align-items:center;padding:10px 14px;border-top:1px solid var(--fio);font-size:12.5px}
+.lin:first-child{border-top:0}
+.lin.cab{font:500 9px/1 'JetBrains Mono',monospace;letter-spacing:.1em;color:#8a8a84;padding:9px 14px;background:#fbfaf6}
+.lin img{width:44px;height:44px;border-radius:8px;object-fit:cover;background:#eee}
+.lin b{display:block;font-size:12.5px}.lin small{color:var(--apoio);font-size:11px}
+.chip{justify-self:start;padding:4px 9px;border-radius:999px;font-size:11px;font-weight:700}
+.chip.pago{background:var(--verde-c);color:var(--verde)}.chip.env{background:#ececea;color:#4a4f52}.chip.sep{background:var(--ambar-c);color:var(--ambar)}
+.nova{background:#f3faf5}
+.novaWrap{overflow:hidden;height:0}
+.aviso{position:absolute;top:16px;right:18px;width:300px;display:flex;gap:11px;padding:12px 14px;border-radius:12px;background:#fff;border:1px solid var(--fio);box-shadow:0 14px 34px #0002;opacity:0;transform:translateY(-14px)}
+.aviso .ok{flex:none;width:28px;height:28px;border-radius:50%;background:var(--verde);display:grid;place-items:center}
+.aviso b{display:block;font-size:12.5px}.aviso span{font-size:11.5px;color:var(--apoio);line-height:1.35}
+.ficha{position:absolute;top:0;right:0;bottom:0;width:430px;background:#fff;border-left:1px solid var(--fio);box-shadow:-20px 0 40px #0000001a;padding:20px 22px;transform:translateX(105%)}
+.ficha h2{font:800 24px/1 Archivo,sans-serif;font-stretch:82%;margin:4px 0 12px;display:flex;justify-content:space-between;align-items:center}
+.bloco{padding:11px 0;border-top:1px solid var(--fio);font-size:12.5px}
+.bloco small{display:block;font:500 9px/1 'JetBrains Mono',monospace;letter-spacing:.1em;color:#8a8a84;margin-bottom:6px}
+.peca{display:grid;grid-template-columns:52px 1fr auto;gap:12px;align-items:center}
+.peca img{width:52px;height:52px;border-radius:8px;object-fit:cover}
+.duas{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btns{display:flex;gap:8px;margin-top:14px}
+.btn{flex:1;height:38px;border-radius:8px;display:grid;place-items:center;font-size:12.5px;font-weight:700;border:1px solid var(--fio);background:#fff}
+.btn.cheio{background:var(--verde);color:#fff;border-color:var(--verde)}
+.rastreio{margin-top:10px;height:0;overflow:hidden}
+.campo{height:38px;border:1.5px solid var(--verde);border-radius:8px;padding:0 12px;display:flex;align-items:center;font:500 13px 'JetBrains Mono',monospace;box-shadow:0 0 0 3px #0b6b4522}
+.estoque{position:absolute;inset:0;padding:22px 26px;background:var(--papel);opacity:0}
+.tams{display:flex;gap:8px;margin-top:8px}
+.tam{width:60px;padding:8px 0 7px;border:1px solid var(--fio);border-radius:9px;background:#fff;text-align:center}
+.tam small{display:block;font:500 9.5px/1 'JetBrains Mono',monospace;color:#8a8a84}
+.tam b{display:block;font:800 20px/1.1 Archivo,sans-serif;margin-top:4px;position:relative;height:22px;overflow:hidden}
+.tam b span{position:absolute;left:0;right:0}
+.tam.alvo{border-color:var(--verde);box-shadow:0 0 0 3px #0b6b4522}
+.notaEst{margin-top:10px;font-size:12px;color:var(--verde);font-weight:600;opacity:0}
+#cursor{position:absolute;left:0;top:0;z-index:9;width:22px;height:22px;pointer-events:none}
+.toque{position:absolute;z-index:8;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;background:#0b6b4540;opacity:0}
+</style></head>
+<body>
+<div class="app">
+  <aside class="lado">
+    <div class="loja"><img src="ICONE" alt=""><div><b>Iconic Sneakers</b><small>Painel da loja</small></div></div>
+    <div class="item"><i></i>Início</div>
+    <div class="grupo">VITRINE</div>
+    <div class="item"><i></i>Peças</div>
+    <div class="item"><i></i>Banners</div>
+    <div class="grupo">GESTÃO</div>
+    <div class="item" id="nav-est"><i></i>Estoque</div>
+    <div class="item at" id="nav-ped"><i></i>Pedidos<span class="bolinha" id="bol">1</span></div>
+    <div class="grupo">RESULTADOS</div>
+    <div class="item"><i></i>Desempenho</div>
+    <div class="item"><i></i>Clientes</div>
+  </aside>
+  <main class="main">
+    <div class="rot">VENDAS DO SITE</div>
+    <h1>Pedidos</h1>
+    <div class="kpis">
+      <div class="kpi"><small>PARA ENVIAR</small><b id="k1">0</b></div>
+      <div class="kpi"><small>PAGOS HOJE</small><b id="k2">1</b></div>
+      <div class="kpi"><small>RETIRAR NA LOJA</small><b>0</b></div>
+    </div>
+    <div class="lista">
+      <div class="lin cab"><span></span><span>PEDIDO</span><span>ENTREGA</span><span>TOTAL</span><span>SITUAÇÃO</span></div>
+      <div class="novaWrap" id="novaWrap"><div class="lin nova" id="nova"><img src="FOTO1" alt=""><div><b>NB 9060 - Azul Bebê</b><small>Pedido 1048, numeração 41, Pix, agora</small></div><span>PAC, Curitiba</span><b>R$ 663,90</b><span class="chip pago" id="chipNova">Pago</span></div></div>
+      <div class="lin"><img src="FOTO2" alt=""><div><b>Samba OG - Rosa Renda</b><small>Pedido 1047, numeração 37, cartão 3x, hoje</small></div><span>SEDEX, São Paulo</span><b>R$ 412,40</b><span class="chip sep">Separando</span></div>
+      <div class="lin"><img src="FOTO3" alt=""><div><b>Dunk Low Panda</b><small>Pedido 1046, numeração 42, Pix, ontem</small></div><span>Retirada</span><b>R$ 598,50</b><span class="chip env">Retirado</span></div>
+      <div class="lin"><img src="FOTO4" alt=""><div><b>Adizero Adios Pro</b><small>Pedido 1045, numeração 40, Pix, ontem</small></div><span>PAC, Joinville</span><b>R$ 663,90</b><span class="chip env">Enviado</span></div>
+    </div>
+
+    <div class="aviso" id="aviso"><span class="ok"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17.5 19 7"/></svg></span><div><b id="avisoT">Pedido pago: R$ 663,90</b><span id="avisoS">NB 9060 - Azul Bebê, numeração 41. O estoque do 41 já baixou.</span></div></div>
+
+    <div class="ficha" id="ficha">
+      <div class="rot">PEDIDO PAGO NO SITE</div>
+      <h2>Pedido 1048 <span class="chip pago" id="chipFicha">Pago</span></h2>
+      <div class="bloco"><small>A PEÇA</small><div class="peca"><img src="FOTO1" alt=""><div><b>NB 9060 - Azul Bebê</b><div style="color:#5c5c5c;font-size:11.5px">Numeração 41, 1 par</div></div><b>R$ 636,50</b></div></div>
+      <div class="bloco duas"><div><small>PAGAMENTO</small>Pix, aprovado 22:47<br><b>R$ 663,90</b> com o frete</div><div><small>ENTREGA</small>PAC, até 6 dias úteis<br>Curitiba, PR, 80010-000</div></div>
+      <div class="bloco duas"><div><small>QUEM COMPROU</small>Mariana Souza<br>mariana@email.com</div><div><small>CPF</small>***.456.789-**</div></div>
+      <div class="rastreio" id="rastreio"><div class="bloco" style="border-top:0;padding-top:0"><small>CÓDIGO DE RASTREIO</small><div class="campo" id="campo"><span id="rastT"></span></div></div></div>
+      <div class="btns"><div class="btn">Imprimir a ficha</div><div class="btn cheio" id="btnEnv">Marcar enviado</div></div>
+    </div>
+
+    <div class="estoque" id="estoque">
+      <div class="rot">CONTAGEM POR TAMANHO</div>
+      <h1>Estoque</h1>
+      <div class="lista" style="margin-top:16px;padding:14px">
+        <div class="peca" style="grid-template-columns:52px 1fr"><img src="FOTO1" alt=""><div><b>NB 9060 - Azul Bebê</b><div style="color:#5c5c5c;font-size:11.5px">New Balance, Streetwear</div></div></div>
+        <div class="tams">
+          <div class="tam"><small>38</small><b><span>1</span></b></div>
+          <div class="tam"><small>39</small><b><span>2</span></b></div>
+          <div class="tam"><small>40</small><b><span>3</span></b></div>
+          <div class="tam" id="t41"><small>41</small><b><span id="n41a">2</span><span id="n41b" style="color:#0b6b45">1</span></b></div>
+          <div class="tam"><small>42</small><b><span>2</span></b></div>
+          <div class="tam"><small>43</small><b><span>1</span></b></div>
+        </div>
+        <div class="notaEst" id="notaEst">O 41 baixou sozinho com a venda do pedido 1048.</div>
+      </div>
+    </div>
+  </main>
+</div>
+<svg id="cursor" viewBox="0 0 24 24"><path d="M5 2.5v17.2l4.6-4.3 2.9 6.6 3-1.3-2.9-6.5h6.2z" fill="#fff" stroke="#111" stroke-width="1.4" stroke-linejoin="round"/></svg>
+<div class="toque" id="toque"></div>
+<script>
+const $ = id => document.getElementById(id);
+const cl = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const fase = (t, a, b) => cl((t - a) / (b - a));
+const suave = p => p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+const sai = p => 1 - Math.pow(1 - p, 3);
+/* o caminho do cursor: [tempo, x, y] */
+/* medidos no DOM (painel-render.mjs medir): a linha nova, o botão antes e
+   depois do campo do rastreio, e o Estoque do menu */
+const CAM = [[0, 700, 470], [3.6, 700, 470], [4.6, 573, 238], [5.0, 573, 238], [6.6, 760, 420], [8.2, 844, 341], [8.6, 844, 341], [10.8, 844, 341], [11.4, 844, 411], [12.2, 844, 411], [13.0, 93, 246], [13.3, 93, 246], [16.5, 300, 420]];
+const TOQUES = [[4.9, 573, 238], [8.5, 844, 341], [11.6, 844, 411], [13.2, 93, 246]];
+const RAST = "AB123456789BR";
+function cursor(t) {
+  let i = 0; while (i < CAM.length - 2 && t > CAM[i + 1][0]) i++;
+  const [t0, x0, y0] = CAM[i], [t1, x1, y1] = CAM[i + 1];
+  const p = suave(fase(t, t0, t1));
+  return [x0 + (x1 - x0) * p, y0 + (y1 - y0) * p];
+}
+window.render = t => {
+  /* 1. o aviso e a linha nova (2.0s) */
+  const a = sai(fase(t, 1.2, 1.7)) * (1 - fase(t, 4.0, 4.4));
+  $("aviso").style.opacity = a; $("aviso").style.transform = `translateY(${(1 - a) * -14}px)`;
+  $("novaWrap").style.height = (sai(fase(t, 1.5, 2.1)) * 65) + "px";
+  /* a bolinha conta o que falta enviar: some quando o 1048 sai */
+  $("bol").style.transform = `scale(${sai(fase(t, 1.5, 1.8)) * (1 - fase(t, 11.7, 12.0))})`;
+  $("k1").textContent = t >= 1.6 ? "1" : "0"; $("k2").textContent = t >= 1.6 ? "2" : "1";
+  /* 2. a ficha abre (5.0s) */
+  const f = suave(fase(t, 5.0, 5.6)) * (1 - suave(fase(t, 13.2, 13.7)));
+  $("ficha").style.transform = `translateX(${(1 - f) * 105}%)`;
+  /* 3. marcar enviado: o rastreio digitado, depois enviado (8.5s a 11.6s) */
+  $("rastreio").style.height = (sai(fase(t, 8.6, 9.0)) * 70) + "px";
+  const n = Math.floor(cl((t - 9.2) / .16, 0, RAST.length));
+  $("rastT").textContent = RAST.slice(0, n);
+  $("btnEnv").textContent = t >= 9.0 && t < 11.6 ? "Confirmar envio" : "Marcar enviado";
+  const env = t >= 11.7;
+  for (const c of [$("chipFicha"), $("chipNova")]) { c.textContent = env ? "Enviado" : "Pago"; c.className = "chip " + (env ? "env" : "pago"); }
+  if (env) { $("k1").textContent = "0"; }
+  if (t >= 11.7 && t < 13.2) {
+    $("avisoT").textContent = "Pedido 1048 enviado"; $("avisoS").textContent = "A Mariana recebeu o rastreio por e-mail.";
+    const b = sai(fase(t, 11.7, 12.1)) * (1 - fase(t, 12.9, 13.2));
+    $("aviso").style.opacity = b; $("aviso").style.transform = `translateY(${(1 - b) * -14}px)`; $("aviso").style.zIndex = 3;
+  } else if (t < 11.7) { $("avisoT").textContent = "Pedido pago: R$ 663,90"; $("avisoS").textContent = "NB 9060 - Azul Bebê, numeração 41. O estoque do 41 já baixou."; }
+  /* 4. o estoque (13.2s): o 41 desce de 2 para 1 */
+  const e = sai(fase(t, 13.4, 13.9));
+  $("estoque").style.opacity = e;
+  $("nav-est").className = "item" + (t >= 13.3 ? " at" : ""); $("nav-ped").className = "item" + (t < 13.3 ? " at" : "");
+  const d = suave(fase(t, 14.3, 14.9));
+  $("n41a").style.transform = `translateY(${-d * 100}%)`; $("n41b").style.transform = `translateY(${(1 - d) * 100}%)`;
+  $("t41").className = "tam" + (t >= 14.2 ? " alvo" : "");
+  $("notaEst").style.opacity = sai(fase(t, 15.0, 15.4));
+  /* o cursor e o toque */
+  const [x, y] = cursor(t);
+  $("cursor").style.transform = `translate(${x - 4}px,${y - 2}px)`;
+  let toq = 0, tx = 0, ty = 0;
+  for (const [tt, xx, yy] of TOQUES) { const p = fase(t, tt, tt + .45); if (p > 0 && p < 1) { toq = p; tx = xx; ty = yy; } }
+  const tq = $("toque"); tq.style.left = tx + "px"; tq.style.top = ty + "px"; tq.style.opacity = toq ? 1 - toq : 0; tq.style.transform = `scale(${.3 + toq * 1.1})`;
+};
+window.render(0);
+</script>
+</body></html>

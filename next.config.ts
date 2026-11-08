@@ -33,6 +33,9 @@ const nextConfig: NextConfig = {
       { source: "/", destination: "/estudio", permanent: false },
       { source: "/termos", destination: "/termos.html", permanent: false },
       { source: "/privacidade", destination: "/privacidade.html", permanent: false },
+      /* a /e-commerce de julho virou a /loja-online (07/11/2026): o nome do
+         produto é "Loja online" e a página antiga dizia R$ 3.499 */
+      { source: "/e-commerce", destination: "/loja-online", permanent: true },
     ];
   },
   // /estudio é um site estático em public/estudio; o Next não resolve

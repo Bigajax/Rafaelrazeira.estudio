@@ -1,0 +1,348 @@
+/* ============================================================
+   O "quem faz" grande da /loja-online (07/11/2026). Ver QuemFazGrande.tsx.
+   Toda a animação sai de --p (0 a 1), gravada pelo script em cada
+   [data-p]. As cores vêm do .page do loja-online.module.css.
+   ============================================================ */
+
+.quem {
+  position: relative;
+  padding: clamp(72px, 10vw, 140px) 0 clamp(80px, 10vw, 140px);
+  overflow: clip;
+  /* as linhas da grade: três fios verticais, como colunas de revista */
+  background:
+    linear-gradient(var(--fio), var(--fio)) 25% 0 / 1px 100% no-repeat,
+    linear-gradient(var(--fio), var(--fio)) 50% 0 / 1px 100% no-repeat,
+    linear-gradient(var(--fio), var(--fio)) 75% 0 / 1px 100% no-repeat,
+    var(--branco);
+}
+
+/* ---------- o palco: a foto e o nome por cima ---------- */
+.palco {
+  --p: .5;
+  position: relative;
+  width: min(560px, 80vw);
+  margin-inline: auto;
+}
+.foto {
+  position: relative; z-index: 1;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  /* o retrato tem fundo branco: o multiply o tinge deste cinza, e a foto
+     ganha moldura em vez de sumir no branco da página */
+  background: #e4e4e0;
+}
+.foto img {
+  display: block; width: 100%; height: 100%; object-fit: cover;
+  /* a foto chega um pouco maior e assenta enquanto passa */
+  transform: scale(calc(1.14 - var(--p) * .14));
+  mix-blend-mode: multiply;
+  will-change: transform;
+}
+
+.nome, .sobrenome {
+  position: absolute; left: 50%; margin: 0;
+  font-family: var(--font-titulo), var(--font-body), sans-serif;
+  font-weight: 600; letter-spacing: -.045em; line-height: .8;
+  white-space: nowrap; pointer-events: none; user-select: none;
+  will-change: transform;
+}
+/* o nome anda mais devagar que a foto: desce em relação a ela enquanto se rola */
+.nome {
+  z-index: 2; top: 50%;
+  font-size: clamp(76px, 17vw, 240px);
+  /* branco com difference: preto sobre o branco e o cinza, branco sobre a
+     gola preta. Sem isto o nome sumia na roupa (07/11, captura em 390) */
+  color: #fff;
+  mix-blend-mode: difference;
+  transform: translate(-56%, calc((var(--p) - .5) * 46vh));
+}
+/* o sobrenome mora atrás da foto e entra pela direita */
+.sobrenome {
+  z-index: 0; top: 78%;
+  font-size: clamp(56px, 12vw, 170px);
+  color: #cfcfcb;
+  transform: translateX(calc(8% + (.62 - var(--p)) * 120vw));
+}
+
+/* ---------- a frase que escurece palavra por palavra ---------- */
+.frase {
+  --p: 1;
+  width: min(1120px, 100% - 32px);
+  margin: clamp(72px, 9vw, 130px) auto 0;
+  font-family: var(--font-titulo), var(--font-body), sans-serif;
+  font-weight: 400;
+  font-size: clamp(32px, 4.6vw, 68px);
+  letter-spacing: -.045em; line-height: 1.04;
+  color: var(--ink);
+}
+.linha { display: block; text-wrap: balance; }
+.frase em { font-style: normal; color: var(--verde); }
+.frase span span, .frase em span {
+  /* cada palavra acende quando a frente da rolagem passa por ela */
+  opacity: clamp(.14, calc(var(--p) * (var(--n) + 3) - var(--i)), 1);
+  transition: opacity .25s linear;
+}
+
+/* ---------- o texto, na metade da direita ---------- */
+/* 07/11 (pedido do Rafael: "a parte de baixo está ruim"): o padding de 50% era
+   da LARGURA DA SEÇÃO, não do bloco, e espremia o texto numa coluna de ~200px
+   com o botão quebrado em duas linhas. Agora o bloco começa 14px depois do fio
+   do meio e vai até a margem, como o texto do hero. */
+.texto {
+  margin: clamp(40px, 5vw, 72px) 0 0;
+  padding: 0 clamp(16px, 4vw, 64px) 0 calc(50% + 14px);
+}
+.texto p { margin: 0 0 14px; max-width: 34em; font-size: clamp(16px, 1.2vw, 17.5px); line-height: 1.55; color: #43484b; }
+.assinatura { width: clamp(96px, 9vw, 140px); margin: 0 0 0 -4px; }
+.assinatura img { display: block; width: 100%; height: auto; clip-path: inset(0 100% 0 0); transition: clip-path .8s cubic-bezier(.45, .05, .35, 1); }
+.escrita img { clip-path: inset(0 0 0 0); }
+@media (prefers-reduced-motion: reduce) { .assinatura img { clip-path: none; transition: none; } }
+.acoes { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 28px; margin-top: 28px; }
+.quem .heroLink svg:first-child { margin-right: 2px; }
+
+@media (max-width: 860px) {
+  .quem {
+    background:
+      linear-gradient(var(--fio), var(--fio)) 50% 0 / 1px 100% no-repeat,
+      var(--branco);
+  }
+  .texto { padding-left: clamp(16px, 4vw, 64px); }
+  /* no celular a foto ocupa a largura: o sobrenome entra logo abaixo dela,
+     inteiro, em vez de aparecer como um pedaço na beirada (07/11) */
+  .sobrenome { top: calc(100% + 10px); left: 0; font-size: 21vw; transform: translateX(calc((.55 - var(--p)) * 140vw)); }
+  .palco { margin-bottom: 21vw; }
+}
+@media (max-width: 480px) {
+  .acoes { flex-direction: column; align-items: stretch; }
+  .quem .heroLink { justify-content: center; min-height: 40px; }
+}
+
+/* sem movimento: tudo parado no lugar final, legível */
+@media (prefers-reduced-motion: reduce) {
+  .foto img, .nome, .sobrenome { will-change: auto; }
+  .foto img { transform: none; }
+  .nome { transform: translate(-56%, 0); }
+  .sobrenome { transform: translateX(-30%); }
+}
+@media (prefers-reduced-motion: reduce) and (max-width: 860px) {
+  .sobrenome { transform: none; }
+  .frase span { opacity: 1; transition: none; }
+}
+
+/* ---------- os fios atrás do hero (07/11) ----------
+   No ::before, com isolate, para ficar atrás de tudo sem mexer no
+   posicionamento da cena da noite. (A faixa gigante que vinha logo abaixo
+   saiu no mesmo dia, pedido do Rafael.) */
+.fiosHero { isolation: isolate; }
+.fiosHero::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    linear-gradient(var(--fio), var(--fio)) 25% 0 / 1px 100% no-repeat,
+    linear-gradient(var(--fio), var(--fio)) 50% 0 / 1px 100% no-repeat,
+    linear-gradient(var(--fio), var(--fio)) 75% 0 / 1px 100% no-repeat;
+}
+
+@media (max-width: 860px) {
+  .fiosHero::before { background: linear-gradient(var(--fio), var(--fio)) 50% 0 / 1px 100% no-repeat; }
+}
+
+/* ---------- o hero no jeito do Wolf (07/11, segunda rodada) ----------
+   Pedido do Rafael: "seguindo este conceito do wolf sem alterar cores" e
+   "este CTA está ruim". As cores são as mesmas (tinta, verde da batida,
+   rosa do botão, o cinza dos fios); muda a composição:
+   • a manchete à esquerda, grande, a batida verde na própria linha;
+   • o texto e os botões na metade da direita, a partir do fio do meio.
+   O botão era a pílula rosa com brilho e sombra, igual a todo site: virou a
+   pílula reta com a seta separada por um fio, a mesma do botão flutuante.
+   As classes repetidas vencem o `.site.tipoTitulo.tipoTitulo h1` da vitrine
+   sem !important. O BarraCelular acha os botões pelo [data-hero-acoes]. */
+.heroW { text-align: left; }
+.heroW.heroW .heroTitulo.heroTitulo {
+  max-width: none; margin: clamp(20px, 3.4vw, 56px) 0 0;
+  /* 400 e não 500 (07/11, a leitura da tipografia): em 115px o 500 pesava */
+  font-size: clamp(46px, 9.2vw, 158px); font-weight: 400;
+  line-height: .9; letter-spacing: -.058em; text-wrap: initial;
+}
+/* a batida verde numa linha só dela, como o segundo verso do Wolf */
+.heroTitulo em { display: block; white-space: nowrap; }
+
+.heroBase {
+  margin: clamp(32px, 4vw, 60px) calc(var(--pad) * -1) 0;
+  padding: 0 var(--pad) 0 calc(50% + 14px);
+}
+.heroW .heroLead {
+  max-width: 34em; margin: 0;
+  font-size: clamp(16px, 1.2vw, 17.5px); line-height: 1.5; color: #43484b;
+  text-wrap: balance;
+}
+.heroAcoes { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 28px; margin-top: 28px; }
+
+/* o botão escolhido em 07/11 (o "1 com o A"): minúsculas e a seta no fim,
+   num círculo branco com a seta rosa, que anda quando o mouse passa */
+:is(.heroW, .quem, .ctaZona) .heroCta {
+  display: inline-flex; align-items: center; justify-content: space-between; gap: 18px;
+  min-height: 58px; padding: 0 8px 0 28px;
+  border-radius: 999px; background: var(--rosa); color: #fff; text-decoration: none;
+  font: 600 16px/1 var(--font-body), sans-serif; letter-spacing: -.005em; white-space: nowrap;
+  transition: background .2s ease, transform .12s ease;
+}
+.heroCtaSeta {
+  display: inline-grid; place-items: center; flex: none;
+  width: 42px; height: 42px; border-radius: 50%; background: #fff; color: var(--rosa);
+}
+.heroCtaSeta svg { width: 20px; height: 15px; transition: transform .25s cubic-bezier(.2, .7, .2, 1); }
+:is(.heroW, .quem, .ctaZona) .heroLink {
+  display: inline-flex; align-items: center; gap: 6px;
+  font: 600 12.5px/1 var(--font-body), sans-serif; letter-spacing: .05em; text-transform: uppercase;
+  color: var(--ink); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 5px;
+}
+.heroLink svg { transition: transform .25s cubic-bezier(.2, .7, .2, 1); }
+@media (hover: hover) and (pointer: fine) {
+  :is(.heroW, .quem, .ctaZona) .heroCta:hover { background: var(--rosa-dark); }
+  .heroCta:hover .heroCtaSeta svg { transform: translateX(4px); }
+  .heroLink:hover svg { transform: translate(2px, -2px); }
+}
+:is(.heroW, .quem, .ctaZona) .heroCta:active { transform: scale(.98); }
+.heroCta:focus-visible, .heroLink:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+/* o texto e os botões sobem depois da manchete, como antes */
+.heroLead, .heroAcoes { animation: heroWSobe .8s cubic-bezier(.2, .7, .2, 1) both; }
+.heroLead { animation-delay: 1.05s; }
+.heroAcoes { animation-delay: 1.2s; }
+@keyframes heroWSobe { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+
+/* a moldura respira mais longe do texto */
+.heroCena { margin-top: clamp(48px, 6vw, 96px); }
+
+@media (max-width: 860px) {
+  /* duas linhas inteiras até 860px (08/11, "quero em duas linhas"): "Aumente suas vendas"
+     mede 9,18em em -.045em; a letra é a largura útil dividida por 9,5, com folga.
+     (No celular o -.058em colava "Aumente suas" numa palavra só.) */
+  .heroW.heroW .heroTitulo.heroTitulo {
+    font-size: calc((100vw - 2 * var(--pad)) / 9.5);
+    line-height: .94; letter-spacing: -.045em; white-space: nowrap;
+  }
+  .heroBase { padding: 0 var(--pad); }
+}
+/* o hero no celular (08/11, pedido do Rafael: "melhorar tamanho, posições").
+   Em 390 a manchete quebrava "Aumente suas / vendas", com o "vendas" sozinho,
+   e a moldura só aparecia na segunda tela. Agora: duas linhas inteiras (ver acima), espaços mais
+   curtos e o topo da moldura já na primeira tela. */
+@media (max-width: 560px) {
+  .heroW.heroW .heroTitulo.heroTitulo {
+    margin-top: 6px; line-height: .92;
+  }
+  .heroBase { margin-top: 22px; }
+  .heroW .heroLead { font-size: 16px; line-height: 1.45; max-width: 26em; }
+  .heroAcoes { margin-top: 22px; }
+  .heroCena.heroCena { margin-top: 36px; }
+}
+@media (max-width: 480px) {
+  .heroAcoes { flex-direction: column; align-items: stretch; }
+  :is(.heroW, .quem, .ctaZona) .heroCta { min-height: 56px; font-size: 15.5px; }
+  :is(.heroW, .quem, .ctaZona) .heroLink { justify-content: center; min-height: 40px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .heroLead, .heroAcoes { animation: none; }
+  .heroCtaSeta svg, .heroLink svg { transition: none; }
+}
+/* em 360 o convite antigo, em caixa alta, passava 13px da margem (07/11) */
+@media (max-width: 380px) {
+  :is(.heroW, .quem, .ctaZona) .heroCta { padding-left: 22px; }
+}
+
+/* ---------- a moldura sem a paisagem (07/11) ----------
+   Os morros e a colina saíram: a cena fica transparente (os fios do hero
+   passam atrás), sem o chão que a colina pedia embaixo, e o aro de vidro,
+   que só fazia sentido sobre a paisagem, volta ao cinza claro. */
+.heroCena.heroCena { background: transparent; padding-bottom: clamp(56px, 7vw, 110px); }
+.heroCena.heroCena .molduraTelaW {
+  background: #ececea; border-color: #dededb;
+  backdrop-filter: none; -webkit-backdrop-filter: none;
+  box-shadow: 0 30px 70px #14181a1f, 0 6px 18px #14181a12;
+}
+
+/* .ctaZona: qualquer bloco da página que usa os botões do hero (o preço e o
+   convite final, 07/11). Só serve de gancho para os seletores acima. */
+.ctaZona { }
+
+/* ---------- a faixa do nome abaixo da moldura (07/11) ---------- */
+.faixaNome {
+  margin: calc(clamp(56px, 7vw, 110px) * -.5) calc(var(--pad) * -1) 0;
+  overflow: hidden; white-space: nowrap; user-select: none; pointer-events: none;
+}
+.faixaTrilho { display: inline-flex; animation: faixaNomeAnda 15s linear infinite; will-change: transform; }
+.faixaTrilho span {
+  display: inline-block; padding-right: .3em;
+  font: 400 clamp(56px, 11.5vw, 184px)/1.15 var(--font-titulo), var(--font-body), sans-serif;
+  letter-spacing: normal; color: #000;
+}
+/* quatro cópias: -25% é exatamente uma, e a volta não tem emenda */
+@keyframes faixaNomeAnda { from { transform: translateX(0); } to { transform: translateX(-25%); } }
+@media (prefers-reduced-motion: reduce) { .faixaTrilho.faixaTrilho { animation-duration: 60s !important; } }
+
+/* o texto e os botões acompanham a manchete em duas linhas (08/11, "agora acompanha com
+   isso"): com a manchete menor, o texto em 16px e a pílula de ponta a ponta pesavam mais
+   que ela. Tudo alinhado à esquerda, na mesma largura da manchete; a pílula do tamanho do
+   texto dela, o link embaixo, à esquerda. Só no hero: o preço e o convite final seguem. */
+@media (max-width: 560px) {
+  /* até a margem (08/11, "o subtítulo não está indo até o final da margem"): o balance
+     encurtava as linhas; em 16px e quebra normal a última linha fica com 3 ou 4 palavras
+     em 360 e 390, e o pretty evita a palavra sozinha em 430 */
+  .heroW .heroLead { font-size: 16px; line-height: 1.5; max-width: none; text-wrap: pretty; }
+  .heroW .heroAcoes { align-items: flex-start; gap: 18px; margin-top: 24px; }
+  .heroW.heroW .heroCta { min-height: 50px; padding-left: 22px; gap: 14px; font-size: 15px; }
+  .heroW .heroCtaSeta { width: 36px; height: 36px; }
+  .heroW.heroW .heroLink { justify-content: flex-start; min-height: 0; }
+}
+
+/* o link que desce na própria página (08/11, "o ver como funciona tem que melhorar"):
+   era caixa alta miúda, sublinhada, com o ↗ de "outro site". Agora é o par da pílula:
+   a mesma letra dela, em tinta, e a seta para baixo num círculo vazado do mesmo
+   tamanho do círculo branco da pílula; no mouse o círculo enche e a seta desce. */
+:is(.heroW, .quem, .ctaZona) .heroLink.heroDesce {
+  gap: 12px; min-height: 44px;
+  font: 500 15.5px/1 var(--font-body), sans-serif; letter-spacing: -.005em; text-transform: none;
+  text-decoration: none;
+}
+.heroDesceSeta {
+  display: inline-grid; place-items: center; flex: none;
+  width: 42px; height: 42px; border-radius: 50%;
+  box-shadow: inset 0 0 0 1px var(--ink);
+  transition: background .2s ease, color .2s ease;
+}
+.heroLink.heroDesce .heroDesceSeta svg { transition: transform .25s cubic-bezier(.2, .7, .2, 1); }
+@media (hover: hover) and (pointer: fine) {
+  .heroLink.heroDesce:hover .heroDesceSeta { background: var(--ink); color: #fff; }
+  .heroLink.heroDesce:hover .heroDesceSeta svg { transform: translateY(3px); }
+}
+@media (max-width: 560px) {
+  .heroDesceSeta { width: 36px; height: 36px; }
+  .heroW .heroLink.heroDesce { font-size: 15px; }
+}
+@media (prefers-reduced-motion: reduce) { .heroDesceSeta, .heroLink.heroDesce .heroDesceSeta svg { transition: none; } }
+/* o "Ver o preço" do convite final volta para cima (o preço vem antes dele) */
+.heroSobe svg { rotate: 180deg; }
+
+/* a pílula e o link do preço e do convite final iguais aos do hero no celular (08/11) */
+@media (max-width: 560px) {
+  .ctaZona .heroCta.heroCta { min-height: 50px; padding-left: 22px; gap: 14px; font-size: 15px; }
+  .ctaZona .heroCtaSeta { width: 36px; height: 36px; }
+  .ctaZona .heroLink.heroLink { justify-content: flex-start; }
+}
+/* o "Web design de loja, assinado por mim." na régua dos outros títulos (08/11) */
+@media (max-width: 560px) {
+  .frase.frase { font-size: clamp(34px, 10.4vw, 44px); line-height: .94; letter-spacing: -.045em; }
+}
+
+/* o "Ver como funciona" sai do hero no celular (08/11, "está ruim este ver como
+   funciona", depois da caixa alta sublinhada e do círculo com a seta): no
+   celular a moldura da loja já vem logo embaixo e convida a rolar; fica uma
+   pílula só, sem disputa. No computador ele segue ao lado da pílula. */
+@media (max-width: 560px) {
+  .heroW .heroLink.heroDesce { display: none; }
+}
+/* a assinatura centrada no celular, em cima do @, que já é centrado (08/11, pedido do Rafael) */
+@media (max-width: 480px) {
+  .assinatura { margin: 0 auto; width: 120px; }
+}

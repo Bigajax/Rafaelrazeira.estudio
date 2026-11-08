@@ -67,8 +67,9 @@ export function diagnosticoDoArroba(v: string): DiagnosticoArroba | null {
    registrada depois amarrar na visita.
    en: o mailto: com o mesmo conteúdo, assunto na primeira linha e o resto
    no corpo. */
-export function linkContato(lang: Lang, d: { nome?: string; instagram?: string; plano?: string }): string {
-  const t = TEXTO[lang];
+export function linkContato(lang: Lang, d: { nome?: string; instagram?: string; plano?: string; abertura?: string }): string {
+  /* a /loja-online (07/11/2026) passa a própria primeira linha */
+  const t = { ...TEXTO[lang], ...(d.abertura ? { abertura: d.abertura } : {}) };
   const ref = refDaVisita();
   const linhas = [
     d.nome ? `${t.nome}: ${d.nome}` : "",
@@ -89,6 +90,12 @@ export async function enviarLeadVitrine(d: {
   plano?: string;
   ctaPosition: "form" | "hero_form";
   lang: Lang;
+  /* ---------- a /loja-online usa este mesmo caminho (07/11/2026) ----------
+     Com `pagina: "loja-online"` o lead vira card de e-commerce no CRM e a
+     rota confere o @ como na vitrine; a `abertura` é a primeira linha do
+     WhatsApp do fallback. Sem os dois, nada muda para a /vitrine-digital. */
+  pagina?: string;
+  abertura?: string;
 }): Promise<{ salvo: boolean; linkWa: string; arrobaInvalido: boolean; loja: LojaEncontrada | null; id?: string | null }> {
   /* ---------- o Lead saiu de antes para DEPOIS da gravação (10/09) ----------
      Ele era disparado aqui em cima, antes de qualquer coisa, e o motivo era
@@ -106,7 +113,7 @@ export async function enviarLeadVitrine(d: {
   const linkWa = linkContato(d.lang, d);
 
   const resposta = await salvarLeadDetalhado({
-    pagina: paginaDaVitrine(d.lang),
+    pagina: d.pagina || paginaDaVitrine(d.lang),
     lang: d.lang,
     nome: d.nome,
     whatsapp: d.whatsapp,
@@ -177,9 +184,10 @@ export function registrarSuspeito(d: {
   plano?: string;
   motivo: MotivoSuspeito;
   lang: Lang;
+  pagina?: string;
 }) {
   void salvarLead({
-    pagina: paginaDaVitrine(d.lang),
+    pagina: d.pagina || paginaDaVitrine(d.lang),
     lang: d.lang,
     nome: d.nome,
     whatsapp: d.whatsapp,

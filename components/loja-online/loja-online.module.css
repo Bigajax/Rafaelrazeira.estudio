@@ -1,0 +1,614 @@
+/* ============================================================
+   A /loja-online (07/11/2026), no design oficial do estúdio
+   (docs/design-estudio.md). Tudo preso em classe: nenhuma regra de
+   elemento solto (.page p, .page h2), porque é ela que já comeu horas
+   de especificidade na /e-commerce (ver a nota no cofre).
+   ============================================================ */
+
+.page {
+  --branco: #ffffff;
+  --cartao: #f2f2f0;
+  --papel: #f6f6f4;
+  --fio: #e6e6e3;
+  --ink: #14181a;
+  --texto: #4a4f52;
+  --suave: #6b7072;
+  --verde: #0c9159;
+  --rosa: #e31b62;
+  --rosa-dark: #b81250;
+  --erro: #b3261e;
+  --entra: cubic-bezier(.2, .7, .2, 1);
+
+  background: var(--branco);
+  color: var(--texto);
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.55;
+  overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
+  /* sem isto a margem do topo vaza para fora do branco (margem que colapsa) */
+  display: flow-root;
+}
+.page *, .page *::before, .page *::after { box-sizing: border-box; }
+
+.wrap { width: min(1120px, 100% - 32px); margin-inline: auto; }
+
+/* ---------- o tipo ---------- */
+.h1, .h2, .h3 { font-family: var(--font-titulo), var(--font-body), sans-serif; color: var(--ink); margin: 0; text-wrap: balance; }
+.h1 { font-weight: 400; font-size: clamp(40px, 4.7vw, 64px); letter-spacing: -.035em; line-height: 1.02; }
+.h2 { font-weight: 500; font-size: clamp(30px, 3.4vw, 46px); letter-spacing: -.03em; line-height: 1.06; }
+.h3 { font-weight: 500; font-size: 20px; letter-spacing: -.015em; line-height: 1.2; }
+.h1 em, .h2 em { font-style: normal; color: var(--verde); }
+.lead { margin: 18px 0 0; font-size: 18px; line-height: 1.55; max-width: 34em; color: var(--texto); }
+.corpo { margin: 14px 0 0; max-width: 36em; }
+.nota { margin: 12px 0 0; font-size: 14px; color: var(--suave); }
+
+/* ---------- os botões ---------- */
+.botao {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 50px; padding: 0 26px; border-radius: 980px; border: 0;
+  font: 600 15px/1 var(--font-body), sans-serif; text-decoration: none; cursor: pointer;
+  transition: background-color .2s, transform .12s;
+}
+.botao:active { transform: scale(.97); }
+.botao:focus-visible, .link:focus-visible, .campo input:focus-visible, .faq summary:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.rosa { background: var(--rosa); color: #fff; box-shadow: inset 0 1px 0 #ffffff47, 0 8px 18px -6px #e31b6273; }
+.rosa:hover { background: var(--rosa-dark); }
+.rosa[disabled] { opacity: .7; cursor: progress; }
+.preto { background: var(--ink); color: #fff; }
+.claro { background: #fff; color: var(--ink); box-shadow: inset 0 0 0 1px #d4d4d1; }
+.whats { background: #1f9d55; color: #fff; }
+.link { color: var(--ink); text-underline-offset: 3px; }
+
+/* ---------- o topo de ponta a ponta (07/11, no jeito do wolfstudio.cc) ----------
+   No fluxo e grudado ao rolar (o hero conta com o espaço). Transparente com
+   desfoque: o que passa por baixo fica borrado, e o fio fino desenha a barra.
+   Medido no deles: 66px, blur de 13,5px, fio de 0,8px a 13% de tinta. */
+.topo {
+  position: sticky; top: 0; z-index: 30;
+  height: 66px; margin: 0;
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 clamp(14px, 1.6vw, 22px);
+  background: #ffffff1f;
+  backdrop-filter: blur(13.5px); -webkit-backdrop-filter: blur(13.5px);
+  border: .8px solid #31313121;
+}
+.marca { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; }
+.marca img { display: block; width: clamp(52px, 4.6vw, 66px); height: auto; }
+.topoNav { display: flex; gap: 0; margin-left: auto; }
+.topoNav a, .topoCta {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px;
+  font: 600 12px/1 var(--font-body), sans-serif; letter-spacing: .02em; text-transform: uppercase;
+  color: var(--ink); text-decoration: none; white-space: nowrap;
+}
+.topoNav a { font-weight: 500; }
+.topoNav a:hover, .topoCta:hover { text-decoration: underline; text-underline-offset: 4px; }
+.topoCta { margin-left: clamp(8px, 2vw, 40px); padding-right: 0; font-weight: 700; }
+.topoCta svg { transition: transform .25s var(--entra); }
+.topoNav a:focus-visible, .topoCta:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+/* ---------- o formulário da amostra ---------- */
+.form { padding: 22px; border-radius: 28px; background: var(--cartao); }
+.formTitulo { margin: 0; font: 500 19px/1.25 var(--font-titulo), sans-serif; letter-spacing: -.01em; color: var(--ink); }
+.formSub { margin: 6px 0 16px; font-size: 15px; color: var(--texto); }
+.campos { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+.campo { display: grid; gap: 6px; }
+.campo span { font: 500 13px/1.2 var(--font-body), sans-serif; color: var(--ink); }
+.campo input {
+  width: 100%; min-height: 50px; padding: 0 16px; border: 0; border-radius: 14px;
+  background: #fff; color: var(--ink); font: 400 16px/1 var(--font-body), sans-serif;
+}
+.campo input::placeholder { color: #9a9e9f; }
+.campo input:focus { outline: none; box-shadow: 0 0 0 2px var(--rosa); }
+.erro { display: block; margin-top: 10px; font-size: 14px; line-height: 1.45; color: var(--erro); }
+.erro a { color: inherit; }
+.form .rosa { width: 100%; margin-top: 12px; }
+.micro { margin: 12px 2px 0; font-size: 13.5px; line-height: 1.5; color: var(--suave); }
+.micro b { color: var(--ink); font-weight: 600; }
+
+.ok { display: grid; gap: 12px; }
+.okLinha { display: flex; align-items: center; gap: 10px; margin: 0; font: 500 19px/1.25 var(--font-titulo), sans-serif; color: var(--ink); }
+.okIcone { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--verde); color: #fff; flex: none; }
+.ok p { margin: 0; }
+.ok .botao { justify-self: start; }
+
+/* ---------- a compra simulada na moldura do hero ----------
+   A moldura é 16:10 no desktop e 4:5 até 720px (vitrine.module.css): cada
+   vídeo foi gravado numa dessas proporções, e só um aparece por vez. */
+.compraDesk, .compraCel { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top center; background: #f2f4f5; }
+.compraCel { display: none; }
+@media (max-width: 720px) {
+  .compraDesk { display: none; }
+  .compraCel { display: block; }
+}
+
+/* as Lojas no ar sem as abas (o componente é o da vitrine; só aqui elas somem) */
+.semAbas [role="tablist"] { display: none; }
+
+/* ---------- a entrada das seções (07/11) ----------
+   A mesma da vitrine: o título letra a letra saindo do desfoque, e o .sobe
+   subindo 14px atrás dele, na ordem de --d. Só com .anim (posta pelo
+   JavaScript depois de montar); com menos movimento, nada se move. */
+.soLeitor { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.palavra { display: inline-block; white-space: nowrap; }
+.letra { display: inline-block; }
+.anim .letra { opacity: 0; filter: blur(12px); transform: translateY(.12em); }
+.visto .letra { animation: letraSurge .7s var(--entra) both; animation-delay: calc(var(--i) * 16ms); }
+@keyframes letraSurge { to { opacity: 1; filter: none; transform: none; } }
+.anim .sobe { opacity: 0; transform: translateY(14px); }
+.visto .sobe { animation: sobe .6s var(--entra) both; animation-delay: calc(var(--d, 0) * 90ms + 200ms); }
+@keyframes sobe { to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .anim .letra, .anim .sobe { opacity: 1; filter: none; transform: none; animation: none; }
+}
+
+/* ---------- o depoimento, simples ---------- */
+/* em cima pouco: as Lojas no ar, logo acima, já terminam com respiro grande */
+/* 07/11, segunda rodada (pedido do Rafael: "ajusta este"): os fios das lojas no
+   ar cortavam no topo do depoimento, e ele era o único bloco centrado numa página
+   que foi toda para a esquerda. Agora os fios passam por ele, a frase vem grande
+   à esquerda, com as aspas verdes penduradas, e quem disse fica na metade da
+   direita, a partir do fio do meio, como o texto do hero. */
+.depo {
+  padding: clamp(24px, 3vw, 48px) 0 clamp(16px, 2vw, 32px);
+  background:
+    linear-gradient(var(--fio), var(--fio)) 25% 0 / 1px 100% no-repeat,
+    linear-gradient(var(--fio), var(--fio)) 50% 0 / 1px 100% no-repeat,
+    linear-gradient(var(--fio), var(--fio)) 75% 0 / 1px 100% no-repeat,
+    var(--branco);
+}
+.depoFigura { margin: 0; padding: 0 clamp(16px, 4vw, 64px); }
+.depoFrase {
+  margin: 0; max-width: 17em;
+  font: 400 clamp(32px, 4.6vw, 72px)/1.02 var(--font-titulo), var(--font-body), sans-serif;
+  letter-spacing: -.04em; color: var(--ink); text-wrap: balance;
+}
+.depoGrande { display: block; }
+.depoResto { display: block; max-width: 30em; margin-top: clamp(16px, 2vw, 28px); font: 400 clamp(18px, 1.6vw, 24px)/1.35 var(--font-titulo), var(--font-body), sans-serif; letter-spacing: -.015em; color: #43484b; }
+/* as aspas verdes saíram em 08/11: no lugar, o rótulo "(Quem já contratou)" */
+.depoRotulo { margin-bottom: clamp(16px, 2vw, 24px); color: var(--ink); }
+.depoQuem { display: flex; align-items: center; gap: 12px; margin-top: clamp(28px, 3.4vw, 48px); padding-left: calc(50% + 14px - clamp(16px, 4vw, 64px)); text-align: left; }
+.depoQuem img { display: block; width: 48px; height: 48px; border-radius: 50%; object-fit: cover; }
+.depoQuem span { display: grid; gap: 2px; font-size: 14px; line-height: 1.3; color: var(--suave); }
+.depoQuem b { font-weight: 600; font-size: 15px; color: var(--ink); }
+
+/* ---------- o modal do formulário, como na vitrine ---------- */
+.modal { width: min(520px, 100% - 24px); max-width: none; max-height: calc(100% - 24px); padding: 0; border: 0; border-radius: 28px; background: #fff; color: var(--texto); overflow: auto; box-shadow: 0 40px 80px #00000033; }
+.modal::backdrop { background: #14181a80; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+.modal .form { background: #fff; padding: 30px 26px 24px; }
+/* no cartão branco o campo volta à caixa cinza da régua (#F3F3F1) */
+.modal .campo input { background: #f3f3f1; }
+.modal .campo input:focus { background: #fff; }
+.modal .formTitulo { padding-right: 44px; font-size: 22px; }
+.modalFechar { position: absolute; top: 14px; right: 14px; z-index: 1; width: 40px; height: 40px; display: grid; place-items: center; border: 0; border-radius: 50%; background: var(--cartao); color: var(--ink); cursor: pointer; }
+.modalFechar:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+/* ---------- as seções ---------- */
+.secao { padding: 88px 0; }
+.secaoCinza { background: var(--papel); }
+
+/* a mesma venda, dois caminhos: os cartões brancos no cinza da seção; o da
+   loja online com o fio verde, porque é o que vence */
+.caminhos { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; max-width: 900px; margin: 40px auto 0; }
+.caminho { padding: 28px; border-radius: 28px; background: #fff; }
+.caminhoBom { box-shadow: inset 0 0 0 2px var(--verde), 0 18px 40px -18px #0c91594d; }
+
+/* ---------- a mesma venda no branco, com vidro (07/11, segunda rodada) ----------
+   Vidro em fundo branco liso não aparece: não há o que desfocar. Por isso as
+   duas manchas de luz atrás dos cartões, nas cores da casa (rosa do lado do
+   direct, verde do lado da loja online), bem abertas e fracas. O cartão é
+   branco translúcido com desfoque, um fio claro e o brilho de cima. */
+.secaoVidro {
+  position: relative; isolation: isolate; overflow: clip;
+  background:
+    linear-gradient(var(--fio), var(--fio)) 25% 0 / 1px 100% no-repeat,
+    linear-gradient(var(--fio), var(--fio)) 50% 0 / 1px 100% no-repeat,
+    linear-gradient(var(--fio), var(--fio)) 75% 0 / 1px 100% no-repeat,
+    var(--branco);
+}
+/* as duas manchas de luz (rosa e verde) saíram no mesmo dia, pedido do Rafael:
+   "retira este blur de fundo". O vidro fica só no cartão, sobre os fios. */
+.tituloEsq { text-align: left; text-wrap: balance; }
+.secaoVidro .caminhos { max-width: none; }
+.secaoVidro .caminho {
+  background: #ffffff8f;
+  -webkit-backdrop-filter: blur(22px) saturate(1.5); backdrop-filter: blur(22px) saturate(1.5);
+  box-shadow: inset 0 0 0 1px #ffffffd9, inset 0 1px 0 #fff, 0 24px 60px -28px #14181a3d;
+}
+.secaoVidro .caminhoBom { box-shadow: inset 0 0 0 1.5px var(--verde), inset 0 1px 0 #fff, 0 24px 60px -24px #0c915959; }
+.secaoVidro .passosC li { border-top-color: #14181a14; }
+.secaoVidro .saldoRuim { background: #fbecebcc; }
+.secaoVidro .saldoBom { background: #e3f3ebcc; }
+@media (max-width: 860px) {
+  .secaoVidro { background: linear-gradient(var(--fio), var(--fio)) 50% 0 / 1px 100% no-repeat, var(--branco); }
+}
+.caminhoTitulo { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 0 0 14px; font: 500 22px/1.2 var(--font-titulo), sans-serif; letter-spacing: -.015em; color: var(--ink); }
+.passosC { display: grid; margin: 0; padding: 0; list-style: none; }
+.passosC li { display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 10px 0; border-top: 1px solid var(--fio); font-size: 16px; color: var(--ink); }
+.passosC li span { flex: 1; }
+.passosC time { font: 500 15px/1 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--suave); }
+.passosC svg { flex: none; color: var(--verde); }
+.passosC .apagado { color: var(--suave); }
+.saldo { display: flex; align-items: center; gap: 8px; margin: 14px 0 0; padding: 12px 14px; border-radius: 14px; font-weight: 600; font-size: 16px; }
+.saldoRuim { background: #fbeceb; color: #a4221a; }
+.saldoBom { background: #e3f3eb; color: #0a7a4b; }
+.exemplo { margin: 10px 0 0; font-size: 13px; color: var(--suave); }
+
+/* da amostra à loja vendendo: as etapas da contratação, em sequência, por isso o número */
+.etapas { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px; max-width: 1000px; margin: 40px auto 0; padding: 0; list-style: none; }
+.etapas li { padding-top: 16px; border-top: 1px solid #d9d9d5; }
+.etapas .num { display: block; margin-bottom: 10px; font: 500 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--verde); }
+.etapas p { margin: 6px 0 0; font-size: 15px; color: var(--texto); }
+.etapas .passoTitulo { margin: 0; font: 500 16px/1.3 var(--font-body), sans-serif; color: var(--ink); }
+@media (max-width: 1023px) { .etapas { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .etapas { grid-template-columns: minmax(0, 1fr); gap: 18px; margin-top: 28px; } }
+
+/* o painel: o vídeo real da Loja Modelo */
+.painel { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 56px; align-items: center; }
+.moldura { padding: 10px; border-radius: 28px; background: #e4e4e2; box-shadow: 0 40px 80px #0000001f, 0 8px 24px #00000012; }
+.moldura video { display: block; width: 100%; height: auto; aspect-ratio: 960 / 600; border-radius: 19px; background: #f8f7f3; }
+.lista { display: grid; gap: 12px; margin: 22px 0 0; padding: 0; list-style: none; }
+.lista li { position: relative; padding-left: 28px; font-size: 16px; line-height: 1.45; }
+.lista li::before {
+  content: ""; position: absolute; left: 0; top: 3px; width: 18px; height: 18px; border-radius: 50%;
+  background: var(--verde) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12.5 10 16.5 18 8'/%3E%3C/svg%3E") center / 12px no-repeat;
+}
+
+.centrado { text-align: center; margin-inline: auto; text-wrap: balance; }
+
+/* o preço */
+.preco { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0; margin-top: 40px; border-radius: 28px; background: var(--cartao); overflow: hidden; }
+.precoValor { padding: 36px; display: grid; align-content: start; gap: 6px; }
+.precoValor .rotulo { margin: 0; font: 500 15px/1.3 var(--font-body), sans-serif; color: var(--ink); }
+.valor { margin: 0; font: 400 clamp(48px, 6vw, 72px)/1 var(--font-titulo), sans-serif; letter-spacing: -.04em; color: var(--ink); }
+.mensal { margin: 18px 0 0; padding-top: 18px; border-top: 1px solid #dcdcd8; }
+.mensal b { display: block; font: 500 24px/1.2 var(--font-titulo), sans-serif; letter-spacing: -.02em; color: var(--ink); }
+.mensal span { display: block; margin-top: 4px; font-size: 15px; }
+.precoValor .botao { justify-self: start; margin-top: 22px; }
+.precoInclui { padding: 36px; background: #fff; box-shadow: inset 1px 0 0 var(--fio); }
+.precoInclui .lista { margin-top: 14px; }
+.jaTem { margin: 22px 0 0; padding: 14px 16px; border-radius: 16px; background: var(--papel); font-size: 15px; }
+.jaTem b { color: var(--ink); }
+
+/* as perguntas */
+.faqGrade { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 56px; align-items: start; }
+.faq { max-width: 760px; }
+.faq details { border-top: 1px solid var(--fio); }
+.faq details:last-child { border-bottom: 1px solid var(--fio); }
+.faq summary {
+  display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  min-height: 60px; padding: 14px 0; cursor: pointer; list-style: none;
+  font: 500 17px/1.35 var(--font-body), sans-serif; color: var(--ink);
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; flex: none; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; background: var(--cartao); font-size: 18px; line-height: 1; transition: transform .25s var(--entra); }
+.faq details[open] summary::after { transform: rotate(45deg); }
+.faq details p { margin: 0 0 18px; max-width: 40em; }
+
+/* o botão flutuante, no canto: aparece depois do hero, some no convite final.
+   Desde 07/11 igual ao botão do hero (o "Mandar o @" com a seta no círculo
+   branco): eram dois desenhos e dois textos para a mesma ação. */
+.flutua {
+  position: fixed; right: clamp(12px, 2.4vw, 34px); bottom: clamp(12px, 2.4vw, 22px); z-index: 40;
+  display: inline-flex; align-items: center; gap: 16px; min-height: 58px; padding: 0 8px 0 26px;
+  border-radius: 999px; background: var(--rosa); color: #fff; text-decoration: none;
+  font: 600 16px/1 var(--font-body), sans-serif; letter-spacing: -.005em; white-space: nowrap;
+  box-shadow: 0 12px 30px -8px #e31b6273;
+  transform: translateY(160%); transition: transform .4s var(--entra), background-color .2s;
+}
+.flutuaSeta {
+  display: inline-grid; place-items: center; flex: none;
+  width: 42px; height: 42px; border-radius: 50%; background: #fff; color: var(--rosa);
+}
+.flutuaSeta svg { width: 20px; height: 15px; transition: transform .25s var(--entra); }
+.flutua:hover { background: var(--rosa-dark); }
+.flutua:hover .flutuaSeta svg { transform: translateX(4px); }
+.flutua:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.flutuaVisivel { transform: none; }
+
+/* ---------- as larguras ---------- */
+@media (max-width: 1023px) {
+  .painel, .faqGrade { grid-template-columns: minmax(0, 1fr); gap: 44px; }
+  .topoNav { display: none; }
+  /* sem os links, o convite vai sozinho para a direita */
+  .topoCta { margin-left: auto; }
+}
+@media (max-width: 720px) {
+  .secao { padding: 64px 0; }
+  .lead { font-size: 17px; }
+  .form { padding: 18px; border-radius: 22px; }
+  .campos { grid-template-columns: minmax(0, 1fr); }
+  .preco { grid-template-columns: minmax(0, 1fr); border-radius: 22px; }
+  .precoValor, .precoInclui { padding: 26px 22px; }
+  .precoInclui { box-shadow: inset 0 1px 0 var(--fio); }
+  .precoValor .botao { justify-self: stretch; }
+  .caminhos { grid-template-columns: minmax(0, 1fr); gap: 14px; margin-top: 28px; }
+  .caminho { padding: 22px 20px; border-radius: 22px; }
+  .moldura { border-radius: 22px; padding: 7px; }
+  .moldura video { border-radius: 16px; }
+  .flutua { min-height: 52px; padding-left: 20px; gap: 12px; font-size: 15px; }
+  .flutuaSeta { width: 38px; height: 38px; }
+  .modal { border-radius: 22px; }
+  .modal .form { padding: 24px 18px 18px; }
+}
+
+@media (max-width: 380px) {
+  .topoCta { font-size: 11px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .flutua { transition: none; }
+}
+
+/* ---------- os dois relógios (07/11) ---------- */
+.relogio { font: 500 15px/1 ui-monospace, SFMono-Regular, Menlo, monospace; color: #a4221a; font-variant-numeric: tabular-nums; }
+.relogioBom { color: var(--verde); }
+.espera { opacity: .12; transition: opacity .35s var(--entra), transform .35s var(--entra); }
+.chegou { opacity: 1; transition: opacity .35s var(--entra), transform .35s var(--entra); }
+.passosC li.espera { transform: translateY(6px); }
+.saldo.espera { transform: scale(.97); }
+.passosC .apagado.chegou { color: var(--suave); }
+@media (prefers-reduced-motion: reduce) { .espera, .chegou { transition: none; } }
+
+@media (max-width: 860px) {
+  .depo { background: linear-gradient(var(--fio), var(--fio)) 50% 0 / 1px 100% no-repeat, var(--branco); }
+  .depoQuem { padding-left: 0; }
+}
+
+/* ---------- da amostra à loja vendendo, nas colunas dos fios (07/11) ----------
+   Quatro etapas, quatro colunas: a lista vai de borda a borda e cada etapa
+   começa 14px depois do seu fio (a primeira, na margem da página). O fio de
+   cima atravessa a tela inteira. */
+.secaoFios {
+  background:
+    linear-gradient(var(--fio), var(--fio)) 25% 0 / 1px 100% no-repeat,
+    linear-gradient(var(--fio), var(--fio)) 50% 0 / 1px 100% no-repeat,
+    linear-gradient(var(--fio), var(--fio)) 75% 0 / 1px 100% no-repeat,
+    var(--branco);
+}
+.secaoFios .etapas {
+  width: 100vw; max-width: none; margin: clamp(36px, 4.4vw, 64px) 0 0 calc(50% - 50vw); gap: 0;
+  border-top: 1px solid var(--fio);
+}
+.secaoFios .etapas li { padding: clamp(18px, 2vw, 28px) clamp(14px, 1.6vw, 24px) 8px 14px; border-top: 0; }
+/* a primeira coluna na margem do .wrap, a mesma do título */
+.secaoFios .etapas li:nth-child(4n + 1) { padding-left: max(16px, (100vw - 1120px) / 2); }
+.secaoFios .etapas .num { margin-bottom: clamp(28px, 4vw, 64px); font: 600 12px/1 var(--font-body), sans-serif; letter-spacing: .05em; color: var(--suave); }
+.secaoFios .etapas .passoTitulo { font: 400 clamp(20px, 1.8vw, 26px)/1.15 var(--font-titulo), var(--font-body), sans-serif; letter-spacing: -.02em; text-wrap: balance; }
+.secaoFios .etapas p { font-size: 15px; line-height: 1.5; color: #43484b; }
+.secaoFios .etapas li p:last-child { margin-top: 10px; }
+@media (max-width: 1023px) {
+  /* duas colunas: a segunda começa no fio do meio */
+  .secaoFios .etapas li:nth-child(odd) { padding-left: max(16px, (100vw - 1120px) / 2); }
+  .secaoFios .etapas li:nth-child(even) { padding-left: 14px; }
+  .secaoFios .etapas li:nth-child(n + 3) { border-top: 1px solid var(--fio); }
+  .secaoFios .etapas .num { margin-bottom: 22px; }
+}
+@media (max-width: 860px) {
+  .secaoFios { background: linear-gradient(var(--fio), var(--fio)) 50% 0 / 1px 100% no-repeat, var(--branco); }
+}
+@media (max-width: 560px) {
+  /* uma coluna: o fio do meio passaria por cima do texto, então some aqui */
+  .secaoFios { background: var(--branco); }
+  .secaoFios .etapas li:nth-child(n) { padding-left: 16px; padding-right: 16px; }
+  .secaoFios .etapas li + li { border-top: 1px solid var(--fio); }
+  .secaoFios .etapas .num { margin-bottom: 14px; }
+}
+
+/* ---------- o painel nas colunas dos fios (07/11) ----------
+   De borda a borda: o texto na metade da esquerda, na margem do .wrap; o
+   painel na da direita, começando 14px depois do fio do meio e indo até a
+   margem da página. */
+@media (min-width: 1024px) {
+  .secaoFios .painel {
+    width: 100vw; max-width: none; margin-left: calc(50% - 50vw);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0;
+  }
+  .secaoFios .painel > :first-child { padding: 0 clamp(28px, 3vw, 56px) 0 max(16px, (100vw - 1120px) / 2); }
+  /* margem, e não padding: o último filho É a moldura, e o padding dela é o aro cinza */
+  .secaoFios .painel > :last-child { margin: 0 clamp(16px, 4vw, 64px) 0 14px; }
+}
+
+/* ============================================================
+   O fim da página no jeito do resto (07/11, "ajusta esta parte, todas
+   essas também"): o preço, o convite final, as perguntas e o rodapé no
+   branco com os fios, nas metades da página.
+   ============================================================ */
+/* duas metades de borda a borda: a da esquerda na margem do .wrap, a da
+   direita 14px depois do fio do meio */
+.metades {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  width: 100vw; margin-left: calc(50% - 50vw);
+}
+.metades > :first-child { padding: 0 clamp(28px, 3vw, 56px) 0 max(16px, (100vw - 1120px) / 2); }
+.metades > :last-child { padding: 0 clamp(16px, 4vw, 64px) 0 14px; }
+.rotuloW { margin: 0 0 14px; font: 600 12px/1 var(--font-body), sans-serif; letter-spacing: .05em; text-transform: uppercase; color: var(--suave); }
+.acoesW { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 28px; margin-top: 28px; }
+
+/* o preço */
+.precoW.precoW { margin-top: clamp(36px, 4.4vw, 64px); padding-top: clamp(24px, 3vw, 40px); border-top: 1px solid var(--fio); }
+.precoW .valor { font-size: clamp(64px, 9vw, 150px); line-height: .9; letter-spacing: -.055em; }
+.precoW .nota { margin-top: 18px; }
+.precoW .mensal { border-top-color: var(--fio); }
+.precoW .jaTem { background: none; padding: 16px 0 0; border-top: 1px solid var(--fio); border-radius: 0; }
+
+/* o convite final */
+.fimW {
+  padding: clamp(80px, 10vw, 150px) 0 clamp(72px, 9vw, 130px);
+  background:
+    linear-gradient(var(--fio), var(--fio)) 25% 0 / 1px 100% no-repeat,
+    linear-gradient(var(--fio), var(--fio)) 50% 0 / 1px 100% no-repeat,
+    linear-gradient(var(--fio), var(--fio)) 75% 0 / 1px 100% no-repeat,
+    var(--branco);
+}
+.fimTitulo {
+  margin: 0; padding: 0 clamp(16px, 4vw, 64px);
+  font: 400 clamp(46px, 9.2vw, 158px)/.9 var(--font-titulo), var(--font-body), sans-serif;
+  letter-spacing: -.058em; color: var(--ink);
+}
+.fimTitulo em { font-style: normal; color: var(--verde); }
+.fimBase { margin-top: clamp(32px, 4vw, 60px); padding: 0 clamp(16px, 4vw, 64px) 0 calc(50% + 14px); }
+.fimBase p { margin: 0; max-width: 30em; font-size: clamp(16px, 1.2vw, 17.5px); line-height: 1.5; color: #43484b; }
+
+/* as perguntas */
+.faqW .faq { max-width: none; }
+.faqW .faq summary::after { background: none; box-shadow: inset 0 0 0 1px var(--fio); }
+
+/* o rodapé: quatro colunas, uma por fio */
+.rodapeW {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  padding: clamp(36px, 4vw, 56px) 0 clamp(40px, 5vw, 64px);
+  border-top: 1px solid var(--fio);
+  background:
+    linear-gradient(var(--fio), var(--fio)) 25% 0 / 1px 100% no-repeat,
+    linear-gradient(var(--fio), var(--fio)) 50% 0 / 1px 100% no-repeat,
+    linear-gradient(var(--fio), var(--fio)) 75% 0 / 1px 100% no-repeat,
+    var(--branco);
+  font-size: 14px; line-height: 1.5; color: var(--suave);
+}
+.rodapeW > * { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 0 clamp(14px, 1.6vw, 24px) 0 14px; }
+.rodapeW > :first-child { padding-left: max(16px, (100vw - 1120px) / 2); }
+.rodapeW p { margin: 0; max-width: 24em; }
+.rodapeW a { color: var(--ink); text-decoration: none; }
+.rodapeW nav a { font: 600 12px/1.6 var(--font-body), sans-serif; letter-spacing: .05em; }
+.rodapeW > :nth-child(3) a { display: inline-flex; align-items: center; gap: 8px; }
+.rodapeW > :nth-child(4) { justify-content: space-between; }
+@media (hover: hover) and (pointer: fine) { .rodapeW a:hover { text-decoration: underline; text-underline-offset: 4px; } }
+.rodapeMarca { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.rodapeMarca img { display: block; height: auto; }
+.rodapeMarca img:first-child { width: 46px; }
+.rodapeMarca img:last-child { width: 120px; }
+.rodapeTopo { font: 600 12px/1 var(--font-body), sans-serif; letter-spacing: .05em; text-transform: uppercase; }
+
+@media (max-width: 860px) {
+  .metades { grid-template-columns: minmax(0, 1fr); row-gap: 40px; }
+  .metades > :first-child, .metades > :last-child { padding: 0 16px; }
+  .fimW { background: linear-gradient(var(--fio), var(--fio)) 50% 0 / 1px 100% no-repeat, var(--branco); }
+  .fimTitulo { font-size: clamp(44px, 13.4vw, 92px); letter-spacing: -.035em; }
+  .fimBase { padding: 0 16px; }
+  .rodapeW { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 32px; background: linear-gradient(var(--fio), var(--fio)) 50% 0 / 1px 100% no-repeat, var(--branco); }
+  .rodapeW > :nth-child(odd) { padding-left: 16px; }
+}
+@media (max-width: 480px) {
+  .acoesW { flex-direction: column; align-items: stretch; }
+  .acoesW > a:not(:first-child) { justify-content: center; min-height: 40px; }
+}
+
+/* ---------- para quem é (07/11) ---------- */
+.paraQuemRotulo { color: var(--ink); position: sticky; top: 96px; }
+.paraQuem { margin: 0; padding: 0; list-style: none; }
+.paraQuem li { padding: clamp(22px, 2.6vw, 36px) 0; border-top: 1px solid var(--fio); }
+.paraQuem li:first-child { padding-top: 0; border-top: 0; }
+.paraQuemNum { display: block; margin-bottom: 12px; font: 600 13px/1 var(--font-body), sans-serif; color: var(--ink); }
+.paraQuemTitulo {
+  margin: 0; font: 500 clamp(24px, 2.6vw, 40px)/1.05 var(--font-titulo), var(--font-body), sans-serif;
+  letter-spacing: -.03em; text-transform: uppercase; color: var(--ink); text-wrap: balance;
+}
+.paraQuem li p:last-child { margin: 10px 0 0; max-width: 34em; font-size: clamp(15px, 1.1vw, 17px); line-height: 1.5; color: #43484b; }
+@media (max-width: 860px) {
+  .paraQuemRotulo { position: static; margin-bottom: 0; }
+}
+
+/* ---------- a mesma venda, sem cartões (07/11, terceira rodada) ---------- */
+.caminhosW { margin-top: clamp(36px, 4.4vw, 64px); padding-top: clamp(24px, 3vw, 40px); border-top: 1px solid var(--fio); }
+.caminhosW .rotuloW { display: flex; justify-content: space-between; align-items: baseline; color: var(--ink); }
+.tempoGrande {
+  display: flex; align-items: baseline; gap: 14px; margin: 0 0 clamp(18px, 2.4vw, 32px);
+  font: 400 clamp(72px, 10vw, 168px)/.85 var(--font-titulo), var(--font-body), sans-serif; letter-spacing: -.06em;
+}
+.tempoGrande span { font: 600 13px/1 var(--font-body), sans-serif; letter-spacing: .05em; text-transform: uppercase; }
+.tempoRuim { color: #a4221a; }
+.tempoBom { color: var(--verde); }
+.caminhosW .passosC li { border-top-color: var(--fio); }
+
+/* ---------- o resto da página no celular (08/11, "continue", depois do hero e das fotos) ----------
+   Uma régua só para os títulos das seções: antes iam de 28px (a mesma venda,
+   o preço) a 52px (o convite final), em peso 500, ao lado do hero e das fotos
+   em 400. Agora 400, apertados como a manchete, no tamanho do "Veja o que já
+   está no ar.". Os itens do "para quem é" perdem a caixa alta no celular (em
+   três linhas pesava mais que o título). Os botões do preço e do convite
+   final ficam como os do hero: a pílula do tamanho do texto, à esquerda. */
+@media (max-width: 560px) {
+  .h2.h2, .tituloEsq.tituloEsq {
+    font-weight: 400; font-size: clamp(34px, 10.4vw, 44px); line-height: .94; letter-spacing: -.045em;
+  }
+  .fimTitulo.fimTitulo { font-size: clamp(40px, 12.4vw, 52px); letter-spacing: -.045em; line-height: .92; }
+  .fimBase p { font-size: 15px; }
+  .paraQuemTitulo { text-transform: none; font-weight: 400; font-size: clamp(22px, 6.4vw, 26px); letter-spacing: -.035em; }
+  .acoesW { align-items: flex-start; }
+  .acoesW > a:not(:first-child) { justify-content: flex-start; }
+}
+/* a mesma venda lado a lado no celular (08/11, "está muito longa, queria um do
+   lado do outro"). Uma em cima da outra davam 950px de rolagem. Agora as duas
+   colunas, separadas pelo fio do meio, correm juntas: os dois relógios andam ao
+   mesmo tempo na tela. Para caber em ~170px: o relógio embaixo do rótulo, o
+   tempo em 44px com a legenda embaixo, e em cada passo o horário em cima do
+   texto, como a hora de uma mensagem. */
+@media (max-width: 860px) {
+  .metades.caminhosW { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .metades.caminhosW > :first-child { padding: 0 12px 0 16px; }
+  .metades.caminhosW > :last-child { padding: 0 16px 0 12px; }
+  .caminhosW .rotuloW { flex-direction: column; align-items: flex-start; gap: 8px; font-size: 11px; }
+  .caminhosW .relogio { font-size: 13px; }
+  .caminhosW .tempoGrande { flex-direction: column; align-items: flex-start; gap: 8px; margin-bottom: 14px; font-size: clamp(40px, 12vw, 64px); }
+  .caminhosW .tempoGrande span { font-size: 11px; }
+  .caminhosW .passosC li { flex-wrap: wrap; gap: 4px 6px; min-height: 0; padding: 10px 0; font-size: 14px; line-height: 1.3; }
+  .caminhosW .passosC time { order: -1; flex-basis: 100%; font-size: 12px; }
+  .caminhosW .passosC svg { width: 12px; height: 12px; align-self: flex-start; margin-top: 4px; }
+  .caminhosW .exemplo { font-size: 12px; line-height: 1.4; }
+}
+/* o painel no celular (08/11, "agora a seção do painel no mobile").
+   O vídeo é a tela do computador (960x600) e, em 390, virava uma miniatura
+   ilegível no pé da seção, depois de quatro parágrafos. Agora:
+   • o vídeo sobe para logo depois do texto (o primeiro bloco vira "contents" e
+     a lista desce com order);
+   • corta o menu da esquerda (4:3 encostado à direita), e os pedidos, o aviso
+     de "pedido pago" e as etiquetas aparecem maiores;
+   • a lista vira linhas com fio, como as etapas, em 15px. */
+@media (max-width: 860px) {
+  .secaoFios .painel { gap: 0; }
+  .secaoFios .painel > :first-child { display: contents; }
+  .secaoFios .painel .moldura { order: 3; margin-top: 28px; padding: 6px; border-radius: 20px; }
+  /* o recorte: sem o menu (20% da esquerda) e sem o vazio de baixo (20%). O
+     object-view-box é do Chrome; no Safari fica o corte de baixo, com o menu */
+  .secaoFios .painel .moldura video {
+    aspect-ratio: 768 / 480; object-fit: cover; object-position: 100% 0; border-radius: 14px;
+    object-view-box: inset(0 0 20% 20%);
+  }
+  .secaoFios .painel .lista { order: 4; gap: 0; margin-top: 28px; }
+  .secaoFios .painel .lista li { padding: 14px 0 14px 28px; border-top: 1px solid var(--fio); font-size: 15px; }
+  .secaoFios .painel .lista li::before { top: 16px; }
+  .secaoFios .painel .lead { font-size: 15px; margin-top: 16px; }
+}
+
+/* o convite do topo (08/11): "Falar no WhatsApp" com o ícone verde e depois "Fale comigo" num
+   círculo foram recusados ("está ruim", "não gostei"). Fica "Vamos conversar" no jeito dos links
+   do topo: caixa alta, a seta ↗ (abre o WhatsApp, fora da página). */
+.topoCta:hover svg { transform: translate(2px, -2px); }
+
+/* o "para quem é" mais curto no celular (08/11, "está muito longo aqui"):
+   o número sai da linha própria e vai ao lado do título, numa coluna de 28px;
+   título em 20px, texto em 14px, menos ar entre os itens e na seção. */
+@media (max-width: 560px) {
+  #para-quem.secao, .secao#para-quem { padding-block: 48px; }
+  .metades:has(> .paraQuem) { row-gap: 20px; }
+  .paraQuem li { display: grid; grid-template-columns: 28px minmax(0, 1fr); column-gap: 4px; padding: 16px 0; }
+  .paraQuemNum { grid-row: 1; margin: 0; padding-top: 5px; font-size: 12px; color: var(--suave); }
+  .paraQuemTitulo.paraQuemTitulo { grid-column: 2; font-size: 20px; line-height: 1.15; }
+  .paraQuem li p:last-child { grid-column: 2; margin-top: 4px; font-size: 14px; line-height: 1.45; }
+}
+
+/* as etapas mais curtas no celular (08/11, "está muito longa no mobile"): como o
+   "para quem é", o número ao lado do título numa coluna de 36px, o título em 18px,
+   o texto em 14px e menos ar em cada etapa */
+@media (max-width: 560px) {
+  .secaoFios .etapas { gap: 0; margin-top: 24px; }
+  .secaoFios .etapas li:nth-child(n) { display: grid; grid-template-columns: 36px minmax(0, 1fr); padding-top: 14px; padding-bottom: 14px; }
+  .secaoFios .etapas .num { grid-row: 1 / 3; margin: 0; padding-top: 4px; font-size: 11px; }
+  .secaoFios .etapas .passoTitulo { grid-column: 2; font-size: 18px; }
+  .secaoFios .etapas li p:last-child { grid-column: 2; margin-top: 4px; font-size: 14px; line-height: 1.45; }
+}
+/* a lista do painel no celular sem os checks verdes (08/11): linhas com fio, como o "para quem é" */
+@media (max-width: 860px) {
+  .secaoFios .painel .lista li { padding: 13px 0; font-size: 16px; color: var(--ink); }
+  .secaoFios .painel .lista li::before { display: none; }
+}

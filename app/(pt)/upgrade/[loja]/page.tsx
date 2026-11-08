@@ -1,11 +1,14 @@
 /* ============================================================
    O UPGRADE DA VITRINE (07/10/2026): /upgrade/<loja>?degrau=vender|loja
 
-   Os dois degraus acima da vitrine, pagos de dentro do painel (o painel
-   embute esta página com ?embed=1, como a de assinar o Performance). Os
-   valores vêm de lib/oferta-performance.ts: a vitrine paga abate os R$ 999
-   (decisão do Rafael em 25/09, na proposta da Fardo). Pix à vista ou cartão
-   em até 12x; o pagamento marca o degrau na loja e o estúdio começa.
+   O degrau acima da vitrine, pago de dentro do painel (o painel embute esta
+   página com ?embed=1, como a de assinar o Performance). Os valores vêm de
+   lib/oferta-performance.ts: a vitrine paga abate os R$ 999 (decisão do
+   Rafael em 25/09, na proposta da Fardo). Pix à vista ou cartão em até 12x;
+   o pagamento marca o degrau na loja e o estúdio começa.
+
+   Desde 04/11/2026 "vender" e "loja" são o mesmo produto (a Loja online);
+   a rota aceita os dois porque os painéis já entregues montam os dois links.
 
    Página por link: noindex e /upgrade no disallow do robots.
    ============================================================ */
@@ -50,9 +53,12 @@ export default async function PaginaUpgrade({ params, searchParams }: { params: 
   const loja = await lerLoja(id);
   if (!loja) notFound();
   const embutida = embed === "1";
+  /* desde 04/11 os dois valores de ?degrau= são o mesmo produto (ver
+     lib/oferta-performance.ts); o nome é o da regra da casa: "Loja online",
+     nunca "vitrine com pagamento" nem "e-commerce" */
   const degrau = DEGRAUS[d];
-  const nome = d === "vender" ? "Vitrine com pagamento" : "E-commerce";
-  const jaPago = loja.upgrade === "loja" || loja.upgrade === d;
+  const nome = degrau.nome;
+  const jaPago = loja.upgrade === "loja" || loja.upgrade === "vender";
 
   const planos: Plano[] = (Object.keys(UPGRADES) as PlanoUpgrade[])
     .filter((k) => UPGRADES[k].degrau === d)
@@ -77,7 +83,7 @@ export default async function PaginaUpgrade({ params, searchParams }: { params: 
             O próximo passo da {loja.nome}
           </p>
           <h1 className={embutida ? u.tituloEmbutido : s.titulo}>{nome}</h1>
-          <p className={u.introducao}>{d === "vender" ? "Sua cliente escolhe a peça e paga na própria vitrine. Você recebe o pedido com os dados para a entrega." : "Uma loja online para vender várias peças no mesmo pedido, com frete, estoque e gestão no painel."}</p>
+          <p className={u.introducao}>Sua cliente escolhe as peças e paga na própria loja, no Pix ou no cartão. O pedido pago chega no seu painel com os dados para a entrega.</p>
           <div className={u.preco}>
             <s>{brl(degrau.cheio)}</s>
             <b>{brl(degrau.valor)}</b>

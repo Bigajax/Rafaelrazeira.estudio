@@ -4,7 +4,7 @@ import { casos } from "@/data/casos";
 
 /* As páginas públicas de venda, nos dois idiomas, cada uma apontando a
    irmã. Fora: /crm, as propostas (são por link), o registrar-venda e as
-   páginas de apoio. A /estudio e a /e-commerce entram só em português. */
+   páginas de apoio. A /estudio e a /loja-online (a antiga /e-commerce) entram só em português. */
 export default function sitemap(): MetadataRoute.Sitemap {
   const agora = new Date();
   const emDoisIdiomas = Object.entries(PARES).flatMap(([pt, en]) => {
@@ -14,7 +14,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       { url: `${SITE}${en}`, lastModified: agora, alternates: { languages } },
     ];
   });
-  const soPt = ["/estudio", "/e-commerce", "/servicos", "/site-imersivo"].map((p) => ({ url: `${SITE}${p}`, lastModified: agora }));
+  const soPt = ["/estudio", "/loja-online","/servicos", "/site-imersivo"].map((p) => ({ url: `${SITE}${p}`, lastModified: agora }));
   /* os casos (19/10/2026): o índice e uma página por loja, datada pela
      última conferência do texto */
   const doCasos = [

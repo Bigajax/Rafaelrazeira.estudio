@@ -183,6 +183,8 @@ async function avisar(lead) {
    o mesmo da Mixpanel, e o de `tipo_projeto` é o do CRM. */
 const TIPO_POR_PAGINA = {
   "e-commerce": "ecommerce",
+  /* a página da Loja online (07/11/2026), que substitui a /e-commerce */
+  "loja-online": "ecommerce",
   "vitrine-digital": "vitrine",
   "vitrine-v3": "vitrine",
   "landing-page": "landing",
@@ -371,6 +373,8 @@ async function sincronizarCRM(linha, utm, { emIngles = false, faixa = "", naoCon
               ? "NÃO ANUNCIA AINDA: não abrir prévia. Conversar primeiro, prévia só depois de rodar tráfego."
               : "PRÉVIA SÓ DEPOIS DE CONFERIR: abrir a Biblioteca de Anúncios da Meta e confirmar que a pessoa anuncia. Sem anúncio ativo, não produzir.")
           : "",
+        /* 07/11/2026: o card diz o degrau, senão o lead vira prévia de vitrine */
+        linha.pagina === "loja-online" ? "VEIO DA /loja-online: pediu a amostra da LOJA ONLINE (R$ 1.990 + R$ 249,90/mês), não só a vitrine." : "",
         linha.vende, linha.produtos, linha.site, linha.necessidade,
       ]
         .filter(Boolean)
@@ -517,7 +521,8 @@ export default async function handler(req, res) {
   /* a loja encontrada volta para o navegador (12/09): a confirmação mostra o
      @ e os seguidores, para a pessoa conferir que era essa mesmo */
   let lojaAchada = null;
-  if (pagina.startsWith("vitrine-digital") && !suspeito && !pedidoProposta) {
+  /* a /loja-online (07/11/2026) também monta a amostra a partir do @ */
+  if ((pagina.startsWith("vitrine-digital") || pagina === "loja-online") && !suspeito && !pedidoProposta) {
     const c = await conferirArroba(canal || "");
     arroba = c.estado;
     if (c.estado === "invalido") suspeito = "arroba";

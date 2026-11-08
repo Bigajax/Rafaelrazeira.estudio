@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<title>L16-04 camadas</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@500;600;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+<style>
+/* O L16-04 (08/11/2026): o roteiro 2, sem o Rafael, na linguagem dos anúncios da G4 e da V4
+   que mais escalam (6 Diário/referencias-anuncios-v4-g4-2026-11-08): cartões de texto em
+   tela cheia com caixa alta reta e uma palavra em itálico serifado, palavra por palavra; a
+   compra na Iconic com legenda; a pilha do que vem na loja (a "Formação G4"); a tarja fixa
+   do público (a da V4) e o selo de ação no último terço. Cores do estúdio, não as da G4.
+   Desenhada por tempo: render(t, versao). Fundo transparente onde a compra aparece. */
+:root { --tinta: #14181a; --verde: #3fd08f; --rosa: #e31b62; --cartao: #f2f2f0; }
+* { box-sizing: border-box; margin: 0; }
+html, body { width: 1080px; height: var(--alto); background: transparent; overflow: hidden; font-family: "Instrument Sans", Arial, sans-serif; color: #fff; }
+#fundo { position: absolute; inset: 0; opacity: 0;
+  background: radial-gradient(120% 70% at 50% 35%, #1f2629 0%, var(--tinta) 60%); }
+#fundo::after { content: ""; position: absolute; inset: 0; opacity: .07;
+  background-image: linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px);
+  background-size: 90px 90px; mask-image: radial-gradient(70% 55% at 50% 40%, #000, transparent); }
+.cena { position: absolute; left: 70px; right: 70px; top: var(--centro); transform: translateY(-50%);
+  display: grid; justify-items: center; text-align: center; gap: 6px; opacity: 0; }
+.caps { font-weight: 700; font-size: 72px; line-height: 1.08; letter-spacing: .01em; text-transform: uppercase; }
+.caps.peq { font-size: 46px; letter-spacing: .06em; font-weight: 600; color: #cfd5d7; }
+.serif { font-family: "Instrument Serif", Georgia, serif; font-style: italic; font-weight: 400; font-size: 150px; line-height: .98; color: var(--verde); }
+.serif.branco { color: #fff; }
+.w { display: inline-block; white-space: pre; }
+.pilula { margin-top: 26px; padding: 14px 34px 16px; border-radius: 999px; background: var(--verde); color: var(--tinta);
+  font-weight: 700; font-size: 44px; letter-spacing: .04em; text-transform: uppercase; }
+/* legenda por cima da compra */
+.leg { position: absolute; left: 60px; right: 60px; top: var(--legY); display: flex; justify-content: center; opacity: 0; }
+.leg > span { padding: 14px 30px 18px; border-radius: 22px; background: #14181aeb; font-weight: 700; font-size: 60px; line-height: 1.15; text-align: center; }
+.leg em { font-family: "Instrument Serif", Georgia, serif; font-weight: 400; font-size: 76px; color: var(--verde); }
+/* a pilha */
+.pilha { position: absolute; left: 90px; right: 90px; top: var(--pilhaTopo); display: grid; gap: 18px; justify-items: stretch; }
+.pilha h3 { text-align: center; margin-bottom: 8px; }
+.item { display: flex; align-items: center; gap: 22px; padding: 22px 30px; border-radius: 24px; background: #fff; color: var(--tinta);
+  font-weight: 600; font-size: 44px; line-height: 1.1; opacity: 0; box-shadow: 0 18px 40px #0006; }
+.item i { flex: none; width: 52px; height: 52px; border-radius: 50%; background: #0c9159; display: grid; place-items: center; }
+.item i::after { content: ""; width: 22px; height: 12px; border-left: 6px solid #fff; border-bottom: 6px solid #fff; transform: translateY(-3px) rotate(-45deg); }
+.preco { display: grid; justify-items: center; gap: 4px; margin-top: 14px; opacity: 0; }
+.preco b { font-weight: 700; font-size: 104px; line-height: 1; letter-spacing: -.02em; }
+.preco small { font-weight: 600; font-size: 38px; color: #cfd5d7; }
+/* fixos */
+.tag { position: absolute; left: 60px; top: var(--tagTopo); padding: 10px 22px; border-radius: 999px; background: #14181ad9; color: #fff; font: 600 30px/1 "Instrument Sans", sans-serif; opacity: 0; }
+.tarja { position: absolute; left: 0; right: 0; top: var(--tarjaY); display: flex; justify-content: center; opacity: 0; }
+.tarja span { display: flex; align-items: center; gap: 16px; padding: 12px 26px 12px 14px; background: #fff; color: var(--tinta); border-radius: 14px;
+  font-weight: 600; font-size: 36px; box-shadow: 0 10px 30px #0005; }
+.tarja span b { padding: 8px 16px; border-radius: 10px; background: var(--rosa); color: #fff; font-weight: 700; }
+.selo { position: absolute; left: 0; right: 0; top: var(--seloY); display: flex; justify-content: center; opacity: 0; }
+.selo span { display: flex; align-items: center; gap: 14px; padding: 16px 32px; border-radius: 999px; background: var(--rosa); color: #fff; font-weight: 700; font-size: 40px; letter-spacing: .02em; }
+.selo span::before { content: ""; width: 18px; height: 18px; border-radius: 50%; background: #fff; }
+.assina { display: flex; align-items: center; gap: 18px; margin-top: 40px; font-weight: 600; font-size: 36px; }
+.assina img { width: 80px; height: 80px; border-radius: 18px; background: #fff; padding: 10px; }
+</style></head>
+<body>
+<div id="fundo"></div>
+
+<!-- ganchos (0 a 3 s) -->
+<div class="cena" data-v="A" data-a="0.15" data-b="3">
+  <div class="caps peq"><span class="w">Para quem vende</span></div>
+  <div class="serif"><span class="w">roupa </span><span class="w">ou tênis</span></div>
+  <div class="caps"><span class="w">pelo Instagram:</span></div>
+  <div class="serif branco" data-pausa="1.15" style="margin-top:18px"><span class="w">uma </span><span class="w">proposta.</span></div>
+</div>
+<div class="cena" data-v="C" data-a="0.1" data-b="3">
+  <div class="caps"><span class="w">Não é curso.</span></div>
+  <div class="caps" data-pausa=".55"><span class="w">Não é aula.</span></div>
+  <div class="caps peq" data-pausa=".55" style="margin-top:22px"><span class="w">É a sua</span></div>
+  <div class="serif" data-pausa=".1"><span class="w">loja online,</span></div>
+  <div class="serif branco" data-pausa=".1"><span class="w">pronta.</span></div>
+</div>
+<div class="leg" data-v="B" data-a="0.25" data-b="3"><span><span class="w">Olha o seu cliente </span><span class="w">comprando </span><em class="w">sozinho.</em></span></div>
+
+<!-- a proposta (3 a 6 s) -->
+<div class="cena" data-a="3.05" data-b="6">
+  <div class="caps peq"><span class="w">Eu monto uma amostra</span></div>
+  <div class="serif"><span class="w">da sua </span><span class="w">loja online</span></div>
+  <div class="caps"><span class="w">com as suas peças.</span></div>
+  <div class="pilula" data-pausa=".9">Sem custo</div>
+</div>
+
+<!-- a compra (6 a 17 s) -->
+<div class="leg" data-a="6.1" data-b="9.9"><span><span class="w">Escolhe o </span><em class="w">tamanho.</em></span></div>
+<div class="leg" data-a="9.95" data-b="13.4"><span><span class="w">Calcula o </span><em class="w">frete.</em></span></div>
+<div class="leg" data-a="13.45" data-b="14.75"><span><span class="w">Paga no </span><em class="w">Pix.</em></span></div>
+<div class="leg" data-a="14.85" data-b="17"><span><span class="w">Pedido </span><em class="w">pago.</em></span></div>
+
+<!-- a pilha (17 a 24 s) -->
+<div class="pilha" id="pilha">
+  <h3 class="caps peq" data-t="17.15">O que vem na sua loja</h3>
+  <div class="item" data-t="17.5"><i></i>Pix e cartão</div>
+  <div class="item" data-t="18.3"><i></i>Frete calculado pelo CEP</div>
+  <div class="item" data-t="19.1"><i></i>O pedido chega pago</div>
+  <div class="item" data-t="19.9"><i></i>Painel para cadastrar as peças</div>
+  <div class="item" data-t="20.7"><i></i>Relatório de quem entrou e do que olhou</div>
+  <div class="preco" data-t="21.8"><b>R$ 1.990</b><small>+ R$ 249,90/mês depois da entrega</small></div>
+</div>
+
+<!-- o fecho (24 a 30 s) -->
+<div class="cena" data-a="24.1" data-b="31">
+  <div class="caps peq"><span class="w">A amostra é</span></div>
+  <div class="serif"><span class="w">por minha </span><span class="w">conta.</span></div>
+  <div class="caps" data-pausa="1.2" style="margin-top:34px"><span class="w">Manda o @ </span><span class="w">da sua loja.</span></div>
+  <div class="caps peq" data-pausa=".3"><span class="w">Em até 24h </span><span class="w">te mostro a sua.</span></div>
+  <div class="assina" data-pausa=".4"><img src="MONOGRAMA" alt=""><span>rafaelrazeira.com.br</span></div>
+</div>
+
+<div class="tarja" id="tarja"><span><b>Loja online</b>Para quem vende pelo Instagram</span></div>
+<div class="selo" id="selo"><span>Manda o @ da sua loja</span></div>
+<div class="tag" id="tag">Demonstração</div>
+<script>
+const fase = (t, a, b) => Math.min(1, Math.max(0, (t - a) / (b - a)));
+const $ = s => document.querySelector(s);
+/* cada cena: as palavras entram uma a uma (subindo e saindo do desfoque); um bloco com
+   data-pausa espera esse tanto depois da palavra anterior */
+const cenas = [...document.querySelectorAll(".cena, .leg")].map(el => {
+  let t = +el.dataset.a; const ws = [];
+  el.querySelectorAll(".w, .pilula, .assina").forEach(w => {
+    const bloco = w.closest("[data-pausa]");
+    if (bloco && !bloco.dataset.usado) { t += +bloco.dataset.pausa; bloco.dataset.usado = 1; }
+    ws.push([w, t]); t += .16;
+  });
+  return { el, v: el.dataset.v, a: +el.dataset.a, b: +el.dataset.b, ws, leg: el.classList.contains("leg") };
+});
+window.render = (t, versao) => {
+  cenas.forEach(c => {
+    if (c.v && c.v !== versao) { c.el.style.opacity = 0; return; }
+    const sai = c.leg ? (t < c.b ? 1 : 0) : 1 - fase(t, c.b - .15, c.b);
+    c.el.style.opacity = t >= c.a - .01 ? sai : 0;
+    c.ws.forEach(([w, a]) => {
+      const p = fase(t, a, a + .28), e = 1 - Math.pow(1 - p, 3);
+      w.style.opacity = p; w.style.transform = `translateY(${(1 - e) * 28}px)`; w.style.filter = `blur(${(1 - e) * 10}px)`;
+    });
+  });
+  /* o fundo escuro: some durante a compra (e no gancho B, que abre nela) */
+  const compra = (versao === "B" && t < 3) || (t >= 6 && t < 17);
+  $("#fundo").style.opacity = compra ? 0 : 1;
+  $("#tag").style.opacity = compra ? 1 : 0;
+  document.querySelectorAll("#pilha [data-t]").forEach(el => {
+    const a = +el.dataset.t, p = fase(t, a, a + .3), e = 1 - Math.pow(1 - p, 3);
+    const fora = 1 - fase(t, 23.85, 24);
+    el.style.opacity = t < 17 ? 0 : p * fora;
+    el.style.transform = `translateY(${(1 - e) * 60}px) scale(${.94 + .06 * e})`;
+  });
+  const tj = fase(t, 3, 3.3);
+  $("#tarja").style.opacity = tj; $("#tarja").style.transform = `translateY(${(1 - tj) * 20}px)`;
+  const sl = fase(t, 20, 20.3);
+  $("#selo").style.opacity = sl; $("#selo").style.transform = `scale(${.85 + .15 * sl})`;
+};
+window.render(0, "A");
+</script>
+</body></html>

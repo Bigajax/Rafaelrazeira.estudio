@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<title>L16-01 texto</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=Inter:wght@500;600&display=swap" rel="stylesheet">
+<style>
+/* A camada de texto do L16-01 (07/11/2026), desenhada por tempo (render(t)) e
+   gravada com fundo transparente por cima da compra. A linguagem é a do
+   rebranding em estudo: tipo pesado condensado em caixa alta, blocos rosa,
+   entrada seca. Faixas do Reels que a interface cobre: ~250px em cima e
+   ~380px embaixo (no 9:16); o texto mora no meio. */
+:root { --rosa: #E31B62; --tinta: #14181a; --verde: #006A3C; }
+* { box-sizing: border-box; margin: 0; }
+html, body { width: 1080px; height: var(--alto); background: transparent; overflow: hidden; }
+body { position: relative; font-family: Archivo, sans-serif; }
+.cena { position: absolute; inset: 0; }
+.bloco { position: absolute; left: 70px; right: 70px; top: var(--meio); transform: translateY(-50%); display: grid; justify-items: start; gap: 14px; }
+.linha { display: inline-block; padding: 6px 26px 12px; background: var(--rosa); color: #fff; font-weight: 900; font-stretch: 68%; font-size: 150px; line-height: .92; letter-spacing: -.01em; text-transform: uppercase; opacity: 0; transform: translateY(26px) scale(.98); transform-origin: left center; }
+.linha.branca { background: #fff; color: var(--tinta); }
+.linha.media { font-size: 118px; }
+.linha.v { opacity: 1; transform: none; }
+.tag { position: absolute; left: 70px; top: var(--tagTopo); padding: 12px 22px; border-radius: 999px; background: #14181ad9; color: #fff; font: 600 30px/1 Inter, sans-serif; }
+.escuro { position: absolute; inset: 0; background: var(--tinta); opacity: 0; }
+.fim { position: absolute; left: 70px; right: 70px; top: var(--meio); transform: translateY(-50%); display: grid; gap: 34px; opacity: 0; }
+.fim .linha { opacity: 1; transform: none; }
+.assina { display: flex; align-items: center; gap: 22px; color: #fff; font: 600 36px/1.2 Inter, sans-serif; }
+.assina img { width: 84px; height: 84px; border-radius: 20px; background: #fff; padding: 12px; }
+</style></head>
+<body>
+<div class="escuro" id="escuro"></div>
+<div class="cena" id="c1"><div class="bloco"><span class="linha">Fazemos</span><span class="linha">sua loja</span><span class="linha branca">online.</span></div></div>
+<div class="cena" id="c2"><div class="bloco"><span class="linha">Pix.</span><span class="linha">Cartão.</span><span class="linha">Frete.</span></div></div>
+<div class="cena" id="c3"><div class="bloco"><span class="linha media">O cliente</span><span class="linha media">compra</span><span class="linha media branca">sozinho.</span></div></div>
+<div class="fim" id="fim">
+  <div style="display:grid;justify-items:start;gap:14px"><span class="linha media">Seu @,</span><span class="linha media">sua loja pronta</span><span class="linha media branca">em 24h.</span></div>
+  <div class="assina"><img src="MONOGRAMA" alt=""><span>rafaelrazeira.com.br<br>Loja online</span></div>
+</div>
+<div class="tag" id="tag">Demonstração</div>
+<script>
+const $ = id => document.getElementById(id);
+const fase = (t, a, b) => Math.min(1, Math.max(0, (t - a) / (b - a)));
+/* cada cena: [início, fim, tempos de entrada de cada linha] */
+const CENAS = [["c1", 0, 1.8, [0.05, 0.3, 0.55]], ["c2", 1.8, 3.6, [1.85, 2.4, 2.95]], ["c3", 3.6, 5.4, [3.65, 3.9, 4.15]]];
+window.render = t => {
+  for (const [id, a, b, ent] of CENAS) {
+    const cena = $(id); cena.style.display = t >= a && t < b ? "" : "none";
+    cena.querySelectorAll(".linha").forEach((l, k) => {
+      /* entrada seca: 4 quadros de subida, sem deslizar longo */
+      const p = fase(t, ent[k], ent[k] + .13);
+      l.style.opacity = p > 0 ? 1 : 0;
+      l.style.transform = `translateY(${(1 - p) * 26}px) scale(${.98 + p * .02})`;
+    });
+  }
+  /* a compra fica escurecida o tempo todo, como foto atrás do cartaz (o bloco
+     branco sumia na página branca da loja); no fim, quase preta */
+  $("escuro").style.opacity = .42 + fase(t, 5.4, 5.6) * .46;
+  $("fim").style.opacity = fase(t, 5.5, 5.62);
+};
+window.render(0);
+</script>
+</body></html>

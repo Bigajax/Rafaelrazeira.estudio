@@ -25,7 +25,6 @@ export default function VitrineV3Page() {
   const oferta: OfertaLanding = {
     ...vitrine, avista: vitrine.avista ?? null,
     performance: PLANOS_PERFORMANCE.pix_mensal.valor,
-    pagamento: DEGRAUS.vender.cheio,
     ecommerce: DEGRAUS.loja.cheio,
     ecommerceMensal: MENSALIDADE_ECOMMERCE,
   };

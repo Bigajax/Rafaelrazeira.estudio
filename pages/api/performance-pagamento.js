@@ -84,7 +84,8 @@ export default async function handler(req, res) {
     return json(res, 400, { error: "Esta loja já tem o Turbinar no cartão, renovando sozinho." });
   }
   const origem = upgrade ? "upgrade" : turbinar ? "turbinar" : "performance";
-  if (upgrade && (l.upgrade === "loja" || l.upgrade === plano.degrau)) {
+  /* (04/11) "vender" e "loja" são o mesmo degrau: pago um, pago o outro */
+  if (upgrade && (l.upgrade === "loja" || l.upgrade === "vender")) {
     return json(res, 400, { error: `${DEGRAUS[plano.degrau].nome}: esta loja já pagou. O estúdio está fazendo.` });
   }
 

@@ -13,6 +13,7 @@ página ainda não migrou.
 |---|---|
 | `/vitrine-digital` e `/en/vitrine-digital` | a origem do sistema (28/10) |
 | `/onboarding/<cliente>` | no sistema desde 29/10 |
+| `/loja-online` | nasceu no sistema em 07/11; a `/e-commerce` redireciona para ela |
 | `/estudio` (a home) | migrada em 29/10, por `public/estudio/css/novo.css` |
 | `/landing-page` | **ainda papel e tinta**: recebe tráfego pago, migra com medição |
 | `/proposta/*`, `/entrega/*` | ainda no sistema antigo |
