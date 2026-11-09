@@ -285,10 +285,10 @@ function Hero() {
             <span className={v.live}><i aria-hidden /> Demonstração</span>
           </div>
           <div className={v.molduraCover}>
-            <VideoNaTela className={s.compraDesk} largura={1280} altura={800} capa="/assets/demo/loja-online-compra-capa.webp"
+            <VideoNaTela className={s.compraDesk} noTopo="(min-width: 721px)" largura={1280} altura={800} capa="/assets/demo/loja-online-compra-capa.webp"
               fontes={[["/assets/demo/loja-online-compra.webm", "video/webm"], ["/assets/demo/loja-online-compra.mp4", "video/mp4"]]}
               rotulo="Demonstração de uma compra na vitrine da Iconic Sneakers: a peça, o tamanho 41, o frete pelo CEP, o Pix e o pagamento aprovado." />
-            <VideoNaTela className={s.compraCel} largura={800} altura={1000} capa="/assets/demo/loja-online-compra-celular-capa.webp"
+            <VideoNaTela className={s.compraCel} noTopo="(max-width: 720px)" largura={800} altura={1000} capa="/assets/demo/loja-online-compra-celular-capa.webp"
               fontes={[["/assets/demo/loja-online-compra-celular.webm", "video/webm"], ["/assets/demo/loja-online-compra-celular.mp4", "video/mp4"]]}
               rotulo="Demonstração de uma compra no celular, na vitrine da Iconic Sneakers: a peça, o tamanho, o frete, o Pix e o pagamento aprovado." />
           </div>
@@ -483,20 +483,41 @@ function Topo() {
 /* ---------- um vídeo que só baixa perto da tela e só roda nela ----------
    Como o do painel da /vitrine-digital. Escondido por CSS (o do celular no
    desktop e vice-versa) ele nunca entra na tela, então nunca é baixado. Com
-   menos movimento, fica a capa. As fontes vão na ordem do menor arquivo. */
-export function VideoNaTela({ fontes, capa, largura, altura, rotulo, className }: { fontes: [string, string][]; capa: string; largura: number; altura: number; rotulo: string; className?: string }) {
+   menos movimento, fica a capa. As fontes vão na ordem do menor arquivo.
+
+   `noTopo` (09/11/2026, a revisão de velocidade das páginas de anúncio): o
+   vídeo que abre a página. Medido no Lighthouse do celular, a CAPA dele é o
+   maior elemento da tela (o LCP), e o vídeo de 1,2 a 1,4 MB começava a baixar
+   junto com ela, porque o "perto da tela" já é verdade no primeiro quadro: o
+   LCP ia a 3,9 e 4,4 s. Com `noTopo`, a capa é pedida no <head> com prioridade
+   alta (só na largura em que esse vídeo aparece, o valor de `noTopo`) e o
+   vídeo só começa depois do `load` da página. Nunca tirar: sem isso a capa
+   volta a disputar a banda com o vídeo no 4G. */
+export function VideoNaTela({ fontes, capa, largura, altura, rotulo, className, noTopo }: { fontes: [string, string][]; capa: string; largura: number; altura: number; rotulo: string; className?: string; noTopo?: string }) {
   const ref = useRef<HTMLVideoElement>(null);
   useEffect(() => {
     const el = ref.current;
     if (!el || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const perto = new IntersectionObserver(([x]) => { if (x.isIntersecting) { el.preload = "auto"; el.load(); perto.disconnect(); } }, { rootMargin: "100% 0px" });
+    let espera: ReturnType<typeof setTimeout> | undefined;
+    const comecar = () => { el.preload = "auto"; el.load(); };
+    const depoisDoLoad = () => { espera = setTimeout(comecar, 200); };
+    const perto = new IntersectionObserver(([x]) => {
+      if (!x.isIntersecting) return;
+      perto.disconnect();
+      if (!noTopo || document.readyState === "complete") comecar();
+      else addEventListener("load", depoisDoLoad, { once: true });
+    }, { rootMargin: "100% 0px" });
     const io = new IntersectionObserver(([x]) => { if (x.isIntersecting) el.play().catch(() => {}); else el.pause(); }, { threshold: .2 });
     perto.observe(el); io.observe(el);
-    return () => { perto.disconnect(); io.disconnect(); };
-  }, []);
-  return <video ref={ref} className={className} muted loop playsInline preload="none" poster={capa} width={largura} height={altura} aria-label={rotulo}>
-    {fontes.map(([src, tipo]) => <source key={src} src={src} type={tipo} />)}
-  </video>;
+    return () => { perto.disconnect(); io.disconnect(); removeEventListener("load", depoisDoLoad); clearTimeout(espera); };
+  }, [noTopo]);
+  return <>
+    {/* o React 19 leva este <link> para o <head> do HTML do servidor */}
+    {noTopo && <link rel="preload" as="image" href={capa} media={noTopo} fetchPriority="high" />}
+    <video ref={ref} className={className} muted loop playsInline preload="none" poster={capa} width={largura} height={altura} aria-label={rotulo}>
+      {fontes.map(([src, tipo]) => <source key={src} src={src} type={tipo} />)}
+    </video>
+  </>;
 }
 
 /* ---------- o painel: o mesmo pedido chegando pago (simulação, 07/11) ----------
@@ -573,7 +594,7 @@ function RodapeLoja() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/assets/marca/rr-monograma.webp" width={55} height={30} alt="" />
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/assets/marca/rr-nome.webp" width={150} height={25} alt="" />
+        <img src="/assets/marca/rr-nome.webp" width={150} height={25} alt="" loading="lazy" decoding="async" />
       </a>
       <p>{r.frase}</p>
     </div>

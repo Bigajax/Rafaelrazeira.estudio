@@ -269,10 +269,13 @@ function Hero() {
             <span className={v.live}><i aria-hidden /> Amostra</span>
           </div>
           <div className={v.molduraCover}>
+            {/* 09/11/2026 (revisão de velocidade): esta captura é o maior elemento do topo no
+                celular (o LCP) e estava com lazy e prioridade baixa, a 3,4 s no Lighthouse. Agora
+                vem cedo e com prioridade alta. Nunca voltar a pôr lazy em imagem do topo. */}
             <picture>
               <source media="(max-width: 720px)" type="image/webp" srcSet="/assets/demo/js-imports-vitrine-curta.webp" />
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img className={v.molduraShot} src="/assets/demo/js-imports-desk-1100.webp" width={1100} height={4847} alt="" loading="lazy" decoding="async" fetchPriority="low" />
+              <img className={v.molduraShot} src="/assets/demo/js-imports-desk-1100.webp" width={1100} height={4847} alt="" loading="eager" fetchPriority="high" />
             </picture>
           </div>
         </div>
@@ -322,7 +325,7 @@ function Rodape() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/assets/marca/rr-monograma.webp" width={55} height={30} alt="" />
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/assets/marca/rr-nome.webp" width={150} height={25} alt="" />
+        <img src="/assets/marca/rr-nome.webp" width={150} height={25} alt="" loading="lazy" decoding="async" />
       </a>
       <p>{r.frase}</p>
     </div>

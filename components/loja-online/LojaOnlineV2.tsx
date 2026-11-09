@@ -109,7 +109,7 @@ function IphoneComVideo() {
         <div className={t.iphoneTela} style={{ transform: TELA_3D }}>
           <div className={t.statusBar}><span>9:41</span><span className={t.statusIcones}><b /><b /></span></div>
           <i className={t.ilha} />
-          <VideoNaTela className={t.iphoneVideo} largura={780} altura={1588} capa="/assets/demo/loja-online-compra-iphone-capa.webp"
+          <VideoNaTela className={t.iphoneVideo} noTopo="all" largura={780} altura={1588} capa="/assets/demo/loja-online-compra-iphone-capa.webp"
             fontes={[["/assets/demo/loja-online-compra-iphone.webm", "video/webm"], ["/assets/demo/loja-online-compra-iphone.mp4", "video/mp4"]]}
             rotulo="Demonstração de uma compra no e-commerce, no celular." />
         </div>
@@ -272,8 +272,10 @@ export function LojaOnlineV2() {
         <p className={t.ilustrativoClaro} data-aviso>*Exemplos ilustrativos.</p>
       </section>
 
-      {/* 6. no ar em 15 dias úteis */}
-      <section className={`${t.escuro} ${t.dupla}`}>
+      {/* 6. no ar em 15 dias úteis. O id "oferta" (09/11/2026) é o que o initTracking observa
+          para mandar o ViewContent e o "Viu a oferta": sem ele a v2 era a única das três
+          páginas de anúncio que não media quem chegou ao preço. */}
+      <section className={`${t.escuro} ${t.dupla}`} id="oferta">
         <div>
           <h2 className={t.h2}>Seu e-commerce no ar em {LOJA.prazo}.</h2>
           {/* 09/11 (sugestões 2, 3 e 4): a linha do tempo com o prazo em cada ponto, o preço num
@@ -297,7 +299,7 @@ export function LojaOnlineV2() {
               rotulo="Simulação do painel da Loja Modelo: o pedido chega pago e o estoque do tamanho baixa sozinho." />
           </div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className={t.macbookMoldura} src="/assets/lojas-no-ar/macbook-moldura-860.webp" width={860} height={525} alt="" />
+          <img className={t.macbookMoldura} src="/assets/lojas-no-ar/macbook-moldura-860.webp" width={860} height={525} alt="" loading="lazy" decoding="async" />
         </div>
       </section>
     </main>
@@ -305,7 +307,7 @@ export function LojaOnlineV2() {
     {/* 7. o rodapé */}
     <footer className={t.rodape}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/assets/marca/rr-nome.webp" width={593} height={96} alt="Rafael Razeira Estúdio" />
+      <img src="/assets/marca/rr-nome.webp" width={593} height={96} alt="Rafael Razeira Estúdio" loading="lazy" decoding="async" />
       <nav aria-label="Contato">
         <a href="/termos">Termos</a>
         <a href="/privacidade">Privacidade</a>
