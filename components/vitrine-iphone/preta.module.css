@@ -69,3 +69,7 @@
 @media (max-width: 720px) {
   .preta :global([class*="quem-faz_heroTitulo__"]) { font-size: calc((100vw - 2 * var(--pad, 16px)) / 10.2) !important; }
 }
+
+/* a assinatura é tinta escura num PNG transparente: no preto ela sumia
+   (09/11, "a assinatura tem que ser branca se não não aparece") */
+.preta :global([class*="quem-faz_assinatura__"]) img { filter: brightness(0) invert(1); }
