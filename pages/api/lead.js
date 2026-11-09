@@ -186,6 +186,8 @@ const TIPO_POR_PAGINA = {
   /* a página da Loja online (07/11/2026), que substitui a /e-commerce */
   "loja-online": "ecommerce",
   "vitrine-digital": "vitrine",
+  /* a página de quem vende iPhone (09/11/2026, lote 17) */
+  "vitrine-digital-iphone": "vitrine",
   "vitrine-v3": "vitrine",
   "landing-page": "landing",
   /* as irmãs em inglês (11/09/2026): mesmo tipo de projeto, outro idioma */
@@ -375,6 +377,8 @@ async function sincronizarCRM(linha, utm, { emIngles = false, faixa = "", naoCon
           : "",
         /* 07/11/2026: o card diz o degrau, senão o lead vira prévia de vitrine */
         linha.pagina === "loja-online" ? "VEIO DA /loja-online: pediu a amostra da LOJA ONLINE (R$ 1.990 + R$ 249,90/mês), não só a vitrine." : "",
+        /* 09/11/2026: a amostra sai com os aparelhos dela; nunca preço chutado */
+        linha.pagina === "vitrine-digital-iphone" ? "VEIO DA /vitrine/iphone: vende iPhone. Amostra com os aparelhos dela (preço, memória e cor); conferir a grade sem \"Único\" nem \"Numeração\"." : "",
         linha.vende, linha.produtos, linha.site, linha.necessidade,
       ]
         .filter(Boolean)

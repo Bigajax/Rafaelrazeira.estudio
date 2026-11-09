@@ -1,0 +1,71 @@
+/* ============================================================
+   A /vitrine/iphone em PRETO (09/11/2026, pedido do Rafael: "nessa versão
+   quero preta"). O desenho é o da /loja-online, que vive de variáveis: aqui
+   elas são redefinidas. O que lá está em cor fixa (o cinza #43484b dos
+   textos, os cartões claros) é coberto por prefixo de classe, porque os
+   módulos dela têm nome com hash: `[class*="loja-online_etapas__"]` casa no
+   dev e no build (conferido no CSS do .next em 09/11). Se a /loja-online
+   renomear uma classe, a regra daqui para de pegar EM SILÊNCIO: conferir
+   em 1440 e 390 depois de mexer lá.
+   Os tokens da vitrine (o hero, o celular, os balões) vão inline no
+   invólucro, no VitrineIphone.tsx (TOKENS_VITRINE).
+   ============================================================ */
+.preta.preta {
+  --branco: #0b0b0c;
+  --cartao: #161618;
+  --papel: #121214;
+  --fio: #232327;
+  --ink: #f5f5f3;
+  --texto: #a9adaf;
+  --suave: #84898b;
+  --verde: #2fc983;
+  color-scheme: dark;
+  background: var(--branco);
+  color: var(--texto);
+}
+
+/* os textos que lá são cinza-escuro fixo */
+.preta :global([class*="quem-faz_heroLead__"]),
+.preta :global([class*="loja-online_etapas__"]) p,
+.preta :global([class*="loja-online_fimBase__"]) p,
+.preta :global([class*="loja-online_paraQuem__"]) li p:last-child,
+.preta :global([class*="quem-faz_texto__"]) p { color: var(--texto) !important; }
+.preta :global([class*="loja-online_etapas__"]) li { border-top-color: var(--fio) !important; }
+.preta :global([class*="loja-online_mensal__"]) { border-top-color: var(--fio) !important; }
+
+/* a faixa do nome e o sobrenome do "quem faz" */
+.preta :global([class*="quem-faz_faixaNome__"]) span { color: var(--ink) !important; }
+.preta :global([class*="quem-faz_sobrenome__"]) { color: #3a3a3e !important; }
+/* a foto do "quem faz" fica com o fundo claro dela: o retrato entra em
+   multiply, e sobre grafite ele escurecia inteiro (medido em 09/11) */
+
+/* a moldura do hero e a do painel, em grafite */
+.preta :global([class*="quem-faz_molduraTelaW__"]) { background: #1a1a1d !important; border-color: #2a2a2e !important; box-shadow: 0 40px 90px #00000080 !important; }
+.preta :global([class*="loja-online_moldura__"]) { background: #1f1f22 !important; box-shadow: 0 40px 80px #00000080 !important; }
+
+/* o botão "Ver como funciona": o círculo vira claro no preto */
+.preta :global([class*="quem-faz_heroDesceSeta__"]) { border-color: var(--ink) !important; color: var(--ink) !important; }
+
+/* o modal e o formulário seguem claros: é o momento de digitar, e o
+   cartão branco sobre o fundo escurecido lê como janela */
+.preta :global([class*="loja-online_modal__"]) { color: #4a4f52; --ink: #14181a; --texto: #4a4f52; --suave: #6b7072; --verde: #0c9159; }
+
+/* os quadros da vitrine (o celular e a conversa) no grafite */
+.quadro.quadro { background: #161618 !important; }
+.quadroZap.quadroZap { background: #0f1a17 !important; }
+.titulo { color: var(--ink); }
+.claro { color: var(--texto); }
+
+/* a logo do estúdio é verde-escura em arquivo: no preto, clareada */
+.preta :global([class*="loja-online_marca__"]) img,
+.preta :global([class*="loja-online_rodapeMarca__"]) img { filter: brightness(1.9) saturate(.9); }
+/* o topo e o nome da conversa no quadro do WhatsApp */
+.quadroZap :global([class*="jornadaZapTopo"]) b { color: #e9edef; }
+.quadroZap :global([class*="jornadaIntervalo"]) { color: #8696a0; }
+
+/* a manchete no celular: a régua da /loja-online divide a largura por 9,5,
+   medida para "Aumente suas vendas" (19 letras); "A amostra da sua vitrine"
+   tem 24 e chegava a 385px numa tela de 390 */
+@media (max-width: 720px) {
+  .preta :global([class*="quem-faz_heroTitulo__"]) { font-size: calc((100vw - 2 * var(--pad, 16px)) / 10.2) !important; }
+}
