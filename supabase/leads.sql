@@ -96,3 +96,18 @@ alter table public.leads add column if not exists plano text;
 -- e-mail, e a coluna fica nula para ele.
 -- ============================================================
 alter table public.leads add column if not exists email text;
+
+-- ============================================================
+-- MIGRAÇÃO 04/11/2026: a loja física e a equipe, para medir o público
+-- Rodar à mão no SQL Editor. Idempotente.
+--
+-- A janela de obrigado da /vitrine-digital passou a perguntar "sua loja tem
+-- endereço físico?" (rua | galeria | casa) e "quantas pessoas trabalham
+-- nela?" (so_eu | 2a3 | 4mais). Gravadas pela CHAVE, para a contagem sair
+-- por group by. Servem para ler, em 2 a 3 semanas, quanto do tráfego pago é
+-- loja de rua com equipe antes de decidir se o anúncio muda de público
+-- (6 Diário/leitura-oferta-loja-2026-11-04.md). Sem estas colunas a rota
+-- /api/lead-detalhes responde 502 e a pessoa vê "Não consegui salvar agora".
+-- ============================================================
+alter table public.leads add column if not exists loja_fisica text;
+alter table public.leads add column if not exists equipe text;

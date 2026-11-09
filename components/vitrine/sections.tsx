@@ -143,7 +143,9 @@ export function Bubble({ out = false, time, tick, delay = 0, children }: { out?:
    não intercepta: vira ClickCTA e navega. */
 function ReabrirCta({ href, rotulo }: { href: string; rotulo: string }) {
   const en = useLang() === "en";
-  return <a className={`${s.button} ${s.primary}`} href={href} data-cta={en ? "reabrir_email" : "reabrir_whats"} data-cta-dest={en ? "email" : "whatsapp"}>{rotulo}</a>;
+  /* o ícone é o mesmo do campo do telefone (05/11): o balão verde sem o
+     fone, feito em máscara CSS, parecia uma bolinha */
+  return <a className={`${s.button} ${s.primary}`} href={href} data-cta={en ? "reabrir_email" : "reabrir_whats"} data-cta-dest={en ? "email" : "whatsapp"}>{!en && <IconeWhatsApp size={20} />}{rotulo}</a>;
 }
 
 /* Antes daqui saía "Tudo certo. Abrindo o WhatsApp…", que dizia à pessoa
@@ -456,6 +458,8 @@ function HeroForm() {
   const t = useVit();
   const lang = useLang();
   const [leadDetalhes, setLeadDetalhes] = useState<{ id: string; whatsapp: string } | null>(null);
+  /* as perguntas acabaram (05/11): só então o WhatsApp aparece embaixo */
+  const [perguntasFeitas, setPerguntasFeitas] = useState(false);
   const [linkWa, setLinkWa] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [enviado, setEnviado] = useState(false);
@@ -551,10 +555,11 @@ function HeroForm() {
     {festa && <Confete />}
     <p className={s.formTitle}>{t.form.okTitulo}<br /><span>{t.form.okSub}</span></p>
     <LojaAchada loja={loja} />
-    {leadDetalhes && <PerguntasDaPrevia id={leadDetalhes.id} whatsapp={leadDetalhes.whatsapp} />}
+    {leadDetalhes && <PerguntasDaPrevia id={leadDetalhes.id} whatsapp={leadDetalhes.whatsapp} onFim={() => setPerguntasFeitas(true)} />}
     {/* o único WhatsApp que sobrou no hero, e só depois do envio: aqui o
-        Contact já disparou, então a saída não custa mais conversão nenhuma */}
-    <ReabrirCta href={linkWa} rotulo={t.form.okCta} />
+        Contact já disparou, então a saída não custa mais conversão nenhuma.
+        Com as perguntas na janela, ele espera elas acabarem (05/11). */}
+    {(!leadDetalhes || perguntasFeitas) && <ReabrirCta href={linkWa} rotulo={t.form.okCta} />}
   </div>;
   return <form id="hero-form" className={s.tag} onSubmit={submit}>
     {/* o alfinete saiu em 28/10, a pedido do Rafael (a anatomia dele está no histórico do git) */}

@@ -856,6 +856,9 @@ revoke execute on function public.perf_registrar_pagamento(uuid, text, text, num
 -- R$ 249,90 por mês depois da entrega e o Performance incluído). Os valores
 -- moram em lib/oferta-performance.ts do estúdio. O pagamento NÃO soma dias:
 -- marca o degrau na loja (o painel mostra "em produção") e o Rafael começa.
+-- (04/11/2026) Os dois viraram um: a Loja online, R$ 1.990/991 + R$ 249,90.
+-- Os valores 'vender' e 'loja' da coluna continuam válidos e significam o
+-- mesmo degrau; nada a rodar de novo aqui.
 alter table public.perf_lojas add column if not exists upgrade text
   check (upgrade in ('vender', 'loja'));
 alter table public.perf_lojas add column if not exists upgrade_pago_em timestamptz;

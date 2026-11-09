@@ -96,6 +96,14 @@ async function fecharAvisos(page) {
 // seletor por loja)
 async function esconderFlutuantes(page) {
   await page.evaluate(() => {
+    // o convite da captura de contatos (o .convite do molde) cobria o canto do cartão o
+    // reel inteiro (Fardo e Iconic, 06/11); o reel-aparelho já escondia
+    if (!document.getElementById("reel-sem-convite")) {
+      const st = document.createElement("style");
+      st.id = "reel-sem-convite";
+      st.textContent = ".convite{display:none!important}";
+      document.head.appendChild(st);
+    }
     for (const a of document.querySelectorAll('a[href*="wa.me"], a[href*="whatsapp"]')) {
       let el = a;
       while (el && el !== document.body) {
@@ -439,7 +447,10 @@ async function gravar(browser, alvo) {
         const cartoes = pecas.filter((a) => a.getBoundingClientRect().height >= 120);
         el = perto(cartoes.length ? cartoes : pecas.filter((a) => a.getBoundingClientRect().height >= 24));
       } else if (tipo === "tamanho") {
-        const bs = [...document.querySelectorAll("button")].filter(visivel).filter((b) => !b.disabled && b.getAttribute("aria-disabled") !== "true" && /^(PP|P|M|G|GG|XG|XGG|\d{2}(,5)?)$/.test(b.textContent.trim()));
+        // fora a grade "Não tem o seu número? Veja estes" do molde (.vt-outros-numero): ela
+        // também é de números, fica lá embaixo, e a descida até ela tirava a foto do quadro
+        // e deixava o cartão branco (Fardo, 06/11)
+        const bs = [...document.querySelectorAll("button")].filter(visivel).filter((b) => !b.closest(".vt-outros-numero") && !b.disabled &&b.getAttribute("aria-disabled") !== "true" && /^(PP|P|M|G|GG|XG|XGG|\d{2}(,5)?)$/.test(b.textContent.trim()));
         // peça de um tamanho só já vem com ele marcado, e clicar DESMARCA (na Full Time o
         // "Separar pra mim" sumia junto, 02/10): só escolhe com dois ou mais, e um que
         // ainda não esteja marcado
@@ -455,11 +466,14 @@ async function gravar(browser, alvo) {
         // (com cara de botão, 36 a 90px de altura, e nunca um link para outra peça: na
         // Japa o cartão inteiro de "Mais peças" é link e contém "Garantir o meu", e pela
         // área ele ganhava do botão da peça)
-        el = [...document.querySelectorAll("a, button")].filter(visivel).filter((b) => !b.closest("header, footer") &&
+        const candidatos = [...document.querySelectorAll("a, button")].filter(visivel).filter((b) => !b.closest("header, footer") &&
           b.getBoundingClientRect().height >= 36 && b.getBoundingClientRect().height <= 90 &&
           !(b.getAttribute("href") || "").includes("/produto/") &&
-          (/whats|pedir|separar|reservar|comprar|garantir/i.test(b.textContent) || /wa\.me|whatsapp/i.test(b.getAttribute("href") || "")))
-          .sort((a, b) => area(b) - area(a))[0] || null;
+          (/whats|pedir|separar|reservar|comprar|garantir/i.test(b.textContent) || /wa\.me|whatsapp/i.test(b.getAttribute("href") || "")));
+        // empate de tamanho (a Fardo tem o "Pedir no 41" e outro botão igual logo embaixo,
+        // 06/11): vale o primeiro da página, que é o de pedir
+        const maior = Math.max(0, ...candidatos.map(area));
+        el = candidatos.find((b) => area(b) >= maior * 0.85) || null;
       }
       return el ? meio(el) : null;
     }, tipo);

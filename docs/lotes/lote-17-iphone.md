@@ -81,3 +81,21 @@ São 6 falas.
 
 **Lição:** antes de casar a palavra do roteiro com a página, conferir **qual** página é o destino.
 A revisão usou a /vitrine-digital, que era o destino da manhã, e errou.
+
+## Montados (09/11/2026)
+
+A fala do preço saiu, a pedido do Rafael: no IMG_4006 ele disse "por apenas mil novecentos e noventa", e a vitrine custa R$ 999. **O preço ficou só na tela,** num cartão de "R$ 999 / sem mensalidade" no começo do final.
+
+**Os vídeos:** `L17-IP-I1`, `L17-IP-I2` e `L17-IP-I3` (9:16, de 30 a 33 s), em `montados-9x16/`. Todo o vídeo fica em selfie, em tela cheia.
+
+**Como cada versão é feita:**
+- **Os começos:** I1 é o IMG_3981, I2 o IMG_3984 e I3 o IMG_3989.
+- **O cartão depois do começo:** "UMA PROPOSTA" no I1, "A SUA VITRINE" no I2 e no I3.
+- **O meio:** o IMG_4004 e o IMG_4005.
+- **O final:** o IMG_4010, gravado junto com o iPhone.
+- **A tarja:** "Para quem vende iPhone pelo Instagram".
+- **O nome no rodapé:** "designer de vitrines digitais".
+
+**Sem tela da JS Imports:** ela não deu o OK. O script é `montar3.cjs`.
+
+**O I2 diz "iPhone":** só o I3 sobe sem citar a marca.

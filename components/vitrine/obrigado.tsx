@@ -34,23 +34,31 @@
    As respostas vão para /api/lead-detalhes, que confere id + WhatsApp + 24h
    antes de gravar no lead e nas notas do card do CRM. Nada aqui dispara
    evento de conversão: o Lead e o Contact já saíram no envio.
+
+   DUAS PERGUNTAS A MAIS (04/11/2026): "tem endereço físico?" e "quantas
+   pessoas trabalham nela?". Servem para MEDIR, por 2 a 3 semanas, quanto do
+   tráfego é loja de rua com equipe, antes de decidir se o anúncio muda de
+   público (a leitura em 6 Diário/leitura-oferta-loja-2026-11-04.md). Sem
+   rótulo de qualificação na tela e sem evento na Meta: só a contagem.
    ============================================================ */
 
 import { useEffect, useRef, useState } from "react";
 import s from "./obrigado.module.css";
 
 type Estado = "pergunta" | "enviando" | "feito" | "pulado" | "erro";
-type Respostas = { vende: string[]; vendeOutro: string; pecas: string; temSite: string; site: string; horario: string };
+type Respostas = { vende: string[]; vendeOutro: string; lojaFisica: string; equipe: string; pecas: string; temSite: string; site: string; horario: string };
 
 const VENDE: [string, string][] = [["tenis", "Tênis"], ["roupas", "Roupas"], ["acessorios", "Acessórios"], ["praia", "Moda praia"], ["outro", "Outro"]];
+const LOJA_FISICA: [string, string][] = [["rua", "Loja de rua"], ["galeria", "Galeria ou shopping"], ["casa", "De casa ou só online"]];
+const EQUIPE: [string, string][] = [["so_eu", "Só eu"], ["2a3", "2 a 3"], ["4mais", "4 ou mais"]];
 const PECAS: [string, string][] = [["ate30", "Até 30"], ["de30a100", "De 30 a 100"], ["mais100", "Mais de 100"]];
 const SITE: [string, string][] = [["nao", "Não"], ["sim", "Sim"]];
 const HORARIO: [string, string][] = [["manha", "Manhã"], ["tarde", "Tarde"], ["noite", "Noite"]];
-const TOTAL = 4;
+const TOTAL = 6;
 /* o chip marcado aparece preto antes de a pergunta deslizar */
 const PAUSA_MS = 260;
 
-const respondeuAlgo = (r: Respostas) => r.vende.length > 0 || !!r.pecas || !!r.temSite || !!r.horario;
+const respondeuAlgo = (r: Respostas) => r.vende.length > 0 || !!r.lojaFisica || !!r.equipe || !!r.pecas || !!r.temSite || !!r.horario;
 
 function Chips({ opcoes, marcado, alternar, multi = false }: { opcoes: [string, string][]; marcado: (k: string) => boolean; alternar: (k: string) => void; multi?: boolean }) {
   return <div className={s.chips} role={multi ? "group" : "radiogroup"}>
@@ -60,12 +68,18 @@ function Chips({ opcoes, marcado, alternar, multi = false }: { opcoes: [string, 
   </div>;
 }
 
-export function PerguntasDaPrevia({ id, whatsapp }: { id: string; whatsapp: string }) {
-  const [r, setR] = useState<Respostas>({ vende: [], vendeOutro: "", pecas: "", temSite: "", site: "", horario: "" });
+/* `onFim` (05/11/2026, pedido do Rafael): avisa a confirmação de que as
+   perguntas acabaram (enviadas, puladas ou com erro). Até lá o "Me chama no
+   WhatsApp agora" fica escondido: com ele embaixo das perguntas, a pessoa
+   saía para o WhatsApp no meio e as respostas iam vazias. */
+export function PerguntasDaPrevia({ id, whatsapp, onFim }: { id: string; whatsapp: string; onFim?: () => void }) {
+  const [r, setR] = useState<Respostas>({ vende: [], vendeOutro: "", lojaFisica: "", equipe: "", pecas: "", temSite: "", site: "", horario: "" });
   const [passo, setPasso] = useState(0);
   const [sentido, setSentido] = useState<"frente" | "tras">("frente");
   const [estado, setEstado] = useState<Estado>("pergunta");
   const raiz = useRef<HTMLElement>(null);
+  const acabou = estado === "feito" || estado === "pulado" || estado === "erro";
+  useEffect(() => { if (acabou) onFim?.(); }, [acabou, onFim]);
 
   /* ---------- quem sai no meio não perde o que respondeu ----------
      O dialog fecha (X, fundo, Esc) sem desmontar nada, então a escuta é o
@@ -115,7 +129,7 @@ export function PerguntasDaPrevia({ id, whatsapp }: { id: string; whatsapp: stri
   /* tocar na resposta já marcada (quem voltou para conferir) mantém a
      marcação e segue, em vez de desmarcar e prender a pessoa no passo;
      para não responder, existe o Pular */
-  function escolher(campo: "pecas" | "temSite" | "horario", valor: string) {
+  function escolher(campo: "lojaFisica" | "equipe" | "pecas" | "temSite" | "horario", valor: string) {
     const novo = { ...r, [campo]: valor };
     setR(novo);
     /* o "Sim" do site abre o campo e espera o Continuar */
@@ -136,6 +150,8 @@ export function PerguntasDaPrevia({ id, whatsapp }: { id: string; whatsapp: stri
         <Chips multi opcoes={VENDE} marcado={k => r.vende.includes(k)} alternar={k => setR(v => ({ ...v, vende: v.vende.includes(k) ? v.vende.filter(x => x !== k) : [...v.vende, k] }))} />
         {r.vende.includes("outro") && <input className={s.campo} type="text" maxLength={60} placeholder="O quê? Ex.: bolsas, perfumes" value={r.vendeOutro} onChange={e => setR(v => ({ ...v, vendeOutro: e.target.value }))} aria-label="O que mais você vende" autoFocus />}
       </>, pronto: r.vende.length > 0 },
+    { titulo: "Sua loja tem endereço físico?", corpo: <Chips opcoes={LOJA_FISICA} marcado={k => r.lojaFisica === k} alternar={k => escolher("lojaFisica", k)} />, pronto: !!r.lojaFisica },
+    { titulo: "Quantas pessoas trabalham nela?", corpo: <Chips opcoes={EQUIPE} marcado={k => r.equipe === k} alternar={k => escolher("equipe", k)} />, pronto: !!r.equipe },
     { titulo: "Quantas peças você tem hoje?", corpo: <Chips opcoes={PECAS} marcado={k => r.pecas === k} alternar={k => escolher("pecas", k)} />, pronto: !!r.pecas },
     { titulo: "Já tem site?", corpo: <>
         <Chips opcoes={SITE} marcado={k => r.temSite === k} alternar={k => escolher("temSite", k)} />

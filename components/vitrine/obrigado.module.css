@@ -42,8 +42,10 @@
    A cabeça com o "1 de 4", a barra de quatro trechos que enche a cada
    passo, a pergunta que entra deslizando (da direita indo, da esquerda
    voltando) e o rodapé com Voltar e Pular em texto. */
-.barra { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; margin-top: 12px }
-.barra i { height: 3px; border-radius: 3px; background: var(--fio); position: relative; overflow: hidden }
+/* a barra tinha quatro colunas fixas (05/11): com seis perguntas os dois
+   últimos traços caíam numa segunda linha; agora um traço por pergunta */
+.barra { display: flex; gap: 4px; margin-top: 12px }
+.barra i { flex: 1 1 0; min-width: 0; height: 3px; border-radius: 3px; background: var(--fio); position: relative; overflow: hidden }
 .barra i::after { content: ""; position: absolute; inset: 0; background: var(--verde); transform: scaleX(0); transform-origin: left; transition: transform .35s cubic-bezier(.2, .7, .2, 1) }
 .barra i.cheio::after { transform: none }
 .entraFrente { animation: entraFrente .35s cubic-bezier(.2, .7, .2, 1) both }
@@ -81,8 +83,10 @@
 .pergunta { margin-top: 18px; min-height: 146px }
 .pergunta > h3 { margin: 0 0 12px; font: 500 20px/1.25 var(--font-titulo, inherit), sans-serif; letter-spacing: -.02em; color: var(--ink) }
 .pergunta > h3 span { display: block; margin-top: 3px; font: 400 13px/1.4 var(--body, "Inter"), sans-serif; letter-spacing: 0; color: var(--suave) }
-.chips { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px }
-.chip { padding: 0 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+/* os chips na largura do texto, quebrando de linha (05/11): na grade de
+   três colunas "Galeria ou shopping" virava "Galeria ou sho..." */
+.chips { display: flex; flex-wrap: wrap; gap: 7px }
+.chip { padding: 8px 14px; line-height: 1.2; text-align: center; white-space: normal; overflow: visible; text-overflow: clip }
 .rodape { align-items: center; margin-top: 18px; gap: 8px }
 .acoes { display: flex; align-items: center; gap: 6px }
 .seguir {
@@ -96,5 +100,4 @@
 @media (prefers-reduced-motion: reduce) { .seguir { transition: none } }
 /* em 360px a coluna do chip tem ~92px e "Acessórios" não cabia: menos
    folga lateral e meio ponto a menos só nas telas estreitas */
-@media (max-width: 380px) { .chip { padding: 0 3px; font-size: 13.5px } }
-@media (max-width: 340px) { .chips { grid-template-columns: repeat(2, minmax(0, 1fr)) } }
+@media (max-width: 380px) { .chip { padding: 8px 12px; font-size: 13.5px } }

@@ -562,7 +562,9 @@ const ESTACOES = [
   { x: 69.6, y: 246.4, s: .7258, blur: 2.756, z: 72 },
 ];
 const PASSO_MS = 2200;
-function Carretel({ lojas, espelhado, ativo, atraso = 0 }: { lojas: { slug: string; nome: string }[]; espelhado?: boolean; ativo: boolean; atraso?: number }) {
+/* `marcas` (07/11/2026, a /loja-online): no quadrado vai a logo da marca, em cinza
+   sobre o branco, no lugar do ícone de aplicativo. Sem ele, nada muda. */
+function Carretel({ lojas, espelhado, ativo, atraso = 0, marcas = false }: { lojas: { slug: string; nome: string }[]; espelhado?: boolean; ativo: boolean; atraso?: number; marcas?: boolean }) {
   /* o índice da loja que está na estação 0 (topo); as outras quatro vêm a seguir */
   const [topo, setTopo] = useState(0);
   const [andando, setAndando] = useState(false);
@@ -589,21 +591,27 @@ function Carretel({ lojas, espelhado, ativo, atraso = 0 }: { lojas: { slug: stri
       const y = saiu ? e.y - 28 : dentro ? e.y : e.y + 28;
       const x = espelhado ? 141.6 - 99.2 * e.s - e.x : e.x;
       return <span key={l.slug} className={s.carretelIcone} title={l.nome}
-        style={{ transform: `translate(${x}px, ${y}px) scale(${e.s})`, filter: `blur(${e.blur}px)`, opacity: dentro ? 1 : 0, zIndex: e.z }}>
+        style={{ transform: `translate(${x}px, ${y}px) scale(${e.s})`, filter: `blur(${e.blur}px)`, opacity: dentro ? 1 : 0, zIndex: e.z, ...(marcas ? { background: "#fff" } : {}) }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={`/assets/icones/${l.slug}.webp`} width={99} height={99} alt="" loading="lazy" decoding="async" />
+        {marcas
+          /* o fundo branco mora no quadrado: no <img>, o brightness(0) o pintaria de preto */
+          ? <img src={`/assets/lojas/${l.slug}-branca.webp`} width={99} height={99} alt="" loading="lazy" decoding="async" style={{ objectFit: "contain", padding: "0 14px", filter: "brightness(0)", opacity: .55 }} />
+          : <img src={`/assets/icones/${l.slug}.webp`} width={99} height={99} alt="" loading="lazy" decoding="async" />}
       </span>;
     })}
   </div>;
 }
-export function FimNovo() {
+/* `marcas` (07/11/2026): a /loja-online passa as lojas que têm a logo da marca;
+   cada lado recebe todas, o da direita começando no meio da lista, para os dois
+   nunca mostrarem a mesma ao mesmo tempo. Sem ela, os ícones de sempre. */
+export function FimNovo({ marcas }: { marcas?: { slug: string; nome: string }[] } = {}) {
   const t = useVit();
   const m = t.mb.fim;
   const [ref, visto] = useVisto();
   const metade = Math.ceil(FAIXA.length / 2);
   return <section ref={ref} className={`${s.section} ${s.mb} ${s.mbAnim} ${s.fimNovo} ${visto ? s.mbVisto : ""}`} id="fim">
     <div className={s.fimGrade}>
-      <Carretel lojas={FAIXA.slice(0, metade)} ativo={visto} />
+      <Carretel lojas={marcas ?? FAIXA.slice(0, metade)} ativo={visto} marcas={!!marcas} />
       <div className={s.fimMiolo}>
         <H2Letras a={m.h2a} b={m.h2b} />
         <p className={s.mbLead}>{m.lead}</p>
@@ -612,7 +620,7 @@ export function FimNovo() {
           <a className={`${s.button} ${s.outline}`} href="#oferta" data-cta="final_reserva" data-cta-dest="oferta">{m.cta2}</a>
         </div>
       </div>
-      <Carretel lojas={FAIXA.slice(metade)} espelhado ativo={visto} atraso={1100} />
+      <Carretel lojas={marcas ? [...marcas.slice(Math.ceil(marcas.length / 2)), ...marcas.slice(0, Math.ceil(marcas.length / 2))] : FAIXA.slice(metade)} espelhado ativo={visto} atraso={1100} marcas={!!marcas} />
     </div>
   </section>;
 }

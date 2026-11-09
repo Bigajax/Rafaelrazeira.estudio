@@ -96,6 +96,11 @@ export async function enviarLeadVitrine(d: {
      WhatsApp do fallback. Sem os dois, nada muda para a /vitrine-digital. */
   pagina?: string;
   abertura?: string;
+  /* ---------- as respostas do formulário em passos (09/11/2026) ----------
+     A /amostra pergunta antes de pedir o contato e manda as respostas nas
+     colunas que a rota já grava (vende, site, investimento, necessidade).
+     Só strings, e só as chaves que a rota conhece entram no banco. */
+  extra?: Record<string, string>;
 }): Promise<{ salvo: boolean; linkWa: string; arrobaInvalido: boolean; loja: LojaEncontrada | null; id?: string | null }> {
   /* ---------- o Lead saiu de antes para DEPOIS da gravação (10/09) ----------
      Ele era disparado aqui em cima, antes de qualquer coisa, e o motivo era
@@ -120,6 +125,7 @@ export async function enviarLeadVitrine(d: {
     ...(d.email ? { email: d.email } : {}),
     canal: d.instagram || "",
     ...(d.plano ? { plano: d.plano } : {}),
+    ...(d.extra ?? {}),
     ...contextoDaSessao(),
   });
 

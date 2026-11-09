@@ -23,10 +23,19 @@
 
    Não dispara nada na Meta nem na Mixpanel: a conversão é o formulário, e
    ela já contou em /api/lead. Isto é só o complemento.
+
+   (04/11/2026) Duas perguntas a mais, "tem endereço físico?" e "quantas
+   pessoas trabalham nela?", gravadas em `leads.loja_fisica` e `leads.equipe`
+   (colunas novas, supabase/leads.sql) pela CHAVE, não pelo rótulo, para a
+   contagem de 2 a 3 semanas sair por `group by`. Sem a coluna no banco o
+   PATCH devolve 400 e esta rota responde 502: rodar a migração antes do
+   deploy.
    ============================================================ */
 
 const JANELA_MS = 24 * 60 * 60 * 1000;
 const VENDE = { tenis: "Tênis", roupas: "Roupas", acessorios: "Acessórios", praia: "Moda praia", outro: "Outro" };
+const LOJA_FISICA = { rua: "loja de rua", galeria: "galeria ou shopping", casa: "vende de casa ou só online" };
+const EQUIPE = { so_eu: "trabalha sozinha", "2a3": "2 a 3 pessoas", "4mais": "4 ou mais pessoas" };
 const PECAS = { ate30: "Até 30 peças", de30a100: "De 30 a 100 peças", mais100: "Mais de 100 peças" };
 const HORARIO = { manha: "manhã", tarde: "tarde", noite: "noite" };
 
@@ -79,6 +88,8 @@ export default async function handler(req, res) {
 
   const r = b.respostas || {};
   const vende = (Array.isArray(r.vende) ? r.vende : []).filter((k) => VENDE[k]).slice(0, 5);
+  const lojaFisica = LOJA_FISICA[r.lojaFisica] ? r.lojaFisica : "";
+  const equipe = EQUIPE[r.equipe] ? r.equipe : "";
   const pecas = PECAS[r.pecas] ? r.pecas : "";
   const temSite = r.temSite === "sim" ? "sim" : r.temSite === "nao" ? "nao" : "";
   const site = temSite === "sim" ? limparSite(r.site) : "";
@@ -86,7 +97,7 @@ export default async function handler(req, res) {
   /* o "Outro" abre um campo curto (28/10): texto livre, então só letras,
      números e pontuação comum, cortado em 60 */
   const outro = vende.includes("outro") ? String(r.vendeOutro || "").replace(/[^\p{L}\p{N} ,.;/&+-]/gu, "").replace(/\s+/g, " ").trim().slice(0, 60) : "";
-  if (!vende.length && !pecas && !temSite && !horario) return json(res, 400, { error: "nada para gravar" });
+  if (!vende.length && !lojaFisica && !equipe && !pecas && !temSite && !horario) return json(res, 400, { error: "nada para gravar" });
 
   /* a linha existe, é recente e é desta pessoa */
   const busca = await rest(`leads?id=eq.${encodeURIComponent(id)}&select=id,whatsapp,created_at,pagina`).catch(() => null);
@@ -101,6 +112,8 @@ export default async function handler(req, res) {
   /* 1. a linha de `leads`: só o que veio preenchido */
   const novidade = {};
   if (textoVende) novidade.vende = textoVende;
+  if (lojaFisica) novidade.loja_fisica = lojaFisica;
+  if (equipe) novidade.equipe = equipe;
   if (pecas) novidade.produtos = PECAS[pecas];
   if (textoSite) novidade.site = textoSite;
   if (Object.keys(novidade).length) {
@@ -122,6 +135,8 @@ export default async function handler(req, res) {
       if (card) {
         const resumo = [
           textoVende ? `vende ${textoVende.toLowerCase()}` : "",
+          lojaFisica ? LOJA_FISICA[lojaFisica] : "",
+          equipe ? EQUIPE[equipe] : "",
           pecas ? PECAS[pecas].toLowerCase() : "",
           textoSite ? `site: ${textoSite}` : "",
           horario ? `chamar de ${HORARIO[horario]}` : "",
