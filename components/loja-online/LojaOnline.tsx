@@ -105,7 +105,8 @@ function Analytics() {
    Dois campos, como no hero da vitrine: o WhatsApp (por onde a amostra
    volta) e o @ (de onde saem as peças). O id `hero-form` é o que a
    medição já reconhece como o formulário do hero. */
-function FormAmostra() {
+/* `produto` (08/11): a v2 testa "e-commerce" no lugar de "loja online" no texto */
+export function FormAmostra({ produto = "loja online", semTitulo = false }: { produto?: string; semTitulo?: boolean }) {
   const [enviando, setEnviando] = useState(false);
   const [enviado, setEnviado] = useState(false);
   const [linkWa, setLinkWa] = useState("");
@@ -143,15 +144,16 @@ function FormAmostra() {
 
   if (enviado) return <div id="hero-form" className={`${s.form} ${s.ok}`} role="status">
     <p className={s.okLinha}><span className={s.okIcone} aria-hidden><Check /></span>Pedido recebido.</p>
-    <p>Em até 24h eu te mando no WhatsApp a amostra da sua loja online, montada com as suas peças.</p>
+    <p>Em até 24h eu te mando no WhatsApp a amostra {produto === "loja online" ? "da sua loja online" : `do seu ${produto}`}, montada com as suas peças.</p>
     {loja && <p className={s.micro}>Encontrei <b>@{loja.arroba}</b> no Instagram{loja.seguidores ? `, com ${loja.seguidores.toLocaleString("pt-BR")} seguidores` : ""}. Se não for a sua loja, me avisa.</p>}
     {linkWa && <a className={`${s.botao} ${s.whats}`} href={linkWa} data-cta="reabrir_whats" data-cta-dest="whatsapp">Me chama no WhatsApp agora</a>}
   </div>;
 
   const a = instaInvalido.replace(/^@+/, "");
   return <form id="hero-form" className={s.form} onSubmit={enviar} noValidate>
-    <p className={s.formTitulo}>Veja a sua loja online antes de pagar</p>
-    <p className={s.formSub}>Manda o @ da loja. Em até 24h eu te mando uma amostra com as suas peças.</p>
+    {/* `semTitulo` (09/11): na v2 o título é o da própria seção */}
+    {!semTitulo && <><p className={s.formTitulo}>{produto === "loja online" ? "Veja a sua loja online antes de pagar" : `Veja o seu ${produto} antes de pagar`}</p>
+    <p className={s.formSub}>Manda o @ da loja. Em até 24h eu te mando uma amostra com as suas peças.</p></>}
     <div className={s.campos}>
       <label className={s.campo}>
         <span>Seu WhatsApp</span>
@@ -482,7 +484,7 @@ function Topo() {
    Como o do painel da /vitrine-digital. Escondido por CSS (o do celular no
    desktop e vice-versa) ele nunca entra na tela, então nunca é baixado. Com
    menos movimento, fica a capa. As fontes vão na ordem do menor arquivo. */
-function VideoNaTela({ fontes, capa, largura, altura, rotulo, className }: { fontes: [string, string][]; capa: string; largura: number; altura: number; rotulo: string; className?: string }) {
+export function VideoNaTela({ fontes, capa, largura, altura, rotulo, className }: { fontes: [string, string][]; capa: string; largura: number; altura: number; rotulo: string; className?: string }) {
   const ref = useRef<HTMLVideoElement>(null);
   useEffect(() => {
     const el = ref.current;

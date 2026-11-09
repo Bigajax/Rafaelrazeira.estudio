@@ -1,0 +1,26 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+html,body{margin:0;background:#fff}
+#cena{position:relative;width:2500px;height:2857px}
+#cena>img{position:absolute;inset:0;width:2500px;height:2857px}
+#tela{position:absolute;left:0;top:0;width:390px;height:844px;transform-origin:0 0;overflow:hidden;border-radius:56px;background:#014f92}
+#tela img{position:absolute;left:0;top:50px;width:390px;height:auto}
+#barra{position:absolute;inset:0 0 auto;height:50px;background:#014f92;color:#fff;font:600 16px/1 -apple-system,"Segoe UI",sans-serif;display:flex;align-items:center;justify-content:space-between;padding:6px 30px 0 44px;box-sizing:border-box;z-index:1}
+#ilha{position:absolute;left:50%;top:11px;width:124px;height:36px;margin-left:-62px;border-radius:20px;background:#000;z-index:2}
+#icones{display:flex;gap:5px;align-items:center}
+#icones b{display:block;width:24px;height:11px;border-radius:3px;box-shadow:inset 0 0 0 1.4px #ffffffb3;background:linear-gradient(#fff,#fff) 2px 50%/72% 6px no-repeat}
+#icones i{display:block;width:17px;height:11px;background:linear-gradient(90deg,#fff 0 3px,transparent 0 5px,#fff 0 8px,transparent 0 10px,#fff 0 13px,transparent 0 15px,#fff 0);clip-path:polygon(0 75%,3px 75%,3px 55%,8px 55%,8px 30%,13px 30%,13px 0,100% 0,100% 100%,0 100%)}
+</style></head><body><div id="cena"><img src="mock.jpg"><div id="tela"><div id="barra"><span>9:41</span><span id="icones"><i></i><b></b></span></div><div id="ilha"></div><img src="tela.webp"></div></div>
+<script>
+// homografia do retângulo 390x844 para os quatro cantos medidos da tela
+function adj(m){return[m[4]*m[8]-m[5]*m[7],m[2]*m[7]-m[1]*m[8],m[1]*m[5]-m[2]*m[4],m[5]*m[6]-m[3]*m[8],m[0]*m[8]-m[2]*m[6],m[2]*m[3]-m[0]*m[5],m[3]*m[7]-m[4]*m[6],m[1]*m[6]-m[0]*m[7],m[0]*m[4]-m[1]*m[3]]}
+function mul(a,b){const c=[];for(let i=0;i<3;i++)for(let j=0;j<3;j++){let s=0;for(let k=0;k<3;k++)s+=a[3*i+k]*b[3*k+j];c[3*i+j]=s}return c}
+function mv(m,v){return[m[0]*v[0]+m[1]*v[1]+m[2]*v[2],m[3]*v[0]+m[4]*v[1]+m[5]*v[2],m[6]*v[0]+m[7]*v[1]+m[8]*v[2]]}
+function base(x1,y1,x2,y2,x3,y3,x4,y4){const m=[x1,x2,x3,y1,y2,y3,1,1,1];const v=mv(adj(m),[x4,y4,1]);return mul(m,[v[0],0,0,0,v[1],0,0,0,v[2]])}
+function gen(s,d){const a=base(...s),b=base(...d);return mul(b,adj(a))}
+const P = window.CANTOS; // tl, tr, br, bl
+const w=390,h=844;
+let t=gen([0,0,w,0,0,h,w,h],[P[0][0],P[0][1],P[1][0],P[1][1],P[3][0],P[3][1],P[2][0],P[2][1]]);
+for(let i=0;i<9;i++)t[i]=t[i]/t[8];
+const m3=[t[0],t[3],0,t[6],t[1],t[4],0,t[7],0,0,1,0,t[2],t[5],0,t[8]];
+document.getElementById('tela').style.transform='matrix3d('+m3.join(',')+')';
+</script></body></html>

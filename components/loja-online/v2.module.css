@@ -1,0 +1,281 @@
+/* ============================================================
+   A /loja-online-v2 (08/11/2026), no jeito da página de cadastro do
+   TikTok for Business, nas cores da casa: a tinta no lugar do preto, o rosa
+   do botão, o verde da batida. Ver LojaOnlineV2.tsx. Os tokens vêm do .page
+   do loja-online.module.css (o formulário é o mesmo da /loja-online).
+   ============================================================ */
+
+.v2 { --pad: clamp(20px, 7vw, 120px); --max: 1240px; color: var(--ink); }
+
+/* a letra grossa e direta da referência, na fonte de títulos da casa */
+.h1, .h2, .h2Claro, .cadastroTitulo {
+  margin: 0; font-family: var(--font-titulo), var(--font-body), sans-serif; font-weight: 600; text-wrap: balance;
+}
+.h1 { font-size: clamp(40px, 5.6vw, 76px); line-height: 1.02; letter-spacing: -.035em; color: #fff; max-width: 10.5em; }
+.h2 { font-size: clamp(32px, 4vw, 54px); line-height: 1.05; letter-spacing: -.03em; color: #fff; max-width: 11em; }
+.h2Claro { font-size: clamp(26px, 2.6vw, 34px); line-height: 1.1; letter-spacing: -.02em; color: var(--ink); }
+
+/* o botão: a pílula rosa, cheia */
+.botao {
+  display: inline-flex; align-items: center; justify-content: center; min-height: 52px; padding: 0 28px;
+  border-radius: 999px; background: var(--rosa); color: #fff; text-decoration: none;
+  font: 600 16px/1 var(--font-body), sans-serif; transition: background .2s, transform .12s;
+}
+.botao:hover { background: var(--rosa-dark); }
+.botao:active { transform: scale(.97); }
+.botao:focus-visible, .faixa:focus-visible, .cartaoLink:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+/* ---------- 1. a faixa da oferta ---------- */
+.faixa {
+  display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 6px 22px;
+  padding: 13px 20px; background: #dff3ea; color: var(--ink); text-decoration: none; text-align: center;
+  font-size: 14px; line-height: 1.4;
+}
+.faixa b { color: var(--verde); font-weight: 600; }
+.faixaLink { display: inline-flex; align-items: center; gap: 2px; font-weight: 600; }
+
+/* ---------- os blocos escuros ---------- */
+.escuro { background: var(--ink); color: #c9cdcf; }
+.lead { margin: 22px 0 32px; max-width: 32em; font-size: clamp(16px, 1.25vw, 18px); line-height: 1.55; color: #c9cdcf; }
+
+/* ---------- 2. o hero ---------- */
+.hero {
+  display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); align-items: center; gap: 40px;
+  padding: clamp(48px, 6vw, 96px) var(--pad);
+}
+.marca { display: block; width: 56px; height: auto; margin-bottom: clamp(28px, 4vw, 48px); filter: brightness(0) invert(1); }
+.heroCena { position: relative; display: grid; place-items: center; min-height: 460px; }
+.circulo { position: absolute; border-radius: 50%; }
+.selo {
+  position: absolute; left: 50%; bottom: -14px; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 7px;
+  padding: 7px 14px; border-radius: 99px; background: #fff; color: var(--ink); white-space: nowrap;
+  font: 600 12.5px/1 var(--font-body), sans-serif; box-shadow: 0 12px 28px #00000040;
+}
+.selo i { width: 7px; height: 7px; border-radius: 50%; background: var(--verde); }
+
+/* ---------- 3. o formulário na página ---------- */
+.cadastro { padding: clamp(56px, 6vw, 88px) 20px; background: #f6f7f8; text-align: center; }
+.cadastroTitulo { font-size: clamp(24px, 2.2vw, 30px); letter-spacing: -.02em; color: var(--ink); font-weight: 500; }
+.passo { margin: 22px 0 8px; font-size: 13.5px; color: var(--suave); }
+.barra { width: min(240px, 70%); height: 6px; margin: 0 auto; border-radius: 99px; background: #dfe9e4; overflow: hidden; }
+.barra span { display: block; width: 50%; height: 100%; background: var(--verde); }
+.cadastroForm { width: min(520px, 100%); margin: 32px auto 0; text-align: left; }
+.cadastroForm form, .cadastroForm > div { background: #fff; box-shadow: 0 1px 0 #0000000a, 0 20px 50px -30px #14181a40; }
+.passo2 { max-width: 30em; margin: 18px auto 0; font-size: 14px; line-height: 1.5; color: var(--suave); }
+
+/* ---------- 4 e 6. os blocos de dois lados ---------- */
+.dupla {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: clamp(40px, 6vw, 96px);
+  padding: clamp(64px, 7vw, 110px) var(--pad);
+}
+.lista { display: grid; gap: 16px; margin: 30px 0 36px; padding: 0; list-style: none; }
+.lista li { display: flex; align-items: flex-start; gap: 12px; font-size: clamp(16px, 1.25vw, 18px); line-height: 1.4; color: #fff; }
+.lista svg { flex: none; margin-top: 1px; color: #fff; }
+
+/* o cartão do gráfico (ILUSTRATIVO) */
+.grafico { position: relative; margin: 0; }
+.graficoTopo { display: flex; align-items: baseline; gap: 12px; margin: 0 0 12px; color: #fff; }
+.graficoTopo span { font-size: 18px; }
+.graficoTopo b { font: 700 clamp(56px, 6vw, 88px)/.9 var(--font-titulo), sans-serif; letter-spacing: -.04em; color: #fff; }
+.graficoCartao { padding: 22px 22px 0; border: 3px solid var(--verde); border-radius: 18px; background: #262b2e; }
+.graficoValor { display: grid; gap: 4px; margin: 0; font: 700 clamp(28px, 2.6vw, 38px)/1 var(--font-titulo), sans-serif; letter-spacing: -.02em; color: #fff; }
+.graficoValor span { font: 400 14px/1.3 var(--font-body), sans-serif; letter-spacing: 0; color: #c9cdcf; }
+.barras { display: flex; align-items: flex-end; gap: 6%; height: 150px; margin-top: 22px; }
+.barras span { flex: 1; border-radius: 4px 4px 0 0; background: #8a9094; }
+.barras span:last-child { background: var(--verde); }
+.ilustrativo { margin-top: 12px; font-size: 13px; color: #8a9094; }
+
+/* ---------- 5. as histórias (ILUSTRATIVAS) ---------- */
+.historias { padding: clamp(64px, 7vw, 100px) var(--pad); background: #fff; }
+.cartoes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-top: 32px; }
+.cartao { display: flex; flex-direction: column; padding: 24px; border: 1px solid #ececea; border-radius: 16px; }
+.cartaoLoja { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 0; font: 700 17px/1.2 var(--font-body), sans-serif; color: var(--ink); }
+.cartaoLoja span { padding: 3px 8px; border-radius: 99px; background: #f2f2f0; font: 600 11px/1.2 var(--font-body), sans-serif; color: var(--suave); }
+.cartaoContexto { margin: 10px 0 22px; font-size: 14px; line-height: 1.5; color: var(--texto); }
+.cartaoNumero { margin: 0 0 8px; font: 500 clamp(19px, 1.6vw, 22px)/1.3 var(--font-titulo), sans-serif; letter-spacing: -.01em; color: var(--ink); }
+.cartaoNumero b { color: var(--rosa); font-weight: 700; }
+.cartaoLink { display: inline-flex; align-items: center; gap: 2px; margin-top: auto; padding-top: 18px; font-weight: 600; font-size: 14px; color: var(--ink); text-decoration: none; }
+.ilustrativoClaro { margin: 16px 0 0; font-size: 13px; color: var(--suave); }
+
+/* o notebook com o painel */
+.notebook { position: relative; }
+.notebookTela { padding: 10px; border-radius: 14px 14px 0 0; background: var(--verde); }
+.notebookTela video { display: block; width: 100%; height: auto; aspect-ratio: 960 / 600; border-radius: 6px; background: #f8f7f3; }
+.notebookBase { display: block; height: 14px; margin: 0 -5%; border-radius: 0 0 14px 14px; background: #0a6e44; }
+
+/* ---------- 7. o rodapé ---------- */
+.rodape {
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px 28px;
+  padding: 26px var(--pad); background: #fff; font-size: 13.5px;
+}
+.rodape img { display: block; width: 150px; height: auto; }
+.rodape nav { display: flex; flex-wrap: wrap; gap: 8px 22px; }
+.rodape a { color: var(--texto); text-decoration: none; }
+.rodape a:hover { text-decoration: underline; }
+
+/* ---------- celular ---------- */
+@media (max-width: 860px) {
+  .hero, .dupla { grid-template-columns: minmax(0, 1fr); }
+  .heroCena { min-height: 0; padding: 20px 0 10px; }
+  .iphone { width: min(250px, 64%); }
+  .cartoes { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 560px) {
+  .v2 { --pad: 20px; }
+  .h1 { font-size: clamp(36px, 10.6vw, 46px); }
+  .botao { width: 100%; }
+
+  .faixa { font-size: 13px; padding: 11px 16px; }
+  .barras { height: 110px; }
+}
+@media (prefers-reduced-motion: reduce) { .botao { transition: none; } }
+
+/* ---------- 3b. como o cliente compra (09/11, as ilustrações do unDraw) ----------
+   As três na mesma altura de caixa (object-fit: contain), o número, o título e o texto. */
+.compra { padding: clamp(64px, 7vw, 100px) var(--pad); background: #fff; }
+.compraPassos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(20px, 3vw, 40px); margin: 36px 0 0; padding: 0; list-style: none; }
+.compraPassos img { display: block; width: 100%; height: clamp(150px, 15vw, 200px); object-fit: contain; object-position: left bottom; margin-bottom: 24px; }
+.compraNum { margin: 0 0 8px; font: 600 13px/1 var(--font-body), sans-serif; color: var(--rosa); }
+.compraTitulo { margin: 0; font: 600 clamp(20px, 1.7vw, 24px)/1.2 var(--font-titulo), sans-serif; letter-spacing: -.02em; color: var(--ink); }
+.compraTexto { margin: 8px 0 0; max-width: 24em; font-size: 15px; line-height: 1.5; color: var(--texto); }
+@media (max-width: 860px) {
+  .compraPassos { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+  .compraPassos img { height: 160px; }
+}
+
+/* ---------- o iPhone do hero (09/11, "quero um iPhone aqui") ----------
+   Desenhado em CSS na proporção do 15 (71,6 x 147,6 mm, tela 390x844): o
+   aro de titânio escuro, a borda preta, a ilha, os botões do lado e a barra
+   de status por cima da captura da Iconic. */
+.iphone { position: relative; z-index: 2; width: min(340px, 74%); }
+
+/* os fundos (09/11, "essas bolas atrás quero melhorar"): eram três bolas soltas
+   (rosa, verde e um aro) que pareciam coladas ao acaso. Agora uma composição só,
+   centrada no aparelho: o disco verde grande atrás dele, com luz de cima, o rosa
+   menor encostado embaixo à esquerda, e dois aros finos concêntricos, como ondas
+   saindo do celular. */
+.circuloVerde { width: 78%; aspect-ratio: 1; left: 50%; top: 50%; transform: translate(-46%, -52%); background: radial-gradient(circle at 35% 25%, #1bb173, var(--verde) 55%, #077045); }
+.circuloRosa { width: 30%; aspect-ratio: 1; left: 6%; bottom: 6%; background: radial-gradient(circle at 35% 30%, #f2477f, var(--rosa) 60%, var(--rosa-dark)); }
+.aro1, .aro2 { left: 50%; top: 50%; aspect-ratio: 1; transform: translate(-50%, -50%); box-shadow: inset 0 0 0 1px #ffffff2e; }
+.aro1 { width: 96%; }
+.aro2 { width: 116%; box-shadow: inset 0 0 0 1px #ffffff17; }
+.heroCena { overflow: visible; }
+@media (max-width: 860px) {
+  .heroCena { min-height: 0; padding: 36px 0 30px; overflow: clip; }
+  .iphone { width: min(290px, 74%); }
+}
+
+/* o iPhone com o vídeo (09/11): ver IphoneComVideo. O palco tem o tamanho do recorte
+   do mockup (1060x1660) e encolhe por --k (largura da caixa / 1060). A origem volta
+   700x590 para a tela usar a homografia nas coordenadas do JPG inteiro. */
+.iphoneCaixa { position: relative; width: 100%; aspect-ratio: 1060 / 1660; --k: .3; }
+.iphonePalco {
+  position: absolute; left: 0; top: 0; width: 1060px; height: 1660px; transform: scale(var(--k)); transform-origin: 0 0;
+  filter: drop-shadow(0 120px 120px #000000b3);
+}
+.iphoneOrigem { position: absolute; left: -700px; top: -590px; width: 0; height: 0; }
+.iphoneTela {
+  position: absolute; left: 0; top: 0; width: 390px; height: 844px; transform-origin: 0 0;
+  overflow: hidden; border-radius: 56px; background: #014f92;
+}
+.iphoneVideo { position: absolute; left: 0; top: 50px; width: 390px; height: 794px; object-fit: cover; object-position: 50% 0; background: #f3f3f1; }
+.statusBar {
+  position: absolute; inset: 0 0 auto; z-index: 1; height: 50px; display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 30px 0 44px; background: #014f92; color: #fff; font: 600 16px/1 -apple-system, "SF Pro Text", var(--font-body), sans-serif;
+}
+.ilha { position: absolute; left: 50%; top: 11px; z-index: 2; width: 124px; height: 36px; margin-left: -62px; border-radius: 20px; background: #000; }
+.statusIcones { display: flex; align-items: center; gap: 5px; }
+.statusIcones b { display: block; height: 11px; }
+.statusIcones b:first-child { width: 17px; background: linear-gradient(90deg, #fff 0 3px, transparent 0 5px, #fff 0 8px, transparent 0 10px, #fff 0 13px, transparent 0 15px, #fff 0); clip-path: polygon(0 75%, 3px 75%, 3px 55%, 8px 55%, 8px 30%, 13px 30%, 13px 0, 100% 0, 100% 100%, 0 100%); }
+.statusIcones b:last-child { width: 24px; border-radius: 3px; box-shadow: inset 0 0 0 1.4px #ffffffb3; background: linear-gradient(#fff, #fff) 2px 50% / 72% 6px no-repeat; }
+.iphoneMoldura { position: absolute; left: 0; top: 0; width: 1060px; height: 1660px; }
+
+/* o gráfico novo (09/11): barras e seta em SVG, e os três números de dinheiro embaixo */
+.graficoSvg { display: block; width: 100%; height: auto; margin-top: 22px; overflow: visible; }
+.graficoCartao { padding-bottom: 14px; }
+.numeros { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
+.numeros p { display: grid; gap: 6px; margin: 0; padding: 16px; border-radius: 14px; background: #20262a; font-size: 13.5px; line-height: 1.3; color: #c9cdcf; }
+.numeros b { font: 700 clamp(20px, 2vw, 28px)/1 var(--font-titulo), sans-serif; letter-spacing: -.02em; color: #fff; }
+.numeros p:first-child b { color: #2fd18c; }
+/* a entrada: as barras verdes crescem e a seta se desenha, uma vez, quando a página monta */
+.barraVerde { transform-box: fill-box; transform-origin: 50% 100%; animation: v2Cresce .9s cubic-bezier(.2, .7, .2, 1) both; }
+.seta { stroke-dasharray: 1; animation: v2Desenha 1.4s .5s cubic-bezier(.45, .05, .35, 1) both; }
+.setaPonta { animation: v2Aparece .3s 1.8s both; }
+@keyframes v2Cresce { from { transform: scaleY(0); } }
+@keyframes v2Desenha { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes v2Aparece { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .barraVerde, .seta, .setaPonta { animation: none; } }
+@media (max-width: 560px) {
+  .numeros { grid-template-columns: minmax(0, 1fr); }
+  .numeros p { grid-template-columns: auto 1fr; align-items: baseline; gap: 10px; }
+}
+
+/* ---------- as histórias com impacto (09/11) ----------
+   O número gigante no topo, o antes e o depois em reais com a barrinha, o dado extra
+   embaixo; o primeiro cartão em verde cheio. */
+.cartaoContexto { margin: 6px 0 20px; }
+.cartaoGrande { display: grid; gap: 4px; margin: 0 0 22px; font-size: 14.5px; line-height: 1.35; color: var(--texto); }
+.cartaoGrande b { font: 700 clamp(56px, 5.4vw, 80px)/.9 var(--font-titulo), sans-serif; letter-spacing: -.045em; color: var(--rosa); }
+.antesDepois { display: grid; gap: 8px; padding: 14px 0; border-block: 1px solid #ececea; }
+.antesDepois p { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; align-items: center; gap: 10px; margin: 0; }
+.antesDepois span { font-size: 12.5px; color: var(--suave); }
+.antesDepois i { display: block; height: 10px; border-radius: 99px; background: #d9dcdd; }
+.antesDepois .barraDepois { background: var(--verde); }
+.antesDepois b { font: 700 15px/1 var(--font-body), sans-serif; color: var(--ink); text-align: right; min-width: 74px; }
+.antesDepois small { font-size: 12px; color: var(--suave); }
+.cartaoExtra { margin: 16px 0 0; font-size: 14.5px; line-height: 1.4; color: var(--texto); }
+.cartaoExtra b { font-weight: 700; color: var(--ink); }
+
+/* o cartão de destaque: verde cheio */
+.cartaoDestaque { background: var(--verde); border-color: var(--verde); color: #fff; box-shadow: 0 30px 60px -30px #0c915999; }
+.cartaoDestaque .cartaoLoja, .cartaoDestaque .cartaoLink, .cartaoDestaque .cartaoExtra b, .cartaoDestaque .antesDepois b { color: #fff; }
+.cartaoDestaque .cartaoLoja span { background: #ffffff26; color: #fff; }
+.cartaoDestaque .cartaoContexto, .cartaoDestaque .cartaoGrande, .cartaoDestaque .cartaoExtra, .cartaoDestaque .antesDepois span, .cartaoDestaque .antesDepois small { color: #d7f2e4; }
+.cartaoDestaque .cartaoGrande b { color: #fff; }
+.cartaoDestaque .antesDepois { border-color: #ffffff33; }
+.cartaoDestaque .antesDepois i { background: #ffffff4d; }
+.cartaoDestaque .antesDepois .barraDepois { background: #fff; }
+.semAvisos [data-aviso] { display: none !important; }
+
+/* ---------- o formulário da amostra, refeito (09/11) ---------- */
+.cadastroTitulo { font-weight: 600; font-size: clamp(28px, 2.8vw, 40px); letter-spacing: -.03em; }
+.cadastroSub { max-width: 30em; margin: 12px auto 0; font-size: 16px; line-height: 1.5; color: var(--texto); }
+.passos { display: flex; justify-content: center; gap: 10px; margin: 26px 0 0; padding: 0; list-style: none; flex-wrap: wrap; }
+.passos li { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px 8px 8px; border-radius: 99px; background: #e9ecee; font-size: 14px; color: var(--suave); }
+.passos b { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: #fff; font-size: 12.5px; color: var(--suave); }
+.passos .passoAtivo { background: var(--ink); color: #fff; }
+.passos .passoAtivo b { background: var(--rosa); color: #fff; }
+.cadastroForm { margin-top: 26px; }
+.cadastroForm form { padding: clamp(22px, 3vw, 32px); border-radius: 22px; }
+/* os campos um embaixo do outro, em cinza: no cartão branco eles sumiam */
+.cadastroForm form > div:first-child { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+.cadastroForm input { background: #f1f3f4 !important; border: 1px solid #e3e6e8 !important; min-height: 54px !important; }
+.cadastroForm input:focus { background: #fff !important; border-color: transparent !important; }
+.cadastroForm form button[type="submit"] { min-height: 56px; margin-top: 20px; font-size: 16px; }
+.garantias { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px 22px; margin: 18px 0 0; padding: 0; list-style: none; font-size: 14px; color: var(--texto); }
+.garantias li { display: inline-flex; align-items: center; gap: 7px; }
+.garantias svg { width: 18px; height: 18px; color: var(--verde); }
+.garantias svg path { stroke: #fff; }
+
+/* ---------- a linha do tempo do prazo e o preço (09/11) ---------- */
+.tempo { position: relative; display: grid; gap: 22px; margin: 32px 0 28px; padding: 0 0 0 30px; list-style: none; }
+.tempo::before { content: ""; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 2px; background: linear-gradient(#ffffff2e, var(--verde)); }
+.tempo li { position: relative; display: grid; gap: 3px; font-size: clamp(15px, 1.2vw, 17px); line-height: 1.4; color: #c9cdcf; }
+.tempo li::before { content: ""; position: absolute; left: -30px; top: 4px; width: 16px; height: 16px; border-radius: 50%; background: var(--ink); box-shadow: inset 0 0 0 2px #ffffff59; }
+.tempo b { font: 600 13px/1.2 var(--font-body), sans-serif; letter-spacing: .04em; text-transform: uppercase; color: #fff; }
+.tempo .tempoFim::before { background: var(--verde); box-shadow: 0 0 0 5px #0c915940; }
+.tempo .tempoFim b { color: #2fd18c; }
+.tempo .tempoFim { color: #fff; font-weight: 600; }
+.preco { display: flex; align-items: center; flex-wrap: wrap; gap: 14px 18px; margin: 0 0 30px; padding: 18px 22px; border-radius: 16px; background: #20262a; box-shadow: inset 0 0 0 1px #ffffff14; }
+.preco p { display: grid; gap: 4px; margin: 0; }
+.preco b { font: 700 clamp(26px, 2.4vw, 34px)/1 var(--font-titulo), sans-serif; letter-spacing: -.02em; color: #fff; }
+.preco small { font-size: .5em; font-weight: 500; color: #c9cdcf; }
+.preco span { font-size: 13.5px; color: #a7adb0; }
+.preco i { font: 300 26px/1 var(--font-body), sans-serif; font-style: normal; color: #6d7377; }
+
+/* o MacBook (09/11): a moldura com a tela vazada por cima, o vídeo por baixo, no vão medido
+   (em % do recorte de 860x525 do mockup) */
+.macbook { position: relative; aspect-ratio: 860 / 525; filter: drop-shadow(0 40px 50px #0000008c); }
+.macbookTela { position: absolute; left: 9.42%; top: 2.86%; width: 80.81%; height: 85.33%; overflow: hidden; border-radius: 1.2% 1.2% 0 0 / 1.9% 1.9% 0 0; background: #f8f7f3; }
+.macbookTela video { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 0 0; }
+.macbookMoldura { position: absolute; inset: 0; width: 100%; height: 100%; }

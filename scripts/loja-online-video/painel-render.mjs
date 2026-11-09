@@ -1,5 +1,5 @@
 /* Desenha o painel simulado quadro a quadro (render(t)) e monta o vídeo.
-   Uso: node painel-render.mjs medir | gravar */
+   Uso: node painel-render.mjs medir | gravar [modelo] */
 import { createRequire } from "module";
 import fs from "fs";
 import path from "path";
@@ -10,12 +10,17 @@ const puppeteer = req("puppeteer-core");
 const FFMPEG = req("ffmpeg-static");
 const AQUI = path.dirname(fileURLToPath(import.meta.url));
 const modo = process.argv[2] || "medir";
+/* `modelo` (09/11, /loja-online-v2): o painel da "Loja Modelo" do estúdio, em vez da Iconic,
+   que não vende pelo site; as fotos das peças continuam as do catálogo. Uso: gravar modelo */
+const MODELO = process.argv[3] === "modelo";
+const ICONE_MODELO = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 34 34"><rect width="34" height="34" rx="9" fill="#0c9159"/><text x="17" y="22" font-family="Arial,sans-serif" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">LM</text></svg>');
 const PROD = "C:/Users/Rafael/Desktop/vitrines/iconic-sneakers/public/produtos/";
 const url = f => pathToFileURL(f).href;
 
 /* a página com as fotos reais da Iconic no lugar dos marcadores */
 let html = fs.readFileSync(path.join(AQUI, "painel.html"), "utf8")
-  .replaceAll("ICONE", url("C:/Users/Rafael/rafael-razeira-estudio/public/assets/lojas/iconic-icone.webp"))
+  .replaceAll("ICONE", MODELO ? ICONE_MODELO : url("C:/Users/Rafael/rafael-razeira-estudio/public/assets/lojas/iconic-icone.webp"))
+  .replaceAll("Iconic Sneakers", MODELO ? "Loja Modelo" : "Iconic Sneakers")
   .replaceAll("FOTO1", url(PROD + "new-balance-9060-azul-bebe-1.webp"))
   .replaceAll("FOTO2", url(PROD + "adidas-samba-og-rosa-renda-1.webp"))
   .replaceAll("FOTO3", url(PROD + "nike-dunk-low-panda-1.webp"))
@@ -45,7 +50,7 @@ if (modo === "medir") {
     await p.evaluate(t => render(t), i / FPS);
     await p.screenshot({ path: path.join(dir, String(i).padStart(5, "0") + ".jpg"), type: "jpeg", quality: 92 });
   }
-  const base = path.join(AQUI, "painel-pedido");
+  const base = path.join(AQUI, MODELO ? "painel-pedido-modelo" : "painel-pedido");
   const ent = ["-y", "-framerate", String(FPS), "-i", path.join(dir, "%05d.jpg"), "-vf", "scale=1440:900:flags=lanczos,format=yuv420p"];
   execFileSync(FFMPEG, [...ent, "-c:v", "libx264", "-preset", "slow", "-crf", "24", "-movflags", "+faststart", `${base}.mp4`], { stdio: "ignore" });
   execFileSync(FFMPEG, [...ent, "-c:v", "libvpx-vp9", "-b:v", "0", "-crf", "36", "-row-mt", "1", `${base}.webm`], { stdio: "ignore" });

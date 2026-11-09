@@ -13,8 +13,9 @@ const puppeteer = req("puppeteer-core");
 const FFMPEG = req("ffmpeg-static");
 
 const [modo = "desktop", OUT = "."] = process.argv.slice(2);
-const MEDIDAS = { desktop: [1280, 800, 1], celular: [400, 500, 2], vertical: [360, 640, 3], retrato: [360, 450, 3] };
-if (!MEDIDAS[modo]) throw new Error("modo: desktop, celular, vertical ou retrato");
+/* iphone (09/11): a tela do iPhone da /loja-online-v2 sem a barra de status (390x844 - 50) */
+const MEDIDAS = { desktop: [1280, 800, 1], celular: [400, 500, 2], vertical: [360, 640, 3], retrato: [360, 450, 3], iphone: [390, 794, 2] };
+if (!MEDIDAS[modo]) throw new Error("modo: desktop, celular, vertical, retrato ou iphone");
 const CEL = modo !== "desktop";
 const [W, H, DPR] = MEDIDAS[modo];
 const PRODUTO = "/produto/new-balance-9060-azul-bebe";
