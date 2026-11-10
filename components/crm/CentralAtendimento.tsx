@@ -51,7 +51,7 @@ import {
   type HistoricoAtendimento,
 } from "@/lib/crm/atendimento";
 import type { painelHoje } from "@/lib/crm/dados";
-import { arrobaDe, dataCurta, diaEmSP, diasDesde, dinheiro, ehLojaOnline, linkWhatsapp, momentoDoContato, somarDias } from "@/lib/crm/regras";
+import { arrobaDe, dataCurta, diaEmSP, diasDesde, diasEntre, dinheiro, ehLojaOnline, linkWhatsapp, momentoDoContato, somarDias } from "@/lib/crm/regras";
 import { ehAtivo, NOME_CANAL, NOME_ESTAGIO, NOME_ORIGEM, NOME_TIPO, type Direcao, type LeadPainel, type Template } from "@/lib/crm/tipos";
 import { ModalNovoLead } from "./ModalNovoLead";
 import { ModalMensagem } from "./ModalMensagem";
@@ -493,7 +493,8 @@ function Atendimento({
      ============================================================ */
   const fala = ultimaEntrada?.resumo && !/^Preencheu o formulário/i.test(ultimaEntrada.resumo) ? ultimaEntrada.resumo : null;
   const cobranca = lead.cobranca && lead.cobranca.quando <= hoje ? lead.cobranca : null;
-  const atrasoDaParcela = cobranca ? diasDesde(cobranca.vence_em, hoje) : 0;
+  /* vence_em é data pura: diasDesde a leria como meia-noite UTC e contaria um dia a mais. */
+  const atrasoDaParcela = cobranca ? diasEntre(cobranca.vence_em, hoje) : 0;
   const vez: { titulo: string; detalhe?: string; botao: string } = lead.quer_no_ar
     ? { titulo: "Pediu para colocar no ar", detalhe: "É o lead mais quente da fila. Responda com o Pix da entrada.", botao: "Mandar o Pix" }
     : cobranca
