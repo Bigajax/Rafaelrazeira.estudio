@@ -371,6 +371,15 @@ export const TITULO_LOJA_DE_CELULAR = "Loja de celular:";
    fingia ser cliente ("entrei no perfil procurando..."). O Rafael escolheu
    a da Loja online: diz quem é, o que faz, e pede licença para mostrar. */
 export const TITULO_LOJA_ONLINE_FRIA = "Loja online: o que eu faço";
+/* A LOJA ONLINE TEM OS TEXTOS DELA (10/11/2026). Quem chegava pelo anúncio
+   da /loja-online recebia "Você pediu a vitrine grátis": a @isis._sttore
+   estava no topo da fila assim em 10/11. O card da Loja online nasce como
+   e-commerce (a /api/lead grava o tipo), e é por ele que a escada e a
+   etapa escolhem. O que nunca fazer: citar caso ou número de venda nesses
+   textos enquanto o checkout não estiver no ar em loja nenhuma. */
+export const TITULO_ANUNCIO_LOJA_ONLINE = "Loja online: chegou pelo anúncio";
+export const TITULO_AMOSTRA_LOJA_ONLINE = "Loja online: amostra pronta";
+export const ehLojaOnline = (lead: Pick<LeadPainel, "tipo_projeto">) => lead.tipo_projeto === "ecommerce";
 export const ehLojaDeCelularTitulo = (titulo: string) => titulo.startsWith(TITULO_LOJA_DE_CELULAR);
 /* A volta da prévia sem resposta (ver templateDaEtapa). */
 export const TITULO_PREVIA_NOVIDADE = "Prévia sem resposta:";
@@ -378,7 +387,7 @@ export const ehLojaDeCelular = (lead: Pick<LeadPainel, "nicho">) =>
   /celular|iphone/i.test(lead.nicho ?? "");
 
 export function degrauDoSilencio(
-  lead: Pick<LeadPainel, "toques" | "toques_entrada" | "saidas_seguidas" | "origem" | "notas" | "nicho">,
+  lead: Pick<LeadPainel, "toques" | "toques_entrada" | "saidas_seguidas" | "origem" | "notas" | "nicho" | "tipo_projeto">,
 ): Degrau | null {
   /* ---------- o formulário não é resposta (21/09/2026) ----------
      O card que nasce do anúncio já nasce com UM toque de entrada: a
@@ -399,6 +408,14 @@ export function degrauDoSilencio(
           indice: 0,
           titulo: TITULO_ARROBA_NAO_ABRIU,
           porque: "Veio do anúncio e o @ do cadastro não abriu na Meta: o primeiro toque pede o @ certo",
+        };
+      }
+      if (ehLojaOnline(lead)) {
+        return {
+          categoria: "abertura_morna",
+          indice: 0,
+          titulo: TITULO_ANUNCIO_LOJA_ONLINE,
+          porque: "Pediu a amostra da Loja online no anúncio e ninguém falou com ela ainda",
         };
       }
       return {
@@ -471,9 +488,14 @@ export function degrauDoSilencio(
    pesquisa e a escada continuam sendo os textos certos.
    ============================================================ */
 export function templateDaEtapa(
-  lead: Pick<LeadPainel, "estagio" | "saidas_seguidas">,
+  lead: Pick<LeadPainel, "estagio" | "saidas_seguidas" | "tipo_projeto">,
 ): { categoria: CategoriaTemplate; indice: number; titulo?: string; porque: string } | null {
   const cobrando = lead.saidas_seguidas > 0;
+  /* A entrega da amostra da Loja online é outra mensagem: a da vitrine diz
+     "A vitrine da {empresa} ficou pronta". */
+  if (lead.estagio === "previa" && !cobrando && ehLojaOnline(lead)) {
+    return { categoria: "previa", indice: 0, titulo: TITULO_AMOSTRA_LOJA_ONLINE, porque: "Loja online em Prévia: a mensagem da vez é a entrega da amostra" };
+  }
   switch (lead.estagio) {
     case "previa":
       /* Com silêncio, o índice 1 da categoria é a MENSAGEM DO PREÇO (#10):

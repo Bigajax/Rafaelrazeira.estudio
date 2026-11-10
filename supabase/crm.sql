@@ -1669,3 +1669,43 @@ select t.owner_id, v.titulo, 'whatsapp', v.categoria, v.conteudo, v.ordem
  where not exists (
    select 1 from public.crm_templates x
     where x.owner_id = t.owner_id and x.titulo = v.titulo);
+
+-- ============================================================
+-- 10/11/2026: OS TEXTOS DA LOJA ONLINE
+-- Quem chegava pelo anúncio da /loja-online recebia a abertura da vitrine
+-- ("Você pediu a vitrine grátis"), e não existia entrega, preço nem volta
+-- para o degrau de R$ 1.990 + R$ 249,90 por mês. O Rafael pediu opções e
+-- aprovou estas, com o nome "Loja online". O preço diz os dois valores de
+-- cara: a mensalidade é obrigatória e não pode aparecer depois. Sem caso e
+-- sem número de venda, porque o checkout não está no ar em loja nenhuma.
+-- Os títulos são lidos pelo código: TITULO_ANUNCIO_LOJA_ONLINE e
+-- TITULO_AMOSTRA_LOJA_ONLINE em lib/crm/regras.ts, RESUMOS_DE_PRECO e
+-- TITULO_VOLTA_DA_LOJA_ONLINE em lib/crm/atendimento.ts. Renomear aqui pede
+-- a mesma troca lá. Já aplicado no banco por script; fica de registro.
+-- ============================================================
+insert into public.crm_templates (owner_id, titulo, canal, categoria, conteudo, ordem)
+select t.owner_id, v.titulo, 'whatsapp', v.categoria, v.conteudo, v.ordem
+  from (select distinct owner_id from public.crm_templates) t
+ cross join (values
+   (E'Loja online: chegou pelo anúncio, a amostra', 'abertura_morna',
+    E'Fala, {nome}! Aqui é o Rafael, do estúdio. Você pediu a amostra da loja online da {instagram} no anúncio, já abri o perfil de vocês.\n\nMonto com as peças de vocês e te mando até amanhã.\n\nQual peça mais sai aí? Começo por ela.',
+    3),
+   (E'Loja online: amostra pronta, só o presente', 'previa',
+    E'Oi, {nome}! A amostra da loja online da {empresa} ficou pronta, montei com as fotos do Instagram de vocês:\n\n{link}\n\nQual peça eu deixo em primeiro? Por enquanto é uma amostra: pra ela vender no nome de vocês tem um investimento, se fizer sentido te passo como funciona.',
+    22),
+   (E'Loja online: o preço (só depois que responder)', 'previa',
+    E'São dois valores: R$ 1.990 pra montar a loja (Pix ou até 12x no cartão, com os juros do cartão) e R$ 249,90 por mês depois que ela estiver no ar.\n\nO mensal cobre o sistema rodando, o relatório das vendas e o suporte quando precisar.\n\nTe mando a proposta com tudo escrito?',
+    23),
+   (E'Loja online: quem já tem a vitrine (R$ 991)', 'previa',
+    E'Oi, {nome}! Dá pra cliente pagar direto na vitrine da {empresa}: Pix, cartão e frete calculado, sem passar pelo WhatsApp.\n\nComo vocês já têm a vitrine, fica R$ 991 pra ligar, mais R$ 249,90 por mês depois de entregue.\n\nQuer ver como fica na de vocês?',
+    24),
+   (E'Depois do preço: a amostra da loja online', 'previa',
+    E'Oi, {nome}! A amostra da loja online da {empresa} ainda tá no ar:\n\n{link}\n\nDeixo mais uns dias ou pode tirar?',
+    25),
+   (E'Loja online: por que tem mensalidade? (só se perguntar)', 'objecao',
+    E'A vitrine é uma vez só porque o pedido fecha no WhatsApp. Na loja online o pagamento passa pelo site, então tem sistema rodando todo dia. É isso que o mensal paga, junto com o relatório e o suporte.',
+    13)
+ ) as v(titulo, categoria, conteudo, ordem)
+ where not exists (
+   select 1 from public.crm_templates x
+    where x.owner_id = t.owner_id and x.titulo = v.titulo);

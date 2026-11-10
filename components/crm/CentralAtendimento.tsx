@@ -36,6 +36,7 @@ import {
   TEMPLATE_BLACK_VIU,
   TEMPLATE_QUER_NO_AR,
   TITULO_VOLTA_DA_BLACK,
+  TITULO_VOLTA_DA_LOJA_ONLINE,
   TITULO_VOLTA_DO_PRECO,
   diasDoPreco,
   filaDaVez,
@@ -49,7 +50,7 @@ import {
   type HistoricoAtendimento,
 } from "@/lib/crm/atendimento";
 import type { painelHoje } from "@/lib/crm/dados";
-import { arrobaDe, dataCurta, diaEmSP, diasDesde, dinheiro, linkWhatsapp, momentoDoContato, somarDias } from "@/lib/crm/regras";
+import { arrobaDe, dataCurta, diaEmSP, diasDesde, dinheiro, ehLojaOnline, linkWhatsapp, momentoDoContato, somarDias } from "@/lib/crm/regras";
 import { ehAtivo, NOME_CANAL, NOME_ESTAGIO, NOME_ORIGEM, NOME_TIPO, type Direcao, type LeadPainel, type Template } from "@/lib/crm/tipos";
 import { ModalNovoLead } from "./ModalNovoLead";
 import { ModalMensagem } from "./ModalMensagem";
@@ -111,7 +112,7 @@ function sugestaoDe({ lead: l, grupo, encerrar }: Linha, hoje: string) {
     const d = dias(diasDoPreco(l, hoje));
     return l.black_em
       ? { titulo: TITULO_VOLTA_DA_BLACK, porque: `Recebeu a Black há ${d} e não respondeu: uma volta só, com a saída aberta` }
-      : { titulo: TITULO_VOLTA_DO_PRECO, porque: `Viu o preço há ${d} e não respondeu: uma volta só, com a saída aberta` };
+      : { titulo: ehLojaOnline(l) ? TITULO_VOLTA_DA_LOJA_ONLINE : TITULO_VOLTA_DO_PRECO, porque: `Viu o preço há ${d} e não respondeu: uma volta só, com a saída aberta` };
   }
   return undefined;
 }
@@ -457,86 +458,86 @@ function Atendimento({
   const ativo = ehAtivo(lead.estagio);
   const d = grupo === "preco" ? diasDoPreco(lead, hoje) : diasDesde(lead.ultimo_toque_em ?? lead.created_at, hoje);
 
+  /* ============================================================
+     A VEZ (10/11/2026, segunda rodada)
+
+     O detalhe mostrava tudo no mesmo tom: sete fatos numa linha, o código
+     do anúncio, dois quadros azuis iguais ("última mensagem", que era o
+     envio do formulário, e a cobrança) e o rosa num "Mandar mensagem"
+     genérico. No Santana, o motivo de ele estar na fila (R$ 400 em aberto
+     desde 26/09) era o terceiro bloco da tela.
+
+     Agora o primeiro bloco responde uma pergunta só, "por que esta pessoa
+     e o que eu faço", com o botão dizendo a ação. O resto desce em voz
+     baixa: o que a pessoa disse, o próximo passo numa linha, a conversa e
+     os dados do cadastro no pé.
+     ============================================================ */
+  const fala = ultimaEntrada?.resumo && !/^Preencheu o formulário/i.test(ultimaEntrada.resumo) ? ultimaEntrada.resumo : null;
+  const cobranca = lead.cobranca && lead.cobranca.quando <= hoje ? lead.cobranca : null;
+  const atrasoDaParcela = cobranca ? diasDesde(cobranca.vence_em, hoje) : 0;
+  const vez: { titulo: string; detalhe?: string; botao: string } = lead.quer_no_ar
+    ? { titulo: "Pediu para colocar no ar", detalhe: "É o lead mais quente da fila. Responda com o Pix da entrada.", botao: "Mandar o Pix" }
+    : cobranca
+      ? { titulo: `A receber ${dinheiro(cobranca.saldo)}`, detalhe: `${cobranca.rotulo} · ${atrasoDaParcela > 0 ? `venceu há ${dias(atrasoDaParcela)}` : "vence hoje"}, em ${dataCurta(cobranca.vence_em)}`, botao: "Mandar mensagem" }
+      : marca
+        ? { titulo: marca.nome, detalhe: marca.id === "audio" ? "Grave o áudio explicando como funciona: onde houve áudio, a conversa viveu." : "Mande o resumo pronto pra encaminhar e pergunte quando eles conversam.", botao: marca.id === "audio" ? "Abrir a conversa" : "Mandar o resumo" }
+        : respondeu
+          ? { titulo: "Escreveu por último", detalhe: fala ? undefined : "A resposta foi marcada à mão, sem o texto.", botao: "Responder" }
+          : encerrar
+            ? { titulo: `Sem resposta há ${dias(d)}`, detalhe: `Pela regra da casa, depois de uns ${DIAS_PARA_ENCERRAR} dias não rolou: encerre e tire a amostra do ar.`, botao: "Mandar mensagem" }
+            : blackPorMandar(lead)
+              ? { titulo: "Falta mandar a Black", detalhe: "R$ 799 à vista até 30/11.", botao: "Mandar a Black" }
+              : grupo === "novos" || ehNovo
+                ? { titulo: "Chegou e ainda não ouviu de você", detalhe: ultimaEntrada?.resumo ?? undefined, botao: "Mandar a primeira mensagem" }
+                : grupo === "preco"
+                  ? { titulo: `Viu ${lead.black_em ? "a Black" : "o preço"} há ${dias(d)}, sem resposta`, detalhe: "Uma volta só, com a saída aberta. Depois dela o contato sai da fila até o décimo dia.", botao: "Mandar a volta" }
+                  : grupo === "amostra"
+                    ? { titulo: `Amostra há ${dias(d)}, sem reação`, detalhe: "Volte com novidade na vitrine, nunca com cobrança.", botao: "Voltar com novidade" }
+                    : { titulo: NOME_ESTAGIO[lead.estagio], detalhe: lead.proximo_passo ?? "Fora da fila de hoje.", botao: "Mandar mensagem" };
+  const dados = [NOME_ORIGEM[lead.origem], `entrou ${hora(lead.created_at)}`, lead.tipo_projeto ? NOME_TIPO[lead.tipo_projeto] : null, lead.ticket_estimado != null ? dinheiro(lead.ticket_estimado) || null : null, lead.preco_em ? `viu o preço em ${dataCurta(diaEmSP(lead.preco_em))}` : null, lead.campanha ? [lead.campanha, lead.anuncio].filter(Boolean).join(" · ") : null].filter(Boolean).join(" · ");
+
   return (
     <>
       <div className={c.detalheCabecalho}>
         <div className={c.identificacao}>
           <div>
-            <span className={c.etapa}>{ehNovo ? "Primeiro atendimento pendente" : respondeu ? "Sua vez de responder" : NOME_ESTAGIO[lead.estagio]}</span>
             <h2>{lead.nome}</h2>
-            <p>
-              {[lead.empresa !== lead.nome ? lead.empresa : null, lead.nicho, lead.cidade, NOME_ORIGEM[lead.origem], `entrou ${hora(lead.created_at)}`, lead.tipo_projeto ? NOME_TIPO[lead.tipo_projeto] : null, lead.ticket_estimado != null ? dinheiro(lead.ticket_estimado) || null : null, lead.preco_em ? `viu o preço em ${dataCurta(diaEmSP(lead.preco_em))}` : null].filter(Boolean).join(" · ")}
-            </p>
-            {lead.campanha && <p className={c.campanha}>{lead.campanha}{lead.anuncio ? ` · ${lead.anuncio}` : ""}</p>}
+            <p>{[lead.empresa !== lead.nome ? lead.empresa : null, lead.nicho, lead.cidade].filter(Boolean).join(" · ") || NOME_ESTAGIO[lead.estagio]}</p>
           </div>
         </div>
         <Link className={c.link} href={`/crm/lead/${lead.id}`}>Abrir ficha ↗</Link>
       </div>
 
-      {lead.quer_no_ar ? (
-        <p className={c.quente}><b>Pediu para colocar no ar.</b> É o lead mais quente da fila: responda agora com o Pix da entrada. O "Mandar mensagem" já abre no template certo.</p>
-      ) : marca ? (
-        <p className={c.quente} data-marca><b>{marca.nome}.</b> {marca.id === "audio" ? "Grave o áudio explicando como funciona: onde houve áudio, a conversa viveu." : "Mande o resumo pronto pra encaminhar e pergunte quando eles conversam."}</p>
-      ) : encerrar ? (
-        <p className={c.quente} data-marca><b>Sem resposta há {dias(d)}.</b> Pela regra da casa, depois de uns {DIAS_PARA_ENCERRAR} dias sem resposta não rolou: encerre e tire a amostra do ar.</p>
-      ) : grupo === "preco" && !blackPorMandar(lead) ? (
-        <p className={c.quente} data-marca><b>Viu o preço há {dias(d)} e não respondeu.</b> Uma volta só, com a saída aberta. Depois dela o contato sai da fila e só volta no décimo dia, para encerrar.</p>
-      ) : null}
-
-      <div className={c.acoesAtendimento}>
+      <section className={c.vez} data-alto={grupo === "responder" || grupo === "novos"}>
+        <h3>{vez.titulo}</h3>
+        {fala && respondeu ? <blockquote>{fala}</blockquote> : vez.detalhe ? <p>{vez.detalhe}</p> : null}
         <div className={c.acoes}>
           {encerrar && ativo && <button type="button" className={`${c.botao} ${c.primario}`} disabled={encerrando} onClick={aoEncerrar}>{encerrando ? "Encerrando…" : "Não rolou"}</button>}
           {whatsapp || instagram ? (
-            <button type="button" className={`${c.botao} ${encerrar ? "" : c.vende}`} onClick={aoMandar}>Mandar mensagem</button>
+            <button type="button" className={`${c.botao} ${encerrar ? "" : c.vende}`} onClick={aoMandar}>{vez.botao}</button>
           ) : (
             <Link className={`${c.botao} ${c.vende}`} href={`/crm/lead/${lead.id}`}>Completar canal de contato</Link>
           )}
-          {instagram && <a className={c.botao} href={`https://www.instagram.com/${encodeURIComponent(instagram)}/`} target="_blank" rel="noopener noreferrer">Ver Instagram ↗</a>}
+          {cobranca && <Link className={c.botao} href="/crm/caixa">Dar baixa no Caixa</Link>}
+          {instagram && <a className={c.botao} href={`https://www.instagram.com/${encodeURIComponent(instagram)}/`} target="_blank" rel="noopener noreferrer">Instagram ↗</a>}
         </div>
-        {ativo && (
-          <div className={c.pedidos}>
-            <span>A pessoa:</span>
-            <button type="button" className={c.pilula} aria-pressed={respondeu && !lead.quer_no_ar} disabled={marcando || respondeu} onClick={() => toque("entrada", RESUMO_RESPONDEU)}>Respondeu</button>
-            <button type="button" className={c.pilula} aria-pressed={Boolean(lead.quer_no_ar)} disabled={marcando || lead.quer_no_ar} onClick={() => toque("entrada", RESUMO_QUER_NO_AR)}>Quer colocar no ar</button>
-            {MARCAS.map((m) => (
-              <button key={m.id} type="button" className={c.pilula} aria-pressed={marca?.id === m.id} disabled={marcando || marca?.id === m.id} onClick={() => marcar(m.passo)}>{m.id === "audio" ? "Pediu áudio" : "Vai ver com o sócio"}</button>
-            ))}
-          </div>
-        )}
-        <p>
-          Conversou por fora? <button type="button" className={c.linkBotao} onClick={() => aoRegistrar("saida")}>Registrar</button>
-          {!lead.preco_em && ativo && <>{" · "}<button type="button" className={c.linkBotao} disabled={marcando} onClick={() => toque("saida", RESUMO_PRECO_A_MAO)}>Já mandei o preço</button></>}
-          {" · "}<button type="button" className={c.linkBotao} onClick={() => aoRegistrar("entrada")}>Disse que não, ou pediu para depois</button>
-        </p>
-        {erroMarca && <p role="alert">{erroMarca}</p>}
-      </div>
-
-      {ultimaEntrada?.resumo && (
-        <section className={c.mensagem}>
-          <span>Última mensagem recebida · {hora(ultimaEntrada.created_at)}</span>
-          <p>{ultimaEntrada.resumo}</p>
-        </section>
-      )}
-      {lead.cobranca && (
-        <section className={c.mensagem}>
-          <span>Cobrança pendente · {dataCurta(lead.cobranca.vence_em)}</span>
-          <p>{lead.cobranca.rotulo} · {dinheiro(lead.cobranca.saldo)} em aberto</p>
-          <Link className={c.link} href="/crm/caixa">Conferir recebimento no Caixa</Link>
-        </section>
-      )}
-      {lead.notas && (
-        <details className={c.notas}>
-          <summary>Informações do pedido e anotações</summary>
-          <p>{lead.notas}</p>
-        </details>
-      )}
+      </section>
 
       {ativo && (
-        <section className={c.proximoPasso}>
-          <div className={c.tituloSecao}>
-            <h3>Próximo passo</h3>
-            <button type="button" className={c.linkBotao} onClick={() => { setPasso(lead.proximo_passo ?? ""); setErroPasso(null); setEditando(!editando); }}>{editando ? "Cancelar" : "Agendar ou editar"}</button>
-          </div>
+        <div className={c.pedidos}>
+          <span>A pessoa:</span>
+          <button type="button" className={c.pilula} aria-pressed={respondeu && !lead.quer_no_ar} disabled={marcando || respondeu} onClick={() => toque("entrada", RESUMO_RESPONDEU)}>Respondeu</button>
+          <button type="button" className={c.pilula} aria-pressed={Boolean(lead.quer_no_ar)} disabled={marcando || lead.quer_no_ar} onClick={() => toque("entrada", RESUMO_QUER_NO_AR)}>Quer colocar no ar</button>
+          {MARCAS.map((m) => (
+            <button key={m.id} type="button" className={c.pilula} aria-pressed={marca?.id === m.id} disabled={marcando || marca?.id === m.id} onClick={() => marcar(m.passo)}>{m.id === "audio" ? "Pediu áudio" : "Vai ver com o sócio"}</button>
+          ))}
+          <button type="button" className={c.pilula} onClick={() => aoRegistrar("entrada")}>Disse que não, ou depois</button>
+        </div>
+      )}
+      {erroMarca && <p role="alert" className={c.erroArquivo}>{erroMarca}</p>}
+
+      {ativo && (
+        <section className={c.passo}>
           {editando ? (
             <form
               className={c.formPasso}
@@ -555,36 +556,46 @@ function Atendimento({
               <label>O que fazer<input value={passo} onChange={(e) => setPasso(e.target.value)} placeholder="Entender a necessidade e apresentar a solução" required /></label>
               <label>Quando<input type="date" value={data} min={hoje} onChange={(e) => setData(e.target.value)} required /></label>
               {erroPasso && <p role="alert">{erroPasso}</p>}
-              <button type="submit" className={`${c.botao} ${c.primario}`} disabled={salvando}>{salvando ? "Salvando…" : "Salvar próximo passo"}</button>
+              <div className={c.acoes}>
+                <button type="submit" className={`${c.botao} ${c.primario}`} disabled={salvando}>{salvando ? "Salvando…" : "Salvar"}</button>
+                <button type="button" className={c.botao} onClick={() => setEditando(false)}>Cancelar</button>
+              </div>
+              <small>Um retorno marcado para depois de hoje tira o contato da fila até a data.</small>
             </form>
           ) : (
             <p>
-              {lead.proximo_passo || "Ainda não combinado"}
-              {lead.proxima_acao_em && <span className={c.prazo} data-atrasado={lead.proxima_acao_em < hoje}>{lead.proxima_acao_em < hoje ? "Atrasado · " : ""}{dataCurta(lead.proxima_acao_em)}</span>}
+              <b>Próximo passo</b>
+              <span>
+                {lead.proximo_passo || "Ainda não combinado"}
+                {lead.proxima_acao_em && <em data-atrasado={lead.proxima_acao_em < hoje}> · {lead.proxima_acao_em < hoje ? "atrasado, " : ""}{dataCurta(lead.proxima_acao_em)}</em>}
+              </span>
+              <button type="button" className={c.linkBotao} onClick={() => { setPasso(lead.proximo_passo ?? ""); setErroPasso(null); setEditando(true); }}>Editar</button>
             </p>
           )}
-          {grupo !== "responder" && grupo !== "novos" && <small>Um retorno marcado para depois de hoje tira o contato da fila até a data.</small>}
         </section>
       )}
 
       <section className={c.historico}>
         <div className={c.tituloSecao}>
-          <h3>Últimas interações</h3>
-          <Link className={c.link} href={`/crm/lead/${lead.id}`}>Ver tudo na ficha</Link>
+          <h3>Conversa</h3>
+          <span>
+            <button type="button" className={c.linkBotao} onClick={() => aoRegistrar("saida")}>Registrar o que foi por fora</button>
+            {!lead.preco_em && ativo && <>{" · "}<button type="button" className={c.linkBotao} disabled={marcando} onClick={() => toque("saida", RESUMO_PRECO_A_MAO)}>Já mandei o preço</button></>}
+          </span>
         </div>
         {falha ? (
           <p role="alert">{falha} <button className={c.linkBotao} type="button" onClick={() => setTentativa((n) => n + 1)}>Tentar novamente</button></p>
         ) : historico === null ? (
-          <p role="status">Carregando histórico…</p>
+          <p role="status">Carregando…</p>
         ) : historico.length ? (
           <ol>
             {historico.map((i) => (
-              <li key={i.id}>
+              <li key={i.id} data-direcao={i.direcao}>
                 <div>
-                  <b>{i.direcao === "entrada" ? "Cliente escreveu" : "Você entrou em contato"}</b>
+                  <b>{i.direcao === "entrada" ? lead.nome : "Você"}</b>
                   <span>{NOME_CANAL[i.canal]} · {hora(i.created_at)}</span>
                 </div>
-                <p>{i.resumo || "Interação registrada sem resumo."}</p>
+                <p>{i.resumo || "Sem resumo."}</p>
               </li>
             ))}
           </ol>
@@ -592,6 +603,16 @@ function Atendimento({
           <p>Nenhuma interação registrada ainda.</p>
         )}
       </section>
+
+      <footer className={c.cadastro}>
+        <p>{dados}</p>
+        {lead.notas && (
+          <details>
+            <summary>Pedido e anotações</summary>
+            <p>{lead.notas}</p>
+          </details>
+        )}
+      </footer>
     </>
   );
 }

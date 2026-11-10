@@ -176,3 +176,32 @@
 .central .pilula[aria-pressed="true"] { background: var(--texto); border-color: var(--texto); color: #fff; cursor: default; }
 .central .pilula:disabled:not([aria-pressed="true"]) { opacity: .5; cursor: default; }
 @media (max-width: 860px) { .central .arquivo li { flex-direction: column; gap: 2px; } }
+
+/* O detalhe em uma pergunta só (10/11): "por que esta pessoa e o que eu
+   faço" no cartão do alto, e o resto em voz baixa. */
+.central .vez { margin: 18px 0 14px; padding: 20px 22px; border-radius: 22px; background: #f2f2f0; }
+.central .vez h3 { margin: 0; font: 500 21px/1.25 var(--font-titulo), var(--body, Arial, sans-serif); letter-spacing: -.02em; color: var(--texto); overflow-wrap: anywhere; }
+.central .vez[data-alto="true"] h3 { color: #a8331f; }
+.central .vez > p { margin: 6px 0 0; max-width: 62ch; font-size: 13px; line-height: 1.6; color: #4a4f52; overflow-wrap: anywhere; }
+.central .vez blockquote { margin: 10px 0 0; padding: 10px 14px; max-width: 62ch; border-radius: 4px 14px 14px 14px; background: #fff; font-size: 14px; line-height: 1.6; color: var(--texto); white-space: pre-wrap; overflow-wrap: anywhere; }
+.central .vez .acoes { margin-top: 16px; }
+.central .pedidos { margin: 0 0 16px; }
+.central .passo { padding: 12px 0; border-block: 1px solid var(--borda); }
+.central .passo > p { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; margin: 0; font-size: 13px; line-height: 1.6; }
+.central .passo > p > b { flex: none; font-size: 12px; color: var(--suave); font-weight: 600; }
+.central .passo > p > span { flex: 1 1 200px; min-width: 0; color: var(--texto); overflow-wrap: anywhere; }
+.central .passo em { font-style: normal; color: var(--suave); }
+.central .passo em[data-atrasado="true"] { color: #9a4e25; }
+.central .passo .formPasso { margin-top: 0; }
+.central .passo .formPasso small { grid-column: 1/-1; font-size: 11px; color: var(--suave); }
+.central .passo .formPasso .acoes { grid-column: 1/-1; }
+.central .historico { margin-top: 18px; }
+.central .historico .tituloSecao > span { font-size: 12px; color: var(--suave); }
+.central .historico li { border-left: 0; padding: 10px 14px; margin: 0 0 8px; max-width: 78%; border-radius: 4px 14px 14px 14px; background: #f6f6f4; }
+.central .historico li[data-direcao="saida"] { margin-left: auto; border-radius: 14px 4px 14px 14px; background: #fff; border: 1px solid var(--borda); }
+.central .historico li p { color: var(--texto); margin-top: 3px; }
+.central .cadastro { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--borda); }
+.central .cadastro p { margin: 0; font-size: 11px; line-height: 1.7; color: var(--suave); overflow-wrap: anywhere; }
+.central .cadastro summary { margin-top: 8px; cursor: pointer; font-size: 12px; font-weight: 600; color: #4a4f52; }
+.central .cadastro details p { margin-top: 6px; font-size: 12px; white-space: pre-wrap; }
+@media (max-width: 860px) { .central .historico li { max-width: 92%; } .central .vez { padding: 16px; border-radius: 18px; } }

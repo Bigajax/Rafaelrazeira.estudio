@@ -40,6 +40,9 @@ export const RESUMOS_DE_PRECO = [
   "Proposta comercial",
   "Preço enviado",
   "Black R$ 799",
+  /* Os dois textos de preço da Loja online (10/11). */
+  "Loja online: o preço",
+  "Loja online: quem já tem a vitrine",
 ] as const;
 export const RESUMO_PRECO_A_MAO = "Preço enviado (marcado à mão)";
 export const ehToqueDePreco = (resumo: string | null | undefined) => Boolean(resumo && RESUMOS_DE_PRECO.some((p) => resumo.startsWith(p)));
@@ -165,6 +168,8 @@ export const DIAS_PARA_ENCERRAR = 10;
    existia, é a volta de quem recebeu proposta. */
 export const TITULO_VOLTA_DO_PRECO = "Depois do preço:";
 export const TITULO_VOLTA_DA_BLACK = "Depois da Black:";
+/* Começa por "Depois do preço:" como a outra, para a fila reconhecer a volta. */
+export const TITULO_VOLTA_DA_LOJA_ONLINE = "Depois do preço: a amostra da loja online";
 export const ehVoltaDoPreco = (resumo: string | null | undefined) =>
   Boolean(resumo && [TITULO_VOLTA_DO_PRECO, TITULO_VOLTA_DA_BLACK, "Proposta sem resposta"].some((p) => resumo.startsWith(p)));
 
