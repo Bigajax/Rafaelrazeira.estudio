@@ -547,8 +547,28 @@ function Atendimento({
             <Link className={`${c.botao} ${c.vende}`} href={`/crm/lead/${lead.id}`}>Completar canal de contato</Link>
           )}
           {cobranca && <Link className={c.botao} href="/crm/caixa">Dar baixa no Caixa</Link>}
+          <button type="button" className={c.botao} aria-expanded={anotando} onClick={() => setAnotando((v) => !v)}>Já falei por fora</button>
           {instagram && <a className={c.botao} href={`https://www.instagram.com/${encodeURIComponent(instagram)}/`} target="_blank" rel="noopener noreferrer">Instagram ↗</a>}
         </div>
+        {anotando && (
+          <form
+            className={c.anotar}
+            onSubmit={(e) => {
+              e.preventDefault();
+              const texto = nota.trim();
+              if (texto) toque("saida", texto, () => { setNota(""); setAnotando(false); });
+            }}
+          >
+            <label htmlFor="nota-por-fora">O que você falou com {lead.nome}?</label>
+            <textarea id="nota-por-fora" value={nota} onChange={(e) => setNota(e.target.value)} rows={3} autoFocus required placeholder="Mandei a amostra pelo direct, ela vai olhar à noite" />
+            <div className={c.acoes}>
+              <button type="submit" className={`${c.botao} ${c.primario}`} disabled={marcando || !nota.trim()}>{marcando ? "Anotando…" : "Anotar na conversa"}</button>
+              {!lead.preco_em && ativo && <button type="button" className={c.botao} disabled={marcando} onClick={() => toque("saida", RESUMO_PRECO_A_MAO, () => setAnotando(false))}>Foi o preço</button>}
+              <button type="button" className={c.linkBotao} onClick={() => aoRegistrar("saida")}>Mudar etapa ou data junto</button>
+            </div>
+            <small>Entra na conversa como mensagem sua, e o contato sai de quem espera você.</small>
+          </form>
+        )}
         {(grupo === "novos" || grupo === "preco" || grupo === "amostra") && !encerrar && <small>Ao enviar, o próximo deste grupo já abre. Fechar sem enviar para.</small>}
       </section>
 
@@ -562,28 +582,6 @@ function Atendimento({
           ))}
           <button type="button" className={c.pilula} onClick={() => aoRegistrar("entrada")}>Disse que não, ou depois</button>
         </div>
-      )}
-      <div className={c.pedidos}>
-        <span>Eu:</span>
-        <button type="button" className={c.pilula} aria-expanded={anotando} onClick={() => setAnotando((v) => !v)}>Já falei por fora</button>
-        {!lead.preco_em && ativo && <button type="button" className={c.pilula} disabled={marcando} onClick={() => toque("saida", RESUMO_PRECO_A_MAO)}>Já mandei o preço</button>}
-      </div>
-      {anotando && (
-        <form
-          className={c.anotar}
-          onSubmit={(e) => {
-            e.preventDefault();
-            const texto = nota.trim();
-            if (texto) toque("saida", texto, () => { setNota(""); setAnotando(false); });
-          }}
-        >
-          <textarea value={nota} onChange={(e) => setNota(e.target.value)} rows={2} autoFocus required aria-label={`O que você falou com ${lead.nome}`} placeholder="O que você falou: mandei a amostra pelo direct, ela vai olhar à noite" />
-          <div className={c.acoes}>
-            <button type="submit" className={`${c.botao} ${c.primario}`} disabled={marcando || !nota.trim()}>{marcando ? "Anotando…" : "Anotar"}</button>
-            <button type="button" className={c.linkBotao} onClick={() => aoRegistrar("saida")}>Mudar etapa ou data junto</button>
-          </div>
-          <small>Entra na conversa como mensagem sua, e o contato sai de quem espera você.</small>
-        </form>
       )}
       {erroMarca && <p role="alert" className={c.erroArquivo}>{erroMarca}</p>}
 
