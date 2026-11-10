@@ -206,3 +206,10 @@
 .central .cadastro summary { margin-top: 8px; cursor: pointer; font-size: 12px; font-weight: 600; color: #4a4f52; }
 .central .cadastro details p { margin-top: 6px; font-size: 12px; white-space: pre-wrap; }
 @media (max-width: 860px) { .central .historico li { max-width: 92%; } .central .vez { padding: 16px; border-radius: 18px; } }
+
+/* A anotação do que foi falado por fora (10/11), embaixo da linha "Eu:". */
+.central .pedidos + .pedidos { margin-top: -8px; }
+.central .anotar { display: grid; gap: 10px; margin: -6px 0 16px; max-width: 62ch; }
+.central .anotar textarea { width: 100%; min-width: 0; padding: 10px 12px; border: 1px solid var(--borda); border-radius: 12px; background: #fff; color: var(--texto); font: 400 13px/1.5 var(--body, Arial, sans-serif); resize: vertical; }
+.central .anotar small { font-size: 11px; color: var(--suave); }
+@media (max-width: 860px) { .central .anotar textarea { font-size: 16px; } }

@@ -424,6 +424,11 @@ function Atendimento({
   const [salvando, comecar] = useTransition();
   const [marcando, comecarMarca] = useTransition();
   const [erroMarca, setErroMarca] = useState<string | null>(null);
+  /* O que foi falado por fora, anotado aqui mesmo (10/11): o Rafael já tinha
+     falado com a Isis pelo celular e não achou onde anotar. O caminho era um
+     link pequeno em cima da conversa, que abria um modal com etapa e data. */
+  const [anotando, setAnotando] = useState(false);
+  const [nota, setNota] = useState("");
   const router = useRouter();
   const canal = lead.whatsapp ? "whatsapp" : "instagram";
 
@@ -433,11 +438,14 @@ function Atendimento({
      lead sobe para "Responder agora". "Um áudio" e "ver com o sócio" viram
      o próximo passo para hoje. "Já mandei o preço" é a saída que foi por
      fora do CRM (01/11): sem ela o grupo "Preço no ar" não acha ninguém. */
-  function toque(direcao: Direcao, resumo: string) {
+  function toque(direcao: Direcao, resumo: string, depois?: () => void) {
     setErroMarca(null);
     comecarMarca(async () => {
       const r = await registrarToque(lead.id, { canal, direcao, resumo });
-      if (r.ok) router.refresh();
+      if (r.ok) {
+        depois?.();
+        router.refresh();
+      }
       else setErroMarca("erro" in r ? r.erro : "Não foi possível marcar.");
     });
   }
@@ -555,6 +563,28 @@ function Atendimento({
           <button type="button" className={c.pilula} onClick={() => aoRegistrar("entrada")}>Disse que não, ou depois</button>
         </div>
       )}
+      <div className={c.pedidos}>
+        <span>Eu:</span>
+        <button type="button" className={c.pilula} aria-expanded={anotando} onClick={() => setAnotando((v) => !v)}>Já falei por fora</button>
+        {!lead.preco_em && ativo && <button type="button" className={c.pilula} disabled={marcando} onClick={() => toque("saida", RESUMO_PRECO_A_MAO)}>Já mandei o preço</button>}
+      </div>
+      {anotando && (
+        <form
+          className={c.anotar}
+          onSubmit={(e) => {
+            e.preventDefault();
+            const texto = nota.trim();
+            if (texto) toque("saida", texto, () => { setNota(""); setAnotando(false); });
+          }}
+        >
+          <textarea value={nota} onChange={(e) => setNota(e.target.value)} rows={2} autoFocus required aria-label={`O que você falou com ${lead.nome}`} placeholder="O que você falou: mandei a amostra pelo direct, ela vai olhar à noite" />
+          <div className={c.acoes}>
+            <button type="submit" className={`${c.botao} ${c.primario}`} disabled={marcando || !nota.trim()}>{marcando ? "Anotando…" : "Anotar"}</button>
+            <button type="button" className={c.linkBotao} onClick={() => aoRegistrar("saida")}>Mudar etapa ou data junto</button>
+          </div>
+          <small>Entra na conversa como mensagem sua, e o contato sai de quem espera você.</small>
+        </form>
+      )}
       {erroMarca && <p role="alert" className={c.erroArquivo}>{erroMarca}</p>}
 
       {ativo && (
@@ -599,10 +629,6 @@ function Atendimento({
       <section className={c.historico}>
         <div className={c.tituloSecao}>
           <h3>Conversa</h3>
-          <span>
-            <button type="button" className={c.linkBotao} onClick={() => aoRegistrar("saida")}>Registrar o que foi por fora</button>
-            {!lead.preco_em && ativo && <>{" · "}<button type="button" className={c.linkBotao} disabled={marcando} onClick={() => toque("saida", RESUMO_PRECO_A_MAO)}>Já mandei o preço</button></>}
-          </span>
         </div>
         {falha ? (
           <p role="alert">{falha} <button className={c.linkBotao} type="button" onClick={() => setTentativa((n) => n + 1)}>Tentar novamente</button></p>
