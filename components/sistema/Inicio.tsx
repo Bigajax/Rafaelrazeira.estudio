@@ -184,9 +184,9 @@ export async function Inicio() {
   return (
     <div className={s.tela}>
       <Cabecalho
-        titulo="Hoje"
+        titulo="Visão do estúdio"
         descricao={
-          "Visão do estúdio · " +
+          "O mês, as entregas e as pendências · " +
           new Date(hoje + "T12:00:00Z").toLocaleDateString("pt-BR", {
             day: "numeric",
             month: "long",
@@ -194,8 +194,8 @@ export async function Inicio() {
           })
         }
       >
-        <Link className={s.botao + " " + s.primario} href="/crm?modo=fila">
-          Trabalhar a fila comercial
+        <Link className={s.botao + " " + s.primario} href="/crm">
+          Voltar para a fila de hoje
         </Link>
         <Link className={s.botao} href="/crm/clientes">
           Clientes

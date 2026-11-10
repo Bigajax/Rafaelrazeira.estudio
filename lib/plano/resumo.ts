@@ -48,7 +48,7 @@ export function fonteDaMeta(fonte: Fonte, ano: number, mes: number): { href: str
     case "saldo": return { href: `/crm/financeiro?mes=${periodo}&aba=extrato`, acao: "Conferir resultado" };
     case "fechados": return { href: `/crm/caixa?ano=${ano}`, acao: "Conferir vendas" };
     case "entregas": return { href: "/crm/projetos", acao: "Acompanhar entregas" };
-    case "toques": return { href: "/crm/atendimento", acao: "Abrir atendimento" };
+    case "toques": return { href: "/crm", acao: "Abrir a fila de hoje" };
     case "posts": return { href: "/crm/marketing/resultados", acao: "Conferir publicações" };
     default: return { href: "#rmr", acao: "Lançar medição" };
   }

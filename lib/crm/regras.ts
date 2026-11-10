@@ -878,6 +878,19 @@ function nomeDeGente(nome: string | null, arroba: string): string | null {
    "Fala, {nome}!" vira "Fala!" em vez de "Fala, [nome]!". */
 const SEM_NOME_RE = /,\s*\{nome\}(?=\s*[!?.,])/g;
 
+/* E o nome que ABRE a mensagem (10/11/2026): "{nome}, {saudacao}! atualizei
+   a sua vitrine" saía como "[nome], bom dia! atualizei..." para todo card
+   cujo nome é o @ da loja, que é quase todo lead do anúncio. Estava assim
+   na "Prévia sem resposta" sugerida ao @denisddsstore. Sem nome de gente a
+   abertura cai e a frase começa em maiúscula: "Bom dia! atualizei...". */
+const NOME_NA_ABERTURA_RE = /^\{nome\},\s*(\{saudacao\})?([\s\S])?/;
+const semNome = (conteudo: string) =>
+  conteudo
+    .replace(SEM_NOME_RE, "")
+    .replace(NOME_NA_ABERTURA_RE, (_, saudacao: string | undefined, letra: string | undefined) =>
+      saudacao ? `{Saudacao}${letra ?? ""}` : (letra ?? "").toUpperCase(),
+    );
+
 function valoresDe(lead: DadosTemplate, paraRender: boolean): Record<string, string | null> {
   const arroba = (lead.instagram ?? "").trim().replace(/^@+/, "").replace(/^https?:\/\/(www\.)?instagram\.com\//i, "").replace(/\/.*$/, "");
   const o = lead.oficina ?? null;
@@ -909,7 +922,7 @@ export function aplicarSaudacao(texto: string, base: Date = new Date()): string 
 
 export function renderTemplate(conteudo: string, lead: DadosTemplate, agora?: Date): string {
   const mapa = valoresDe(lead, true);
-  const texto = mapa.nome ? conteudo : conteudo.replace(SEM_NOME_RE, "");
+  const texto = mapa.nome ? conteudo : semNome(conteudo);
   const comDados = texto.replace(VARIAVEIS_RE, (_, chave: string) => {
     const v = mapa[chave];
     return v && v.trim() ? v.trim() : `[${chave}]`;
@@ -920,7 +933,7 @@ export function renderTemplate(conteudo: string, lead: DadosTemplate, agora?: Da
 /** Quais variáveis do texto ficariam sem valor para este lead. */
 export function lacunas(conteudo: string, lead: DadosTemplate): string[] {
   const mapa = valoresDe(lead, false);
-  const texto = mapa.nome ? conteudo : conteudo.replace(SEM_NOME_RE, "");
+  const texto = mapa.nome ? conteudo : semNome(conteudo);
   const achadas = [...texto.matchAll(VARIAVEIS_RE)].map((m) => m[1]);
   return [...new Set(achadas)].filter((c) => !mapa[c] || !String(mapa[c]).trim());
 }

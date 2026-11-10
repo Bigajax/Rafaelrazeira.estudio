@@ -22,10 +22,24 @@
   gap: 12px;
 }
 .central .acoes { justify-content: flex-start; flex-wrap: wrap; gap: 8px; }
-.central .sobretitulo { font-size: 13px; font-weight: 400; color: var(--suave); }
-.central .cabecalho h1 { color: var(--texto); font: 500 32px/1.15 var(--font-titulo), var(--body, Arial, sans-serif); letter-spacing: -.03em; margin: 4px 0 6px; }
+/* O cabeçalho numa linha (10/11): o título, o placar e as ações. Eram ~500px
+   de cabeçalho, abas, contexto e filtros antes do primeiro contato. */
+.central .cabecalho { flex-wrap: wrap; }
+.central .cabecalho > div:first-child { display: flex; align-items: baseline; flex: 1 1 280px; flex-wrap: wrap; gap: 4px 14px; min-width: 0; }
+.central .cabecalho .acoes { flex-wrap: nowrap; }
+.central .cabecalho .botao { white-space: nowrap; }
+@media (max-width: 1100px) { .central .cabecalho .acoes { flex-wrap: wrap; } }
+.central .cabecalho h1 { color: var(--texto); font: 500 28px/1.15 var(--font-titulo), var(--body, Arial, sans-serif); letter-spacing: -.03em; margin: 0; }
+.central .cabecalho p b { color: var(--texto); }
+.central .cabecalho .busca { flex: 0 1 240px; }
+.central .cabecalho .busca input[type="search"] { min-height: 40px; padding-block: 8px; border-radius: 980px; background: #f2f2f0; border-color: transparent; }
+.central .cabecalho .busca input[type="search"]:focus { background: #fff; border-color: var(--texto); }
+/* O rosa é o botão que vende, um por tela (docs/design-estudio.md). */
+.central .botao.vende { background: #e31b62; border-color: #e31b62; color: #fff; }
+.central .botao.vende:hover { background: #b81250; border-color: #b81250; color: #fff; }
+.central .campanha { font-size: 11px; }
 .central .cabecalho h1 > span { color: var(--green, #0c9159); }
-.central .cabecalho p, .central .contexto p { font-size: 12px; line-height: 1.5; color: var(--suave); margin: 0; }
+.central .cabecalho p { font-size: 12px; line-height: 1.5; color: var(--suave); margin: 0; }
 .central .botao {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
   min-height: 40px; padding: 9px 13px; border: 1px solid var(--borda); border-radius: 980px;
@@ -36,45 +50,37 @@
 .central .botao:hover { border-color: var(--texto); }
 .central .primario:hover { background: #000; color: white; }
 .central .botao:disabled { opacity: .6; cursor: wait; }
-.central .abas { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
-.central .abas > button {
-  display: flex; align-items: center; justify-content: space-between; gap: 8px;
-  min-height: 57px; padding: 12px 14px; border: 1px solid var(--borda); border-radius: 14px;
-  background: white; color: #4a4f52; font: 600 12px/1.4 var(--body, Arial, sans-serif); text-align: left; cursor: pointer;
-}
-.central .abas b { display: grid; place-items: center; min-width: 26px; padding: 3px 6px; background: #f2f2f0; color: #4a4f52; border-radius: 980px; font-size: 12px; font-variant-numeric: tabular-nums; }
-.central .abas [aria-pressed="true"] { background: var(--acento); border-color: var(--acento); color: #fff; }
-.central .abas [aria-pressed="true"] b { background: #ffffff29; color: #fff; }
-.central .abas [data-aba="responder"] b { background: #fff0df; color: #8d501a; }
-.central .contexto { align-items: flex-start; }
-.central .contexto h2 { margin: 0 0 4px; font: 700 17px/1.4 var(--body, Arial, sans-serif); color: var(--texto); }
-.central .prioridade { font-size: 10px; padding: 7px 10px; border-radius: 980px; background: #f2f2f0; color: #4a4f52; flex: none; }
-.central .filtros { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
-.central .busca { flex: 1 1 300px; min-width: 0; }
-.central .busca input[type="search"], .central .origem select, .central .formPasso input {
+.central .busca { min-width: 0; }
+.central .busca input[type="search"], .central .formPasso input {
   width: 100%; min-width: 0; min-height: 42px; padding: 10px 12px;
   border: 1px solid var(--borda); border-radius: 12px; background: white;
   color: var(--texto); font: 400 13px/1.4 var(--body, Arial, sans-serif); box-shadow: none;
 }
-.central .origem { display: flex; align-items: center; gap: 8px; min-width: 0; }
-.central .origem > span { font-size: 12px; color: var(--suave); }
-.central .origem select { max-width: 260px; }
 .central .mesa { display: grid; grid-template-columns: minmax(290px, .8fr) minmax(0, 1.7fr); gap: 18px; align-items: start; }
 .central .fila { min-width: 0; border: 1px solid var(--borda); border-radius: 16px; background: #fff; overflow: hidden; }
-.central .filaCabecalho { padding: 14px; border-bottom: 1px solid #e6e6e3; font-size: 11px; color: var(--suave); }
+.central .filaCabecalho { padding: 12px 14px; border-bottom: 1px solid #e6e6e3; font-size: 12px; color: var(--suave); }
 .central .filaCabecalho > b { color: var(--texto); }
-.central .fila > ul { list-style: none; margin: 0; padding: 5px; max-height: max(440px, calc(100dvh - 340px)); overflow-y: auto; scrollbar-width: thin; scrollbar-color: #cfcfcb transparent; }
-.central .contato { display: grid; width: 100%; min-width: 0; text-align: left; gap: 7px; padding: 14px; border: 1px solid transparent; border-bottom-color: #eeeeec; border-radius: 12px; background: #fff; color: var(--texto); cursor: pointer; font-family: inherit; }
+.central .rolagem { max-height: max(420px, calc(100dvh - 190px)); overflow-y: auto; scrollbar-width: thin; scrollbar-color: #cfcfcb transparent; }
+.central .fila ul { list-style: none; margin: 0; padding: 4px 5px 8px; }
+/* O grupo: o nome preso no alto enquanto a lista dele rola. */
+.central .grupo h2 { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0; padding: 11px 14px 8px; background: #fff; border-bottom: 1px solid #eeeeec; font: 600 12px/1.4 var(--body, Arial, sans-serif); color: var(--suave); }
+.central .grupo h2 b { min-width: 24px; padding: 2px 7px; border-radius: 980px; background: #f2f2f0; color: #4a4f52; font-size: 11px; text-align: center; font-variant-numeric: tabular-nums; }
+.central .grupo:is([data-grupo="responder"], [data-grupo="novos"]) h2 { color: var(--texto); }
+.central .grupo:is([data-grupo="responder"], [data-grupo="novos"]) h2 b { background: #fbe9e4; color: #a8331f; }
+.central .fora { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 12px 14px; border: 0; border-top: 1px solid #e6e6e3; background: #f6f6f4; color: var(--suave); font: 600 12px/1.4 var(--body, Arial, sans-serif); cursor: pointer; }
+.central .fora:hover { color: var(--texto); }
+.central .fora b { font-variant-numeric: tabular-nums; }
+.central .contato { display: grid; width: 100%; min-width: 0; text-align: left; gap: 2px; padding: 10px 12px; border: 1px solid transparent; border-radius: 12px; background: #fff; color: var(--texto); cursor: pointer; font-family: inherit; }
+.central .contato > b { font-size: 14px; line-height: 1.4; overflow-wrap: anywhere; }
+.central .motivo { font-size: 11px; line-height: 1.5; color: var(--suave); }
 .central .contato:hover { background: #f6f6f4; }
 .central .contato[aria-pressed="true"] { background: #f2f2f0; border-color: #cfcfcb; box-shadow: inset 3px 0 var(--acento); }
 .central .contatoTopo { align-items: flex-start; gap: 8px; }
 .central .contatoTopo > b { font-size: 14px; line-height: 1.4; overflow-wrap: anywhere; }
 .central .etapa { display: inline-block; background: #f2f2f0; color: #4a4f52; border-radius: 980px; padding: 3px 6px; font-size: 10px; font-weight: 600; line-height: 1.5; }
 .central .contatoTopo .etapa { flex: none; }
-.central .contatoEmpresa { font-size: 12px; color: var(--suave); line-height: 1.5; overflow-wrap: anywhere; }
-.central .contatoOrigem { font-size: 10px; color: var(--suave); }
-.central .contatoRodape { font-size: 11px; color: var(--suave); }
-.central .espera { color: #975121; font-weight: 600; }
+.central .contatoEmpresa { font-size: 12px; color: var(--suave); line-height: 1.5; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.central .espera { font-size: 11px; line-height: 1.5; color: #a8331f; font-weight: 600; }
 .central .detalhe { min-width: 0; padding: 23px; border: 1px solid var(--borda); border-radius: 16px; background: white; scroll-margin-top: 12px; }
 .central .detalheCabecalho { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; flex-wrap: wrap; }
 .central .identificacao { display: flex; align-items: flex-start; gap: 12px; min-width: 0; }
@@ -89,7 +95,7 @@
 .central .acoesAtendimento { margin-bottom: 18px; }
 .central .acoesAtendimento > p { margin: 8px 0 0; color: var(--suave); font-size: 11px; line-height: 1.6; }
 .central .mensagem { padding: 14px 16px; border-radius: 8px; background: #edf5fa; border-left: 3px solid #6a9cb6; margin-bottom: 14px; }
-.central .mensagem > span { font-size: 9px; color: #466777; font-weight: 600; }
+.central .mensagem > span { font-size: 11px; color: #466777; font-weight: 600; }
 .central .mensagem > p, .central .notas p { margin: 7px 0 0; font-size: 13px; line-height: 1.65; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--texto); }
 .central .notas { border: 1px solid var(--borda); padding: 12px 14px; border-radius: 12px; margin-bottom: 16px; }
 .central .notas summary { cursor: pointer; font-size: 12px; font-weight: 600; color: #4a4f52; }
@@ -97,7 +103,7 @@
 .central .tituloSecao { align-items: baseline; flex-wrap: wrap; gap: 6px 12px; }
 .central .tituloSecao h3 { margin: 0; font: 700 14px/1.5 var(--body, Arial, sans-serif); color: var(--texto); }
 .central .proximoPasso > p { font-size: 13px; margin: 9px 0 6px; line-height: 1.6; color: var(--texto); overflow-wrap: anywhere; }
-.central .prazo { font-size: 11px; color: #6b7072; }
+.central .prazo { display: block; margin-top: 4px; font-size: 11px; color: #6b7072; }
 .central .prazo[data-atrasado="true"] { color: #9a4e25; font-weight: 600; }
 .central .proximoPasso > small { display: block; font-size: 10px; line-height: 1.6; color: var(--suave); margin-top: 10px; }
 .central .formPasso { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 12px; margin-top: 12px; }
@@ -117,31 +123,24 @@
 .central .semSelecao { padding-block: 60px; }
 .central .semSelecao > span { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; margin: auto; color: #347452; background: #e6f3e9; font-size: 22px; }
 .central .semSelecao h3 { font: 500 21px/1.3 var(--font-titulo), var(--body, Arial, sans-serif); color: var(--texto); margin: 14px 0 6px; }
-.central .prospeccao { min-width: 0; }
 .central .voltarLista { display: none; }
-.central .prospeccao > div { min-height: 650px; height: auto; }
 .central .srOnly { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
 .central :is(button, a, select, input, summary):focus-visible { outline: 2px solid var(--acento); outline-offset: 3px; }
 @media (min-width: 861px) { .central .fila { position: sticky; top: 14px; } }
 @media (max-width: 1100px) {
   .central .mesa { grid-template-columns: minmax(260px, .9fr) minmax(0, 1.5fr); gap: 12px; }
-  .central .abas > button { padding: 10px; font-size: 11px; }
   .central .detalhe { padding: 18px; }
-  .central .prioridade { display: none; }
 }
 @media (max-width: 860px) {
   :global(main):has(.central) { padding-bottom: calc(104px + env(safe-area-inset-bottom)); }
   .central { gap: 14px; }
-  .central .cabecalho { align-items: flex-start; flex-wrap: wrap; }
-  .central .cabecalho h1 { font-size: 28px; }
-  .central .abas { display: flex; overflow-x: auto; gap: 7px; padding-bottom: 5px; scrollbar-width: thin; }
-  .central .abas > button { flex: 0 0 auto; min-height: 45px; padding: 9px 12px; font-size: 12px; }
-  .central .busca { flex-basis: 100%; }
-  .central .origem { width: 100%; }
-  .central .origem select { max-width: none; flex: 1; }
-  .central .busca input[type="search"], .central .origem select, .central .formPasso input { font-size: 16px; }
+  .central .cabecalho { align-items: flex-start; }
+  .central .cabecalho h1 { font-size: 26px; }
+  .central .cabecalho .acoes { width: 100%; }
+  .central .cabecalho .busca { flex: 1 1 100%; }
+  .central .busca input[type="search"], .central .formPasso input { font-size: 16px; }
   .central .mesa { grid-template-columns: minmax(0, 1fr); }
-  .central .fila > ul { max-height: 330px; }
+  .central .rolagem { max-height: 380px; }
   .central .detalhe { padding: 16px; }
   .central .voltarLista { display: inline-block; margin-bottom: 16px; }
   .central .identificacao h2 { font-size: 23px; }

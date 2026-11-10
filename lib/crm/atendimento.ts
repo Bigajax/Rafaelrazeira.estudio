@@ -125,6 +125,126 @@ export function filasAtendimento(leads: LeadPainel[], hoje: string) {
   } satisfies Record<AbaAtendimento, LeadPainel[]>;
 }
 
+/* ============================================================
+   A FILA DA VEZ (10/11/2026)
+
+   As seis abas viraram uma fila só, na ordem do dinheiro. A revisão de
+   10/11 mediu o banco: 574 leads ativos e NENHUM com retorno para hoje ou
+   para a frente (310 vencidos, 264 sem data). Com tudo atrasado, "atrasado"
+   não separava ninguém, e as abas tinham 273, 298 e 351 nomes. Das 98
+   pessoas que viram o preço, 45 nunca receberam mais nada.
+
+   Por isso a fila NÃO confia na data marcada à mão para pôr alguém na
+   frente: ela sai do que aconteceu (quem escreveu por último, há quantos
+   dias o preço saiu). A data marcada só serve para TIRAR alguém da fila:
+   retorno no futuro é o Rafael dizendo "ainda não".
+
+   Quatro grupos, e fora deles ninguém aparece:
+     responder .. escreveu por último, pediu para colocar no ar, pediu áudio
+                  ou resumo pro sócio, ou tem parcela para cobrar
+     novos ...... procurou o estúdio e ainda não ouviu de mim, até 14 dias
+     preco ...... viu o preço e ficou em silêncio: UMA volta aos 3 dias e,
+                  aos 10, encerrar ("Não rolou"). A regra da casa proíbe
+                  cobranças em sequência depois do preço (cofre,
+                  abordagem-whatsapp-previas, 01/11), então não há 2ª volta
+     amostra .... amostra entregue, sem preço e sem reação há 3 dias, ou
+                  na lista da Black sem ter recebido a oferta
+
+   A prospecção (garimpo) fica de fora de propósito: 392 leads e 2 ganhos,
+   contra 7 de 9 vindos do anúncio. Ela se trabalha pelo Funil.
+   O que nunca fazer: devolver um grupo "todo mundo que tem data vencida".
+   Foi ele que encheu as abas.
+   ============================================================ */
+export const DIAS_NOVO = 14;
+export const DIAS_PARA_VOLTAR = 3;
+export const DIAS_PARA_ENCERRAR = 10;
+
+/* A volta depois do preço NÃO é um toque de preço: se contasse, cada volta
+   reiniciava o relógio e o lead nunca chegava ao "encerrar". Os títulos dos
+   dois templates novos começam assim; a "Proposta sem resposta", que já
+   existia, é a volta de quem recebeu proposta. */
+export const TITULO_VOLTA_DO_PRECO = "Depois do preço:";
+export const TITULO_VOLTA_DA_BLACK = "Depois da Black:";
+export const ehVoltaDoPreco = (resumo: string | null | undefined) =>
+  Boolean(resumo && [TITULO_VOLTA_DO_PRECO, TITULO_VOLTA_DA_BLACK, "Proposta sem resposta"].some((p) => resumo.startsWith(p)));
+
+/* A resposta marcada num clique (10/11): com o leitor do WhatsApp desligado
+   desde 01/10, a semana de 130 saídas tinha 4 entradas registradas, porque
+   registrar pedia um modal. */
+export const RESUMO_RESPONDEU = "Respondeu (marcado à mão)";
+
+export const GRUPOS_DA_FILA = [
+  { id: "responder", nome: "Responder agora" },
+  { id: "novos", nome: "Chegou e não ouviu de mim" },
+  { id: "preco", nome: "Preço no ar" },
+  { id: "amostra", nome: "Amostra sem reação" },
+] as const;
+export type GrupoDaFila = (typeof GRUPOS_DA_FILA)[number]["id"];
+export type ItemDaFila = { lead: LeadPainel; grupo: GrupoDaFila; encerrar: boolean };
+
+type CamposDaEspera = Pick<LeadPainel, "estagio" | "origem" | "toques" | "toques_entrada" | "saidas_seguidas" | "created_at" | "ultimo_toque_em">;
+const escreveuPorUltimo = (l: CamposDaEspera) => ehAtivo(l.estagio) && l.toques !== l.toques_entrada && l.toques_entrada > 0 && l.saidas_seguidas === 0;
+const chegouAgora = (l: CamposDaEspera, hoje: string) =>
+  ehNoPipeline(l.estagio) && l.toques === l.toques_entrada && l.origem !== "prospeccao" && diasDesde(l.ultimo_toque_em ?? l.created_at, hoje) <= DIAS_NOVO;
+
+/** Quem está esperando o Rafael falar. É o número do trilho, e por isso só
+    usa o que a view `crm_leads_painel` já traz, sem ler as interações. */
+export const esperaPorMim = (l: CamposDaEspera, hoje: string) => escreveuPorUltimo(l) || chegouAgora(l, hoje);
+
+/* Há quantos dias o preço saiu. Quem está em Proposta ou Negociação sem
+   toque de preço registrado conta da entrada na etapa. */
+export const diasDoPreco = (l: LeadPainel, hoje: string) => diasDesde(l.preco_em ?? l.entrou_no_estagio_em, hoje);
+
+export function filaDaVez(leads: LeadPainel[], hoje: string) {
+  const todos = [...new Map(leads.map((l) => [l.id, l])).values()];
+  const desempate = (a: LeadPainel, b: LeadPainel) => a.id.localeCompare(b.id);
+  const itens: ItemDaFila[] = [];
+  const usados = new Set<string>();
+  const por = (grupo: GrupoDaFila, lista: LeadPainel[], encerrar: (l: LeadPainel) => boolean = () => false) => {
+    for (const l of lista) {
+      if (usados.has(l.id)) continue;
+      usados.add(l.id);
+      itens.push({ lead: l, grupo, encerrar: encerrar(l) });
+    }
+  };
+  const adiado = (l: LeadPainel) => Boolean(l.proxima_acao_em && l.proxima_acao_em > hoje);
+  const peso = (l: LeadPainel) => (l.quer_no_ar ? 0 : l.cobranca ? 1 : 2);
+
+  por(
+    "responder",
+    todos
+      .filter((l) => l.quer_no_ar || escreveuPorUltimo(l) || Boolean(l.cobranca && l.cobranca.quando <= hoje) || (ehAtivo(l.estagio) && Boolean(marcaDe(l)) && !adiado(l)))
+      .sort((a, b) => peso(a) - peso(b) || momentoDoContato(a).localeCompare(momentoDoContato(b)) || desempate(a, b)),
+  );
+  // Quem acabou de chegar está quente; a espera antiga já esfriou (20/10/2026).
+  por("novos", todos.filter((l) => chegouAgora(l, hoje)).sort((a, b) => momentoDoContato(b).localeCompare(momentoDoContato(a)) || desempate(a, b)));
+
+  const ativos = todos.filter((l) => ehNoPipeline(l.estagio) && !usados.has(l.id));
+  let aguardando = 0;
+
+  /* Quem está na lista da Black e ainda não recebeu a oferta tem uma
+     mensagem por mandar, não um silêncio para encerrar. A Vallox viu o preço
+     em 14/10, entrou na lista em 03/11 e saía como "encerrar" (10/11). */
+  const blackPorMandar = (l: LeadPainel) => naBlack(l) && !l.black_em;
+  const comPreco = ativos.filter((l) => viuOPreco(l) && (l.saidas_seguidas > 0 || blackPorMandar(l)));
+  const deveEncerrar = (l: LeadPainel) => !blackPorMandar(l) && diasDoPreco(l, hoje) >= DIAS_PARA_ENCERRAR;
+  const jaVoltei = (l: LeadPainel) => Boolean(l.preco_em && l.ultimo_toque_em && Date.parse(l.ultimo_toque_em) - Date.parse(l.preco_em) > 60000);
+  const naVezDoPreco = comPreco.filter((l) => !adiado(l) && (blackPorMandar(l) || deveEncerrar(l) || (!jaVoltei(l) && diasDoPreco(l, hoje) >= DIAS_PARA_VOLTAR)));
+  aguardando += comPreco.length - naVezDoPreco.length;
+  // A volta primeiro, o preço mais recente no topo; quem é para encerrar fica no fim.
+  por("preco", naVezDoPreco.sort((a, b) => Number(deveEncerrar(a)) - Number(deveEncerrar(b)) || (b.preco_em ?? "").localeCompare(a.preco_em ?? "") || desempate(a, b)), deveEncerrar);
+
+  const comAmostra = ativos.filter((l) => !usados.has(l.id) && !viuOPreco(l) && (blackPorMandar(l) || ((Boolean(l.previa_url) || l.estagio === "previa") && l.saidas_seguidas > 0)));
+  const paradoDemais = (l: LeadPainel) => !blackPorMandar(l) && diasDesde(l.ultimo_toque_em ?? l.created_at, hoje) > DIAS_PARADO;
+  const naVezDaAmostra = comAmostra.filter((l) => !adiado(l) && (blackPorMandar(l) || diasDesde(l.ultimo_toque_em ?? l.created_at, hoje) >= DIAS_PARA_VOLTAR));
+  aguardando += comAmostra.length - naVezDaAmostra.length;
+  por("amostra", naVezDaAmostra.sort((a, b) => Number(paradoDemais(a)) - Number(paradoDemais(b)) || (b.ultimo_toque_em ?? "").localeCompare(a.ultimo_toque_em ?? "") || desempate(a, b)), paradoDemais);
+
+  /* Fora da fila: todo o resto do funil, alcançado pela busca. */
+  const fora = todos.filter((l) => ehNoPipeline(l.estagio) && !usados.has(l.id)).sort((a, b) => momentoDoContato(b).localeCompare(momentoDoContato(a)) || desempate(a, b));
+  return { itens, fora, aguardando };
+}
+
 export function tempoDeEspera(instante: string, agora: number): string {
   const minutos = Math.max(0, Math.floor((agora - Date.parse(instante)) / 60000));
   if (!Number.isFinite(minutos)) return "Horário indisponível";

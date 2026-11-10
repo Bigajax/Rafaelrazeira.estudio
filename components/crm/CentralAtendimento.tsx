@@ -1,108 +1,192 @@
 "use client";
 
+/* ============================================================
+   O HOJE: UMA FILA SÓ (10/11/2026)
+
+   Até aqui eram seis abas (Novos, Preciso responder, Retornos, Prospecção,
+   Viu o preço, Black), com 273, 5, 298, 351, 97 e 107 nomes. A única que
+   era dinheiro, "Preciso responder", tinha o mesmo peso das outras, e o
+   cabeçalho, as abas, o contexto, o aviso e os filtros somavam uns 500px
+   antes do primeiro contato numa tela de 700.
+
+   Agora a tela é a fila da vez, em quatro grupos na ordem do dinheiro
+   (`filaDaVez` em lib/crm/atendimento.ts, onde está o porquê de cada um),
+   com o cabeçalho numa linha. O resto do funil fica atrás de "Fora da
+   fila" e da busca, que procura em todos. A prospecção saiu daqui por
+   decisão do Rafael: ela se trabalha pelo Funil.
+
+   O que nunca fazer: devolver uma aba por critério. Cada aba nova vira uma
+   fila que ninguém zera.
+   ============================================================ */
+
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { definirPasso, registrarToque } from "@/app/(pt)/crm/acoes";
 import { arquivarParados, desfazerArquivo, lerHistoricoAtendimento, type ComoEstava } from "@/app/(pt)/crm/acoes-atendimento";
-import { ABAS_ATENDIMENTO, DIAS_PARADO, filasAtendimento, MARCAS, marcaDe, novoContato, parado, precisaResponder, naBlack, RESUMO_PRECO_A_MAO, RESUMO_QUER_NO_AR, TEMPLATE_BLACK_AMOSTRA, TEMPLATE_BLACK_VIU, TEMPLATE_QUER_NO_AR, tempoDeEspera, type AbaAtendimento, type HistoricoAtendimento } from "@/lib/crm/atendimento";
+import {
+  DIAS_PARADO,
+  DIAS_PARA_ENCERRAR,
+  GRUPOS_DA_FILA,
+  MARCAS,
+  RESUMO_PRECO_A_MAO,
+  RESUMO_QUER_NO_AR,
+  RESUMO_RESPONDEU,
+  TEMPLATE_BLACK_AMOSTRA,
+  TEMPLATE_BLACK_VIU,
+  TEMPLATE_QUER_NO_AR,
+  TITULO_VOLTA_DA_BLACK,
+  TITULO_VOLTA_DO_PRECO,
+  diasDoPreco,
+  filaDaVez,
+  marcaDe,
+  naBlack,
+  novoContato,
+  parado,
+  precisaResponder,
+  tempoDeEspera,
+  type GrupoDaFila,
+  type HistoricoAtendimento,
+} from "@/lib/crm/atendimento";
+import type { painelHoje } from "@/lib/crm/dados";
 import { arrobaDe, dataCurta, diaEmSP, diasDesde, dinheiro, linkWhatsapp, momentoDoContato, somarDias } from "@/lib/crm/regras";
-import { ehAtivo, NOME_CANAL, NOME_ESTAGIO, NOME_ORIGEM, NOME_TIPO, ORIGENS, type Direcao, type LeadPainel, type Origem } from "@/lib/crm/tipos";
-import { Hoje } from "./Hoje";
+import { ehAtivo, NOME_CANAL, NOME_ESTAGIO, NOME_ORIGEM, NOME_TIPO, type Direcao, type LeadPainel, type Template } from "@/lib/crm/tipos";
 import { ModalNovoLead } from "./ModalNovoLead";
 import { ModalMensagem } from "./ModalMensagem";
 import { ModalToque } from "./ModalToque";
 import c from "./atendimento.module.css";
 
-type Props = React.ComponentProps<typeof Hoje>;
-const normalizar = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR");
+type Props = { painel: Awaited<ReturnType<typeof painelHoje>>; templates: Template[] };
+/* Uma linha da lista. `grupo` nulo é quem veio da busca ou do "Fora da fila". */
+type Linha = { lead: LeadPainel; grupo: GrupoDaFila | null; encerrar: boolean };
+
+const normalizar = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLocaleLowerCase("pt-BR");
 const hora = (s: string) => {
   const d = new Date(s);
-  return Number.isNaN(d.getTime()) ? "Horário indisponível" : d.toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+  return Number.isNaN(d.getTime())
+    ? "Horário indisponível"
+    : d.toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
 };
+const dias = (n: number) => `${n} ${n === 1 ? "dia" : "dias"}`;
+const blackPorMandar = (l: LeadPainel) => naBlack(l) && !l.black_em;
 
-/* "Preço há 3 dias, sem resposta": quanto tempo o valor está no ar e se a
-   pessoa voltou a falar depois dele. Quem só está no estágio Proposta, sem
-   toque de preço registrado, mostra o estágio. */
-function precoHa(l: LeadPainel, hoje: string) {
-  if (!l.preco_em) return NOME_ESTAGIO[l.estagio];
-  const d = diasDesde(l.preco_em, hoje);
-  const quando = d === 0 ? "Preço hoje" : `Preço há ${d} ${d === 1 ? "dia" : "dias"}`;
-  return l.saidas_seguidas > 0 ? `${quando}, sem resposta` : quando;
+/* O que a linha diz, numa frase: por que esta pessoa está na fila agora. */
+function motivoDe({ lead: l, grupo, encerrar }: Linha, hoje: string, agora: number | null): { texto: string; alto: boolean } {
+  if (grupo === "responder") {
+    if (l.quer_no_ar) return { texto: "Quer colocar no ar", alto: true };
+    if (l.cobranca && l.cobranca.quando <= hoje) return { texto: `A receber ${dinheiro(l.cobranca.saldo)}`, alto: true };
+    if (precisaResponder(l)) return { texto: agora ? `Escreveu, ${tempoDeEspera(momentoDoContato(l), agora)}` : "Escreveu por último", alto: true };
+    return { texto: marcaDe(l)?.nome ?? "Sua vez", alto: true };
+  }
+  if (grupo === "novos") return { texto: agora ? tempoDeEspera(momentoDoContato(l), agora) : `Desde ${hora(momentoDoContato(l))}`, alto: true };
+  if (grupo === "preco") {
+    if (blackPorMandar(l)) return { texto: "Mandar a Black", alto: false };
+    const d = diasDoPreco(l, hoje);
+    if (encerrar) return { texto: `Sem resposta há ${dias(d)}: encerrar`, alto: false };
+    return { texto: `${l.black_em ? "Black" : "Preço"} há ${dias(d)}, sem resposta`, alto: false };
+  }
+  if (grupo === "amostra") {
+    if (blackPorMandar(l)) return { texto: "Mandar a Black", alto: false };
+    const d = diasDesde(l.ultimo_toque_em ?? l.created_at, hoje);
+    return { texto: encerrar ? `Parada há ${dias(d)}: encerrar` : `Amostra há ${dias(d)}, sem reação`, alto: false };
+  }
+  return { texto: `${NOME_ESTAGIO[l.estagio]} · ${l.proxima_acao_em ? `retorno ${dataCurta(l.proxima_acao_em)}` : "sem retorno marcado"}`, alto: false };
 }
 
-/* O template que o "Mandar mensagem" abre já escolhido: o do botão da
-   amostra para quem pediu para colocar no ar, o resumo para quem vai ver
-   com o sócio. Sem pedido, o modal decide pela etapa e pela escada. */
-/* "Black há 3 dias, sem resposta", como o precoHa; quem ainda não recebeu
-   mostra o que falta fazer. */
-function blackHa(l: LeadPainel, hoje: string) {
-  if (!l.black_em) return "Mandar a Black";
-  const d = diasDesde(l.black_em, hoje);
-  const quando = d === 0 ? "Black mandada hoje" : `Black há ${d} ${d === 1 ? "dia" : "dias"}`;
-  return l.saidas_seguidas > 0 ? `${quando}, sem resposta` : quando;
-}
-
-function sugestaoDe(l: LeadPainel) {
+/* O template que o "Mandar mensagem" abre já escolhido. Sem pedido, o modal
+   decide pela etapa e pela escada do silêncio. */
+function sugestaoDe({ lead: l, grupo, encerrar }: Linha, hoje: string) {
   if (l.quer_no_ar) return { titulo: TEMPLATE_QUER_NO_AR, porque: "Pediu para colocar no ar: responda com o Pix da entrada" };
   /* O preço que saiu por fora do CRM não tem toque: a lista da Black traz
      "(já viu o preço)" no passo, conferido no WhatsApp em 03/11. */
-  if (naBlack(l) && !l.black_em) return l.preco_em || l.proximo_passo?.includes("já viu o preço")
-    ? { titulo: TEMPLATE_BLACK_VIU, porque: "Na lista da Black e já viu o preço: a condição de R$ 799 até 30/11" }
-    : { titulo: TEMPLATE_BLACK_AMOSTRA, porque: "Na lista da Black, só com a amostra: o preço pela primeira vez, já com a Black" };
+  if (blackPorMandar(l))
+    return l.preco_em || l.proximo_passo?.includes("já viu o preço")
+      ? { titulo: TEMPLATE_BLACK_VIU, porque: "Na lista da Black e já viu o preço: a condição de R$ 799 até 30/11" }
+      : { titulo: TEMPLATE_BLACK_AMOSTRA, porque: "Na lista da Black, só com a amostra: o preço pela primeira vez, já com a Black" };
   const marca = marcaDe(l);
-  return marca?.template ? { titulo: marca.template, porque: `${marca.nome}: o resumo pronto pra encaminhar` } : undefined;
+  if (marca?.template) return { titulo: marca.template, porque: `${marca.nome}: o resumo pronto pra encaminhar` };
+  /* A volta depois do preço (10/11). Quem está em Proposta ou Negociação
+     fica com a "Proposta sem resposta", que a etapa já sugere. */
+  if (grupo === "preco" && !encerrar && !["proposta", "negociacao"].includes(l.estagio)) {
+    const d = dias(diasDoPreco(l, hoje));
+    return l.black_em
+      ? { titulo: TITULO_VOLTA_DA_BLACK, porque: `Recebeu a Black há ${d} e não respondeu: uma volta só, com a saída aberta` }
+      : { titulo: TITULO_VOLTA_DO_PRECO, porque: `Viu o preço há ${d} e não respondeu: uma volta só, com a saída aberta` };
+  }
+  return undefined;
 }
 
-export function CentralAtendimento({ painel, templates, posts = [] }: Props) {
+export function CentralAtendimento({ painel, templates }: Props) {
   const router = useRouter();
-  const [aba, setAba] = useState<AbaAtendimento>("novos");
   const [busca, setBusca] = useState("");
-  const [origem, setOrigem] = useState<Origem | "">("");
+  const [verFora, setVerFora] = useState(false);
   const [selecionado, setSelecionado] = useState<string | null>(null);
   const [novo, setNovo] = useState(false);
   const [registro, setRegistro] = useState<{ lead: LeadPainel; direcao: Direcao } | null>(null);
-  /* O "Mandar mensagem" da ficha, aqui mesmo (01/11): o Rafael abria a ficha
-     só para chegar nele. Junto vai o próximo da fila, para onde o painel
-     anda quando a mensagem sai. */
+  /* O "Mandar mensagem" abre aqui mesmo (01/11): o Rafael abria a ficha só
+     para chegar nele. Junto vai o próximo da fila, para onde a tela anda
+     quando a mensagem sai. */
   const [mensagem, setMensagem] = useState<{ lead: LeadPainel; proximo: string | null; sugestao?: { titulo: string; porque: string } } | null>(null);
   const [agora, setAgora] = useState<number | null>(null);
-  /* Arquivar os parados: primeiro a lista à vista, depois o clique, e o
-     Desfazer fica na tela com o estado de antes de cada um. */
+  /* Arquivar: primeiro a lista à vista, depois o clique, e o Desfazer fica
+     na tela com o estado de antes de cada um. */
   const [revisando, setRevisando] = useState(false);
   const [arquivados, setArquivados] = useState<ComoEstava[] | null>(null);
   const [erroArquivo, setErroArquivo] = useState<string | null>(null);
   const [arquivando, comecarArquivo] = useTransition();
   const detalheRef = useRef<HTMLElement>(null);
   const filaRef = useRef<HTMLElement>(null);
-  const contatos = painel.contatos;
-  const filas = useMemo(() => filasAtendimento(contatos, painel.hoje), [contatos, painel.hoje]);
-  const descricao = ABAS_ATENDIMENTO.find((a) => a.id === aba)!;
-  const lista = useMemo(() => filas[aba].filter((l) => {
-    if (origem && l.origem !== origem) return false;
-    const texto = normalizar([l.nome, l.empresa, l.nicho, l.cidade, l.email, l.instagram, l.whatsapp].filter(Boolean).join(" "));
-    return !busca.trim() || texto.includes(normalizar(busca.trim())) || (busca.replace(/\D/g, "").length >= 5 && (l.whatsapp ?? "").replace(/\D/g, "").includes(busca.replace(/\D/g, "")));
-  }), [filas, aba, origem, busca]);
-  const atual = lista.find((l) => l.id === selecionado) ?? lista[0] ?? null;
-  const prospeccao = useMemo(() => {
-    const filtrar = (ls: LeadPainel[]) => ls.filter((l) => l.origem === "prospeccao");
-    return { ...painel, atrasados: filtrar(painel.atrasados), paraHoje: filtrar(painel.paraHoje), semPasso: filtrar(painel.semPasso), riscados: filtrar(painel.riscados), amostras: filtrar(painel.amostras) };
-  }, [painel]);
+
+  const hoje = painel.hoje;
+  const fila = useMemo(() => filaDaVez(painel.contatos, hoje), [painel.contatos, hoje]);
+  const termo = busca.trim();
+  /* A busca procura em TODOS, não só na fila: é por ela que se chega em
+     quem ficou de fora. */
+  const linhas: Linha[] = useMemo(() => {
+    if (termo) {
+      const alvo = normalizar(termo);
+      const numero = termo.replace(/\D/g, "");
+      const naFila = new Map(fila.itens.map((i) => [i.lead.id, i]));
+      return [...new Map(painel.contatos.map((l) => [l.id, l])).values()]
+        .filter((l) => {
+          const texto = normalizar([l.nome, l.empresa, l.nicho, l.cidade, l.email, l.instagram, l.whatsapp].filter(Boolean).join(" "));
+          return texto.includes(alvo) || (numero.length >= 5 && (l.whatsapp ?? "").replace(/\D/g, "").includes(numero));
+        })
+        .map((l) => ({ lead: l, grupo: null, encerrar: naFila.get(l.id)?.encerrar ?? false }));
+    }
+    if (verFora) return fila.fora.map((l) => ({ lead: l, grupo: null, encerrar: false }));
+    return fila.itens;
+  }, [termo, verFora, fila, painel.contatos]);
+  const atual = linhas.find((i) => i.lead.id === selecionado) ?? linhas[0] ?? null;
+  const agrupada = !termo && !verFora;
 
   useEffect(() => {
-    const atualizar = () => { setAgora(Date.now()); if (document.visibilityState === "visible") router.refresh(); };
+    const atualizar = () => {
+      setAgora(Date.now());
+      if (document.visibilityState === "visible") router.refresh();
+    };
     setAgora(Date.now());
     const timer = window.setInterval(atualizar, 60000);
     document.addEventListener("visibilitychange", atualizar);
-    return () => { clearInterval(timer); document.removeEventListener("visibilitychange", atualizar); };
+    return () => {
+      clearInterval(timer);
+      document.removeEventListener("visibilitychange", atualizar);
+    };
   }, [router]);
 
-  const parados = useMemo(() => aba === "prospeccao" || aba === "black" ? [] : filas[aba].filter((l) => parado(l, painel.hoje)), [filas, aba, painel.hoje]);
-  function arquivar() {
+  /* Os parados de fora da fila. A prospecção não entra: o Rafael decidiu em
+     10/11 tirá-la da tela do dia sem arquivar nada. */
+  const parados = useMemo(() => (verFora ? fila.fora.filter((l) => l.origem !== "prospeccao" && parado(l, hoje)) : []), [verFora, fila.fora, hoje]);
+  function arquivar(ids: string[], proximo: string | null = null) {
     setErroArquivo(null);
     comecarArquivo(async () => {
-      const r = await arquivarParados(parados.map((l) => l.id));
-      if (r.ok) { setArquivados(r.antes); setRevisando(false); setSelecionado(null); router.refresh(); } else setErroArquivo(r.erro);
+      const r = await arquivarParados(ids);
+      if (r.ok) {
+        setArquivados(r.antes);
+        setRevisando(false);
+        setSelecionado(proximo);
+        router.refresh();
+      } else setErroArquivo(r.erro);
     });
   }
   function desfazer() {
@@ -110,70 +194,206 @@ export function CentralAtendimento({ painel, templates, posts = [] }: Props) {
     setErroArquivo(null);
     comecarArquivo(async () => {
       const r = await desfazerArquivo(arquivados);
-      if (r.ok) { setArquivados(null); router.refresh(); } else setErroArquivo(r.erro);
+      if (r.ok) {
+        setArquivados(null);
+        router.refresh();
+      } else setErroArquivo(r.erro);
     });
   }
-
-  function trocarAba(id: AbaAtendimento) { setAba(id); setBusca(""); setOrigem(""); setSelecionado(null); setRevisando(false); }
+  const proximoDe = (id: string) => {
+    const i = linhas.findIndex((x) => x.lead.id === id);
+    return (linhas[i + 1] ?? linhas[i - 1])?.lead.id ?? null;
+  };
   function escolher(id: string) {
     setSelecionado(id);
     if (window.matchMedia("(max-width: 860px)").matches) {
-      requestAnimationFrame(() => { detalheRef.current?.scrollIntoView({ block: "start", behavior: "instant" }); detalheRef.current?.focus({ preventScroll: true }); });
+      requestAnimationFrame(() => {
+        detalheRef.current?.scrollIntoView({ block: "start", behavior: "instant" });
+        detalheRef.current?.focus({ preventScroll: true });
+      });
     }
   }
+
+  const linha = (i: Linha) => {
+    const l = i.lead;
+    const m = motivoDe(i, hoje, agora);
+    const contexto = [l.empresa !== l.nome ? l.empresa : null, l.nicho].filter(Boolean).join(" · ") || NOME_ORIGEM[l.origem];
+    return (
+      <li key={l.id}>
+        <button type="button" className={c.contato} data-contato={l.id} aria-pressed={atual?.lead.id === l.id} onClick={() => escolher(l.id)}>
+          <b>{l.nome}</b>
+          <span className={c.contatoEmpresa}>{contexto}</span>
+          <span className={m.alto ? c.espera : c.motivo}>{m.texto}</span>
+        </button>
+      </li>
+    );
+  };
+
   return (
     <div className={c.central} data-atendimento>
       <header className={c.cabecalho}>
-        <div><span className={c.sobretitulo}>Relacionamento e vendas</span><h1>Atendimento<span>.</span></h1><p>Quem chegou, quem espera sua resposta e qual é o próximo passo.</p>{painel.resultado && <p className={c.resultado}><b>Últimos 30 dias:</b> {painel.resultado.precos} {painel.resultado.precos === 1 ? "viu" : "viram"} o preço, {painel.resultado.fechados} {painel.resultado.fechados === 1 ? "fechou" : "fecharam"}.</p>}</div>
-        <div className={c.acoes}><Link className={c.botao} href="/crm/pipeline">Ver funil</Link><button className={`${c.botao} ${c.primario}`} type="button" onClick={() => setNovo(true)}>+ Novo contato</button></div>
+        <div>
+          <h1>
+            Hoje<span>.</span>
+          </h1>
+          <p>
+            <b>{fila.itens.length} na fila</b>
+            {fila.aguardando > 0 && ` · ${fila.aguardando} aguardando resposta`}
+            {painel.resultado && ` · em 30 dias, ${painel.resultado.precos} ${painel.resultado.precos === 1 ? "viu" : "viram"} o preço e ${painel.resultado.fechados} ${painel.resultado.fechados === 1 ? "fechou" : "fecharam"}`}
+          </p>
+        </div>
+        <div className={c.acoes}>
+          <label className={c.busca}>
+            <span className={c.srOnly}>Buscar em todos os contatos</span>
+            <input type="search" placeholder="Buscar em todos os contatos" value={busca} onChange={(e) => { setBusca(e.target.value); setSelecionado(null); }} />
+          </label>
+          <Link className={c.botao} href="/crm?modo=visao">Visão do estúdio</Link>
+          <Link className={c.botao} href="/crm/pipeline">Funil</Link>
+          <button className={c.botao} type="button" onClick={() => setNovo(true)}>+ Novo contato</button>
+        </div>
       </header>
-      <nav className={c.abas} aria-label="Filas de atendimento">
-        {ABAS_ATENDIMENTO.map((a) => <button key={a.id} type="button" aria-pressed={aba === a.id} data-aba={a.id} onClick={() => trocarAba(a.id)}><span>{a.nome}</span><b>{filas[a.id].length}</b></button>)}
-      </nav>
-      <div className={c.contexto}>
-        <div><h2>{descricao.nome}</h2><p>{descricao.descricao}</p></div>
-        {aba === "novos" && <span className={c.prioridade}>Quem procurou o estúdio aparece primeiro, o mais recente no topo</span>}
-      </div>
-      {arquivados ? <div className={c.arquivo} role="status"><p>{arquivados.length} {arquivados.length === 1 ? "contato arquivado" : "contatos arquivados"} como perdidos (sumiu, sem resposta).</p><button type="button" className={c.botao} disabled={arquivando} onClick={desfazer}>{arquivando ? "Desfazendo…" : "Desfazer"}</button><button type="button" className={c.linkBotao} onClick={() => setArquivados(null)}>Fechar</button></div>
-        : parados.length > 0 && !revisando ? <div className={c.arquivo}><p>{parados.length} {parados.length === 1 ? "contato está parado" : "contatos estão parados"} há mais de {DIAS_PARADO} dias nesta fila.</p><button type="button" className={c.botao} onClick={() => setRevisando(true)}>Revisar e arquivar</button></div> : null}
-      {revisando && <div className={c.arquivo} data-revisando>
-        <p><b>Arquivar {parados.length} como perdidos, "sumiu, sem resposta"?</b> Saem das filas e do Funil, e o retorno marcado de cada um é apagado. O Desfazer devolve tudo como estava.</p>
-        <ul>{parados.map((l) => <li key={l.id}>{l.nome}<span>{NOME_ESTAGIO[l.estagio]} · último movimento {dataCurta(diaEmSP(l.ultimo_toque_em ?? l.created_at))}</span></li>)}</ul>
-        <div className={c.acoes}><button type="button" className={`${c.botao} ${c.primario}`} disabled={arquivando} onClick={arquivar}>{arquivando ? "Arquivando…" : `Arquivar os ${parados.length}`}</button><button type="button" className={c.botao} onClick={() => setRevisando(false)}>Cancelar</button></div>
-      </div>}
+
+      {arquivados ? (
+        <div className={c.arquivo} role="status">
+          <p>
+            {arquivados.length} {arquivados.length === 1 ? "contato encerrado" : "contatos encerrados"} como perdido (sumiu, sem resposta).
+          </p>
+          <button type="button" className={c.botao} disabled={arquivando} onClick={desfazer}>{arquivando ? "Desfazendo…" : "Desfazer"}</button>
+          <button type="button" className={c.linkBotao} onClick={() => setArquivados(null)}>Fechar</button>
+        </div>
+      ) : parados.length > 0 && !revisando ? (
+        <div className={c.arquivo}>
+          <p>
+            {parados.length} {parados.length === 1 ? "contato de fora da fila está parado" : "contatos de fora da fila estão parados"} há mais de {DIAS_PARADO} dias. A prospecção não entra nesta conta.
+          </p>
+          <button type="button" className={c.botao} onClick={() => setRevisando(true)}>Revisar e arquivar</button>
+        </div>
+      ) : null}
+      {revisando && (
+        <div className={c.arquivo} data-revisando>
+          <p>
+            <b>Arquivar {parados.length} como perdidos, "sumiu, sem resposta"?</b> Saem do Funil, e o retorno marcado de cada um é apagado. O Desfazer devolve tudo como estava.
+          </p>
+          <ul>
+            {parados.map((l) => (
+              <li key={l.id}>
+                {l.nome}
+                <span>{NOME_ESTAGIO[l.estagio]} · último movimento {dataCurta(diaEmSP(l.ultimo_toque_em ?? l.created_at))}</span>
+              </li>
+            ))}
+          </ul>
+          <div className={c.acoes}>
+            <button type="button" className={`${c.botao} ${c.primario}`} disabled={arquivando} onClick={() => arquivar(parados.map((l) => l.id))}>{arquivando ? "Arquivando…" : `Arquivar os ${parados.length}`}</button>
+            <button type="button" className={c.botao} onClick={() => setRevisando(false)}>Cancelar</button>
+          </div>
+        </div>
+      )}
       {erroArquivo && <p role="alert" className={c.erroArquivo}>{erroArquivo}</p>}
-      {aba === "prospeccao" ? <div className={c.prospeccao}><Hoje painel={prospeccao} templates={templates} posts={posts} /></div> : <>
-        <div className={c.filtros}>
-          <label className={c.busca}><span className={c.srOnly}>Buscar contato nesta aba</span><input type="search" placeholder="Buscar nome, empresa, segmento ou telefone" value={busca} onChange={(e) => setBusca(e.target.value)} /></label>
-          <label className={c.origem}><span>Origem</span><select value={origem} onChange={(e) => setOrigem(e.target.value as Origem | "")}><option value="">Todas as origens</option>{ORIGENS.map((o) => <option key={o} value={o}>{NOME_ORIGEM[o]}</option>)}</select></label>
-          {(busca || origem) && <button type="button" className={c.botao} onClick={() => { setBusca(""); setOrigem(""); }}>Limpar filtros</button>}
-        </div>
-        <div className={c.mesa}>
-          <section ref={filaRef} className={c.fila} aria-label={`Contatos: ${descricao.nome}`}>
-            <div className={c.filaCabecalho}><b>{lista.length} {lista.length === 1 ? "contato" : "contatos"}</b><span>Selecione para atender</span></div>
-            <ul>{lista.map((l) => <li key={l.id}><button type="button" className={c.contato} data-contato={l.id} aria-pressed={atual?.id === l.id} onClick={() => escolher(l.id)}>
-              <span className={c.contatoTopo}><b>{l.nome}</b><span className={c.etapa}>{NOME_ESTAGIO[l.estagio]}</span></span>
-              {l.quer_no_ar ? <span className={c.marca} data-quente>Quer colocar no ar</span> : marcaDe(l) ? <span className={c.marca}>{marcaDe(l)!.nome}</span> : naBlack(l) && aba !== "black" ? <span className={c.marca}>Black</span> : null}
-              {[l.empresa !== l.nome ? l.empresa : null, l.nicho].some(Boolean) && <span className={c.contatoEmpresa}>{[l.empresa !== l.nome ? l.empresa : null, l.nicho].filter(Boolean).join(" · ")}</span>}
-              <span className={c.contatoOrigem}>{NOME_ORIGEM[l.origem]}</span>
-              <span className={c.contatoRodape}><span className={novoContato(l) || precisaResponder(l) ? c.espera : ""}>{novoContato(l) || precisaResponder(l) ? agora ? tempoDeEspera(novoContato(l) ? l.created_at : momentoDoContato(l), agora) : `Desde ${hora(l.created_at)}` : aba === "preco" ? precoHa(l, painel.hoje) : aba === "black" ? blackHa(l, painel.hoje) : l.proxima_acao_em ? `Retorno ${dataCurta(l.proxima_acao_em)}` : "Definir próximo passo"}</span><span aria-hidden="true">→</span></span>
-            </button></li>)}</ul>
-            {!lista.length && <div className={c.vazio}><b>{busca || origem ? "Nenhum contato neste filtro" : "Nenhum contato pendente nesta aba"}</b><p>{busca || origem ? "Ajuste a busca ou limpe os filtros." : "Confira as outras filas. Novas entradas aparecerão aqui automaticamente."}</p></div>}
-          </section>
-          <section ref={detalheRef} className={c.detalhe} tabIndex={-1} aria-label="Atendimento selecionado">
-            <button type="button" className={`${c.linkBotao} ${c.voltarLista}`} onClick={() => { filaRef.current?.scrollIntoView({ block: "start", behavior: "instant" }); filaRef.current?.querySelector<HTMLButtonElement>('button[aria-pressed="true"]')?.focus({ preventScroll: true }); }}>← Voltar para a lista de contatos</button>
-            {atual ? <Atendimento key={atual.id} lead={atual} hoje={painel.hoje} aoRegistrar={(direcao) => setRegistro({ lead: atual, direcao })} aoMandar={() => { const i = lista.findIndex((l) => l.id === atual.id); setMensagem({ lead: atual, proximo: (lista[i + 1] ?? lista[i - 1])?.id ?? null, sugestao: sugestaoDe(atual) }); }} /> : <div className={c.semSelecao}><span aria-hidden="true">✓</span><h3>Fila conferida</h3><p>Escolha outra aba para continuar o atendimento.</p><button type="button" className={c.botao} onClick={() => trocarAba(aba === "novos" ? "responder" : "novos")}>{aba === "novos" ? "Ver quem espera resposta" : "Ver novos contatos"}</button></div>}
-          </section>
-        </div>
-      </>}
-      {novo && <ModalNovoLead origemInicial="inbound" pesquisarAoCriar={false} aoCriar={(id) => { trocarAba("novos"); setSelecionado(id); router.refresh(); }} aoFechar={() => setNovo(false)} />}
-      {mensagem && <ModalMensagem lead={mensagem.lead} templates={templates} sugestao={mensagem.sugestao} aoFechar={() => setMensagem(null)} aoEnviar={(r) => { setSelecionado(mensagem.proximo); void r.finally(() => router.refresh()); }} />}
+
+      <div className={c.mesa}>
+        <section ref={filaRef} className={c.fila} aria-label="A fila de hoje">
+          {!agrupada && (
+            <div className={c.filaCabecalho}>
+              <b>{termo ? `${linhas.length} ${linhas.length === 1 ? "encontrado" : "encontrados"}` : `${linhas.length} fora da fila`}</b>
+              <button type="button" className={c.linkBotao} onClick={() => { setBusca(""); setVerFora(false); setRevisando(false); setSelecionado(null); }}>← Voltar para a fila</button>
+            </div>
+          )}
+          <div className={c.rolagem}>
+            {agrupada ? (
+              GRUPOS_DA_FILA.map((g) => {
+                const doGrupo = linhas.filter((i) => i.grupo === g.id);
+                return doGrupo.length ? (
+                  <div key={g.id} className={c.grupo} data-grupo={g.id}>
+                    <h2>
+                      {g.nome}
+                      <b>{doGrupo.length}</b>
+                    </h2>
+                    <ul>{doGrupo.map(linha)}</ul>
+                  </div>
+                ) : null;
+              })
+            ) : (
+              <ul>{linhas.map(linha)}</ul>
+            )}
+            {!linhas.length && (
+              <div className={c.vazio}>
+                <b>{termo ? "Ninguém com esse nome" : agrupada ? "Fila zerada" : "Ninguém fora da fila"}</b>
+                <p>{termo ? "A busca olha nome, loja, segmento, @ e telefone." : agrupada ? (fila.aguardando ? `${fila.aguardando} aguardando resposta. Quem escrever ou chegar aparece aqui.` : "Quem escrever ou chegar aparece aqui.") : "Todo o funil está na fila."}</p>
+              </div>
+            )}
+          </div>
+          {agrupada && fila.fora.length > 0 && (
+            <button type="button" className={c.fora} onClick={() => { setVerFora(true); setSelecionado(null); }}>
+              Fora da fila<b>{fila.fora.length}</b>
+            </button>
+          )}
+        </section>
+
+        <section ref={detalheRef} className={c.detalhe} tabIndex={-1} aria-label="Atendimento selecionado">
+          <button
+            type="button"
+            className={`${c.linkBotao} ${c.voltarLista}`}
+            onClick={() => {
+              filaRef.current?.scrollIntoView({ block: "start", behavior: "instant" });
+              filaRef.current?.querySelector<HTMLButtonElement>('button[aria-pressed="true"]')?.focus({ preventScroll: true });
+            }}
+          >
+            ← Voltar para a fila
+          </button>
+          {atual ? (
+            <Atendimento
+              key={atual.lead.id}
+              item={atual}
+              hoje={hoje}
+              encerrando={arquivando}
+              aoRegistrar={(direcao) => setRegistro({ lead: atual.lead, direcao })}
+              aoMandar={() => setMensagem({ lead: atual.lead, proximo: proximoDe(atual.lead.id), sugestao: sugestaoDe(atual, hoje) })}
+              aoEncerrar={() => arquivar([atual.lead.id], proximoDe(atual.lead.id))}
+            />
+          ) : (
+            <div className={c.semSelecao}>
+              <span aria-hidden="true">✓</span>
+              <h3>{termo ? "Nada encontrado" : "Fila zerada"}</h3>
+              <p>{termo ? "Confira a grafia, ou busque pelo telefone." : "Ninguém esperando você agora."}</p>
+            </div>
+          )}
+        </section>
+      </div>
+
+      {novo && <ModalNovoLead origemInicial="inbound" pesquisarAoCriar={false} aoCriar={(id) => { setBusca(""); setVerFora(false); setSelecionado(id); router.refresh(); }} aoFechar={() => setNovo(false)} />}
+      {mensagem && (
+        <ModalMensagem
+          lead={mensagem.lead}
+          templates={templates}
+          sugestao={mensagem.sugestao}
+          aoFechar={() => setMensagem(null)}
+          aoEnviar={(r) => {
+            setSelecionado(mensagem.proximo);
+            void r.finally(() => router.refresh());
+          }}
+        />
+      )}
       {registro && <ModalToque lead={registro.lead} direcaoInicial={registro.direcao} exigirProximoPasso aoFechar={() => { setRegistro(null); router.refresh(); }} />}
     </div>
   );
 }
 
-function Atendimento({ lead, hoje, aoRegistrar, aoMandar }: { lead: LeadPainel; hoje: string; aoRegistrar: (direcao: Direcao) => void; aoMandar: () => void }) {
+function Atendimento({
+  item,
+  hoje,
+  encerrando,
+  aoRegistrar,
+  aoMandar,
+  aoEncerrar,
+}: {
+  item: Linha;
+  hoje: string;
+  encerrando: boolean;
+  aoRegistrar: (direcao: Direcao) => void;
+  aoMandar: () => void;
+  aoEncerrar: () => void;
+}) {
+  const { lead, grupo, encerrar } = item;
   const [historico, setHistorico] = useState<HistoricoAtendimento[] | null>(null);
   const [falha, setFalha] = useState<string | null>(null);
   const [tentativa, setTentativa] = useState(0);
@@ -182,81 +402,196 @@ function Atendimento({ lead, hoje, aoRegistrar, aoMandar }: { lead: LeadPainel; 
   const [editando, setEditando] = useState(false);
   const [erroPasso, setErroPasso] = useState<string | null>(null);
   const [salvando, comecar] = useTransition();
-  const [marcando, comecarPreco] = useTransition();
-  const [erroPreco, setErroPreco] = useState<string | null>(null);
+  const [marcando, comecarMarca] = useTransition();
+  const [erroMarca, setErroMarca] = useState<string | null>(null);
   const router = useRouter();
-  /* O preço que saiu por fora do CRM (01/11): até hoje a mensagem do preço
-     nunca foi registrada, e sem isso a aba "Viu o preço" não acha ninguém.
-     Vira um toque de saída de hoje, com o resumo que a fila reconhece. */
-  function marcarPreco() {
-    setErroPreco(null);
-    comecarPreco(async () => {
-      const r = await registrarToque(lead.id, { canal: lead.whatsapp ? "whatsapp" : "instagram", direcao: "saida", resumo: RESUMO_PRECO_A_MAO });
-      if (r.ok) router.refresh(); else setErroPreco("erro" in r ? r.erro : "Não foi possível marcar o preço.");
-    });
-  }
-  /* O QUE A PESSOA PEDIU (01/11), num clique. "Colocar no ar" é uma
-     entrada (a pessoa escreveu), e por isso o lead vai para "Preciso
-     responder" e fura a fila. "Um áudio" e "ver com o sócio" viram o
-     próximo passo para hoje. */
-  function pediuNoAr() {
-    setErroPreco(null);
-    comecarPreco(async () => {
-      const r = await registrarToque(lead.id, { canal: lead.whatsapp ? "whatsapp" : "instagram", direcao: "entrada", resumo: RESUMO_QUER_NO_AR });
-      if (r.ok) router.refresh(); else setErroPreco("erro" in r ? r.erro : "Não foi possível marcar o pedido.");
+  const canal = lead.whatsapp ? "whatsapp" : "instagram";
+
+  /* O QUE ACONTECEU, num clique. O leitor do WhatsApp está desligado desde
+     01/10, então o CRM só sabe o que é marcado aqui.
+     "Respondeu" e "Quer colocar no ar" são entradas (a pessoa escreveu): o
+     lead sobe para "Responder agora". "Um áudio" e "ver com o sócio" viram
+     o próximo passo para hoje. "Já mandei o preço" é a saída que foi por
+     fora do CRM (01/11): sem ela o grupo "Preço no ar" não acha ninguém. */
+  function toque(direcao: Direcao, resumo: string) {
+    setErroMarca(null);
+    comecarMarca(async () => {
+      const r = await registrarToque(lead.id, { canal, direcao, resumo });
+      if (r.ok) router.refresh();
+      else setErroMarca("erro" in r ? r.erro : "Não foi possível marcar.");
     });
   }
   function marcar(passoDaMarca: string) {
-    setErroPreco(null);
-    comecarPreco(async () => {
+    setErroMarca(null);
+    comecarMarca(async () => {
       const r = await definirPasso(lead.id, passoDaMarca, hoje);
-      if (r.ok) router.refresh(); else setErroPreco("erro" in r ? r.erro : "Não foi possível marcar.");
+      if (r.ok) router.refresh();
+      else setErroMarca("erro" in r ? r.erro : "Não foi possível marcar.");
     });
   }
   const marca = marcaDe(lead);
   useEffect(() => {
     let ativo = true;
-    setHistorico(null); setFalha(null);
-    lerHistoricoAtendimento(lead.id).then((r) => { if (ativo) { if (r.ok) setHistorico(r.interacoes); else setFalha(r.erro); } }).catch(() => { if (ativo) setFalha("Não foi possível carregar o histórico."); });
-    return () => { ativo = false; };
+    setHistorico(null);
+    setFalha(null);
+    lerHistoricoAtendimento(lead.id)
+      .then((r) => {
+        if (!ativo) return;
+        if (r.ok) setHistorico(r.interacoes);
+        else setFalha(r.erro);
+      })
+      .catch(() => {
+        if (ativo) setFalha("Não foi possível carregar o histórico.");
+      });
+    return () => {
+      ativo = false;
+    };
   }, [lead.id, lead.toques, tentativa]);
   const whatsapp = linkWhatsapp(lead.whatsapp);
   const instagram = arrobaDe(lead.instagram);
   const ultimaEntrada = historico?.find((i) => i.direcao === "entrada");
   const ehNovo = novoContato(lead);
-  return <>
-    <div className={c.detalheCabecalho}>
-      <div className={c.identificacao}><span className={c.avatar} aria-hidden="true">{lead.nome.trim().split(/\s+/).slice(0, 2).map((s) => s[0]).join("")}</span><div><span className={c.etapa}>{ehNovo ? "Primeiro atendimento pendente" : precisaResponder(lead) ? "Sua vez de responder" : NOME_ESTAGIO[lead.estagio]}</span><h2>{lead.nome}</h2><p>{[lead.empresa !== lead.nome ? lead.empresa : null, lead.nicho, lead.cidade].filter(Boolean).join(" · ") || "Complete os dados conforme conversar"}</p></div></div>
-      <Link className={c.link} href={`/crm/lead/${lead.id}`}>Abrir ficha completa ↗</Link>
-    </div>
-    {lead.quer_no_ar && <p className={c.quente}><b>Pediu para colocar no ar.</b> É o lead mais quente da fila: responda agora com o Pix da entrada. O "Mandar mensagem" já abre no template certo.</p>}
-    {!lead.quer_no_ar && marca && <p className={c.quente} data-marca><b>{marca.nome}.</b> {marca.id === "audio" ? "Grave o áudio explicando como funciona: onde houve áudio, a conversa viveu." : "Mande o resumo pronto pra encaminhar e pergunte quando eles conversam."}</p>}
-    {/* Os dados numa linha só (01/11): eram um quadro de meia tela que
-        empurrava a última mensagem e o próximo passo para baixo. */}
-    <p className={c.resumo}>{[NOME_ORIGEM[lead.origem], `entrou ${hora(lead.created_at)}`, lead.tipo_projeto ? NOME_TIPO[lead.tipo_projeto] : null, lead.ticket_estimado != null ? dinheiro(lead.ticket_estimado) || null : null, lead.preco_em ? `viu o preço em ${dataCurta(diaEmSP(lead.preco_em))}` : null].filter(Boolean).join(" · ")}{lead.campanha && <span>{lead.campanha}{lead.anuncio ? ` · ${lead.anuncio}` : ""}</span>}</p>
-    <div className={c.acoesAtendimento}>
-      <div className={c.acoes}>{whatsapp || instagram ? <button type="button" className={`${c.botao} ${c.primario}`} onClick={aoMandar}>Mandar mensagem</button> : <Link className={`${c.botao} ${c.primario}`} href={`/crm/lead/${lead.id}`}>Completar canal de contato</Link>}{instagram && <a className={c.botao} href={`https://www.instagram.com/${encodeURIComponent(instagram)}/`} target="_blank" rel="noopener noreferrer">Ver Instagram ↗</a>}</div>
-      <p>A mensagem enviada fica registrada sozinha e o painel passa ao próximo contato. Conversou por fora? <button type="button" className={c.linkBotao} onClick={() => aoRegistrar("saida")}>Registrar atendimento</button>{!lead.preco_em && ehAtivo(lead.estagio) && <>{" · "}<button type="button" className={c.linkBotao} disabled={marcando} onClick={marcarPreco}>{marcando ? "Marcando…" : "Já mandei o preço"}</button></>}</p>
-      {ehAtivo(lead.estagio) && <div className={c.pedidos}><span>A pessoa pediu:</span>
-        <button type="button" className={c.pilula} aria-pressed={Boolean(lead.quer_no_ar)} disabled={marcando || lead.quer_no_ar} onClick={pediuNoAr}>Colocar no ar</button>
-        {MARCAS.map((m) => <button key={m.id} type="button" className={c.pilula} aria-pressed={marca?.id === m.id} disabled={marcando || marca?.id === m.id} onClick={() => marcar(m.passo)}>{m.id === "audio" ? "Um áudio" : "Ver com o sócio"}</button>)}
-      </div>}
-      {erroPreco && <p role="alert">{erroPreco}</p>}
-    </div>
-    {ultimaEntrada?.resumo && <section className={c.mensagem}><span>ÚLTIMA MENSAGEM RECEBIDA · {hora(ultimaEntrada.created_at)}</span><p>{ultimaEntrada.resumo}</p></section>}
-    {lead.notas && <details className={c.notas}><summary>Informações do pedido e anotações</summary><p>{lead.notas}</p></details>}
-    {lead.cobranca && <section className={c.mensagem}><span>COBRANÇA PENDENTE · {dataCurta(lead.cobranca.vence_em)}</span><p>{lead.cobranca.rotulo} · {dinheiro(lead.cobranca.saldo)} em aberto</p><Link className={c.link} href="/crm/caixa">Conferir recebimento no Caixa</Link></section>}
-    {ehAtivo(lead.estagio) && <section className={c.proximoPasso}>
-      <div className={c.tituloSecao}><h3>Próximo passo</h3><button type="button" className={c.linkBotao} onClick={() => { setPasso(lead.proximo_passo ?? ""); setErroPasso(null); setEditando(!editando); }}>{editando ? "Cancelar" : "Agendar ou editar"}</button></div>
-      {editando ? <form className={c.formPasso} onSubmit={(e) => { e.preventDefault(); setErroPasso(null); comecar(async () => { const r = await definirPasso(lead.id, passo, data); if (r.ok) { setEditando(false); router.refresh(); } else setErroPasso("erro" in r ? r.erro : "Preencha o próximo passo e uma data válida."); }); }}>
-        <label>O que fazer<input value={passo} onChange={(e) => setPasso(e.target.value)} placeholder="Entender a necessidade e apresentar a solução" required /></label><label>Quando<input type="date" value={data} min={hoje} onChange={(e) => setData(e.target.value)} required /></label>{erroPasso && <p role="alert">{erroPasso}</p>}<button type="submit" className={`${c.botao} ${c.primario}`} disabled={salvando}>{salvando ? "Salvando…" : "Salvar próximo passo"}</button>
-      </form> : <><p>{lead.proximo_passo || "Ainda não combinado"}</p><span className={c.prazo} data-atrasado={Boolean(lead.proxima_acao_em && lead.proxima_acao_em < hoje)}>{lead.proxima_acao_em ? `${lead.proxima_acao_em < hoje ? "Atrasado · " : ""}${dataCurta(lead.proxima_acao_em)}` : "Defina uma ação e uma data"}</span></>}
-      {ehNovo && <small>Agendar não marca como atendido. Este contato continua em Novos até você registrar o atendimento.</small>}
-    </section>}
-    <section className={c.historico}>
-      <div className={c.tituloSecao}><h3>Últimas interações</h3><button type="button" className={c.linkBotao} onClick={() => aoRegistrar("entrada")}>Registrar resposta recebida</button></div>
-      {falha ? <p role="alert">{falha} <button className={c.linkBotao} type="button" onClick={() => setTentativa((n) => n + 1)}>Tentar novamente</button></p> : historico === null ? <p role="status">Carregando histórico…</p> : historico.length ? <ol>{historico.map((i) => <li key={i.id}><div><b>{i.direcao === "entrada" ? "Cliente escreveu" : "Você entrou em contato"}</b><span>{NOME_CANAL[i.canal]} · {hora(i.created_at)}</span></div><p>{i.resumo || "Interação registrada sem resumo."}</p></li>)}</ol> : <p>Nenhuma interação registrada ainda.</p>}
-      <Link className={c.link} href={`/crm/lead/${lead.id}`}>Ver histórico completo na ficha</Link>
-    </section>
-  </>;
+  /* Quem ainda não recebeu nada meu continua "novo" depois de marcado: o
+     histórico é que diz se o clique já foi dado. */
+  const respondeu = precisaResponder(lead) || Boolean(historico?.[0]?.direcao === "entrada" && historico[0].resumo?.startsWith(RESUMO_RESPONDEU));
+  const ativo = ehAtivo(lead.estagio);
+  const d = grupo === "preco" ? diasDoPreco(lead, hoje) : diasDesde(lead.ultimo_toque_em ?? lead.created_at, hoje);
+
+  return (
+    <>
+      <div className={c.detalheCabecalho}>
+        <div className={c.identificacao}>
+          <div>
+            <span className={c.etapa}>{ehNovo ? "Primeiro atendimento pendente" : respondeu ? "Sua vez de responder" : NOME_ESTAGIO[lead.estagio]}</span>
+            <h2>{lead.nome}</h2>
+            <p>
+              {[lead.empresa !== lead.nome ? lead.empresa : null, lead.nicho, lead.cidade, NOME_ORIGEM[lead.origem], `entrou ${hora(lead.created_at)}`, lead.tipo_projeto ? NOME_TIPO[lead.tipo_projeto] : null, lead.ticket_estimado != null ? dinheiro(lead.ticket_estimado) || null : null, lead.preco_em ? `viu o preço em ${dataCurta(diaEmSP(lead.preco_em))}` : null].filter(Boolean).join(" · ")}
+            </p>
+            {lead.campanha && <p className={c.campanha}>{lead.campanha}{lead.anuncio ? ` · ${lead.anuncio}` : ""}</p>}
+          </div>
+        </div>
+        <Link className={c.link} href={`/crm/lead/${lead.id}`}>Abrir ficha ↗</Link>
+      </div>
+
+      {lead.quer_no_ar ? (
+        <p className={c.quente}><b>Pediu para colocar no ar.</b> É o lead mais quente da fila: responda agora com o Pix da entrada. O "Mandar mensagem" já abre no template certo.</p>
+      ) : marca ? (
+        <p className={c.quente} data-marca><b>{marca.nome}.</b> {marca.id === "audio" ? "Grave o áudio explicando como funciona: onde houve áudio, a conversa viveu." : "Mande o resumo pronto pra encaminhar e pergunte quando eles conversam."}</p>
+      ) : encerrar ? (
+        <p className={c.quente} data-marca><b>Sem resposta há {dias(d)}.</b> Pela regra da casa, depois de uns {DIAS_PARA_ENCERRAR} dias sem resposta não rolou: encerre e tire a amostra do ar.</p>
+      ) : grupo === "preco" && !blackPorMandar(lead) ? (
+        <p className={c.quente} data-marca><b>Viu o preço há {dias(d)} e não respondeu.</b> Uma volta só, com a saída aberta. Depois dela o contato sai da fila e só volta no décimo dia, para encerrar.</p>
+      ) : null}
+
+      <div className={c.acoesAtendimento}>
+        <div className={c.acoes}>
+          {encerrar && ativo && <button type="button" className={`${c.botao} ${c.primario}`} disabled={encerrando} onClick={aoEncerrar}>{encerrando ? "Encerrando…" : "Não rolou"}</button>}
+          {whatsapp || instagram ? (
+            <button type="button" className={`${c.botao} ${encerrar ? "" : c.vende}`} onClick={aoMandar}>Mandar mensagem</button>
+          ) : (
+            <Link className={`${c.botao} ${c.vende}`} href={`/crm/lead/${lead.id}`}>Completar canal de contato</Link>
+          )}
+          {instagram && <a className={c.botao} href={`https://www.instagram.com/${encodeURIComponent(instagram)}/`} target="_blank" rel="noopener noreferrer">Ver Instagram ↗</a>}
+        </div>
+        {ativo && (
+          <div className={c.pedidos}>
+            <span>A pessoa:</span>
+            <button type="button" className={c.pilula} aria-pressed={respondeu && !lead.quer_no_ar} disabled={marcando || respondeu} onClick={() => toque("entrada", RESUMO_RESPONDEU)}>Respondeu</button>
+            <button type="button" className={c.pilula} aria-pressed={Boolean(lead.quer_no_ar)} disabled={marcando || lead.quer_no_ar} onClick={() => toque("entrada", RESUMO_QUER_NO_AR)}>Quer colocar no ar</button>
+            {MARCAS.map((m) => (
+              <button key={m.id} type="button" className={c.pilula} aria-pressed={marca?.id === m.id} disabled={marcando || marca?.id === m.id} onClick={() => marcar(m.passo)}>{m.id === "audio" ? "Pediu áudio" : "Vai ver com o sócio"}</button>
+            ))}
+          </div>
+        )}
+        <p>
+          Conversou por fora? <button type="button" className={c.linkBotao} onClick={() => aoRegistrar("saida")}>Registrar</button>
+          {!lead.preco_em && ativo && <>{" · "}<button type="button" className={c.linkBotao} disabled={marcando} onClick={() => toque("saida", RESUMO_PRECO_A_MAO)}>Já mandei o preço</button></>}
+          {" · "}<button type="button" className={c.linkBotao} onClick={() => aoRegistrar("entrada")}>Disse que não, ou pediu para depois</button>
+        </p>
+        {erroMarca && <p role="alert">{erroMarca}</p>}
+      </div>
+
+      {ultimaEntrada?.resumo && (
+        <section className={c.mensagem}>
+          <span>Última mensagem recebida · {hora(ultimaEntrada.created_at)}</span>
+          <p>{ultimaEntrada.resumo}</p>
+        </section>
+      )}
+      {lead.cobranca && (
+        <section className={c.mensagem}>
+          <span>Cobrança pendente · {dataCurta(lead.cobranca.vence_em)}</span>
+          <p>{lead.cobranca.rotulo} · {dinheiro(lead.cobranca.saldo)} em aberto</p>
+          <Link className={c.link} href="/crm/caixa">Conferir recebimento no Caixa</Link>
+        </section>
+      )}
+      {lead.notas && (
+        <details className={c.notas}>
+          <summary>Informações do pedido e anotações</summary>
+          <p>{lead.notas}</p>
+        </details>
+      )}
+
+      {ativo && (
+        <section className={c.proximoPasso}>
+          <div className={c.tituloSecao}>
+            <h3>Próximo passo</h3>
+            <button type="button" className={c.linkBotao} onClick={() => { setPasso(lead.proximo_passo ?? ""); setErroPasso(null); setEditando(!editando); }}>{editando ? "Cancelar" : "Agendar ou editar"}</button>
+          </div>
+          {editando ? (
+            <form
+              className={c.formPasso}
+              onSubmit={(e) => {
+                e.preventDefault();
+                setErroPasso(null);
+                comecar(async () => {
+                  const r = await definirPasso(lead.id, passo, data);
+                  if (r.ok) {
+                    setEditando(false);
+                    router.refresh();
+                  } else setErroPasso("erro" in r ? r.erro : "Preencha o próximo passo e uma data válida.");
+                });
+              }}
+            >
+              <label>O que fazer<input value={passo} onChange={(e) => setPasso(e.target.value)} placeholder="Entender a necessidade e apresentar a solução" required /></label>
+              <label>Quando<input type="date" value={data} min={hoje} onChange={(e) => setData(e.target.value)} required /></label>
+              {erroPasso && <p role="alert">{erroPasso}</p>}
+              <button type="submit" className={`${c.botao} ${c.primario}`} disabled={salvando}>{salvando ? "Salvando…" : "Salvar próximo passo"}</button>
+            </form>
+          ) : (
+            <p>
+              {lead.proximo_passo || "Ainda não combinado"}
+              {lead.proxima_acao_em && <span className={c.prazo} data-atrasado={lead.proxima_acao_em < hoje}>{lead.proxima_acao_em < hoje ? "Atrasado · " : ""}{dataCurta(lead.proxima_acao_em)}</span>}
+            </p>
+          )}
+          {grupo !== "responder" && grupo !== "novos" && <small>Um retorno marcado para depois de hoje tira o contato da fila até a data.</small>}
+        </section>
+      )}
+
+      <section className={c.historico}>
+        <div className={c.tituloSecao}>
+          <h3>Últimas interações</h3>
+          <Link className={c.link} href={`/crm/lead/${lead.id}`}>Ver tudo na ficha</Link>
+        </div>
+        {falha ? (
+          <p role="alert">{falha} <button className={c.linkBotao} type="button" onClick={() => setTentativa((n) => n + 1)}>Tentar novamente</button></p>
+        ) : historico === null ? (
+          <p role="status">Carregando histórico…</p>
+        ) : historico.length ? (
+          <ol>
+            {historico.map((i) => (
+              <li key={i.id}>
+                <div>
+                  <b>{i.direcao === "entrada" ? "Cliente escreveu" : "Você entrou em contato"}</b>
+                  <span>{NOME_CANAL[i.canal]} · {hora(i.created_at)}</span>
+                </div>
+                <p>{i.resumo || "Interação registrada sem resumo."}</p>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <p>Nenhuma interação registrada ainda.</p>
+        )}
+      </section>
+    </>
+  );
 }

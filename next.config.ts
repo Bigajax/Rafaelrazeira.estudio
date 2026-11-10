@@ -36,6 +36,9 @@ const nextConfig: NextConfig = {
       /* a /e-commerce de julho virou a /loja-online (07/11/2026): o nome do
          produto é "Loja online" e a página antiga dizia R$ 3.499 */
       { source: "/e-commerce", destination: "/loja-online", permanent: true },
+      /* o Atendimento virou o Hoje (10/11/2026): era a mesma tela em dois
+         endereços. Temporário, para o favorito antigo não quebrar. */
+      { source: "/crm/atendimento", destination: "/crm", permanent: false },
     ];
   },
   // /estudio é um site estático em public/estudio; o Next não resolve

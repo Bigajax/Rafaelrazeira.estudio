@@ -1641,3 +1641,31 @@ select t.owner_id, v.titulo, 'whatsapp', v.categoria, v.conteudo, v.ordem
  where not exists (
    select 1 from public.crm_templates x
     where x.owner_id = t.owner_id and x.titulo = v.titulo);
+
+-- ============================================================
+-- 10/11/2026: A VOLTA DEPOIS DO PREÇO
+-- A revisão do CRM mediu 98 pessoas que viram o preço, 45 sem nenhum toque
+-- depois dele e 93 com a Black de 04/11 sem resposta, com o passo "Black:
+-- cobrar a resposta" vencido e nenhum texto para essa volta: o modal sugeria
+-- a "Prévia sem resposta: volta com novidade". A regra da casa proíbe
+-- cobranças em sequência depois do preço, então é UMA volta, com a saída
+-- aberta e um dado de produção no fim. Os títulos começam por "Depois do
+-- preço:" e "Depois da Black:" de propósito: é por eles que a fila sabe que
+-- a volta saiu (ehVoltaDoPreco em lib/crm/atendimento.ts), e eles NÃO podem
+-- começar como um título de preço, senão o relógio reinicia. Textos aprovados
+-- pelo Rafael em 10/11. Já aplicado no banco por script; fica de registro.
+-- ============================================================
+insert into public.crm_templates (owner_id, titulo, canal, categoria, conteudo, ordem)
+select t.owner_id, v.titulo, 'whatsapp', v.categoria, v.conteudo, v.ordem
+  from (select distinct owner_id from public.crm_templates) t
+ cross join (values
+   ('Depois do preço: uma volta, com a saída', 'previa',
+    E'Oi, {nome}! Volto uma vez só pra não virar chateação. A vitrine da {instagram} continua no ar:\n\n{link}\n\nSe não for a hora, me fala sem cerimônia que eu tiro do ar. Se for, os pedidos caem neste número mesmo?',
+    20),
+   ('Depois da Black: uma volta, com a data', 'previa',
+    E'Oi, {nome}! Volto uma vez só: a condição de Black da vitrine da {instagram}, R$ 799 à vista, vale até 30/11.\n\nSe não for a hora, me fala sem cerimônia que eu tiro do ar. Se for, os pedidos caem neste número mesmo?',
+    21)
+ ) as v(titulo, categoria, conteudo, ordem)
+ where not exists (
+   select 1 from public.crm_templates x
+    where x.owner_id = t.owner_id and x.titulo = v.titulo);

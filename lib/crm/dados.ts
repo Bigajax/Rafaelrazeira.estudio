@@ -23,7 +23,7 @@ import {
    ============================================================ */
 
 import { clienteServidor } from "./supabase";
-import { ehPedidoNoAr, ehToqueDeBlack, ehToqueDePreco } from "./atendimento";
+import { ehPedidoNoAr, ehToqueDeBlack, ehToqueDePreco, ehVoltaDoPreco, esperaPorMim } from "./atendimento";
 import {
   amostraNoLote,
   diaEmSP,
@@ -173,7 +173,9 @@ export async function painelHoje() {
       const antesBlack = blackPorLead.get(t.lead_id);
       if (!antesBlack || t.created_at > antesBlack) blackPorLead.set(t.lead_id, t.created_at);
     }
-    if (!ehToqueDePreco(t.resumo)) continue;
+    /* A volta depois do preço não é preço de novo (10/11): se contasse, cada
+       volta reiniciava o relógio da fila e ninguém chegava ao "encerrar". */
+    if (!ehToqueDePreco(t.resumo) || ehVoltaDoPreco(t.resumo)) continue;
     const antes = precoPorLead.get(t.lead_id);
     if (!antes || t.created_at > antes) precoPorLead.set(t.lead_id, t.created_at);
   }
@@ -392,13 +394,15 @@ export async function contagens() {
 
   const [{ data: leads }, { count: templates }, { data: cobrancas }, entradas, suporte] =
     await Promise.all([
-      conferir(
-        supabase
-          .from("crm_leads")
-          .select("proxima_acao_em")
-          .in("estagio", ATIVOS)
-          .returns<Pick<Lead, "proxima_acao_em">[]>(),
-      ),
+      /* Da view, e não da tabela, desde 10/11: o número do Hoje no trilho
+         passou a ser "quem espera eu falar", e isso pede os toques. */
+      lerTodos<EsperaNoTrilho>(
+        supabase,
+        "crm_leads_painel",
+        "estagio, origem, toques, toques_entrada, saidas_seguidas, created_at, ultimo_toque_em",
+        undefined,
+        { estagio: [...ATIVOS] },
+      ).then((data) => ({ data })),
       conferir(
         supabase
           .from("crm_templates")
@@ -426,11 +430,12 @@ export async function contagens() {
   const lista = leads ?? [];
 
   return {
-    /* A MESMA definição de fila do painel Hoje, e ela precisa continuar
-       sendo: o trilho dizendo "3" com quatro cartas na tela é pior do que o
-       trilho não dizer nada. Atrasado, hoje e sem próximo passo. */
-    fila: lista.filter((l) => !l.proxima_acao_em || l.proxima_acao_em <= hoje)
-      .length,
+    /* Quem está esperando o Rafael falar: escreveu por último, ou procurou
+       o estúdio nos últimos 14 dias e ainda não ouviu nada (10/11). Até
+       aqui era "atrasado, hoje e sem próximo passo", que em 10/11 dava 574
+       de 574 ativos: um ponto rosa aceso para sempre não avisa de nada. A
+       régua é a `esperaPorMim`, a mesma dos dois primeiros grupos da fila. */
+    fila: lista.filter((l) => esperaPorMim(l, hoje)).length,
     ativos: lista.length,
     templates: templates ?? 0,
     suporte,
@@ -475,6 +480,10 @@ type ParcelaComRecebimentos = {
 
 
 export type Contagens = Awaited<ReturnType<typeof contagens>>;
+type EsperaNoTrilho = Pick<
+  LeadPainel,
+  "estagio" | "origem" | "toques" | "toques_entrada" | "saidas_seguidas" | "created_at" | "ultimo_toque_em"
+>;
 
 /* ============================================================
    KANBAN

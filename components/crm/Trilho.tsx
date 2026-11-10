@@ -38,8 +38,9 @@ const MOMENTOS: { nome: string; rotas: Rota[] }[] = [
   {
     nome: "Vendas",
     rotas: [
-      { href: "/crm", rotulo: "Hoje", nota: "o estúdio", conta: "fila" },
-      { href: "/crm/atendimento", rotulo: "Atendimento", nota: "novos e respostas", conta: null },
+      /* O Atendimento saiu do menu em 10/11: era a mesma tela do Hoje em
+         outro endereço. O número é quem está esperando o Rafael falar. */
+      { href: "/crm", rotulo: "Hoje", nota: "quem espera você", conta: "fila" },
       { href: "/crm/clientes", rotulo: "Clientes", nota: "os vínculos", conta: null },
       {
         href: "/crm/pipeline",
@@ -165,7 +166,6 @@ const pendencia = (conta: keyof Contagens | null, contagens: Contagens) => {
 
 const ICONES: Record<string, IconePainelNome> = {
   "/crm/clientes": "clientes",
-  "/crm/atendimento": "mensagens",
   "/crm": "hoje",
   "/crm/pipeline": "funil",
   "/crm/templates": "templates",
