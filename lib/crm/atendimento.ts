@@ -182,9 +182,12 @@ export const RESUMO_RESPONDEU = "Respondeu (marcado à mão)";
    "Mandar mensagem" não tinha texto nenhum para isso. */
 export const TITULO_COBRANCA = "Cobrança da parcela";
 
+/* A ordem da tela. Os novos no alto (10/11, pedido do Rafael: "quero que os
+   novos leads cheguem primeiro"): quem acabou de pedir a amostra é quem
+   esfria mais rápido. */
 export const GRUPOS_DA_FILA = [
-  { id: "responder", nome: "Responder agora" },
   { id: "novos", nome: "Chegou e não ouviu de mim" },
+  { id: "responder", nome: "Responder agora" },
   { id: "preco", nome: "Preço no ar" },
   { id: "amostra", nome: "Amostra sem reação" },
 ] as const;
@@ -251,6 +254,11 @@ export function filaDaVez(leads: LeadPainel[], hoje: string) {
 
   /* Fora da fila: todo o resto do funil, alcançado pela busca. */
   const fora = todos.filter((l) => ehNoPipeline(l.estagio) && !usados.has(l.id)).sort((a, b) => momentoDoContato(b).localeCompare(momentoDoContato(a)) || desempate(a, b));
+  /* Os grupos são montados na ordem de quem tem a preferência (quem pediu
+     para colocar no ar é "responder" mesmo sendo novo), mas a lista sai na
+     ordem da tela: é dela que saem o primeiro aberto e o próximo do lote. */
+  const lugar = new Map<GrupoDaFila, number>(GRUPOS_DA_FILA.map((g, i) => [g.id, i]));
+  itens.sort((a, b) => lugar.get(a.grupo)! - lugar.get(b.grupo)!);
   return { itens, fora, aguardando };
 }
 
