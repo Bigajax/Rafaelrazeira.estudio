@@ -33,7 +33,7 @@ import { CSSProperties, FormEvent, useEffect, useRef, useState } from "react";
 import f from "./amostra.module.css";
 import { CampoIsca, useGuardaDeFormulario } from "@/components/form-guarda";
 import { mascararWhatsapp, whatsappValido } from "@/components/telefone";
-import { diagnosticoDoArroba, enviarLeadVitrine, registrarSuspeito } from "@/components/vitrine/lead-flow";
+import { diagnosticoDoArroba, enviarLeadVitrine, ESPACO_NO_ARROBA, registrarSuspeito, temEspaco } from "@/components/vitrine/lead-flow";
 import type { LojaEncontrada } from "@/components/lead";
 import { initTracking, mpTrack } from "@/components/vitrine/tracking";
 import { linkWhatsApp } from "@/lib/contato";
@@ -186,7 +186,7 @@ export function FormAmostraPassos() {
     if (res.arrobaInvalido) {
       const i = PASSOS.findIndex(p => p.k === "instagram");
       ir(i);
-      setErro(`Não achei ${instagram.startsWith("@") ? instagram : "@" + instagram} no Instagram. Confere o @: precisa ser a conta profissional da loja, é dela que eu tiro as fotos.`);
+      setErro(temEspaco(instagram) ? ESPACO_NO_ARROBA : `Não achei ${instagram.startsWith("@") ? instagram : "@" + instagram} no Instagram. Confere o @: precisa ser a conta profissional da loja, é dela que eu tiro as fotos.`);
       return;
     }
     if (res.salvo) {

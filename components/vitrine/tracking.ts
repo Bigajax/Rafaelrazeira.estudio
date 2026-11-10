@@ -177,12 +177,23 @@ const idAleatorio = () =>
   (crypto.randomUUID && crypto.randomUUID()) ||
   `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
+/* ---------- o id partido no iOS (10/11/2026) ----------
+   No navegador interno do Instagram e do Facebook no iPhone, a mesma visita
+   chegava à Mixpanel com dois ids: o "Abriu a página" com um, o resto com
+   outro (5 de 7 visitas de iOS em 09 e 10/11; Android e Safari, não). O
+   localStorage lido no primeiro evento não era o mesmo dos seguintes, o que
+   acontece quando o app troca o armazenamento da página pré-carregada ao
+   mostrá-la. Um funil "Abriu → Enviou" perdia essa gente. A memória da página
+   vence o armazenamento: decidido o id, ele vale até a página fechar, e o
+   localStorage só serve para a PRÓXIMA visita. */
+let idDaPagina = "";
 function mpDistinctId() {
+  if (idDaPagina) return idDaPagina;
   try {
     let id = localStorage.getItem("mp_distinct_id");
     if (!id) { id = idAleatorio(); localStorage.setItem("mp_distinct_id", id); }
-    return id;
-  } catch { return "anon"; }
+    return (idDaPagina = id);
+  } catch { return (idDaPagina = idAleatorio()); }
 }
 
 /* ---------- código da visita ----------
@@ -202,7 +213,11 @@ function mpDistinctId() {
    Separado do mp_distinct_id: identidade do Mixpanel e chave de casamento da
    Meta são coisas diferentes, e juntar deixaria uma refém da outra. */
 const ALFABETO = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+let codigoDaPagina = "";
 function codigoVisita() {
+  /* a mesma memória do mpDistinctId: este código é o external_id da Meta, e
+     dividido em dois o PageView e o Lead da mesma pessoa não casam */
+  if (codigoDaPagina) return codigoDaPagina;
   try {
     let c = localStorage.getItem("visita_ref");
     if (!c) {
@@ -210,7 +225,7 @@ function codigoVisita() {
         .map(byte => ALFABETO[byte % 32]).join("");
       localStorage.setItem("visita_ref", c);
     }
-    return c;
+    return (codigoDaPagina = c);
   } catch { return ""; }
 }
 

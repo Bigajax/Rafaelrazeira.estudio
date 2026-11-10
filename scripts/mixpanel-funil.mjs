@@ -10,6 +10,13 @@
    COMO USAR:
      node scripts/mixpanel-funil.mjs                    (ontem e hoje)
      node scripts/mixpanel-funil.mjs 2026-08-01 2026-08-05
+     node scripts/mixpanel-funil.mjs 2026-11-09 2026-11-10 --pagina loja-online
+
+   AS PÁGINAS (10/11/2026): até aqui o script só lia a "vitrine-digital", e
+   para a /loja-online, a v2 e a /vitrine/iphone devolvia "0 eventos". Agora
+   lê todas as páginas de anúncio (PAGINAS abaixo), com uma linha por página
+   e dia, e `--pagina` restringe a uma só. As datas são dias de BRASÍLIA: o
+   export da Mixpanel é em UTC, e pedir 13/08 trazia a noite do dia 12 (14/08).
 
    PRECISA DE: MIXPANEL_API_SECRET no .env.local.
    Onde achar: mixpanel.com → engrenagem → Project Settings → Access Keys.
@@ -40,15 +47,26 @@ if (!SEGREDO) {
 
 const ontem = new Date(Date.now() - 864e5).toISOString().slice(0, 10);
 const hoje = new Date().toISOString().slice(0, 10);
-const de = process.argv[2] || ontem;
-const ate = process.argv[3] || hoje;
+const args = process.argv.slice(2);
+const iPag = args.indexOf("--pagina");
+const SO_PAGINA = iPag >= 0 ? args[iPag + 1] : null;
+const datas = args.filter((a) => /^\d{4}-\d{2}-\d{2}$/.test(a));
+const de = datas[0] || ontem;
+const ate = datas[1] || hoje;
+/* as páginas que recebem anúncio; o /estudio e o resto ficam fora */
+const PAGINAS = ["vitrine-digital", "vitrine-digital-en", "vitrine-digital-iphone", "loja-online", "loja-online-v2", "amostra"];
+const diaUtc = (d, n) => new Date(Date.parse(d + "T00:00:00Z") + n * 864e5).toISOString().slice(0, 10);
+/* o dia de Brasília de um evento: o time menos 3 horas */
+const diaBrt = (t) => new Date(t * 1000 - 3 * 3600e3).toISOString().slice(0, 10);
 
 /* Datacenters da Meta e saídas de proxy. Nada disso é gente, e contar como
    se fosse já inflou a leitura em quase três vezes uma vez. */
-const DATACENTER = ["Prineville", "Luleå", "Lulea", "San Jose", "Ashburn", "Boardman", "Des Moines", "Council Bluffs", "Dublin", "Clonee"];
+const DATACENTER = ["Prineville", "Luleå", "Lulea", "San Jose", "Ashburn", "Boardman", "Des Moines", "Council Bluffs", "Dublin", "Clonee", "Forest City", "Altoona", "Fort Worth", "Gallatin", "Springfield"];
+/* o Rafael conferindo as próprias páginas */
+const CASA = ["Maringá", "Sarandi"];
 
 console.log(`Puxando ${de} até ${ate}…`);
-const r = await fetch(`https://data.mixpanel.com/api/2.0/export?from_date=${de}&to_date=${ate}`, {
+const r = await fetch(`https://data.mixpanel.com/api/2.0/export?from_date=${diaUtc(de, -1)}&to_date=${[diaUtc(ate, 1), hoje].sort()[0]}`, {
   headers: { Authorization: "Basic " + Buffer.from(SEGREDO + ":").toString("base64") },
 });
 if (!r.ok) {
@@ -80,22 +98,57 @@ const emSegundos = (t) => (t > 1e12 ? Math.round(t / 1000) : t);
 
 /* A API devolve JSON por linha, não um array: um evento por linha */
 const linhas = (await r.text()).trim().split("\n").filter(Boolean);
-const eventos = linhas.map((l) => JSON.parse(l)).filter((e) => e.properties.page === "vitrine-digital");
-for (const e of eventos) {
+/* O export devolve o MESMO evento mais de uma vez (534 linhas e 373
+   $insert_id de 08 a 10/11). A tela da Mixpanel tira a repetição; aqui é à
+   mão, senão quem abriu uma vez aparece abrindo três. */
+const vistos = new Set();
+const eventos = [];
+for (const l of linhas) {
+  const e = JSON.parse(l);
+  const p = e.properties;
+  if (p.$insert_id) {
+    if (vistos.has(p.$insert_id)) continue;
+    vistos.add(p.$insert_id);
+  }
+  p.time = emSegundos(p.time);
+  const d = diaBrt(p.time);
+  if (d < de || d > ate) continue;
+  if (!(SO_PAGINA ? p.page === SO_PAGINA : PAGINAS.includes(p.page))) continue;
   e.event = NOME_NOVO[e.event] || e.event;
-  e.properties.time = emSegundos(e.properties.time);
+  eventos.push(e);
 }
-console.log(`${linhas.length} eventos no projeto, ${eventos.length} da vitrine-digital\n`);
+console.log(`${linhas.length} linhas no export, ${eventos.length} eventos de ${SO_PAGINA || "páginas de anúncio"} de ${de} a ${ate} (BRT)\n`);
 if (!eventos.length) process.exit(0);
 
 const bruto = path.join(RAIZ, `mixpanel-${de}_${ate}.json`);
 fs.writeFileSync(bruto, JSON.stringify(eventos, null, 1));
 
+/* pessoa = id + página: quem abre duas páginas conta em cada uma */
 const pessoas = new Map();
+eventos.sort((a, b) => a.properties.time - b.properties.time);
 for (const e of eventos) {
-  const id = e.properties.distinct_id;
+  const id = e.properties.distinct_id + "|" + e.properties.page;
   if (!pessoas.has(id)) pessoas.set(id, { eventos: [], p: e.properties });
   pessoas.get(id).eventos.push({ ev: e.event, t: e.properties.time, props: e.properties });
+}
+
+/* ---------- a visita partida no iOS (10/11/2026) ----------
+   Até o conserto em components/vitrine/tracking.ts, o navegador interno do
+   Instagram e do Facebook no iPhone mandava o "Abriu a página" com um id e
+   o resto da visita com outro. Para ler o que já foi gravado: o id sem
+   "Abriu a página" junta no que abriu a mesma página, na mesma cidade e no
+   mesmo sistema, até 3 minutos antes. */
+const lista = [...pessoas.entries()];
+for (const [k, v] of lista) {
+  if (v.eventos.some((x) => x.ev === "Abriu a página")) continue;
+  const t0 = v.eventos[0].t;
+  const par = lista.find(([k2, w]) => k2 !== k && pessoas.has(k2)
+    && w.p.page === v.p.page && w.p.$city === v.p.$city && w.p.$os === v.p.$os
+    && w.eventos.some((x) => x.ev === "Abriu a página" && x.t <= t0 && t0 - x.t <= 180));
+  if (!par) continue;
+  par[1].eventos.push(...v.eventos);
+  par[1].eventos.sort((a, b) => a.t - b.t);
+  pessoas.delete(k);
 }
 
 function classificar(v) {
@@ -104,7 +157,7 @@ function classificar(v) {
   if (/localhost|127\.0\.0\.1|vercel\.app\/.*preview/.test(url)) return "teste (localhost)";
   if (pais && pais !== "BR") return "bot / datacenter";
   if (DATACENTER.includes(cidade)) return "bot / datacenter";
-  if (cidade === "Maringá") return "você (Maringá)";
+  if (CASA.includes(cidade)) return "você (Maringá/Sarandi)";
   return "visitante real";
 }
 for (const v of pessoas.values()) v.tipo = classificar(v);
@@ -149,6 +202,24 @@ for (const ev of ["Abriu a página", "Rolou", "Viu a oferta", "Clicou em CTA", "
   const n = reais.filter((v) => tem(v, ev)).length;
   const pct = ((n / reais.length) * 100).toFixed(0);
   console.log(`  ${ev.padEnd(21)} ${String(n).padStart(3)}  ${pct.padStart(3)}%  ${"█".repeat(Math.round(n / reais.length * 34))}`);
+}
+
+/* uma linha por dia de Brasília e página, para cruzar com a Meta */
+console.log("\n=== por dia (BRT) e página ===");
+const porPag = {};
+for (const v of reais) {
+  const k = `${diaBrt(v.eventos[0].t)}  ${String(v.p.page).padEnd(22)}`;
+  const g = (porPag[k] ??= { n: 0, rolou: 0, form: 0, enviou: 0, anuncios: {} });
+  g.n++;
+  if (tem(v, "Rolou")) g.rolou++;
+  if (tem(v, "Tocou no formulário")) g.form++;
+  if (tem(v, "Enviou o formulário")) g.enviou++;
+  const a = v.eventos.map((x) => x.props.utm_content).find(Boolean) || "sem utm";
+  g.anuncios[a] = (g.anuncios[a] || 0) + 1;
+}
+for (const [k, g] of Object.entries(porPag).sort()) {
+  const an = Object.entries(g.anuncios).sort((a, b) => b[1] - a[1]).map(([a, n]) => `${a} ${n}`).join(", ");
+  console.log(`  ${k} ${String(g.n).padStart(3)} pessoas | rolou ${g.rolou} | tocou no form. ${g.form} | enviou ${g.enviou} | ${an}`);
 }
 
 /* O que a instrumentação de leitura passou a responder: onde a pessoa parou */

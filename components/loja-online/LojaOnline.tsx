@@ -36,7 +36,7 @@ import s from "./loja-online.module.css";
 import v from "@/app/(pt)/vitrine-digital/vitrine.module.css";
 import { CampoIsca, useGuardaDeFormulario } from "@/components/form-guarda";
 import { mascararWhatsapp, whatsappValido } from "@/components/telefone";
-import { diagnosticoDoArroba, enviarLeadVitrine, registrarSuspeito, type DiagnosticoArroba } from "@/components/vitrine/lead-flow";
+import { diagnosticoDoArroba, enviarLeadVitrine, ESPACO_NO_ARROBA, registrarSuspeito, temEspaco, type DiagnosticoArroba } from "@/components/vitrine/lead-flow";
 import type { LojaEncontrada } from "@/components/lead";
 import { focarSemContar, initTracking } from "@/components/vitrine/tracking";
 import { ligarAncoras } from "@/components/vitrine/ancora";
@@ -172,6 +172,7 @@ export function FormAmostra({ produto = "loja online", semTitulo = false }: { pr
       {instaDiag === "telefone" ? "Isso é um telefone. Aqui eu preciso do @ da loja no Instagram, o nome logo abaixo da foto do perfil."
         : instaDiag === "email" ? "Isso é um e-mail. Aqui eu preciso do @ da loja no Instagram, o nome logo abaixo da foto do perfil."
         : recusas >= 2 ? <>A Meta não reconhece <b>@{a}</b> como conta profissional, e as peças da amostra saem do perfil. Se preferir, <a href={linkWhatsApp("Oi Rafael! Tentei mandar o @ da minha loja pela página da loja online e não deu certo. Pode me ajudar?")} target="_blank" rel="noopener" data-cta="arroba_ajuda" data-cta-dest="whatsapp">me chama no WhatsApp</a>.</>
+        : temEspaco(a) ? ESPACO_NO_ARROBA
         : <>Não achei <b>@{a}</b> no Instagram. Confere o @ da loja: precisa ser a conta profissional, é dela que eu tiro as fotos.</>}
     </small>}
     <button type="submit" className={`${s.botao} ${s.rosa}`} disabled={enviando}>{enviando ? "Enviando..." : CTA}</button>

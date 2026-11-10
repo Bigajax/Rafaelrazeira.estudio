@@ -19,7 +19,8 @@
 
    ---------- os três desfechos ----------
    ok           conta profissional encontrada: o lead vale, segue tudo.
-   invalido     formato impossível (e-mail, espaço, 40 letras) ou a Meta
+   invalido     formato impossível (e-mail, 40 letras; o espaço só depois
+                de tentar as emendas, ver `emendas`) ou a Meta
                 respondeu 110: "não existe ou não é conta profissional".
                 Dos dois jeitos não há de onde tirar a prévia.
    desconhecido a Meta não respondeu, o token venceu, a variável falta.
@@ -68,34 +69,35 @@ function pareceSite(v: string): boolean {
 }
 
 /* A régua do próprio Instagram: até 30 caracteres, letras, números, ponto e
-   sublinhado. Um e-mail tem @ no meio e cai aqui; "Gráfica leão" tem
-   espaço e acento e cai aqui. Nenhum dos dois precisa de rede para ser
-   recusado. E precisa de pelo menos uma letra ou número (04/11/2026): "."
-   passou como @ e virou card com nome e Instagram ".", porque a Meta
-   respondeu com erro e o @ entrou como "desconhecido". */
+   sublinhado. Um e-mail tem @ no meio e cai aqui. Nenhum dos dois precisa de
+   rede para ser recusado. E precisa de pelo menos uma letra ou número
+   (04/11/2026): "." passou como @ e virou card com nome e Instagram ".",
+   porque a Meta respondeu com erro e o @ entrou como "desconhecido". */
 const FORMATO = /^(?=[._]*[a-z0-9])[a-z0-9._]{1,30}$/;
 
-export async function conferirArroba(bruto: string): Promise<Conferencia> {
-  const cru = String(bruto || "").trim();
-  if (pareceSite(cru)) return { estado: "desconhecido", arroba: cru, motivo: "site" };
+/* O @ escrito como nome (10/11/2026): "@voltz sports" chegou de um anúncio
+   pago da /loja-online com WhatsApp e foi recusado pelo espaço; a pessoa não
+   tentou de novo. Quem escreve com espaço ou acento quase sempre está
+   escrevendo o nome da loja, e o @ de verdade é esse nome emendado. Então,
+   antes de recusar, pergunta à Meta pelas emendas possíveis: junto
+   ("voltzsports"), com ponto e com sublinhado, sem acento. Só vale a que a
+   Meta CONFIRMAR: um chute não confirmado nunca vira o @ da loja. */
+function emendas(arroba: string): string[] {
+  if (!/\s/.test(arroba) && !/[^\x00-\x7f]/.test(arroba)) return [];
+  const sem = arroba.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+  const partes = sem.split(/\s+/).filter(Boolean);
+  const lista = [partes.join(""), partes.join("."), partes.join("_")];
+  return [...new Set(lista)].filter((v) => FORMATO.test(v));
+}
 
-  const arroba = limparArroba(cru);
-  if (!arroba || !FORMATO.test(arroba)) return { estado: "invalido", arroba, motivo: "formato" };
+type Resposta = { estado: EstadoArroba; arroba: string; seguidores?: number; posts?: number; motivo?: string };
 
-  const token = process.env.IG_GRAPH_TOKEN;
-  const id = process.env.IG_GRAPH_ID;
-  if (!token || !id) {
-    console.warn("[arroba] IG_GRAPH_TOKEN ou IG_GRAPH_ID ausente: o @ não foi conferido.");
-    return { estado: "desconhecido", arroba, motivo: "sem token" };
-  }
-
-  const ctrl = new AbortController();
-  const t = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
+async function consultar(arroba: string, token: string, id: string, signal: AbortSignal): Promise<Resposta> {
   try {
     const campos = "username,followers_count,media_count";
     const r = await fetch(
       `https://graph.facebook.com/${VERSAO}/${id}?fields=business_discovery.username(${encodeURIComponent(arroba)})%7B${campos}%7D&access_token=${token}`,
-      { signal: ctrl.signal },
+      { signal },
     );
     const j = (await r.json()) as {
       business_discovery?: { username?: string; followers_count?: number; media_count?: number };
@@ -114,6 +116,34 @@ export async function conferirArroba(bruto: string): Promise<Conferencia> {
   } catch (e) {
     console.error("[arroba] falha ao conferir:", (e as Error)?.message || e);
     return { estado: "desconhecido", arroba, motivo: "exceção" };
+  }
+}
+
+export async function conferirArroba(bruto: string): Promise<Conferencia> {
+  const cru = String(bruto || "").trim();
+  if (pareceSite(cru)) return { estado: "desconhecido", arroba: cru, motivo: "site" };
+
+  const arroba = limparArroba(cru);
+  const tentativas = FORMATO.test(arroba) ? [arroba] : emendas(arroba);
+  if (!arroba || !tentativas.length) return { estado: "invalido", arroba, motivo: "formato" };
+
+  const token = process.env.IG_GRAPH_TOKEN;
+  const id = process.env.IG_GRAPH_ID;
+  if (!token || !id) {
+    console.warn("[arroba] IG_GRAPH_TOKEN ou IG_GRAPH_ID ausente: o @ não foi conferido.");
+    /* sem rede não há como confirmar a emenda: o escrito com espaço segue recusado */
+    return tentativas[0] === arroba ? { estado: "desconhecido", arroba, motivo: "sem token" } : { estado: "invalido", arroba, motivo: "formato" };
+  }
+
+  /* As emendas vão juntas, no mesmo prazo de uma consulta só: a rota tem 6s. */
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
+  try {
+    const respostas = await Promise.all(tentativas.map((a) => consultar(a, token, id, ctrl.signal)));
+    if (tentativas[0] === arroba) return respostas[0];
+    const achada = respostas.find((r) => r.estado === "ok");
+    if (achada) return { ...achada, motivo: `emenda de "${arroba}"` };
+    return { estado: "invalido", arroba, motivo: "formato" };
   } finally {
     clearTimeout(t);
   }

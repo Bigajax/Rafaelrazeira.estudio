@@ -59,6 +59,13 @@ export function diagnosticoDoArroba(v: string): DiagnosticoArroba | null {
   return null;
 }
 
+/* O @ escrito como nome da loja (10/11/2026): "@voltz sports" foi recusado
+   na /loja-online e a tela disse só "Não achei", sem dizer por quê; a pessoa
+   não tentou de novo. A rota já tenta as emendas (lib/arroba.ts); quando
+   nenhuma existe, a recusa diz o motivo: o @ não tem espaço. */
+export const ESPACO_NO_ARROBA = "O @ não tem espaço: é o nome logo abaixo da foto do perfil, tudo junto, às vezes com ponto ou sublinhado. Confere lá no Instagram e escreve igual.";
+export const temEspaco = (v: string) => /\S\s+\S/.test(String(v || "").trim());
+
 /* ---------- o link de contato, por idioma ----------
    pt: o wa.me com a mensagem pronta. A primeira linha é a mesma dos CTAs da
    página: a conversa começa do mesmo jeito, venha de onde vier. O telefone
