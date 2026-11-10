@@ -69,6 +69,7 @@ import {
   type Estagio,
   type LeadPainel,
 } from "@/lib/crm/tipos";
+import { esperaPorMim } from "@/lib/crm/atendimento";
 import { CardLead, CardVoando } from "./CardLead";
 import { ModalContrato } from "./ModalContrato";
 import { ModalNovoLead } from "./ModalNovoLead";
@@ -956,9 +957,10 @@ function Coluna({
     disabled: desabilitado,
   });
   const soma = leads.reduce((s, l) => s + Number(l.ticket_estimado ?? 0), 0);
-  const pedindo = leads.filter((l) =>
-    ["atrasado", "sem_passo"].includes(urgencia(l, hoje)),
-  ).length;
+  /* Só quem espera o Rafael falar (10/11): pela data vencida, as sete
+     colunas diziam que TODOS os 574 cards pediam atenção, e aviso em tudo
+     não avisa de nada. É a mesma régua do número do Hoje no menu. */
+  const pedindo = leads.filter((l) => esperaPorMim(l, hoje)).length;
   return (
     <section
       className={p.coluna}
@@ -979,7 +981,7 @@ function Coluna({
           {pedindo > 0 ? (
             <span>
               <i />
-              {pedindo} {pedindo === 1 ? "pede" : "pedem"} atenção
+              {pedindo} {pedindo === 1 ? "espera" : "esperam"} você
             </span>
           ) : (
             <span>{String(indice + 1).padStart(2, "0")} / 07</span>

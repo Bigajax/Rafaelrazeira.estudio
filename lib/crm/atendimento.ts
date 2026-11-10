@@ -178,6 +178,10 @@ export const ehVoltaDoPreco = (resumo: string | null | undefined) =>
    registrar pedia um modal. */
 export const RESUMO_RESPONDEU = "Respondeu (marcado à mão)";
 
+/* A cobrança da parcela (10/11): o Santana devia R$ 400 desde 26/09 e o
+   "Mandar mensagem" não tinha texto nenhum para isso. */
+export const TITULO_COBRANCA = "Cobrança da parcela";
+
 export const GRUPOS_DA_FILA = [
   { id: "responder", nome: "Responder agora" },
   { id: "novos", nome: "Chegou e não ouviu de mim" },

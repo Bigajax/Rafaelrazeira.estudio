@@ -37,7 +37,7 @@
 import { useEffect, useState } from "react";
 import { registrarToque } from "@/app/(pt)/crm/acoes";
 import { lerHistoricoAtendimento } from "@/app/(pt)/crm/acoes-atendimento";
-import { ehToqueDeBlack, IMAGEM_BLACK, type HistoricoAtendimento } from "@/lib/crm/atendimento";
+import { ehToqueDeBlack, ehToqueDePreco, ehVoltaDoPreco, IMAGEM_BLACK, type HistoricoAtendimento } from "@/lib/crm/atendimento";
 import { dadosDaOficina } from "@/app/(pt)/crm/acoes-producao";
 import {
   aplicarSaudacao,
@@ -327,6 +327,10 @@ export function ModalMensagem({
   const avisos = (
     <>
       {temColchete ? <p className={s.erro}>Troque o que está entre colchetes antes de enviar.</p> : null}
+      {/* O preço seco em texto morreu (leituras de 18/09 e 01/11: ~40
+          receberam o valor, nenhuma fechou pela conversa; onde houve áudio
+          e proposta, a conversa viveu). Lembra, não bloqueia. */}
+      {ehToqueDePreco(tituloDe(escolhido)) && !ehVoltaDoPreco(tituloDe(escolhido)) && !ehBlack ? <p className={s.msgCanal}>Preço só em texto costuma morrer: mande junto o áudio de 30 segundos e, se der, o link da proposta.</p> : null}
       {jaEnviada ? <p className={s.erro}>Esta mensagem já foi enviada para {lead.nome} em {quandoFoi(jaEnviada.created_at)}. Repetida, ela lê como robô.</p> : null}
       {!jaEnviada && minutosDaUltima !== null && minutosDaUltima < 24 * 60 ? <p className={s.erro}>Sua última mensagem saiu há {minutosDaUltima < 60 ? `${Math.max(1, minutosDaUltima)} min` : `${Math.floor(minutosDaUltima / 60)} h`} e não tem resposta registrada. Se a pessoa não respondeu, mais uma agora lê como pressão.</p> : null}
     </>

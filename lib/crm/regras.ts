@@ -872,9 +872,12 @@ export type DadosOficina = {
 export type DadosTemplate = Pick<Lead, "nome" | "empresa" | "nicho" | "cidade"> & {
   instagram?: string | null;
   oficina?: DadosOficina | null;
+  /* {saldo} (10/11): o que falta da parcela, para a cobrança sair com o
+     valor escrito. Só o lead que deve o tem; nos outros vira lacuna. */
+  cobranca?: { saldo: number } | null;
 };
 
-const VARIAVEIS_RE = /\{(nome|empresa|nicho|cidade|instagram|link|pecas|destaques|topo)\}/g;
+const VARIAVEIS_RE = /\{(nome|empresa|nicho|cidade|instagram|link|pecas|destaques|topo|saldo)\}/g;
 
 /* "A, B e C": a lista lida como se fala, sem vírgula antes do "e". */
 function listar(nomes: string[]): string | null {
@@ -929,6 +932,7 @@ function valoresDe(lead: DadosTemplate, paraRender: boolean): Record<string, str
     pecas: o?.pecas ? String(o.pecas) : null,
     destaques: o ? listar(o.destaques) : null,
     topo: o?.destaques[0]?.trim() || null,
+    saldo: lead.cobranca ? dinheiro(lead.cobranca.saldo) || null : null,
   };
 }
 

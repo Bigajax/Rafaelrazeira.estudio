@@ -156,14 +156,16 @@ function Conteudo({ lead, hoje }: { lead: LeadPainel; hoje: string }) {
           )}
         </div>
       </div>
-      <div className={p.cardValor}>
-        <span>
-          {lead.estagio === "ganho" ? "Valor fechado" : "Valor estimado"}
-        </span>
-        <strong>
-          {valor == null ? "Sem estimativa" : dinheiro(valor) || "R$ 0"}
-        </strong>
-      </div>
+      {/* Sem valor, sem linha (10/11): "Sem estimativa" em negrito repetia
+          em quase todos os 574 cards e era a coisa mais alta de cada um. */}
+      {valor != null ? (
+        <div className={p.cardValor}>
+          <span>
+            {lead.estagio === "ganho" ? "Valor fechado" : "Valor estimado"}
+          </span>
+          <strong>{dinheiro(valor) || "R$ 0"}</strong>
+        </div>
+      ) : null}
       {!encerrado ? (
         <div
           className={p.proximaAcao}

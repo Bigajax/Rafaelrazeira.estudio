@@ -1709,3 +1709,45 @@ select t.owner_id, v.titulo, 'whatsapp', v.categoria, v.conteudo, v.ordem
  where not exists (
    select 1 from public.crm_templates x
     where x.owner_id = t.owner_id and x.titulo = v.titulo);
+
+-- ============================================================
+-- 10/11/2026: OS TEXTOS "SEM CARA DE IA" E A COBRANÇA
+-- O Rafael pediu templates novos "sem parecer IA". Os vícios achados: frase
+-- espelhada ("Se não for a hora, X. Se for, Y."), fórmula de vendedor ("sem
+-- cerimônia", "prazo fechado e preço fechado", "Prontinho", "consigo te
+-- encaixar no calendário deste mês") e explicação comprida numa bolha só.
+-- Oito textos trocados (uma ideia por bolha, pergunta fácil no fim) e um
+-- novo, a cobrança da parcela, com {saldo} (o Santana devia R$ 400 desde
+-- 26/09 e não havia texto). A abertura do anúncio, a entrega da amostra e as
+-- duas da Black NÃO mudaram: a leitura de 01/11 mostrou que funcionam.
+-- Os textos de antes estão no cofre, em
+-- 6 Diário/templates-antes-de-2026-11-10.json. Já aplicado; fica de registro.
+-- ============================================================
+update public.crm_templates
+   set conteudo = E'Oi, {nome}! A vitrine da {instagram} ainda tá no ar, do jeito que te mandei:\n\n{link}\n\nDeixo mais uns dias ou pode tirar?'
+ where titulo = E'Depois do preço: uma volta, com a saída';
+update public.crm_templates
+   set conteudo = E'Oi, {nome}! Só pra não passar batido: a Black da vitrine da {instagram}, R$ 799 à vista, vai até dia 30.\n\nSeguro a de vocês ou pode tirar do ar?'
+ where titulo = E'Depois da Black: uma volta, com a data';
+update public.crm_templates
+   set conteudo = E'Funciona assim: ela vira o site da loja, no nome de vocês. A cliente escolhe a peça e o pedido já chega pronto no WhatsApp da loja.\n\nVem um painel no celular pra vocês mesmos colocarem peça nova e trocarem preço.\n\nFica R$ 999 uma vez só, sem mensalidade. Metade pra começar e o resto na entrega.\n\nQuer que eu já separe a de vocês?'
+ where titulo = E'Prévia, mensagem 2: o preço (só depois que responder)';
+update public.crm_templates
+   set conteudo = E'Entendo, {nome}. No valor eu não consigo mexer, mas na entrada sim: faço R$ 100 pra começar e o resto só quando estiver no ar.\n\nAssim fica melhor pra vocês?'
+ where titulo = E'Quando o preço trava';
+update public.crm_templates
+   set conteudo = E'Oi, {nome}! Conseguiu olhar a proposta da {empresa}?\n\nSe não for pra agora é só me falar, tá tudo certo.'
+ where titulo = E'Proposta sem resposta';
+update public.crm_templates
+   set conteudo = E'Segue o orçamento da vitrine da {empresa}:\n\n[link da proposta]'
+ where titulo = E'Enviando a proposta';
+update public.crm_templates
+   set conteudo = E'Oi, {nome}! Rafael aqui, a gente conversou um tempo atrás sobre o site da {empresa}.\n\nChegaram a fazer ou ficou parado?'
+ where titulo = E'Reativar contato antigo (mais de 30 dias)';
+update public.crm_templates
+   set conteudo = E'Oi, {nome}! Aqui é o Rafael, faço site pra loja aqui em Maringá. Me passaram o contato da {empresa}.\n\nVocês já têm site ou vendem só pelo Instagram?'
+ where titulo = E'Chegou por indicação';
+insert into public.crm_templates (owner_id, titulo, canal, categoria, conteudo, ordem)
+select t.owner_id, E'Cobrança da parcela', 'whatsapp', 'proposta', E'Oi, {nome}! Tudo certo com a vitrine aí?\n\nFicou em aberto o restante, {saldo}. Te mando o Pix por aqui?', 13
+  from (select distinct owner_id from public.crm_templates) t
+ where not exists (select 1 from public.crm_templates x where x.owner_id = t.owner_id and x.titulo = E'Cobrança da parcela');

@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { MetaSemana } from "@/components/crm/MetaSemana";
 import { metricas } from "@/lib/crm/dados";
+import { funilSemanal } from "@/lib/crm/funil-semanal";
 import { constancia } from "@/lib/marketing/dados";
 import { dataCurta, dinheiro, dinheiroCurto, hojeSP, rotuloSemana } from "@/lib/crm/regras";
 import { NOME_CANAL, NOME_MOTIVO, type Canal, type MotivoPerda } from "@/lib/crm/tipos";
@@ -119,10 +120,12 @@ export default async function PaginaMetricas({
   const pedido = Number(bruto);
   const dias = (PERIODOS as readonly number[]).includes(pedido) ? (pedido as 7 | 30 | 90) : 30;
 
-  const [m, feed] = await Promise.all([
+  const [m, feed, coortes] = await Promise.all([
     exemplo ? { ...EXEMPLO, dias } : metricas(dias),
     constancia(hojeSP()),
+    exemplo ? [] : funilSemanal(8),
   ]);
+  const tetoCoorte = Math.max(1, ...coortes.map((x) => x.chegaram));
   const tetoFeed = Math.max(1, ...feed.semanas.map((x) => x.postadas));
 
   const taxaResposta = m.respostas.contatados
@@ -221,7 +224,8 @@ export default async function PaginaMetricas({
             {taxaResposta === null ? "sem dado" : `${taxaResposta}%`}
           </b>
           <small>
-            {m.respostas.responderam} de {m.respostas.contatados} responderam depois de você falar
+            {m.respostas.responderam} de {m.respostas.contatados} responderam depois de você falar. Só conta a resposta
+            registrada: com o leitor do WhatsApp desligado, é o que foi marcado à mão.
           </small>
         </div>
 
@@ -233,6 +237,50 @@ export default async function PaginaMetricas({
           <small>do primeiro registro até fechar, nos ganhos do período</small>
         </div>
       </section>
+
+      {/* ---------- 0. quem procurou o estúdio, por semana de chegada (10/11) ----------
+          A pergunta que decide o mês, e que nenhum bloco respondia: de quem
+          chegou naquela semana, quantos ouviram de mim, em quanto tempo,
+          quantos viram o preço e quantos fecharam. Ver lib/crm/funil-semanal.ts. */}
+      {coortes.length ? (
+        <>
+          <h2 className={s.rotulo}>
+            Quem procurou o estúdio
+            <span className={s.rotuloCont}>por semana de chegada, sem a prospecção</span>
+          </h2>
+          <section className={s.bloco}>
+            <div className={s.anuncios}>
+              <div className={`${s.anuncioLinha} ${s.anuncioCab}`} aria-hidden>
+                <span />
+                <span />
+                <b>chegou</b>
+                <b>ouviu</b>
+                <b>preço</b>
+                <b>fechou</b>
+              </div>
+              {coortes.map((c) => (
+                <div key={c.semana} className={s.anuncioLinha}>
+                  <span className={s.anuncioNome}>semana de {rotuloSemana(c.semana)}</span>
+                  <span className={s.barraTrilho}>
+                    <i className={s.barraFill} style={{ width: `${(c.chegaram / tetoCoorte) * 100}%` }} />
+                  </span>
+                  <b className={s.anuncioNum}>{c.chegaram}</b>
+                  <b className={`${s.anuncioNum} ${c.chegaram && c.falei < c.chegaram ? s.funilQueda : ""}`}>
+                    {c.falei}
+                    <small>{c.horasAteFalar === null ? "" : c.horasAteFalar < 48 ? `${c.horasAteFalar} h` : `${Math.round(c.horasAteFalar / 24)} d`}</small>
+                  </b>
+                  <b className={s.anuncioNum}>{c.preco}</b>
+                  <b className={`${s.anuncioNum} ${c.fecharam ? s.anuncioGanho : ""}`}>{c.fecharam}</b>
+                </div>
+              ))}
+            </div>
+            <p className={s.blocoNota} style={{ marginTop: 12 }}>
+              "Ouviu" é quem recebeu a primeira mensagem, com o tempo mediano até ela. Em rosa, a semana em que alguém
+              ficou sem ouvir. "Fechou" é o card em Ganho; o que entrou fica no Caixa.
+            </p>
+          </section>
+        </>
+      ) : null}
 
       {/* ---------- 1. atividade ---------- */}
       <h2 className={s.rotulo}>

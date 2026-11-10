@@ -35,6 +35,7 @@ import {
   TEMPLATE_BLACK_AMOSTRA,
   TEMPLATE_BLACK_VIU,
   TEMPLATE_QUER_NO_AR,
+  TITULO_COBRANCA,
   TITULO_VOLTA_DA_BLACK,
   TITULO_VOLTA_DA_LOJA_ONLINE,
   TITULO_VOLTA_DO_PRECO,
@@ -98,6 +99,7 @@ function motivoDe({ lead: l, grupo, encerrar }: Linha, hoje: string, agora: numb
    decide pela etapa e pela escada do silêncio. */
 function sugestaoDe({ lead: l, grupo, encerrar }: Linha, hoje: string) {
   if (l.quer_no_ar) return { titulo: TEMPLATE_QUER_NO_AR, porque: "Pediu para colocar no ar: responda com o Pix da entrada" };
+  if (l.cobranca && l.cobranca.quando <= hoje) return { titulo: TITULO_COBRANCA, porque: `Tem ${dinheiro(l.cobranca.saldo)} em aberto: a cobrança, com o valor já escrito` };
   /* O preço que saiu por fora do CRM não tem toque: a lista da Black traz
      "(já viu o preço)" no passo, conferido no WhatsApp em 03/11. */
   if (blackPorMandar(l))
@@ -135,6 +137,11 @@ export function CentralAtendimento({ painel, templates }: Props) {
   const [arquivados, setArquivados] = useState<ComoEstava[] | null>(null);
   const [erroArquivo, setErroArquivo] = useState<string | null>(null);
   const [arquivando, comecarArquivo] = useTransition();
+  /* O LOTE (10/11): em 10/11 havia 95 voltas do preço para mandar, uma por
+     uma, e cada envio devolvia à lista. Agora, ao enviar, o modal do
+     próximo do MESMO grupo já abre. Fechar sem enviar para o lote. O modal
+     chama aoEnviar e logo aoFechar, por isso o próximo espera aqui. */
+  const seguinte = useRef<typeof mensagem>(null);
   const detalheRef = useRef<HTMLElement>(null);
   const filaRef = useRef<HTMLElement>(null);
 
@@ -153,7 +160,9 @@ export function CentralAtendimento({ painel, templates }: Props) {
           const texto = normalizar([l.nome, l.empresa, l.nicho, l.cidade, l.email, l.instagram, l.whatsapp].filter(Boolean).join(" "));
           return texto.includes(alvo) || (numero.length >= 5 && (l.whatsapp ?? "").replace(/\D/g, "").includes(numero));
         })
-        .map((l) => ({ lead: l, grupo: null, encerrar: naFila.get(l.id)?.encerrar ?? false }));
+        /* Quem está na fila leva o grupo dela para a busca (10/11): o Santana,
+           que deve parcela, aparecia como "Ganho · sem retorno marcado". */
+        .map((l) => ({ lead: l, grupo: naFila.get(l.id)?.grupo ?? null, encerrar: naFila.get(l.id)?.encerrar ?? false }));
     }
     if (verFora) return fila.fora.map((l) => ({ lead: l, grupo: null, encerrar: false }));
     return fila.itens;
@@ -367,9 +376,19 @@ export function CentralAtendimento({ painel, templates }: Props) {
           lead={mensagem.lead}
           templates={templates}
           sugestao={mensagem.sugestao}
-          aoFechar={() => setMensagem(null)}
+          key={mensagem.lead.id}
+          aoFechar={() => {
+            setMensagem(seguinte.current);
+            seguinte.current = null;
+          }}
           aoEnviar={(r) => {
+            const daVez = linhas.find((x) => x.lead.id === mensagem.lead.id);
+            const prox = linhas.find((x) => x.lead.id === mensagem.proximo);
             setSelecionado(mensagem.proximo);
+            seguinte.current =
+              prox && daVez?.grupo && daVez.grupo !== "responder" && prox.grupo === daVez.grupo && !prox.encerrar
+                ? { lead: prox.lead, proximo: proximoDe(prox.lead.id), sugestao: sugestaoDe(prox, hoje) }
+                : null;
             void r.finally(() => router.refresh());
           }}
         />
@@ -478,7 +497,7 @@ function Atendimento({
   const vez: { titulo: string; detalhe?: string; botao: string } = lead.quer_no_ar
     ? { titulo: "Pediu para colocar no ar", detalhe: "É o lead mais quente da fila. Responda com o Pix da entrada.", botao: "Mandar o Pix" }
     : cobranca
-      ? { titulo: `A receber ${dinheiro(cobranca.saldo)}`, detalhe: `${cobranca.rotulo} · ${atrasoDaParcela > 0 ? `venceu há ${dias(atrasoDaParcela)}` : "vence hoje"}, em ${dataCurta(cobranca.vence_em)}`, botao: "Mandar mensagem" }
+      ? { titulo: `A receber ${dinheiro(cobranca.saldo)}`, detalhe: `${cobranca.rotulo} · ${atrasoDaParcela > 0 ? `venceu há ${dias(atrasoDaParcela)}` : "vence hoje"}, em ${dataCurta(cobranca.vence_em)}`, botao: "Cobrar no WhatsApp" }
       : marca
         ? { titulo: marca.nome, detalhe: marca.id === "audio" ? "Grave o áudio explicando como funciona: onde houve áudio, a conversa viveu." : "Mande o resumo pronto pra encaminhar e pergunte quando eles conversam.", botao: marca.id === "audio" ? "Abrir a conversa" : "Mandar o resumo" }
         : respondeu
@@ -521,6 +540,7 @@ function Atendimento({
           {cobranca && <Link className={c.botao} href="/crm/caixa">Dar baixa no Caixa</Link>}
           {instagram && <a className={c.botao} href={`https://www.instagram.com/${encodeURIComponent(instagram)}/`} target="_blank" rel="noopener noreferrer">Instagram ↗</a>}
         </div>
+        {(grupo === "novos" || grupo === "preco" || grupo === "amostra") && !encerrar && <small>Ao enviar, o próximo deste grupo já abre. Fechar sem enviar para.</small>}
       </section>
 
       {ativo && (
