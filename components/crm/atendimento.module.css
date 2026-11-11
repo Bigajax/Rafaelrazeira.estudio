@@ -67,6 +67,11 @@
 .central .grupo h2 b { min-width: 24px; padding: 2px 7px; border-radius: 980px; background: #f2f2f0; color: #4a4f52; font-size: 11px; text-align: center; font-variant-numeric: tabular-nums; }
 .central .grupo:is([data-grupo="responder"], [data-grupo="novos"]) h2 { color: var(--texto); }
 .central .grupo:is([data-grupo="responder"], [data-grupo="novos"]) h2 b { background: #fbe9e4; color: #a8331f; }
+/* O seletor de segmento da prospecção do dia (11/11): uma linha quieta sob o nome do grupo. */
+.central .segmento { display: grid; gap: 4px; padding: 2px 14px 8px; }
+.central .segmento label { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--suave); }
+.central .segmento select { flex: 1; min-width: 0; padding: 6px 10px; border: 1px solid var(--borda); border-radius: 980px; background: #fff; color: var(--texto); font: 500 12px/1.4 var(--body, Arial, sans-serif); }
+.central .segmento small { font-size: 11px; line-height: 1.5; color: var(--suave); }
 .central .fora { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 12px 14px; border: 0; border-top: 1px solid #e6e6e3; background: #f6f6f4; color: var(--suave); font: 600 12px/1.4 var(--body, Arial, sans-serif); cursor: pointer; }
 .central .fora:hover { color: var(--texto); }
 .central .fora b { font-variant-numeric: tabular-nums; }

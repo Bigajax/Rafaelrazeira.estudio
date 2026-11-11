@@ -1,5 +1,5 @@
 import { ehAtivo, ehNoPipeline, type Interacao, type LeadPainel } from "./tipos";
-import { diasDesde, momentoDoContato, procurouOEstudio } from "./regras";
+import { diaEmSP, diasDesde, momentoDoContato, procurouOEstudio } from "./regras";
 
 export const ABAS_ATENDIMENTO = [
   { id: "novos", nome: "Novos contatos", descricao: "Quem ainda precisa do primeiro atendimento. Continua aqui até você registrar que falou." },
@@ -153,12 +153,34 @@ export function filasAtendimento(leads: LeadPainel[], hoje: string) {
      amostra .... amostra entregue, sem preço e sem reação há 3 dias, ou
                   na lista da Black sem ter recebido a oferta
 
-   A prospecção (garimpo) fica de fora de propósito: 392 leads e 2 ganhos,
-   contra 7 de 9 vindos do anúncio. Ela se trabalha pelo Funil.
+   A prospecção (garimpo) ficou de fora em 10/11: 392 leads e 2 ganhos,
+   contra 7 de 9 vindos do anúncio.
    O que nunca fazer: devolver um grupo "todo mundo que tem data vencida".
    Foi ele que encheu as abas.
+
+   ---------- 11/11/2026: a cobrança que se repetia e a prospecção do dia ----------
+   O Rafael, no dia seguinte: "parece que estou meio limitado a novos
+   clientes. E tá aparecendo esses repetidos aqui."
+
+   OS REPETIDOS. Quem tinha parcela vencida entrava em "Responder agora"
+   todo dia, sem olhar se a cobrança já tinha saído. A HG Surf Wear recebeu
+   mensagem em 10/11 e em 11/11, tinha retorno para 13/11 e seguia no topo.
+   Agora, depois de uma mensagem minha, a cobrança sai da fila e volta na
+   data do próximo passo; sem data, em DIAS_ENTRE_COBRANCAS dias. Dívida
+   que nunca foi cobrada não some por causa de data marcada.
+
+   A PROSPECÇÃO DO DIA. Havia 236 leads de garimpo que nunca receberam
+   mensagem (89 de roupas femininas), só alcançáveis pelo Funil. Entram
+   como QUINTO grupo, no fim, com as três travas que faltavam à aba antiga
+   (351 nomes): só quem nunca ouviu de mim, um segmento por vez e
+   PROSPECCAO_POR_DIA por dia, contando os que já saíram hoje. A regra de
+   saída é o próprio toque: mandou, saiu. Se a pessoa responder, sobe para
+   "Responder agora".
    ============================================================ */
 export const DIAS_NOVO = 14;
+export const DIAS_ENTRE_COBRANCAS = 3;
+export const PROSPECCAO_POR_DIA = 10;
+export const NICHO_PADRAO = "roupas femininas";
 export const DIAS_PARA_VOLTAR = 3;
 export const DIAS_PARA_ENCERRAR = 10;
 
@@ -190,6 +212,7 @@ export const GRUPOS_DA_FILA = [
   { id: "responder", nome: "Responder agora" },
   { id: "preco", nome: "Preço no ar" },
   { id: "amostra", nome: "Amostra sem reação" },
+  { id: "prospeccao", nome: "Prospecção do dia" },
 ] as const;
 export type GrupoDaFila = (typeof GRUPOS_DA_FILA)[number]["id"];
 export type ItemDaFila = { lead: LeadPainel; grupo: GrupoDaFila; encerrar: boolean };
@@ -207,7 +230,24 @@ export const esperaPorMim = (l: CamposDaEspera, hoje: string) => escreveuPorUlti
    toque de preço registrado conta da entrada na etapa. */
 export const diasDoPreco = (l: LeadPainel, hoje: string) => diasDesde(l.preco_em ?? l.entrou_no_estagio_em, hoje);
 
-export function filaDaVez(leads: LeadPainel[], hoje: string) {
+/* O segmento como chave: "Roupas femininas " e "roupas femininas" são o mesmo. */
+export const nichoDe = (l: Pick<LeadPainel, "nicho">) => (l.nicho ?? "").trim().toLocaleLowerCase("pt-BR");
+
+/* A parcela vencida pede cobrança hoje? Não, se a cobrança já saiu e ainda
+   não é hora de voltar (ver a nota de 11/11 acima). */
+export function cobrancaNaVez(l: LeadPainel, hoje: string): boolean {
+  if (!l.cobranca || l.cobranca.quando > hoje) return false;
+  const faleiDepois = l.saidas_seguidas > 0 && Boolean(l.ultimo_toque_em) && diaEmSP(l.ultimo_toque_em!) >= l.cobranca.quando;
+  if (!faleiDepois) return true;
+  if (l.proxima_acao_em && l.proxima_acao_em > hoje) return false;
+  /* O retorno marcado para depois da minha última mensagem chegou: é hoje.
+     Data mais velha que a mensagem não conta, senão a cobrança voltava todo
+     dia de novo assim que a data passasse. */
+  if (l.proxima_acao_em && l.proxima_acao_em > diaEmSP(l.ultimo_toque_em!)) return true;
+  return diasDesde(l.ultimo_toque_em, hoje) >= DIAS_ENTRE_COBRANCAS;
+}
+
+export function filaDaVez(leads: LeadPainel[], hoje: string, nichoEscolhido: string | null = null) {
   const todos = [...new Map(leads.map((l) => [l.id, l])).values()];
   const desempate = (a: LeadPainel, b: LeadPainel) => a.id.localeCompare(b.id);
   const itens: ItemDaFila[] = [];
@@ -220,19 +260,21 @@ export function filaDaVez(leads: LeadPainel[], hoje: string) {
     }
   };
   const adiado = (l: LeadPainel) => Boolean(l.proxima_acao_em && l.proxima_acao_em > hoje);
-  const peso = (l: LeadPainel) => (l.quer_no_ar ? 0 : l.cobranca ? 1 : 2);
+  const peso = (l: LeadPainel) => (l.quer_no_ar ? 0 : cobrancaNaVez(l, hoje) ? 1 : 2);
+  /* Já cobrei e estou esperando: não é fila, e também não é "preço sem resposta, encerrar". */
+  const cobrancaEsperando = (l: LeadPainel) => Boolean(l.cobranca && l.cobranca.quando <= hoje) && !cobrancaNaVez(l, hoje);
 
   por(
     "responder",
     todos
-      .filter((l) => l.quer_no_ar || escreveuPorUltimo(l) || Boolean(l.cobranca && l.cobranca.quando <= hoje) || (ehAtivo(l.estagio) && Boolean(marcaDe(l)) && !adiado(l)))
+      .filter((l) => l.quer_no_ar || escreveuPorUltimo(l) || cobrancaNaVez(l, hoje) || (ehAtivo(l.estagio) && Boolean(marcaDe(l)) && !adiado(l)))
       .sort((a, b) => peso(a) - peso(b) || momentoDoContato(a).localeCompare(momentoDoContato(b)) || desempate(a, b)),
   );
   // Quem acabou de chegar está quente; a espera antiga já esfriou (20/10/2026).
   por("novos", todos.filter((l) => chegouAgora(l, hoje)).sort((a, b) => momentoDoContato(b).localeCompare(momentoDoContato(a)) || desempate(a, b)));
 
-  const ativos = todos.filter((l) => ehNoPipeline(l.estagio) && !usados.has(l.id));
-  let aguardando = 0;
+  const ativos = todos.filter((l) => ehNoPipeline(l.estagio) && !usados.has(l.id) && !cobrancaEsperando(l));
+  let aguardando = todos.filter((l) => !usados.has(l.id) && cobrancaEsperando(l)).length;
 
   /* Quem está na lista da Black e ainda não recebeu a oferta tem uma
      mensagem por mandar, não um silêncio para encerrar. A Vallox viu o preço
@@ -252,6 +294,19 @@ export function filaDaVez(leads: LeadPainel[], hoje: string) {
   aguardando += comAmostra.length - naVezDaAmostra.length;
   por("amostra", naVezDaAmostra.sort((a, b) => Number(paradoDemais(a)) - Number(paradoDemais(b)) || (b.ultimo_toque_em ?? "").localeCompare(a.ultimo_toque_em ?? "") || desempate(a, b)), paradoDemais);
 
+  /* A prospecção do dia (11/11): quem veio do garimpo e nunca ouviu de mim,
+     um segmento por vez, até PROSPECCAO_POR_DIA por dia. Quem tem WhatsApp
+     primeiro (é por onde a mensagem sai), depois o garimpo mais recente. */
+  const nuncaOuviu = todos.filter((l) => l.origem === "prospeccao" && ehNoPipeline(l.estagio) && !usados.has(l.id) && l.toques === l.toques_entrada && !adiado(l));
+  const contagem = new Map<string, number>();
+  for (const l of nuncaOuviu) contagem.set(nichoDe(l), (contagem.get(nichoDe(l)) ?? 0) + 1);
+  const nichos = [...contagem].map(([nicho, quantos]) => ({ nicho, quantos })).sort((a, b) => b.quantos - a.quantos || a.nicho.localeCompare(b.nicho));
+  const nicho = nichos.some((n) => n.nicho === nichoEscolhido) ? nichoEscolhido! : nichos.some((n) => n.nicho === NICHO_PADRAO) ? NICHO_PADRAO : (nichos[0]?.nicho ?? null);
+  const feitosHoje = todos.filter((l) => l.origem === "prospeccao" && l.toques - l.toques_entrada === 1 && Boolean(l.ultimo_toque_em) && diaEmSP(l.ultimo_toque_em!) === hoje).length;
+  const doNicho = nuncaOuviu.filter((l) => nichoDe(l) === nicho).sort((a, b) => Number(Boolean(b.whatsapp)) - Number(Boolean(a.whatsapp)) || b.created_at.localeCompare(a.created_at) || desempate(a, b));
+  por("prospeccao", doNicho.slice(0, Math.max(0, PROSPECCAO_POR_DIA - feitosHoje)));
+  const prospeccao = { nichos, nicho, feitosHoje, noNicho: doNicho.length };
+
   /* Fora da fila: todo o resto do funil, alcançado pela busca. */
   const fora = todos.filter((l) => ehNoPipeline(l.estagio) && !usados.has(l.id)).sort((a, b) => momentoDoContato(b).localeCompare(momentoDoContato(a)) || desempate(a, b));
   /* Os grupos são montados na ordem de quem tem a preferência (quem pediu
@@ -259,7 +314,7 @@ export function filaDaVez(leads: LeadPainel[], hoje: string) {
      ordem da tela: é dela que saem o primeiro aberto e o próximo do lote. */
   const lugar = new Map<GrupoDaFila, number>(GRUPOS_DA_FILA.map((g, i) => [g.id, i]));
   itens.sort((a, b) => lugar.get(a.grupo)! - lugar.get(b.grupo)!);
-  return { itens, fora, aguardando };
+  return { itens, fora, aguardando, prospeccao };
 }
 
 export function tempoDeEspera(instante: string, agora: number): string {

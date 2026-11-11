@@ -75,4 +75,45 @@ testar("Histórico verifica dono antes de consultar interações e não disfarç
   assert.deepEqual(tabelas, ["crm_leads"]);
   assert.ok(filtros.some(([k, v]) => k === "owner_id" && v === "dono"));
 });
+/* 11/11/2026: a cobrança que se repetia e a prospecção do dia. */
+const { filaDaVez, cobrancaNaVez } = carregar("lib/crm/atendimento.ts");
+const divida = { parcela_id: "p", rotulo: "Entrada", valor: 199, saldo: 199, vence_em: "2026-10-06", quando: "2026-10-06", metodo_previsto: null, contrato_titulo: "c" };
+const grupoDe = (r, id) => r.itens.find((i) => i.lead.id === id)?.grupo ?? null;
+testar("Cobrança nunca feita fica na fila, mesmo com retorno no futuro", () => {
+  const l = lead("a", { estagio: "previa", cobranca: divida, toques: 1, saidas_seguidas: 1, ultimo_toque_em: "2026-10-01T12:00:00Z", proxima_acao_em: "2026-12-01" });
+  assert.equal(cobrancaNaVez(l, hoje), true);
+  assert.equal(grupoDe(filaDaVez([l], hoje), "a"), "responder");
+});
+testar("Cobrança feita sai da fila até o retorno marcado, e sem cair em 'encerrar'", () => {
+  const l = lead("a", { estagio: "previa", cobranca: divida, preco_em: "2026-10-01T12:00:00Z", toques: 3, saidas_seguidas: 2, ultimo_toque_em: "2026-10-16T12:00:00Z", proxima_acao_em: "2026-10-18" });
+  const r = filaDaVez([l], hoje);
+  assert.equal(grupoDe(r, "a"), null);
+  assert.equal(r.aguardando, 1);
+  assert.equal(grupoDe(filaDaVez([l], "2026-10-18"), "a"), "responder");
+});
+testar("Cobrança feita sem data volta em 3 dias; se a pessoa responde, volta na hora", () => {
+  const l = lead("a", { estagio: "ganho", cobranca: divida, toques: 2, saidas_seguidas: 1, ultimo_toque_em: "2026-10-15T12:00:00Z" });
+  assert.equal(cobrancaNaVez(l, hoje), false);
+  assert.equal(cobrancaNaVez(l, "2026-10-18"), true);
+  assert.equal(cobrancaNaVez({ ...l, saidas_seguidas: 0, toques_entrada: 1 }, hoje), true);
+});
+testar("Prospecção do dia: só quem nunca ouviu, um segmento, dez por dia", () => {
+  const p = (id, extra = {}) => lead(id, { origem: "prospeccao", nicho: "Roupas femininas", whatsapp: "44999990000", ...extra });
+  const dados = [...Array.from({ length: 14 }, (_, i) => p("r" + String(i).padStart(2, "0"))), p("pet", { nicho: "pet shop" }), p("falado", { toques: 1, saidas_seguidas: 1, ultimo_toque_em: "2026-10-01T12:00:00Z" })];
+  const r = filaDaVez(dados, hoje);
+  assert.equal(r.itens.filter((i) => i.grupo === "prospeccao").length, 10);
+  assert.equal(r.prospeccao.nicho, "roupas femininas");
+  assert.equal(r.prospeccao.noNicho, 14);
+  assert.equal(grupoDe(r, "pet"), null);
+  assert.equal(grupoDe(r, "falado"), null);
+  assert.equal(grupoDe(filaDaVez(dados, hoje, "pet shop"), "pet"), "prospeccao");
+});
+testar("Prospecção do dia desconta os que já saíram hoje e fica depois dos outros grupos", () => {
+  const p = (id, extra = {}) => lead(id, { origem: "prospeccao", nicho: "roupas femininas", ...extra });
+  const feitos = Array.from({ length: 4 }, (_, i) => p("f" + i, { toques: 1, saidas_seguidas: 1, ultimo_toque_em: hoje + "T15:00:00Z" }));
+  const r = filaDaVez([...Array.from({ length: 12 }, (_, i) => p("r" + String(i).padStart(2, "0"))), ...feitos, lead("novo", { created_at: hoje + "T12:00:00Z" })], hoje);
+  assert.equal(r.prospeccao.feitosHoje, 4);
+  assert.equal(r.itens.filter((i) => i.grupo === "prospeccao").length, 6);
+  assert.equal(r.itens[0].lead.id, "novo");
+});
 (async () => { let falhas = 0; for (const t of testes) { try { await t.executar(); console.log("OK: " + t.nome); } catch (e) { falhas++; console.error("FALHOU: " + t.nome, e); } } console.log(`${testes.length - falhas}/${testes.length} cenários de atendimento passaram.`); if (falhas) process.exitCode = 1; })();

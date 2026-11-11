@@ -12,11 +12,13 @@
    Agora a tela é a fila da vez, em quatro grupos na ordem do dinheiro
    (`filaDaVez` em lib/crm/atendimento.ts, onde está o porquê de cada um),
    com o cabeçalho numa linha. O resto do funil fica atrás de "Fora da
-   fila" e da busca, que procura em todos. A prospecção saiu daqui por
-   decisão do Rafael: ela se trabalha pelo Funil.
+   fila" e da busca, que procura em todos. A prospecção saiu daqui em 10/11
+   e voltou em 11/11 como o quinto grupo, "Prospecção do dia": só quem nunca
+   ouviu de mim, um segmento por vez (o seletor no alto do grupo) e dez por
+   dia. O porquê está em lib/crm/atendimento.ts.
 
    O que nunca fazer: devolver uma aba por critério. Cada aba nova vira uma
-   fila que ninguém zera.
+   fila que ninguém zera. Grupo novo só com regra de saída e teto.
    ============================================================ */
 
 import Link from "next/link";
@@ -28,6 +30,7 @@ import {
   DIAS_PARADO,
   DIAS_PARA_ENCERRAR,
   GRUPOS_DA_FILA,
+  PROSPECCAO_POR_DIA,
   MARCAS,
   RESUMO_PRECO_A_MAO,
   RESUMO_QUER_NO_AR,
@@ -92,6 +95,7 @@ function motivoDe({ lead: l, grupo, encerrar }: Linha, hoje: string, agora: numb
     const d = diasDesde(l.ultimo_toque_em ?? l.created_at, hoje);
     return { texto: encerrar ? `Parada há ${dias(d)}: encerrar` : `Amostra há ${dias(d)}, sem reação`, alto: false };
   }
+  if (grupo === "prospeccao") return { texto: l.whatsapp ? "Primeiro contato" : "Primeiro contato, pelo Instagram", alto: false };
   return { texto: `${NOME_ESTAGIO[l.estagio]} · ${l.proxima_acao_em ? `retorno ${dataCurta(l.proxima_acao_em)}` : "sem retorno marcado"}`, alto: false };
 }
 
@@ -146,7 +150,23 @@ export function CentralAtendimento({ painel, templates }: Props) {
   const filaRef = useRef<HTMLElement>(null);
 
   const hoje = painel.hoje;
-  const fila = useMemo(() => filaDaVez(painel.contatos, hoje), [painel.contatos, hoje]);
+  /* O segmento da prospecção do dia fica guardado neste navegador: é
+     conveniência, não dado. Sem ele, a fila escolhe o padrão. */
+  const [nicho, setNicho] = useState<string | null>(null);
+  useEffect(() => {
+    try {
+      const guardado = window.localStorage.getItem("crm_nicho_prospeccao");
+      if (guardado !== null) setNicho(guardado);
+    } catch {}
+  }, []);
+  const trocarNicho = (n: string) => {
+    setNicho(n);
+    setSelecionado(null);
+    try {
+      window.localStorage.setItem("crm_nicho_prospeccao", n);
+    } catch {}
+  };
+  const fila = useMemo(() => filaDaVez(painel.contatos, hoje, nicho), [painel.contatos, hoje, nicho]);
   const termo = busca.trim();
   /* A busca procura em TODOS, não só na fila: é por ela que se chega em
      quem ficou de fora. */
@@ -312,12 +332,30 @@ export function CentralAtendimento({ painel, templates }: Props) {
             {agrupada ? (
               GRUPOS_DA_FILA.map((g) => {
                 const doGrupo = linhas.filter((i) => i.grupo === g.id);
-                return doGrupo.length ? (
+                const p = g.id === "prospeccao" && fila.prospeccao.nichos.length ? fila.prospeccao : null;
+                return doGrupo.length || p ? (
                   <div key={g.id} className={c.grupo} data-grupo={g.id}>
                     <h2>
                       {g.nome}
                       <b>{doGrupo.length}</b>
                     </h2>
+                    {p && (
+                      <div className={c.segmento}>
+                        <label>
+                          <span>Segmento</span>
+                          <select value={p.nicho ?? ""} onChange={(e) => trocarNicho(e.target.value)}>
+                            {p.nichos.map((n) => (
+                              <option key={n.nicho} value={n.nicho}>{n.nicho || "sem segmento"} ({n.quantos})</option>
+                            ))}
+                          </select>
+                        </label>
+                        <small>
+                          {p.feitosHoje >= PROSPECCAO_POR_DIA
+                            ? `Os ${PROSPECCAO_POR_DIA} de hoje já saíram. Amanhã tem mais.`
+                            : `${p.feitosHoje} de ${PROSPECCAO_POR_DIA} hoje · ${p.noNicho} neste segmento nunca ouviram de você`}
+                        </small>
+                      </div>
+                    )}
                     <ul>{doGrupo.map(linha)}</ul>
                   </div>
                 ) : null;
@@ -515,6 +553,8 @@ function Atendimento({
             ? { titulo: `Sem resposta há ${dias(d)}`, detalhe: `Pela regra da casa, depois de uns ${DIAS_PARA_ENCERRAR} dias não rolou: encerre e tire a amostra do ar.`, botao: "Mandar mensagem" }
             : blackPorMandar(lead)
               ? { titulo: "Falta mandar a Black", detalhe: "R$ 799 à vista até 30/11.", botao: "Mandar a Black" }
+              : grupo === "prospeccao"
+                ? { titulo: "Prospecção: o primeiro contato", detalhe: "Um toque só. Se a pessoa responder, ela sobe para Responder agora; se não, sai da fila.", botao: "Mandar a primeira mensagem" }
               : grupo === "novos" || ehNovo
                 ? { titulo: "Chegou e ainda não ouviu de você", detalhe: ultimaEntrada?.resumo ?? undefined, botao: "Mandar a primeira mensagem" }
                 : grupo === "preco"
@@ -569,7 +609,7 @@ function Atendimento({
             <small>Entra na conversa como mensagem sua, e o contato sai de quem espera você.</small>
           </form>
         )}
-        {(grupo === "novos" || grupo === "preco" || grupo === "amostra") && !encerrar && <small>Ao enviar, o próximo deste grupo já abre. Fechar sem enviar para.</small>}
+        {(grupo === "novos" || grupo === "preco" || grupo === "amostra" || grupo === "prospeccao") && !encerrar && <small>Ao enviar, o próximo deste grupo já abre. Fechar sem enviar para.</small>}
       </section>
 
       {ativo && (
