@@ -98,6 +98,17 @@ async function listarPecas() {
     if (!achados.length || urls.size === antes) break;
     await dormir(PAUSA);
   }
+  /* A LISTA PELO SITEMAP (A7 Shoes, 12/11/2026): loja de rolagem infinita
+     devolve vazia a ?page=2, e a listagem parava em 12 de 46 peças. O
+     sitemap.xml lista todas: soma o que ele traz, sem repetir. */
+  try {
+    const mapa = await baixar(`${SITE}/sitemap.xml`);
+    const antes = urls.size;
+    for (const m of mapa.matchAll(/<loc>(https?:\/\/[^<]+\/produtos\/[a-z0-9-]+\/)<\/loc>/g)) urls.add(m[1]);
+    process.stdout.write(`sitemap: +${urls.size - antes} links\n`);
+  } catch {
+    process.stdout.write("sitemap: não abriu\n");
+  }
   return [...urls];
 }
 
@@ -146,7 +157,9 @@ function lerPeca(html, url) {
   /* peça sem foto no site vem com o desenho de câmera da Nuvemshop
      (/assets/stores/img/no-photo): ela NÃO é foto, e a peça sai da vitrine
      se não sobrar nenhuma de verdade (2 na Ufa, 26/09/2026) */
-  const fotos = [...new Set([...html.matchAll(/href="(\/\/dcdn[^"]+-1024-1024\.(?:webp|jpg|jpeg|png))"/g)].map((m) => "https:" + m[1]))].filter((f) => !f.includes("/assets/stores/img/no-photo"));
+  /* o CDN pode ser dcdn ou acdn-us (A7 Shoes, 12/11/2026: só acdn, e as 12 peças
+     caíam aqui por "sem foto") */
+  const fotos = [...new Set([...html.matchAll(/href="(\/\/(?:dcdn|acdn)[^"]+-1024-1024\.(?:webp|jpg|jpeg|png))"/g)].map((m) => "https:" + m[1]))].filter((f) => !f.includes("/assets/stores/img/no-photo"));
 
   const marcaBruta = produto.brand?.name ?? null;
   return {
