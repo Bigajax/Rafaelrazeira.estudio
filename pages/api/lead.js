@@ -199,6 +199,9 @@ const TIPO_POR_PAGINA = {
   /* o site imersivo para marcas (15/10/2026) entra como "site" de propósito:
      é o tipo que o CHECK do crm_leads já aceita, sem migração no banco */
   "site-imersivo": "site",
+  /* o site para escritório de arquitetura (12/11/2026): também "site", o tipo
+     que o CHECK já aceita; o card diz na nota que não é vitrine */
+  "arquitetos": "site",
 };
 
 /* O tipo do card. A /amostra decide o degrau pelas respostas (faturamento e
@@ -389,6 +392,8 @@ async function sincronizarCRM(linha, utm, { emIngles = false, faixa = "", naoCon
         /* 07/11/2026: o card diz o degrau, senão o lead vira prévia de vitrine */
         linha.pagina === "loja-online" ? "VEIO DA /loja-online: pediu a amostra da LOJA ONLINE (R$ 1.990 + R$ 249,90/mês), não só a vitrine." : "",
         /* 09/11/2026: o formulário em passos já traz o degrau e a qualificação na `necessidade` */
+        /* 12/11/2026: arquiteto não é loja; a escada do CRM ainda fala de vitrine */
+        linha.pagina === "arquitetos" ? "VEIO DA /arquitetos: ESCRITÓRIO DE ARQUITETURA, não é loja. Amostra com os projetos do perfil (R$ 999, sem mensalidade). Não mandar os textos de vitrine da escada." : "",
         linha.pagina === "amostra" ? `VEIO DO /amostra (formulário em passos). Degrau sugerido: ${(linha.plano || "Vitrine").toUpperCase()}.` : "",
         /* 09/11/2026: a amostra sai com os aparelhos dela; nunca preço chutado */
         linha.pagina === "vitrine-digital-iphone" ? "VEIO DA /vitrine/iphone: vende iPhone. Amostra com os aparelhos dela (preço, memória e cor); conferir a grade sem \"Único\" nem \"Numeração\"." : "",
@@ -539,7 +544,7 @@ export default async function handler(req, res) {
      @ e os seguidores, para a pessoa conferir que era essa mesmo */
   let lojaAchada = null;
   /* a /loja-online (07/11/2026) também monta a amostra a partir do @ */
-  if ((pagina.startsWith("vitrine-digital") || pagina === "loja-online" || pagina === "amostra") && !suspeito && !pedidoProposta) {
+  if ((pagina.startsWith("vitrine-digital") || pagina === "loja-online" || pagina === "amostra" || pagina === "arquitetos") && !suspeito && !pedidoProposta) {
     const c = await conferirArroba(canal || "");
     arroba = c.estado;
     if (c.estado === "invalido") suspeito = "arroba";

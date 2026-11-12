@@ -30,6 +30,18 @@ export interface OfertaIdioma {
    real a mais. */
 export const IMERSIVO = { total: 4997, entrada: 2499, saldo: 2498 } as const;
 
+/* O SITE PARA ARQUITETO (/arquitetos, 12/11/2026): o portfólio de
+   escritório de arquitetura, na linha do site da NEAM. R$ 999, o preço da
+   vitrine (decisão do Rafael no mesmo dia: "o valor do site é 999"; a
+   primeira versão sugerida foi R$ 2.490). Sem mensalidade, e a entrada de
+   50% da casa: R$ 500 + R$ 499, a entrada leva o real a mais.
+   `projetos` é quantos entram na entrega; `prazoDias` conta a partir das
+   fotos e textos recebidos; `amostraHoras` é a promessa da amostra. */
+export const ARQUITETO = {
+  total: 999, entrada: 500, saldo: 499, parcelas: 4,
+  projetos: 8, prazoDias: 15, amostraHoras: 48,
+} as const;
+
 /* O TURBINAR (/turbinar, 03/11/2026): o estúdio roda os anúncios da Meta
    da loja que já tem a vitrine, por mês. A verba vai direto da loja para a
    Meta, no cartão dela; o estúdio cobra só a gestão. Números SUGERIDOS em

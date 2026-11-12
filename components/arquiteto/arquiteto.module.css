@@ -1,0 +1,682 @@
+/* ============================================================
+   A /arquitetos (12/11/2026)
+   A régua da casa (docs/design-estudio.md: branco, Instrument Sans, pílula,
+   o verde como batida e o rosa só no botão que vende) com o desenho da
+   referência que o Rafael trouxe no mesmo dia, ads.openai.com: hero
+   dividido com a interface flutuando num painel de textura suave, títulos
+   de seção centrados em peso médio, seletor em pílula trocando o painel.
+   A textura aqui é a própria arquitetura, desfocada.
+   ============================================================ */
+
+.page {
+  --branco: #fff;
+  --cartao: #F4F4F2;
+  --fio: #E6E6E3;
+  --ink: #14181A;
+  --texto: #4A4F52;
+  --suave: #6B7072;
+  --verde: #0C9159;
+  --rosa: #E31B62;
+  --rosa-dark: #B81250;
+  --ease: cubic-bezier(.2, .7, .2, 1);
+  background: var(--branco);
+  color: var(--texto);
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.55;
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+}
+.page *, .page *::before, .page *::after { box-sizing: border-box; }
+.page img { display: block; max-width: 100%; }
+.page :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+.wrap { width: min(1180px, 100% - 48px); margin-inline: auto; }
+
+/* ---------- o tipo ---------- */
+.h1, .h2 {
+  font-family: var(--font-titulo), system-ui, sans-serif;
+  color: var(--ink);
+  font-weight: 500;
+  margin: 0;
+  text-wrap: balance;
+}
+.h1 { font-size: clamp(40px, 4.4vw, 64px); line-height: 1.02; letter-spacing: -.035em; }
+.h2 { font-size: clamp(32px, 3.6vw, 52px); line-height: 1.06; letter-spacing: -.03em; }
+.h1 em, .h2 em { font-style: normal; color: var(--verde); }
+.lead { font-size: 18px; line-height: 1.55; max-width: 34em; margin: 18px 0 0; text-wrap: pretty; }
+.miudo { font-size: 14px; color: var(--suave); margin: 14px 0 0; }
+.centro { text-align: center; margin-inline: auto; }
+.h2.centro { max-width: 15em; }
+.lead.centro { max-width: 36em; }
+
+/* ---------- o botão ---------- */
+.botao {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 50px; padding: 0 24px; border-radius: 980px; border: 0;
+  font: 600 15px/1 var(--font-body), system-ui, sans-serif; text-decoration: none; cursor: pointer;
+  transition: background-color .2s, transform .12s;
+}
+.botao:active { transform: scale(.97); }
+.rosa { background: var(--rosa); color: #fff; box-shadow: inset 0 1px 0 #ffffff47, 0 8px 18px -6px #e31b6273; }
+.rosa:hover { background: var(--rosa-dark); }
+.rosa:disabled { opacity: .7; cursor: default; }
+.claro { background: #fff; color: var(--ink); box-shadow: inset 0 0 0 1px #D4D4D1; }
+.claro:hover { background: var(--cartao); }
+.whats { background: #25D366; color: #06331a; }
+
+/* ---------- o topo em pílula ---------- */
+.topo {
+  position: fixed; z-index: 20; top: 10px; left: 50%; transform: translateX(-50%);
+  width: min(1120px, 100% - 20px); height: 60px; padding: 0 8px 0 22px;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  /* o vidro líquido (12/11, pedido do Rafael: "usa expo-glass-effect no header"). O
+     expo-glass-effect é React Native (o UIGlassEffect do iOS) e não roda na web; este é
+     o equivalente em CSS: translúcido, o fundo desfocado e saturado, o brilho na borda
+     de cima e a sombra por dentro embaixo. Sem suporte a backdrop-filter, cai no branco. */
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffffff8c, #ffffff4d);
+  backdrop-filter: blur(18px) saturate(180%) brightness(1.04);
+  -webkit-backdrop-filter: blur(18px) saturate(180%) brightness(1.04);
+  box-shadow:
+    inset 0 1px 0 #ffffffe6,
+    inset 0 -1px 0 #ffffff59,
+    inset 0 0 0 1px #ffffff66,
+    inset 0 -10px 20px -12px #0000001f,
+    0 12px 32px -8px #00000024,
+    0 1px 2px #00000014;
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .topo { background: #fffffff2; }
+}
+.marca img { width: 55px; height: auto; }
+.topoNav { display: flex; gap: 28px; }
+.topoNav a { color: var(--texto); text-decoration: none; font-size: 14px; font-weight: 500; }
+.topoNav a:hover { color: var(--ink); }
+.topoCta {
+  display: inline-flex; align-items: center; min-height: 44px; padding: 0 20px; border-radius: 999px;
+  background: var(--ink); color: #fff; text-decoration: none; font-size: 14px; font-weight: 600;
+}
+
+/* ---------- a entrada: um momento só, no hero ---------- */
+.sobe { animation: sobe .6s var(--ease) both; animation-delay: calc(var(--d, 0) * 90ms + 80ms); }
+@keyframes sobe { from { opacity: 0; transform: translateY(14px); } }
+
+/* ---------- o hero dividido ---------- */
+/* a foto que troca: a nova varre da esquerda por cima da anterior */
+.foto { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; }
+.fotoAnterior { opacity: 1; z-index: 1; }
+.fotoAtiva { opacity: 1; z-index: 2; }
+.varre { animation: varre .9s cubic-bezier(.7, 0, .2, 1) both; }
+/* no hero, a troca da referência: a nova foto aparece por cima devagar e se aproxima */
+.funde { animation: funde 1.4s ease both, aproxima 7s linear both; }
+@keyframes funde { from { opacity: 0; } }
+@keyframes aproxima { from { transform: scale(1.06); } }
+@keyframes varre { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+
+/* ---------- as seções ---------- */
+.secao { padding: 128px 0 0; }
+
+/* o briefing */
+.briefing { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 56px; align-items: center; }
+.briefingCartao {
+  width: min(460px, 100%); padding: 24px; border-radius: 16px; background: #fff;
+  box-shadow: 0 30px 60px #00000024, 0 4px 14px #00000012;
+}
+.chips { border: 0; padding: 0; margin: 0 0 18px; min-width: 0; }
+.chips legend { padding: 0; margin-bottom: 10px; font-size: 14px; font-weight: 600; color: var(--ink); }
+.chips div { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  min-height: 38px; padding: 0 14px; border: 0; border-radius: 999px; cursor: pointer;
+  background: #fff; box-shadow: inset 0 0 0 1px var(--fio); color: var(--texto);
+  font: 500 14px/1 var(--font-body), sans-serif; transition: background-color .15s, color .15s;
+}
+.chip[aria-pressed="true"] { background: var(--ink); color: #fff; box-shadow: none; }
+.zap { border-top: 1px solid var(--fio); padding-top: 16px; margin-top: 4px; }
+.zapRotulo { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; font-size: 13px; color: var(--suave); }
+.balao { margin: 0; padding: 12px 14px; border-radius: 14px 14px 14px 4px; background: #E7F8E0; color: var(--ink); font-size: 15px; line-height: 1.45; }
+
+/* como funciona: é sequência, leva número */
+.etapas { list-style: none; margin: 56px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+.etapas li { border-top: 1px solid var(--ink); padding-top: 18px; }
+.etapas p { margin: 0; }
+.num { font: 500 13px/1 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--verde); }
+.passoTitulo { margin: 14px 0 8px !important; font-family: var(--font-titulo), sans-serif; font-weight: 500; font-size: 20px; line-height: 1.2; letter-spacing: -.02em; color: var(--ink); }
+
+/* o preço */
+.preco { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 56px; align-items: start; }
+.precoCartao { border-radius: 28px; background: var(--cartao); padding: 40px; }
+.valor { margin: 0; font-family: var(--font-titulo), sans-serif; font-weight: 500; font-size: clamp(56px, 7vw, 88px); line-height: 1; letter-spacing: -.045em; color: var(--ink); }
+.condicao { margin: 14px 0 0; max-width: 30em; }
+.inclui { list-style: none; margin: 28px 0 0; padding: 22px 0 0; border-top: 1px solid #DDDDD9; display: grid; gap: 12px; }
+.inclui li { display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: 12px; align-items: start; color: var(--ink); }
+.inclui svg { margin-top: 4px; color: var(--verde); }
+.naoInclui { margin: 22px 0 26px; font-size: 14px; color: var(--suave); }
+
+/* as perguntas */
+.faq > div:last-child { max-width: 760px; margin: 48px auto 0; }
+.pergunta { border-bottom: 1px solid var(--fio); }
+.pergunta summary {
+  list-style: none; cursor: pointer; display: flex; justify-content: space-between; gap: 16px; align-items: center;
+  padding: 22px 0; font-family: var(--font-titulo), sans-serif; font-weight: 500; font-size: 20px; letter-spacing: -.015em; color: var(--ink);
+}
+.pergunta summary::-webkit-details-marker { display: none; }
+.pergunta summary::after { content: "+"; font: 400 24px/1 var(--font-body), sans-serif; color: var(--suave); transition: transform .25s var(--ease); }
+.pergunta[open] summary::after { transform: rotate(45deg); }
+.pergunta p { margin: 0 0 22px; max-width: 40em; }
+
+/* ---------- o rodapé ---------- */
+.rodape { border-top: 1px solid var(--fio); padding: 44px 0; font-size: 14px; }
+.rodape .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 24px; }
+.rodape p { margin: 12px 0 0; color: var(--suave); }
+.rodapeLinks { display: grid; gap: 10px; align-content: start; }
+.rodapeLinks a { display: inline-flex; align-items: center; gap: 8px; color: var(--ink); text-decoration: none; }
+
+/* ---------- o modal e o formulário ---------- */
+.modal {
+  width: min(480px, 100% - 32px); max-height: calc(100svh - 32px); padding: 0; border: 0; border-radius: 24px;
+  background: #fff; color: var(--texto); box-shadow: 0 40px 80px #00000040;
+}
+.modal::backdrop { background: #14181a73; backdrop-filter: blur(4px); }
+.modalFechar {
+  position: absolute; top: 12px; right: 12px; width: 40px; height: 40px; border: 0; border-radius: 999px;
+  background: var(--cartao); color: var(--ink); display: grid; place-items: center; cursor: pointer;
+}
+.form { padding: 36px 28px 28px; display: grid; gap: 14px; font-family: var(--font-body), system-ui, sans-serif; }
+.formTitulo { margin: 0; padding-right: 36px; font-family: var(--font-titulo), sans-serif; font-weight: 500; font-size: 26px; line-height: 1.1; letter-spacing: -.025em; color: var(--ink); }
+.formSub { margin: -4px 0 4px; }
+.campos { display: grid; gap: 12px; }
+.campo { display: grid; gap: 6px; }
+.campo span { font-size: 13px; font-weight: 600; color: var(--ink); }
+.campo input {
+  height: 50px; padding: 0 16px; border: 0; border-radius: 14px; background: #F3F3F1;
+  font: 400 16px var(--font-body), sans-serif; color: var(--ink); outline: none;
+}
+.campo input:focus { background: #fff; box-shadow: 0 0 0 2px var(--rosa); }
+.campo input[aria-invalid="true"] { box-shadow: 0 0 0 2px #B3261E; }
+.erro { color: #B3261E; font-size: 14px; line-height: 1.45; }
+.erro a { color: inherit; }
+.micro { margin: 0; font-size: 13px; color: var(--suave); }
+.ok p { margin: 0; }
+.okLinha { display: flex; align-items: center; gap: 10px; font-family: var(--font-titulo), sans-serif; font-weight: 500; font-size: 24px; color: var(--ink); }
+.okIcone { width: 34px; height: 34px; border-radius: 50%; background: var(--verde); color: #fff; display: grid; place-items: center; }
+
+/* ---------- o celular e o tablet ---------- */
+@media (max-width: 960px) {
+  .briefing, .preco { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+  .etapas { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 36px; }
+}
+@media (max-width: 640px) {
+  .wrap { width: calc(100% - 32px); }
+  .topoNav { display: none; }
+  .secao { padding-top: 88px; }
+  .lead, .heroLead { font-size: 17px; }
+  .comparar { margin-top: 36px; }
+  .briefingCartao { padding: 18px; border-radius: 24px; }
+  .etapas { grid-template-columns: minmax(0, 1fr); }
+  .precoCartao { padding: 28px 22px; border-radius: 24px; }
+  .botoes .botao { flex: 1 1 auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sobe, .varre, .funde { animation: none; }
+  .botao, .chip, .abas button, .pergunta summary::after { transition: none; }
+}
+
+/* ---------- o hero em tela cheia (12/11) ----------
+   A foto é o site de exemplo; o vidro do cartão é o mesmo do topo, mais opaco,
+   porque o texto precisa ler sobre qualquer foto. */
+.heroCheio {
+  position: relative; isolation: isolate; overflow: hidden;
+  min-height: max(640px, 100svh);
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 24px;
+  padding: 110px max(24px, calc((100% - 1180px) / 2)) 32px;
+  color: #fff;
+}
+.heroFotos { position: absolute; z-index: -1; inset: 0; background: #2a2c28; }
+.heroFotos::after {
+  content: ""; position: absolute; z-index: 3; inset: 0; pointer-events: none;
+  background: linear-gradient(#00000047, #0000 22%, #0000 60%, #00000066);
+}
+.heroCartao {
+  width: min(560px, 100%); padding: 32px 32px 28px; border-radius: 28px; color: var(--texto);
+  background: linear-gradient(180deg, #ffffffd9, #ffffffbf);
+  backdrop-filter: blur(22px) saturate(180%); -webkit-backdrop-filter: blur(22px) saturate(180%);
+  box-shadow: inset 0 1px 0 #fff, inset 0 0 0 1px #ffffff80, 0 30px 60px -20px #00000059;
+}
+.heroCartao .h1 { font-size: clamp(36px, 4vw, 56px); }
+.heroCartao .heroLead { margin-top: 16px; font-size: 17px; }
+.heroCartao .botoes { margin-top: 24px; }
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .heroCartao { background: #fffffff2; } }
+@media (max-width: 760px) {
+  .heroCheio { flex-direction: column-reverse; align-items: stretch; justify-content: flex-start; padding: 96px 12px 12px; min-height: max(620px, 100svh); }
+  .heroCartao { padding: 24px 20px 20px; border-radius: 24px; }
+  .heroCartao .botoes .botao { flex: 1 1 auto; }
+}
+
+/* ============================================================
+   A continuidade (12/11, "não achei que tem uma continuidade de design"):
+   a página fala duas línguas e só duas. A CENA (a foto da obra de ponta a
+   ponta com o cartão de vidro) abre, aparece no meio e fecha; o BRANCO
+   editorial (fio fino em cima, título à esquerda, nada de cartão cinza)
+   carrega o texto. Um raio só para cartão: 28px.
+   ============================================================ */
+.heroLead { font-size: 17px; line-height: 1.55; margin: 16px 0 0; text-wrap: pretty; }
+.botoes { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+.demoNome { margin: 0; font-family: var(--font-titulo), sans-serif; font-weight: 500; font-size: 15px; line-height: 1.2; }
+.demoDado { margin: 2px 0 0; font-size: 12px; opacity: .85; }
+.demoPassos { display: flex; }
+.demoPassos button { width: 30px; height: 28px; padding: 0; border: 0; background: none; cursor: pointer; display: grid; place-items: center; }
+.demoPassos button::before { content: ""; width: 20px; height: 3px; border-radius: 2px; background: #ffffff73; transition: background-color .3s; }
+.demoPassos button[aria-pressed="true"]::before { background: #fff; }
+
+/* a cena: o hero, as frentes e o convite */
+.cena {
+  position: relative; isolation: isolate; overflow: hidden;
+  min-height: max(620px, 92svh); margin-top: 128px;
+  display: flex; align-items: flex-end;
+  padding: 110px max(24px, calc((100% - 1180px) / 2)) 32px;
+}
+.cenaFotos { position: absolute; z-index: -1; inset: 0; background: #2a2c28; }
+.cenaFotos::after { content: ""; position: absolute; z-index: 3; inset: 0; pointer-events: none; background: linear-gradient(#0000, #0000 55%, #00000059); }
+.cenaCartao, .heroCartao {
+  width: min(560px, 100%); padding: 32px 32px 28px; border-radius: 28px; color: var(--texto);
+  background: linear-gradient(180deg, #ffffffde, #ffffffc4);
+  backdrop-filter: blur(22px) saturate(180%); -webkit-backdrop-filter: blur(22px) saturate(180%);
+  box-shadow: inset 0 1px 0 #fff, inset 0 0 0 1px #ffffff80, 0 30px 60px -20px #00000059;
+}
+.cenaCartao .h2 { font-size: clamp(30px, 3.2vw, 44px); }
+.cenaCartao .lead { font-size: 17px; margin: 14px 0 24px; }
+.cenaFim { margin-bottom: 0; }
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .cenaCartao { background: #fffffff2; } }
+
+/* as abas dentro do vidro */
+.abas { display: flex; flex-wrap: wrap; gap: 6px; margin: 22px 0 20px; }
+.abas button {
+  min-height: 38px; padding: 0 15px; border: 0; border-radius: 999px; cursor: pointer;
+  background: #ffffffa6; box-shadow: inset 0 0 0 1px #0000001a; color: var(--texto);
+  font: 500 14px/1 var(--font-body), sans-serif; transition: background-color .2s, color .2s;
+}
+.abas button[aria-selected="true"] { background: var(--ink); color: #fff; box-shadow: none; }
+.frenteTexto { border-top: 1px solid #00000024; padding-top: 18px; min-height: 7.5em; }
+.frenteTexto p { margin: 0; }
+.frenteTitulo { font-family: var(--font-titulo), sans-serif; font-weight: 500; font-size: 22px; letter-spacing: -.02em; line-height: 1.15; color: var(--ink); margin-bottom: 8px !important; }
+
+/* o branco editorial: Instagram x site em duas colunas com o fio em cima */
+.comparar { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 48px; margin-top: 48px; }
+.cartao { border-top: 1px solid var(--ink); padding-top: 18px; }
+.cartaoTitulo { margin: 0 0 16px; font-family: var(--font-titulo), sans-serif; font-weight: 500; font-size: 20px; letter-spacing: -.02em; color: var(--ink); }
+.marcas { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.marcas li { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 12px; align-items: start; }
+.marcas svg { margin-top: 4px; color: var(--suave); }
+.cartaoSite .marcas svg { color: var(--verde); }
+
+/* o briefing: o cartão branco com fio, sem foto atrás */
+.briefingCartao { box-shadow: inset 0 0 0 1px var(--fio), 0 24px 48px -28px #00000040; border-radius: 28px; width: 100%; max-width: 520px; justify-self: end; }
+
+/* o preço: branco com fio, como o briefing */
+.precoCartao { background: #fff; box-shadow: inset 0 0 0 1px var(--fio), 0 24px 48px -28px #00000040; }
+
+/* as dúvidas: título à esquerda, lista à direita */
+.faq { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 56px; align-items: start; }
+.faq > div:last-child { max-width: none; margin: 0; }
+.pergunta:first-child { border-top: 1px solid var(--ink); }
+
+@media (max-width: 960px) {
+  .faq { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .briefingCartao { justify-self: stretch; max-width: none; }
+}
+@media (max-width: 760px) {
+  .cena { min-height: max(600px, 100svh); margin-top: 88px; padding: 96px 12px 12px; }
+  .cenaCartao { padding: 24px 20px 20px; border-radius: 24px; }
+  .comparar { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ---------- a troca de aba (12/11) ----------
+   Três coisas no mesmo tempo, .5s: a pílula preta desliza, o texto sai e
+   entra subindo, a foto varre por baixo do vidro. A pílula é um span atrás
+   dos botões; com ela medida, o botão ativo perde o fundo próprio. */
+.abas { position: relative; isolation: isolate; }
+.pilula {
+  position: absolute; z-index: -1; left: 0; top: 0; border-radius: 999px; background: var(--ink);
+  transition: transform .5s cubic-bezier(.65, 0, .25, 1), width .5s cubic-bezier(.65, 0, .25, 1);
+}
+/* com a pílula medida, nenhuma aba tem fundo próprio: o branco cobria a pílula no meio do caminho */
+.abasComPilula button { background: transparent; }
+.abasComPilula button[aria-selected="true"] { box-shadow: none; }
+.abas button { transition: color .35s ease .1s, background-color .2s; }
+.trocaTexto { animation: trocaTexto .5s cubic-bezier(.2, .7, .2, 1) both; }
+@keyframes trocaTexto { from { opacity: 0; transform: translateY(8px); } }
+.cena .varre { animation-duration: 1.1s; }
+@media (prefers-reduced-motion: reduce) {
+  .pilula { transition: none; }
+  .trocaTexto, .cena .varre { animation: none; }
+}
+
+/* ---------- a folha que sobe (12/11) ----------
+   A foto fica presa no topo (sticky) com a altura exata da tela; a folha
+   branca seguinte vem por cima, com 28px de canto (o raio da casa) e uma
+   sombra para cima. Tela baixa demais (paisagem no celular): a foto não
+   prende, senão o cartão de vidro ficaria embaixo da folha sem ser visto. */
+.grupo { position: relative; }
+.heroCheio, .cena { position: sticky; top: 0; height: 100svh; min-height: 0; margin-top: 0; }
+.cenaFim { height: 82svh; }
+.folha {
+  position: relative; z-index: 1; background: var(--branco);
+  border-radius: 28px 28px 0 0; padding-bottom: 128px;
+  box-shadow: 0 -18px 40px -22px #00000059;
+}
+.folhaRodape { padding-bottom: 0; }
+.folhaRodape .rodape { border-top: 0; padding-top: 52px; }
+@media (max-width: 760px) {
+  .folha { border-radius: 24px 24px 0 0; padding-bottom: 88px; }
+  .folhaRodape { padding-bottom: 0; }
+}
+@media (max-height: 600px) {
+  .heroCheio, .cena { position: relative; height: auto; min-height: 600px; }
+}
+/* a foto que vem depois do branco também chega como folha: canto em cima */
+.cena { border-radius: 28px 28px 0 0; }
+@media (max-width: 760px) { .cena { border-radius: 24px 24px 0 0; } }
+
+/* ---------- o estudo da saaslandingpage.com, aplicado (12/11) ---------- */
+
+/* 1. o formulário dentro do cartão do hero: os dois campos lado a lado, o botão embaixo */
+.formHero { padding: 0; margin-top: 22px; gap: 12px; }
+.formHero .campos { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.formHero .campo input { background: #ffffffcc; box-shadow: inset 0 0 0 1px #0000001a; }
+.formHero .campo input:focus { background: #fff; box-shadow: 0 0 0 2px var(--rosa); }
+.formHero .botao { width: 100%; }
+.formHero.ok { margin-top: 18px; }
+
+/* 2. a tela de cada passo: branca com fio, acima do fio preto do passo */
+.etapas li { border-top: 0; padding-top: 0; }
+.etapas .num { display: block; border-top: 1px solid var(--ink); padding-top: 16px; }
+.tela {
+  position: relative; aspect-ratio: 4 / 3; margin-bottom: 18px; border-radius: 20px; overflow: hidden;
+  background: #fff; box-shadow: inset 0 0 0 1px var(--fio);
+  display: grid; place-items: center; padding: 16px;
+}
+.telaCampo { width: 100%; display: grid; gap: 8px; }
+.telaCampo span { display: flex; align-items: center; height: 40px; padding: 0 14px; border-radius: 12px; background: #F3F3F1; color: var(--ink); font-size: 14px; }
+.cursor { width: 1.5px; height: 16px; margin-left: 2px; background: var(--rosa); animation: pisca 1s steps(1) infinite; }
+@keyframes pisca { 50% { opacity: 0; } }
+.telaCampo b { height: 36px; border-radius: 999px; background: var(--rosa); color: #fff; display: grid; place-items: center; font-size: 13px; font-weight: 600; }
+.telaZap { width: 100%; height: 100%; display: grid; align-content: start; gap: 10px; }
+.telaZapTopo { display: flex; align-items: center; gap: 6px; margin: 0; font-size: 12px; font-weight: 600; color: var(--ink); }
+.telaBalao { justify-self: start; width: 82%; padding: 5px; border-radius: 12px 12px 12px 4px; background: #E7F8E0; display: grid; gap: 6px; }
+.telaBalao img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 8px; }
+.telaBalao span { padding: 0 5px 3px; font-size: 12px; line-height: 1.35; color: var(--ink); }
+.telaFotos { width: 100%; height: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.telaFotos img { min-height: 0; }
+.telaFotos img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+.telaFotos span { border-radius: 8px; box-shadow: inset 0 0 0 1.5px #D4D4D1; display: grid; place-items: center; color: var(--suave); font-size: 22px; }
+.telaSite { width: 100%; height: 100%; display: grid; grid-template-rows: auto minmax(0, 1fr); border-radius: 10px; overflow: hidden; box-shadow: 0 10px 24px -12px #00000059, inset 0 0 0 1px var(--fio); }
+.telaBarra { display: flex; align-items: center; gap: 4px; margin: 0; padding: 6px 8px; background: #F6F6F4; font-size: 10px; color: var(--suave); }
+.telaBarra i { width: 6px; height: 6px; border-radius: 50%; background: #D9D9D6; }
+.telaBarra span { margin-left: 6px; }
+.telaSite div { position: relative; }
+.telaSite img { width: 100%; height: 100%; object-fit: cover; }
+.telaSite b { position: absolute; top: 8px; left: 8px; padding: 2px 6px; border: 1px solid #fff; color: #fff; font: 500 10px/1.2 var(--font-titulo), sans-serif; letter-spacing: .02em; }
+
+/* 3. os caminhos: a tabela no branco, a coluna do estúdio com o fio verde */
+.caminhos { margin-top: 72px; }
+.caminhosTitulo { margin: 0 0 18px; font-family: var(--font-titulo), sans-serif; font-weight: 500; font-size: 22px; letter-spacing: -.02em; color: var(--ink); }
+.tabelaRolo { overflow-x: auto; border-top: 1px solid var(--ink); }
+.tabela { width: 100%; min-width: 720px; border-collapse: collapse; font-size: 15px; }
+.tabela th, .tabela td { padding: 16px 14px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--fio); }
+.tabela thead th { font-weight: 600; color: var(--ink); font-size: 14px; }
+.tabela tbody th { font-weight: 500; color: var(--ink); width: 22%; padding-left: 0; }
+.tabela td { color: var(--texto); }
+.tabela .colEstudio { background: #0c91590d; color: var(--ink); font-weight: 500; box-shadow: inset 2px 0 0 var(--verde); }
+.tabela thead .colEstudio { color: var(--verde); }
+
+@media (max-width: 760px) {
+  .formHero .campos { grid-template-columns: minmax(0, 1fr); }
+  .caminhos { margin-top: 56px; }
+  .tabela { min-width: 640px; font-size: 14px; }
+}
+@media (prefers-reduced-motion: reduce) { .cursor { animation: none; } }
+.tabela tbody th, .tabela thead td { position: sticky; left: 0; z-index: 1; background: #fff; }
+/* a caixa do passo dá altura definida ao que está dentro (sem isso a grade de fotos cortava a 2ª fileira) */
+.tela { grid-template-rows: minmax(0, 1fr); grid-template-columns: minmax(0, 1fr); }
+.telaFotos, .telaZap, .telaSite { min-height: 0; }
+
+/* ---------- a entrada da /vitrine-digital (12/11) ----------
+   Os mesmos números da vitrine e da /loja-online: a letra sai de 12px de
+   desfoque subindo .12em, 16ms entre letras; o bloco sobe 14px, 90ms entre
+   blocos, 200ms depois do título começar. */
+.soLeitor { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.palavra { display: inline-block; white-space: nowrap; }
+.letra { display: inline-block; }
+.anim .letra { opacity: 0; filter: blur(12px); transform: translateY(.12em); }
+.visto .letra { animation: letraSurge .7s var(--ease) both; animation-delay: calc(var(--i) * 16ms); }
+@keyframes letraSurge { to { opacity: 1; filter: none; transform: none; } }
+.anim .entra { opacity: 0; transform: translateY(14px); }
+.visto .entra { animation: entra .6s var(--ease) both; animation-delay: calc(var(--d, 0) * 90ms + 200ms); }
+@keyframes entra { to { opacity: 1; transform: none; } }
+/* o título do hero: anima ao abrir, sem esperar rolagem (é CSS puro, roda sem JS) */
+.carga .letra { animation: letraEntra .8s var(--ease) both; animation-delay: calc(var(--i) * 18ms + 250ms); }
+@keyframes letraEntra { from { opacity: 0; filter: blur(12px); transform: translateY(.12em); } }
+@media (prefers-reduced-motion: reduce) {
+  .anim .letra, .anim .entra, .carga .letra { opacity: 1; filter: none; transform: none; animation: none; }
+}
+
+/* ---------- a janela da aba (12/11) ----------
+   Ao lado do cartão de vidro, a parte do site do arquiteto que a aba
+   descreve. No celular ela fica acima do cartão, mais baixa. */
+#o-que-vem, .cena:not(.cenaFim) { justify-content: space-between; gap: 32px; }
+.cenaDica { margin: 10px 0 0; font-size: 15px; color: var(--suave); }
+.janelaAba {
+  align-self: center; width: min(540px, 44%); border-radius: 16px; overflow: hidden; background: #fff;
+  box-shadow: 0 40px 80px -20px #00000073, 0 0 0 1px #ffffff40; font-size: 13px; color: var(--texto);
+}
+.janelaAba > :last-child { padding: 18px; }
+.janelaAba .telaBarra { font-size: 11px; padding: 8px 12px; }
+.janelaAba img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.abaTituloP { margin: 0 0 10px; font: 500 20px/1.15 var(--font-titulo), sans-serif; letter-spacing: -.02em; color: var(--ink); }
+.abaTexto { margin: 10px 0 0; line-height: 1.5; }
+.abaRotulo { margin: 14px 0 8px; font-size: 12px; font-weight: 600; color: var(--ink); }
+.abaProjeto { padding: 0 !important; }
+.abaFoto { position: relative; aspect-ratio: 16 / 8; }
+.abaFoto b { position: absolute; left: 16px; bottom: 12px; color: #fff; font: 500 22px/1 var(--font-titulo), sans-serif; letter-spacing: -.02em; text-shadow: 0 2px 12px #00000080; }
+.abaFicha { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 0; padding: 14px 18px 0; gap: 8px; }
+.abaFicha dt { font-size: 11px; color: var(--suave); }
+.abaFicha dd { margin: 2px 0 0; color: var(--ink); font-weight: 500; }
+.abaProjeto .abaTexto { padding: 0 18px 18px; }
+.abaEscritorio { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 16px; align-items: start; }
+.abaFotoQuadrada { aspect-ratio: 3 / 4; border-radius: 10px; overflow: hidden; }
+.abaEquipe { display: flex; gap: 6px; }
+.abaEquipe span { width: 34px; height: 34px; border-radius: 50%; background: #F3F3F1; display: grid; place-items: center; font-size: 11px; font-weight: 600; color: var(--ink); }
+.abaProcesso ol { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 0; }
+.abaProcesso li { display: grid; grid-template-columns: 28px 76px minmax(0, 1fr); gap: 8px; align-items: baseline; padding: 11px 0; border-top: 1px solid var(--fio); }
+.abaProcesso li span { font: 500 11px/1 ui-monospace, monospace; color: var(--verde); }
+.abaProcesso li b { color: var(--ink); font-weight: 600; }
+.abaProcesso li em { font-style: normal; }
+.abaChips { display: flex; flex-wrap: wrap; gap: 5px; }
+.abaChips span { padding: 6px 11px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--fio); font-size: 12px; }
+.abaChips .abaChipOn { background: var(--ink); color: #fff; box-shadow: none; }
+.abaZap { margin-top: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; height: 38px; border-radius: 999px; background: #25D366; color: #06331a; font-weight: 600; font-size: 13px; }
+.abaCampoBusca { display: flex; align-items: center; gap: 8px; margin: 0 0 14px; height: 38px; padding: 0 14px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--fio), 0 2px 6px #0000000f; color: var(--ink); }
+.abaResultado { padding: 10px 0; border-top: 1px solid var(--fio); }
+.abaUrl { margin: 0; font-size: 11px; color: var(--suave); }
+.abaLink { margin: 3px 0 0; font-size: 16px; color: #1a0dab; line-height: 1.3; }
+.abaLinkFraco { margin: 3px 0 0; font-size: 14px; color: #1a0dab; opacity: .7; }
+.abaResultado .abaTexto { margin-top: 4px; font-size: 12px; }
+@media (max-width: 900px) {
+  .cena:not(.cenaFim) { flex-direction: column-reverse; justify-content: flex-end; align-items: stretch; gap: 12px; }
+  .janelaAba { width: 100%; max-height: 34svh; align-self: stretch; }
+  .janelaAba > :last-child { padding: 12px; }
+  .abaFicha, .abaEscritorio .abaEquipe, .abaEscritorio .abaRotulo, .abaProjeto .abaTexto, .abaResultado + .abaResultado { display: none; }
+  .abaTituloP { font-size: 16px; }
+}
+
+/* ---------- o vidro de verdade (12/11, "faz em glassmorphism", nas três peças) ----------
+   O cartão do hero, o das cenas e o topo deixam de ser branco quase opaco:
+   vidro escurecido e translúcido, a foto desfocada passando por trás, texto
+   branco. O verde da batida clareia para ler sobre o vidro (o #0C9159 da casa
+   some no escuro). O escurecido segura a leitura até sobre céu claro. */
+.heroCartao, .cenaCartao {
+  color: #ffffffd1;
+  background: linear-gradient(155deg, #ffffff2e, #ffffff0a 60%), #11161a52;
+  backdrop-filter: blur(26px) saturate(170%); -webkit-backdrop-filter: blur(26px) saturate(170%);
+  box-shadow: inset 0 1px 0 #ffffff70, inset 0 0 0 1px #ffffff33, 0 30px 70px -24px #0000008c;
+}
+.heroCartao .h1, .cenaCartao .h2 { color: #fff; }
+.heroCartao em, .cenaCartao em { color: #6BE3A9; }
+.heroCartao .heroLead, .cenaCartao .lead, .cenaDica { color: #ffffffcc; }
+.cenaDica { color: #ffffffa8; }
+/* o formulário no vidro */
+.formHero .campo span { color: #fff; }
+.formHero .campo input { background: #ffffff1f; box-shadow: inset 0 0 0 1px #ffffff3d; color: #fff; }
+.formHero .campo input::placeholder { color: #ffffff99; }
+.formHero .campo input:focus { background: #ffffff2e; box-shadow: inset 0 0 0 1px #ffffff80, 0 0 0 2px var(--rosa); }
+.formHero .micro, .formHero .micro b { color: #ffffffb3; }
+.formHero .erro, .formHero .erro a { color: #FFB4AB; }
+.formHero.ok, .formHero.ok p { color: #fff; }
+/* as abas no vidro: contorno claro, a pílula vira branca com o texto escuro */
+.abas button { background: transparent; box-shadow: inset 0 0 0 1px #ffffff4d; color: #ffffffd9; }
+.abas button[aria-selected="true"] { color: var(--ink); box-shadow: none; }
+.abasComPilula button[aria-selected="true"] { background: transparent; }
+.abas:not(.abasComPilula) button[aria-selected="true"] { background: #fff; }
+.pilula { background: #fff; box-shadow: 0 6px 16px -6px #00000066; }
+.frenteTexto { border-top-color: #ffffff38; }
+.frenteTexto p { color: #ffffffcc; }
+.frenteTitulo { color: #fff; }
+/* o topo: o mesmo vidro, claro (ele passa sobre o branco também) */
+.topo {
+  background: linear-gradient(180deg, #ffffff6b, #ffffff2e);
+  backdrop-filter: blur(22px) saturate(180%); -webkit-backdrop-filter: blur(22px) saturate(180%);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .heroCartao, .cenaCartao { background: #1a2024eb; }
+  .topo { background: #fffffff2; }
+}
+
+/* ---------- o celular, compacto (12/11, "por mobile não está responsivo") ----------
+   Medido em 360, 375, 400 e 412 com toque: a página não estoura para o lado.
+   O problema era escala: no celular cada peça tinha o tamanho do desktop.
+   O que muda aqui: o cartão do hero mais baixo (rótulos dos campos só para o
+   leitor de tela, o placeholder diz o que é), a ficha da obra num fundo
+   escuro, os passos com a tela pequena ao lado do texto, abas e opções
+   menores. */
+@media (max-width: 760px) {
+  /* o hero */
+  .heroCartao { padding: 20px 18px 16px; }
+  .heroCartao .h1 { font-size: 34px; }
+  .heroCartao .heroLead { font-size: 15px; margin-top: 10px; }
+  .formHero { margin-top: 14px; gap: 8px; }
+  .formHero .campos { gap: 8px; }
+  .formHero .campo span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .formHero .campo input { height: 46px; }
+  .formHero .botao { min-height: 48px; }
+  .formHero .micro { font-size: 12px; }
+
+  /* as cenas: cartão e abas menores */
+  .cenaCartao { padding: 20px 18px 18px; }
+  .cenaCartao .h2 { font-size: 28px; }
+  .cenaDica { font-size: 14px; }
+  .abas { margin: 14px 0 14px; gap: 5px; }
+  .abas button { min-height: 34px; padding: 0 12px; font-size: 13px; }
+  .frenteTexto { padding-top: 12px; min-height: 0; }
+  .frenteTitulo { font-size: 19px; }
+  .frenteTexto p { font-size: 14px; }
+  .janelaAba { max-height: 28svh; }
+
+  /* o briefing */
+  .chips { margin-bottom: 14px; }
+  .chip { min-height: 34px; padding: 0 12px; font-size: 13px; }
+  .balao { font-size: 14px; }
+
+  /* os passos: a tela pequena à esquerda, o texto à direita */
+  .etapas { gap: 22px; margin-top: 36px; }
+  .etapas li { display: grid; grid-template-columns: 116px minmax(0, 1fr); column-gap: 14px; align-items: start; }
+  .etapas li > .tela { grid-column: 1; grid-row: 1 / span 3; aspect-ratio: 1; margin: 0; padding: 8px; border-radius: 14px; }
+  .etapas li > :not(.tela) { grid-column: 2; }
+  .etapas .num { padding-top: 10px; }
+  .passoTitulo { font-size: 17px; margin: 8px 0 4px !important; }
+  .etapas li > p:last-child { font-size: 14px; }
+  .telaCampo span { height: 30px; padding: 0 8px; font-size: 10px; border-radius: 8px; }
+  .telaCampo b { height: 26px; font-size: 10px; }
+  .telaZapTopo { font-size: 9px; }
+  .telaBalao { width: 100%; padding: 3px; }
+  .telaBalao span { font-size: 8.5px; padding: 0 3px 2px; }
+  .telaFotos { gap: 4px; }
+  .telaFotos img, .telaFotos span { border-radius: 5px; }
+  .telaFotos span { font-size: 14px; }
+  .telaSite b { top: 5px; left: 5px; font-size: 7px; padding: 1px 4px; }
+  .tela .telaBarra { padding: 4px 5px; font-size: 7px; }
+  .tela .telaBarra span { display: none; }
+
+  /* o preço */
+  .valor { font-size: 56px; }
+}
+/* a tabela de caminhos em blocos no celular: o rótulo, a resposta do estúdio
+   em destaque, as outras três menores embaixo */
+@media (max-width: 760px) {
+  .tabelaRolo { overflow: visible; }
+  .tabela, .tabela tbody, .tabela tr, .tabela th, .tabela td { display: block; }
+  .tabela { min-width: 0; }
+  .tabela thead { display: none; }
+  .tabela tr { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px 10px; padding: 16px 0; border-bottom: 1px solid var(--fio); }
+  .tabela th, .tabela td { padding: 0; border: 0; }
+  .tabela tbody th { grid-column: 1 / -1; width: auto; position: static; font-size: 15px; }
+  .tabela td { font-size: 13px; }
+  .tabela td::before { content: attr(data-c); display: block; font-size: 11px; color: var(--suave); margin-bottom: 2px; }
+  .tabela .colEstudio { order: -1; grid-column: 1 / -1; padding: 10px 12px; border-radius: 12px; box-shadow: inset 2px 0 0 var(--verde); font-size: 15px; }
+  .tabela tbody th { order: -2; }
+  .tabela .colEstudio::before { color: var(--verde); font-weight: 600; }
+}
+
+/* ---------- a ficha da obra no hero (12/11, "melhora isso") ----------
+   Um cartão só, no vidro dos outros: o rótulo do exemplo, o nome e a ficha,
+   e os tracinhos como progresso. Mede 280px no desktop; no celular estica
+   na largura do cartão de baixo, como uma faixa acima dele. */
+.heroFicha {
+  display: grid; gap: 4px; width: 280px; padding: 14px 16px 10px; border-radius: 20px; color: #fff;
+  background: linear-gradient(155deg, #ffffff2e, #ffffff0a 60%), #11161a52;
+  backdrop-filter: blur(22px) saturate(170%); -webkit-backdrop-filter: blur(22px) saturate(170%);
+  box-shadow: inset 0 1px 0 #ffffff70, inset 0 0 0 1px #ffffff33, 0 20px 50px -20px #0000008c;
+}
+.heroRotulo { margin: 0 0 2px; font-size: 11px; font-weight: 500; letter-spacing: .01em; color: #ffffffa6; }
+.heroFicha .demoNome { font-size: 17px; letter-spacing: -.01em; }
+.heroFicha .demoDado { font-size: 12.5px; opacity: .75; }
+.heroFicha .demoPassos { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; margin-top: 8px; }
+.heroFicha .demoPassos button { position: relative; width: auto; height: 22px; }
+.heroFicha .demoPassos button::before { width: 100%; height: 3px; background: #ffffff40; }
+.heroFicha .demoPassos button.passou::before, .heroFicha .demoPassos button[aria-pressed="true"]::before { background: #ffffffe6; }
+/* andando sozinho: a da obra atual enche da esquerda no tempo da troca */
+.heroFicha .correndo button[aria-pressed="true"]::before { background: #ffffff40; }
+.heroFicha .correndo button[aria-pressed="true"]::after {
+  content: ""; position: absolute; left: 0; top: 50%; height: 3px; margin-top: -1.5px; border-radius: 2px; background: #fff;
+  animation: enche 4.8s linear both;
+}
+@keyframes enche { from { width: 0; } to { width: 100%; } }
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .heroFicha { background: #1a2024eb; } }
+@media (max-width: 760px) {
+  .heroFicha { width: 100%; padding: 12px 16px 8px; border-radius: 18px; margin-top: auto; }
+  .heroFicha .demoNome { font-size: 15px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .heroFicha .correndo button[aria-pressed="true"]::after { animation: none; width: 100%; }
+}
+/* menor e mais minimalista (12/11, logo depois: "queria menor e mais minimalista"):
+   sem a caixa de vidro, só o texto pequeno sobre a foto com uma sombra macia
+   para ler, e a barra de progresso fina */
+.heroFicha {
+  width: 170px; padding: 0; gap: 1px; border-radius: 0; background: none; box-shadow: none;
+  backdrop-filter: none; -webkit-backdrop-filter: none; text-shadow: 0 1px 10px #00000080;
+}
+.heroRotulo { font-size: 10.5px; color: #ffffffb3; margin-bottom: 1px; }
+.heroFicha .demoNome { font-size: 13px; font-weight: 500; }
+.heroFicha .demoDado { font-size: 11px; opacity: .8; }
+.heroFicha .demoPassos { gap: 3px; margin-top: 6px; }
+.heroFicha .demoPassos button { height: 14px; }
+.heroFicha .demoPassos button::before, .heroFicha .correndo button[aria-pressed="true"]::after { height: 2px; }
+.heroFicha .correndo button[aria-pressed="true"]::after { margin-top: -1px; }
+@media (max-width: 760px) {
+  .heroFicha { width: 150px; padding: 0 4px; border-radius: 0; }
+  .heroFicha .demoNome { font-size: 13px; }
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .heroFicha { background: none; } }
+@media (max-width: 760px) { .heroFicha { text-shadow: 0 1px 3px #000000b3, 0 0 18px #00000099; } }
