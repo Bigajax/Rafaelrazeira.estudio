@@ -79,7 +79,7 @@ function FormAmostra() {
   const [linkWa, setLinkWa] = useState("");
   const [loja, setLoja] = useState<LojaEncontrada | null>(null);
   const [telInvalido, setTelInvalido] = useState(false);
-  const [instaDiag, setInstaDiag] = useState<DiagnosticoArroba | null>(null);
+  const [instaDiag, setInstaDiag] = useState<DiagnosticoArroba | "vazio" | null>(null);
   const [instaInvalido, setInstaInvalido] = useState("");
   const [recusas, setRecusas] = useState(0);
   const envioSuspeito = useGuardaDeFormulario();
@@ -97,6 +97,12 @@ function FormAmostra() {
       return;
     }
     if (!whatsappValido(whatsapp)) { setTelInvalido(true); return; }
+    /* o @ vazio (12/11/2026): o form tem noValidate, então o `required` do
+       campo não segura nada. Sem @ e com `nome: ""`, a rota responde 400
+       ("nome ou site/instagram é obrigatório"), o lead-flow cai no fallback,
+       abre o WhatsApp e a Meta conta um Contact que não está no banco
+       (Itarema, l18-lo-e1, 12/11 às 02h47). */
+    if (!instagram.trim().replace(/^@+/, "")) { setInstaDiag("vazio"); return; }
     const diag = diagnosticoDoArroba(instagram);
     if (diag) { setInstaDiag(diag); return; }
     setEnviando(true);
@@ -135,7 +141,8 @@ function FormAmostra() {
     <CampoIsca />
     {telInvalido && <small className={s.erro} role="alert">Confere o número: é por ele que eu te mando a amostra. Ex.: (44) 99999-0000.</small>}
     {(instaDiag || instaInvalido) && <small className={s.erro} role="alert">
-      {instaDiag === "telefone" ? "Isso é um telefone. Aqui eu preciso do @ da loja no Instagram, o nome logo abaixo da foto do perfil."
+      {instaDiag === "vazio" ? "Falta o @ da loja no Instagram: os aparelhos da amostra saem dele."
+        : instaDiag === "telefone" ? "Isso é um telefone. Aqui eu preciso do @ da loja no Instagram, o nome logo abaixo da foto do perfil."
         : instaDiag === "email" ? "Isso é um e-mail. Aqui eu preciso do @ da loja no Instagram, o nome logo abaixo da foto do perfil."
         : recusas >= 2 ? <>A Meta não reconhece <b>@{a}</b> como conta profissional, e os aparelhos da amostra saem do perfil. Se preferir, <a href={linkWhatsApp("Oi Rafael! Tentei mandar o @ da minha loja pela página da vitrine de iPhone e não deu certo. Pode me ajudar?")} target="_blank" rel="noopener" data-cta="arroba_ajuda" data-cta-dest="whatsapp">me chama no WhatsApp</a>.</>
         : temEspaco(a) ? ESPACO_NO_ARROBA
