@@ -5,6 +5,7 @@ import { AreaDeRaspar } from "./AreaDeRaspar";
 import { ConquistaSite } from "./ConquistaSite";
 import { CupomNoBilhete } from "./CupomNoBilhete";
 import { CelebracaoRaspadinha } from "./CelebracaoRaspadinha";
+import { TopoArquiteto } from "./TopoArquiteto";
 import { mascararWhatsapp, whatsappValido } from "@/components/telefone";
 import { linkWhatsApp } from "@/lib/contato";
 import { type EstadoSorteio, type ResultadoBilhete } from "@/lib/sorteio-arquitetos";
@@ -20,7 +21,7 @@ function Bilhete({ resultado, liberado, aoRevelar, revelado, nome, previa, codig
   return <div className={s.pilha}>
     <div className={`${s.bilheteFundo} ${s.fundoUm}`} aria-hidden="true"><span>Um presente para o seu escritório.</span></div>
     <div className={`${s.bilheteFundo} ${s.fundoDois}`} aria-hidden="true" />
-    <div className={s.sombraBilhete}><div className={s.bilhete} data-bilhete>
+    <div className={s.sombraBilhete}><div className={`${s.bilhete} ${revelado ? s.bilhetePremiado : ""}`} data-bilhete>
       {revelado && resultado !== "cupom300" && <CelebracaoRaspadinha intensidade={resultado === "site" ? "principal" : "cupom"} />}
       <div className={s.impresso}>
       <span className={s.lateral}>Bloco Arquitetura</span>
@@ -127,14 +128,12 @@ export function Raspadinha({ previa = false }: { previa?: boolean }) {
   const naoAberto = !previa && estado?.estado === "nao-aberto";
   const nome = estado && "nome" in estado ? estado.nome : "";
 
-  return <div className={`${s.page} ${revelado && resultado === "cupom50" ? s.cupomEspecial : ""}`}>
-    <header className={s.topo}>
-      <a href="/arquitetos" aria-label="Rafael Razeira Estúdio — sites para arquitetos">{/* eslint-disable-next-line @next/next/no-img-element */}<img src="/assets/marca/rr-nome.webp" width={180} height={30} alt="Rafael Razeira Estúdio" /></a>
-      <span>Na palestra da Bloco Arquitetura</span>
-    </header>
+  return <div className={`${s.page} ${revelado && resultado === "cupom50" ? s.cupomEspecial : ""}`} data-etapa={inscricao ? "inscricao" : esperando ? "espera" : "bilhete"}>
+    <TopoArquiteto raspadinha />
     <main className={s.main}>
       <div className={s.conteudo}>
         <div className={s.abertura}>
+          <p className={s.evento}>Na palestra da Bloco Arquitetura</p>
           <h1>{encerrado ? "O sorteio já aconteceu." : esperando ? "Seu bilhete está guardado." : inscricao ? "Seus projetos podem ganhar um novo endereço." : "Seus projetos merecem mais espaço."}</h1>
           <p className={s.intro}>{esperando ? `${nome}, sua participação está confirmada. O bilhete será liberado aqui mesmo quando o sorteio acontecer.`
             : inscricao ? "Cadastre-se durante a palestra. No momento do sorteio, um escritório ganha um site, até dois ganham 50% de desconto e todos os demais ganham R$ 300 de desconto."
@@ -165,12 +164,16 @@ export function Raspadinha({ previa = false }: { previa?: boolean }) {
           </div>}
           {erro && <div className={s.erro} role="alert"><p>{erro}</p>{!estado && <button className={s.botaoClaro} type="button" onClick={() => setTentativa(n => n + 1)}>Tentar novamente</button>}</div>}
         </div>
-        <div className={s.palco}>
+        <div className={s.palco} id="bilhete">
           <Bilhete key={`${resultado}-${rodadaPrevia}`} resultado={resultado} liberado={liberado} aoRevelar={aoRevelar}
             revelado={revelado} nome={nome} previa={previa} codigo={resultadoReal?.codigo} entregue={resultadoReal?.entregue} utilizado={resultadoReal?.utilizado} />
           <p className={s.dica}>{liberado ? revelado ? "Um presente do Rafael Razeira Estúdio." : "Passe o dedo na faixa prateada para revelar." : "O resultado será revelado neste bilhete."}</p>
         </div>
       </div>
+      <aside className={s.conviteSite} aria-label="Conheça o site para arquitetos">
+        <div><p>Um novo endereço para os seus projetos.</p><span>Veja como pode ser o site do seu escritório e o que vem na criação.</span></div>
+        <a className={s.linkRosa} href="/arquitetos">Conhecer o site para arquitetos<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" /></svg></a>
+      </aside>
       {previa && <aside className={s.previa} aria-label="Controles da demonstração">
         <div><strong>Prévia da experiência</strong><span>Raspe à vontade. Nenhum prêmio é consumido.</span></div>
         <div className={s.opcoesPrevia} aria-label="Resultado para demonstrar">

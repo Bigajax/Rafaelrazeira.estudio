@@ -10,23 +10,23 @@ export async function imagemBilhete({ resultado, codigo, previa, utilizado, entr
   canvas.width = 1080; canvas.height = 1350;
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Não foi possível gerar a imagem neste navegador.");
-  const oliva = "#625222", papel = "#fcf8ec";
+  const verde = "#046c40", papel = "#fbfcf5";
   const oferta = BENEFICIOS_SORTEIO[resultado];
   const site = resultado === "site";
-  const texto = (valor: string, y: number, fonte: string, cor = oliva, largura = 720) => {
+  const texto = (valor: string, y: number, fonte: string, cor = verde, largura = 720) => {
     ctx.font = fonte; ctx.fillStyle = cor; ctx.textAlign = "center";
     ctx.fillText(valor, 540, y, largura);
   };
-  ctx.fillStyle = "#f4f3ef"; ctx.fillRect(0, 0, 1080, 1350);
+  ctx.fillStyle = "#f5f5f1"; ctx.fillRect(0, 0, 1080, 1350);
   ctx.shadowColor = "#373f2430"; ctx.shadowBlur = 24; ctx.shadowOffsetY = 12;
   ctx.fillStyle = "#fffefb"; ctx.fillRect(64, 70, 952, 1210);
   ctx.shadowColor = "transparent"; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
-  ctx.fillStyle = "#f4f3ef";
+  ctx.fillStyle = "#f5f5f1";
   for (let x = 76; x < 1016; x += 24) for (const y of [70, 1280]) {
     ctx.beginPath(); ctx.arc(x, y, 6, 0, Math.PI * 2); ctx.fill();
   }
-  ctx.fillStyle = oliva; ctx.fillRect(88, 98, 904, 1154);
-  ctx.strokeStyle = "#c1b88b"; ctx.lineWidth = 1;
+  ctx.fillStyle = verde; ctx.fillRect(88, 98, 904, 1154);
+  ctx.strokeStyle = "#b4d7b9"; ctx.lineWidth = 1;
   ctx.beginPath(); ctx.roundRect(102, 112, 876, 1126, 14); ctx.stroke();
   texto("✧", 173, "28px Georgia", papel);
   texto("RAFAEL RAZEIRA", 236, "52px Georgia", papel);
@@ -47,9 +47,9 @@ export async function imagemBilhete({ resultado, codigo, previa, utilizado, entr
     texto(`De ${reaisCentavos(VALOR_SITE_CENTAVOS)} por`, 802, "24px Arial");
     texto(reaisCentavos(oferta.finalCentavos), 862, "bold 47px Arial");
   }
-  ctx.strokeStyle = "#d7cba4"; ctx.beginPath(); ctx.moveTo(210, 899); ctx.lineTo(870, 899); ctx.stroke();
+  ctx.strokeStyle = "#d7e4d8"; ctx.beginPath(); ctx.moveTo(210, 899); ctx.lineTo(870, 899); ctx.stroke();
   texto(previa ? "Prévia sem validade" : "Seu código individual", 945, "24px Arial");
-  if (!previa && codigo) texto(codigo, 993, "24px monospace", oliva, 680);
+  if (!previa && codigo) texto(codigo, 993, "24px monospace", verde, 680);
   texto(previa ? "Esta imagem não concede um benefício." : site ? "Combine a entrega com o Rafael pelo WhatsApp." : "Uso único. Não cumulativo com outros descontos.", 1057, "21px Arial");
   texto(previa ? "Demonstração da experiência" : utilizado ? "Cupom já utilizado" : entregue ? "Site já entregue" : "Benefício individual. Validação pelo código.", 1178, "22px Arial", papel);
   texto("Na palestra da Bloco Arquitetura", 1213, "19px Arial", papel);

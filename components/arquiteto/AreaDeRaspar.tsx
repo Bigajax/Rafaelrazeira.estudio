@@ -1,6 +1,6 @@
 "use client";
 
-import { PointerEvent, ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { PointerEvent, ReactNode, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { BENEFICIOS_SORTEIO, type ResultadoBilhete } from "@/lib/sorteio-arquitetos";
 import s from "./raspadinha.module.css";
 
@@ -66,6 +66,8 @@ function pintarPrata(ctx: CanvasRenderingContext2D, largura: number, altura: num
 
 export function AreaDeRaspar({ resultado, liberado, aoRevelar, premioRevelado }: { resultado: ResultadoBilhete; liberado: boolean; aoRevelar: () => void; premioRevelado?: ReactNode }) {
   const canvas = useRef<HTMLCanvasElement>(null);
+  const janela = useRef<HTMLDivElement>(null);
+  const alturaFechada = useRef(0);
   const motor = useRef<Motor | null>(null);
   const fila = useRef<Ponto[]>([]);
   const frame = useRef<number | null>(null);
@@ -75,6 +77,19 @@ export function AreaDeRaspar({ resultado, liberado, aoRevelar, premioRevelado }:
   const [feedback, setFeedback] = useState<Feedback>("inicio");
   const [pronto, setPronto] = useState(false);
   const [revelado, setRevelado] = useState(false);
+  const temPremio = !!premioRevelado;
+
+  useLayoutEffect(() => {
+    const el = janela.current;
+    if (!el || !temPremio) return;
+    const inicial = alturaFechada.current, final = el.getBoundingClientRect().height;
+    if (!inicial || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // Só expande depois de soltar; o mesmo cartão continua montado.
+    const animacao = el.animate([{ height: `${inicial}px` }, { height: `${final}px` }], {
+      duration: 280, easing: "cubic-bezier(.22,1,.36,1)",
+    });
+    return () => animacao.cancel();
+  }, [temPremio]);
 
   function informar(valor: Feedback) {
     if (feedbackAtual.current === valor) return;
@@ -88,6 +103,7 @@ export function AreaDeRaspar({ resultado, liberado, aoRevelar, premioRevelado }:
     fila.current = [];
     if (frame.current !== null) cancelAnimationFrame(frame.current);
     frame.current = null;
+    alturaFechada.current = janela.current?.parentElement?.getBoundingClientRect().height || 0;
     setRevelado(true);
     // O resultado ao redor do cartão só muda depois da cobertura desaparecer.
     const duracao = matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 240;
@@ -194,8 +210,8 @@ export function AreaDeRaspar({ resultado, liberado, aoRevelar, premioRevelado }:
     if (!cancelar && raspagemSuficiente(m)) revelar();
   }
 
-  return <div className={`${s.interacao} ${premioRevelado ? s.interacaoPremiada : ""}`} data-raspagem={revelado ? "revelada" : feedback === "suficiente" ? "pronta" : feedback === "raspando" ? "raspando" : "coberta"}>
-    <div className={`${s.raspar} ${revelado ? s.revelado : ""} ${premioRevelado ? s.rasparPremiada : ""}`}>
+  return <div className={`${s.interacao} ${premioRevelado ? s.interacaoPremiada : ""} ${!liberado ? s.interacaoBloqueada : ""}`} data-raspagem={revelado ? "revelada" : feedback === "suficiente" ? "pronta" : feedback === "raspando" ? "raspando" : "coberta"}>
+    <div ref={janela} className={`${s.raspar} ${revelado ? s.revelado : ""} ${premioRevelado ? s.rasparPremiada : ""}`}>
       <div className={s.premio} aria-hidden={!revelado}>
         {premioRevelado || <div className={s.antecipacaoPremio} data-previa-raspagem>
           <span className={s.chamadaRaspada}>

@@ -5,10 +5,11 @@ const path=require('node:path');
 const sharp=require('sharp');
 const puppeteer=require('puppeteer-core');
 const BASE=process.env.QA_BASE_URL||'http://localhost:3000';
-const pasta=path.resolve('.tmp/bilhetes-salvos');
+const pasta=fs.mkdtempSync(path.resolve('.tmp/bilhetes-salvos-'));
 const pausa=ms=>new Promise(r=>setTimeout(r,ms));
 async function clicar(page,texto){for(const button of await page.$$('button'))if((await button.evaluate(el=>el.textContent)).includes(texto)){await button.click();return;}throw new Error(`Botão não encontrado: ${texto}`);}
 async function texto(page,valor){await page.waitForFunction(t=>document.body.textContent.includes(t),{},valor);}
+async function prontoParaUsar(page){await page.$eval('[data-raspagem]',async el=>{await Promise.allSettled(el.getAnimations({subtree:true}).map(a=>a.finished));});}
 (async()=>{
   fs.mkdirSync(pasta,{recursive:true});
   const browser=await puppeteer.launch({executablePath:process.env.QA_CHROME_PATH||'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true,args:['--no-sandbox']});
@@ -34,6 +35,8 @@ async function texto(page,valor){await page.waitForFunction(t=>document.body.tex
       for(let i=0;i<100&&!fs.existsSync(path.join(pasta,evento.suggestedFilename));i++)await pausa(50);
       const imagem=await sharp(path.join(pasta,evento.suggestedFilename)).metadata();
       assert.equal(imagem.format,'png');assert.equal(imagem.width,1080);assert.equal(imagem.height,1350);
+      const cor=await sharp(path.join(pasta,evento.suggestedFilename)).extract({left:95,top:150,width:1,height:1}).removeAlpha().raw().toBuffer();
+      assert.deepEqual([...cor],[4,108,64],'O PNG deve usar o mesmo verde da marca.');
       const impresso=(await page.evaluate(()=>window.textosSalvos)).map(t=>t.replace(/\s/g,' '));
       for(const esperado of esperados)assert.ok(impresso.includes(esperado),`Imagem deve conter: ${esperado}`);
       assert.ok(!impresso.includes('Pessoa inscrita'));
@@ -43,6 +46,7 @@ async function texto(page,valor){await page.waitForFunction(t=>document.body.tex
     }
     await page.goto(`${BASE}/arquitetos/raspadinha`,{waitUntil:'networkidle2'});
     await clicar(page,'50% de desconto');await clicar(page,'Revelar sem raspar');await page.waitForSelector('[data-cupom]');
+    await prontoParaUsar(page);
     await baixar('Salvar prévia',['50%','R$ 749,50','Prévia sem validade','Esta imagem não concede um benefício.'],true);
     assert.ok(!(await page.evaluate(()=>Array.from(document.querySelectorAll('button')).some(b=>b.textContent==='Copiar código'))));
     console.log('OK: prévia baixa PNG identificado sem validade nem código real.');
@@ -52,6 +56,7 @@ async function texto(page,valor){await page.waitForFunction(t=>document.body.tex
       estado={estado:'resultado',nome:'Pessoa inscrita',ganhou:beneficio==='site',beneficio,codigo:`BLOCO-TESTE-${beneficio}`,entregue:false,utilizado:false};
       await page.goto(`${BASE}/arquitetos/raspadinha/participar`,{waitUntil:'networkidle2'});await page.waitForSelector('canvas');await clicar(page,'Revelar sem raspar');
       await page.waitForSelector('[data-guardar-bilhete]');
+      await prontoParaUsar(page);
       assert.ok(await page.$('[data-bilhete] [data-raspagem] [data-guardar-bilhete]'));
       await clicar(page,'Copiar código');await texto(page,'Código copiado.');
       assert.equal(await page.evaluate(()=>window.copia),estado.codigo);
@@ -62,7 +67,7 @@ async function texto(page,valor){await page.waitForFunction(t=>document.body.tex
         await page.evaluate(()=>{navigator.clipboard.writeText=async()=>{throw new Error('Bloqueado');};});
         await clicar(page,'Copiar código');await texto(page,'Selecione o código acima');
         estado={...estado,utilizado:true};await page.reload({waitUntil:'networkidle2'});await page.waitForSelector('canvas');await clicar(page,'Revelar sem raspar');
-        await page.waitForSelector('[data-guardar-bilhete]');await baixar('Salvar meu cupom',[estado.codigo,'Cupom já utilizado'],false);
+        await page.waitForSelector('[data-guardar-bilhete]');await prontoParaUsar(page);await baixar('Salvar meu cupom',[estado.codigo,'Cupom já utilizado'],false);
         assert.equal(await page.$('[data-cupom] a[href^="https://wa.me/"]'),null);
       }
     }

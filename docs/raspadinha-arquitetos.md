@@ -28,7 +28,9 @@ Após o sorteio, cada participante recebe seu próprio código. O ganhador do si
 
 Correção do Rafael em 17/11/2026: a conquista acontece **dentro do próprio bilhete**, sem substituir a página nem retirar o cartão. Depois da raspagem, a mesma área revela **“É seu!”**, **“Você ganhou um site!”**, o valor de R$ 1.499 em criação e o botão **Quero começar meu site**. O nome não aparece na mensagem de conquista. Selo, código e botão permanecem dentro do cartão. O botão abre o WhatsApp com o nome completo e o código do ganhador. Quando a entrega já está registrada, o bilhete informa esse estado. Não há apresentação de portfólio nem rolagem automática para outra composição.
 
-A conquista tem uma chuva breve de confetes em papel, oliva e dourado, contida nos limites do bilhete. O cupom de 50% recebe uma celebração menor, também dentro do cartão; o de R$ 300 mantém a revelação breve. A opção de movimento reduzido remove animações e confetes. O foco vai para o título do prêmio dentro da área raspada, sem deslocar a página; o próximo Tab alcança o botão principal.
+A conquista tem uma explosão breve de confetes verdes, claros e rosa, contida nos limites do bilhete. O cupom de 50% recebe uma celebração menor, também dentro do cartão; o de R$ 300 mantém a revelação breve. A opção de movimento reduzido remove animações e confetes. O foco vai para o título do prêmio dentro da área raspada, sem deslocar a página; o próximo Tab alcança o botão principal.
+
+Na atualização visual de 17/11/2026, a revelação expande a área do bilhete em 280 ms após soltar o dedo e terminar o desaparecimento da prata. A altura inicial inclui o espaço dos controles, para o cartão não encolher antes de crescer. A mensagem entra em sequência breve e um brilho atravessa a impressão. O modo de movimento reduzido pula a expansão e as entradas; o mesmo cartão e a mesma área raspada continuam montados.
 
 Os dois cupons também revelam toda a oferta dentro da mesma área raspada: “Você ganhou”, desconto em destaque, valor original riscado, preço final e botão **Usar meu cupom**. O de 50% recebe impressão mais clara e destaque maior; o de R$ 300 mantém o mesmo acabamento. Código individual e aviso de cupom utilizado permanecem dentro do bilhete. Nenhum nome aparece no resultado e a página não é substituída ao revelar.
 
@@ -66,9 +68,11 @@ As rotas antigas por token, o SQL `raspadinha-arquitetos.sql` e seus testes perm
 
 Referência vista no navegador: [Herbar’s Scratch Cards](https://br.pinterest.com/pin/895231232162605785/). A fotografia serve só de referência, não é publicada como asset do estúdio.
 
-O elemento central é o bilhete impresso: moldura branca serrilhada, miolo oliva, marca em branco, faixas laterais e cobertura de prata com textura. Duas folhas atrás dão espessura; o cartão que recebe o gesto permanece sem rotação para a raspagem acompanhar o dedo com precisão.
+O elemento central é o bilhete impresso: moldura branca serrilhada, miolo verde da logo, marca em branco, faixas laterais e cobertura de prata com textura. Duas folhas atrás dão espessura; o cartão que recebe o gesto permanece sem rotação para a raspagem acompanhar o dedo com precisão. No celular, as folhas têm menor inclinação e as molduras laterais ocupam menos espaço, ampliando a leitura do prêmio e os botões.
 
-Tokens: papel `#F4F3EF`, oliva `#625222`, tinta `#272D25`, prata `#BFC1BD` e branco `#FFFEFB`. Instrument Sans na interface mantém o vínculo com a página de arquitetos; Georgia aparece na impressão do bilhete e no prêmio. A faixa prateada ocupa o centro, a mensagem explica o próximo gesto e os detalhes do site ficam em uma seção expansível.
+Tokens atuais: papel `#F5F5F1`, verde da marca `#046C40` (conferido na imagem da logo), rosa de ação `#E31B62`, tinta `#182B21` e papel interno `#FBFCF5`. O PNG salvo usa o mesmo verde do bilhete. Instrument Sans na interface mantém o vínculo com a página de arquitetos; Georgia aparece na impressão do bilhete e no prêmio. A faixa prateada ocupa o centro, a mensagem explica o próximo gesto e os detalhes do site ficam em uma seção expansível.
+
+O header é o mesmo componente `TopoArquiteto` utilizado na landing `/arquitetos`: pílula fixa em vidro, monograma e navegação. Na raspadinha, o botão rosa leva à landing; outro convite rosa depois do bilhete apresenta o site para arquitetos. O contexto da palestra fica junto ao título. Abaixo de 640 px, o menu de seções é recolhido, mantendo marca e botão. O fluxo de cadastro e os valores dos prêmios permanecem os mesmos; nenhuma alteração de banco é necessária para esta atualização visual.
 
 ```text
 Computador                         Celular
@@ -92,6 +96,7 @@ Instalar a dependência de QA, se faltar: `npm install --prefix .tmp/raspadinha-
 - `node scripts/teste-sorteio-arquitetos.cjs`: migração, inscrições concorrentes, sorteio único, privilégios, resultado e API, em Postgres local sem acessar produção.
 - `node scripts/teste-cupons-ui.cjs`: três resultados em 320/390/1440 px, preservação do cartão e da área raspada, oferta/CTA/código dentro do bilhete, foco e teclado, valores e mensagens do WhatsApp, prévia sem emissão real e cupom utilizado. Requer localhost; `QA_BASE_URL` permite outro endereço local.
 - `node scripts/teste-salvar-bilhete.cjs`: download real dos PNGs e conferência de tamanho/conteúdo, código copiado e permissão bloqueada, prévia sem validade, cupom utilizado, espera até o sorteio, liberação automática, pausa em aba oculta e reconexão. API simulada, sem acessar produção. Os intervalos são acelerados somente no navegador de teste.
+- `node scripts/teste-visual-raspadinha.cjs`: header comparado com a landing, cores do bilhete e CTA, expansão com alturas intermediárias sem encolher, cadastro/espera/prêmios em 320/390/768/1440 px, código longo, enquadramento do bilhete e movimento reduzido. API simulada.
 - `node scripts/teste-conquista-ui.cjs`: conquista no bilhete em 320/390/768/1440 px, preservação do mesmo cartão e área raspada, nome/CTA/código dentro do cartão, confetes contidos, foco/teclado e movimento reduzido. Usa a prévia e uma resposta simulada da API, sem emitir prêmios reais.
 - `node scripts/teste-raspadinha.cjs`: compatibilidade do fluxo legado de 50%.
 - Conferência TypeScript e build Next.js.

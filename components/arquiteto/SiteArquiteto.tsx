@@ -35,6 +35,7 @@ import { ligarAncoras } from "@/components/vitrine/ancora";
 import { IconeInstagram, IconeWhatsApp, textoDe } from "@/components/vitrine/sections";
 import { linkWhatsApp, WHATSAPP_EXIBIDO } from "@/lib/contato";
 import { ARQUITETO } from "@/lib/oferta";
+import { TopoArquiteto } from "./TopoArquiteto";
 
 const PAGINA = "arquitetos";
 const ABERTURA = "Oi Rafael! Quero ver a amostra do site do meu escritório.";
@@ -590,18 +591,7 @@ function ModalAmostra() {
 }
 
 function Topo() {
-  return <header className={s.topo}>
-    <a className={s.marca} href="#topo" aria-label="Rafael Razeira Estúdio, voltar ao topo">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/assets/marca/rr-monograma.webp" width={55} height={30} alt="" />
-    </a>
-    <nav className={s.topoNav} aria-label="Seções">
-      <a href="#o-que-vem">O site</a>
-      <a href="#como-funciona">Como funciona</a>
-      <a href="#oferta">Preço</a>
-    </nav>
-    <a className={s.topoCta} href={linkWhatsApp("Oi Rafael! Vim pela página do site para arquiteto e quero tirar uma dúvida.")} target="_blank" rel="noopener" data-cta="topo_whatsapp" data-cta-dest="whatsapp">Conversar</a>
-  </header>;
+  return <TopoArquiteto />;
 }
 
 function Rodape() {

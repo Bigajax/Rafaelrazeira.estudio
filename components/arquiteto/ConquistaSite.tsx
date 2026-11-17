@@ -9,9 +9,9 @@ import s from "./raspadinha.module.css";
 
 function SeloConquista() {
   return <svg className={s.seloNoBilhete} viewBox="0 0 80 80" fill="none" aria-hidden="true">
-    <path d="m40 2 7 6 9-1 4 8 9 3 1 9 7 6-4 8 1 9-8 5-3 9-9 1-7 7-8-4-9 1-5-8-9-3-1-9-7-7 4-8-1-9 8-4 3-9 9-1Z" fill="#d7c184" />
-    <circle cx="40" cy="39" r="25" stroke="#99803b" strokeWidth=".8" />
-    <path d="m29 39 8 8 15-16" stroke="#625222" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="m40 2 7 6 9-1 4 8 9 3 1 9 7 6-4 8 1 9-8 5-3 9-9 1-7 7-8-4-9 1-5-8-9-3-1-9-7-7 4-8-1-9 8-4 3-9 9-1Z" fill="#c2e4ba" />
+    <circle cx="40" cy="39" r="25" stroke="#71a571" strokeWidth=".8" />
+    <path d="m29 39 8 8 15-16" stroke="#046c40" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
   </svg>;
 }
 
