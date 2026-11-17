@@ -60,6 +60,8 @@ async function prontoParaUsar(page){await page.$eval('[data-raspagem]',async el=
       assert.ok(await page.$('[data-bilhete] [data-raspagem] [data-guardar-bilhete]'));
       await clicar(page,'Copiar código');await texto(page,'Código copiado.');
       assert.equal(await page.evaluate(()=>window.copia),estado.codigo);
+      assert.ok(await page.$eval('button[class*=copiarCodigo]',el=>el.textContent.trim()==='Código copiado ✓'));
+      await page.waitForFunction(()=>document.querySelector('button[class*=copiarCodigo]')?.textContent.trim()==='Copiar código');
       await baixar(beneficio==='site'?'Salvar meu prêmio':'Salvar meu cupom',[estado.codigo,beneficio==='site'?'Você ganhou um site!':beneficio==='cupom50'?'R$ 749,50':'R$ 1.199,00'],false);
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
       if(beneficio==='cupom300'){
@@ -72,6 +74,41 @@ async function prontoParaUsar(page){await page.$eval('[data-raspagem]',async el=
       }
     }
     console.log('OK: site e cupons salvos em PNG com código próprio/valores, cópia e falha de permissão; cupom usado identificado.');
+    const compartilhar=await browser.newPage();await compartilhar.setViewport({width:390,height:844});
+    compartilhar.on('pageerror',e=>erros.push(e.message));
+    await compartilhar.evaluateOnNewDocument(()=>{
+      window.modoCompartilhar='sucesso';window.permiteCompartilhar=true;
+      Object.defineProperty(navigator,'canShare',{configurable:true,value:dados=>window.permiteCompartilhar&&dados.files?.length===1&&dados.files[0].type==='image/png'});
+      Object.defineProperty(navigator,'share',{configurable:true,value:dados=>{
+        window.compartilhado=dados;window.ativacaoAoCompartilhar=navigator.userActivation.isActive;
+        if(window.modoCompartilhar==='cancelar')return Promise.reject(new DOMException('Cancelado','AbortError'));
+        if(window.modoCompartilhar==='negar')return Promise.reject(new DOMException('Bloqueado','NotAllowedError'));
+        return Promise.resolve();
+      }});
+    });
+    await compartilhar.setRequestInterception(true);compartilhar.on('request',req=>req.url().includes('/api/arquitetos/sorteio')?req.respond({status:200,contentType:'application/json',body:JSON.stringify(estado)}):req.continue());
+    estado={estado:'resultado',nome:'Pessoa inscrita',ganhou:false,beneficio:'cupom50',codigo:'BLOCO-COMPARTILHAR-TESTE',utilizado:false,entregue:false};
+    await compartilhar.goto(`${BASE}/arquitetos/raspadinha/participar`,{waitUntil:'networkidle2'});
+    await compartilhar.waitForFunction(()=>document.querySelector('canvas')?.width>0);await clicar(compartilhar,'Revelar sem raspar');
+    await compartilhar.waitForFunction(()=>document.querySelector('button[class*=compartilharBilhete]')?.disabled===false);
+    await prontoParaUsar(compartilhar);await clicar(compartilhar,'Compartilhar bilhete');
+    await texto(compartilhar,'Bilhete enviado ao compartilhamento');
+    const recebido=await compartilhar.evaluate(async()=>({nome:window.compartilhado.files[0].name,tipo:window.compartilhado.files[0].type,bytes:Array.from(new Uint8Array(await window.compartilhado.files[0].arrayBuffer())),ativacao:window.ativacaoAoCompartilhar,url:window.compartilhado.url}));
+    assert.equal(recebido.nome,'BLOCO-COMPARTILHAR-TESTE-cupom50.png');assert.equal(recebido.tipo,'image/png');assert.equal(recebido.ativacao,true);assert.equal(recebido.url,undefined);
+    const meta=await sharp(Buffer.from(recebido.bytes)).metadata();assert.equal(meta.width,1080);assert.equal(meta.height,1350);
+    let downloadsAoCancelar=0;const contar=()=>downloadsAoCancelar++;cdp.on('Browser.downloadWillBegin',contar);
+    await compartilhar.evaluate(()=>{window.modoCompartilhar='cancelar';});await clicar(compartilhar,'Compartilhar bilhete');
+    await compartilhar.waitForFunction(()=>document.querySelector('button[class*=compartilharBilhete]')?.disabled===false);await pausa(100);
+    assert.equal(downloadsAoCancelar,0);assert.ok(!(await compartilhar.evaluate(()=>document.body.textContent.includes('Não foi possível abrir'))));cdp.off('Browser.downloadWillBegin',contar);
+    await compartilhar.evaluate(()=>{window.modoCompartilhar='negar';});await clicar(compartilhar,'Compartilhar bilhete');await texto(compartilhar,'Não foi possível abrir o compartilhamento.');
+    assert.equal(await compartilhar.$eval('button[class*=salvarBilhete]',el=>el.disabled),false);
+    await compartilhar.evaluateOnNewDocument(()=>{window.permiteCompartilhar=false;});await compartilhar.reload({waitUntil:'networkidle2'});
+    await compartilhar.waitForFunction(()=>document.querySelector('canvas')?.width>0);await clicar(compartilhar,'Revelar sem raspar');
+    await compartilhar.waitForFunction(()=>document.querySelector('button[class*=compartilharBilhete]')?.disabled===false);await prontoParaUsar(compartilhar);
+    const fallback=new Promise((resolve,reject)=>{const t=setTimeout(()=>reject(new Error('Compartilhamento sem suporte deve oferecer o PNG.')),15000);cdp.once('Browser.downloadWillBegin',e=>{clearTimeout(t);resolve(e);});});
+    await clicar(compartilhar,'Compartilhar bilhete');assert.equal((await fallback).suggestedFilename,'BLOCO-COMPARTILHAR-TESTE-cupom50.png');await texto(compartilhar,'Este navegador não abre o menu de compartilhamento.');
+    assert.ok(await compartilhar.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await compartilhar.close();
+    console.log('OK: botão confirma cópia e restaura rótulo; arquivo PNG preparado antes do toque, compartilhamento simulado mantém ativação; cancelamento sem download; falha orienta e ausência de suporte baixa o PNG.');
     const espera=await browser.newPage();espera.on('pageerror',e=>erros.push(e.message));
     await espera.evaluateOnNewDocument(()=>{
       const original=window.setTimeout;

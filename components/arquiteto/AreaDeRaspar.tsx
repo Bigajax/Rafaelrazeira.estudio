@@ -1,6 +1,6 @@
 "use client";
 
-import { PointerEvent, ReactNode, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { PointerEvent, ReactNode, useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { BENEFICIOS_SORTEIO, type ResultadoBilhete } from "@/lib/sorteio-arquitetos";
 import s from "./raspadinha.module.css";
 
@@ -39,32 +39,34 @@ function pintarPrata(ctx: CanvasRenderingContext2D, largura: number, altura: num
   ctx.globalCompositeOperation = "source-over";
   ctx.globalAlpha = 1;
   const prata = ctx.createLinearGradient(0, 0, largura, altura);
-  [[0, "#b6bbb4"], [.28, "#e6e8e1"], [.47, "#d2d6cd"], [.7, "#edf0e7"], [1, "#b7bdb2"]].forEach(([n, cor]) => prata.addColorStop(Number(n), String(cor)));
+  [[0, "#b9bdc1"], [.22, "#e3e5e7"], [.4, "#fafafa"], [.51, "#d5d8db"], [.72, "#edf0f2"], [1, "#bcc1c5"]].forEach(([n, cor]) => prata.addColorStop(Number(n), String(cor)));
   ctx.fillStyle = prata; ctx.fillRect(0, 0, largura, altura);
-  ctx.lineWidth = .6; ctx.strokeStyle = "#ffffff30";
-  for (let x = -altura; x < largura; x += 6) {
-    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x + altura, altura); ctx.stroke();
+  ctx.lineWidth = .5; ctx.strokeStyle = "#ffffff18";
+  for (let y = 1; y < altura; y += 3) {
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(largura, y); ctx.stroke();
   }
   for (let i = 0; i < Math.min(6500, largura * altura / 8); i++) {
-    ctx.fillStyle = i % 2 ? "#ffffff26" : "#30392a13";
+    ctx.fillStyle = i % 2 ? "#ffffff1c" : "#40464d0b";
     ctx.fillRect((i * 139.3) % largura, (i * 53.7) % altura, .8, .65);
   }
-  ctx.strokeStyle = "#707b6540"; ctx.strokeRect(7, 7, largura - 14, altura - 14);
+  ctx.strokeStyle = "#ffffff80"; ctx.strokeRect(.5, .5, largura - 1, altura - 1);
   const centroX = largura / 2, centroY = altura / 2;
-  ctx.strokeStyle = "#536148a6"; ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.arc(centroX, centroY - 34, 12, 0, Math.PI * 2); ctx.stroke();
-  ctx.beginPath(); ctx.arc(centroX, centroY - 34, 8.5, 0, Math.PI * 2); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(centroX - 4, centroY - 31); ctx.lineTo(centroX + 4, centroY - 37); ctx.stroke();
-  ctx.textAlign = "center"; ctx.fillStyle = "#414b38";
-  ctx.font = `400 ${Math.max(17, Math.min(25, largura * .075))}px Georgia, serif`;
-  ctx.fillText("Raspe para descobrir", centroX, centroY + 8, largura - 24);
-  ctx.font = `${largura < 230 ? 9 : 11}px system-ui, sans-serif`;
-  ctx.fillStyle = "#59634f";
-  ctx.fillText("Use o dedo ou arraste o mouse", centroX, centroY + 32, largura - 24);
+  ctx.save(); ctx.translate(centroX, centroY - 30);
+  ctx.strokeStyle = "#59636e"; ctx.lineWidth = 1.25; ctx.lineCap = "round"; ctx.lineJoin = "round";
+  ctx.stroke(new Path2D("M-3 12-11 3Q-13 0-10-1Q-8-2-6 1L-3 4V-10Q-3-14 0-14Q3-14 3-10V-2Q4-5 7-4L12-2Q16 0 16 5L14 14Q13 18 8 18H3Q0 18-3 12Z"));
+  ctx.stroke(new Path2D("M-14-17Q0-24 14-17M10-21 14-17 10-13M-10-21-14-17-10-13"));
+  ctx.restore();
+  ctx.textAlign = "center"; ctx.fillStyle = "#303a43";
+  ctx.font = `400 ${Math.max(22, Math.min(30, largura * .09))}px Georgia, serif`;
+  ctx.fillText("Raspe aqui", centroX, centroY + 21, largura - 24);
+  ctx.font = `${largura < 260 ? 11 : 12}px system-ui, sans-serif`;
+  ctx.fillStyle = "#53606b";
+  ctx.fillText("para revelar seu presente", centroX, centroY + 43, largura - 24);
   ctx.restore();
 }
 
 export function AreaDeRaspar({ resultado, liberado, aoRevelar, premioRevelado, mensagemBloqueio = "Aguarde o sorteio" }: { resultado: ResultadoBilhete; liberado: boolean; aoRevelar: () => void; premioRevelado?: ReactNode; mensagemBloqueio?: string }) {
+  const instrucao = useId();
   const canvas = useRef<HTMLCanvasElement>(null);
   const janela = useRef<HTMLDivElement>(null);
   const alturaFechada = useRef(0);
@@ -83,12 +85,15 @@ export function AreaDeRaspar({ resultado, liberado, aoRevelar, premioRevelado, m
     const el = janela.current;
     if (!el || !temPremio) return;
     const inicial = alturaFechada.current, final = el.getBoundingClientRect().height;
-    if (!inicial || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const movimento = matchMedia("(prefers-reduced-motion: reduce)");
+    if (!inicial || movimento.matches) return;
     // Só expande depois de soltar; o mesmo cartão continua montado.
     const animacao = el.animate([{ height: `${inicial}px` }, { height: `${final}px` }], {
-      duration: 280, easing: "cubic-bezier(.22,1,.36,1)",
+      duration: 260, easing: "cubic-bezier(.22,1,.36,1)",
     });
-    return () => animacao.cancel();
+    const parar = () => { if (movimento.matches) animacao.cancel(); };
+    movimento.addEventListener("change", parar);
+    return () => { movimento.removeEventListener("change", parar); animacao.cancel(); };
   }, [temPremio]);
 
   function informar(valor: Feedback) {
@@ -106,7 +111,7 @@ export function AreaDeRaspar({ resultado, liberado, aoRevelar, premioRevelado, m
     alturaFechada.current = janela.current?.parentElement?.getBoundingClientRect().height || 0;
     setRevelado(true);
     // O resultado ao redor do cartão só muda depois da cobertura desaparecer.
-    const duracao = matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 240;
+    const duracao = matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 200;
     tempoRevelacao.current = setTimeout(aoRevelar, duracao);
   }, [aoRevelar, liberado]);
 
@@ -210,7 +215,7 @@ export function AreaDeRaspar({ resultado, liberado, aoRevelar, premioRevelado, m
     if (!cancelar && raspagemSuficiente(m)) revelar();
   }
 
-  return <div className={`${s.interacao} ${premioRevelado ? s.interacaoPremiada : ""} ${!liberado ? s.interacaoBloqueada : ""}`} data-raspagem={revelado ? "revelada" : feedback === "suficiente" ? "pronta" : feedback === "raspando" ? "raspando" : "coberta"}>
+  return <div className={`${s.interacao} ${premioRevelado ? s.interacaoPremiada : ""} ${!liberado ? s.interacaoBloqueada : ""}`} role="group" aria-label="Bilhete raspável" aria-describedby={liberado && !revelado ? instrucao : undefined} data-raspagem={revelado ? "revelada" : feedback === "suficiente" ? "pronta" : feedback === "raspando" ? "raspando" : "coberta"}>
     <div ref={janela} className={`${s.raspar} ${revelado ? s.revelado : ""} ${premioRevelado ? s.rasparPremiada : ""}`}>
       <div className={s.premio} aria-hidden={!revelado}>
         {premioRevelado || <div className={s.antecipacaoPremio} data-previa-raspagem>
@@ -229,8 +234,9 @@ export function AreaDeRaspar({ resultado, liberado, aoRevelar, premioRevelado, m
       </> : <div className={s.bloqueado}><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" aria-hidden><rect x="5" y="10" width="14" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg><span>{mensagemBloqueio}</span></div>}
     </div>
     {liberado && !revelado && <>
+      <span id={instrucao} className={s.somenteLeitura}>Raspe a faixa com o dedo ou o mouse para revelar seu presente, ou use o botão Revelar sem raspar.</span>
       <div className={s.controlesRaspagem}>
-        <span className={s.feedbackRaspagem} role="status">{feedback === "suficiente" ? "Solte para revelar" : feedback === "raspando" ? "Continue raspando" : "Passe o dedo"}</span>
+        <span className={s.feedbackRaspagem} role="status">{feedback === "suficiente" ? "Solte para revelar" : feedback === "raspando" ? "Continue raspando" : "Seu presente está aqui"}</span>
         <button className={s.revelar} type="button" onClick={revelar}>Revelar sem raspar</button>
       </div>
     </>}

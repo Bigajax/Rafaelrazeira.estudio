@@ -26,7 +26,6 @@ export function CupomNoBilhete({ resultado, nome, previa, codigo, utilizado }: {
       <span>De <s>{reaisCentavos(VALOR_SITE_CENTAVOS)}</s> por</span>
       <strong>{reaisCentavos(oferta.finalCentavos)}</strong>
     </div>
-    {!previa && codigo && <div className={s.registroNoBilhete}><span>Seu cupom individual</span><code>{codigo}</code></div>}
     {!previa && utilizado ? <p className={s.cupomUtilizado} role="status">Este cupom já foi utilizado.</p> : <a className={`${s.botao} ${s.ctaNoBilhete}`}
       href={previa ? "/arquitetos" : linkWhatsApp(`Oi Rafael! Sou ${nome}, participei da palestra da Bloco Arquitetura e ganhei ${oferta.rotulo}. Meu cupom é ${codigo}. Quero o site do meu escritório por ${reaisCentavos(oferta.finalCentavos)}, de ${reaisCentavos(VALOR_SITE_CENTAVOS)}.`)}
       target="_blank" rel="noreferrer">Usar meu cupom<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" /></svg></a>}

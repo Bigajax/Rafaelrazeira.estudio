@@ -15,7 +15,8 @@ async function clicar(page,texto){for(const b of await page.$$('button'))if((awa
     const header=await page.$eval('[data-header-arquiteto]',el=>{const r=el.getBoundingClientRect();return{width:r.width,height:r.height,top:r.top,logo:el.querySelector('img').getAttribute('src')};});
     assert.deepEqual(header,headerOriginal);
     assert.equal(await page.$eval('[data-bilhete] [class*=impresso]',el=>getComputedStyle(el).backgroundColor),'rgb(4, 108, 64)');
-    assert.equal(await page.$eval('aside[aria-label="Conheça o site para arquitetos"] a',el=>getComputedStyle(el).backgroundColor),'rgb(227, 27, 98)');
+    assert.equal(await page.$eval('aside[aria-label="Conheça o site para arquitetos"] a',el=>getComputedStyle(el).color),'rgb(227, 27, 98)');
+    assert.equal(await page.$eval('aside[aria-label="Conheça o site para arquitetos"] a',el=>getComputedStyle(el).backgroundColor),'rgba(0, 0, 0, 0)');
     assert.equal(await page.$eval('header > a:last-child',el=>el.getAttribute('href')),'/arquitetos');
     await page.waitForFunction(()=>document.querySelector('canvas')?.width>0);
     const inicial=await page.$eval('[data-raspagem]',el=>el.getBoundingClientRect().height);
@@ -25,6 +26,7 @@ async function clicar(page,texto){for(const b of await page.$$('button'))if((awa
     assert.ok(final>inicial+30);
     assert.ok(Math.min(...alturas)>=inicial-2,'O espaço dos controles não pode sumir e encolher o cartão antes de crescer.');
     assert.ok(alturas.some(h=>h>inicial+8&&h<final-8),'Precisa expandir em quadros intermediários.');
+    assert.equal(await page.$eval('aside[aria-label="Conheça o site para arquitetos"] a',el=>getComputedStyle(el).backgroundColor),'rgb(227, 27, 98)');
     console.log('OK: header compartilhado com /arquitetos, cores da marca e expansão contínua sem encolher antes do prêmio.');
     let estado;
     await page.setRequestInterception(true);page.on('request',req=>req.url().includes('/api/arquitetos/sorteio')?req.respond({status:200,contentType:'application/json',body:JSON.stringify(estado)}):req.continue());
@@ -41,6 +43,8 @@ async function clicar(page,texto){for(const b of await page.$$('button'))if((awa
         assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
         const r=await page.$eval('[data-bilhete]',el=>{const b=el.getBoundingClientRect();return{left:b.left,right:b.right};});
         assert.ok(r.left>=0&&r.right<=width,'O bilhete deve caber inteiro na largura.');
+        if(width<=480)assert.ok(await page.$$eval('[data-bilhete] [class*=lateral]',els=>els.every(el=>getComputedStyle(el).display==='none')));
+        if(etapa==='site'||etapa==='cupom300')assert.ok(await page.$eval('[data-guardar-bilhete] button',el=>el.getBoundingClientRect().height>=46));
         assert.ok(await page.$eval('header',el=>el.getBoundingClientRect().bottom<document.querySelector('h1').getBoundingClientRect().top));
         const links=await page.$$eval('aside[aria-label="Conheça o site para arquitetos"] a',els=>els.map(el=>({href:el.getAttribute('href'),h:el.getBoundingClientRect().height,w:el.getBoundingClientRect().width})));
         assert.ok(links.every(l=>l.href==='/arquitetos'&&l.h>=48&&l.w<=width-28));
