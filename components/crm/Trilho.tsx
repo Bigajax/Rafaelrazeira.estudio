@@ -56,6 +56,7 @@ const MOMENTOS: { nome: string; rotas: Rota[] }[] = [
         nota: "as mensagens",
         conta: "templates",
       },
+      { href: "/crm/raspadinha", rotulo: "Raspadinha", nota: "o prêmio da palestra", conta: null },
     ],
   },
   {
@@ -169,6 +170,7 @@ const ICONES: Record<string, IconePainelNome> = {
   "/crm": "hoje",
   "/crm/pipeline": "funil",
   "/crm/templates": "templates",
+  "/crm/raspadinha": "presente",
   "/crm/producao": "producao",
   "/crm/projetos": "projetos",
   "/crm/performance": "performance",

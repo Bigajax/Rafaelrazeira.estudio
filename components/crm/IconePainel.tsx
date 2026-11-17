@@ -6,6 +6,7 @@ export type IconePainelNome =
   | "funil"
   | "mensagens"
   | "templates"
+  | "presente"
   | "producao"
   | "projetos"
   | "performance"
@@ -20,6 +21,7 @@ export type IconePainelNome =
   | "menu";
 
 const desenhos: Record<IconePainelNome, ReactNode> = {
+  presente: <><path d="M4 11h16v10H4zM3 7h18v4H3zM12 7v14" /><path d="M12 7H8a2.5 2.5 0 1 1 2.5-2.5L12 7Zm0 0h4a2.5 2.5 0 1 0-2.5-2.5L12 7Z" /></>,
   clientes: (
     <>
       <circle cx="9" cy="7" r="3" />

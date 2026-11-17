@@ -1,0 +1,34 @@
+.page { max-width: 980px; margin: 0 auto; padding: 28px 16px 60px; color: #14181a; }
+.page h1 { font-size: clamp(28px, 4vw, 40px); font-weight: 500; letter-spacing: -.035em; line-height: 1.15; }
+.page h2 { font-size: 22px; font-weight: 500; }
+.intro { color: #62686a; max-width: 650px; line-height: 1.65; }
+.cabeca { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+.cartao { border-radius: 22px; border: 1px solid #e6e6e3; background: #fff; padding: 28px; margin-top: 24px; }
+.status { display: inline-flex; padding: 6px 12px; border-radius: 999px; background: #f0f3ed; color: #39634c; font-size: 13px; }
+.preco { font-size: 30px; font-weight: 600; letter-spacing: -.03em; margin-block: 16px; }
+.preco s { font-size: 16px; color: #6b7072; font-weight: 400; margin-right: 12px; }
+.acoes { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0; }
+.primario, .secundario { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 12px 20px; border-radius: 999px; font-family: inherit; font-size: 13px; font-weight: 500; line-height: 1.4; text-decoration: none; cursor: pointer; border: 1px solid #dce0d9; }
+.primario { background: #14181a; color: #fff; border-color: #14181a; }
+.secundario { background: #fff; color: #14181a; }
+.primario:disabled, .secundario:disabled { opacity: .5; cursor: wait; }
+.micro { font-size: 13px; color: #62686a; line-height: 1.6; }
+.qr { display: block; max-width: 100%; height: auto; }
+.link { display: block; width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #dce0d9; font: 12px/1.5 ui-monospace, monospace; }
+.aviso { border: 1px solid #e0ddbc; background: #fcfbf3; padding: 18px; border-radius: 12px; margin-top: 20px; }
+.dados { display: grid; grid-template-columns: max-content 1fr; gap: 12px 24px; overflow-wrap: anywhere; }
+.dados dt { color: #62686a; font-size: 13px; }
+.dados dd { margin: 0; }
+.tabelaWrap { overflow-x: auto; }
+.tabela { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
+.tabela th, .tabela td { padding: 12px 10px; border-bottom: 1px solid #e6e6e3; }
+.tabela th { color: #62686a; font-weight: 500; }
+.projecao { width: 100vw; height: 100dvh; max-width: 100vw; max-height: 100dvh; border: none; margin: 0; padding: 32px; background: #fff; color: #14181a; text-align: center; }
+.projecao[open] { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+.projecao h2 { font-size: clamp(28px, 5vw, 56px); letter-spacing: -.04em; margin: 12px 0 0; }
+.projecao p { margin: 0; }
+.projecao > img:first-of-type { width: 180px; height: auto; }
+.qrGrande { display: block; height: min(52dvh, 640px); width: auto; max-width: 85vw; aspect-ratio: 1; object-fit: contain; }
+.fechar { position: absolute; right: 18px; top: 16px; border: 1px solid #ddd; background: #fff; width: 44px; height: 44px; border-radius: 999px; font-size: 24px; cursor: pointer; }
+.page :focus-visible, .projecao :focus-visible { outline: 3px solid #0c9159; outline-offset: 4px; }
+@media (max-width: 480px) { .cartao { padding: 20px; } .dados { grid-template-columns: 1fr; gap: 4px; } .dados dd { margin-bottom: 12px; } }
