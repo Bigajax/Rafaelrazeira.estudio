@@ -64,7 +64,7 @@ function pintarPrata(ctx: CanvasRenderingContext2D, largura: number, altura: num
   ctx.restore();
 }
 
-export function AreaDeRaspar({ resultado, liberado, aoRevelar, premioRevelado }: { resultado: ResultadoBilhete; liberado: boolean; aoRevelar: () => void; premioRevelado?: ReactNode }) {
+export function AreaDeRaspar({ resultado, liberado, aoRevelar, premioRevelado, mensagemBloqueio = "Aguarde o sorteio" }: { resultado: ResultadoBilhete; liberado: boolean; aoRevelar: () => void; premioRevelado?: ReactNode; mensagemBloqueio?: string }) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const janela = useRef<HTMLDivElement>(null);
   const alturaFechada = useRef(0);
@@ -226,7 +226,7 @@ export function AreaDeRaspar({ resultado, liberado, aoRevelar, premioRevelado }:
         <canvas ref={canvas} aria-hidden="true" onPointerDown={comecar} onPointerMove={enfileirar}
           onPointerUp={e => terminar(e)} onPointerCancel={e => terminar(e, true)} onLostPointerCapture={e => terminar(e, true)} draggable={false} />
         {!pronto && !revelado && <span className={s.preparando}>Preparando seu bilhete…</span>}
-      </> : <div className={s.bloqueado}><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" aria-hidden><rect x="5" y="10" width="14" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg><span>Aguarde o sorteio</span></div>}
+      </> : <div className={s.bloqueado}><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" aria-hidden><rect x="5" y="10" width="14" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg><span>{mensagemBloqueio}</span></div>}
     </div>
     {liberado && !revelado && <>
       <div className={s.controlesRaspagem}>

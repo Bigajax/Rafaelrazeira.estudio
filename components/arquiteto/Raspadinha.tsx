@@ -17,7 +17,7 @@ function Estrela({ className = "" }: { className?: string }) {
   return <svg className={className} width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2c0 7-3 10-10 10 7 0 10 3 10 10 0-7 3-10 10-10-7 0-10-3-10-10Z" stroke="currentColor" /></svg>;
 }
 
-function Bilhete({ resultado, liberado, aoRevelar, revelado, nome, previa, codigo, entregue, utilizado }: { resultado: ResultadoBilhete; liberado: boolean; aoRevelar: () => void; revelado: boolean; nome: string; previa: boolean; codigo?: string; entregue?: boolean; utilizado?: boolean }) {
+function Bilhete({ resultado, liberado, aoRevelar, revelado, nome, previa, codigo, entregue, utilizado, mensagemBloqueio }: { resultado: ResultadoBilhete; liberado: boolean; aoRevelar: () => void; revelado: boolean; nome: string; previa: boolean; codigo?: string; entregue?: boolean; utilizado?: boolean; mensagemBloqueio: string }) {
   return <div className={s.pilha}>
     <div className={`${s.bilheteFundo} ${s.fundoUm}`} aria-hidden="true"><span>Um presente para o seu escritório.</span></div>
     <div className={`${s.bilheteFundo} ${s.fundoDois}`} aria-hidden="true" />
@@ -29,7 +29,7 @@ function Bilhete({ resultado, liberado, aoRevelar, revelado, nome, previa, codig
         <Estrela className={s.estrela} />
         {/* eslint-disable-next-line @next/next/no-img-element */}<img className={s.marcaBilhete} src="/assets/marca/rr-nome.webp" width={250} height={42} alt="Rafael Razeira Estúdio" />
         <p className={s.fraseBilhete}>Um novo espaço para os seus projetos.</p>
-        <AreaDeRaspar resultado={resultado} liberado={liberado} aoRevelar={aoRevelar}
+        <AreaDeRaspar resultado={resultado} liberado={liberado} aoRevelar={aoRevelar} mensagemBloqueio={mensagemBloqueio}
           premioRevelado={revelado ? resultado === "site" ? <ConquistaSite nome={nome} previa={previa} codigo={codigo} entregue={entregue} /> : <CupomNoBilhete resultado={resultado} nome={nome} previa={previa} codigo={codigo} utilizado={utilizado} /> : undefined} />
         <p className={s.assinaturaBilhete}>Feito para o seu próximo capítulo.</p>
       </div>
@@ -59,10 +59,11 @@ export function Raspadinha({ previa = false }: { previa?: boolean }) {
   const [conexao, setConexao] = useState(true);
   const aoRevelar = useCallback(() => setRevelado(true), []);
   const carregar = useCallback(async (signal?: AbortSignal) => {
-    const r = await fetch(ENDPOINT, { cache: "no-store", signal }); const dados = await r.json();
+    const r = await fetch(ENDPOINT, { cache: "no-store", signal: signal ?? AbortSignal.timeout(15000) }); const dados = await r.json();
     if (!r.ok) throw new Error(dados.erro || "Não foi possível consultar o sorteio.");
     signal?.throwIfAborted();
     setEstado(dados); setConexao(true);
+    return dados as EstadoSorteio;
   }, []);
   useEffect(() => {
     if (previa) return;
@@ -109,10 +110,18 @@ export function Raspadinha({ previa = false }: { previa?: boolean }) {
     if (nome.length < 2 || !whatsappValido(whatsapp)) { setErro("Preencha seu nome e um WhatsApp válido com DDD."); return; }
     setEnviando(true); setErro("");
     try {
-      const r = await fetch(ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ nome, whatsapp, website: form.get("website") }) });
+      const r = await fetch(ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ nome, whatsapp, website: form.get("website") }), signal: AbortSignal.timeout(15000) });
       const dados = await r.json();
       if (dados.estado) setEstado(dados); else throw new Error(dados.erro || "Não foi possível confirmar sua participação.");
-    } catch (e) { setErro(e instanceof Error ? e.message : "Confira a conexão e tente novamente."); }
+    } catch (e) {
+      // A inscrição pode ter sido salva antes de a resposta se perder.
+      // Confere o mesmo recibo; não cria outra participação.
+      try {
+        const confirmado = await carregar();
+        if (confirmado.estado === "aguardando" || confirmado.estado === "resultado") { setErro(""); return; }
+      } catch { /* A tentativa pode ser repetida com o mesmo recibo. */ }
+      setErro(e instanceof Error && e.name === "Error" ? e.message : "Não foi possível confirmar sua inscrição. Confira a conexão e tente novamente neste navegador.");
+    }
     finally { setEnviando(false); }
   }
 
@@ -127,6 +136,7 @@ export function Raspadinha({ previa = false }: { previa?: boolean }) {
   const encerrado = !previa && estado?.estado === "encerrado";
   const naoAberto = !previa && estado?.estado === "nao-aberto";
   const nome = estado && "nome" in estado ? estado.nome : "";
+  const mensagemBloqueio = encerrado ? "Consulte sua participação" : inscricao ? "Cadastre-se para participar" : naoAberto ? "Inscrições em breve" : !estado && !previa ? erro ? "Consulta indisponível" : "Preparando sua participação…" : "Aguarde o sorteio";
 
   return <div className={`${s.page} ${revelado && resultado === "cupom50" ? s.cupomEspecial : ""}`} data-etapa={inscricao ? "inscricao" : esperando ? "espera" : "bilhete"}>
     <TopoArquiteto raspadinha />
@@ -137,7 +147,7 @@ export function Raspadinha({ previa = false }: { previa?: boolean }) {
           <h1>{encerrado ? "O sorteio já aconteceu." : esperando ? "Seu bilhete está guardado." : inscricao ? "Seus projetos podem ganhar um novo endereço." : "Seus projetos merecem mais espaço."}</h1>
           <p className={s.intro}>{esperando ? `${nome}, sua participação está confirmada. O bilhete será liberado aqui mesmo quando o sorteio acontecer.`
             : inscricao ? "Cadastre-se durante a palestra. No momento do sorteio, um escritório ganha um site, até dois ganham 50% de desconto e todos os demais ganham R$ 300 de desconto."
-            : encerrado ? "Abra esta página no mesmo navegador da inscrição para consultar o seu bilhete."
+            : encerrado ? "Não encontramos uma inscrição neste navegador. Se você já participou, abra a página no navegador do cadastro ou fale com o Rafael para conferir sua participação."
             : naoAberto ? "Um site de presente para um dos escritórios que participarem da palestra. As inscrições abrem em breve."
             : revelado && resultado === "site" ? "Um site para apresentar suas obras, contar a história do escritório e receber o próximo projeto. É por nossa conta."
             : revelado ? "Uma condição especial na criação do site do seu escritório, com até oito projetos e contato direto pelo WhatsApp."
@@ -162,12 +172,12 @@ export function Raspadinha({ previa = false }: { previa?: boolean }) {
             <EscopoSite presente={resultado === "site"} />
             {previa && <p className={s.notaPrevia}>{resultado === "site" ? "Prévia do prêmio. Nenhum prêmio foi emitido; o botão apresenta o serviço." : "Demonstração do cupom. Nenhum cupom foi emitido; o botão apresenta o serviço."}</p>}
           </div>}
-          {erro && <div className={s.erro} role="alert"><p>{erro}</p>{!estado && <button className={s.botaoClaro} type="button" onClick={() => setTentativa(n => n + 1)}>Tentar novamente</button>}</div>}
+          {erro && <div className={s.erro} role="alert"><p>{erro}</p>{inscricao && <p>Aguarde a mensagem “Inscrição confirmada” antes de fechar esta página.</p>}{!estado && <button className={s.botaoClaro} type="button" onClick={() => setTentativa(n => n + 1)}>Tentar novamente</button>}</div>}
         </div>
         <div className={s.palco} id="bilhete">
           <Bilhete key={`${resultado}-${rodadaPrevia}`} resultado={resultado} liberado={liberado} aoRevelar={aoRevelar}
-            revelado={revelado} nome={nome} previa={previa} codigo={resultadoReal?.codigo} entregue={resultadoReal?.entregue} utilizado={resultadoReal?.utilizado} />
-          <p className={s.dica}>{liberado ? revelado ? "Um presente do Rafael Razeira Estúdio." : "Passe o dedo na faixa prateada para revelar." : "O resultado será revelado neste bilhete."}</p>
+            revelado={revelado} nome={nome} previa={previa} codigo={resultadoReal?.codigo} entregue={resultadoReal?.entregue} utilizado={resultadoReal?.utilizado} mensagemBloqueio={mensagemBloqueio} />
+          <p className={s.dica}>{liberado ? revelado ? "Um presente do Rafael Razeira Estúdio." : "Passe o dedo na faixa prateada para revelar." : encerrado ? "Seu benefício só aparece para a participação identificada." : inscricao ? "Confirme seu cadastro para guardar o bilhete." : "O resultado será revelado neste bilhete."}</p>
         </div>
       </div>
       <aside className={s.conviteSite} aria-label="Conheça o site para arquitetos">
