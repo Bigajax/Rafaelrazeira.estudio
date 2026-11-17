@@ -28,6 +28,19 @@ const nextConfig: NextConfig = {
      Custo: a primeira requisição de cada tamanho paga a conversão no servidor;
      da segunda em diante sai do cache da Vercel. */
   images: { formats: ["image/avif", "image/webp"] },
+  async headers() {
+    return [
+      {
+        source: "/evento/qr-raspadinha-monograma-preto-branco.png",
+        headers: [
+          {
+            key: "Content-Disposition",
+            value: 'attachment; filename="qr-raspadinha-monograma-preto-branco.png"',
+          },
+        ],
+      },
+    ];
+  },
   async redirects() {
     return [
       { source: "/", destination: "/estudio", permanent: false },
