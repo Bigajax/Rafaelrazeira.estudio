@@ -18,9 +18,15 @@ A pasta `dist/` contém a prévia portátil, com todas as fotos e fontes locais.
 
 ## Demonstração na Vercel
 
-Configuração preparada, ainda sem implantação confirmada. Usar um projeto separado do site principal, com raiz em `experimentos/paula-martins`. O `vercel.json` define o preset Other, desativa instalação e build e serve a pasta `dist/`. Não é necessário executar o Next.js da raiz do repositório.
+Reutilizar o projeto `paula-martins`, separado do site principal, com raiz em `experimentos/paula-martins`. O `vercel.json` define o preset Other, desativa instalação e build e serve a pasta `dist/`. Manter essas mesmas configurações no projeto da Vercel. Não é necessário executar o Next.js da raiz do repositório.
 
-Criar uma implantação de Preview para a apresentação. No envio pela CLI, usar esta pasta como diretório de trabalho; o `.vercelignore` limita o envio aos arquivos de configuração e à prévia. Não reutilizar a vinculação `.vercel` do projeto principal. A página mantém `noindex`, e o cabeçalho `X-Robots-Tag` reforça a instrução de não indexar. Isso não restringe acesso: antes de entregar, conferir que o link abre no celular da cliente sem exigir conta da Vercel.
+O projeto acompanha a branch `main`; seu domínio de demonstração é https://paula-martins.vercel.app/. O ambiente Production desse projeto separado continua sendo uma demonstração, sem vinculação ao site oficial da cliente. Os endereços exclusivos de deployment podem exigir autenticação da Vercel. No envio pela CLI, selecionar explicitamente o projeto `paula-martins` e a equipe `rafaels-projects-f3ef53c3`. Não reutilizar nem modificar a vinculação `.vercel` do projeto principal. A página mantém `noindex`, e o cabeçalho `X-Robots-Tag` reforça a instrução de não indexar. Antes de entregar, conferir que o domínio de demonstração abre sem exigir conta da Vercel.
+
+### Correção do 404 em 18/11/2026
+
+O deployment `dpl_3be2a4gXHmUMTCoXz2uJAB8J9Xm7`, do commit `882a90e`, estava READY e com aliases corretos, mas publicou uma saída vazia (`lambdas[0].output: []`). Os logs registraram a remoção de 1747 arquivos pelo `.vercelignore` e o aviso `Build output contains no "functions", "static", or "services" directory`.
+
+O filtro global `*`, com exceções relativas apenas a `dist`, não preservou a prévia ao ser aplicado aos caminhos do repositório no deploy Git. Foi removido o `.vercelignore` restritivo; o limite de publicação continua sendo `outputDirectory: dist`, portanto pesquisa e código de apoio não viram arquivos públicos. O preset persistido no projeto também foi alinhado de Node para Other. Não reintroduzir esse filtro global para o deploy Git deste monorepositório.
 
 Referência de configuração: [documentação oficial da Vercel](https://vercel.com/docs/project-configuration/vercel-json).
 
