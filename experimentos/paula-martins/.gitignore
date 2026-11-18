@@ -1,0 +1,8 @@
+# Evidências e candidatas locais; arquivos selecionados estão em dist/assets.
+/pesquisa/*.html
+/pesquisa/*.json
+/pesquisa/*.txt
+/pesquisa/*.jpg
+/pesquisa/candidatas/
+/verificacao/
+/*.zip
