@@ -16,6 +16,14 @@ Nesta pasta, execute `npm run dev` e abra http://localhost:4318/.
 
 A pasta `dist/` contém a prévia portátil, com todas as fotos e fontes locais. Pode ser servida por qualquer servidor HTTP estático. O `server.mjs` escuta apenas no endereço de loopback.
 
+## Demonstração na Vercel
+
+Configuração preparada, ainda sem implantação confirmada. Usar um projeto separado do site principal, com raiz em `experimentos/paula-martins`. O `vercel.json` define o preset Other, desativa instalação e build e serve a pasta `dist/`. Não é necessário executar o Next.js da raiz do repositório.
+
+Criar uma implantação de Preview para a apresentação. No envio pela CLI, usar esta pasta como diretório de trabalho; o `.vercelignore` limita o envio aos arquivos de configuração e à prévia. Não reutilizar a vinculação `.vercel` do projeto principal. A página mantém `noindex`, e o cabeçalho `X-Robots-Tag` reforça a instrução de não indexar. Isso não restringe acesso: antes de entregar, conferir que o link abre no celular da cliente sem exigir conta da Vercel.
+
+Referência de configuração: [documentação oficial da Vercel](https://vercel.com/docs/project-configuration/vercel-json).
+
 ## Conteúdo e curadoria
 
 Foram selecionadas cinco fotografias da Casa Ville, três do estúdio em Santa Fé, três renders de cozinha para área de lazer e um retrato da Paula. As galerias mantêm a separação por projeto, com miniaturas, legendas e navegação por deslize, botões ou teclado. Os renders aparecem identificados na capa e na ampliação. Nenhuma imagem de banco ou IA foi usada. A área social da Casa Ville recebeu uma versão pública de 2048 × 1366 pixels; estúdio e cozinha continuam dependendo dos originais da cliente para maior resolução.
