@@ -203,12 +203,25 @@ select.caixa{appearance:none;-webkit-appearance:none;padding-right:36px;cursor:p
 @media(hover:hover) and (pointer:fine){.add:hover{border-color:var(--ink);background:#fff}}
 
 /* ——— A revisão ——— */
-.resumo{list-style:none;margin-top:20px;border-top:1px solid #DCDCD8}
-.resumo li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 14px;padding:14px 0;border-bottom:1px solid #DCDCD8}
-.resumo .r-q{font:500 13px/1.4 var(--body);color:var(--suave)}
+.resumo{list-style:none;margin-top:8px}
+.resumo .r-bloco{margin-top:22px;padding-bottom:8px;border-bottom:1px solid #14181a1f;font:500 11.5px var(--mono);letter-spacing:.03em;text-transform:uppercase;color:var(--verde)}
+.resumo .r-item{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:3px 16px;padding:13px 0;border-bottom:1px solid #14181a12}
+.resumo .r-q{grid-column:1;font:500 13px/1.4 var(--body);color:var(--suave)}
 .resumo .r-a{grid-column:1;font-size:15px;line-height:1.5;color:var(--ink);white-space:pre-line;overflow-wrap:anywhere}
-.resumo .r-a.vazio{color:#A3A7A8}
-.resumo .editar{grid-column:2;grid-row:1 / span 2;align-self:center;border:0;background:none;cursor:pointer;font:500 13.5px var(--body);color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+.resumo .sem .r-a{color:#9A9E9F;font-size:14px}
+.resumo .editar{
+  grid-column:2;grid-row:1 / span 2;min-height:36px;padding:0 14px;border-radius:999px;cursor:pointer;
+  border:1px solid #14181a1f;background:#ffffff8f;color:var(--ink);font:500 13px var(--body);
+  transition:border-color .15s ease,background .15s ease;
+}
+/* "Responder" só com contorno escuro: preto cheio, com quase tudo vazio, virava uma coluna pesada */
+.resumo .sem .editar{border-color:#14181a8c}
+@media(hover:hover) and (pointer:fine){.resumo .editar:hover{border-color:var(--ink)}}
+/* no celular o botão desce para baixo da resposta, à esquerda: ao lado, ele espremia o texto */
+@media(max-width:480px){
+  .resumo .r-item{grid-template-columns:minmax(0,1fr)}
+  .resumo .editar{grid-column:1;grid-row:auto;justify-self:start;margin-top:6px;min-height:34px}
+}
 
 /* ——— O rodapé do cartão ——— */
 .rodape{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:30px}
@@ -227,7 +240,8 @@ select.caixa{appearance:none;-webkit-appearance:none;padding-right:36px;cursor:p
 .feito{display:none;text-align:center;padding:10px 0 6px}
 .feito.ver{display:block;animation:sobe .4s cubic-bezier(.2,.7,.2,1) both}
 .aneis{position:relative;width:132px;height:132px;margin:0 auto}
-.aneis svg{position:absolute;inset:0}
+/* só o svg dos anéis: ".aneis svg" pegava também o do check e o jogava no canto (24/11) */
+.aneis > svg{position:absolute;inset:0}
 .aneis circle{fill:none;stroke:#C4C4C0;stroke-width:1;transform-origin:66px 66px;animation:anel .7s cubic-bezier(.2,.7,.2,1) both}
 .aneis circle:nth-child(2){animation-delay:.08s}
 .aneis circle:nth-child(3){animation-delay:.16s}
@@ -291,7 +305,6 @@ body{background:transparent}
   .add:hover{background:#ffffff8f}
 }
 .add{border-color:#14181a33}
-.resumo,.resumo li{border-color:#14181a17}
 .aneis circle{stroke:#14181a2e}
 .ok{background:#ffffffb3;box-shadow:inset 0 1px 0 #fff}
 
@@ -321,6 +334,19 @@ body{background:transparent}
   #seguir.clara:hover{border-color:var(--ink);background:#ffffff73}
 }
 @media(prefers-reduced-motion:reduce){.volta span,#seguir::after{transition:none}}
+
+/* ——— Celular (24/11, "deixa tudo responsivo") ———
+   Mais largura útil para o cartão, e os botões do fim empilhados, de
+   ponta a ponta, em vez de dois lado a lado espremidos. */
+@media(max-width:480px){
+  .quadro{padding:0 10px}
+  .cartao{padding:22px 18px;border-radius:24px}
+  .tela{margin-top:22px}
+  .porque{font-size:14px}
+  .feito .botoes{flex-direction:column;align-items:stretch}
+  .feito .botoes .pilula{width:100%}
+  .item{padding:14px}
+}
 
 /* sem desfoque no navegador, o cartão volta ao cinza da casa */
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
@@ -518,7 +544,7 @@ body{background:transparent}
         <!-- ============ A REVISÃO ============ -->
         <section class="tela" data-resumo>
           <h2>Confira antes de <em>enviar</em></h2>
-          <p class="sub">Toque em "Editar" para mudar uma resposta.</p>
+          <p class="sub" id="resumoConta"></p>
           <ul class="resumo" id="resumo"></ul>
         </section>
 
@@ -741,18 +767,31 @@ body{background:transparent}
   }
 
   function montarResumo() {
+    /* a revisão por bloco, com a conta do que falta (24/11, "melhora isso"):
+       a lista corrida de 16 linhas iguais não dizia o que estava vazio */
     const ul = $("resumo");
     ul.innerHTML = "";
-    perguntas.forEach((p) => {
-      const li = document.createElement("li");
-      const q = document.createElement("span"); q.className = "r-q"; q.textContent = p.querySelector("h2").textContent;
-      const r = respostaDe(p);
-      const a = document.createElement("span"); a.className = "r-a" + (r ? "" : " vazio"); a.textContent = r || "Sem resposta";
-      const b = document.createElement("button"); b.type = "button"; b.className = "editar"; b.textContent = "Editar";
-      b.addEventListener("click", () => { daRevisao = true; mostrar(telas.indexOf(p), "tras"); irAoCartao(); });
-      li.append(q, b, a);
-      ul.appendChild(li);
+    let feitas = 0;
+    blocos.forEach((bloco) => {
+      const cab = document.createElement("li"); cab.className = "r-bloco"; cab.textContent = bloco;
+      ul.appendChild(cab);
+      perguntas.filter((p) => p.dataset.bloco === bloco).forEach((p) => {
+        const r = respostaDe(p);
+        if (r) feitas++;
+        const li = document.createElement("li"); li.className = "r-item" + (r ? "" : " sem");
+        const q = document.createElement("span"); q.className = "r-q"; q.textContent = p.querySelector("h2").textContent;
+        const a = document.createElement("span"); a.className = "r-a"; a.textContent = r || "Sem resposta";
+        const b = document.createElement("button"); b.type = "button"; b.className = "editar"; b.textContent = r ? "Editar" : "Responder";
+        b.setAttribute("aria-label", (r ? "Editar: " : "Responder: ") + q.textContent);
+        b.addEventListener("click", () => { daRevisao = true; mostrar(telas.indexOf(p), "tras"); irAoCartao(); });
+        li.append(q, a, b);
+        ul.appendChild(li);
+      });
     });
+    const falta = perguntas.length - feitas;
+    $("resumoConta").textContent = falta === 0
+      ? "Todas as " + perguntas.length + " respondidas."
+      : feitas + " de " + perguntas.length + " respondidas. As vazias podem ficar assim, ou você responde agora.";
   }
 
   /* ——— salvar ——— */
