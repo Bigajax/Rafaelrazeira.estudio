@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     locale: "pt_BR",
     type: "website",
     /* repetida de propósito: o openGraph do filho substitui o do layout raiz */
-    images: [{ url: "/assets/og-rr.png", width: 1200, height: 630, alt: "Monograma RR do Rafael Razeira Estúdio" }],
+    images: [{ url: "/assets/og-rr.png?v=2", width: 1200, height: 630, alt: "Monograma RR do Rafael Razeira Estúdio" }],
   },
 };
 

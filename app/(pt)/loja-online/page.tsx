@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   title: { absolute: title },
   description,
   alternates: { canonical: `${SITE}/loja-online` },
-  openGraph: { title, description, url: `${SITE}/loja-online`, locale: "pt_BR", type: "website" },
+  openGraph: { title, description, url: `${SITE}/loja-online`, locale: "pt_BR", type: "website", images: [{ url: "/assets/og-rr.png?v=2", width: 1200, height: 630, alt: "Monograma RR do Rafael Razeira Estúdio" }] },
 };
 
 export default function LojaOnlinePage() {

@@ -39,6 +39,7 @@ export const metadata: Metadata = {
     locale: "en_US",
     alternateLocale: ["pt_BR"],
     type: "website",
+    images: [{ url: "/assets/og-rr.png?v=2", width: 1200, height: 630, alt: "Rafael Razeira Studio monogram" }],
   },
 };
 

@@ -331,7 +331,8 @@ export function Header() {
         <Image className={`${s.brandRR} ${s.rrEsq}`} src="/assets/marca/rr-monograma.webp" width={55} height={30} alt="" />
         <Image className={`${s.brandRR} ${s.rrDir}`} src="/assets/marca/rr-monograma.webp" width={55} height={30} alt="" />
       </span>
-      <Image className={s.brandNome} src="/assets/marca/rr-nome.webp" width={150} height={25} alt="" />
+      {/* só o RR no topo (24/11, pedido do Rafael): o nome escrito saiu do
+          cabeçalho e fica no rodapé; o nome da marca segue no aria-label */}
     </a>
     {/* O seletor de idioma e o CTA andam juntos (11/09/2026): à esquerda
         do botão, onde todo site põe, e visível também no celular, senão

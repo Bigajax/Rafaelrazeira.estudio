@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   title: { absolute: titulo },
   description: descricao,
   alternates: { canonical: "/quanto-custa-site-para-loja" },
-  openGraph: { title: titulo, description: descricao, type: "article", locale: "pt_BR" },
+  openGraph: { title: titulo, description: descricao, type: "article", locale: "pt_BR", images: [{ url: "/assets/og-rr.png?v=2", width: 1200, height: 630, alt: "Monograma RR do Rafael Razeira Estúdio" }] },
 };
 
 const entra = [

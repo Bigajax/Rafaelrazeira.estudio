@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   title: { absolute: title },
   description: ptIphone.meta.description,
   alternates: { canonical: `${SITE}/vitrine/iphone` },
-  openGraph: { title, description: ptIphone.meta.description, url: `${SITE}/vitrine/iphone`, locale: "pt_BR", type: "website" },
+  openGraph: { title, description: ptIphone.meta.description, url: `${SITE}/vitrine/iphone`, locale: "pt_BR", type: "website", images: [{ url: "/assets/og-rr.png?v=2", width: 1200, height: 630, alt: "Monograma RR do Rafael Razeira Estúdio" }] },
 };
 
 export default function VitrineIphonePage() {

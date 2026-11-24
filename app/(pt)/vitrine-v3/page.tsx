@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   title, description,
   alternates: { canonical: `${SITE}/vitrine-v3` },
   robots: { index: false, follow: false },
-  openGraph: { title, description, url: `${SITE}/vitrine-v3`, locale: "pt_BR", type: "website" },
+  openGraph: { title, description, url: `${SITE}/vitrine-v3`, locale: "pt_BR", type: "website", images: [{ url: "/assets/og-rr.png?v=2", width: 1200, height: 630, alt: "Monograma RR do Rafael Razeira Estúdio" }] },
 };
 
 export default function VitrineV3Page() {
