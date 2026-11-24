@@ -274,15 +274,39 @@ select.caixa{appearance:none;-webkit-appearance:none;padding-right:36px;cursor:p
    Vidro sobre branco liso não aparece: precisa de algo atrás para
    desfocar. A primeira versão tinha as cores digitais da MOD e os
    anéis da marca no fundo; o Rafael pediu fundo NEUTRO, "nada de
-   círculos" (mesmo dia). Ficou uma passagem leve de cinza.
+   círculos" (mesmo dia). A passagem lisa de cinza ele também não
+   gostou ("não gostei do fundo"); das cinco saídas neutras escolheu a
+   SOMBRA DE JANELA: parede em cinza quente e a luz de uma janela de
+   quatro folhas entrando na diagonal, com a cruz do caixilho em sombra.
+   Só CSS: um retângulo de luz com a cruz feita de dois degradês,
+   inclinado e desfocado. Nunca círculo, nunca cor.
    O cartão das perguntas é o vidro principal (o único com
    backdrop-filter, além do topo); chips, campos e cartões de dentro
    são vidro leite, branco translúcido sem desfoque próprio, porque
    desfoque dentro de desfoque pesa no celular e não muda o olho.
    ============================================================ */
-html{background:#F3F3F2}
+html{background:#DAD6CF}
 body{background:transparent}
-.fundo{position:fixed;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,#FAFAF9 0%,#F1F1EF 55%,#E8E8E5 100%)}
+.fundo{
+  --parede:#DAD6CF;
+  position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;
+  background:linear-gradient(160deg,#E2DED8 0%,var(--parede) 50%,#D3CFC7 100%);
+}
+/* a luz da janela: quatro folhas claras, a cruz do caixilho na cor da
+   parede. Com pouco contraste e muito desfoque (a primeira medida) a
+   janela sumia: a cruz precisa ficar firme, só a borda da luz é macia. */
+.fundo::before{
+  content:"";position:absolute;width:76vmax;height:58vmax;top:-6vmax;right:-12vmax;
+  background:
+    linear-gradient(90deg,transparent calc(50% - 1.1vmax),var(--parede) calc(50% - 1.1vmax) calc(50% + 1.1vmax),transparent calc(50% + 1.1vmax)),
+    linear-gradient(0deg,transparent calc(50% - 1.1vmax),var(--parede) calc(50% - 1.1vmax) calc(50% + 1.1vmax),transparent calc(50% + 1.1vmax)),
+    linear-gradient(135deg,#FCFBF8 0%,#F5F2EC 55%,#E9E5DE 100%);
+  transform:rotate(-12deg) skewX(-24deg);
+  filter:blur(6px);
+}
+/* a luz morre devagar no pé da página */
+.fundo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,#D0CCC4 100%)}
+@media(max-width:700px){.fundo::before{width:115vmax;height:88vmax;top:-14vmax;right:-48vmax}}
 
 .vidro,.cartao{
   background:#ffffff5c;border:1px solid #ffffffb3;
@@ -314,6 +338,20 @@ body{background:transparent}
    sólido com a seta, Pular só contorno, Voltar contorno leve com a seta
    para trás. O fio em cima separa a pergunta da navegação. */
 .rodape{margin-top:28px;padding-top:20px;border-top:1px solid #14181a12}
+/* O BOTÃO NO MESMO LUGAR (24/11, "o botão se move de lugar"): o form
+   recebe como altura mínima a da pergunta mais alta (medida no JS, sem
+   as telas de cartões, que crescem de propósito), então o rodapé não
+   pula de uma pergunta para a outra. No celular ele vira uma barra de
+   vidro presa no pé da tela, no mesmo lugar do polegar. */
+#form{position:relative}
+@media(max-width:600px){
+  .rodape{
+    position:sticky;bottom:10px;z-index:5;margin:24px -8px 0;padding:8px;border:1px solid #ffffffcc;border-radius:999px;
+    background:#ffffffb8;-webkit-backdrop-filter:blur(16px) saturate(160%);backdrop-filter:blur(16px) saturate(160%);
+    box-shadow:0 10px 30px -10px #14181a40;
+  }
+  .rodape .volta{background:transparent}
+}
 .volta{
   display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:0 18px 0 14px;border-radius:999px;cursor:pointer;
   border:1px solid #14181a1a;background:#ffffff59;color:var(--texto);font:500 14.5px var(--body);
@@ -897,7 +935,37 @@ body{background:transparent}
     local = JSON.parse(localStorage.getItem(LOCAL) || "null");
     passoSalvo = parseInt(localStorage.getItem(LOCAL + "-passo") || "0", 10) || 0;
   } catch (e) {}
+  /* a altura reservada: a da pergunta mais alta, fora as de cartões e a
+     revisão, com os campos "outro"/"qual é" abertos. Mede de novo quando
+     a fonte chega e quando a largura muda (o celular vira de lado). */
+  function reservarAltura() {
+    form.style.minHeight = "";
+    const ocultos = Array.from(form.querySelectorAll("[data-revela]"));
+    ocultos.forEach((el) => { el.hidden = false; });
+    let max = 0;
+    telas.forEach((t) => {
+      if (t.hasAttribute("data-resumo") || t.querySelector("[data-lista]")) return;
+      const classe = t.className, estilo = t.getAttribute("style");
+      t.className = "tela ativo";
+      t.style.cssText = "position:absolute;visibility:hidden;left:0;right:0;animation:none";
+      max = Math.max(max, t.offsetHeight + parseFloat(getComputedStyle(t).marginTop));
+      t.className = classe;
+      if (estilo === null) t.removeAttribute("style"); else t.setAttribute("style", estilo);
+    });
+    revelar();
+    form.style.minHeight = max + "px";
+  }
+  let largura = window.innerWidth, resizeTimer = null;
+  window.addEventListener("resize", () => {
+    if (window.innerWidth === largura) return; /* a barra do celular sumindo não conta */
+    largura = window.innerWidth;
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(reservarAltura, 150);
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(reservarAltura);
+
   preencher(local && local.respostas);
+  reservarAltura();
   mostrar(passoSalvo);
   fetch(API + "?loja=" + LOJA, { cache: "no-store" })
     .then((r) => r.json())
