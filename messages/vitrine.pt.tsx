@@ -29,8 +29,13 @@ const centavos = (n: number) => `${R(n)},00`; // R$999,00
 export const pt = {
   lang: "pt" as Lang,
   meta: {
-    title: "Vitrine Digital para lojas",
-    description: "Eu desenho a prévia da sua vitrine sem custo. Catálogo com foto, preço e tamanho, pedido pronto no WhatsApp, projeto completo por R$999.",
+    /* 24/11/2026 (o Rafael, com o print da aba: "melhora também essas
+       frases"): o título dizia o nome do produto, que ninguém procura nem
+       entende ("isso é site?"); agora diz a promessa da página. "Vitrine
+       digital" fica na descrição, para a busca. O travessão do molde do
+       título saiu de app/(pt)/layout.tsx (regra da casa). */
+    title: "O site da sua loja, pronto antes de pagar",
+    description: `Manda o @ da sua loja e veja o site dela pronto em até 24h, sem custo. Vitrine digital com foto, preço e tamanho, pedido pronto no WhatsApp. ${R(v.total)}, sem mensalidade.`,
   },
   marca: { nome: "RAFAEL RAZEIRA", sufixo: "ESTÚDIO" },
   header: {
@@ -45,7 +50,10 @@ export const pt = {
     /* 28/10: era "PARA LOJAS DO INSTAGRAM E WHATSAPP", que lia como loja que
        pertence ao Instagram; o Rafael disse que não fazia sentido. O que a
        etiqueta diz é PARA QUEM é a página */
-    eyebrow: "Para lojas que vendem pelo Instagram",
+    /* "físicas" desde 24/11: o anúncio que vende (h27u) abre com "você tem
+       loja física" e fecha com "retira na loja". Se entrar anúncio para
+       quem vende de casa, esta etiqueta volta a ser a de antes. */
+    eyebrow: "Para lojas físicas que vendem pelo Instagram",
     /* em caixa normal desde 28/10: o CSS põe em caixa alta (como já fazia com
        os h2), e o teste da Geist precisa da frase escrita como se fala */
     /* ---------- a manchete mudou com a entrada de 50% (28/10/2026) ----------
@@ -67,20 +75,21 @@ export const pt = {
        da sua", e a página repete. */
     lead: <>Manda o <b>@ da sua loja</b> aqui embaixo. Em até 24h eu te mando a prévia com as suas peças, pronta para receber pedido no WhatsApp.</>,
     faixa: "Pronta em 7 dias úteis · Sem mensalidade · Você mesmo atualiza ·",
-    phoneAria: "A loja completa da Iconic Sneakers rolando do topo ao rodapé dentro de uma janela de navegador: catálogo, páginas de produto e pedido pelo WhatsApp",
+    phoneAria: "A loja da Star Point, de Maringá, rolando dentro de uma janela de navegador: categorias, peças com preço e tamanho e reserva pelo WhatsApp",
     /* 28/10: as logos são só quem PAGOU, e o canhoto conta todas as vitrines
        com link (as amostras incluídas). Com "no ar" nos dois, 8 e 108 pareciam
        se contradizer; agora um diz cliente e o outro diz desenhadas */
     lojas: "Lojas que já são clientes do estúdio",
-    rolar: "Rolar até a vitrine da Iconic",
+    rolar: "Rolar até a loja da Star Point",
     cta: "Quero ver a minha loja",
     cta2: "Ver lojas no ar",
     modalAria: "Pedir a prévia da sua loja",
     modalFechar: "Fechar",
-    liveTag: "No ar: Iconic Sneakers · Ver lojas que já usam ↓",
+    liveTag: "No ar: Star Point, de Maringá · Ver lojas que já usam ↓",
     pedido: {
       k: "Pedido no seu WhatsApp",
-      texto: <>Oi, Iconic! Quero o <b>New Balance 9060</b>, tam <b>41</b>. Pode separar?</>,
+      /* o pedido do vídeo do h27u (24/11): o Samba, o 41 e a retirada na loja */
+      texto: <>Oi, Star Point! Quero o <b>Samba OG Branco</b>, tam <b>41</b>. Retiro na loja.</>,
       hora: "agora",
     },
   },
@@ -319,7 +328,13 @@ export const pt = {
        cartão do painel; pagar tudo antes: o trilho do preço) */
     titulo: "Perguntas antes de contratar",
     duvida: { texto: "Não achou a sua?", link: "Me chama no WhatsApp", msg: "Oi Rafael, tenho uma dúvida sobre a vitrine digital." },
+    /* as três primeiras voltaram em 24/11: são as perguntas que mais chegam
+       no WhatsApp (6 Diário/leitura-whatsapp-2026-11-01), e quem pergunta
+       ali já saiu da página. As respostas repetem o que a página afirma. */
     itens: [
+      { p: "Isso é um site?", r: "É o site da sua loja. Abre no celular por um link, com as peças, a foto, o preço e os tamanhos, e o pedido chega pronto no seu WhatsApp.", nao: false },
+      { p: "Tem mensalidade?", r: `Não. São ${R(v.total)} uma vez só. O único custo por fora é o domínio próprio, se você quiser um: é opcional, anual e pago direto no registrador.`, nao: false },
+      { p: "Eu consigo atualizar sozinho?", r: "Consegue. A loja vem com um painel que abre no celular: você troca preço e foto, marca esgotado e cadastra peça nova na hora, sem me chamar.", nao: false },
       { p: "A vitrine recebe pagamentos dos meus clientes?", r: "Não. A vitrine organiza o catálogo e leva o pedido pronto para o WhatsApp da loja, onde você combina pagamento e entrega.", nao: true },
       { p: "Quantos produtos estão incluídos?", r: "A vitrine não tem limite de produtos. Os 60 primeiros eu cadastro para você, com foto, preço e tamanhos; os outros você mesmo cadastra no painel, em minutos e sem me chamar.", nao: false },
       /* as três de 28/10: as respostas são as dos termos (public/termos.html,
@@ -401,10 +416,12 @@ export const pt = {
     },
     preco: {
       eyebrow: "Sem mensalidade",
-      h2: <>Vitrine completa por <em>{R(v.total)}.</em></>,
-      h2a: "Vitrine completa por", h2b: `${R(v.total)}.`,
+      /* "o site da sua loja" desde 24/11: nas 212 conversas do WhatsApp a
+         pergunta campeã foi "isso é site?"; "vitrine" não se explica sozinha */
+      h2: <>O site da sua loja por <em>{R(v.total)}.</em></>,
+      h2a: "O site da sua loja por", h2b: `${R(v.total)}.`,
       lead: "Pouco para começar, o resto na entrega. O saldo só depois de você aprovar.",
-      linhas: [[R(v.entrada), "para começar"], [R(v.saldo), "na entrega, depois de aprovar"]] as [string, string][],
+      linhas: [[R(v.entrada), "para começar"], [R(v.saldo), "na entrega, depois de aprovar: Pix ou cartão em até 4x"]] as [string, string][],
       /* o R$899 à vista saiu do cartão em 28/10 (decisão do Rafael): é o
          degrau 1 de desconto da negociação (cofre, 1 Processos/fechar-e-receber),
          e publicado ele vira o preço de todo mundo; e não tinha botão para pagar */

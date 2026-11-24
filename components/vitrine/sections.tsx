@@ -1057,27 +1057,21 @@ export function Hero() {
       <div className={s.molduraTela} role="img" aria-label={t.hero.phoneAria}>
         <div className={s.browserBar}>
           <span className={s.dots} aria-hidden><i /><i /><i /></span>
-          <span className={s.urlChip}>iconicsneakers.com.br</span>
+          <span className={s.urlChip}>star-point-wheat.vercel.app</span>
           <span className={s.live}><i aria-hidden /> {t.projetos.live}</span>
         </div>
         <div className={s.molduraCover}>
           <picture>
-            {/* a curta desde 29/10: a inteira (500x7503) virava no iPhone uma
-                camada animada de ~1000x15000px, uns 60MB, e o Safari a
-                descartava quando a memória apertava (o print do Rafael, com
-                uma chamada de vídeo aberta): a moldura ficava cinza. A curta
-                para no banner "Indicou, ganhou" e pesa metade */}
-            {/* a do TOPO desde 24/11 (500x1900, só WebP): a curta (500x3760)
-                voltou a ficar cinza no iPhone do Rafael, aberta pelo WhatsApp
-                com a página nova. Metade da altura é metade da camada animada
-                na memória (5 Armadilhas/captura-longa-some-no-iphone) */}
-            <source media="(max-width: 720px)" type="image/webp" srcSet="/assets/demo/iconic-vitrine-topo.webp" />
-            {/* a de 1100px desde 28/10: a moldura mostra no máximo 1040px, e a de
-                1440 custava 368KB na primeira tela do desktop */}
-            <source type="image/avif" sizes="min(1040px, 72vw)" srcSet="/assets/case-iconic-desk-1100.avif 1100w, /assets/case-iconic-desk.avif 1440w" />
-            <source type="image/webp" sizes="min(1040px, 72vw)" srcSet="/assets/case-iconic-desk-1100.webp 1100w, /assets/case-iconic-desk.webp 1440w" />
+            {/* a STAR POINT desde 24/11/2026 (o Rafael: "pode ser a star point"):
+                é a loja do anúncio que vende, o h27u, e quem clica tem de
+                reconhecer na página a loja que viu no vídeo. Era a Iconic.
+                No celular a captura do topo (500x1900, só WebP): a longa
+                ficava cinza no iPhone (5 Armadilhas/captura-longa-some-no-iphone).
+                As capturas saem de star-point-wheat.vercel.app. */}
+            <source media="(max-width: 720px)" type="image/webp" srcSet="/assets/demo/star-point-topo.webp" />
+            <source type="image/webp" sizes="min(1040px, 72vw)" srcSet="/assets/case-star-point-desk-1100.webp 1100w, /assets/case-star-point-desk.webp 1440w" />
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className={s.molduraShot} src="/assets/case-iconic-desk.jpg" width={1440} height={6470} alt="" loading="lazy" decoding="async" fetchPriority="low" />
+            <img className={s.molduraShot} src="/assets/case-star-point-desk.webp" width={1440} height={4600} alt="" loading="lazy" decoding="async" fetchPriority="low" />
           </picture>
         </div>
       </div>

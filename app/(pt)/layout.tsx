@@ -7,7 +7,7 @@ import "@/app/globals.css";
    exigem. */
 export const metadata: Metadata = {
   metadataBase: new URL("https://rafaelrazeira.com.br"),
-  title: { default: "Rafael Razeira Estúdio", template: "%s — Rafael Razeira Estúdio" },
+  title: { default: "Rafael Razeira Estúdio", template: "%s · Rafael Razeira Estúdio" },
   description: "Design, estratégia e desenvolvimento para marcas que querem vender melhor.",
   /* o ícone da aba em 48px (2KB) e o do iPhone em 180px (28/10): o
      favicon.png de 512px pesava 66KB em toda abertura de página */

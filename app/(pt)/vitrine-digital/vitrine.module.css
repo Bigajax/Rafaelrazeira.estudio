@@ -4476,7 +4476,7 @@ html:has(.site) { scroll-behavior: smooth }
 }
 /* a entrada em cena, no mesmo tempo que os botões tinham */
 .site.estruturaCentro.estruturaCentro .heroEntrada,
-.site.estruturaCentro.estruturaCentro .heroMicro { animation: heroSobe .8s cubic-bezier(.2, .7, .2, 1) 1.25s both }
+.site.estruturaCentro.estruturaCentro .heroMicro { animation: heroSobe .6s cubic-bezier(.2, .7, .2, 1) .45s both }
 @media (prefers-reduced-motion: reduce) {
   .site.estruturaCentro.estruturaCentro .heroEntrada,
   .site.estruturaCentro.estruturaCentro .heroMicro { animation: none }
@@ -4494,3 +4494,11 @@ html:has(.site) { scroll-behavior: smooth }
     background-image: linear-gradient(180deg, #ffffff26, #ffffff00 60%), linear-gradient(var(--rosa), var(--rosa));
   }
 }
+
+/* ---------- a primeira tela chega mais cedo (24/11/2026) ----------
+   A manchete letra por letra levava ~1,8s e o campo do @ só entrava aos
+   1,25s, terminando perto dos 2s, numa visita de 7s de mediana. O gesto é o
+   mesmo, na metade do tempo: o campo começa a aparecer aos 0,45s. */
+.site.estruturaCentro.estruturaCentro .heroCopy h1 .letra { animation-duration: .55s; animation-delay: calc(var(--i) * 14ms + 60ms) }
+.site.estruturaCentro.estruturaCentro .heroCopy .lead { animation-duration: .6s; animation-delay: .35s }
+.site.estruturaCentro.estruturaCentro .logosLojas { animation-duration: .6s; animation-delay: .7s }
