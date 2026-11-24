@@ -664,3 +664,7 @@
 :global(html[data-crm-tema="escuro"]) .central .acaoLeve { color: #c5d2cb; text-decoration-color: rgba(255, 255, 255, .3); }
 :global(html[data-crm-tema="escuro"]) .central .vez .passo { border-top-color: rgba(255, 255, 255, .12); }
 :global(html[data-crm-tema="escuro"]) .central .vez .passo > p > b { color: #9db0a7; }
+
+/* o título do Hoje no tamanho dos outros (24/11/2026): estava em 40px fixo */
+.central .cabecalho h1 { font-size: clamp(28px, 3vw, 38px); }
+@media (max-width: 860px) { .central .cabecalho h1 { font-size: 28px; } }

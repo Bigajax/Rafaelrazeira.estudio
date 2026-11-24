@@ -9491,3 +9491,36 @@
   background: rgba(255, 255, 255, .1);
   color: #dbe6e0;
 }
+
+
+/* ============================================================
+   UM TÍTULO SÓ EM TODAS AS TELAS (24/11/2026, noite)
+   Vistas lado a lado no CRM de produção, as telas tinham três títulos:
+   "Caixa", "Financeiro" e "Clientes" pequenos e sem ponto; "Templates",
+   "Projetos", "Plano" e "Produção" com ponto ROSA; o Hoje e o Funil maiores,
+   com ponto verde. Agora todo título de tela tem o mesmo tamanho (o da base,
+   .app h1) e o ponto final verde, que é o acento do painel desde a casca.
+   O rosa volta a ser só o do botão que vende e o do "atrasado".
+   O .ponto fora de um h1 do .main (o login, a marca do menu, o número do
+   Caixa) não muda.
+   ============================================================ */
+.app .main h1 .ponto {
+  color: var(--green);
+}
+:global(html[data-crm-tema="escuro"]) .app .main h1 .ponto {
+  color: #46d695;
+}
+
+
+/* ---------- três acertos da ficha completa (24/11/2026, noite) ----------
+   Vistos na ficha da Japa Modas, no CRM de produção:
+   1. o X de fechar ficava em cima do valor ("R$ 999"): o topo do cabeçalho
+      guarda o lugar do X quando a ficha abre como janela;
+   2. o ponto final do nome era rosa (vinha do tempo do cabeçalho grafite):
+      é o verde do painel, como nos títulos das telas. */
+.app .modal .fichaCabTopo {
+  padding-right: 44px;
+}
+.app .pontoClaro {
+  color: var(--green);
+}

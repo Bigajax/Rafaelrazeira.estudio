@@ -611,3 +611,25 @@
 .form + section {
   margin-top: 20px;
 }
+
+/* o título das telas do sistema (Caixa, Clientes) no tamanho e no desenho dos
+   outros (24/11/2026): era 30px fixo e sem o ponto final. O ponto entra pelo
+   CSS porque o título vem pronto, em texto, de quem usa o <Painel>. */
+.cabeca h1 {
+  font-size: clamp(28px, 3vw, 38px);
+  line-height: 1.1;
+}
+.cabeca h1::after {
+  content: ".";
+  color: var(--green, #0c9159);
+}
+
+/* o "Criar ficha de cliente" virava uma bola (24/11/2026): a linha é flex e
+   esticava o botão até a altura do formulário ao lado; com o canto 980px,
+   ficava oval. Cada peça fica na sua altura, alinhada pelo alto. */
+.links {
+  align-items: flex-start;
+}
+.links > .botao {
+  flex: none;
+}

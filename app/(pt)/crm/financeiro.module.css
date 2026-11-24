@@ -277,3 +277,6 @@
 }
 @media (max-width: 420px) { .tela .form { grid-template-columns: 1fr } }
 @media (max-width: 560px) { .tela .tabela { min-width: 0 } }
+
+/* o ponto do título é o verde do painel (24/11/2026), como em todas as telas */
+.tela h1 .ponto { color: var(--green); }

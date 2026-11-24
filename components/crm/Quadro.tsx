@@ -505,7 +505,7 @@ export function Quadro({
           <div>
             <span className={p.sobretitulo}>Estúdio e vendas</span>
             <h1>
-              Pipeline de vendas<span>.</span>
+              Funil<span>.</span>
             </h1>
             <p>Da primeira conversa ao projeto fechado.</p>
           </div>

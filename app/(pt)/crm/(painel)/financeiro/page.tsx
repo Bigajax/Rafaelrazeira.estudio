@@ -42,7 +42,7 @@ export default async function PaginaFinanceiro({
   if (dados.semTabela) {
     return (
       <div className={f.tela}>
-        <h1>Financeiro.</h1>
+        <h1>Financeiro<i className={f.ponto}>.</i></h1>
         <div className={f.aviso}>
           <b>Falta criar a tabela de custos.</b>
           <p>
