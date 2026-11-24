@@ -865,6 +865,30 @@ export const LOJAS_LINKS: Record<string, string> = {
   fardo: "https://fardoesportes.com.br",
 };
 export const LOJAS_NOMES: Record<string, string> = { iconic: "Iconic Sneakers", japa: "Japa Modas", arena: "Arena Imports", sneakerspot: "SneakerSpot", jk: "JK Imports", fulltime: "Full Time Skateboards", mm: "M&M Calçados", fardo: "Fardo Esportes" };
+/* o campo do @ do hero: não envia nada, só abre o modal com o @ levado.
+   O evento é da janela porque o modal mora no fim do Hero e escuta lá
+   (ModalDoFormulario). O botão guarda o data-cta="hero_abrir": a pílula do
+   topo e a barra do celular medem a visibilidade DELE para aparecer. */
+function EntradaDoHero() {
+  const t = useVit();
+  const abrir = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const arroba = String(new FormData(e.currentTarget).get("arroba") || "").trim();
+    window.dispatchEvent(new CustomEvent("vitrine:abrir-form", { detail: { arroba } }));
+  };
+  return <>
+    <form className={s.heroEntrada} onSubmit={abrir} noValidate>
+      <label>
+        <span aria-hidden><IconeInstagram id="insta-degrade-hero" size={20} /></span>
+        <input name="arroba" aria-label={t.etiqueta.instaAria} placeholder={t.etiqueta.instaPh} autoCapitalize="off" autoCorrect="off" spellCheck={false} enterKeyHint="go"
+               onInput={e => { e.currentTarget.value = e.currentTarget.value.replace(/^\s*(?:https?:\/\/)?(?:www\.)?instagram\.com\//i, "").replace(/[@\s]/g, "").replace(/\/.*$/, ""); }} />
+      </label>
+      <button className={`${s.button} ${s.acao}`} data-cta="hero_abrir" data-cta-dest="form">{t.hero.cta}</button>
+    </form>
+    <p className={s.heroMicro}>{t.hero.micro}</p>
+  </>;
+}
+
 export function Hero() {
   const t = useVit();
   return <section className={s.hero} id="topo">
@@ -964,10 +988,18 @@ export function Hero() {
             no fim do Hero). Custo conhecido: um toque a mais antes do
             formulário, que é o Contact da campanha. Se o Contact cair, é o
             primeiro suspeito. */}
-        <div className={s.heroAcoes}>
-          <a className={`${s.button} ${s.acao}`} href="#hero-form" data-cta="hero_abrir" data-cta-dest="form">{t.hero.cta}</a>
-          <a className={`${s.button} ${s.outline}`} href="#projetos" data-cta="hero_lojas" data-cta-dest="projetos">{t.hero.cta2}</a>
-        </div>
+        {/* ---------- o @ na primeira tela (24/11/2026) ----------
+            Na leitura da conta inteira (6 Diário/leitura-anuncios-2026-11-24),
+            o modal de 28/10 custou no Android: quem tocava no formulário caiu
+            de 30% para 21% das visitas, e 77% de quem chega nunca rola. O
+            formulário inteiro não voltou (a estrutura de título, ação e
+            logos é a pedida pelo Rafael): voltou só o primeiro campo. A
+            pessoa digita o @ aqui e o modal abre com ele preenchido, pedindo
+            o WhatsApp. O "Ver lojas no ar" saiu: uma ação só na primeira
+            tela; a seta e a etiqueta "No ar" continuam levando às lojas.
+            A linha de baixo é a do anúncio h27u, palavra por palavra na
+            ordem dele: começa com quanto, o total, sem mensalidade. */}
+        <EntradaDoHero />
         {/* ---------- as lojas que já estão no ar (28/10/2026) ----------
             Pedido do Rafael, no molde do "Trusted by" de site de produto:
             uma legenda pequena e as logos em cinza, paradas, sobre o branco.
@@ -1122,8 +1154,21 @@ function ModalDoFormulario() {
       d.showModal();
       focarSemContar(d.querySelector("input"));
     };
+    /* o campo do @ do hero (24/11): abre o modal com o @ já escrito e o
+       foco no WhatsApp, que é o que falta. O campo do modal é solto (não
+       controlado), então escrever o valor direto basta: o envio lê o form. */
+    const abrirComArroba = (e: Event) => {
+      const d = ref.current;
+      if (!d) return;
+      if (!d.open) d.showModal();
+      const arroba = (e as CustomEvent<{ arroba?: string }>).detail?.arroba;
+      const campo = d.querySelector<HTMLInputElement>('input[name="instagram"]');
+      if (arroba && campo && !campo.value) campo.value = arroba;
+      focarSemContar(d.querySelector("input"));
+    };
     document.addEventListener("click", abrir, true);
-    return () => document.removeEventListener("click", abrir, true);
+    window.addEventListener("vitrine:abrir-form", abrirComArroba);
+    return () => { document.removeEventListener("click", abrir, true); window.removeEventListener("vitrine:abrir-form", abrirComArroba); };
   }, []);
   return <dialog ref={ref} className={s.modalForm} aria-label={t.hero.modalAria}
     onClick={e => { if (e.target === e.currentTarget) e.currentTarget.close(); }}>

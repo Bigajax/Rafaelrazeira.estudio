@@ -54,7 +54,13 @@ export const pt = {
        pagar é a prévia. "Antes de decidir" guarda o argumento (você vê
        primeiro) e é verdade: decidir não é pagar. Escolha do Rafael entre
        três caminhos (a dor do direct e o resultado curto ficaram de fora). */
-    h1: <>Veja sua loja pronta antes de <em>decidir.</em></>,
+    /* 24/11/2026: "pagar" de novo. Com a entrada de volta a R$ 199 e a
+       prévia sem custo, a frase é verdade, e é o título do anúncio que
+       vende ("Você vê pronta antes de pagar", h27u): quem clica tem de
+       reconhecer a página. */
+    h1: <>Veja sua loja pronta antes de <em>pagar.</em></>,
+    /* a linha do anúncio h27u, na ordem dele (24/11) */
+    micro: <><b>A prévia é por minha conta.</b> Gostou? {R(v.entrada)} para começar, {R(v.total)} no total, sem mensalidade.</>,
     lead: <>Mando a prévia com as suas peças em até 24h. Gostou, ela vai ao ar com o pedido chegando montado no seu WhatsApp.</>,
     faixa: "Pronta em 7 dias úteis · Sem mensalidade · Você mesmo atualiza ·",
     phoneAria: "A loja completa da Iconic Sneakers rolando do topo ao rodapé dentro de uma janela de navegador: catálogo, páginas de produto e pedido pelo WhatsApp",
@@ -393,7 +399,7 @@ export const pt = {
       eyebrow: "Sem mensalidade",
       h2: <>Vitrine completa por <em>{R(v.total)}.</em></>,
       h2a: "Vitrine completa por", h2b: `${R(v.total)}.`,
-      lead: "Metade para começar, metade na entrega. O saldo só depois de você aprovar.",
+      lead: "Pouco para começar, o resto na entrega. O saldo só depois de você aprovar.",
       linhas: [[R(v.entrada), "para começar"], [R(v.saldo), "na entrega, depois de aprovar"]] as [string, string][],
       /* o R$899 à vista saiu do cartão em 28/10 (decisão do Rafael): é o
          degrau 1 de desconto da negociação (cofre, 1 Processos/fechar-e-receber),

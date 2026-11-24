@@ -1751,3 +1751,14 @@ insert into public.crm_templates (owner_id, titulo, canal, categoria, conteudo, 
 select t.owner_id, E'Cobrança da parcela', 'whatsapp', 'proposta', E'Oi, {nome}! Tudo certo com a vitrine aí?\n\nFicou em aberto o restante, {saldo}. Te mando o Pix por aqui?', 13
   from (select distinct owner_id from public.crm_templates) t
  where not exists (select 1 from public.crm_templates x where x.owner_id = t.owner_id and x.titulo = E'Cobrança da parcela');
+
+-- ============================================================
+-- 24/11/2026: a entrada volta para R$ 199 nos templates (JÁ RODADO pela API
+-- da sessão, este bloco é só o registro). Decisão do Rafael depois da leitura
+-- da conta inteira (6 Diário/leitura-anuncios-2026-11-24): com R$ 199 saíram
+-- 7 vendas do anúncio, com os 50% nenhum lead novo fechou. O R$ 899 da
+-- amostra parada fica R$ 199 + R$ 700.
+-- ============================================================
+-- update public.crm_templates set conteudo = replace(conteudo, 'Metade pra começar e o resto na entrega.', 'R$ 199 pra começar e o resto na entrega.') where id = 'bb4afc39-72d9-413d-8903-81cdc3363cb2';
+-- update public.crm_templates set conteudo = replace(conteudo, 'Fica R$ 450 pra começar e R$ 449 na entrega, no Pix.', 'Fica R$ 199 pra começar e R$ 700 na entrega.') where id = 'ef7a469b-48b9-439a-84ff-931c2bd5118b';
+-- update public.crm_templates set conteudo = replace(conteudo, 'metade pra começar', 'R$ 199 pra começar') where id in ('9aaa0bf6-ce51-49c0-81c4-0211a23d38c0','3d705c39-c1ba-41c4-8d2c-78569651d00b','49cb8402-2d65-4424-ab68-b1fb4ae8b80c');

@@ -477,22 +477,22 @@ export const PROPOSTAS: Record<string, Proposta> = {
      só a entrada da tabela, R$ 199 no Pix, e os R$ 800 vêm na entrega pela
      página de entrega da loja, como em toda proposta (lib/oferta.ts). A
      vitrine-v2 acima segue intacta, com o R$ 997 do teste antigo. */
-  /* 28/10/2026: a entrada da tabela passou para os 50%, R$ 500 (lib/oferta.ts),
-     e os R$ 499 vêm na entrega. Esta é a única do arquivo que segue a tabela
+  /* 24/11/2026: a entrada da tabela voltou para R$ 199 (lib/oferta.ts), e os
+     R$ 800 vêm na entrega (foi R$ 500 + R$ 499 de 28/10 a 23/11). Esta é a única do arquivo que segue a tabela
      em vez de uma proposta enviada, então é a única que muda. */
   "vitrine-direta": {
     titulo: "Rafael Razeira Estúdio, Vitrine Digital",
     whatsapp: "5544991246187",
     itens: {
-      entrada_pix: { label: "Vitrine digital: entrada para início do projeto", valor: 500, metodo: "pix" },
+      entrada_pix: { label: "Vitrine digital: entrada para início do projeto", valor: 199, metodo: "pix" },
     },
   },
   /* A Black (04/11/2026), decisão do Rafael: a página /black
      (public/black/index.html), o link da transmissão comercial do WhatsApp
      para as amostras. R$ 799 inteiros na frente, no Pix ou no cartão em até
      12x COM os juros do Mercado Pago (o Brick calcula; nada somado aqui),
-     e a condição normal ao lado, como no banner: R$ 500 de entrada no Pix e
-     R$ 499 na entrega. Vale até 30/11 (2 Regras da casa/entrada-199-regra).
+     e a condição normal ao lado, como no banner: R$ 199 de entrada no Pix e
+     R$ 800 na entrega (era R$ 500 + R$ 499 até 23/11). Vale até 30/11 (2 Regras da casa/entrada-199-regra).
      Em 01/12, tirar a página do ar e estas linhas, ou decidir com o Rafael. */
   "black-799": {
     titulo: "Rafael Razeira Estúdio, Vitrine Digital (Black)",
@@ -500,7 +500,7 @@ export const PROPOSTAS: Record<string, Proposta> = {
     itens: {
       avista_pix: { label: "Vitrine digital na Black: R$ 799 à vista no Pix", valor: 799, metodo: "pix" },
       avista_card: { label: "Vitrine digital na Black: R$ 799 no cartão em até 12x", valor: 799, metodo: "card", maxParcelas: 12 },
-      entrada_pix: { label: "Vitrine digital: entrada de R$ 500 (o resto, R$ 499, na entrega)", valor: 500, metodo: "pix" },
+      entrada_pix: { label: "Vitrine digital: entrada de R$ 199 (o resto, R$ 800, na entrega)", valor: 199, metodo: "pix" },
     },
   },
   /* A HG Surf Wear (06/10/2026), decisão do Rafael: duas formas na mesma

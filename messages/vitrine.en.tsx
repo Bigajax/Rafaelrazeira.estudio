@@ -36,6 +36,7 @@ export const en: VitrineMessages = {
   hero: {
     eyebrow: "For stores that sell on Instagram",
     h1: <>See your store ready before you <em>decide.</em></>,
+    micro: <><b>The preview is on me.</b> Like it? {R(v.entrada)} to start, {R(v.total)} in total, no monthly fee.</>,
     lead: <>I email you a preview built from your products within 24h. Like it, and it goes live with orders landing ready on your WhatsApp.</>,
     faixa: "Ready in 7 business days · No monthly fee · You update it yourself ·",
     phoneAria: "The complete Iconic Sneakers store scrolling top to bottom inside a browser window: catalog, product pages and WhatsApp ordering",

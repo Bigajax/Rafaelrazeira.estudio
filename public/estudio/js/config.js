@@ -120,7 +120,7 @@ const CONFIG_ESTUDIO = {
     headline: "Do primeiro contato <em>ao ar.</em>",
     /* 20/10/2026: os três passos eram os de projeto sob medida (briefing,
        design, aprovação) com "entrada de 50%". O caminho de hoje é o da
-       vitrine: o @, a amostra no celular, e a entrada de R$ 500, 50% desde 28/10 (lib/oferta.ts;
+       vitrine: o @, a amostra no celular, e a entrada de R$ 199, de volta desde 24/11 (lib/oferta.ts;
        mudou lá, muda aqui). É a mesma promessa da /vitrine-digital. */
     steps: [
       /* 29/10: o método do estúdio, não o funil da vitrine (esse mora na /vitrine-digital) */
@@ -211,7 +211,7 @@ const CONFIG_ESTUDIO = {
           "Painel para você atualizar pelo celular",
           "No ar em até 7 dias úteis",
         ],
-        entrada:"Começa com <b>R$500</b>. O resto depois de aprovar.",
+        entrada:"Começa com <b>R$199</b>. O resto depois de aprovar.",
         acao:"Quero a minha amostra",
         tipoProjeto:"Vitrine digital (catálogo com pedido no WhatsApp)",
       },
@@ -305,14 +305,14 @@ const CONFIG_ESTUDIO = {
     /* 20/10/2026: a garantia dizia "50% de entrada, devolvida se não
        aprovar" e o preço "a partir de R$ 1.500", as duas coisas de agosto e
        as duas contra a oferta de hoje (lib/oferta.ts). Agora é a promessa da
-       vitrine: ver pronta antes de pagar, R$ 500 para começar (50%, desde 28/10). */
+       vitrine: ver pronta antes de pagar, R$ 199 para começar (de volta desde 24/11). */
     scarcity: "Agenda aberta para novos projetos.",
     email: "rafaelrazeira.estudio@gmail.com",
     // Bloco de garantia: aparece destacado logo antes do formulário
     guarantee: {
       label: "Garantia",
       title: "Você vê antes de pagar.",
-      text:  "A amostra da sua vitrine chega pronta no seu celular, <b>antes de qualquer pagamento</b>. Gostou, começa com <b>R$500</b> e paga o resto só depois de aprovar. Não gostou, <b>não paga nada</b>.",
+      text:  "A amostra da sua vitrine chega pronta no seu celular, <b>antes de qualquer pagamento</b>. Gostou, começa com <b>R$199</b> e paga o resto só depois de aprovar. Não gostou, <b>não paga nada</b>.",
     },
     pricing: "Vitrine digital <b>R$999</b>. E-commerce a partir de <b>R$3.499</b>.",   // microcopy acima do formulário
     pricingNote: "A vitrine é paga uma vez, sem mensalidade. O e-commerce sai de uma proposta com o escopo e o valor fechados.",
