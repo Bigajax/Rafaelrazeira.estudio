@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { IconePainel, type IconePainelNome } from "./IconePainel";
+import { Paleta } from "./Paleta";
 import type { Contagens } from "@/lib/crm/dados";
 import s from "@/app/(pt)/crm/crm.module.css";
 
@@ -212,8 +213,10 @@ export function Trilho({ sair, contagens }: { sair: () => void; contagens: Conta
         caminho.startsWith(`${href}/`) ||
         (href === "/crm/pipeline" && caminho.startsWith("/crm/lead/")) ||
         (href === "/crm/financeiro" && caminho === "/crm/conciliacao");
+  const rotasDaPaleta = MOMENTOS.flatMap(({ rotas }) => rotas).map(({ href, rotulo, nota }) => ({ href, rotulo, nota, icone: ICONES[href] }));
   return (
     <>
+      <Paleta rotas={rotasDaPaleta} />
       <a href="#crm-principal" className={s.pularConteudo}>
         Pular para o conteúdo
       </a>
@@ -270,6 +273,10 @@ export function Trilho({ sair, contagens }: { sair: () => void; contagens: Conta
             ])}
           </ul>
 
+          {/* a paleta de comandos (24/11) NÃO tem botão aqui: o menu já está no
+              limite de altura da janela do Rafael (ver "o menu inteiro em
+              janela baixa" no CSS). O atalho é Ctrl+K, e a dica mora no campo
+              de busca do Hoje. */}
           <form action={sair} className={s.trilhoPe}>
             <button type="submit" className={s.trilhoSair}>
               <IconePainel nome="sair" />

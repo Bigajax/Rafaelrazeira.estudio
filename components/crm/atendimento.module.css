@@ -277,3 +277,390 @@
 .central .fora { background: #f5f8f6; }
 .central .grupo h2 b { background: #e6ede9; }
 .central .grupo:is([data-grupo="responder"], [data-grupo="novos"]) h2 b { background: #fde8ef; color: #b81250; }
+
+/* ============================================================
+   O HOJE EM VIDRO (24/11/2026, noite)
+   Pedido do Rafael: "outra cara aqui, quero glassmorphism". Vidro só existe
+   com alguma coisa atrás para desfocar, então o chão deixa de ser liso: é
+   uma névoa feita do verde da casca, com um ponto de luz quente no alto à
+   direita, parada enquanto a tela rola. Em cima dela:
+   - vidro claro: o placar, a fila e a ficha;
+   - vidro verde: o cartão da vez, a peça forte da tela;
+   - peça branca: o contato escolhido, que sobe do vidro.
+   O desfoque fica nas superfícies grandes (seis), nunca em cada linha da
+   fila: backdrop-filter em 150 itens trava a rolagem.
+   O rosa segue um por tela, e nenhuma regra da fila mudou: é só pele.
+   É a segunda exceção à régua na ferramenta interna (docs/design-estudio.md
+   proíbe vidro fosco fora do topo NO SITE).
+   ============================================================ */
+.central {
+  --vidro: rgba(255, 255, 255, .40);
+  --vidro-forte: rgba(255, 255, 255, .52);
+  --vidro-borda: rgba(255, 255, 255, .7);
+  --vidro-fio: rgba(20, 60, 42, .1);
+  --vidro-sombra: 0 22px 44px -26px rgba(5, 96, 59, .42), 0 2px 6px -2px rgba(5, 96, 59, .12);
+  --vidro-brilho: inset 0 1px 0 rgba(255, 255, 255, .85);
+  --desfoque: saturate(1.7) blur(26px);
+  --borda: var(--vidro-fio);
+}
+:global(main):has(.central) {
+  background:
+    radial-gradient(46rem 32rem at -4% -6%, rgba(8, 128, 78, .62), transparent 64%),
+    radial-gradient(34rem 26rem at 102% 2%, rgba(255, 196, 120, .58), transparent 62%),
+    radial-gradient(44rem 34rem at 92% 106%, rgba(20, 160, 110, .52), transparent 64%),
+    radial-gradient(30rem 24rem at 30% 70%, rgba(96, 200, 190, .42), transparent 66%),
+    radial-gradient(26rem 20rem at 60% 28%, rgba(190, 236, 210, .5), transparent 66%),
+    #dcebe3;
+  background-attachment: fixed;
+}
+
+/* as três superfícies grandes e o placar */
+.central .placar > div,
+.central .fila,
+.central .detalhe {
+  background: var(--vidro);
+  border: 1px solid var(--vidro-borda);
+  box-shadow: var(--vidro-sombra), var(--vidro-brilho);
+  -webkit-backdrop-filter: var(--desfoque);
+  backdrop-filter: var(--desfoque);
+}
+.central .detalhe { background: var(--vidro-forte); border-radius: 24px; padding: 28px; }
+.central .fila { border-radius: 22px; }
+.central .placar > div { border-radius: 18px; padding: 14px 18px; }
+.central .placar dd { font-size: 28px; }
+
+/* a fila: as linhas são transparentes sobre o vidro; quem está escolhido
+   vira peça branca */
+.central .contato { background: transparent; border-radius: 14px; }
+.central .contato:hover:not([aria-pressed="true"]) { background: rgba(255, 255, 255, .5); }
+.central .contato[aria-pressed="true"] {
+  background: rgba(255, 255, 255, .92);
+  border-color: rgba(255, 255, 255, .95);
+  box-shadow: inset 3px 0 var(--acento), 0 10px 22px -14px rgba(5, 96, 59, .5);
+}
+.central .filaCabecalho { border-bottom-color: var(--vidro-fio); }
+/* o nome do grupo fica preso no alto: precisa do próprio vidro, senão as
+   linhas passam por trás do texto */
+.central .grupo h2 {
+  background: rgba(244, 249, 246, .78);
+  border-bottom-color: var(--vidro-fio);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+.central .grupo h2 b { background: rgba(255, 255, 255, .7); }
+.central .fora { background: rgba(255, 255, 255, .34); border-top-color: var(--vidro-fio); }
+.central .segmento select { background: rgba(255, 255, 255, .7); }
+.central .rolagem { scrollbar-color: rgba(5, 96, 59, .28) transparent; }
+
+/* a ficha: o cartão da vez em vidro verde */
+.central .vez {
+  background: linear-gradient(135deg, rgba(12, 145, 89, .20), rgba(47, 174, 120, .09) 58%, rgba(255, 255, 255, .22));
+  border: 1px solid rgba(12, 145, 89, .2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .7), 0 16px 34px -24px rgba(5, 96, 59, .55);
+  border-radius: 24px;
+  padding: 24px 26px;
+}
+.central .vez h3 { font-size: 24px; }
+.central .vez > p { color: #2f3b36; }
+.central .vez blockquote { background: rgba(255, 255, 255, .78); }
+.central .anotar { border-top-color: rgba(12, 145, 89, .16); }
+.central .anotar textarea { background: rgba(255, 255, 255, .82); }
+.central .passo, .central .cadastro { border-color: var(--vidro-fio); }
+.central .historico li { background: rgba(255, 255, 255, .5); }
+.central .historico li[data-direcao="saida"] { background: rgba(255, 255, 255, .88); border-color: rgba(255, 255, 255, .95); }
+.central .notas, .central .proximoPasso, .central .dados, .central .arquivo {
+  background: rgba(255, 255, 255, .46); border-color: var(--vidro-borda);
+}
+.central .arquivo[data-revisando] { background: rgba(255, 255, 255, .74); }
+.central .quente[data-marca], .central .marca, .central .etapa, .central .avatar { background: rgba(255, 255, 255, .66); }
+
+/* os botões e as pílulas: vidro quase branco, para o toque continuar claro */
+.central .botao:not(.primario):not(.vende),
+.central .pilula:not([aria-pressed="true"]) {
+  background: rgba(255, 255, 255, .74);
+  border-color: var(--vidro-borda);
+  box-shadow: 0 1px 2px rgba(5, 96, 59, .1);
+}
+.central .botao:not(.primario):not(.vende):hover,
+.central .pilula:not([aria-pressed="true"]):not(:disabled):hover { background: #fff; border-color: rgba(12, 145, 89, .4); }
+.central .primario { box-shadow: 0 10px 20px -12px rgba(5, 96, 59, .8), inset 0 1px 0 rgba(255, 255, 255, .25); }
+.central .botao.vende { box-shadow: 0 12px 22px -12px rgba(227, 27, 98, .75), inset 0 1px 0 rgba(255, 255, 255, .28); }
+.central .cabecalho .busca input[type="search"] {
+  background: rgba(255, 255, 255, .6); border-color: var(--vidro-borda);
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  box-shadow: var(--vidro-brilho);
+}
+.central .cabecalho .busca input[type="search"]:focus { background: rgba(255, 255, 255, .9); }
+.central .formPasso input { background: rgba(255, 255, 255, .82); }
+.central .cabecalho h1 { font-size: 40px; letter-spacing: -.035em; }
+
+@media (max-width: 860px) {
+  .central .detalhe { padding: 18px; border-radius: 20px; }
+  .central .vez { padding: 18px; border-radius: 20px; }
+  .central .vez h3 { font-size: 21px; }
+  .central .cabecalho h1 { font-size: 30px; }
+  .central .placar dd { font-size: 24px; }
+  /* no celular o fundo fixo engasga a rolagem em alguns aparelhos */
+  :global(main):has(.central) { background-attachment: scroll; }
+}
+
+/* sem desfoque disponível, ou com "reduzir transparência" ligado: o vidro
+   vira cartão quase opaco, e nada perde contraste */
+@supports not ((backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))) {
+  .central { --vidro: rgba(255, 255, 255, .9); --vidro-forte: rgba(255, 255, 255, .94); }
+  .central .grupo h2 { background: #f4f9f6; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .central { --vidro: #fff; --vidro-forte: #fff; --desfoque: none; }
+  .central .grupo h2 { background: #f4f9f6; -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+
+/* ============================================================
+   O HOJE PELO TECLADO E SEM "CARREGANDO" (24/11/2026, noite)
+   Três peças do mesmo pedido ("mais tecnológico"), todas de comportamento:
+   1. as teclas desenhadas: a legenda sob a fila, o Enter dentro do botão da
+      vez e o Ctrl K dentro do campo de busca (abre a paleta);
+   2. o esqueleto da conversa, com o brilho passando, no lugar do texto
+      "Carregando…";
+   3. a troca de contato: a ficha entra num fade de 140ms. Curto de
+      propósito: troca-se de contato centenas de vezes por dia, e movimento
+      longo aqui vira espera. Só opacidade, nada desliza.
+   ============================================================ */
+.central kbd {
+  display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 5px;
+  border: 1px solid rgba(20, 60, 42, .18); border-bottom-width: 2px; border-radius: 6px;
+  background: rgba(255, 255, 255, .78); color: #3a4a43;
+  font: 600 10.5px/1 var(--body, Arial, sans-serif); letter-spacing: 0; white-space: nowrap;
+}
+.central .atalhos {
+  display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 0; padding: 9px 14px 10px;
+  border-top: 1px solid var(--vidro-fio); font-size: 11px; color: var(--suave);
+}
+.central .atalhos span { display: inline-flex; align-items: center; gap: 4px; }
+.central .teclaNoBotao {
+  margin-left: 4px; border-color: rgba(255, 255, 255, .38); background: rgba(255, 255, 255, .2); color: #fff;
+}
+.central .botao:not(.vende) .teclaNoBotao { border-color: rgba(20, 60, 42, .18); background: rgba(255, 255, 255, .7); color: #3a4a43; }
+/* a dica do atalho dentro do campo de busca */
+.central .cabecalho .busca { position: relative; }
+.central .cabecalho .busca input[type="search"] { padding-right: 74px; }
+.central .teclaBusca {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  display: inline-flex; gap: 3px; padding: 2px; border: 0; border-radius: 8px; background: transparent; cursor: pointer;
+}
+.central .teclaBusca:hover kbd { background: #fff; border-color: rgba(12, 145, 89, .45); }
+/* a linha escolhida pelo teclado não some atrás do nome do grupo preso no alto */
+.central .contato { scroll-margin-block: 46px 8px; }
+
+/* o esqueleto da conversa */
+.central .esqueleto { display: grid; gap: 8px; margin: 12px 0; }
+.central .esqueleto i {
+  display: block; width: 62%; height: 54px; border-radius: 4px 14px 14px 14px;
+  background: linear-gradient(100deg, rgba(255, 255, 255, .42) 20%, rgba(255, 255, 255, .9) 42%, rgba(255, 255, 255, .42) 64%) 0 0 / 240% 100%;
+  animation: esqueletoBrilha 1.25s linear infinite;
+}
+.central .esqueleto i[data-saida] { width: 48%; height: 42px; margin-left: auto; border-radius: 14px 4px 14px 14px; animation-delay: .12s; }
+.central .esqueleto i:last-child { width: 38%; height: 42px; animation-delay: .24s; }
+@keyframes esqueletoBrilha { from { background-position: 120% 0; } to { background-position: -120% 0; } }
+
+/* a ficha entra: o Atendimento remonta a cada contato (key), então a
+   animação roda sozinha a cada troca */
+.central .detalhe > .detalheCabecalho,
+.central .detalhe > .vez,
+.central .detalhe > .pedidos,
+.central .detalhe > .passo,
+.central .detalhe > .historico,
+.central .detalhe > .cadastro { animation: fichaEntra .14s ease-out both; }
+@keyframes fichaEntra { from { opacity: 0; } to { opacity: 1; } }
+
+@media (max-width: 860px), (hover: none) {
+  .central .atalhos, .central .teclaNoBotao, .central .teclaBusca { display: none; }
+  .central .cabecalho .busca input[type="search"] { padding-right: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .central .esqueleto i { animation: none; background: rgba(255, 255, 255, .6); }
+  .central .detalhe > * { animation: none; }
+}
+
+/* ============================================================
+   O PLACAR VIVO, OS NÚMEROS NA MONO E O HOJE ESCURO (24/11/2026, noite)
+   O par de components/crm/PlacarVivo.tsx.
+   ============================================================ */
+/* os números são dado: vão na mono da casa, com algarismo de largura fixa */
+.central .placar dd,
+.central .grupo h2 b,
+.central .fora b {
+  font-family: var(--mono, ui-monospace, Consolas, monospace);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -.04em;
+}
+.central .placar dd { font-weight: 500; font-size: 26px; }
+.central .grupo h2 b, .central .fora b { letter-spacing: 0; }
+
+/* cada peça do placar é o chão do seu desenho: o gráfico fica atrás, colado
+   embaixo, e o número e o rótulo passam na frente */
+.central .placar > div { position: relative; overflow: hidden; isolation: isolate; }
+.central .placar dd, .central .placar dt { position: relative; z-index: 1; }
+.central .faisca {
+  position: absolute; z-index: 0; right: 0; bottom: 0; width: 34%; height: 72%;
+  pointer-events: none;
+}
+.central .faiscaArea { fill: rgba(12, 145, 89, .13); stroke: none; }
+.central .faiscaLinha {
+  fill: none; stroke: #0c9159; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 1; stroke-dashoffset: 0;
+  animation: faiscaDesenha .7s cubic-bezier(.2, .7, .2, 1) .15s backwards;
+}
+@keyframes faiscaDesenha { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+/* a fila repartida pelos grupos: os dois que cobram em rosa, o resto em verde
+   cada vez mais claro, na ordem da tela */
+.central .composicao {
+  position: absolute; z-index: 1; left: 18px; right: 18px; bottom: 7px;
+  display: flex; gap: 2px; height: 3px;
+}
+.central .composicao i { min-width: 3px; border-radius: 2px; background: rgba(12, 145, 89, .55); }
+.central .composicao i[data-grupo="novos"] { background: #e31b62; }
+.central .composicao i[data-grupo="responder"] { background: #f0739f; }
+.central .composicao i[data-grupo="preco"] { background: #0c9159; }
+.central .composicao i[data-grupo="amostra"] { background: rgba(12, 145, 89, .6); }
+.central .composicao i[data-grupo="prospeccao"] { background: rgba(12, 145, 89, .3); }
+
+/* a luz do vidro precisa de um chão para o anel; a fila fica como está
+   (sticky no computador), que já serve de chão */
+.central .detalhe[data-luz] { position: relative; }
+
+/* a barra de estado ocupa o pé: a fila e a ficha encolhem o que ela toma */
+@media (min-width: 861px) {
+  /* 262 do cabeçalho e do placar + 46 da barra de estado + 38 da legenda do teclado */
+  .central { --alto: max(380px, calc(100dvh - 346px)); }
+  .central .detalhe { min-height: calc(var(--alto) + 84px); }
+}
+@media (max-width: 860px) {
+  .central .placar dd { font-size: 22px; }
+  .central .faisca { width: 40%; }
+  .central .composicao { left: 12px; right: 12px; bottom: 5px; }
+}
+@media (prefers-reduced-motion: reduce) { .central .faiscaLinha { animation: none; } }
+
+/* ---------- o Hoje no tema escuro ----------
+   Os tokens do vidro viram e, como muita cor do Hoje está escrita à mão (o
+   vidro claro é feito de brancos translúcidos), as peças são acertadas uma
+   a uma aqui. O rosa do botão que vende não muda. */
+:global(html[data-crm-tema="escuro"]) .central {
+  --texto: #eef5f1;
+  --suave: #9db0a7;
+  --acento: #2fbd7d;
+  --vidro: rgba(255, 255, 255, .06);
+  --vidro-forte: rgba(255, 255, 255, .075);
+  --vidro-borda: rgba(255, 255, 255, .13);
+  --vidro-fio: rgba(255, 255, 255, .1);
+  --vidro-sombra: 0 22px 44px -26px rgba(0, 0, 0, .85), 0 2px 6px -2px rgba(0, 0, 0, .4);
+  --vidro-brilho: inset 0 1px 0 rgba(255, 255, 255, .1);
+  --borda: var(--vidro-fio);
+}
+:global(html[data-crm-tema="escuro"]) .central .cabecalho h1,
+:global(html[data-crm-tema="escuro"]) .central .placar dd,
+:global(html[data-crm-tema="escuro"]) .central .identificacao h2,
+:global(html[data-crm-tema="escuro"]) .central .vez h3,
+:global(html[data-crm-tema="escuro"]) .central .tituloSecao h3,
+:global(html[data-crm-tema="escuro"]) .central .link,
+:global(html[data-crm-tema="escuro"]) .central .linkBotao { color: var(--texto); }
+:global(html[data-crm-tema="escuro"]) .central .contato:hover:not([aria-pressed="true"]) { background: rgba(255, 255, 255, .06); }
+:global(html[data-crm-tema="escuro"]) .central .contato[aria-pressed="true"] {
+  background: rgba(255, 255, 255, .12);
+  border-color: rgba(255, 255, 255, .16);
+  box-shadow: inset 3px 0 var(--acento), 0 10px 22px -14px rgba(0, 0, 0, .8);
+}
+:global(html[data-crm-tema="escuro"]) .central .grupo h2 { background: rgba(20, 30, 26, .82); color: var(--texto); }
+:global(html[data-crm-tema="escuro"]) .central .grupo h2 b { background: rgba(255, 255, 255, .12); color: #dbe6e0; }
+:global(html[data-crm-tema="escuro"]) .central .grupo:is([data-grupo="responder"], [data-grupo="novos"]) h2 b { background: rgba(227, 27, 98, .26); color: #ff9dbf; }
+:global(html[data-crm-tema="escuro"]) .central .fora { background: rgba(255, 255, 255, .04); }
+:global(html[data-crm-tema="escuro"]) .central .segmento select,
+:global(html[data-crm-tema="escuro"]) .central .formPasso input,
+:global(html[data-crm-tema="escuro"]) .central .anotar textarea { background: rgba(255, 255, 255, .08); color: var(--texto); }
+:global(html[data-crm-tema="escuro"]) .central .vez {
+  background: linear-gradient(135deg, rgba(47, 189, 125, .26), rgba(47, 189, 125, .1) 58%, rgba(255, 255, 255, .04));
+  border-color: rgba(47, 189, 125, .32);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1), 0 16px 34px -24px rgba(0, 0, 0, .9);
+}
+:global(html[data-crm-tema="escuro"]) .central .vez > p,
+:global(html[data-crm-tema="escuro"]) .central .vez > small,
+:global(html[data-crm-tema="escuro"]) .central .espera,
+:global(html[data-crm-tema="escuro"]) .central .notas summary,
+:global(html[data-crm-tema="escuro"]) .central .cadastro summary { color: #c5d2cb; }
+:global(html[data-crm-tema="escuro"]) .central .vez blockquote,
+:global(html[data-crm-tema="escuro"]) .central .historico li { background: rgba(255, 255, 255, .07); color: var(--texto); }
+:global(html[data-crm-tema="escuro"]) .central .historico li[data-direcao="saida"] { background: rgba(47, 189, 125, .16); border-color: rgba(47, 189, 125, .28); }
+:global(html[data-crm-tema="escuro"]) .central .notas,
+:global(html[data-crm-tema="escuro"]) .central .proximoPasso,
+:global(html[data-crm-tema="escuro"]) .central .dados,
+:global(html[data-crm-tema="escuro"]) .central .arquivo,
+:global(html[data-crm-tema="escuro"]) .central .arquivo[data-revisando] { background: rgba(255, 255, 255, .05); }
+:global(html[data-crm-tema="escuro"]) .central .quente[data-marca],
+:global(html[data-crm-tema="escuro"]) .central .marca,
+:global(html[data-crm-tema="escuro"]) .central .etapa,
+:global(html[data-crm-tema="escuro"]) .central .avatar { background: rgba(255, 255, 255, .1); color: #dbe6e0; }
+:global(html[data-crm-tema="escuro"]) .central .quente:not([data-marca]),
+:global(html[data-crm-tema="escuro"]) .central .marca[data-quente] { background: rgba(227, 27, 98, .22); color: #ffb3cd; }
+:global(html[data-crm-tema="escuro"]) .central .botao:not(.primario):not(.vende),
+:global(html[data-crm-tema="escuro"]) .central .pilula:not([aria-pressed="true"]) {
+  background: rgba(255, 255, 255, .09);
+  border-color: rgba(255, 255, 255, .16);
+  color: var(--texto);
+  box-shadow: none;
+}
+:global(html[data-crm-tema="escuro"]) .central .botao:not(.primario):not(.vende):hover,
+:global(html[data-crm-tema="escuro"]) .central .pilula:not([aria-pressed="true"]):not(:disabled):hover { background: rgba(255, 255, 255, .16); border-color: rgba(47, 189, 125, .6); }
+:global(html[data-crm-tema="escuro"]) .central .primario,
+:global(html[data-crm-tema="escuro"]) .central .pilula[aria-pressed="true"] { background: #1d9c64; border-color: #1d9c64; color: #fff; }
+:global(html[data-crm-tema="escuro"]) .central .cabecalho .busca input[type="search"] { background: rgba(255, 255, 255, .08); color: var(--texto); }
+:global(html[data-crm-tema="escuro"]) .central .cabecalho .busca input[type="search"]:focus { background: rgba(255, 255, 255, .13); }
+:global(html[data-crm-tema="escuro"]) .central kbd { border-color: rgba(255, 255, 255, .2); background: rgba(255, 255, 255, .1); color: #dbe6e0; }
+:global(html[data-crm-tema="escuro"]) .central .esqueleto i {
+  background: linear-gradient(100deg, rgba(255, 255, 255, .06) 20%, rgba(255, 255, 255, .18) 42%, rgba(255, 255, 255, .06) 64%) 0 0 / 240% 100%;
+}
+:global(html[data-crm-tema="escuro"]) .central .faiscaLinha { stroke: #46d695; }
+:global(html[data-crm-tema="escuro"]) .central .faiscaArea { fill: rgba(70, 214, 149, .14); }
+:global(html[data-crm-tema="escuro"]) .central .prazo[data-atrasado="true"],
+:global(html[data-crm-tema="escuro"]) .central .passo em[data-atrasado="true"],
+:global(html[data-crm-tema="escuro"]) .central .erroArquivo,
+:global(html[data-crm-tema="escuro"]) .central .formPasso p { color: #ffb08a; }
+
+/* ============================================================
+   A FICHA DO HOJE, UNIFICADA (24/11/2026, noite)
+   O Rafael mandou o print da ficha real e pediu "unificar, simplificar":
+   1. o registro do formulário não se repete (era cartão, conversa e rodapé);
+   2. o próximo passo mora dentro do cartão da vez: "o que fazer agora" é um
+      bloco só, e a ficha tem duas partes (agir, e o que já aconteceu);
+   3. os caminhos de apoio ("Já falei por fora", "Abrir o Instagram") são
+      links em voz baixa: o cartão tem UMA chamada, a rosa;
+   4. a etapa é etiqueta com nome, ao lado do contexto.
+   ============================================================ */
+.central .identificacao p { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.central .identificacao .etapa { padding: 3px 9px; font-size: 11px; }
+
+.central .acaoLeve {
+  display: inline-flex; align-items: center; min-height: 40px; padding: 0 6px;
+  border: 0; background: none; color: #2f3b36; cursor: pointer;
+  font: 600 12.5px/1.4 var(--body, Arial, sans-serif);
+  text-decoration: underline; text-decoration-color: rgba(20, 60, 42, .28); text-underline-offset: 4px;
+}
+.central .acaoLeve:hover { color: var(--texto); text-decoration-color: currentColor; }
+.central .vez .acoes { align-items: center; gap: 8px 14px; }
+
+/* o próximo passo no pé do cartão: uma linha, separada por um fio */
+.central .vez .passo {
+  margin-top: 16px; padding: 14px 0 0; border: 0; border-top: 1px solid rgba(12, 145, 89, .18);
+}
+.central .vez .passo > p { max-width: none; margin: 0; }
+.central .vez .passo > p > b { color: #47564f; }
+.central .vez .passo .formPasso { max-width: 62ch; }
+/* a linha de ajuda fica entre os botões e o próximo passo */
+.central .vez > small { margin-top: 12px; max-width: 62ch; line-height: 1.5; }
+
+@media (max-width: 860px) {
+  .central .acaoLeve { min-height: 44px; }
+}
+:global(html[data-crm-tema="escuro"]) .central .acaoLeve { color: #c5d2cb; text-decoration-color: rgba(255, 255, 255, .3); }
+:global(html[data-crm-tema="escuro"]) .central .vez .passo { border-top-color: rgba(255, 255, 255, .12); }
+:global(html[data-crm-tema="escuro"]) .central .vez .passo > p > b { color: #9db0a7; }

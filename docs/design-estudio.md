@@ -58,6 +58,10 @@ Rafael trouxe de referência em 28/10.
   painel de canto arredondado, e o acento do painel é o verde. Foi pedido do
   Rafael, com o painel da PublicaLoja de referência. Vale só para a
   ferramenta interna: no site, "nunca fundo verde" e "sem gradiente" seguem.
+- **Exceção: o Hoje em vidro (24/11/2026).** A tela Hoje do `/crm` usa vidro fosco
+  (painéis translúcidos com desfoque sobre uma névoa verde), pedido do Rafael
+  ("quero glassmorphism"). Mora no fim de `components/crm/atendimento.module.css`.
+  Vale só para a ferramenta interna: no site, "vidro fosco fora do topo" segue proibido.
 
 ---
 

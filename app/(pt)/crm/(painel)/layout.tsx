@@ -1,4 +1,7 @@
+import { Suspense } from "react";
 import { Trilho } from "@/components/crm/Trilho";
+import { BarraEstado } from "@/components/crm/BarraEstado";
+import { LuzDoVidro } from "@/components/crm/TemaELuz";
 import { contagens } from "@/lib/crm/dados";
 import { sair } from "../acoes";
 import s from "../crm.module.css";
@@ -26,6 +29,11 @@ export default async function LayoutPainel({
     <div className={s.mesa}>
       <Trilho sair={sair} contagens={numeros} />
       <main id="crm-principal" tabIndex={-1} className={s.main}>{children}</main>
+      {/* a barra de estado (24/11): no Suspense, para a Meta lenta não segurar a tela */}
+      <Suspense fallback={null}>
+        <BarraEstado />
+      </Suspense>
+      <LuzDoVidro />
       {modal}
     </div>
   );

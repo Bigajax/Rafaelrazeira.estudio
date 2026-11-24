@@ -57,6 +57,7 @@ import type { painelHoje } from "@/lib/crm/dados";
 import { arrobaDe, dataCurta, diaEmSP, diasDesde, diasEntre, dinheiro, ehLojaOnline, linkWhatsapp, momentoDoContato, somarDias } from "@/lib/crm/regras";
 import { ehAtivo, NOME_CANAL, NOME_ESTAGIO, NOME_ORIGEM, NOME_TIPO, type Direcao, type LeadPainel, type Template } from "@/lib/crm/tipos";
 import { ModalNovoLead } from "./ModalNovoLead";
+import { Composicao, Contagem, Faisca } from "./PlacarVivo";
 import { ModalMensagem } from "./ModalMensagem";
 import { ModalToque } from "./ModalToque";
 import c from "./atendimento.module.css";
@@ -66,6 +67,12 @@ type Props = { painel: Awaited<ReturnType<typeof painelHoje>>; templates: Templa
 type Linha = { lead: LeadPainel; grupo: GrupoDaFila | null; encerrar: boolean };
 
 const normalizar = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLocaleLowerCase("pt-BR");
+/* O registro que o formulário do site deixa no card ("Preencheu o formulário
+   da /vitrine-digital"). Não é fala de ninguém: é de onde o contato veio, e
+   isso o rodapé da ficha já diz. Por isso ele não vira frase do cartão da
+   vez, e uma conversa feita só dele não aparece (24/11/2026). */
+const soFormulario = (texto?: string | null) => /^\s*preencheu o formul[aá]rio/i.test(texto ?? "");
+
 const hora = (s: string) => {
   const d = new Date(s);
   return Number.isNaN(d.getTime())
@@ -244,6 +251,50 @@ export function CentralAtendimento({ painel, templates }: Props) {
     }
   }
 
+  /* ---------- a fila pelo teclado (24/11/2026) ----------
+     Seta para baixo e para cima (ou J e K) andam pelos contatos; Enter faz a
+     ação da vez, a mesma do botão principal da ficha. O Rafael atravessa a
+     fila dezenas de vezes por dia, e cada contato era um clique.
+     O que o atalho NÃO faz:
+     - não age com o foco num campo, nem com modal aberto (o Enter e as setas
+       são do campo e do modal);
+     - o Enter só vale com o foco na página ou num contato da fila: num botão
+       qualquer, Enter continua sendo o clique daquele botão;
+     - não usa Ctrl, Alt nem Cmd: Ctrl+K é da paleta (components/crm/Paleta).
+     Os valores vivos passam por um ref para o ouvinte ser instalado uma vez. */
+  const teclado = useRef({ linhas, atual, ocupado: false });
+  teclado.current = { linhas, atual, ocupado: Boolean(novo || registro || mensagem) };
+  useEffect(() => {
+    const aoTeclar = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      const alvo = e.target as HTMLElement | null;
+      if (alvo?.closest?.("input, textarea, select, [contenteditable='true']")) return;
+      if (document.querySelector("dialog[open], [role='dialog'], [aria-modal='true']")) return;
+      const { linhas: todas, atual: daVez, ocupado } = teclado.current;
+      if (ocupado || !todas.length) return;
+      const passo = e.key === "ArrowDown" || e.key === "j" ? 1 : e.key === "ArrowUp" || e.key === "k" ? -1 : 0;
+      if (passo) {
+        e.preventDefault();
+        const i = daVez ? todas.findIndex((x) => x.lead.id === daVez.lead.id) : -1;
+        const proximo = todas[Math.max(0, Math.min(todas.length - 1, i + passo))];
+        if (!proximo) return;
+        setSelecionado(proximo.lead.id);
+        requestAnimationFrame(() => {
+          const botao = filaRef.current?.querySelector<HTMLButtonElement>(`[data-contato="${proximo.lead.id}"]`);
+          botao?.scrollIntoView({ block: "nearest" });
+          botao?.focus({ preventScroll: true });
+        });
+        return;
+      }
+      if (e.key === "Enter" && daVez && (alvo === document.body || alvo?.hasAttribute("data-contato"))) {
+        e.preventDefault();
+        detalheRef.current?.querySelector<HTMLElement>("[data-acao-da-vez]")?.click();
+      }
+    };
+    document.addEventListener("keydown", aoTeclar);
+    return () => document.removeEventListener("keydown", aoTeclar);
+  }, []);
+
   const linha = (i: Linha) => {
     const l = i.lead;
     const m = motivoDe(i, hoje, agora);
@@ -271,6 +322,10 @@ export function CentralAtendimento({ painel, templates }: Props) {
           <label className={c.busca}>
             <span className={c.srOnly}>Buscar em todos os contatos</span>
             <input type="search" placeholder="Buscar contato" value={busca} onChange={(e) => { setBusca(e.target.value); setSelecionado(null); }} />
+            {/* a dica do atalho (24/11): abre a paleta, que busca em todas as telas */}
+            <button type="button" className={c.teclaBusca} onClick={() => window.dispatchEvent(new Event("crm:paleta"))} aria-label="Abrir a busca do painel inteiro (Ctrl K)" aria-keyshortcuts="Control+K">
+              <kbd>Ctrl</kbd><kbd>K</kbd>
+            </button>
           </label>
           {/* O "Funil" saiu daqui em 24/11: já é uma rota do menu, a dois dedos. */}
           <Link className={c.botao} href="/crm?modo=visao">Visão do estúdio</Link>
@@ -281,13 +336,25 @@ export function CentralAtendimento({ painel, templates }: Props) {
       {/* O placar em quatro peças (24/11), como os números do painel da
           PublicaLoja. É uma faixa baixa de propósito: em 10/11 o cabeçalho
           foi encolhido porque só cabia um contato antes de rolar. */}
+      {/* O placar vivo (24/11, noite): os números contam ao abrir, a fila
+          mostra de que grupos ela é feita, e os dois de resultado ganham o
+          desenho dos últimos 14 dias (components/crm/PlacarVivo). */}
       <dl className={c.placar}>
-        <div><dd>{fila.itens.length}</dd><dt>na fila de hoje</dt></div>
-        <div><dd>{fila.aguardando}</dd><dt>aguardando resposta</dt></div>
+        <div data-luz>
+          <dd><Contagem valor={fila.itens.length} /></dd><dt>na fila de hoje</dt>
+          <Composicao partes={GRUPOS_DA_FILA.map((g) => ({ id: g.id, nome: g.nome, n: fila.itens.filter((i) => i.grupo === g.id).length }))} />
+        </div>
+        <div data-luz><dd><Contagem valor={fila.aguardando} /></dd><dt>aguardando resposta</dt></div>
         {painel.resultado && (
           <>
-            <div><dd>{painel.resultado.precos}</dd><dt>{painel.resultado.precos === 1 ? "viu" : "viram"} o preço em 30 dias</dt></div>
-            <div><dd>{painel.resultado.fechados}</dd><dt>{painel.resultado.fechados === 1 ? "fechou" : "fecharam"} em 30 dias</dt></div>
+            <div data-luz>
+              <dd><Contagem valor={painel.resultado.precos} /></dd><dt>{painel.resultado.precos === 1 ? "viu" : "viram"} o preço em 30 dias</dt>
+              <Faisca serie={painel.resultado.serie.precos} rotulo="Viram o preço" />
+            </div>
+            <div data-luz>
+              <dd><Contagem valor={painel.resultado.fechados} /></dd><dt>{painel.resultado.fechados === 1 ? "fechou" : "fecharam"} em 30 dias</dt>
+              <Faisca serie={painel.resultado.serie.fechados} rotulo="Fecharam" />
+            </div>
           </>
         )}
       </dl>
@@ -330,7 +397,7 @@ export function CentralAtendimento({ painel, templates }: Props) {
       {erroArquivo && <p role="alert" className={c.erroArquivo}>{erroArquivo}</p>}
 
       <div className={c.mesa}>
-        <section ref={filaRef} className={c.fila} aria-label="A fila de hoje">
+        <section ref={filaRef} className={c.fila} aria-label="A fila de hoje" data-luz>
           {!agrupada && (
             <div className={c.filaCabecalho}>
               <b>{termo ? `${linhas.length} ${linhas.length === 1 ? "encontrado" : "encontrados"}` : `${linhas.length} fora da fila`}</b>
@@ -384,9 +451,15 @@ export function CentralAtendimento({ painel, templates }: Props) {
               Fora da fila<b>{fila.fora.length}</b>
             </button>
           )}
+          {/* a legenda do teclado (24/11): some no celular, onde não há teclas */}
+          <p className={c.atalhos} aria-hidden>
+            <span><kbd>↑</kbd><kbd>↓</kbd> andar</span>
+            <span><kbd>Enter</kbd> agir</span>
+            <span><kbd>Ctrl</kbd><kbd>K</kbd> buscar</span>
+          </p>
         </section>
 
-        <section ref={detalheRef} className={c.detalhe} tabIndex={-1} aria-label="Atendimento selecionado">
+        <section ref={detalheRef} className={c.detalhe} tabIndex={-1} aria-label="Atendimento selecionado" data-luz>
           <button
             type="button"
             className={`${c.linkBotao} ${c.voltarLista}`}
@@ -583,7 +656,12 @@ function Atendimento({
         <div className={c.identificacao}>
           <div>
             <h2>{lead.nome}</h2>
-            <p>{[lead.empresa !== lead.nome ? lead.empresa : null, lead.nicho, lead.cidade].filter(Boolean).join(" · ") || NOME_ESTAGIO[lead.estagio]}</p>
+            {/* a etapa virou etiqueta com nome (24/11): "Prévia" solto embaixo
+                do nome não dizia o que era */}
+            <p>
+              <span className={c.etapa}>Etapa: {NOME_ESTAGIO[lead.estagio]}</span>
+              {[lead.empresa !== lead.nome ? lead.empresa : null, lead.nicho, lead.cidade].filter(Boolean).join(", ")}
+            </p>
           </div>
         </div>
         <Link className={c.link} href={`/crm/lead/${lead.id}`}>Abrir ficha ↗</Link>
@@ -591,17 +669,22 @@ function Atendimento({
 
       <section className={c.vez} data-alto={grupo === "responder" || grupo === "novos"}>
         <h3>{vez.titulo}</h3>
-        {fala && respondeu ? <blockquote>{fala}</blockquote> : vez.detalhe ? <p>{vez.detalhe}</p> : null}
+        {/* o registro automático do formulário não se repete aqui (24/11): a
+            mesma frase aparecia no cartão, na conversa e no rodapé, que já
+            diz de onde o contato veio */}
+        {fala && respondeu ? <blockquote>{fala}</blockquote> : vez.detalhe && !soFormulario(vez.detalhe) ? <p>{vez.detalhe}</p> : null}
         <div className={c.acoes}>
           {encerrar && ativo && <button type="button" className={`${c.botao} ${c.primario}`} disabled={encerrando} onClick={aoEncerrar}>{encerrando ? "Encerrando…" : "Não rolou"}</button>}
           {whatsapp || instagram ? (
-            <button type="button" className={`${c.botao} ${encerrar ? "" : c.vende}`} onClick={aoMandar}>{vez.botao}</button>
+            <button type="button" className={`${c.botao} ${encerrar ? "" : c.vende}`} onClick={aoMandar} data-acao-da-vez>{vez.botao}<kbd className={c.teclaNoBotao} aria-hidden>Enter</kbd></button>
           ) : (
             <Link className={`${c.botao} ${c.vende}`} href={`/crm/lead/${lead.id}`}>Completar canal de contato</Link>
           )}
           {cobranca && <Link className={c.botao} href="/crm/caixa">Dar baixa no Caixa</Link>}
-          <button type="button" className={c.botao} aria-expanded={anotando} onClick={() => setAnotando((v) => !v)}>Já falei por fora</button>
-          {instagram && <a className={c.botao} href={`https://www.instagram.com/${encodeURIComponent(instagram)}/`} target="_blank" rel="noopener noreferrer">Instagram ↗</a>}
+          {/* os dois caminhos de apoio em voz baixa (24/11): eram botões do
+              mesmo peso do que vende, e o cartão tinha três chamadas iguais */}
+          <button type="button" className={c.acaoLeve} aria-expanded={anotando} onClick={() => setAnotando((v) => !v)}>Já falei por fora</button>
+          {instagram && <a className={c.acaoLeve} href={`https://www.instagram.com/${encodeURIComponent(instagram)}/`} target="_blank" rel="noopener noreferrer">Abrir o Instagram</a>}
         </div>
         {anotando && (
           <form
@@ -622,7 +705,48 @@ function Atendimento({
             <small>Entra na conversa como mensagem sua, e o contato sai de quem espera você.</small>
           </form>
         )}
-        {(grupo === "novos" || grupo === "preco" || grupo === "amostra" || grupo === "prospeccao") && !encerrar && <small>Ao enviar, o próximo deste grupo já abre. Fechar sem enviar para.</small>}
+        {(grupo === "novos" || grupo === "preco" || grupo === "amostra" || grupo === "prospeccao") && !encerrar && <small>Depois de enviar, o próximo contato deste grupo abre sozinho. Se você fechar sem enviar, a sequência para aqui.</small>}
+        {/* o próximo passo mora DENTRO do cartão desde 24/11: "o que fazer
+            agora" é um bloco só. Era uma faixa solta entre as pílulas e a
+            conversa, a quarta da ficha. */}
+        {ativo && (
+          <div className={c.passo}>
+            {editando ? (
+              <form
+                className={c.formPasso}
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  setErroPasso(null);
+                  comecar(async () => {
+                    const r = await definirPasso(lead.id, passo, data);
+                    if (r.ok) {
+                      setEditando(false);
+                      router.refresh();
+                    } else setErroPasso("erro" in r ? r.erro : "Preencha o próximo passo e uma data válida.");
+                  });
+                }}
+              >
+                <label>O que fazer<input value={passo} onChange={(e) => setPasso(e.target.value)} placeholder="Entender a necessidade e apresentar a solução" required /></label>
+                <label>Quando<input type="date" value={data} min={hoje} onChange={(e) => setData(e.target.value)} required /></label>
+                {erroPasso && <p role="alert">{erroPasso}</p>}
+                <div className={c.acoes}>
+                  <button type="submit" className={`${c.botao} ${c.primario}`} disabled={salvando}>{salvando ? "Salvando…" : "Salvar"}</button>
+                  <button type="button" className={c.botao} onClick={() => setEditando(false)}>Cancelar</button>
+                </div>
+                <small>Um retorno marcado para depois de hoje tira o contato da fila até a data.</small>
+              </form>
+            ) : (
+              <p>
+                <b>Próximo passo</b>
+                <span>
+                  {lead.proximo_passo || "Ainda não combinado"}
+                  {lead.proxima_acao_em && <em data-atrasado={lead.proxima_acao_em < hoje}>, {lead.proxima_acao_em < hoje ? "atrasado, " : ""}{dataCurta(lead.proxima_acao_em)}</em>}
+                </span>
+                <button type="button" className={c.linkBotao} onClick={() => { setPasso(lead.proximo_passo ?? ""); setErroPasso(null); setEditando(true); }}>{lead.proximo_passo ? "Editar" : "Combinar"}</button>
+              </p>
+            )}
+          </div>
+        )}
       </section>
 
       {ativo && (
@@ -638,45 +762,10 @@ function Atendimento({
       )}
       {erroMarca && <p role="alert" className={c.erroArquivo}>{erroMarca}</p>}
 
-      {ativo && (
-        <section className={c.passo}>
-          {editando ? (
-            <form
-              className={c.formPasso}
-              onSubmit={(e) => {
-                e.preventDefault();
-                setErroPasso(null);
-                comecar(async () => {
-                  const r = await definirPasso(lead.id, passo, data);
-                  if (r.ok) {
-                    setEditando(false);
-                    router.refresh();
-                  } else setErroPasso("erro" in r ? r.erro : "Preencha o próximo passo e uma data válida.");
-                });
-              }}
-            >
-              <label>O que fazer<input value={passo} onChange={(e) => setPasso(e.target.value)} placeholder="Entender a necessidade e apresentar a solução" required /></label>
-              <label>Quando<input type="date" value={data} min={hoje} onChange={(e) => setData(e.target.value)} required /></label>
-              {erroPasso && <p role="alert">{erroPasso}</p>}
-              <div className={c.acoes}>
-                <button type="submit" className={`${c.botao} ${c.primario}`} disabled={salvando}>{salvando ? "Salvando…" : "Salvar"}</button>
-                <button type="button" className={c.botao} onClick={() => setEditando(false)}>Cancelar</button>
-              </div>
-              <small>Um retorno marcado para depois de hoje tira o contato da fila até a data.</small>
-            </form>
-          ) : (
-            <p>
-              <b>Próximo passo</b>
-              <span>
-                {lead.proximo_passo || "Ainda não combinado"}
-                {lead.proxima_acao_em && <em data-atrasado={lead.proxima_acao_em < hoje}> · {lead.proxima_acao_em < hoje ? "atrasado, " : ""}{dataCurta(lead.proxima_acao_em)}</em>}
-              </span>
-              <button type="button" className={c.linkBotao} onClick={() => { setPasso(lead.proximo_passo ?? ""); setErroPasso(null); setEditando(true); }}>Editar</button>
-            </p>
-          )}
-        </section>
-      )}
-
+      {/* a conversa some quando só existe o registro do formulário (24/11):
+          era um balão repetindo o rodapé. Para quem acabou de chegar ("novos")
+          nem o esqueleto aparece, porque não há o que carregar para mostrar. */}
+      {(historico === null ? grupo !== "novos" || Boolean(falha) : falha || !historico.length || !historico.every((i) => soFormulario(i.resumo))) && (
       <section className={c.historico}>
         <div className={c.tituloSecao}>
           <h3>Conversa</h3>
@@ -684,7 +773,13 @@ function Atendimento({
         {falha ? (
           <p role="alert">{falha} <button className={c.linkBotao} type="button" onClick={() => setTentativa((n) => n + 1)}>Tentar novamente</button></p>
         ) : historico === null ? (
-          <p role="status">Carregando…</p>
+          /* o esqueleto no lugar do "Carregando…" (24/11): três balões com o
+             brilho passando, no formato da conversa que vai chegar. O texto
+             fica só para o leitor de tela. */
+          <div className={c.esqueleto} role="status">
+            <span className={c.srOnly}>Carregando a conversa</span>
+            <i /><i data-saida /><i />
+          </div>
         ) : historico.length ? (
           <ol>
             {historico.map((i) => (
@@ -701,6 +796,7 @@ function Atendimento({
           <p>Nenhuma interação registrada ainda.</p>
         )}
       </section>
+      )}
 
       <footer className={c.cadastro}>
         <p>{dados}</p>

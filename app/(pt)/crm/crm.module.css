@@ -1338,7 +1338,7 @@
 @media (hover: hover) and (pointer: fine) {
   .app .btnMiniForte:hover {
     background: var(--ink);
-    color: var(--paper-alto);
+    color: var(--paper-alto-solido, var(--paper-alto));
     border-color: var(--ink);
   }
 }
@@ -7004,7 +7004,7 @@
   left: 76px;
   top: -100px;
   z-index: 150;
-  background: var(--paper-alto);
+  background: var(--paper-alto-solido, var(--paper-alto));
   padding: 12px 16px;
   border: 1px solid var(--green-dark);
 }
@@ -9002,4 +9002,492 @@
 .app .barraCelular a[aria-current="page"]::before,
 .app .barraCelular .barraMaisAtivo::before {
   background: var(--painel-acento);
+}
+
+
+/* ============================================================
+   O PAINEL INTEIRO EM VIDRO (24/11/2026, noite)
+   O Rafael aprovou o Hoje em vidro e pediu "a página completa". Em vez de
+   repintar classe por classe, a troca é nos TOKENS, dentro do .main:
+   quase todo cartão do CRM se pinta com --paper-alto (161 lugares), então
+   ele vira branco translúcido e o chão vira a névoa verde do Hoje.
+   Sem backdrop-filter nos cartões, de propósito: atrás deles só existe a
+   névoa, que já é lisa, e desfoque em dezenas de placas do Funil custaria
+   rolagem sem mudar um pixel. O desfoque fica no Hoje, onde o nome do
+   grupo passa por cima da lista.
+   O que NÃO vira vidro:
+   - o que é --paper (#fff): campos, peças escolhidas, botões claros;
+   - o que fica PRESO no alto ou na lateral (cabeçalho de tabela, bandeja):
+     usa --paper-alto-solido, senão o conteúdo passa por trás do texto;
+   - os modais e o menu, que moram fora do .main.
+   Vale só na ferramenta interna (docs/design-estudio.md).
+   ============================================================ */
+.app .main {
+  --paper-alto: rgba(255, 255, 255, .46);
+  --paper-alto-solido: #edf4f0;
+  --paper-2: rgba(16, 84, 56, .09);
+  --line: rgba(20, 60, 42, .14);
+  background:
+    radial-gradient(46rem 32rem at -4% -6%, rgba(8, 128, 78, .62), transparent 64%),
+    radial-gradient(34rem 26rem at 102% 2%, rgba(255, 196, 120, .58), transparent 62%),
+    radial-gradient(44rem 34rem at 92% 106%, rgba(20, 160, 110, .52), transparent 64%),
+    radial-gradient(30rem 24rem at 30% 70%, rgba(96, 200, 190, .42), transparent 66%),
+    radial-gradient(26rem 20rem at 60% 28%, rgba(190, 236, 210, .5), transparent 66%),
+    #dcebe3;
+  background-attachment: fixed;
+}
+@media (max-width: 860px) {
+  /* fundo fixo engasga a rolagem em celular */
+  .app .main { background-attachment: scroll; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .app .main { --paper-alto: #f6f6f4; --paper-2: #efefed; --line: #e2e2df; background: #f7f7f6; }
+}
+
+/* ============================================================
+   OS ÍCONES VIVOS DO MENU (24/11/2026)
+   O par deste bloco é components/crm/IconePainel.tsx, que marca cada parte
+   do desenho com data-f (forma que se enche), data-mov (o movimento) e
+   data-d (o atraso).
+   As regras do movimento:
+   - UMA vez por passada do mouse, ~0,35s, nunca em laço: é menu, o Rafael
+     passa por ele dezenas de vezes por dia;
+   - só transform, opacidade e traço: nada que mexa no layout;
+   - só com mouse de verdade (hover + pointer fino) e só para quem não pediu
+     menos movimento; no toque e com "reduzir movimento" o menu fica parado;
+   - a tela aberta não anima: ganha o preenchimento leve (data-f).
+   ============================================================ */
+.app [data-icone] [data-f] {
+  fill: currentColor;
+  fill-opacity: 0;
+  transition: fill-opacity .2s ease;
+}
+.app .trilhoAtivo [data-icone] [data-f],
+.app .barraCelular a[aria-current="page"] [data-icone] [data-f] {
+  fill-opacity: .26;
+}
+.app [data-icone] [data-mov] {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.app [data-icone] [data-mov="cresce"] { transform-origin: center bottom; }
+.app [data-icone] [data-mov="ondula"] { transform-origin: left center; }
+.app [data-icone] [data-mov="balanca"] { transform-origin: 35% 65%; }
+.app .trilho .trilhoIcone,
+.app .trilho .trilhoSair svg {
+  transition: transform .18s cubic-bezier(.2, .7, .2, 1);
+}
+.app .trilho .trilhoLink:active .trilhoIcone,
+.app .trilho .trilhoSair:active svg {
+  transform: scale(.9);
+  transition-duration: .08s;
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .app .trilho .trilhoLink:hover .trilhoIcone,
+  .app .trilho .trilhoSair:hover svg {
+    transform: scale(1.1);
+  }
+  .app .trilho :is(.trilhoLink, .trilhoSair):hover [data-mov] {
+    animation-duration: .38s;
+    animation-timing-function: cubic-bezier(.2, .7, .2, 1);
+    animation-fill-mode: backwards;
+  }
+  .app .trilho :is(.trilhoLink, .trilhoSair):hover [data-d="1"] { animation-delay: 70ms; }
+  .app .trilho :is(.trilhoLink, .trilhoSair):hover [data-d="2"] { animation-delay: 140ms; }
+  .app .trilho :is(.trilhoLink, .trilhoSair):hover [data-mov="sobe"] { animation-name: icoSobe; }
+  .app .trilho :is(.trilhoLink, .trilhoSair):hover [data-mov="vai"] { animation-name: icoVai; }
+  .app .trilho :is(.trilhoLink, .trilhoSair):hover [data-mov="gira"] { animation-name: icoGira; animation-duration: .5s; }
+  .app .trilho :is(.trilhoLink, .trilhoSair):hover [data-mov="balanca"] { animation-name: icoBalanca; animation-duration: .46s; }
+  .app .trilho :is(.trilhoLink, .trilhoSair):hover [data-mov="cresce"] { animation-name: icoCresce; }
+  .app .trilho :is(.trilhoLink, .trilhoSair):hover [data-mov="pulsa"] { animation-name: icoPulsa; animation-duration: .44s; }
+  .app .trilho :is(.trilhoLink, .trilhoSair):hover [data-mov="ondula"] { animation-name: icoOndula; animation-duration: .5s; }
+  .app .trilho :is(.trilhoLink, .trilhoSair):hover [data-mov="desenha"] { animation-name: icoDesenha; animation-duration: .42s; }
+}
+@keyframes icoSobe {
+  0%, 100% { transform: none; }
+  45% { transform: translateY(-2.6px) rotate(-7deg); }
+}
+@keyframes icoVai {
+  0%, 100% { transform: none; }
+  45% { transform: translateX(2.4px); }
+}
+@keyframes icoGira {
+  from { transform: rotate(0) scale(1); }
+  50% { transform: rotate(45deg) scale(1.14); }
+  to { transform: rotate(90deg) scale(1); }
+}
+@keyframes icoBalanca {
+  0%, 100% { transform: none; }
+  30% { transform: rotate(-11deg); }
+  65% { transform: rotate(6deg); }
+}
+@keyframes icoCresce {
+  from { transform: scaleY(.3); }
+  to { transform: none; }
+}
+@keyframes icoPulsa {
+  0%, 100% { transform: none; opacity: 1; }
+  40% { transform: scale(1.4); opacity: .65; }
+}
+@keyframes icoOndula {
+  0%, 100% { transform: none; }
+  30% { transform: skewY(-9deg) scaleX(.93); }
+  65% { transform: skewY(5deg); }
+}
+@keyframes icoDesenha {
+  from { stroke-dasharray: 1; stroke-dashoffset: 1; }
+  to { stroke-dasharray: 1; stroke-dashoffset: 0; }
+}
+
+/* ============================================================
+   A PALETA DE COMANDOS (24/11/2026), o par de components/crm/Paleta.tsx
+   Uma janela de vidro no terço de cima da tela, sobre um véu escuro com
+   desfoque. Aqui o desfoque vale: atrás dela está a tela inteira, com
+   texto e cartão, e é isso que o vidro precisa para parecer vidro.
+   A entrada é de 140ms, do tamanho 98% (nunca de zero): abre-se a paleta
+   muitas vezes por dia, e ela não pode parecer lenta.
+   ============================================================ */
+.app .paleta {
+  width: min(620px, calc(100vw - 32px));
+  max-height: min(70dvh, 560px);
+  margin: 14dvh auto auto;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, .7);
+  border-radius: 22px;
+  background: rgba(248, 252, 250, .82);
+  -webkit-backdrop-filter: saturate(1.6) blur(26px);
+  backdrop-filter: saturate(1.6) blur(26px);
+  box-shadow: 0 40px 90px -30px rgba(3, 60, 38, .65), inset 0 1px 0 rgba(255, 255, 255, .9);
+  color: var(--ink);
+  font-family: var(--body);
+  overflow: hidden;
+}
+.app .paleta[open] {
+  display: flex;
+  flex-direction: column;
+  animation: paletaAbre .14s ease-out both;
+}
+.app .paleta::backdrop {
+  background: rgba(6, 40, 28, .42);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+@keyframes paletaAbre {
+  from { opacity: 0; transform: translateY(-6px) scale(.98); }
+  to { opacity: 1; transform: none; }
+}
+.app .paleta kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border: 1px solid rgba(20, 60, 42, .18);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, .85);
+  color: #3a4a43;
+  font: 600 11px/1 var(--body);
+  white-space: nowrap;
+}
+.app .paletaCampo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+  border-bottom: 1px solid rgba(20, 60, 42, .12);
+  color: var(--ink-fraco);
+}
+.app .paleta .paletaCampo input {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  outline: none;
+  background: none;
+  box-shadow: none;
+  color: var(--ink);
+  font: 500 18px/1.4 var(--display, var(--body));
+  letter-spacing: -.01em;
+}
+.app .paleta .paletaCampo input::placeholder { color: #7d8a84; }
+.app .paletaLista {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 6px 8px 8px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(5, 96, 59, .28) transparent;
+}
+.app .paletaGrupo {
+  margin: 0;
+  padding: 10px 10px 4px;
+  font: 600 11px/1.4 var(--body);
+  color: var(--ink-fraco);
+}
+.app .paleta .paletaItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 46px;
+  padding: 7px 10px;
+  border: 0;
+  border-radius: 12px;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  scroll-margin-block: 8px;
+}
+.app .paletaItem svg { flex: none; width: 20px; height: 20px; color: var(--green-dark); }
+.app .paletaItem span { display: grid; flex: 1; min-width: 0; }
+.app .paletaItem b { font: 600 14px/1.35 var(--body); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.app .paletaItem small { font: 400 12px/1.35 var(--body); color: var(--ink-fraco); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.app .paleta .paletaItem[aria-selected="true"] {
+  background: rgba(255, 255, 255, .92);
+  box-shadow: inset 3px 0 var(--green), 0 8px 18px -12px rgba(5, 96, 59, .5);
+}
+.app .paletaItem[aria-selected="true"] [data-f] { fill-opacity: .22; }
+.app .paletaVazio { margin: 0; padding: 26px 14px; text-align: center; font: 400 13px/1.6 var(--body); color: var(--ink-fraco); }
+.app .paletaPe {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin: 0;
+  padding: 10px 18px;
+  border-top: 1px solid rgba(20, 60, 42, .12);
+  background: rgba(255, 255, 255, .4);
+  font: 400 11.5px/1.4 var(--body);
+  color: var(--ink-fraco);
+}
+.app .paletaPe span { display: inline-flex; align-items: center; gap: 4px; }
+.app .paletaPe span:last-child { margin-left: auto; }
+@media (max-width: 600px) {
+  .app .paleta { margin-top: 8dvh; border-radius: 18px; }
+  .app .paleta .paletaCampo input { font-size: 16px; }
+  .app .paletaPe span:not(:last-child) { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .app .paleta[open] { animation: none; } }
+@media (prefers-reduced-transparency: reduce) {
+  .app .paleta { background: #f7fbf9; -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+
+/* ============================================================
+   A BARRA DE ESTADO, A LUZ DO VIDRO E O TEMA ESCURO (24/11/2026, noite)
+   O par de components/crm/BarraEstado.tsx e TemaELuz.tsx.
+
+   A BARRA é uma pílula de vidro solta no pé do painel, só no computador.
+   Solta, e não colada na borda, por um motivo: a barra lateral desenha o
+   canto arredondado do conteúdo no pé da tela, e uma faixa de ponta a ponta
+   passaria por cima dele. O .main ganha o respiro embaixo para nada ficar
+   escondido atrás dela. Os números vão na mono da casa (--mono), com
+   algarismos de largura fixa: é dado, e dado alinha.
+   ============================================================ */
+.app .barraEstado {
+  display: none;
+}
+@media (min-width: 861px) {
+  .app .main {
+    padding-bottom: 68px;
+  }
+  .app .barraEstado {
+    position: fixed;
+    left: 96px;
+    right: 24px;
+    bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px 22px;
+    min-height: 36px;
+    padding: 5px 8px 5px 16px;
+    border: 1px solid rgba(255, 255, 255, .7);
+    border-radius: 999px;
+    background: rgba(246, 251, 248, .72);
+    -webkit-backdrop-filter: saturate(1.6) blur(18px);
+    backdrop-filter: saturate(1.6) blur(18px);
+    box-shadow: 0 14px 30px -18px rgba(5, 96, 59, .55), inset 0 1px 0 rgba(255, 255, 255, .85);
+    color: #33423b;
+    font: 500 12px/1.3 var(--body);
+    white-space: nowrap;
+    overflow: hidden;
+  }
+}
+.app .barraEstado > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+.app .barraEstado b {
+  font: 600 12px/1.3 var(--mono);
+  font-variant-numeric: tabular-nums;
+  color: #14181a;
+}
+.app .barraEstado b[data-texto] {
+  font-family: var(--body);
+}
+.app .barraEstado small {
+  font: 400 11.5px/1.3 var(--body);
+  color: #66756e;
+}
+/* o ponto: verde pulsando devagar quando a Meta gastou hoje, cinza parado
+   quando não gastou, vazado quando não há leitura */
+.app .barraEstado [data-vivo] i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #9aa8a1;
+}
+.app .barraEstado [data-vivo="sim"] i {
+  background: #12a866;
+  box-shadow: 0 0 0 0 rgba(18, 168, 102, .55);
+  animation: pontoVivo 2.4s ease-out infinite;
+}
+.app .barraEstado [data-vivo="sem"] i {
+  background: none;
+  box-shadow: inset 0 0 0 1.5px #9aa8a1;
+}
+@keyframes pontoVivo {
+  0% { box-shadow: 0 0 0 0 rgba(18, 168, 102, .5); }
+  70%, 100% { box-shadow: 0 0 0 7px rgba(18, 168, 102, 0); }
+}
+.app .barraEstado .barraEstadoFim {
+  margin-left: auto;
+  gap: 12px;
+}
+.app .botaoTema {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 26px;
+  padding: 0 11px;
+  border: 1px solid rgba(20, 60, 42, .16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .8);
+  color: #24302b;
+  font: 600 11.5px/1 var(--body);
+  cursor: pointer;
+}
+.app .botaoTema:hover { border-color: rgba(12, 145, 89, .5); }
+.app .botaoTema:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+@media (max-width: 1100px) {
+  .app .barraEstado small { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app .barraEstado [data-vivo="sim"] i { animation: none; }
+}
+
+/* ---------- a luz do vidro ----------
+   O anel de brilho na borda do cartão marcado com data-luz, no ponto onde
+   está o mouse (--lx e --ly vêm do LuzDoVidro). É só a BORDA: a máscara
+   recorta o miolo, então o texto do cartão nunca fica lavado. Quem marca o
+   cartão cuida do position dele (a fila do Hoje é sticky e não pode virar
+   relative). */
+.app [data-luz]::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  padding: 1.5px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(240px circle at var(--lx, -400px) var(--ly, -400px), rgba(255, 255, 255, .98), rgba(110, 220, 165, .55) 38%, transparent 70%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity .25s ease;
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .app [data-luz]:hover::after { opacity: 1; }
+}
+
+/* ============================================================
+   O TEMA ESCURO (24/11/2026)
+   Escolhido no botão da barra de estado; o padrão continua claro. É a mesma
+   pele de vidro com os tokens virados: o papel fica grafite translúcido, a
+   tinta fica clara, e a névoa verde aparece sobre quase preto.
+
+   COMO FUNCIONA: --paper e --ink trocam de lugar JUNTOS. Quase todo botão
+   escuro do painel é "fundo --ink, texto --paper", então ele vira claro com
+   texto escuro sozinho, sem regra nova.
+
+   O QUE AINDA NÃO ESTÁ GARANTIDO: o que pinta fundo branco com cor escrita à
+   mão (#fff) em vez de token fica claro no meio do escuro, com texto claro
+   por cima. O Hoje, a paleta e a barra foram acertados um a um; as outras
+   telas herdaram só os tokens. Achou um canto assim? É trocar o #fff daquela
+   regra por var(--paper).
+   ============================================================ */
+:global(html[data-crm-tema="escuro"]) .app .main {
+  color-scheme: dark;
+  --paper: #18211e;
+  --paper-alto: rgba(255, 255, 255, .065);
+  --paper-alto-solido: #141c19;
+  --paper-2: rgba(255, 255, 255, .1);
+  --ink: #eef5f1;
+  --ink-soft: #c5d2cb;
+  --ink-fraco: #9db0a7;
+  --line: rgba(255, 255, 255, .13);
+  --green-dark: #2fbd7d;
+  --painel-acento: #2fbd7d;
+  --painel-acento-suave: rgba(47, 189, 125, .18);
+  --painel-borda-ativa: rgba(47, 189, 125, .5);
+  --painel-campo-fundo: rgba(255, 255, 255, .08);
+  --painel-sombra: 0 12px 48px rgba(0, 0, 0, .6);
+  color: var(--ink);
+  background:
+    radial-gradient(46rem 32rem at -4% -6%, rgba(12, 145, 89, .55), transparent 64%),
+    radial-gradient(34rem 26rem at 102% 2%, rgba(255, 170, 90, .14), transparent 62%),
+    radial-gradient(44rem 34rem at 92% 106%, rgba(20, 160, 110, .36), transparent 64%),
+    radial-gradient(30rem 24rem at 30% 70%, rgba(40, 120, 130, .28), transparent 66%),
+    #0b1310;
+  background-attachment: fixed;
+}
+:global(html[data-crm-tema="escuro"]) .app .main :where(input, select, textarea) {
+  color: var(--ink);
+}
+:global(html[data-crm-tema="escuro"]) .app .barraEstado {
+  border-color: rgba(255, 255, 255, .14);
+  background: rgba(18, 28, 24, .74);
+  box-shadow: 0 14px 30px -18px rgba(0, 0, 0, .9), inset 0 1px 0 rgba(255, 255, 255, .1);
+  color: #c5d2cb;
+}
+:global(html[data-crm-tema="escuro"]) .app .barraEstado b { color: #f2f8f5; }
+:global(html[data-crm-tema="escuro"]) .app .barraEstado small { color: #92a59c; }
+:global(html[data-crm-tema="escuro"]) .app .botaoTema {
+  border-color: rgba(255, 255, 255, .18);
+  background: rgba(255, 255, 255, .1);
+  color: #eef5f1;
+}
+:global(html[data-crm-tema="escuro"]) .app [data-luz]::after {
+  background: radial-gradient(240px circle at var(--lx, -400px) var(--ly, -400px), rgba(170, 255, 215, .9), rgba(47, 189, 125, .45) 38%, transparent 70%);
+}
+:global(html[data-crm-tema="escuro"]) .app .paleta {
+  border-color: rgba(255, 255, 255, .14);
+  background: rgba(18, 27, 23, .84);
+  box-shadow: 0 40px 90px -30px rgba(0, 0, 0, .9), inset 0 1px 0 rgba(255, 255, 255, .1);
+  color: #eef5f1;
+}
+:global(html[data-crm-tema="escuro"]) .app .paleta::backdrop { background: rgba(0, 0, 0, .6); }
+:global(html[data-crm-tema="escuro"]) .app .paletaCampo,
+:global(html[data-crm-tema="escuro"]) .app .paletaPe { border-color: rgba(255, 255, 255, .1); color: #9db0a7; }
+:global(html[data-crm-tema="escuro"]) .app .paletaPe { background: rgba(255, 255, 255, .04); }
+:global(html[data-crm-tema="escuro"]) .app .paleta .paletaCampo input,
+:global(html[data-crm-tema="escuro"]) .app .paleta .paletaItem { color: #eef5f1; }
+:global(html[data-crm-tema="escuro"]) .app .paletaItem small,
+:global(html[data-crm-tema="escuro"]) .app .paletaGrupo,
+:global(html[data-crm-tema="escuro"]) .app .paletaVazio { color: #9db0a7; }
+:global(html[data-crm-tema="escuro"]) .app .paletaItem svg { color: #46d695; }
+:global(html[data-crm-tema="escuro"]) .app .paleta .paletaItem[aria-selected="true"] {
+  background: rgba(255, 255, 255, .1);
+  box-shadow: inset 3px 0 #2fbd7d;
+}
+:global(html[data-crm-tema="escuro"]) .app .paleta kbd {
+  border-color: rgba(255, 255, 255, .2);
+  background: rgba(255, 255, 255, .1);
+  color: #dbe6e0;
 }

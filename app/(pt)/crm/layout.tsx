@@ -58,6 +58,10 @@ export const dynamic = "force-dynamic";
 export default function LayoutCRM({ children }: { children: React.ReactNode }) {
   return (
     <div className={`${s.app} ${display.variable} ${titulo.variable} ${body.variable} ${mono.variable} ${serif.variable} ${titulos}`}>
+      {/* o tema escolhido (24/11) entra ANTES da primeira pintura, senão a tela
+          pisca clara e depois escurece. Só lê o localStorage e marca o <html>;
+          quem troca é o BotaoTema (components/crm/TemaELuz). */}
+      <script dangerouslySetInnerHTML={{ __html: `try{if(localStorage.getItem("crm_tema")==="escuro")document.documentElement.dataset.crmTema="escuro"}catch(e){}` }} />
       {children}
     </div>
   );

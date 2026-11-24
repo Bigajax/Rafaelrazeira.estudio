@@ -23,6 +23,36 @@ export async function lerHistoricoAtendimento(leadId: string): Promise<
   }
 }
 
+/* ---------- A BUSCA DA PALETA DE COMANDOS (24/11/2026) ----------
+   O Ctrl+K do painel procura contato por nome, loja ou @, em qualquer tela.
+   Só leitura, e só do dono da sessão (o mesmo filtro por owner_id do
+   histórico, além do RLS). O termo é limpo antes de entrar no filtro:
+   vírgula e parêntese são a sintaxe do `.or()` do PostgREST, e % e * são
+   curingas. Devolve no máximo 8, os mexidos por último primeiro. */
+export async function buscarContatos(
+  termo: string,
+): Promise<{ id: string; nome: string; empresa: string | null; estagio: string }[]> {
+  const usuario = await usuarioAtual();
+  if (!usuario) return [];
+  const limpo = String(termo ?? "").replace(/[,()%*\\"']/g, " ").replace(/\s+/g, " ").trim().slice(0, 60);
+  if (limpo.length < 2) return [];
+  const semArroba = limpo.replace(/^@/, "");
+  try {
+    const banco = await clienteServidor();
+    const { data } = await banco
+      .from("crm_leads")
+      .select("id, nome, empresa, estagio")
+      .eq("owner_id", usuario.id)
+      .or(`nome.ilike.%${limpo}%,empresa.ilike.%${limpo}%,instagram.ilike.%${semArroba}%`)
+      .order("updated_at", { ascending: false })
+      .limit(8)
+      .returns<{ id: string; nome: string; empresa: string | null; estagio: string }[]>();
+    return data ?? [];
+  } catch {
+    return [];
+  }
+}
+
 /* ============================================================
    ARQUIVAR OS PARADOS (01/11/2026)
 

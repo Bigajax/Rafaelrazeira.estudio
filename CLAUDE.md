@@ -35,7 +35,10 @@ As regras de trabalho do estúdio estão no `CLAUDE.md` de usuário e no cofre
 ## Conferir
 
     npx tsc --noEmit
-    npx next build      # e LER o exit code
+    NEXT_DIST_DIR=.next-build npx next build      # e LER o exit code
 
-Outra sessão pode estar com o dev server de pé na 3000. Build por cima dele derruba o CSS
-do dev: avisar em vez de quebrar o trabalho alheio.
+O `NEXT_DIST_DIR=.next-build` é obrigatório: o build escreve numa pasta ao lado e não
+encosta no dev server. Sem ele, o build cai na `.next` do dev e a tela do dev fica sem CSS e
+sem script (24/11/2026: o Rafael abriu o CRM em `localhost:3000` e não conseguiu nem entrar).
+Se o dev já estiver quebrado e não der para fechar o terminal dele, sobe-se outro ao lado:
+`NEXT_DIST_DIR=.next-dev3001 npx next dev -p 3001`.

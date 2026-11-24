@@ -49,6 +49,7 @@ whatsapp-leitor.log
 # O build de conferência ao lado do dev (NEXT_DIST_DIR, ver next.config.ts).
 .next-build/
 .next-dev-checkin/
+.next-dev3001/
 
 # Prévias, backups e cache local das ferramentas.
 .tmp/

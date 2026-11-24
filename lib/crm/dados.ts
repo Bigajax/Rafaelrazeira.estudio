@@ -187,9 +187,32 @@ export async function painelHoje() {
   const { count: fechados30 } = await conferir(
     supabase.from("crm_leads").select("id", { count: "exact", head: true }).eq("estagio", "ganho").gte("fechado_em", desde.slice(0, 10)),
   );
+  /* AS SÉRIES DO PLACAR (24/11/2026): os dois números de resultado ganham o
+     desenho dos últimos 14 dias atrás deles. Só estes dois têm história por
+     dia; "na fila" e "aguardando" são foto do momento e não ganham gráfico
+     (um gráfico inventado ali seria enfeite mentindo).
+     O preço conta pelo ÚLTIMO preço de cada loja, como o número de cima. */
+  const DIAS_DA_SERIE = 14;
+  const diasDaSerie = Array.from({ length: DIAS_DA_SERIE }, (_, i) => somarDias(hoje, i - (DIAS_DA_SERIE - 1)));
+  const emSP = (iso: string) => new Date(new Date(iso).getTime() - 3 * 3600000).toISOString().slice(0, 10);
+  const contarPorDia = (datas: string[]) => {
+    const porDia = new Map<string, number>();
+    for (const d of datas) porDia.set(d, (porDia.get(d) ?? 0) + 1);
+    return diasDaSerie.map((d) => porDia.get(d) ?? 0);
+  };
+  const { data: ganhosDaSerie } = await supabase
+    .from("crm_leads")
+    .select("fechado_em")
+    .eq("estagio", "ganho")
+    .gte("fechado_em", diasDaSerie[0])
+    .returns<{ fechado_em: string | null }[]>();
   const resultado = {
     precos: [...precoPorLead.values()].filter((d) => d >= desde).length,
     fechados: fechados30 ?? 0,
+    serie: {
+      precos: contarPorDia([...precoPorLead.values()].map(emSP)),
+      fechados: contarPorDia((ganhosDaSerie ?? []).flatMap((g) => (g.fechado_em ? [g.fechado_em.slice(0, 10)] : []))),
+    },
   };
 
   const lista = [...(leads ?? []), ...(ganhosQueDevem ?? [])].map((l) => ({

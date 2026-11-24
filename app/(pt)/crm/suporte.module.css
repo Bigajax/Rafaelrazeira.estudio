@@ -10,7 +10,7 @@
 .ok { color: var(--green); font-weight: 600; margin: 8px 0 0; font-size: 14px }
 
 /* ---------- a fila ---------- */
-.fila { border: 1px solid var(--line); border-radius: 8px; background: var(--paper-alto); padding: 12px; position: sticky; top: 16px; max-height: calc(100vh - 32px); overflow: auto }
+.fila { border: 1px solid var(--line); border-radius: 8px; background: var(--paper-alto-solido, var(--paper-alto)); padding: 12px; position: sticky; top: 16px; max-height: calc(100vh - 32px); overflow: auto }
 .filtro { display: flex; gap: 4px; padding: 3px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper) }
 .filtro button { flex: 1; border: 0; background: none; padding: 7px 10px; border-radius: 6px; font: 500 13px var(--body); color: var(--ink-soft); cursor: pointer }
 .filtro button[aria-pressed="true"] { background: var(--paper-alto); color: inherit; box-shadow: 0 1px 2px rgba(0, 0, 0, .08) }

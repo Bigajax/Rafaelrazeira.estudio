@@ -104,7 +104,7 @@
 /* ---------- a bandeja: o que espera data ---------- */
 .tela .bandeja {
   position: sticky; top: 16px;
-  background: var(--paper-alto); border: 1px solid var(--line);
+  background: var(--paper-alto-solido, var(--paper-alto)); border: 1px solid var(--line);
   box-shadow: none;
   padding: 16px 16px 18px;
   max-height: calc(100dvh - 32px); overflow-y: auto; border-radius: var(--painel-raio);
@@ -563,7 +563,7 @@
 /* o botão que liga o time no PC (01/10): tinta cheia, verde no hover; é a
    ação que destrava os pedidos */
 .tela .ligarTime {
-  display: inline-block; flex: none; margin-left: 10px; padding: 6px 12px; font: 600 12px var(--body); text-decoration: none; color: var(--paper-alto); background: var(--ink); border: 1.5px solid var(--ink);
+  display: inline-block; flex: none; margin-left: 10px; padding: 6px 12px; font: 600 12px var(--body); text-decoration: none; color: var(--paper-alto-solido, var(--paper-alto)); background: var(--ink); border: 1.5px solid var(--ink);
 }
 .tela .ligarTime:hover { background: var(--green-dark); border-color: var(--green-dark) }
 .tela .ligarTime:focus-visible { outline: 3px solid var(--green); outline-offset: 2px }
