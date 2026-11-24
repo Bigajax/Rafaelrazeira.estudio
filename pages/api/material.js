@@ -28,8 +28,8 @@ import crypto from "crypto";
 const BUCKET = "material";
 /* os checklists feitos à mão, que não têm config.json; o neam-acim é o
    onboarding do núcleo de arquitetos (public/onboarding/, 29/10), o
-   mod-arquitetura o do site da MOD (24/11) */
-const LOJAS = new Set(["fulltime", "neam-acim", "mod-arquitetura"]);
+   mod-arquitetura o do site da MOD e o mod-sistema o do sistema dela (24/11) */
+const LOJAS = new Set(["fulltime", "neam-acim", "mod-arquitetura", "mod-sistema"]);
 const EXTENSOES = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp", "image/heic": "heic", "image/heif": "heif", "image/avif": "avif" };
 const LIMITE_RESPOSTAS = 400 * 1024;
 
