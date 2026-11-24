@@ -1057,7 +1057,9 @@ export function Hero() {
       <div className={s.molduraTela} role="img" aria-label={t.hero.phoneAria}>
         <div className={s.browserBar}>
           <span className={s.dots} aria-hidden><i /><i /><i /></span>
-          <span className={s.urlChip}>star-point-wheat.vercel.app</span>
+          {/* sem o endereço desde 24/11 (o Rafael: "tira isso, não precisa aparecer"):
+              o da Star Point é um vercel.app. Fica só o respiro entre os pontos e o NO AR. */}
+          <span style={{ flex: 1 }} aria-hidden />
           <span className={s.live}><i aria-hidden /> {t.projetos.live}</span>
         </div>
         <div className={s.molduraCover}>
