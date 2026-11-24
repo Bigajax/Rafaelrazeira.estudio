@@ -266,22 +266,31 @@ export function CentralAtendimento({ painel, templates }: Props) {
           <h1>
             Hoje<span>.</span>
           </h1>
-          <p>
-            <b>{fila.itens.length} na fila</b>
-            {fila.aguardando > 0 && ` · ${fila.aguardando} aguardando resposta`}
-            {painel.resultado && ` · em 30 dias, ${painel.resultado.precos} ${painel.resultado.precos === 1 ? "viu" : "viram"} o preço e ${painel.resultado.fechados} ${painel.resultado.fechados === 1 ? "fechou" : "fecharam"}`}
-          </p>
         </div>
         <div className={c.acoes}>
           <label className={c.busca}>
             <span className={c.srOnly}>Buscar em todos os contatos</span>
-            <input type="search" placeholder="Buscar em todos os contatos" value={busca} onChange={(e) => { setBusca(e.target.value); setSelecionado(null); }} />
+            <input type="search" placeholder="Buscar contato" value={busca} onChange={(e) => { setBusca(e.target.value); setSelecionado(null); }} />
           </label>
+          {/* O "Funil" saiu daqui em 24/11: já é uma rota do menu, a dois dedos. */}
           <Link className={c.botao} href="/crm?modo=visao">Visão do estúdio</Link>
-          <Link className={c.botao} href="/crm/pipeline">Funil</Link>
-          <button className={c.botao} type="button" onClick={() => setNovo(true)}>+ Novo contato</button>
+          <button className={`${c.botao} ${c.primario}`} type="button" onClick={() => setNovo(true)}>+ Novo contato</button>
         </div>
       </header>
+
+      {/* O placar em quatro peças (24/11), como os números do painel da
+          PublicaLoja. É uma faixa baixa de propósito: em 10/11 o cabeçalho
+          foi encolhido porque só cabia um contato antes de rolar. */}
+      <dl className={c.placar}>
+        <div><dd>{fila.itens.length}</dd><dt>na fila de hoje</dt></div>
+        <div><dd>{fila.aguardando}</dd><dt>aguardando resposta</dt></div>
+        {painel.resultado && (
+          <>
+            <div><dd>{painel.resultado.precos}</dd><dt>{painel.resultado.precos === 1 ? "viu" : "viram"} o preço em 30 dias</dt></div>
+            <div><dd>{painel.resultado.fechados}</dd><dt>{painel.resultado.fechados === 1 ? "fechou" : "fecharam"} em 30 dias</dt></div>
+          </>
+        )}
+      </dl>
 
       {arquivados ? (
         <div className={c.arquivo} role="status">
@@ -562,7 +571,11 @@ function Atendimento({
                   : grupo === "amostra"
                     ? { titulo: `Amostra há ${dias(d)}, sem reação`, detalhe: "Volte com novidade na vitrine, nunca com cobrança.", botao: "Voltar com novidade" }
                     : { titulo: NOME_ESTAGIO[lead.estagio], detalhe: lead.proximo_passo ?? "Fora da fila de hoje.", botao: "Mandar mensagem" };
-  const dados = [NOME_ORIGEM[lead.origem], `entrou ${hora(lead.created_at)}`, lead.tipo_projeto ? NOME_TIPO[lead.tipo_projeto] : null, lead.ticket_estimado != null ? dinheiro(lead.ticket_estimado) || null : null, lead.preco_em ? `viu o preço em ${dataCurta(diaEmSP(lead.preco_em))}` : null, lead.campanha ? [lead.campanha, lead.anuncio].filter(Boolean).join(" · ") : null].filter(Boolean).join(" · ");
+  const dados = [NOME_ORIGEM[lead.origem], `entrou ${hora(lead.created_at)}`, lead.tipo_projeto ? NOME_TIPO[lead.tipo_projeto] : null, lead.ticket_estimado != null ? dinheiro(lead.ticket_estimado) || null : null, lead.preco_em ? `viu o preço em ${dataCurta(diaEmSP(lead.preco_em))}` : null].filter(Boolean).join(" · ");
+  /* O código da campanha e do anúncio saiu da linha de cima (24/11): era
+     "previa-gratis-2026-08 · l11-01b-repetitivo-redondo-sneakerspot" na cara
+     da ficha. Fica guardado dentro do que abre, para quem for procurar. */
+  const anuncio = lead.campanha ? [lead.campanha, lead.anuncio].filter(Boolean).join(" · ") : null;
 
   return (
     <>
@@ -691,10 +704,11 @@ function Atendimento({
 
       <footer className={c.cadastro}>
         <p>{dados}</p>
-        {lead.notas && (
+        {(lead.notas || anuncio) && (
           <details>
-            <summary>Pedido e anotações</summary>
-            <p>{lead.notas}</p>
+            <summary>{lead.notas ? "Pedido e anotações" : "De qual anúncio veio"}</summary>
+            {lead.notas && <p>{lead.notas}</p>}
+            {anuncio && <p>Anúncio de origem: {anuncio}</p>}
           </details>
         )}
       </footer>

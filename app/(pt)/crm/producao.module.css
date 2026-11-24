@@ -2063,8 +2063,8 @@
 .entrada.entrada.entrada button,
 .acoes.acoes .aVez.aVez,
 .btnGrafite.btnGrafite.aVez {
-  background: var(--ink);
-  border-color: var(--ink);
+  background: var(--painel-acento, #076b42);
+  border-color: var(--painel-acento, #076b42);
   color: #fff;
   border-radius: 980px;
   text-transform: none;
@@ -2072,8 +2072,8 @@
 .entrada.entrada.entrada button:hover:not(:disabled),
 .acoes.acoes .aVez.aVez:hover:not(:disabled),
 .btnGrafite.btnGrafite.aVez:hover:not(:disabled) {
-  background: #000;
-  border-color: #000;
+  background: #076b42;
+  border-color: #076b42;
 }
 .btnGrafite.btnGrafite.btnGrafite {
   border-radius: 980px;

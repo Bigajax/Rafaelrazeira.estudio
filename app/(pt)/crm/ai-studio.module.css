@@ -499,7 +499,7 @@
   gap: 4px;
   padding: 4px;
   border-radius: 980px;
-  background: #f2f2f0;
+  background: #e6ede9;
 }
 .seg.seg {
   margin: 0;
@@ -510,7 +510,7 @@
   padding: 8px 10px;
 }
 .seg.segAtivo {
-  background: var(--ink);
+  background: var(--painel-acento, #076b42);
   color: #fff;
 }
 .modelos.modelos {
@@ -536,8 +536,8 @@
   border-radius: 980px;
 }
 .chip.chipAtivo {
-  background: var(--ink);
-  border-color: var(--ink);
+  background: var(--painel-acento, #076b42);
+  border-color: var(--painel-acento, #076b42);
   color: #fff;
 }
 .slotImg.slotImg {
@@ -555,7 +555,7 @@
    os controles, o consumo e os vazios ganham o canto grande; a mono sai
    da estimativa e da moldura vazia. */
 .estudio .abas {
-  background: #f2f2f0;
+  background: #e6ede9;
   border: 0;
   border-radius: 980px;
 }
@@ -563,7 +563,7 @@
   border-radius: 980px;
 }
 .estudio .abas .abaAtiva {
-  background: var(--ink);
+  background: var(--painel-acento, #076b42);
   color: #fff;
 }
 .estudio .abas a i {

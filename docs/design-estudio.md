@@ -53,6 +53,11 @@ Rafael trouxe de referência em 28/10.
   Botão de "depois" é preto; botão de "olhar" é branco com fio.
 - **Seção escura só onde a prova pede contraste** (ex.: a faixa de números).
   A página é clara.
+- **Exceção: a casca do CRM (24/11/2026).** A barra lateral do `/crm` é um
+  degradê verde (`--casca`, no fim do `crm.module.css`), com o conteúdo num
+  painel de canto arredondado, e o acento do painel é o verde. Foi pedido do
+  Rafael, com o painel da PublicaLoja de referência. Vale só para a
+  ferramenta interna: no site, "nunca fundo verde" e "sem gradiente" seguem.
 
 ---
 

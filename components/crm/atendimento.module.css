@@ -219,3 +219,61 @@
 .central .anotar .acoes { align-items: center; margin-top: 0; }
 .central .anotar small { font-size: 11px; color: var(--suave); }
 @media (max-width: 860px) { .central .anotar textarea { font-size: 16px; } }
+
+/* ============================================================
+   O HOJE NA CASCA VERDE (24/11/2026)
+   Seis acertos pedidos pelo Rafael em cima da tela real:
+   1. o chão vira quase branco e a fila e a ficha, brancas, ganham corpo;
+   2. o vermelho sai do título da vez e da linha de espera: com tudo
+      vermelho nada chamava. Fica o rosa do botão que vende e o número
+      dos dois grupos que cobram;
+   3. o contato escolhido e o que é "marcado" usam o verde do painel;
+   4. o título maior, o placar na linha de baixo, a busca mais larga.
+   ============================================================ */
+.central { --acento: #076b42; }
+:global(main):has(.central) { background: var(--paper, #f7f7f6); }
+.central .cabecalho { align-items: flex-end; }
+.central .cabecalho > div:first-child { flex-direction: column; align-items: flex-start; gap: 6px; }
+.central .cabecalho h1 { font-size: 34px; line-height: 1.1; }
+.central .cabecalho p { font-size: 13px; }
+.central .cabecalho .busca { flex: 0 1 280px; }
+.central .cabecalho .busca input[type="search"] { background: #fff; border-color: var(--borda); }
+.central .cabecalho .busca input[type="search"]:focus { border-color: var(--acento); }
+.central .primario:hover { background: #05603b; border-color: #05603b; }
+.central .espera { color: var(--texto); }
+.central .vez { background: #eef6f1; }
+.central .vez[data-alto="true"] h3 { color: var(--texto); }
+.central .contato[aria-pressed="true"] { background: #e3f1ea; border-color: #b7d8c6; }
+.central .pilula[aria-pressed="true"] { background: var(--acento); border-color: var(--acento); }
+.central .cadastro details p + p { color: var(--suave); font-size: 11px; white-space: normal; }
+@media (max-width: 860px) {
+  .central .cabecalho h1 { font-size: 28px; }
+  .central .cabecalho .busca { flex: 1 1 100%; }
+}
+
+/* O placar em quatro peças, a ficha da altura da fila e o "+ Novo contato"
+   como a ação do topo (24/11/2026). O --alto é um só para a fila e para a
+   ficha: mudou o cabeçalho, muda aqui e as duas acompanham. */
+.central { --alto: max(420px, calc(100dvh - 262px)); }
+.central .placar { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 0; }
+.central .placar > div { display: flex; align-items: baseline; gap: 10px; min-width: 0; padding: 12px 16px; border: 1px solid var(--borda); border-radius: 14px; background: #fff; }
+.central .placar dd { margin: 0; font: 500 24px/1.1 var(--font-titulo), var(--body, Arial, sans-serif); letter-spacing: -.02em; color: var(--texto); font-variant-numeric: tabular-nums; }
+.central .placar dt { order: 2; min-width: 0; font-size: 12px; line-height: 1.4; color: var(--suave); }
+.central .rolagem { max-height: var(--alto); }
+@media (min-width: 861px) { .central .detalhe { min-height: calc(var(--alto) + 46px); } }
+@media (max-width: 860px) {
+  .central .placar { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .central .placar > div { padding: 10px 12px; }
+  .central .rolagem { max-height: 380px; }
+}
+
+/* As cores afinadas (24/11): o verde mais vivo do painel e os cinzas com um
+   fio de verde, os mesmos tokens do fim do crm.module.css. */
+.central { --acento: var(--painel-acento, #0a8450); --borda: var(--line, #dfe7e2); }
+.central .primario:hover { background: #076b42; border-color: #076b42; }
+.central .vez { background: #e9f5ee; }
+.central .contato[aria-pressed="true"] { background: var(--painel-acento-suave, #e2f3ea); border-color: var(--painel-borda-ativa, #b4dcc7); }
+.central .contato:hover:not([aria-pressed="true"]) { background: #f5f8f6; }
+.central .fora { background: #f5f8f6; }
+.central .grupo h2 b { background: #e6ede9; }
+.central .grupo:is([data-grupo="responder"], [data-grupo="novos"]) h2 b { background: #fde8ef; color: #b81250; }

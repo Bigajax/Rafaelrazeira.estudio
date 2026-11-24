@@ -145,6 +145,6 @@
 .tabelaMini tbody tr:last-child > * { border-bottom: 0 }
 
 /* O período no seletor em pílula, igual aos Indicadores (30/10/2026). */
-.periodos { padding: 4px; border-radius: 980px; background: #f2f2f0 }
+.periodos { padding: 4px; border-radius: 980px; background: #e6ede9 }
 .periodos a { border: 0; border-radius: 980px; background: transparent; min-height: 36px }
-.periodos a[aria-current="page"] { background: var(--ink); color: #fff }
+.periodos a[aria-current="page"] { background: var(--painel-acento, #076b42); color: #fff }

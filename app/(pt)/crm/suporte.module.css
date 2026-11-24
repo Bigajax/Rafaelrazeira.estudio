@@ -91,10 +91,10 @@
    escolhido em tinta, os selos em pílula. */
 .fila, .conversa, .ranking, .faq > li, .editor { border-radius: 16px }
 .mensagens li { border-radius: 14px }
-.filtro { border-radius: 980px; background: #f2f2f0; border: 0; padding: 4px }
+.filtro { border-radius: 980px; background: #e6ede9; border: 0; padding: 4px }
 .filtro button { border-radius: 980px }
 .estado { border-radius: 980px }
-.filtro button[aria-pressed="true"] { background: var(--ink); color: #fff; box-shadow: none }
+.filtro button[aria-pressed="true"] { background: var(--painel-acento, #076b42); color: #fff; box-shadow: none }
 /* Os campos do editor da FAQ não tinham borda própria e caíam na borda
    padrão do navegador (2px preta); e o "Salvar pergunta" era um .btnEscuro,
    feito para fundo preto, e sumia no cartão branco (30/10/2026). */

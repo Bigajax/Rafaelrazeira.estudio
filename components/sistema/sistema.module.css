@@ -523,14 +523,14 @@
   transform: scale(0.97);
 }
 .primario {
-  background: var(--ink, #14181a);
-  border-color: var(--ink, #14181a);
+  background: var(--painel-acento, #076b42);
+  border-color: var(--painel-acento, #076b42);
   color: #fff;
 }
 @media (hover: hover) and (pointer: fine) {
   .primario:hover {
-    background: #000;
-    border-color: #000;
+    background: #076b42;
+    border-color: #076b42;
     color: #fff;
   }
 }
@@ -569,8 +569,8 @@
   border-radius: 980px;
 }
 .abas.abas a[aria-current="page"] {
-  background: var(--ink, #14181a);
-  border-color: var(--ink, #14181a);
+  background: var(--painel-acento, #076b42);
+  border-color: var(--painel-acento, #076b42);
   color: #fff;
 }
 .links a,

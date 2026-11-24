@@ -383,8 +383,8 @@
   font-variant-numeric: tabular-nums;
 }
 .painel .focos > button[aria-pressed="true"] {
-  background: #14181a;
-  border-color: #14181a;
+  background: var(--painel-acento, #076b42);
+  border-color: var(--painel-acento, #076b42);
   color: #fff;
   font-weight: 650;
 }
@@ -1494,12 +1494,12 @@
   border-radius: 980px;
 }
 .painel .botaoPrimario {
-  background: var(--ink, #14181a);
-  border-color: var(--ink, #14181a);
+  background: var(--painel-acento, #076b42);
+  border-color: var(--painel-acento, #076b42);
   box-shadow: none;
 }
 .painel .botaoPrimario:hover {
-  background: #000;
+  background: #076b42;
 }
 .painel .busca input,
 .painel .busca input[type="search"] {

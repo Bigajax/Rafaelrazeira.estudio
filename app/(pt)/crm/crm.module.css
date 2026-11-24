@@ -8695,3 +8695,311 @@
 .app .modal {
   border-radius: 20px;
 }
+
+/* ============================================================
+   A CASCA VERDE (24/11/2026)
+   O Rafael trouxe o painel da PublicaLoja (~/Desktop/vitria/plataforma,
+   app/area-interna.css) como referência: barra lateral em degradê, o
+   conteúdo num painel de canto arredondado, o acento na cor da marca.
+   Lá a cor é o roxo; aqui é o verde do estúdio.
+
+   Isto contraria de propósito duas linhas da régua (docs/design-estudio.md:
+   "nunca fundo verde" e "sem gradiente"). Elas seguem valendo para o SITE;
+   a exceção é a casca da ferramenta interna, pedida por ele.
+
+   O que NÃO mudou: o menu continua abrindo com o mouse e com o teclado.
+   A referência é só ícone com dica, mas ela tem 7 portas; aqui são 15, e
+   15 ícones sem nome não se acham. O rosa segue sendo "atrasado".
+   ============================================================ */
+.app {
+  --casca-topo: #05603b;
+  --casca-meio: #0c9159;
+  --casca-pe: #2fae78;
+  --casca: linear-gradient(175deg, var(--casca-topo), var(--casca-meio) 62%, var(--casca-pe));
+  /* o acento do painel volta do preto (29/10) para o verde */
+  --painel-acento: #076b42;
+  --painel-acento-suave: #e3f1ea;
+  --painel-borda-ativa: #b7d8c6;
+}
+.app .btnAcao {
+  background: var(--green-dark);
+  border-color: var(--green-dark);
+}
+@media (hover: hover) and (pointer: fine) {
+  .app .btnAcao:hover {
+    background: var(--casca-topo);
+    border-color: var(--casca-topo);
+  }
+}
+.app .periodo a.periodoAtivo {
+  background: var(--green-dark);
+}
+
+@media (min-width: 861px) {
+  .app .trilho {
+    width: 72px;
+  }
+  /* O canto arredondado do conteúdo é desenhado pela barra, e não pelo
+     .main: como a barra é fixa na janela, o canto fica no alto e no pé da
+     TELA o tempo todo, e não só no começo e no fim da rolagem. */
+  .app .trilho::before,
+  .app .trilho::after {
+    content: "";
+    position: absolute;
+    left: 72px;
+    width: 24px;
+    height: 24px;
+    pointer-events: none;
+  }
+  .app .trilho::before {
+    top: 0;
+    background: radial-gradient(circle at 100% 100%, transparent 23.5px, var(--casca-topo) 24px);
+  }
+  .app .trilho::after {
+    bottom: 0;
+    background: radial-gradient(circle at 100% 0, transparent 23.5px, var(--casca-pe) 24px);
+  }
+  .app .trilhoPainel {
+    z-index: 1;
+    width: 72px;
+    padding: 8px 12px 12px;
+    border-right: 0;
+    background: var(--casca);
+    color: #fff;
+  }
+  .app .trilho:focus-within .trilhoPainel {
+    width: 248px;
+    box-shadow: 8px 0 28px #14181a24;
+  }
+  .app .trilhoMarca {
+    min-height: 64px;
+    padding: 0 2px 12px;
+    color: #fff;
+    border-bottom-color: #ffffff40;
+  }
+  /* a logo é verde em fundo transparente: vai numa peça branca */
+  .app .trilhoLogo {
+    width: 44px;
+    height: 44px;
+    padding: 5px;
+    border-radius: 12px;
+    background: #fff;
+  }
+  .app .trilhoMarcaTexto,
+  .app .trilhoMarcaTexto b {
+    color: #fff;
+  }
+  .app .trilhoMarcaTexto small {
+    color: #ffffffd9;
+  }
+  .app .trilhoLista {
+    scrollbar-width: none;
+  }
+  .app .trilhoLista::-webkit-scrollbar {
+    display: none;
+  }
+  /* 13 + 22 + 13 = 48: o ícone fica no meio da peça com o menu fechado e
+     não sai do lugar quando ele abre. */
+  .app .trilho .trilhoLink,
+  .app .trilho .trilhoSair {
+    gap: 14px;
+    padding-inline: 13px;
+    border-radius: 10px;
+    color: #fff;
+    transition: background-color 0.18s ease;
+  }
+  .app .trilho .trilhoIcone,
+  .app .trilho .trilhoSair svg {
+    width: 22px;
+    height: 22px;
+  }
+  .app .trilho .trilhoLink b,
+  .app .trilho .trilhoAtivo b {
+    color: #fff;
+  }
+  .app .trilho .trilhoAtivo {
+    background: #ffffff30;
+    color: #fff;
+  }
+  .app .trilho .trilhoLink:focus-visible,
+  .app .trilho .trilhoSair:focus-visible,
+  .app .trilho .trilhoMarca:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+  }
+  .app .trilho .trilhoCont {
+    background: #ffffff30;
+    color: #fff;
+  }
+  .app .trilho .trilhoAtivo .trilhoCont {
+    background: #ffffff40;
+  }
+  /* quem cobra é o único número em peça branca: salta no verde */
+  .app .trilho .trilhoCobra,
+  .app .trilho .trilhoAtivo .trilhoCobra {
+    background: #fff;
+    color: var(--rosa-dark);
+  }
+  .app .trilho .trilhoPonto {
+    top: 3px;
+    left: 30px;
+    box-shadow: 0 0 0 2px var(--casca-meio);
+  }
+  .app .trilhoLista .trilhoMomento {
+    padding-inline: 13px;
+    background-image: linear-gradient(#ffffff45, #ffffff45);
+  }
+  .app .trilhoLista .trilhoMomento:first-child {
+    background: none;
+  }
+  .app .trilho:focus-within .trilhoMomento {
+    color: #ffffffd9;
+    background: none;
+  }
+  .app .trilhoPe {
+    border-top-color: #ffffff50;
+  }
+}
+@media (min-width: 861px) and (hover: hover) and (pointer: fine) {
+  .app .trilho:hover .trilhoPainel {
+    width: 248px;
+    box-shadow: 8px 0 28px #14181a24;
+  }
+  .app .trilho .trilhoLink:hover,
+  .app .trilho .trilhoSair:hover {
+    background: #ffffff20;
+    color: #fff;
+  }
+  .app .trilho .trilhoAtivo:hover {
+    background: #ffffff30;
+  }
+  .app .trilho:hover .trilhoMomento {
+    color: #ffffffd9;
+    background: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app .trilho .trilhoLink,
+  .app .trilho .trilhoSair {
+    transition: none;
+  }
+}
+/* o celular não tem a barra lateral: só o "você está aqui" vira verde */
+.app .barraCelular a[aria-current="page"],
+.app .barraCelular .barraMaisAtivo {
+  color: var(--green-dark);
+}
+.app .barraCelular a[aria-current="page"]::before,
+.app .barraCelular .barraMaisAtivo::before {
+  background: var(--green-dark);
+}
+.app .menuCelularGrupo a[aria-current="page"] {
+  background: var(--painel-acento-suave);
+  color: var(--green-dark);
+}
+
+/* ---------- o menu inteiro em janela baixa (24/11/2026) ----------
+   Na janela do Rafael (uns 714px de altura útil, com o zoom dele) a lista
+   rolava e escondia Indicadores e Plano, sem sinal nenhum. Abaixo de 860px
+   de altura as linhas apertam até caberem as 15 rotas; a linha do grupo
+   continua com a MESMA altura fechada e aberta, para o ícone não fugir do
+   mouse. Abaixo de 700px a lista volta a rolar, com o pé esmaecido para
+   avisar que tem mais. */
+@media (min-width: 861px) and (max-height: 860px) {
+  .app .trilhoPainel {
+    gap: 8px;
+    padding-block: 8px;
+  }
+  .app .trilhoMarca {
+    min-height: 54px;
+    padding-bottom: 8px;
+  }
+  .app .trilhoLogo {
+    width: 40px;
+    height: 40px;
+  }
+  .app .trilhoLista {
+    gap: 1px;
+  }
+  .app .trilho .trilhoLink,
+  .app .trilho .trilhoSair {
+    min-height: 32px;
+    padding-block: 4px;
+  }
+  .app .trilho .trilhoPonto {
+    top: 1px;
+  }
+  .app .trilhoLista .trilhoMomento {
+    height: 13px;
+    margin-top: 2px;
+    font-size: 11px;
+  }
+  .app .trilhoPe {
+    padding-top: 8px;
+  }
+}
+@media (min-width: 861px) and (max-height: 699px) {
+  .app .trilhoLista {
+    mask-image: linear-gradient(#000 calc(100% - 28px), transparent);
+  }
+}
+
+/* ---------- o chão quase branco e o cartão branco, em todas as telas (24/11/2026) ----------
+   Era cartão cinza (#f6f6f4) sobre chão branco. O Rafael aprovou o Hoje com
+   o contrário, como na referência, e pediu "o mesmo nas outras telas". A
+   troca é nos dois tokens, e não tela por tela: todo cartão do CRM já era
+   escrito como --paper-alto sobre --paper, então o degrau entre os dois
+   fica do mesmo tamanho, só invertido, e nenhum cartão some.
+   O --paper-2 (trilho de seletor, hover) desce um tom para continuar
+   aparecendo no chão novo. Ficam de fora, de propósito: o Funil (raias
+   coloridas com card branco, em pipeline.module.css) e o Plano, que têm
+   chão próprio. */
+.app {
+  --paper: #f7f7f6;
+  --paper-alto: #ffffff;
+  --paper-2: #ebebe8;
+}
+.app .periodo {
+  background: var(--paper-2);
+}
+
+/* ---------- as cores afinadas (24/11/2026, "melhore as cores") ----------
+   Duas coisas estavam erradas na primeira passada:
+   1. o verde era o #076b42, um verde-garrafa escuro e apagado, e a barra
+      começava quase preta. Sobe para perto do verde da logo: #0a8450 no
+      acento (4,7:1 com texto branco; o #0c9159 da marca dá 4,0 e não passa)
+      e a barra de #08784a a #18a06b (3,3:1 com o ícone branco no pé);
+   2. os cinzas eram neutros e não conversavam com o verde. Chão, fio e
+      trilho de seletor ganham um fio de verde, como o Plano já tinha
+      (#f4f7f4). O degrau cartão/chão continua 1,07, igual ao de antes. */
+.app {
+  --casca-topo: #08784a;
+  --casca-meio: #0c9159;
+  --casca-pe: #18a06b;
+  --painel-acento: #0a8450;
+  --painel-acento-suave: #e2f3ea;
+  --painel-borda-ativa: #b4dcc7;
+  --paper: #f5f8f6;
+  --paper-2: #e6ede9;
+  --line: #dfe7e2;
+}
+.app .btnAcao,
+.app .periodo a.periodoAtivo {
+  background: var(--painel-acento);
+  border-color: var(--painel-acento);
+}
+@media (hover: hover) and (pointer: fine) {
+  .app .btnAcao:hover {
+    background: #076b42;
+    border-color: #076b42;
+  }
+}
+.app .barraCelular a[aria-current="page"],
+.app .barraCelular .barraMaisAtivo,
+.app .menuCelularGrupo a[aria-current="page"] {
+  color: var(--painel-acento);
+}
+.app .barraCelular a[aria-current="page"]::before,
+.app .barraCelular .barraMaisAtivo::before {
+  background: var(--painel-acento);
+}
