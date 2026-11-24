@@ -2266,7 +2266,17 @@ export function MobileBar() {
     const offer = document.getElementById("oferta");
     const end = document.getElementById("fim");
     let focused = false, inOffer = false, inEnd = false, cedo = true;
-    const update = () => setHidden(focused || inOffer || inEnd || cedo);
+    /* 24/11/2026: a barra também some quando um botão igual, de dentro de
+       uma seção, está na tela. Eram dois "Quero ver a minha loja" rosa a
+       poucos centímetros um do outro em várias telas do celular. */
+    let botaoAVista = false;
+    const visiveis = new Set<Element>();
+    const update = () => setHidden(focused || inOffer || inEnd || cedo || botaoAVista);
+    const botoesIO = new IntersectionObserver(es => {
+      for (const e of es) { if (e.isIntersecting) visiveis.add(e.target); else visiveis.delete(e.target); }
+      botaoAVista = visiveis.size > 0; update();
+    }, { rootMargin: "0px 0px -72px 0px" });
+    document.querySelectorAll('main [data-cta-dest="form"]:not([data-cta="hero_abrir"])').forEach(b => botoesIO.observe(b));
     /* desde 28/10 a pílula entra quando o botão do hero passa para cima da
        tela, a mesma regra do botão do topo no desktop (`useCtaDoTopo`): os
        dois juntos na primeira tela disputariam o olho com a mesma frase.
@@ -2292,7 +2302,7 @@ export function MobileBar() {
     if (offer && offerIO) offerIO.observe(offer);
     const endIO = end && new IntersectionObserver(([x]) => { inEnd = x.isIntersecting; update(); }, { rootMargin: "-10% 0px" });
     if (end && endIO) endIO.observe(end);
-    return () => { document.removeEventListener("focusin", onFocus); document.removeEventListener("focusout", onBlur); window.removeEventListener("scroll", medir); window.removeEventListener("resize", medir); offerIO?.disconnect(); endIO?.disconnect(); heroIO?.disconnect(); };
+    return () => { document.removeEventListener("focusin", onFocus); document.removeEventListener("focusout", onBlur); window.removeEventListener("scroll", medir); window.removeEventListener("resize", medir); botoesIO.disconnect(); offerIO?.disconnect(); endIO?.disconnect(); heroIO?.disconnect(); };
   }, []);
   /* a barra passa a levar o preço no lugar do prazo: ela é a única peça que
      acompanha a pessoa a página inteira, e "pronta em 7 dias" já é um dos

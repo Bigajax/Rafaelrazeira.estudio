@@ -4502,3 +4502,22 @@ html:has(.site) { scroll-behavior: smooth }
 .site.estruturaCentro.estruturaCentro .heroCopy h1 .letra { animation-duration: .55s; animation-delay: calc(var(--i) * 14ms + 60ms) }
 .site.estruturaCentro.estruturaCentro .heroCopy .lead { animation-duration: .6s; animation-delay: .35s }
 .site.estruturaCentro.estruturaCentro .logosLojas { animation-duration: .6s; animation-delay: .7s }
+
+/* ---------- a revisão de desenho de 24/11/2026 (celular) ----------
+   1. O cabeçalho da página de anúncio sem saída: o ícone do Instagram
+      levava para fora e o PT/EN ocupava o canto mais nobre para um público
+      todo brasileiro. Só na versão em português (:lang(pt)); a /en segue
+      com o seletor. O Instagram continua no "quem faz".
+   2. O que está incluso deixa de deslizar de lado: o segundo grupo aparecia
+      cortado ("Painel d...") bem na hora do preço. Os três grupos empilham,
+      cada um no seu cartão, tudo à vista. */
+@media (max-width: 720px) {
+  :lang(pt) .site.estruturaCentro.estruturaCentro .idiomaSuave,
+  :lang(pt) .site.estruturaCentro.estruturaCentro .instaIcone { display: none }
+  .site.estruturaCentro.estruturaCentro .precoGrupos {
+    display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; overflow: visible;
+    margin-inline: 0; padding: 18px 0 4px; scroll-snap-type: none;
+  }
+  .site.estruturaCentro.estruturaCentro .precoGrupos > div { flex: none }
+}
+.quemCurtoFoto img { background: #fff }

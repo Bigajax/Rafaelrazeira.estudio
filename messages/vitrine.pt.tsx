@@ -160,7 +160,7 @@ export const pt = {
   },
 
   quem: {
-    alt: "Rafael Razeira de óculos esportivos e jaqueta preta, com montanhas nevadas ao fundo",
+    alt: "Retrato em preto e branco de Rafael Razeira, de óculos escuros, sobre fundo branco",
     legenda: "MARINGÁ · PR · EST. 2026",
     eyebrow: "QUEM FAZ",
     h2: <>Do primeiro oi<br />até a loja no ar:<br /><em>sou eu.</em></>,
@@ -451,7 +451,7 @@ export const pt = {
       /* só o Luciano, da Iconic (28/10, pedido do Rafael), com a foto dele;
          as outras seis frases ficaram guardadas na conversa de 28/10 */
       itens: [
-        { q: ["Parabéns pelo trabalho! Parabéns pela agilidade e prestatividade! Você se antecipou em várias coisas que não tínhamos pedido e principalmente em fazer uma entrega com rapidez.", "Para nós ajudou muito, pois já tínhamos desistido de pegar esta Black Friday, mas ainda deu tempo hábil por causa do seu empenho!"], quem: "Luciano", loja: "Iconic Sneakers", cliente: true, k: "iconic", foto: "/assets/depo/luciano.webp",
+        { q: ["Parabéns pelo trabalho! Parabéns pela agilidade e prestatividade! Você se antecipou em várias coisas que não tínhamos pedido e principalmente em fazer uma entrega com rapidez."], quem: "Luciano", loja: "Iconic Sneakers", cliente: true, k: "iconic", foto: "/assets/depo/luciano.webp",
           /* o destaque (28/10): um trecho EXATO da segunda frase, com as reticências dizendo que é recorte; a mensagem inteira continua embaixo */
           destaque: "…já tínhamos desistido de pegar esta Black Friday, mas ainda deu tempo hábil por causa do seu empenho!", site: "https://iconicsneakers.com.br", dominio: "iconicsneakers.com.br", tela: "/assets/demo/iconic-vitrine" },
       ] as { q: string[]; quem: string; loja?: string; cliente: boolean; k?: string; foto?: string; destaque?: string; site?: string; dominio?: string; tela?: string }[],

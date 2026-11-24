@@ -374,7 +374,9 @@ export function QuemFazCurto() {
   return <section ref={ref} className={`${s.section} ${s.mb} ${s.mbAnim} ${s.quemCurto} ${visto ? s.mbVisto : ""}`}>
     <div className={s.quemCurtoGrid}>
       <div className={s.quemCurtoFoto}>
-        <Image src="/assets/rafael-quemfaz-cor.webp" width={520} height={693} sizes="(max-width: 720px) 60vw, 300px" alt={t.quem.alt} />
+        {/* o retrato em preto e branco desde 24/11/2026 (escolha do Rafael), no
+            lugar da selfie na neve: recortado do cabelo ao queixo, em 3:4 */}
+        <Image src="/assets/rafael-quemfaz-retrato.webp" width={780} height={1040} sizes="(max-width: 720px) 60vw, 300px" alt={t.quem.alt} />
       </div>
       <div>
         {/* sem o "QUEM FAZ" em cima (28/10): o título já diz quem faz */}
