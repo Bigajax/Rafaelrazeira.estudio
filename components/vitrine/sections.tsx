@@ -1067,8 +1067,11 @@ export function Hero() {
                 descartava quando a memória apertava (o print do Rafael, com
                 uma chamada de vídeo aberta): a moldura ficava cinza. A curta
                 para no banner "Indicou, ganhou" e pesa metade */}
-            <source media="(max-width: 720px)" type="image/avif" srcSet="/assets/demo/iconic-vitrine-curta.avif" />
-            <source media="(max-width: 720px)" type="image/webp" srcSet="/assets/demo/iconic-vitrine-curta.webp" />
+            {/* a do TOPO desde 24/11 (500x1900, só WebP): a curta (500x3760)
+                voltou a ficar cinza no iPhone do Rafael, aberta pelo WhatsApp
+                com a página nova. Metade da altura é metade da camada animada
+                na memória (5 Armadilhas/captura-longa-some-no-iphone) */}
+            <source media="(max-width: 720px)" type="image/webp" srcSet="/assets/demo/iconic-vitrine-topo.webp" />
             {/* a de 1100px desde 28/10: a moldura mostra no máximo 1040px, e a de
                 1440 custava 368KB na primeira tela do desktop */}
             <source type="image/avif" sizes="min(1040px, 72vw)" srcSet="/assets/case-iconic-desk-1100.avif 1100w, /assets/case-iconic-desk.avif 1440w" />

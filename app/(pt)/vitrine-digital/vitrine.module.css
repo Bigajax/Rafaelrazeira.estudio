@@ -2453,8 +2453,10 @@ html:has(.site) { scroll-behavior: smooth }
   .molduraTela { padding: 7px; border-radius: 22px }
   .molduraTela .browserBar { border-radius: 15px 15px 0 0 }
   .molduraCover { aspect-ratio: 4 / 5; border-radius: 0 0 15px 15px }
-  /* 24s para a captura curta (29/10) andar na mesma velocidade dos 44s da inteira */
-  .molduraShot { --dur: 24s }
+  /* 12s para a captura do topo (24/11, 500x1900) andar na mesma velocidade;
+     sem will-change no celular: ele segura a camada inteira na memória mesmo
+     parada, e é ela que o Safari do iPhone descarta (a moldura cinza) */
+  .molduraShot { --dur: 12s; will-change: auto }
 }
 @media (prefers-reduced-motion: reduce) { .molduraShot { animation: none } }
 /* sobe e cresce enquanto entra na tela, como na referência. Só onde o
@@ -4478,4 +4480,17 @@ html:has(.site) { scroll-behavior: smooth }
 @media (prefers-reduced-motion: reduce) {
   .site.estruturaCentro.estruturaCentro .heroEntrada,
   .site.estruturaCentro.estruturaCentro .heroMicro { animation: none }
+}
+
+/* ---------- o pé rosa do Safari (24/11/2026) ----------
+   O Safari novo do iPhone pinta a barra dele com a COR DE FUNDO do que está
+   fixo no pé da página, e o que está lá é a pílula rosa: a barra inteira do
+   navegador ficava rosa (print do Rafael). Ele lê só background-color, não
+   imagem: o rosa da pílula fixa passa a ser uma camada de degradê chapado e
+   a cor de fundo fica transparente. O botão não muda de cara. */
+@media (max-width: 720px) {
+  .site.botoesApple.botoesApple.estruturaCentro .bar .acao {
+    background-color: transparent;
+    background-image: linear-gradient(180deg, #ffffff26, #ffffff00 60%), linear-gradient(var(--rosa), var(--rosa));
+  }
 }

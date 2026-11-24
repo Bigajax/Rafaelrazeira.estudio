@@ -61,7 +61,11 @@ export const pt = {
     h1: <>Veja sua loja pronta antes de <em>pagar.</em></>,
     /* a linha do anúncio h27u, na ordem dele (24/11) */
     micro: <><b>A prévia é por minha conta.</b> Gostou? {R(v.entrada)} para começar, {R(v.total)} no total, sem mensalidade.</>,
-    lead: <>Mando a prévia com as suas peças em até 24h. Gostou, ela vai ao ar com o pedido chegando montado no seu WhatsApp.</>,
+    /* 24/11/2026: a frase passou a PEDIR o @ (o Rafael: "tem que ter algo
+       indicando para colocar o @"). Com o campo logo abaixo, "Mando a
+       prévia" não dizia o que a pessoa faz; o anúncio h27u diz "Manda o @
+       da sua", e a página repete. */
+    lead: <>Manda o <b>@ da sua loja</b> aqui embaixo. Em até 24h eu te mando a prévia com as suas peças, pronta para receber pedido no WhatsApp.</>,
     faixa: "Pronta em 7 dias úteis · Sem mensalidade · Você mesmo atualiza ·",
     phoneAria: "A loja completa da Iconic Sneakers rolando do topo ao rodapé dentro de uma janela de navegador: catálogo, páginas de produto e pedido pelo WhatsApp",
     /* 28/10: as logos são só quem PAGOU, e o canhoto conta todas as vitrines
