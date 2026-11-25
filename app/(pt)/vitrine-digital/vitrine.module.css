@@ -4522,3 +4522,54 @@ html:has(.site) { scroll-behavior: smooth }
 }
 /* o retrato tem fundo branco sobre página branca: a linha fina segura a borda do cartão */
 .quemCurtoFoto img { background: #fff; outline: 1px solid #e6e6e3; outline-offset: -1px }
+
+/* ---------- duas seções em preto (25/11/2026) ----------
+   O Rafael: "quero colocar algumas coisas pretas na landing page". O preto
+   da régua (docs/design-estudio.md) é o de "seguir", e seção escura só onde
+   a prova pede contraste. A página já tinha uma, o Placar, emendado no pé da
+   foto do hero. Entraram mais duas, espaçadas para não virar zebra:
+   - o depoimento do Luciano, a única Black Friday verdadeira da página (dita
+     por um cliente), que dá o clima da semana sem prometer oferta;
+   - o convite do fim, onde o botão rosa salta sobre o preto.
+   O preço, o "como funciona" e o FAQ seguem brancos: lá a pessoa lê com calma.
+   O preto é o do Placar (#14181a), o mesmo --ink. */
+.site.estruturaCentro.estruturaCentro .depo,
+.site.estruturaCentro.estruturaCentro .fimNovo {
+  --escuro-texto: #f4f4f2;
+  --escuro-apoio: #a9afb2;
+  background: #14181a;
+  color: var(--escuro-texto);
+}
+/* o depoimento */
+.site.estruturaCentro.estruturaCentro .depo .depoAspas,
+.site.estruturaCentro.estruturaCentro .mb.depo .depoFrase p,
+.site.estruturaCentro.estruturaCentro .mb.depo .depoFrase .depoDestaque,
+.site.estruturaCentro.estruturaCentro .depo .depoNome,
+.site.estruturaCentro.estruturaCentro .depo .depoTela { color: var(--escuro-texto) }
+.site.estruturaCentro.estruturaCentro .mb.depo .depoComDestaque .depoInteira p,
+.site.estruturaCentro.estruturaCentro .depo .depoPapel,
+.site.estruturaCentro.estruturaCentro .depo .depoDominio { color: var(--escuro-apoio) }
+.site.estruturaCentro.estruturaCentro .depo .depoFoto .depoAvatar { background: #262b2e; color: var(--escuro-texto) }
+.site.estruturaCentro.estruturaCentro .depo .depoSelo { box-shadow: 0 0 0 2px #14181a }
+@media (hover: hover) {
+  .site.estruturaCentro.estruturaCentro .depo .depoTela:hover .depoDominio { color: var(--escuro-texto) }
+}
+/* o convite do fim: o título, o apoio e o botão branco com fio vira o
+   branco cheio sobre o preto; o rosa segue o mesmo */
+.site.estruturaCentro.estruturaCentro .mb.fimNovo h2 { color: var(--escuro-texto) }
+.site.estruturaCentro.estruturaCentro .mb.fimNovo h2 em { color: #2fd389 }
+.site.estruturaCentro.estruturaCentro .mb.fimNovo .mbLead { color: var(--escuro-apoio) }
+.site.estruturaCentro.estruturaCentro .mb.fimNovo .mbAcoes .outline { border-color: #ffffff3d; background: transparent; color: var(--escuro-texto) }
+@media (hover: hover) {
+  .site.estruturaCentro.estruturaCentro .mb.fimNovo .mbAcoes .outline:hover { border-color: var(--escuro-texto) }
+}
+.site.estruturaCentro.estruturaCentro .fimNovo .carretelIcone { box-shadow: 0 0 0 1px #ffffff1a }
+/* os cantos (25/11/2026, "quero bordas arredondadas também"): o mesmo raio
+   do pé do Placar (40px, 28 no celular), agora nos quatro cantos, para as
+   três faixas pretas da página serem do mesmo desenho */
+.site.estruturaCentro.estruturaCentro .depo,
+.site.estruturaCentro.estruturaCentro .fimNovo { border-radius: 40px }
+@media (max-width: 720px) {
+  .site.estruturaCentro.estruturaCentro .depo,
+  .site.estruturaCentro.estruturaCentro .fimNovo { border-radius: 28px }
+}
