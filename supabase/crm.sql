@@ -1762,3 +1762,151 @@ select t.owner_id, E'Cobrança da parcela', 'whatsapp', 'proposta', E'Oi, {nome}
 -- update public.crm_templates set conteudo = replace(conteudo, 'Metade pra começar e o resto na entrega.', 'R$ 199 pra começar e o resto na entrega.') where id = 'bb4afc39-72d9-413d-8903-81cdc3363cb2';
 -- update public.crm_templates set conteudo = replace(conteudo, 'Fica R$ 450 pra começar e R$ 449 na entrega, no Pix.', 'Fica R$ 199 pra começar e R$ 700 na entrega.') where id = 'ef7a469b-48b9-439a-84ff-931c2bd5118b';
 -- update public.crm_templates set conteudo = replace(conteudo, 'metade pra começar', 'R$ 199 pra começar') where id in ('9aaa0bf6-ce51-49c0-81c4-0211a23d38c0','3d705c39-c1ba-41c4-8d2c-78569651d00b','49cb8402-2d65-4424-ab68-b1fb4ae8b80c');
+
+-- ============================================================
+-- 25/11/2026: a repaginada dos templates (JÁ RODADO pelo
+-- scripts/repaginar-templates-2026-11-25.mjs --gravar; este bloco é o
+-- registro, e rodar de novo não muda nada). O Rafael, na entrega da WFS
+-- Store: "muito monótono e perguntas que os clientes não respondem". Só o
+-- texto de 19 templates: mais curto, uma ideia por parágrafo, a pergunta do
+-- fim de sim ou não, o preço abrindo pelos R$ 199 com o total junto, e saem
+-- os dois que fingiam ser cliente (proibido desde 06/11). Título, categoria,
+-- ordem, valores e condições não mudam. O texto de antes está em
+-- supabase/templates-antes-2026-11-25.json (o script tem --voltar).
+-- ============================================================
+update public.crm_templates
+   set conteudo = E'Fala, {nome}! Rafael aqui, do estúdio. Chegou o seu pedido da vitrine grátis da {instagram}, já tô com o perfil aberto.\n\nMonto hoje a prévia do site da loja, com as fotos do Instagram de vocês. De graça.\n\nQual peça mais sai aí? Começo por ela.'
+ where titulo = E'Chegou pelo anúncio: quem sou e o que ela pediu';
+update public.crm_templates
+   set conteudo = E'Fala, {nome}! Rafael aqui, do estúdio. Chegou o seu pedido da vitrine grátis, mas o {instagram} não abriu aqui.\n\nMe manda o @ certo da loja que eu começo hoje?'
+ where titulo = E'Chegou pelo anúncio, mas o @ não abriu';
+update public.crm_templates
+   set conteudo = E'{nome}, olha como ficou a {empresa}:\n\n{link}\n\nÉ uma amostra por enquanto. Ficou com a cara de vocês?'
+ where titulo = E'Prévia pronta, mensagem 1: só o presente';
+update public.crm_templates
+   set conteudo = E'{nome}, olha a amostra da loja online da {empresa}:\n\n{link}\n\nÉ uma amostra por enquanto. Ficou com a cara de vocês?'
+ where titulo = E'Loja online: amostra pronta, só o presente';
+update public.crm_templates
+   set conteudo = E'Pra ela virar o site da loja, no número de vocês, começa com R$ 199 no Pix. Os outros R$ 800 só na entrega. R$ 999 no total, sem mensalidade.\n\nVem com um painel no celular pra vocês mesmos trocarem peça e preço.\n\nTe mando o Pix dos R$ 199?'
+ where titulo = E'Prévia, mensagem 2: o preço (só depois que responder)';
+update public.crm_templates
+   set conteudo = E'Boa! Pra ela ir pro ar no número de vocês: R$ 199 no Pix pra começar e R$ 800 na entrega. R$ 999 no total, sem mensalidade.\n\nTe mando o Pix dos R$ 199?'
+ where titulo = E'Quero colocar no ar: o botão da amostra';
+update public.crm_templates
+   set conteudo = E'Que bom que curtiu! Te explico em duas linhas como ela vai pro número de vocês?'
+ where titulo = E'Gostou e não perguntou: o próximo passo';
+update public.crm_templates
+   set conteudo = E'Consegue, pelo celular: tira a foto, põe nome, preço e numeração, e a peça aparece no site na hora. Acabou um número, é só marcar que ele some.'
+ where titulo = E'Eu consigo atualizar? O painel';
+update public.crm_templates
+   set conteudo = E'Nessa vitrine a compra fecha no WhatsApp: a cliente escolhe a peça e o tamanho, e o pedido chega pronto pra vocês. O pagamento vocês combinam na conversa, como já fazem hoje.'
+ where titulo = E'Dá pra comprar direto no site? A compra fecha no WhatsApp';
+update public.crm_templates
+   set conteudo = E'Deixo pronto pra você só encaminhar:\n\nA vitrine da {empresa}: {link}\nÉ o site da loja: a cliente escolhe a peça e o pedido chega pronto no WhatsApp. Vem com painel pra trocar as peças pelo celular.\nR$ 199 pra começar e R$ 800 na entrega. R$ 999 no total, sem mensalidade.\n\nVocês conseguem conversar até amanhã?'
+ where titulo = E'Vou ver com o sócio: o resumo pra encaminhar';
+update public.crm_templates
+   set conteudo = E'{nome}, {saudacao}! Atualizei a vitrine com o que entrou de novo no feed de vocês, e {topo} tá no topo:\n\n{link}\n\nFaltou alguma peça?'
+ where titulo = E'Prévia sem resposta: volta com novidade';
+update public.crm_templates
+   set conteudo = E'Oi, {nome}! Tô deixando a vitrine da {instagram} pronta pra ligar no número de vocês.\n\nOs pedidos caem neste WhatsApp mesmo?'
+ where titulo = E'Disse que ia fazer e sumiu: um dado, sem Pix';
+update public.crm_templates
+   set conteudo = E'Oi, {nome}! A vitrine da {instagram} continua no ar:\n\n{link}\n\nComo ela já tá montada, consigo fazer por R$ 899 em vez de R$ 999: R$ 199 pra começar e R$ 700 na entrega. Sem mensalidade.\n\nFecho a de vocês, ou posso tirar do ar?'
+ where titulo = E'Amostra pronta: condição única R$ 899';
+update public.crm_templates
+   set conteudo = E'Oi, {saudacao}! Aqui é o Rafael, de Maringá, faço site pra loja. Vi a {empresa} e fiquei com uma dúvida: vocês vendem só pelo direct ou já têm site?'
+ where titulo = E'Primeiro toque, só a pergunta';
+update public.crm_templates
+   set conteudo = E'Entendi! Então posso montar uma prévia do site da {empresa} com as fotos de vocês, de graça, pra você ver como fica antes de decidir qualquer coisa.\n\nQuer?'
+ where titulo = E'Segundo toque, depois que responder';
+update public.crm_templates
+   set conteudo = E'Oi, {nome}! Vi que você passou por aqui. Eu monto a prévia do site da loja de graça, com as fotos do Instagram.\n\nQuer ver como ficaria a {empresa}?'
+ where titulo = E'Depois de curtir ou comentar';
+update public.crm_templates
+   set conteudo = E'{nome}, {saudacao}! Acho que te peguei na correria. Era só isto: posso montar a prévia do site da {empresa}, de graça, pra você ver?'
+ where titulo = E'Retorno 1, a hora ruim (2 a 3 dias)';
+update public.crm_templates
+   set conteudo = E'{nome}, última por aqui. Olha uma loja que eu fiz, pra você ver o tipo de coisa:\n\n[link]\n\nSe um dia quiser uma assim pra {empresa}, é só me chamar.'
+ where titulo = E'Retorno 2, mostra em vez de pedir (4 a 6 dias)';
+update public.crm_templates
+   set conteudo = E'{nome}, {saudacao}. Vou parar de te chamar pra não virar chateação. Se um dia a {empresa} precisar de site, é só me mandar mensagem aqui.\n\nSucesso aí!'
+ where titulo = E'Retorno 3, a saída honrosa (8 a 10 dias)';
+
+-- ============================================================
+-- 25/11/2026, a segunda leva da repaginada (JÁ RODADO pelo mesmo script):
+-- o Rafael pediu "todos os templates", e entraram os 22 que tinham ficado de
+-- fora (o frio, a Loja online, as objeções, a Black, a proposta e a cobrança).
+-- Só a forma. A última linha conserta a amostra de R$ 899 da primeira leva,
+-- que tinha perdido o "em até 12x no cartão (com os juros do cartão)": o
+-- script agora compara os valores, datas, parcelas e prazos do texto de
+-- antes com o novo e avisa o que saiu ou entrou.
+-- ============================================================
+update public.crm_templates
+   set conteudo = E'Oi, {nome}! A vitrine da {instagram} continua no ar:\n\n{link}\n\nComo ela já tá montada, consigo fazer por R$ 899 em vez de R$ 999: R$ 199 pra começar e R$ 700 na entrega, ou em até 12x no cartão (com os juros do cartão). Sem mensalidade.\n\nFecho a de vocês, ou posso tirar do ar?'
+ where titulo = E'Amostra pronta: condição única R$ 899';
+update public.crm_templates
+   set conteudo = E'Oi, {saudacao}! Aqui é o Rafael, faço vitrine digital pra loja. Achei a {empresa} no Google.\n\nMonto de graça uma prévia do site de vocês: os aparelhos com foto e preço, e o pedido caindo no WhatsApp da loja.\n\nPosso montar?'
+ where titulo = E'Loja de celular: direto na prévia';
+update public.crm_templates
+   set conteudo = E'Oi, {saudacao}! Aqui é o Rafael, de Maringá. Eu faço loja online pra loja como a sua: a cliente escolhe a peça, paga no Pix ou no cartão, e o pedido cai no seu painel.\n\nTe mostro como ficaria com as suas peças? Se não for a hora, tranquilo.'
+ where titulo = E'Loja online: o que eu faço, com saída';
+update public.crm_templates
+   set conteudo = E'Oi, {saudacao}! Achei a sua loja procurando {nicho} em {cidade}.\n\nEu faço loja online pra cliente pagar direto no site, sem passar pelo direct.\n\nTe mostro como funciona?'
+ where titulo = E'Loja online: achei no Google';
+update public.crm_templates
+   set conteudo = E'Oi, {nome}! Aqui é o Rafael, de Maringá, faço site pra loja. Me passaram o contato da {empresa}.\n\nVocês já têm site?'
+ where titulo = E'Chegou por indicação';
+update public.crm_templates
+   set conteudo = E'Oi, {nome}! Rafael aqui, a gente conversou um tempo atrás sobre o site da {empresa}.\n\nAinda faz sentido pra vocês?'
+ where titulo = E'Reativar contato antigo (mais de 30 dias)';
+update public.crm_templates
+   set conteudo = E'Fala, {nome}! Rafael aqui, do estúdio. Chegou o seu pedido da amostra da loja online da {instagram}, já tô com o perfil aberto.\n\nMonto com as peças de vocês e te mando até amanhã.\n\nQual peça mais sai aí? Começo por ela.'
+ where titulo = E'Loja online: chegou pelo anúncio, a amostra';
+update public.crm_templates
+   set conteudo = E'Fechou! Vou montar uma amostra com as suas peças, pra você ver como fica antes de decidir.\n\nQual peça mais sai aí? Começo por ela.'
+ where titulo = E'Loja online: depois do sim, a amostra';
+update public.crm_templates
+   set conteudo = E'São dois valores: R$ 1.990 pra montar a loja, no Pix ou em até 12x no cartão (com os juros do cartão), e R$ 249,90 por mês depois que ela estiver no ar.\n\nO mensal cobre o sistema, o relatório das vendas e o suporte.\n\nTe mando a proposta com tudo escrito?'
+ where titulo = E'Loja online: o preço (só depois que responder)';
+update public.crm_templates
+   set conteudo = E'Oi, {nome}! Dá pra cliente pagar direto na vitrine da {empresa}: Pix, cartão e frete calculado, sem passar pelo WhatsApp.\n\nComo vocês já têm a vitrine, são R$ 991 pra ligar e R$ 249,90 por mês depois de entregue.\n\nQuer ver como fica na de vocês?'
+ where titulo = E'Loja online: quem já tem a vitrine (R$ 991)';
+update public.crm_templates
+   set conteudo = E'Oi, {nome}! A amostra da loja online da {empresa} ainda tá no ar:\n\n{link}\n\nDeixo mais uns dias ou posso tirar?'
+ where titulo = E'Depois do preço: a amostra da loja online';
+update public.crm_templates
+   set conteudo = E'A vitrine é uma vez só porque o pedido fecha no WhatsApp. Na loja online o pagamento passa pelo site, então tem sistema rodando todo dia.\n\nO mensal paga isso, mais o relatório e o suporte.'
+ where titulo = E'Loja online: por que tem mensalidade? (só se perguntar)';
+update public.crm_templates
+   set conteudo = E'Entendo, {nome}. No valor eu não mexo, mas na entrada sim: R$ 100 pra começar e o resto só quando estiver no ar.\n\nAssim dá?'
+ where titulo = E'Quando o preço trava';
+update public.crm_templates
+   set conteudo = E'{nome}, consigo 10% de desconto por [o motivo deste caso]: R$ 899 em vez de R$ 999, uma vez só, sem mensalidade. R$ 199 pra começar e R$ 700 na entrega.\n\nO resto não muda: o pedido no seu WhatsApp e o painel pra trocar preço e foto.\n\nFecho assim?'
+ where titulo = E'Desconto de 10% (escreva o motivo deste caso)';
+update public.crm_templates
+   set conteudo = E'{nome}, a menor condição que eu faço: R$ 799 à vista no Pix, em vez dos R$ 999. Ela só existe porque o pagamento vem inteiro na frente.\n\nO resto fica igual: pronta em 5 dias úteis, com o pedido no seu WhatsApp e o painel pra trocar preço e foto.\n\nTe mando o Pix?'
+ where titulo = E'Último recurso: R$ 799 à vista no Pix';
+update public.crm_templates
+   set conteudo = E'Não é mensal: paga uma vez e acabou.\n\nO único custo à parte é o domínio, o endereço .com.br: R$ 40 por ano no registro.br, no seu nome.'
+ where titulo = E'É mensal? (só se a pessoa perguntar)';
+update public.crm_templates
+   set conteudo = E'Oi, {nome}! A vitrine da {instagram} ainda tá no ar:\n\n{link}\n\nDeixo mais uns dias ou posso tirar?'
+ where titulo = E'Depois do preço: uma volta, com a saída';
+update public.crm_templates
+   set conteudo = E'Oi, {nome}! A Black da vitrine da {instagram}, R$ 799 à vista, vai até dia 30.\n\nSeguro a de vocês ou posso tirar do ar?'
+ where titulo = E'Depois da Black: uma volta, com a data';
+update public.crm_templates
+   set conteudo = E'Oi! 🔥 Condição de Black pra vocês: a vitrine que eu montei da loja vai pro ar por R$ 799 à vista, em vez de R$ 999.\n\n{link}\n\nVale até 30/11. Seguro a de vocês?'
+ where titulo = E'Black R$ 799 até 30/11: só a amostra';
+update public.crm_templates
+   set conteudo = E'Oi! 🔥 Lembra da vitrine que eu montei pra vocês? Na Black ela vai pro ar por R$ 799 à vista, em vez de R$ 999.\n\n{link}\n\nVale até 30/11. Seguro a de vocês?'
+ where titulo = E'Black R$ 799 até 30/11: já viu o preço';
+update public.crm_templates
+   set conteudo = E'Aqui o orçamento da vitrine da {empresa}, com tudo escrito:\n\n[link da proposta]'
+ where titulo = E'Enviando a proposta';
+update public.crm_templates
+   set conteudo = E'Oi, {nome}! Conseguiu ver a proposta da {empresa}?\n\nSe não for pra agora, me fala sem cerimônia.'
+ where titulo = E'Proposta sem resposta';
+update public.crm_templates
+   set conteudo = E'Oi, {nome}! Tudo certo com a vitrine aí?\n\nFalta só o restante, {saldo}. Te mando o Pix por aqui?'
+ where titulo = E'Cobrança da parcela';

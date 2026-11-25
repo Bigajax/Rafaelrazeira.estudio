@@ -9027,14 +9027,11 @@
   --paper-alto-solido: #edf4f0;
   --paper-2: rgba(16, 84, 56, .09);
   --line: rgba(20, 60, 42, .14);
-  background:
-    radial-gradient(46rem 32rem at -4% -6%, rgba(8, 128, 78, .62), transparent 64%),
-    radial-gradient(34rem 26rem at 102% 2%, rgba(255, 196, 120, .58), transparent 62%),
-    radial-gradient(44rem 34rem at 92% 106%, rgba(20, 160, 110, .52), transparent 64%),
-    radial-gradient(30rem 24rem at 30% 70%, rgba(96, 200, 190, .42), transparent 66%),
-    radial-gradient(26rem 20rem at 60% 28%, rgba(190, 236, 210, .5), transparent 66%),
-    #dcebe3;
-  background-attachment: fixed;
+  /* o chão LISO (25/11/2026): eram cinco manchas de cor (a "névoa"), e o
+     Rafael: "não estou gostando do gradiente da cor de fundo, precisava ser
+     mais liso". Uma cor só, o verde claro da casca; os painéis continuam
+     claros por cima dela */
+  background: var(--chao-liso, #d3e6dc);
 }
 @media (max-width: 860px) {
   /* fundo fixo engasga a rolagem em celular */
@@ -9439,13 +9436,9 @@
   --painel-campo-fundo: rgba(255, 255, 255, .08);
   --painel-sombra: 0 12px 48px rgba(0, 0, 0, .6);
   color: var(--ink);
-  background:
-    radial-gradient(46rem 32rem at -4% -6%, rgba(12, 145, 89, .55), transparent 64%),
-    radial-gradient(34rem 26rem at 102% 2%, rgba(255, 170, 90, .14), transparent 62%),
-    radial-gradient(44rem 34rem at 92% 106%, rgba(20, 160, 110, .36), transparent 64%),
-    radial-gradient(30rem 24rem at 30% 70%, rgba(40, 120, 130, .28), transparent 66%),
-    #0b1310;
-  background-attachment: fixed;
+  /* liso também no escuro (25/11) */
+  --chao-liso: #0f1a15;
+  background: #0f1a15;
 }
 :global(html[data-crm-tema="escuro"]) .app .main :where(input, select, textarea) {
   color: var(--ink);

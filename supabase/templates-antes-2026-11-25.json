@@ -1,0 +1,289 @@
+[
+ {
+  "id": "a56bbcfa-7918-4cb1-9d95-deb9f2f2e10d",
+  "titulo": "Primeiro toque, só a pergunta",
+  "categoria": "abertura_fria",
+  "ordem": 1,
+  "conteudo": "oi, {saudacao}! entrei no perfil da {empresa} procurando {nicho} e não achei onde ver os preços. é só por aqui no direct mesmo?"
+ },
+ {
+  "id": "ad1a8861-502e-41d2-b68a-b17c602deb6c",
+  "titulo": "Loja de celular: direto na prévia",
+  "categoria": "abertura_fria",
+  "ordem": 2,
+  "conteudo": "Oi, {saudacao}! Aqui é o Rafael, eu faço vitrine digital pra loja.\nAchei a {empresa} no Google e quero montar uma prévia de graça pra vocês: os aparelhos com foto e preço, e o pedido caindo direto no WhatsApp da loja. Sem compromisso.\n\nQual aparelho mais sai aí? Começo por ele."
+ },
+ {
+  "id": "4df381c1-00a1-412d-a4e5-ad6d4b66167c",
+  "titulo": "Loja online: o que eu faço, com saída",
+  "categoria": "abertura_fria",
+  "ordem": 3,
+  "conteudo": "Oi, {saudacao}! Aqui é o Rafael, de Maringá.\nEu faço loja online pra loja como a sua: a cliente escolhe a peça e o tamanho, paga no Pix ou no cartão, e o pedido cai no seu painel.\n\nPosso te mostrar como ficaria com as suas peças? Se não for a hora, tranquilo."
+ },
+ {
+  "id": "76fd4de4-7bff-47ca-9774-6e10ae859d36",
+  "titulo": "Loja online: achei no Google",
+  "categoria": "abertura_fria",
+  "ordem": 4,
+  "conteudo": "Oi, {saudacao}! Achei a sua loja procurando {nicho} em {cidade}.\nEu faço loja online pra cliente pagar direto no site, sem passar pelo direct.\n\nPosso te mostrar como funciona?"
+ },
+ {
+  "id": "069352aa-b691-40ca-9eab-39d95ac2235b",
+  "titulo": "Chegou pelo anúncio, mas o @ não abriu",
+  "categoria": "abertura_morna",
+  "ordem": 2,
+  "conteudo": "Fala, {nome}! Aqui é o Rafael, do estúdio. Você pediu a vitrine grátis no anúncio do Instagram, mas o {instagram} que veio no cadastro não abriu aqui.\nMe manda o @ certo da loja (ou o link do perfil) que eu já começo a prévia hoje, de graça e sem compromisso."
+ },
+ {
+  "id": "e71efe69-2e42-4eb7-9101-c0dbfd9a36e8",
+  "titulo": "Depois de curtir ou comentar",
+  "categoria": "abertura_morna",
+  "ordem": 2,
+  "conteudo": "oi {nome}, {saudacao}! vi que você passou por aqui. posso te fazer uma pergunta rápida sobre a {empresa}?"
+ },
+ {
+  "id": "7b57fd07-54bf-47e0-b977-4ae69c6081b4",
+  "titulo": "Chegou pelo anúncio: quem sou e o que ela pediu",
+  "categoria": "abertura_morna",
+  "ordem": 2,
+  "conteudo": "Fala, {nome}! Aqui é o Rafael, do estúdio. Você pediu a vitrine grátis da {instagram} no anúncio do Instagram, e já abri o seu perfil.\nVou montar hoje uma prévia do site da sua loja, com as fotos do seu Instagram. De graça e sem compromisso.\nSó me diz uma coisa pra eu começar certo: qual peça mais vende aí? Começo por ela."
+ },
+ {
+  "id": "65ba1495-48fc-4555-9e78-291dbeea593e",
+  "titulo": "Loja online: chegou pelo anúncio, a amostra",
+  "categoria": "abertura_morna",
+  "ordem": 3,
+  "conteudo": "Fala, {nome}! Aqui é o Rafael, do estúdio. Você pediu a amostra da loja online da {instagram} no anúncio, já abri o perfil de vocês.\n\nMonto com as peças de vocês e te mando até amanhã.\n\nQual peça mais sai aí? Começo por ela."
+ },
+ {
+  "id": "25c80c98-72a2-4818-a880-d2eb12771aff",
+  "titulo": "Retorno 3, a saída honrosa (8 a 10 dias)",
+  "categoria": "encerramento",
+  "ordem": 6,
+  "conteudo": "{nome}, {saudacao}. vou parar de te chamar pra não virar chateação. deixo meu contato salvo aqui: se um dia a {empresa} precisar de site, me manda mensagem que eu te atendo na hora. sucesso aí!"
+ },
+ {
+  "id": "d375c017-6552-4954-89db-bee71073bea5",
+  "titulo": "Retorno 1, a hora ruim (2 a 3 dias)",
+  "categoria": "follow_up",
+  "ordem": 4,
+  "conteudo": "{nome}, {saudacao}! acho que te peguei numa hora corrida. era uma dúvida rápida só, sem pressa nenhuma: quando sobrar um minuto aí me diz"
+ },
+ {
+  "id": "1bb1cc0c-bf65-40b1-ae4f-74984640e63a",
+  "titulo": "Retorno 2, mostra em vez de pedir (4 a 6 dias)",
+  "categoria": "follow_up",
+  "ordem": 5,
+  "conteudo": "{nome}, não vou mais te encher, prometo. só te deixo isto aqui pra você ver o tipo de coisa que eu faço: é uma loja daqui da região que hoje vende pela própria página. [link] se um dia a {empresa} quiser algo assim, é só me chamar que eu monto uma prévia sem cobrar nada."
+ },
+ {
+  "id": "e2e07b82-df2d-42b0-9ca6-a554e39aba88",
+  "titulo": "Chegou por indicação",
+  "categoria": "indicacao",
+  "ordem": 7,
+  "conteudo": "Oi, {nome}! Aqui é o Rafael, faço site pra loja aqui em Maringá. Me passaram o contato da {empresa}.\n\nVocês já têm site ou vendem só pelo Instagram?"
+ },
+ {
+  "id": "017eba22-a42a-43b6-9306-cc0bb07e94b6",
+  "titulo": "Quando o preço trava",
+  "categoria": "objecao",
+  "ordem": 8,
+  "conteudo": "Entendo, {nome}. No valor eu não consigo mexer, mas na entrada sim: faço R$ 100 pra começar e o resto só quando estiver no ar.\n\nAssim fica melhor pra vocês?"
+ },
+ {
+  "id": "ef7a469b-48b9-439a-84ff-931c2bd5118b",
+  "titulo": "Desconto de 10% (escreva o motivo deste caso)",
+  "categoria": "objecao",
+  "ordem": 9,
+  "conteudo": "{nome}, consigo fazer com 10% de desconto por [o motivo deste caso]: a vitrine sai por R$ 899 em vez de R$ 999, uma vez só, sem mensalidade. Fica R$ 199 pra começar e R$ 700 na entrega. O resto não muda: o pedido caindo no seu WhatsApp e o painel pra você trocar preço e foto sem depender de ninguém."
+ },
+ {
+  "id": "c2453bc4-a461-46be-bbad-ca4272d2828b",
+  "titulo": "Último recurso: R$ 799 à vista no Pix",
+  "categoria": "objecao",
+  "ordem": 10,
+  "conteudo": "{nome}, a menor condição que eu faço é esta: R$ 799 à vista no Pix, de uma vez, em vez dos R$ 999. Ela só existe porque o pagamento vem inteiro na frente. O resto fica igual: pronta em 5 dias úteis, com o pedido caindo no seu WhatsApp e o painel pra você trocar preço e foto sem depender de ninguém."
+ },
+ {
+  "id": "49cb8402-2d65-4424-ab68-b1fb4ae8b80c",
+  "titulo": "Vou ver com o sócio: o resumo pra encaminhar",
+  "categoria": "objecao",
+  "ordem": 11,
+  "conteudo": "Pra facilitar, deixo aqui pronto pra você só encaminhar:\n\nA vitrine da {empresa}: {link}\nÉ o site da loja, com as peças, foto e preço. O cliente escolhe e o pedido chega pronto no WhatsApp. Vem um painel pra cadastrar e trocar as peças pelo celular.\nR$ 999 uma vez só, sem mensalidade: R$ 199 pra começar e o resto na entrega.\n\nVocês conversam quando? Te chamo depois disso."
+ },
+ {
+  "id": "9c7f4b03-4964-41a2-a4d6-704b89c6839c",
+  "titulo": "É mensal? (só se a pessoa perguntar)",
+  "categoria": "objecao",
+  "ordem": 12,
+  "conteudo": "Não é mensal: é uma vez só, você paga e acabou. O único custo à parte é o domínio, o endereço .com.br, R$ 40 por ano no registro.br, no seu nome."
+ },
+ {
+  "id": "68d8d37e-ec9a-4700-988a-f54d36efebcf",
+  "titulo": "Loja online: por que tem mensalidade? (só se perguntar)",
+  "categoria": "objecao",
+  "ordem": 13,
+  "conteudo": "A vitrine é uma vez só porque o pedido fecha no WhatsApp. Na loja online o pagamento passa pelo site, então tem sistema rodando todo dia. É isso que o mensal paga, junto com o relatório e o suporte."
+ },
+ {
+  "id": "b4c26c2d-3d91-4801-bbc6-e92f116e5523",
+  "titulo": "Prévia pronta, mensagem 1: só o presente",
+  "categoria": "previa",
+  "ordem": 9,
+  "conteudo": "Oi, {nome}! A vitrine da {empresa} ficou pronta, montei com as fotos do Instagram de vocês:\n\n{link}\n\nTem algum modelo chegando agora que vocês querem ver aí? Por enquanto é uma amostra: pra funcionar no número de vocês tem um investimento, se fizer sentido te passo como funciona."
+ },
+ {
+  "id": "bb4afc39-72d9-413d-8903-81cdc3363cb2",
+  "titulo": "Prévia, mensagem 2: o preço (só depois que responder)",
+  "categoria": "previa",
+  "ordem": 10,
+  "conteudo": "Funciona assim: ela vira o site da loja, no nome de vocês. A cliente escolhe a peça e o pedido já chega pronto no WhatsApp da loja.\n\nVem um painel no celular pra vocês mesmos colocarem peça nova e trocarem preço.\n\nFica R$ 999 uma vez só, sem mensalidade. R$ 199 pra começar e o resto na entrega.\n\nQuer que eu já separe a de vocês?"
+ },
+ {
+  "id": "fb8f9cc6-1cb4-4539-8c5a-43448f268ea1",
+  "titulo": "Prévia sem resposta: volta com novidade",
+  "categoria": "previa",
+  "ordem": 11,
+  "conteudo": "{nome}, {saudacao}! atualizei a sua vitrine com o que apareceu de novo no seu feed e deixei {topo} no topo: {link}\nficou alguma peça de fora?"
+ },
+ {
+  "id": "eb48e317-4576-43ee-a255-d13afd1a0a13",
+  "titulo": "Disse que ia fazer e sumiu: um dado, sem Pix",
+  "categoria": "previa",
+  "ordem": 12,
+  "conteudo": "Oi, {nome}! Você falou que ia fazer a vitrine da {instagram}, então já vou deixando tudo pronto pra ligar no seu número. Só me confirma uma coisa: os pedidos caem neste WhatsApp aqui mesmo, ou em outro número?"
+ },
+ {
+  "id": "9aaa0bf6-ce51-49c0-81c4-0211a23d38c0",
+  "titulo": "Amostra pronta: condição única R$ 899",
+  "categoria": "previa",
+  "ordem": 13,
+  "conteudo": "Oi, {nome}! A vitrine da {instagram} que eu montei continua no ar:\n\n{link}\n\nComo ela já está pronta, fiz uma condição só pra quem tem a amostra montada: R$ 899 em vez de R$ 999. Dá pra fazer R$ 199 pra começar e o resto na entrega, ou parcelar no cartão em até 12x (com os juros do cartão). Eu ligo no WhatsApp da loja, coloco no nome de vocês e entrego um painel pra cadastrar as peças sozinhos. Sem mensalidade.\n\nFecho a de vocês, ou posso tirar do ar?"
+ },
+ {
+  "id": "3d705c39-c1ba-41c4-8d2c-78569651d00b",
+  "titulo": "Quero colocar no ar: o botão da amostra",
+  "categoria": "previa",
+  "ordem": 14,
+  "conteudo": "Que bom! Pra colocar a da {empresa} no ar no número de vocês: R$ 999 uma vez só, sem mensalidade, R$ 199 pra começar e o resto na entrega. Te mando o Pix da entrada e já começo?"
+ },
+ {
+  "id": "a85efead-1852-4a6c-a849-a8e87c5f1495",
+  "titulo": "Gostou e não perguntou: o próximo passo",
+  "categoria": "previa",
+  "ordem": 15,
+  "conteudo": "Que bom que gostou! Quer que eu te passe como funciona pra ela rodar no número de vocês?"
+ },
+ {
+  "id": "3d0d7ea6-543a-44da-8d8c-855959a5d045",
+  "titulo": "Eu consigo atualizar? O painel",
+  "categoria": "previa",
+  "ordem": 16,
+  "conteudo": "Consegue sim: vem um painel no celular. Tira a foto, coloca nome, preço e numeração, salva, e a peça aparece no site na hora. Acabou um número, é só marcar que ele some do site."
+ },
+ {
+  "id": "9cf4a028-0854-4f91-93e6-d4dc8cb78cb5",
+  "titulo": "Dá pra comprar direto no site? A compra fecha no WhatsApp",
+  "categoria": "previa",
+  "ordem": 17,
+  "conteudo": "Nessa vitrine a compra fecha no WhatsApp: o cliente escolhe a peça e o tamanho, e o pedido chega pronto pra vocês, com o modelo e o número. O pagamento vocês combinam na conversa, do jeito que já fazem hoje. Sem carrinho e sem cadastro pro cliente."
+ },
+ {
+  "id": "ed3bd217-f282-4ebf-a6f5-c5c5c9903693",
+  "titulo": "Black R$ 799 até 30/11: só a amostra",
+  "categoria": "previa",
+  "ordem": 18,
+  "conteudo": "Oi! 🔥 Fiz uma condição de Black pra vocês: a vitrine que eu montei da loja de vocês vai pro ar por R$ 799 à vista, em vez de R$ 999.\n\n{link}\n\nVale até 30/11."
+ },
+ {
+  "id": "3d3dbcc3-ae61-4fb4-af34-7de4fb290e5f",
+  "titulo": "Black R$ 799 até 30/11: já viu o preço",
+  "categoria": "previa",
+  "ordem": 19,
+  "conteudo": "Oi! 🔥 Fiz uma condição de Black pra vocês: a vitrine que eu montei da loja de vocês vai pro ar por R$ 799 à vista, em vez de R$ 999.\n\n{link}\n\nVale até 30/11."
+ },
+ {
+  "id": "38178a37-c5f6-4644-927c-4540f39602f4",
+  "titulo": "Depois do preço: uma volta, com a saída",
+  "categoria": "previa",
+  "ordem": 20,
+  "conteudo": "Oi, {nome}! A vitrine da {instagram} ainda tá no ar, do jeito que te mandei:\n\n{link}\n\nDeixo mais uns dias ou pode tirar?"
+ },
+ {
+  "id": "f897fd29-b797-4153-a38f-887ca1ce6120",
+  "titulo": "Depois da Black: uma volta, com a data",
+  "categoria": "previa",
+  "ordem": 21,
+  "conteudo": "Oi, {nome}! Só pra não passar batido: a Black da vitrine da {instagram}, R$ 799 à vista, vai até dia 30.\n\nSeguro a de vocês ou pode tirar do ar?"
+ },
+ {
+  "id": "7b325b3e-da4f-4a34-90d3-86b2e4a5af56",
+  "titulo": "Loja online: amostra pronta, só o presente",
+  "categoria": "previa",
+  "ordem": 22,
+  "conteudo": "Oi, {nome}! A amostra da loja online da {empresa} ficou pronta, montei com as fotos do Instagram de vocês:\n\n{link}\n\nQual peça eu deixo em primeiro? Por enquanto é uma amostra: pra ela vender no nome de vocês tem um investimento, se fizer sentido te passo como funciona."
+ },
+ {
+  "id": "d15764f4-9b64-4e9b-ae21-11955424b1e8",
+  "titulo": "Loja online: o preço (só depois que responder)",
+  "categoria": "previa",
+  "ordem": 23,
+  "conteudo": "São dois valores: R$ 1.990 pra montar a loja (Pix ou até 12x no cartão, com os juros do cartão) e R$ 249,90 por mês depois que ela estiver no ar.\n\nO mensal cobre o sistema rodando, o relatório das vendas e o suporte quando precisar.\n\nTe mando a proposta com tudo escrito?"
+ },
+ {
+  "id": "6028853c-fcc5-4ba9-b243-4ee8be502fed",
+  "titulo": "Loja online: quem já tem a vitrine (R$ 991)",
+  "categoria": "previa",
+  "ordem": 24,
+  "conteudo": "Oi, {nome}! Dá pra cliente pagar direto na vitrine da {empresa}: Pix, cartão e frete calculado, sem passar pelo WhatsApp.\n\nComo vocês já têm a vitrine, fica R$ 991 pra ligar, mais R$ 249,90 por mês depois de entregue.\n\nQuer ver como fica na de vocês?"
+ },
+ {
+  "id": "460d2af9-496a-4383-aafc-b5d599bb7fea",
+  "titulo": "Depois do preço: a amostra da loja online",
+  "categoria": "previa",
+  "ordem": 25,
+  "conteudo": "Oi, {nome}! A amostra da loja online da {empresa} ainda tá no ar:\n\n{link}\n\nDeixo mais uns dias ou pode tirar?"
+ },
+ {
+  "id": "f1d128ec-3dda-4b6d-a8d7-d44842ad21d1",
+  "titulo": "Enviando a proposta",
+  "categoria": "proposta",
+  "ordem": 11,
+  "conteudo": "Segue o orçamento da vitrine da {empresa}:\n\n[link da proposta]"
+ },
+ {
+  "id": "0deb9202-8ab9-47e6-a667-1f52fb289a6b",
+  "titulo": "Proposta sem resposta",
+  "categoria": "proposta",
+  "ordem": 12,
+  "conteudo": "Oi, {nome}! Conseguiu olhar a proposta da {empresa}?\n\nSe não for pra agora é só me falar, tá tudo certo."
+ },
+ {
+  "id": "e6ac8370-2343-4550-9647-3e6f5561167a",
+  "titulo": "Cobrança da parcela",
+  "categoria": "proposta",
+  "ordem": 13,
+  "conteudo": "Oi, {nome}! Tudo certo com a vitrine aí?\n\nFicou em aberto o restante, {saldo}. Te mando o Pix por aqui?"
+ },
+ {
+  "id": "43488ef7-ed00-491c-a1c5-645c481d8d8f",
+  "titulo": "Reativar contato antigo (mais de 30 dias)",
+  "categoria": "reativacao",
+  "ordem": 13,
+  "conteudo": "Oi, {nome}! Rafael aqui, a gente conversou um tempo atrás sobre o site da {empresa}.\n\nChegaram a fazer ou ficou parado?"
+ },
+ {
+  "id": "f9baee58-f153-4df3-90a0-de14174d4094",
+  "titulo": "Segundo toque, depois que responder",
+  "categoria": "segundo_toque",
+  "ordem": 3,
+  "conteudo": "ah, entendi! é que eu faço site aqui de Maringá e entrei pra ver as coisas de vocês antes de perguntar. sem uma página com tudo organizado, quem só ia dar uma olhada acaba te chamando no WhatsApp, e boa parte desiste antes. posso montar uma prévia da {empresa} pra você ver, sem compromisso e sem cobrar nada por isso. quer?"
+ },
+ {
+  "id": "4f0b56ea-9070-4803-b92c-20266624283f",
+  "titulo": "Loja online: depois do sim, a amostra",
+  "categoria": "segundo_toque",
+  "ordem": 4,
+  "conteudo": "Então deixa eu montar uma amostra com as suas peças, aí você vê como fica antes de decidir.\n\nQual peça mais sai aí? Começo por ela."
+ }
+]

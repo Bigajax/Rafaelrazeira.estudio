@@ -304,14 +304,11 @@
   --borda: var(--vidro-fio);
 }
 :global(main):has(.central) {
-  background:
-    radial-gradient(46rem 32rem at -4% -6%, rgba(8, 128, 78, .62), transparent 64%),
-    radial-gradient(34rem 26rem at 102% 2%, rgba(255, 196, 120, .58), transparent 62%),
-    radial-gradient(44rem 34rem at 92% 106%, rgba(20, 160, 110, .52), transparent 64%),
-    radial-gradient(30rem 24rem at 30% 70%, rgba(96, 200, 190, .42), transparent 66%),
-    radial-gradient(26rem 20rem at 60% 28%, rgba(190, 236, 210, .5), transparent 66%),
-    #dcebe3;
-  background-attachment: fixed;
+  /* o chão LISO (25/11/2026): eram cinco manchas de cor (a "névoa"), e o
+     Rafael: "não estou gostando do gradiente da cor de fundo, precisava ser
+     mais liso". Uma cor só, o verde claro da casca; os painéis continuam
+     claros por cima dela */
+  background: var(--chao-liso, #d3e6dc);
 }
 
 /* as três superfícies grandes e o placar */
@@ -354,7 +351,8 @@
 
 /* a ficha: o cartão da vez em vidro verde */
 .central .vez {
-  background: linear-gradient(135deg, rgba(12, 145, 89, .20), rgba(47, 174, 120, .09) 58%, rgba(255, 255, 255, .22));
+  /* liso desde 25/11: era um degradê de verde para branco */
+  background: rgba(12, 145, 89, .13);
   border: 1px solid rgba(12, 145, 89, .2);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .7), 0 16px 34px -24px rgba(5, 96, 59, .55);
   border-radius: 24px;
@@ -579,7 +577,7 @@
 :global(html[data-crm-tema="escuro"]) .central .formPasso input,
 :global(html[data-crm-tema="escuro"]) .central .anotar textarea { background: rgba(255, 255, 255, .08); color: var(--texto); }
 :global(html[data-crm-tema="escuro"]) .central .vez {
-  background: linear-gradient(135deg, rgba(47, 189, 125, .26), rgba(47, 189, 125, .1) 58%, rgba(255, 255, 255, .04));
+  background: rgba(47, 189, 125, .16);
   border-color: rgba(47, 189, 125, .32);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1), 0 16px 34px -24px rgba(0, 0, 0, .9);
 }
@@ -668,3 +666,16 @@
 /* o título do Hoje no tamanho dos outros (24/11/2026): estava em 40px fixo */
 .central .cabecalho h1 { font-size: clamp(28px, 3vw, 38px); }
 @media (max-width: 860px) { .central .cabecalho h1 { font-size: 28px; } }
+
+/* ── A ETAPA NO "JÁ FALEI POR FORA" (25/11/2026) ──
+   As etapas do caminho como botões de escolha, na mesma pílula das marcas
+   ("Respondeu", "Pediu áudio"): a marcada é a verde. Ficam numa linha que
+   quebra; no celular cada uma tem a altura do dedo. */
+.central .etapas { display: grid; gap: 6px; }
+.central .etapas > span { font: 600 12px/1.4 var(--body, Arial, sans-serif); color: var(--texto); }
+.central .etapas > div { display: flex; flex-wrap: wrap; gap: 6px; }
+.central .etapas .pilula { font-size: 12px; padding: 6px 12px; }
+.central .etapas .pilula[aria-pressed="true"] { cursor: pointer; }
+@media (max-width: 860px) {
+  .central .etapas .pilula { min-height: 44px; padding-inline: 14px; }
+}

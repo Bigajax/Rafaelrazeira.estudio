@@ -54,8 +54,8 @@ import {
   type HistoricoAtendimento,
 } from "@/lib/crm/atendimento";
 import type { painelHoje } from "@/lib/crm/dados";
-import { arrobaDe, dataCurta, diaEmSP, diasDesde, diasEntre, dinheiro, ehLojaOnline, linkWhatsapp, momentoDoContato, somarDias } from "@/lib/crm/regras";
-import { ehAtivo, NOME_CANAL, NOME_ESTAGIO, NOME_ORIGEM, NOME_TIPO, type Direcao, type LeadPainel, type Template } from "@/lib/crm/tipos";
+import { arrobaDe, dataCurta, destinoDoToque, diaEmSP, diasDesde, diasEntre, dinheiro, ehLojaOnline, linkWhatsapp, momentoDoContato, NOME_CAMPO, somarDias } from "@/lib/crm/regras";
+import { ehAtivo, ESTAGIOS_DO_QUADRO, NOME_CANAL, NOME_ESTAGIO, NOME_ORIGEM, NOME_TIPO, type Direcao, type Estagio, type LeadPainel, type Template } from "@/lib/crm/tipos";
 import { ModalNovoLead } from "./ModalNovoLead";
 import { Composicao, Contagem, Faisca } from "./PlacarVivo";
 import { ModalMensagem } from "./ModalMensagem";
@@ -549,6 +549,17 @@ function Atendimento({
      link pequeno em cima da conversa, que abria um modal com etapa e data. */
   const [anotando, setAnotando] = useState(false);
   const [nota, setNota] = useState("");
+  /* A ETAPA, escolhida junto com a anotação (25/11/2026). O Rafael falou com
+     a @wfsstoree por fora, o card já estava em Prévia, e para dizer a etapa
+     ele tinha que sair pelo "Mudar etapa ou data junto", um link no fim da
+     linha que abre outro formulário. Agora as etapas do caminho ficam à
+     vista, com a marcada sendo a etapa para onde o contato JÁ iria sozinho
+     (o trilho: lista vira contatado, contatado vira follow-up; o resto
+     fica). Só vai para a ação quando ele TOCA numa: sem toque, o trilho
+     continua bônus, e uma etapa que a régua recusaria não vira erro. */
+  const [etapaEscolhida, setEtapaEscolhida] = useState<Estagio | null>(null);
+  const etapaDoTrilho = destinoDoToque("saida", lead.estagio) ?? lead.estagio;
+  const etapaMarcada = etapaEscolhida ?? etapaDoTrilho;
   const router = useRouter();
   const canal = lead.whatsapp ? "whatsapp" : "instagram";
 
@@ -558,14 +569,18 @@ function Atendimento({
      lead sobe para "Responder agora". "Um áudio" e "ver com o sócio" viram
      o próximo passo para hoje. "Já mandei o preço" é a saída que foi por
      fora do CRM (01/11): sem ela o grupo "Preço no ar" não acha ninguém. */
-  function toque(direcao: Direcao, resumo: string, depois?: () => void) {
+  function toque(direcao: Direcao, resumo: string, depois?: () => void, estagio?: Estagio) {
     setErroMarca(null);
     comecarMarca(async () => {
-      const r = await registrarToque(lead.id, { canal, direcao, resumo });
+      const r = await registrarToque(lead.id, { canal, direcao, resumo, ...(estagio ? { estagio } : {}) });
       if (r.ok) {
         depois?.();
         router.refresh();
       }
+      /* a etapa escolhida pode pedir um dado que a ficha não tem (a Proposta
+         pede o ticket): nada foi gravado, e a frase diz o que falta e onde */
+      else if ("falta" in r && r.falta?.length && estagio)
+        setErroMarca(`${NOME_ESTAGIO[estagio]} pede ${r.falta.map((campo) => NOME_CAMPO[campo].toLowerCase()).join(" e ")}. Nada foi anotado: complete em "Outra etapa ou data".`);
       else setErroMarca("erro" in r ? r.erro : "Não foi possível marcar.");
     });
   }
@@ -692,16 +707,35 @@ function Atendimento({
             onSubmit={(e) => {
               e.preventDefault();
               const texto = nota.trim();
-              if (texto) toque("saida", texto, () => { setNota(""); setAnotando(false); });
+              if (texto) toque("saida", texto, () => { setNota(""); setAnotando(false); setEtapaEscolhida(null); }, etapaEscolhida ?? undefined);
             }}
           >
             <label htmlFor="nota-por-fora">O que você falou com {lead.nome}?</label>
             <textarea id="nota-por-fora" value={nota} onChange={(e) => setNota(e.target.value)} rows={3} autoFocus required placeholder="Mandei a amostra pelo direct, ela vai olhar à noite" />
+            {/* a etapa à vista (25/11): são botões de escolha, um marcado por vez */}
+            {ativo && (
+              <div className={c.etapas} role="group" aria-label="Etapa no funil">
+                <span>Etapa no funil</span>
+                <div>
+                  {ESTAGIOS_DO_QUADRO.map((e) => (
+                    <button key={e} type="button" className={c.pilula} aria-pressed={etapaMarcada === e} disabled={marcando} onClick={() => setEtapaEscolhida(e)}>
+                      {NOME_ESTAGIO[e]}
+                    </button>
+                  ))}
+                </div>
+                <small>
+                  {etapaMarcada === lead.estagio
+                    ? `Continua em ${NOME_ESTAGIO[lead.estagio]}.`
+                    : `Passa de ${NOME_ESTAGIO[lead.estagio]} para ${NOME_ESTAGIO[etapaMarcada]}${etapaEscolhida ? "" : ", como o funil já faria"}.`}
+                </small>
+              </div>
+            )}
             <div className={c.acoes}>
               <button type="submit" className={`${c.botao} ${c.primario}`} disabled={marcando || !nota.trim()}>{marcando ? "Anotando…" : "Anotar na conversa"}</button>
-              {!lead.preco_em && ativo && <button type="button" className={c.botao} disabled={marcando} onClick={() => toque("saida", RESUMO_PRECO_A_MAO, () => setAnotando(false))}>Foi o preço</button>}
-              <button type="button" className={c.linkBotao} onClick={() => aoRegistrar("saida")}>Mudar etapa ou data junto</button>
+              {!lead.preco_em && ativo && <button type="button" className={c.botao} disabled={marcando} onClick={() => toque("saida", RESUMO_PRECO_A_MAO, () => { setAnotando(false); setEtapaEscolhida(null); }, etapaEscolhida ?? undefined)}>Foi o preço</button>}
+              <button type="button" className={c.linkBotao} onClick={() => aoRegistrar("saida")}>Outra etapa ou data</button>
             </div>
+            {erroMarca && <p role="alert" className={c.erroArquivo}>{erroMarca}</p>}
             <small>Entra na conversa como mensagem sua, e o contato sai de quem espera você.</small>
           </form>
         )}
@@ -760,7 +794,7 @@ function Atendimento({
           <button type="button" className={c.pilula} onClick={() => aoRegistrar("entrada")}>Disse que não, ou depois</button>
         </div>
       )}
-      {erroMarca && <p role="alert" className={c.erroArquivo}>{erroMarca}</p>}
+      {erroMarca && !anotando && <p role="alert" className={c.erroArquivo}>{erroMarca}</p>}
 
       {/* a conversa some quando só existe o registro do formulário (24/11):
           era um balão repetindo o rodapé. Para quem acabou de chegar ("novos")
