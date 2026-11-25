@@ -86,7 +86,6 @@ const blackPorMandar = (l: LeadPainel) => naBlack(l) && !l.black_em;
 function motivoDe({ lead: l, grupo, encerrar }: Linha, hoje: string, agora: number | null): { texto: string; alto: boolean } {
   if (grupo === "responder") {
     if (l.quer_no_ar) return { texto: "Quer colocar no ar", alto: true };
-    if (l.cobranca && l.cobranca.quando <= hoje) return { texto: `A receber ${dinheiro(l.cobranca.saldo)}`, alto: true };
     if (precisaResponder(l)) return { texto: agora ? `Escreveu, ${tempoDeEspera(momentoDoContato(l), agora)}` : "Escreveu por último", alto: true };
     return { texto: marcaDe(l)?.nome ?? "Sua vez", alto: true };
   }
@@ -103,6 +102,11 @@ function motivoDe({ lead: l, grupo, encerrar }: Linha, hoje: string, agora: numb
     return { texto: encerrar ? `Parada há ${dias(d)}: encerrar` : `Amostra há ${dias(d)}, sem reação`, alto: false };
   }
   if (grupo === "prospeccao") return { texto: l.whatsapp ? "Primeiro contato" : "Primeiro contato, pelo Instagram", alto: false };
+  /* a cobrança (25/11): o valor e há quanto tempo venceu, em voz baixa */
+  if (grupo === "receber" && l.cobranca) {
+    const atraso = diasEntre(l.cobranca.vence_em, hoje);
+    return { texto: `${dinheiro(l.cobranca.saldo)}, ${atraso > 0 ? `venceu há ${dias(atraso)}` : "vence hoje"}`, alto: false };
+  }
   return { texto: `${NOME_ESTAGIO[l.estagio]} · ${l.proxima_acao_em ? `retorno ${dataCurta(l.proxima_acao_em)}` : "sem retorno marcado"}`, alto: false };
 }
 
@@ -110,7 +114,7 @@ function motivoDe({ lead: l, grupo, encerrar }: Linha, hoje: string, agora: numb
    decide pela etapa e pela escada do silêncio. */
 function sugestaoDe({ lead: l, grupo, encerrar }: Linha, hoje: string) {
   if (l.quer_no_ar) return { titulo: TEMPLATE_QUER_NO_AR, porque: "Pediu para colocar no ar: responda com o Pix da entrada" };
-  if (l.cobranca && l.cobranca.quando <= hoje) return { titulo: TITULO_COBRANCA, porque: `Tem ${dinheiro(l.cobranca.saldo)} em aberto: a cobrança, com o valor já escrito` };
+  if (l.cobranca && l.cobranca.quando <= hoje && grupo !== "responder") return { titulo: TITULO_COBRANCA, porque: `Tem ${dinheiro(l.cobranca.saldo)} em aberto: a cobrança, com o valor já escrito` };
   /* O preço que saiu por fora do CRM não tem toque: a lista da Black traz
      "(já viu o preço)" no passo, conferido no WhatsApp em 03/11. */
   if (blackPorMandar(l))
@@ -310,7 +314,7 @@ export function CentralAtendimento({ painel, templates }: Props) {
     );
   };
 
-  const NOME_CURTO: Record<string, string> = { novos: "novos", responder: "a responder", preco: "preço", amostra: "amostra", prospeccao: "prospecção" };
+  const NOME_CURTO: Record<string, string> = { novos: "novos", responder: "a responder", preco: "preço", amostra: "amostra", prospeccao: "prospecção", receber: "a receber" };
   const composicao = GRUPOS_DA_FILA.map((g) => ({ id: g.id, nome: g.nome, curto: NOME_CURTO[g.id] ?? g.nome, n: fila.itens.filter((i) => i.grupo === g.id).length }));
 
   return (
@@ -661,7 +665,7 @@ function Atendimento({
   const atrasoDaParcela = cobranca ? diasEntre(cobranca.vence_em, hoje) : 0;
   const vez: { titulo: string; detalhe?: string; botao: string } = lead.quer_no_ar
     ? { titulo: "Pediu para colocar no ar", detalhe: "É o lead mais quente da fila. Responda com o Pix da entrada.", botao: "Enviar o Pix" }
-    : cobranca
+    : cobranca && grupo !== "responder"
       ? { titulo: `A receber ${dinheiro(cobranca.saldo)}`, detalhe: `${cobranca.rotulo} · ${atrasoDaParcela > 0 ? `venceu há ${dias(atrasoDaParcela)}` : "vence hoje"}, em ${dataCurta(cobranca.vence_em)}`, botao: "Cobrar no WhatsApp" }
       : marca
         ? { titulo: marca.nome, detalhe: marca.id === "audio" ? "Grave o áudio explicando como funciona: onde houve áudio, a conversa viveu." : "Mande o resumo pronto pra encaminhar e pergunte quando eles conversam.", botao: marca.id === "audio" ? "Abrir a conversa" : "Enviar o resumo" }
@@ -759,6 +763,9 @@ function Atendimento({
             <small>Fica na conversa como mensagem sua, e o contato sai das pendências.</small>
           </form>
         )}
+        {/* quem escreveu e também deve (25/11): a conversa vem primeiro, e a
+            parcela fica dita aqui, com o "Dar baixa no Caixa" ao lado */}
+        {cobranca && grupo === "responder" && <small>Parcela em aberto: {dinheiro(cobranca.saldo)} ({cobranca.rotulo}), {atrasoDaParcela > 0 ? `vencida há ${dias(atrasoDaParcela)}` : "vence hoje"}.</small>}
         {(grupo === "novos" || grupo === "preco" || grupo === "amostra" || grupo === "prospeccao") && !encerrar && <small>Ao enviar, o próximo contato deste grupo abre em seguida.</small>}
         {/* o próximo passo mora DENTRO do cartão desde 24/11: "o que fazer
             agora" é um bloco só. Era uma faixa solta entre as pílulas e a

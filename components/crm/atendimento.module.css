@@ -714,3 +714,16 @@
 /* a ficha completa no rodapé, na mesma linha dos dados de origem */
 .central .cadastroLinha { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; }
 .central .cadastroLinha .link { font-size: 12px; }
+
+/* ── O GRUPO "A RECEBER" (25/11/2026) ──
+   A cobrança saiu de "Responder agora" para um grupo próprio, no fim. Na
+   barra e na legenda do placar ela é âmbar: nem o rosa de quem espera
+   resposta, nem o verde da venda em andamento. */
+.central .composicao i[data-grupo="receber"],
+.central .legenda li[data-grupo="receber"]::before { background: #c98a1b; }
+
+/* o nome do grupo preso no alto é OPACO (25/11/2026): com 78% de branco e
+   desfoque, o contato de baixo aparecia por trás do nome ("TOP TÊNIS" atrás
+   de "Prospecção do dia"). Sobre o chão liso o vidro não acrescenta nada. */
+.central .grupo h2 { background: #e6f1eb; -webkit-backdrop-filter: none; backdrop-filter: none; }
+:global(html[data-crm-tema="escuro"]) .central .grupo h2 { background: #17221d; }

@@ -213,6 +213,14 @@ export const GRUPOS_DA_FILA = [
   { id: "preco", nome: "Preço enviado, sem resposta" },
   { id: "amostra", nome: "Amostra enviada, sem resposta" },
   { id: "prospeccao", nome: "Prospecção do dia" },
+  /* A COBRANÇA TEM O GRUPO DELA, NO FIM (25/11/2026). Parcela vencida entrava
+     em "Responder agora" e ainda passava na frente de quem tinha escrito: o
+     Rafael abriu a fila com quatro "A receber" no topo e 16 no grupo, e
+     disse "o meu CRM é voltado para clientes". Ela não sai do Hoje (o
+     Santana ficou devendo R$ 400 de 26/09 a 10/11 sem aparecer em lugar
+     nenhum): fica à vista, depois de tudo que é venda. Quem deve E escreveu
+     por último continua em "Responder agora": ali tem alguém esperando. */
+  { id: "receber", nome: "A receber" },
 ] as const;
 export type GrupoDaFila = (typeof GRUPOS_DA_FILA)[number]["id"];
 export type ItemDaFila = { lead: LeadPainel; grupo: GrupoDaFila; encerrar: boolean };
@@ -260,15 +268,24 @@ export function filaDaVez(leads: LeadPainel[], hoje: string, nichoEscolhido: str
     }
   };
   const adiado = (l: LeadPainel) => Boolean(l.proxima_acao_em && l.proxima_acao_em > hoje);
-  const peso = (l: LeadPainel) => (l.quer_no_ar ? 0 : cobrancaNaVez(l, hoje) ? 1 : 2);
+  const peso = (l: LeadPainel) => (l.quer_no_ar ? 0 : 1);
   /* Já cobrei e estou esperando: não é fila, e também não é "preço sem resposta, encerrar". */
   const cobrancaEsperando = (l: LeadPainel) => Boolean(l.cobranca && l.cobranca.quando <= hoje) && !cobrancaNaVez(l, hoje);
 
   por(
     "responder",
     todos
-      .filter((l) => l.quer_no_ar || escreveuPorUltimo(l) || cobrancaNaVez(l, hoje) || (ehAtivo(l.estagio) && Boolean(marcaDe(l)) && !adiado(l)))
+      .filter((l) => l.quer_no_ar || escreveuPorUltimo(l) || (ehAtivo(l.estagio) && Boolean(marcaDe(l)) && !adiado(l)))
       .sort((a, b) => peso(a) - peso(b) || momentoDoContato(a).localeCompare(momentoDoContato(b)) || desempate(a, b)),
+  );
+  /* A cobrança da vez, logo depois de quem escreveu e ANTES dos outros
+     grupos: quem deve não pode cair em "preço sem resposta: encerrar". A
+     parcela mais antiga primeiro. Na tela o grupo é o último. */
+  por(
+    "receber",
+    todos
+      .filter((l) => cobrancaNaVez(l, hoje))
+      .sort((a, b) => (a.cobranca?.vence_em ?? "").localeCompare(b.cobranca?.vence_em ?? "") || desempate(a, b)),
   );
   // Quem acabou de chegar está quente; a espera antiga já esfriou (20/10/2026).
   por("novos", todos.filter((l) => chegouAgora(l, hoje)).sort((a, b) => momentoDoContato(b).localeCompare(momentoDoContato(a)) || desempate(a, b)));

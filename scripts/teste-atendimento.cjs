@@ -82,14 +82,14 @@ const grupoDe = (r, id) => r.itens.find((i) => i.lead.id === id)?.grupo ?? null;
 testar("Cobrança nunca feita fica na fila, mesmo com retorno no futuro", () => {
   const l = lead("a", { estagio: "previa", cobranca: divida, toques: 1, saidas_seguidas: 1, ultimo_toque_em: "2026-10-01T12:00:00Z", proxima_acao_em: "2026-12-01" });
   assert.equal(cobrancaNaVez(l, hoje), true);
-  assert.equal(grupoDe(filaDaVez([l], hoje), "a"), "responder");
+  assert.equal(grupoDe(filaDaVez([l], hoje), "a"), "receber");
 });
 testar("Cobrança feita sai da fila até o retorno marcado, e sem cair em 'encerrar'", () => {
   const l = lead("a", { estagio: "previa", cobranca: divida, preco_em: "2026-10-01T12:00:00Z", toques: 3, saidas_seguidas: 2, ultimo_toque_em: "2026-10-16T12:00:00Z", proxima_acao_em: "2026-10-18" });
   const r = filaDaVez([l], hoje);
   assert.equal(grupoDe(r, "a"), null);
   assert.equal(r.aguardando, 1);
-  assert.equal(grupoDe(filaDaVez([l], "2026-10-18"), "a"), "responder");
+  assert.equal(grupoDe(filaDaVez([l], "2026-10-18"), "a"), "receber");
 });
 testar("Cobrança feita sem data volta em 3 dias; se a pessoa responde, volta na hora", () => {
   const l = lead("a", { estagio: "ganho", cobranca: divida, toques: 2, saidas_seguidas: 1, ultimo_toque_em: "2026-10-15T12:00:00Z" });
@@ -115,5 +115,27 @@ testar("Prospecção do dia desconta os que já saíram hoje e fica depois dos o
   assert.equal(r.prospeccao.feitosHoje, 4);
   assert.equal(r.itens.filter((i) => i.grupo === "prospeccao").length, 6);
   assert.equal(r.itens[0].lead.id, "novo");
+});
+/* 25/11/2026: a cobrança tem o grupo dela, no fim da fila. */
+testar("Quem deve e escreveu por último fica em Responder agora, não em A receber", () => {
+  const l = lead("a", { estagio: "previa", cobranca: divida, toques: 3, toques_entrada: 1, saidas_seguidas: 0, ultimo_toque_em: "2026-10-16T12:00:00Z" });
+  assert.equal(grupoDe(filaDaVez([l], hoje), "a"), "responder");
+});
+testar("A cobrança não passa na frente de quem escreveu, e A receber é o último grupo da tela", () => {
+  const deve = lead("deve", { estagio: "ganho", cobranca: divida, toques: 1, saidas_seguidas: 1, ultimo_toque_em: "2026-10-01T12:00:00Z" });
+  const escreveu = lead("escreveu", { estagio: "conversa", toques: 3, toques_entrada: 1, saidas_seguidas: 0, ultimo_toque_em: "2026-10-16T12:00:00Z" });
+  const novo = lead("novo", { created_at: hoje + "T12:00:00Z" });
+  const garimpo = lead("garimpo", { origem: "prospeccao", nicho: "roupas femininas" });
+  const r = filaDaVez([deve, escreveu, novo, garimpo], hoje);
+  assert.equal(grupoDe(r, "deve"), "receber");
+  assert.equal(grupoDe(r, "escreveu"), "responder");
+  assert.equal(r.itens.filter((i) => i.grupo === "responder").length, 1);
+  assert.equal(r.itens[r.itens.length - 1].lead.id, "deve");
+});
+testar("Em A receber, a parcela mais antiga vem primeiro", () => {
+  const nova = lead("nova", { estagio: "ganho", cobranca: { ...divida, vence_em: "2026-10-10", quando: "2026-10-10" }, toques: 1, saidas_seguidas: 1, ultimo_toque_em: "2026-10-01T12:00:00Z" });
+  const velha = lead("velha", { estagio: "ganho", cobranca: { ...divida, vence_em: "2026-09-26", quando: "2026-09-26" }, toques: 1, saidas_seguidas: 1, ultimo_toque_em: "2026-09-20T12:00:00Z" });
+  const r = filaDaVez([nova, velha], hoje);
+  assert.deepEqual(r.itens.map((i) => i.lead.id), ["velha", "nova"]);
 });
 (async () => { let falhas = 0; for (const t of testes) { try { await t.executar(); console.log("OK: " + t.nome); } catch (e) { falhas++; console.error("FALHOU: " + t.nome, e); } } console.log(`${testes.length - falhas}/${testes.length} cenários de atendimento passaram.`); if (falhas) process.exitCode = 1; })();
