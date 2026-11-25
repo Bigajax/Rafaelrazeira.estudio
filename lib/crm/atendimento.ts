@@ -208,10 +208,10 @@ export const TITULO_COBRANCA = "Cobrança da parcela";
    novos leads cheguem primeiro"): quem acabou de pedir a amostra é quem
    esfria mais rápido. */
 export const GRUPOS_DA_FILA = [
-  { id: "novos", nome: "Chegou e não ouviu de mim" },
+  { id: "novos", nome: "Novos contatos" },
   { id: "responder", nome: "Responder agora" },
-  { id: "preco", nome: "Preço no ar" },
-  { id: "amostra", nome: "Amostra sem reação" },
+  { id: "preco", nome: "Preço enviado, sem resposta" },
+  { id: "amostra", nome: "Amostra enviada, sem resposta" },
   { id: "prospeccao", nome: "Prospecção do dia" },
 ] as const;
 export type GrupoDaFila = (typeof GRUPOS_DA_FILA)[number]["id"];

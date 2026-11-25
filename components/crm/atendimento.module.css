@@ -679,3 +679,38 @@
 @media (max-width: 860px) {
   .central .etapas .pilula { min-height: 44px; padding-inline: 14px; }
 }
+
+/* ── O PLACAR QUE SE EXPLICA (25/11/2026) ──
+   Era o número grande com o rótulo ao lado ("146 na fila de hoje") e uma barra
+   colorida sem legenda. Agora cada peça tem o nome em cima, o número, e ao
+   lado dele uma linha dizendo o que ele conta; na fila, essa linha é a legenda
+   da barra, com a cor de cada grupo. */
+.central .placar > div {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: baseline;
+  column-gap: 12px; row-gap: 0; padding: 10px 16px 14px;
+}
+.central .placar dt { grid-column: 1 / -1; order: 0; font-size: 12px; font-weight: 600; line-height: 1.4; color: var(--texto); }
+.central .placar dd { grid-column: 1; }
+.central .placar small,
+.central .legenda { grid-column: 2; position: relative; z-index: 1; margin: 0; padding: 0; font-size: 11px; line-height: 1.45; color: var(--suave); }
+.central .legenda { display: flex; flex-wrap: wrap; column-gap: 10px; row-gap: 0; list-style: none; }
+.central .legenda li { display: inline-flex; align-items: baseline; gap: 4px; white-space: nowrap; }
+.central .legenda li::before { content: ""; align-self: center; width: 7px; height: 7px; border-radius: 2px; background: rgba(12, 145, 89, .55); }
+.central .legenda li[data-grupo="novos"]::before { background: #e31b62; }
+.central .legenda li[data-grupo="responder"]::before { background: #f0739f; }
+.central .legenda li[data-grupo="preco"]::before { background: #0c9159; }
+.central .legenda li[data-grupo="amostra"]::before { background: rgba(12, 145, 89, .6); }
+.central .legenda li[data-grupo="prospeccao"]::before { background: rgba(12, 145, 89, .3); }
+.central .legenda b { font-weight: 600; color: var(--texto); font-variant-numeric: tabular-nums; }
+/* os dois de resultado têm o desenho dos 14 dias à direita: a frase não passa por cima */
+.central .placar > div:has(.faisca) small { padding-right: 36%; }
+@media (max-width: 860px) {
+  /* no celular são duas peças por linha: a explicação desce para baixo do número */
+  .central .placar small, .central .legenda { grid-column: 1 / -1; }
+  /* o desenho dos 14 dias continua à direita: a frase quebra antes dele */
+  .central .placar > div:has(.faisca) small { padding-right: 42%; }
+}
+
+/* a ficha completa no rodapé, na mesma linha dos dados de origem */
+.central .cadastroLinha { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; }
+.central .cadastroLinha .link { font-size: 12px; }
