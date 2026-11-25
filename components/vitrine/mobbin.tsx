@@ -278,9 +278,12 @@ export function Etapas() {
       <article className={`${s.bentoCard} ${s.bentoPainel}`}>
         <h3>{bt.painel.t}</h3>
         <ul className={s.bentoLista}>{bt.painel.p.map(x => <li key={x}>{x}</li>)}</ul>
-        {/* o vídeo do cadastro (28/10): gravado no painel do molde em modo
-            local, com a foto real do New Balance 9060 da Iconic, 28s em
-            laço, sem som. Quem pede menos movimento vê a capa parada. */}
+        {/* o vídeo do cadastro: gravado no painel do molde em modo local,
+            com a foto real do New Balance 9060 da Iconic, em laço, sem som.
+            Quem pede menos movimento vê a capa parada. Regravado em
+            25/11/2026 no painel v2.3.4 (o menu preto, o cartão branco, a
+            janela "Nova peça"), 22s; o de 28/10 era o papel e tinta, que
+            nenhuma loja tem mais. Como regravar: scripts/gravar-video-painel.cjs. */}
         <figure className={s.bentoTela}>
           <VideoPainel alt={bt.painel.alt} />
           <figcaption>{bt.painel.legenda}</figcaption>
@@ -356,11 +359,16 @@ function VideoPainel({ alt }: { alt: string }) {
     io.observe(v);
     return () => { io.disconnect(); perto.disconnect(); };
   }, []);
-  /* 960x600 desde 28/10 (era 1280x800 e 1,4MB no webm; agora ~310KB), e o
-     mp4 vem primeiro só se for menor: hoje os dois empatam */
-  return <video ref={ref} className={s.bentoVideo} muted loop playsInline preload="none" poster="/assets/demo/painel-cadastro-capa.webp" width={960} height={600} aria-label={alt}>
-    <source src="/assets/demo/painel-cadastro.webm" type="video/webm" />
-    <source src="/assets/demo/painel-cadastro.mp4" type="video/mp4" />
+  /* 960x600 desde 28/10 (era 1280x800 e 1,4MB no webm), e o mp4 vem
+     primeiro só se for menor: hoje os dois empatam.
+     A gravação (25/11/2026): o molde oficial no modo local, tela de
+     1280x800 a 1,5x, uma foto por quadro a 30 por segundo com um cursor
+     desenhado por cima, reduzida a 960x600 no ffmpeg (vp9 crf 42, h264 crf
+     30): 251KB e 229KB. Com out_range=tv: em faixa cheia o Chrome recusava o webm. O ?v= no endereço é para o navegador e a Vercel
+     não servirem o vídeo antigo de cache: regravou, sobe o número. */
+  return <video ref={ref} className={s.bentoVideo} muted loop playsInline preload="none" poster="/assets/demo/painel-cadastro-capa.webp?v=2" width={960} height={600} aria-label={alt}>
+    <source src="/assets/demo/painel-cadastro.webm?v=2" type="video/webm" />
+    <source src="/assets/demo/painel-cadastro.mp4?v=2" type="video/mp4" />
   </video>;
 }
 
