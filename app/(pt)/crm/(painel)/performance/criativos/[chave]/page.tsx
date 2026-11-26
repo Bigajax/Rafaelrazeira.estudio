@@ -26,6 +26,7 @@ import {
   pontosDaCurva,
   type LinhaAnuncio,
   type LinhaDia,
+  type LinhaContrato,
   type LinhaRecebimento,
 } from "@/lib/performance/criativos";
 import { FormDecisao, FormProducao } from "@/components/performance/FichaCriativo";
@@ -67,15 +68,16 @@ export default async function FichaCriativo({ params }: { params: Promise<{ chav
   if (!meus.length) notFound();
   const ids = meus.map((x) => x.ad_id);
 
-  const [diasR, paginasR, leadsR, recR, curvasR, fichaR, projetosR, cotacao] = await Promise.all([
+  const [diasR, paginasR, leadsR, recR, curvasR, fichaR, projetosR, cotacao, contratosR] = await Promise.all([
     supabase.from("ads_meta_dia").select("ad_id, dia, gasto, impressoes, plays_3s, thruplay, cliques_link, lpv, formularios, checkouts, compras").in("ad_id", ids).limit(5000),
     supabase.from("ads_pagina_dia").select("utm_content, visitantes, interagiram, rolaram, viram_oferta, comecaram, enviaram").limit(5000),
-    supabase.from("crm_leads").select("id, nome, empresa, estagio, created_at, anuncio").not("anuncio", "is", null).order("created_at", { ascending: false }).limit(5000),
+    supabase.from("crm_leads").select("id, nome, empresa, estagio, created_at, anuncio, valor_fechado").not("anuncio", "is", null).order("created_at", { ascending: false }).limit(5000),
     supabase.from("crm_recebimentos").select("lead_id, valor, valor_estornado, estornado_em, recebido_em, utm:bruto->metadata->>utm_content").limit(5000),
     supabase.from("ads_curvas").select("ad_id, curva, duracao, folha, lido_em").in("ad_id", ids),
     supabase.from("ads_criativos").select("custo_producao, ai_projeto_id, decisoes").eq("chave", chave).maybeSingle(),
     supabase.from("ai_projetos").select("id, nome").order("created_at", { ascending: false }).limit(200),
     cotacaoDolar(),
+    supabase.from("crm_contratos").select("lead_id, tipo, status, valor_total").limit(5000),
   ]);
 
   const dias = (diasR.data ?? []) as LinhaDia[];
@@ -91,6 +93,7 @@ export default async function FichaCriativo({ params }: { params: Promise<{ chav
     recebimentos,
     "2000-01-01",
     hoje,
+    { contratos: (contratosR.data ?? []) as LinhaContrato[] },
   )[0];
 
   /* a curva do anúncio que mais apareceu (é a que tem mais gente por trás) */

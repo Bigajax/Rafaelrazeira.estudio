@@ -27,7 +27,7 @@
 .tabela thead th:first-child { text-align: left; left: 0; z-index: 1 }
 .tabela td small { display: block; font-size: 11.5px; color: var(--ink-fraco) }
 
-/* 1. os números grandes */
+/* os números grandes: só a ficha do criativo usa desde 26/11 (a tela geral tem a escada) */
 .cartoes { margin-top: 22px; display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)) }
 .cartoes > div { border: 1px solid var(--line); border-radius: 8px; background: var(--paper-alto); padding: 16px 18px; display: grid; gap: 4px; min-width: 0 }
 .cartoes span { font: 500 12px/1.3 var(--body); color: var(--ink-fraco) }
@@ -148,3 +148,51 @@
 .periodos { padding: 4px; border-radius: 980px; background: #e6ede9 }
 .periodos a { border: 0; border-radius: 980px; background: transparent; min-height: 36px }
 .periodos a[aria-current="page"] { background: var(--painel-acento, #076b42); color: #fff }
+
+/* ---------- a escada do dinheiro (26/11/2026) ----------
+   A peça que manda na tela: quatro degraus de leads a cliente, o número
+   grande na fonte de título, a barra com a parte dos leads que chegou ali e
+   o maior tombo com o rótulo em rosa escuro (só o rótulo: a barra continua
+   tinta). Embaixo, o dinheiro: o que saiu, o que foi contratado e o que já
+   entrou, com o fio do caixa (verde o que entrou, âmbar o que falta). */
+.escada { margin-top: 24px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper-alto); padding: 22px 24px 20px }
+.escada > h2 { font: 650 18px/1.3 var(--body); letter-spacing: -.015em; margin: 0 0 18px }
+.degraus { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)) }
+.degraus > li { display: grid; align-content: start; gap: 4px; padding: 0 20px; border-left: 1px solid var(--line); min-width: 0 }
+.degraus > li:first-child { padding-left: 0; border-left: 0 }
+.degrauNome { font: 500 13px/1.4 var(--body); color: var(--ink-soft) }
+.degrauNum { font: 400 clamp(36px, 3.8vw, 52px)/1 var(--display); letter-spacing: -.035em; font-variant-numeric: tabular-nums; color: var(--ink) }
+.degrauCusto { font: 400 12.5px/1.45 var(--body); color: var(--ink-fraco); font-variant-numeric: tabular-nums }
+.degrauTrilho { display: block; height: 8px; margin-top: 10px; border-radius: 4px; background: rgba(20, 24, 26, .07); overflow: hidden }
+.degrauTrilho i { display: block; height: 100%; border-radius: inherit; background: var(--ink) }
+.degrauQueda { font: 400 12px/1.45 var(--body); color: var(--ink-fraco) }
+.degraus > li[data-queda] .degrauQueda { color: var(--rosa-dark); font-weight: 600 }
+
+.dinheiro { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 20px }
+.dinheiro > div { display: grid; align-content: start; gap: 2px; min-width: 0 }
+.dinheiro span { font: 500 13px/1.4 var(--body); color: var(--ink-soft) }
+.dinheiro b { font: 650 24px/1.2 var(--body); letter-spacing: -.02em; font-variant-numeric: tabular-nums }
+.dinheiro small { font: 400 12.5px/1.45 var(--body); color: var(--ink-fraco); font-variant-numeric: tabular-nums }
+.dinheiro .recebido { color: var(--painel-acento, #076b42) }
+.dinheiro .caixa { grid-column: 1 / -1; gap: 6px }
+.caixaTrilho { display: block; height: 6px; border-radius: 3px; background: #f0e2c2; overflow: hidden }
+.caixaTrilho i { display: block; height: 100%; background: var(--painel-acento, #076b42) }
+.comCaixa .caixaTrilho { width: 72px; margin: 6px 0 0 auto }
+.tabela td[data-parou] small { color: #8a5d00 }
+
+@media (max-width: 900px) {
+  .degraus { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 20px }
+  .degraus > li:nth-child(3) { padding-left: 0; border-left: 0 }
+}
+@media (max-width: 600px) {
+  .escada { padding: 18px 16px }
+  .degraus { grid-template-columns: minmax(0, 1fr); row-gap: 0 }
+  .degraus > li { grid-template-columns: minmax(0, 1fr) auto; column-gap: 12px; padding: 12px 0; border-left: 0; border-top: 1px solid var(--line) }
+  .degraus > li:first-child { padding-top: 0; border-top: 0 }
+  .degrauNome { grid-column: 1; grid-row: 1 }
+  .degrauNum { grid-column: 2; grid-row: 1 / span 2; font-size: 34px; text-align: right; align-self: center }
+  .degrauCusto { grid-column: 1; grid-row: 2 }
+  .degrauTrilho, .degrauQueda { grid-column: 1 / -1 }
+  .degrauTrilho { margin-top: 6px }
+  .dinheiro { grid-template-columns: minmax(0, 1fr) }
+}

@@ -11,6 +11,8 @@
    - gastar 1,5 a 2x o custo por formulário alvo sem nenhum formulário mata.
    ============================================================ */
 
+import { avancouLead, valorContratado, type EventoEtapa } from "@/lib/sistema/comercial";
+
 export type LinhaAnuncio = {
   ad_id: string;
   nome: string;
@@ -50,6 +52,9 @@ export type Conta = {
    R$ 20 e R$ 50"); o h27u fez R$ 10,36. */
 export const CPL_ALVO = 20;
 export const PISO_IMPRESSOES = 500;
+/* Abaixo de 3 clientes, o custo por cliente é o gasto dividido por quase
+   nada: com 1 venda ele é o gasto inteiro. A tela mostra, mas avisa. */
+export const PISO_CLIENTES = 3;
 
 export type Criativo = {
   chave: string;
@@ -83,12 +88,33 @@ export type Criativo = {
   receita: number;
   cac: number | null; // gasto / clientes
   retorno: number | null; // receita / gasto
+  // a escada do dinheiro (26/11/2026): o degrau do meio e o contratado
+  amostras: number;
+  propostas: number;
+  contratado: number;
+  custoAmostra: number | null; // gasto / amostras
+  custoProposta: number | null; // gasto / propostas
+  retornoContratado: number | null; // contratado / gasto
 };
 
 /* ---------- FASE 2: a página e o CRM (19/10/2026) ---------- */
 
 export type LinhaPagina = { utm_content: string; pagina: string; dia: string; visitantes: number; interagiram: number; comecaram: number; enviaram: number };
-export type LinhaLead = { id: string; anuncio: string | null; estagio: string; created_at: string };
+export type LinhaLead = { id: string; anuncio: string | null; estagio: string; created_at: string; valor_fechado?: number | null };
+export type LinhaContrato = { lead_id: string; tipo: string; status: string; valor_total: number | null };
+
+/* O que o CRM sabe além do lead (26/11/2026). Opcional para os scripts que
+   ainda não leem contrato nem histórico: sem eventos, a amostra é lida pelo
+   estágio de agora (quem foi perdido depois da amostra conta a menos); com
+   eles, pela passagem registrada, igual aos Indicadores. */
+export type ExtrasCRM = { contratos?: LinhaContrato[]; eventos?: EventoEtapa[] | null };
+
+function chegadas(extras: ExtrasCRM) {
+  const porLead = new Map<string, EventoEtapa[]>();
+  for (const e of extras.eventos ?? []) porLead.set(e.lead_id, [...(porLead.get(e.lead_id) ?? []), e]);
+  const semHistorico = !extras.eventos;
+  return (l: LinhaLead, etapa: "previa" | "proposta") => avancouLead(l, semHistorico ? null : (porLead.get(l.id) ?? []), etapa);
+}
 export type LinhaRecebimento = { lead_id: string | null; valor: number; valor_estornado: number | null; estornado_em: string | null; recebido_em: string; utm: string | null };
 
 /* A utm de agosto era dinâmica ({{ad.id}}): o lead e o Mixpanel guardaram o
@@ -116,8 +142,11 @@ export function ligarCRM(
   recebimentos: LinhaRecebimento[],
   desde: string,
   ate: string,
+  extras: ExtrasCRM = {},
 ) {
   const porChave = new Map(criativos.map((g) => [g.chave, g]));
+  const chegou = chegadas(extras);
+  const contratos = extras.contratos ?? [];
   for (const p of paginas) {
     if (p.dia < desde || p.dia > ate) continue;
     const g = porChave.get(chaveDaUtm(p.utm_content, anuncios) ?? "");
@@ -137,6 +166,9 @@ export function ligarCRM(
     if (!g) continue;
     g.leads += 1;
     if (l.estagio === "ganho") g.clientes += 1;
+    if (chegou(l, "previa")) g.amostras += 1;
+    if (chegou(l, "proposta")) g.propostas += 1;
+    g.contratado += valorContratado(l, contratos);
     chaveDoLead.set(l.id, g.chave);
   }
   for (const r of recebimentos) {
@@ -148,15 +180,20 @@ export function ligarCRM(
     g.receita = Math.round(g.receita * 100) / 100;
     g.cac = g.clientes ? g.gasto / g.clientes : null;
     g.retorno = g.gasto > 0 ? g.receita / g.gasto : null;
+    g.custoAmostra = g.amostras ? g.gasto / g.amostras : null;
+    g.custoProposta = g.propostas ? g.gasto / g.propostas : null;
+    g.retornoContratado = g.gasto > 0 ? g.contratado / g.gasto : null;
   }
   return criativos;
 }
 
 /* o mês a mês, para comparar com o Financeiro: gasto real contra o que voltou */
-export function mesAMes(anuncios: LinhaAnuncio[], dias: LinhaDia[], leads: LinhaLead[], recebimentos: LinhaRecebimento[]) {
-  const meses = new Map<string, { mes: string; gasto: number; formularios: number; leads: number; clientes: number; receita: number }>();
+export function mesAMes(anuncios: LinhaAnuncio[], dias: LinhaDia[], leads: LinhaLead[], recebimentos: LinhaRecebimento[], extras: ExtrasCRM = {}) {
+  const chegou = chegadas(extras);
+  const contratos = extras.contratos ?? [];
+  const meses = new Map<string, { mes: string; gasto: number; formularios: number; leads: number; amostras: number; propostas: number; clientes: number; contratado: number; receita: number }>();
   const m = (mes: string) => {
-    if (!meses.has(mes)) meses.set(mes, { mes, gasto: 0, formularios: 0, leads: 0, clientes: 0, receita: 0 });
+    if (!meses.has(mes)) meses.set(mes, { mes, gasto: 0, formularios: 0, leads: 0, amostras: 0, propostas: 0, clientes: 0, contratado: 0, receita: 0 });
     return meses.get(mes)!;
   };
   for (const d of dias) {
@@ -171,6 +208,9 @@ export function mesAMes(anuncios: LinhaAnuncio[], dias: LinhaDia[], leads: Linha
     const x = m(mes);
     x.leads += 1;
     if (l.estagio === "ganho") x.clientes += 1;
+    if (chegou(l, "previa")) x.amostras += 1;
+    if (chegou(l, "proposta")) x.propostas += 1;
+    x.contratado += valorContratado(l, contratos);
     mesDoLead.set(l.id, mes);
   }
   for (const r of recebimentos) {
@@ -178,6 +218,30 @@ export function mesAMes(anuncios: LinhaAnuncio[], dias: LinhaDia[], leads: Linha
     if (mes) m(mes).receita += r.estornado_em ? 0 : Math.max(0, Number(r.valor) - Number(r.valor_estornado || 0));
   }
   return [...meses.values()].filter((x) => x.gasto > 0 || x.receita > 0).sort((a, b) => a.mes.localeCompare(b.mes));
+}
+
+/* ---------- a escada do dinheiro (26/11/2026) ----------
+   O total do período em degraus: quantos chegaram a cada etapa, quanto custou
+   cada um, e onde mais gente parou. É a pergunta do diagnóstico de 26/11: o
+   01b levava à amostra quase como o h27u e não fez proposta nenhuma; o custo
+   do formulário não mostrava isso, a escada mostra. A maior queda só conta
+   onde o degrau de cima tem gente: de 0 para 0 não é queda. */
+export type Degrau = { chave: "leads" | "amostras" | "propostas" | "clientes"; nome: string; n: number; custo: number | null; fracao: number; queda: number | null };
+
+export function escada(t: { gasto: number; leads: number; amostras: number; propostas: number; clientes: number }) {
+  const lista: [Degrau["chave"], string, number][] = [
+    ["leads", "Leads", t.leads],
+    ["amostras", "Amostra", t.amostras],
+    ["propostas", "Proposta", t.propostas],
+    ["clientes", "Cliente", t.clientes],
+  ];
+  const degraus: Degrau[] = lista.map(([chave, nome, qtd], i) => {
+    const anterior = i ? lista[i - 1][2] : 0;
+    return { chave, nome, n: qtd, custo: qtd ? t.gasto / qtd : null, fracao: t.leads ? qtd / t.leads : 0, queda: anterior ? 1 - qtd / anterior : null };
+  });
+  const comQueda = degraus.filter((d) => (d.queda ?? 0) > 0);
+  const maior = comQueda.length ? comQueda.reduce((a, b) => ((b.queda ?? 0) > (a.queda ?? 0) ? b : a)) : null;
+  return { degraus, maiorQueda: maior?.chave ?? null };
 }
 
 const div = (a: number, b: number) => (b > 0 ? a / b : null);
@@ -225,6 +289,12 @@ export function agruparCriativos(anuncios: LinhaAnuncio[], dias: LinhaDia[]): Cr
         receita: 0,
         cac: null,
         retorno: null,
+        amostras: 0,
+        propostas: 0,
+        contratado: 0,
+        custoAmostra: null,
+        custoProposta: null,
+        retornoContratado: null,
       };
       grupos.set(chave, g);
     }
@@ -342,7 +412,8 @@ export function maiorQueda(pontos: { t: number; v: number }[]) {
 
 /* A semana contra a anterior: os últimos 7 dias fechados (até ontem) e os 7
    de antes. Hoje fica fora porque ainda está gastando. */
-export function semanaContraAnterior(dias: LinhaDia[], leads: LinhaLead[], anuncios: LinhaAnuncio[], hojeISO: string) {
+export function semanaContraAnterior(dias: LinhaDia[], leads: LinhaLead[], anuncios: LinhaAnuncio[], hojeISO: string, extras: ExtrasCRM = {}) {
+  const chegou = chegadas(extras);
   const dia = (desloc: number) => new Date(Date.parse(hojeISO) - desloc * 864e5).toISOString().slice(0, 10);
   const janelas = [
     { de: dia(7), ate: dia(1) },
@@ -353,7 +424,7 @@ export function semanaContraAnterior(dias: LinhaDia[], leads: LinhaLead[], anunc
     const gasto = d.reduce((s, x) => s + (Number(x.gasto) || 0), 0);
     const formularios = d.reduce((s, x) => s + x.formularios, 0);
     const l = leads.filter((x) => x.created_at.slice(0, 10) >= de && x.created_at.slice(0, 10) <= ate && chaveDaUtm(x.anuncio, anuncios));
-    return { de, ate, gasto, formularios, cpl: formularios ? gasto / formularios : null, leads: l.length, clientes: l.filter((x) => x.estagio === "ganho").length };
+    return { de, ate, gasto, formularios, cpl: formularios ? gasto / formularios : null, leads: l.length, amostras: l.filter((x) => chegou(x, "previa")).length, clientes: l.filter((x) => x.estagio === "ganho").length };
   });
   return { esta, antes };
 }

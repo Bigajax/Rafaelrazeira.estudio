@@ -1,7 +1,7 @@
 import { cache } from "react";
 import { pagamentosPorParcela, semAlocacao } from "@/lib/caixa/recebimentos";
 import { conferir } from "@/lib/sistema/consultas";
-import { avancouLead } from "@/lib/sistema/comercial";
+import { avancouLead, valorContratado } from "@/lib/sistema/comercial";
 import { lerTodos, tabelaAusente } from "@/lib/sistema/consultas";
 import { diaLocal, mesLocal } from "@/lib/sistema/calendario";
 import { chamadosEsperando } from "@/lib/suporte/dados";
@@ -861,21 +861,7 @@ export async function metricas(dias: 7 | 30 | 90) {
       previa: chegaram(grupo, "previa"),
       proposta: chegaram(grupo, "proposta"),
       ganho: chegaram(grupo, "ganho"),
-      valor: grupo.reduce((s, l) => {
-        const seus = contratos.filter(
-          (c) => c.lead_id === l.id && c.tipo === "projeto",
-        );
-        return (
-          s +
-          (seus.length
-            ? seus
-                .filter((c) => c.status === "ativo")
-                .reduce((v, c) => v + Number(c.valor_total ?? 0), 0)
-            : l.estagio === "ganho"
-              ? (l.valor_fechado ?? 0)
-              : 0)
-        );
-      }, 0),
+      valor: grupo.reduce((s, l) => s + valorContratado(l, contratos), 0),
     }))
     .sort(
       (a, b) =>

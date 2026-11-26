@@ -24,12 +24,16 @@ import {
   pct,
   PISO_IMPRESSOES,
   type Conta,
+  escada,
+  PISO_CLIENTES,
   type LinhaAnuncio,
+  type LinhaContrato,
   type LinhaDia,
   type LinhaLead,
   type LinhaPagina,
   type LinhaRecebimento,
 } from "@/lib/performance/criativos";
+import type { EventoEtapa } from "@/lib/sistema/comercial";
 import s from "@/app/(pt)/crm/crm.module.css";
 import p from "@/app/(pt)/crm/performance.module.css";
 import a from "../analise/analise.module.css";
@@ -38,7 +42,9 @@ import c from "./criativos.module.css";
 export const metadata: Metadata = { title: "Criativos" };
 export const dynamic = "force-dynamic";
 
-const PERIODOS = [7, 30, 90] as const;
+/* "tudo" desde 26/11/2026: o diagnóstico daquele dia era da vida inteira da
+   conta (R$ 4.029, 8 clientes), e 90 dias já não alcançavam setembro. */
+const PERIODOS = [7, 30, 90, "tudo"] as const;
 const reais = (v: number | null, casas = 2) =>
   v == null ? "–" : v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: casas, maximumFractionDigits: casas });
 const n = (v: number) => v.toLocaleString("pt-BR");
@@ -72,7 +78,6 @@ export default async function PaginaCriativos({ searchParams }: { searchParams: 
   const { dias: diasParam } = await searchParams;
   const dias = PERIODOS.find((d) => String(d) === diasParam) ?? 30;
   const hoje = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(new Date());
-  const desde = new Date(Date.parse(hoje) - (dias - 1) * 864e5).toISOString().slice(0, 10);
 
   const supabase = await clienteServidor();
   const [contaR, anunciosR] = await Promise.all([
@@ -95,28 +100,50 @@ export default async function PaginaCriativos({ searchParams }: { searchParams: 
     }
     return linhas;
   }
-  const [todosDias, paginas, leads, recebimentos] = semTabela
-    ? [[], [], [], []]
+  /* O histórico de etapas: sem a tabela, null (a amostra é lida pelo estágio
+     de agora). Lista vazia por erro faria ninguém ter chegado à amostra. */
+  async function eventosEtapa(): Promise<EventoEtapa[] | null> {
+    const linhas: EventoEtapa[] = [];
+    for (let de = 0; ; de += 1000) {
+      const { data, error } = await supabase
+        .from("crm_eventos_etapa")
+        .select("id, lead_id, etapa, anterior, motivo, ocorrido_em, inicial")
+        .order("ocorrido_em")
+        .range(de, de + 999);
+      if (error) return de ? linhas : null;
+      linhas.push(...((data ?? []) as EventoEtapa[]));
+      if (!data || data.length < 1000) return linhas;
+    }
+  }
+  const [todosDias, paginas, leads, recebimentos, contratos, eventos] = semTabela
+    ? [[], [], [], [], [], null]
     : await Promise.all([
         tudo<LinhaDia>("ads_meta_dia", "ad_id, dia, gasto, impressoes, plays_3s, thruplay, cliques_link, lpv, formularios, checkouts, compras", "dia"),
         tudo<LinhaPagina>("ads_pagina_dia", "utm_content, pagina, dia, visitantes, interagiram, comecaram, enviaram", "dia"),
-        tudo<LinhaLead>("crm_leads", "id, anuncio, estagio, created_at", "created_at", "anuncio"),
+        tudo<LinhaLead>("crm_leads", "id, anuncio, estagio, created_at, valor_fechado", "created_at", "anuncio"),
         // a utm da compra direta volta no metadata do Mercado Pago (o rastro do checkout, 19/10)
         tudo<LinhaRecebimento>("crm_recebimentos", "lead_id, valor, valor_estornado, estornado_em, recebido_em, utm:bruto->metadata->>utm_content", "recebido_em"),
+        tudo<LinhaContrato>("crm_contratos", "lead_id, tipo, status, valor_total", "created_at"),
+        eventosEtapa(),
       ]);
+  const extras = { contratos, eventos };
+  const desde =
+    dias === "tudo"
+      ? (todosDias.find((d) => Number(d.gasto) > 0)?.dia ?? hoje)
+      : new Date(Date.parse(hoje) - (dias - 1) * 864e5).toISOString().slice(0, 10);
   const linhasDia = todosDias.filter((d) => d.dia >= desde);
   const temPagina = paginas.length > 0;
 
   const conta = (contaR.data?.[0] ?? null) as Conta | null;
   const anuncios = (anunciosR.data ?? []) as LinhaAnuncio[];
-  const criativos = ligarCRM(agruparCriativos(anuncios, linhasDia), anuncios, paginas, leads, recebimentos, desde, hoje);
+  const criativos = ligarCRM(agruparCriativos(anuncios, linhasDia), anuncios, paginas, leads, recebimentos, desde, hoje, extras);
   const avisos = avisosDaConta(conta, anuncios, hoje);
   // gastou e a Meta registrou gente na página, mas o Mixpanel não viu ninguém: link ou utm quebrada
   if (temPagina)
     for (const g of criativos.filter((x) => x.ligados && x.lpv >= 20 && !x.visitantes))
       avisos.push({ nivel: "amarelo", texto: `${g.nome}: a Meta registrou ${g.lpv} visitas na página, e o Mixpanel não viu nenhuma com essa utm. Confira o link do anúncio.` });
-  const meses = mesAMes(anuncios, todosDias, leads, recebimentos);
-  const semana = semanaContraAnterior(todosDias, leads, anuncios, hoje);
+  const meses = mesAMes(anuncios, todosDias, leads, recebimentos, extras);
+  const semana = semanaContraAnterior(todosDias, leads, anuncios, hoje, extras);
   // os lotes do período: os do L08 em diante (com loja) e os formatos de antes
   const lotes = [...new Set(criativos.filter((g) => g.gasto > 0).map((g) => componentesDo(g.nome)?.lote ?? (componentesDo(g.nome) ? "" : null)))].filter(
     (x): x is string => x !== null,
@@ -130,11 +157,15 @@ export default async function PaginaCriativos({ searchParams }: { searchParams: 
       compras: x.compras + g.compras,
       lpv: x.lpv + g.lpv,
       leads: x.leads + g.leads,
+      amostras: x.amostras + g.amostras,
+      propostas: x.propostas + g.propostas,
       clientes: x.clientes + g.clientes,
+      contratado: x.contratado + g.contratado,
       receita: x.receita + g.receita,
     }),
-    { gasto: 0, form: 0, check: 0, compras: 0, lpv: 0, leads: 0, clientes: 0, receita: 0 },
+    { gasto: 0, form: 0, check: 0, compras: 0, lpv: 0, leads: 0, amostras: 0, propostas: 0, clientes: 0, contratado: 0, receita: 0 },
   );
+  const degraus = escada(t);
   const comGasto = criativos.filter((g) => g.gasto > 0);
   // só o que passou do piso entra nas tabelas; o resto vai para "Ainda cedo"
   const julgaveis = comGasto.filter((g) => g.impressoes >= PISO_IMPRESSOES);
@@ -161,7 +192,7 @@ export default async function PaginaCriativos({ searchParams }: { searchParams: 
         <nav className={c.periodos} aria-label="Período">
           {PERIODOS.map((d) => (
             <Link key={d} href={`/crm/performance/criativos?dias=${d}`} aria-current={d === dias ? "page" : undefined}>
-              {d} dias
+              {d === "tudo" ? "Desde o início" : `${d} dias`}
             </Link>
           ))}
         </nav>
@@ -184,17 +215,29 @@ export default async function PaginaCriativos({ searchParams }: { searchParams: 
         </ul>
       ) : null}
 
-      {/* a frase do período */}
+      {/* a frase do período: o dinheiro primeiro, a Meta depois (26/11/2026) */}
       {comGasto.length ? (
         <p className={c.frase}>
-          De {dataBR(desde)} a {dataBR(hoje)} saíram <b>{reais(t.gasto)}</b> em {comGasto.length} {comGasto.length === 1 ? "criativo" : "criativos"}.{" "}
-          {t.form ? (
+          {dias === "tudo" ? "Desde" : "De"} {dataBR(desde)} {dias === "tudo" ? "até" : "a"} {dataBR(hoje)}, <b>{reais(t.gasto, 0)}</b> em{" "}
+          {comGasto.length} {comGasto.length === 1 ? "criativo" : "criativos"}
+          {t.leads ? (
             <>
-              Vieram <b>{n(t.form)}</b> {t.form === 1 ? "formulário" : "formulários"}, e cada um custou <b>{reais(t.gasto / t.form)}</b>.
+              {" "}trouxeram <b>{n(t.leads)}</b> {t.leads === 1 ? "lead" : "leads"} ao CRM: <b>{n(t.amostras)}</b> chegaram à amostra,{" "}
+              <b>{n(t.propostas)}</b> à proposta e <b>{n(t.clientes)}</b> {t.clientes === 1 ? "virou cliente" : "viraram cliente"}.
+              {t.contratado || t.receita ? (
+                <>
+                  {" "}Foram <b>{reais(t.contratado, 0)}</b> contratados, e <b>{reais(t.receita, 0)}</b> já entraram.
+                </>
+              ) : null}
+            </>
+          ) : t.form ? (
+            <>
+              {" "}trouxeram <b>{n(t.form)}</b> {t.form === 1 ? "formulário" : "formulários"}, a <b>{reais(t.gasto / t.form)}</b> cada, e nenhum lead no CRM ainda.
             </>
           ) : (
-            <>Nenhum formulário no período.</>
+            <>, sem nenhum formulário.</>
           )}
+          {melhor?.clientes ? ` O que mais rendeu foi o ${melhor.nome}.` : ""}
           {(() => {
             const pagar = comGasto.filter((g) => compraDireta(g.destino)).reduce((x, g) => x + g.checkouts, 0);
             return pagar ? ` ${n(pagar)} ${pagar === 1 ? "pessoa tocou" : "pessoas tocaram"} em pagar na compra direta.` : "";
@@ -202,19 +245,72 @@ export default async function PaginaCriativos({ searchParams }: { searchParams: 
           {t.compras ? ` A Meta atribui ${n(t.compras)} ${t.compras === 1 ? "compra" : "compras"}.` : ""}
         </p>
       ) : !semTabela ? (
-        <p className={p.vazio}>{conta ? `Nenhum anúncio gastou nos últimos ${dias} dias.` : "Nenhuma leitura da Meta gravada ainda."}</p>
+        <p className={p.vazio}>
+          {conta ? (dias === "tudo" ? "Nenhum anúncio gastou ainda." : `Nenhum anúncio gastou nos últimos ${dias} dias.`) : "Nenhuma leitura da Meta gravada ainda."}
+        </p>
       ) : null}
-
-      <p className={a.como}>
-        Para atualizar, no PC: <code>npx tsx scripts/ler-meta.ts --gravar</code> e <code>npx tsx scripts/ler-pagina.ts --gravar</code> (30 dias;{" "}
-        <code>--desde 2026-08-01</code> para mais). Leads e vendas vêm do CRM na hora. Régua da matriz:
-        nada se julga antes de {n(PISO_IMPRESSOES)} impressões; o hook corta o pior terço; o custo por formulário alvo é {reais(CPL_ALVO, 0)} até você
-        decidir outro.
-      </p>
 
       {comGasto.length ? (
         <>
-          {/* 0. a semana contra a anterior (a leitura de segunda-feira) */}
+          {/* 1. a escada: onde o dinheiro para (26/11/2026). A largura de cada
+              degrau é a parte dos leads que chegou até ele; o maior tombo leva
+              o rótulo. É o que o custo do formulário escondia em outubro. */}
+          {t.leads ? (
+            <section className={c.escada} aria-labelledby="criativos-escada">
+              <h2 id="criativos-escada">Onde o dinheiro para</h2>
+              <ol className={c.degraus}>
+                {degraus.degraus.map((d) => (
+                  <li key={d.chave} data-queda={degraus.maiorQueda === d.chave ? "" : undefined}>
+                    <span className={c.degrauNome}>{d.nome}</span>
+                    <b className={c.degrauNum}>{n(d.n)}</b>
+                    <small className={c.degrauCusto}>{d.custo != null ? `${reais(d.custo, 0)} cada` : "nenhum ainda"}</small>
+                    <span className={c.degrauTrilho} aria-hidden="true">
+                      <i style={{ width: `${Math.max(d.n ? 1.5 : 0, d.fracao * 100)}%` }} />
+                    </span>
+                    {d.queda != null ? (
+                      <small className={c.degrauQueda}>
+                        {degraus.maiorQueda === d.chave ? "A maior queda: " : ""}
+                        {pct(d.queda)} não {d.queda === 1 ? "chegou" : "chegaram"} aqui
+                      </small>
+                    ) : (
+                      <small className={c.degrauQueda}>a base</small>
+                    )}
+                  </li>
+                ))}
+              </ol>
+
+              <div className={c.dinheiro}>
+                <div>
+                  <span>Saiu em anúncio</span>
+                  <b>{reais(t.gasto, 0)}</b>
+                </div>
+                <div>
+                  <span>Contratado</span>
+                  <b>{reais(t.contratado, 0)}</b>
+                  <small>{t.gasto ? `${reais(t.contratado / t.gasto)} para cada R$ 1` : ""}</small>
+                </div>
+                <div>
+                  <span>Já entrou</span>
+                  <b className={c.recebido}>{reais(t.receita, 0)}</b>
+                  <small>{t.gasto ? `${reais(t.receita / t.gasto)} para cada R$ 1` : ""}</small>
+                </div>
+                {t.contratado > 0 ? (
+                  <div className={c.caixa}>
+                    <span className={c.caixaTrilho} aria-hidden="true">
+                      <i style={{ width: `${Math.min(100, (t.receita / t.contratado) * 100)}%` }} />
+                    </span>
+                    <small>
+                      {t.receita >= t.contratado
+                        ? "Tudo o que foi contratado já entrou."
+                        : `Faltam ${reais(t.contratado - t.receita, 0)} para entrar: o saldo da entrega e as parcelas.`}
+                    </small>
+                  </div>
+                ) : null}
+              </div>
+            </section>
+          ) : null}
+
+          {/* 2. a semana contra a anterior (a leitura de segunda-feira) */}
           {semana.esta.gasto || semana.antes.gasto ? (
             <div className={c.semana} aria-label="Esta semana contra a anterior">
               <p className={c.semanaTitulo}>
@@ -225,8 +321,8 @@ export default async function PaginaCriativos({ searchParams }: { searchParams: 
                   [
                     ["Gasto", reais(semana.esta.gasto, 0), reais(semana.antes.gasto, 0), semana.esta.gasto - semana.antes.gasto, false],
                     ["Formulários", n(semana.esta.formularios), n(semana.antes.formularios), semana.esta.formularios - semana.antes.formularios, true],
-                    ["Cada formulário", reais(semana.esta.cpl), reais(semana.antes.cpl), (semana.esta.cpl ?? 0) - (semana.antes.cpl ?? 0), false],
                     ["Leads no CRM", n(semana.esta.leads), n(semana.antes.leads), semana.esta.leads - semana.antes.leads, true],
+                    ["Chegaram à amostra", n(semana.esta.amostras), n(semana.antes.amostras), semana.esta.amostras - semana.antes.amostras, true],
                   ] as const
                 ).map(([rotulo, agora, antes, delta, maisEhMelhor]) => (
                   <li key={rotulo}>
@@ -241,50 +337,67 @@ export default async function PaginaCriativos({ searchParams }: { searchParams: 
             </div>
           ) : null}
 
-          {/* 1. os números grandes */}
-          <div className={c.cartoes}>
-            <div>
-              <span>Gasto</span>
-              <b>{reais(t.gasto, 0)}</b>
-              <small>em {comGasto.length} criativos</small>
+          {/* 3. a escada por criativo: a antiga "Virou cliente?", com o degrau
+              do meio e o contratado (26/11/2026) */}
+          <section className={a.secao} aria-labelledby="criativos-clientes">
+            <h2 id="criativos-clientes">Onde cada criativo para</h2>
+            <p className={c.legenda}>
+              Os leads que chegaram no período e tudo o que eles fizeram depois, mesmo fora dele. Abaixo de {PISO_CLIENTES} clientes, o custo por
+              cliente ainda diz pouco.
+            </p>
+            <div className={c.rolagem} tabIndex={0} aria-label="Tabela de onde cada criativo para">
+              <table className={c.tabela}>
+                <thead>
+                  <tr>
+                    <th scope="col">Criativo</th>
+                    <th scope="col">Gasto</th>
+                    <th scope="col">Leads</th>
+                    <th scope="col">Amostra</th>
+                    <th scope="col">Proposta</th>
+                    <th scope="col">Cliente</th>
+                    <th scope="col">Contratado</th>
+                    <th scope="col">Já entrou</th>
+                    <th scope="col" title="dinheiro recebido ÷ gasto">Cada R$ 1</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[...julgaveis]
+                    .sort((x, y) => y.contratado - x.contratado || y.receita - x.receita || y.propostas - x.propostas || y.amostras - x.amostras || y.gasto - x.gasto)
+                    .map((g) => (
+                      <tr key={g.chave}>
+                        <Nome g={g} />
+                        <td>{reais(g.gasto, 0)}</td>
+                        <td>{n(g.leads)}</td>
+                        <td>
+                          {n(g.amostras)}
+                          <small>{g.custoAmostra != null ? `${reais(g.custoAmostra, 0)} cada` : "–"}</small>
+                        </td>
+                        <td data-parou={g.amostras >= 5 && !g.propostas ? "" : undefined}>
+                          {n(g.propostas)}
+                          <small>{g.custoProposta != null ? `${reais(g.custoProposta, 0)} cada` : g.amostras >= 5 ? "parou na amostra" : "–"}</small>
+                        </td>
+                        <td>
+                          {n(g.clientes)}
+                          <small>{g.cac != null ? `${reais(g.cac, 0)} cada${g.clientes < PISO_CLIENTES ? ", pouca amostra" : ""}` : "–"}</small>
+                        </td>
+                        <td>{g.contratado ? reais(g.contratado, 0) : "–"}</td>
+                        <td className={c.comCaixa}>
+                          {g.receita ? reais(g.receita, 0) : "–"}
+                          {g.contratado > 0 ? (
+                            <span className={c.caixaTrilho} aria-hidden="true">
+                              <i style={{ width: `${Math.min(100, (g.receita / g.contratado) * 100)}%` }} />
+                            </span>
+                          ) : null}
+                        </td>
+                        <td className={c.forte} data-nivel={g.retorno == null || !g.receita ? "cinza" : g.retorno >= 1 ? "verde" : "amarelo"}>
+                          {g.receita ? reais(g.retorno) : "–"}
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
             </div>
-            <div>
-              <span>Formulários</span>
-              <b>{n(t.form)}</b>
-              <small>{t.lpv ? `de ${n(t.lpv)} que chegaram na página` : "no período"}</small>
-            </div>
-            <div>
-              <span>Cada formulário</span>
-              <b>{t.form ? reais(t.gasto / t.form) : "–"}</b>
-              <small>a régua é {reais(CPL_ALVO, 0)}</small>
-            </div>
-            <div>
-              <span>Viraram cliente</span>
-              <b>{n(t.clientes)}</b>
-              <small>de {n(t.leads)} leads que chegaram no CRM</small>
-            </div>
-            <div>
-              <span>Cada cliente custou</span>
-              <b>{t.clientes ? reais(t.gasto / t.clientes, 0) : "–"}</b>
-              <small>{t.receita ? `e entraram ${reais(t.receita, 0)}` : "nenhum pagamento ainda"}</small>
-            </div>
-            <div>
-              <span>Cada R$ 1 em anúncio</span>
-              <b>{t.gasto ? reais(t.receita / t.gasto) : "–"}</b>
-              <small>voltou em dinheiro recebido</small>
-            </div>
-            <div>
-              <span>O que mais rendeu</span>
-              <b className={c.cartaoNome}>{melhor ? melhor.nome : "–"}</b>
-              <small>
-                {melhor
-                  ? melhor.clientes
-                    ? `${n(melhor.clientes)} clientes, ${reais(melhor.receita, 0)} recebidos`
-                    : `${reais(melhor.cpl)} por formulário`
-                  : `nenhum com resultado e ${n(PISO_IMPRESSOES)} impressões`}
-              </small>
-            </div>
-          </div>
+          </section>
 
           {/* 2. o que fazer, em três colunas */}
           <section className={a.secao} aria-labelledby="criativos-fazer">
@@ -388,51 +501,11 @@ export default async function PaginaCriativos({ searchParams }: { searchParams: 
             </div>
           </section>
 
-          {/* 3c. virou dinheiro? */}
-          <section className={a.secao} aria-labelledby="criativos-clientes">
-            <h2 id="criativos-clientes">Virou cliente?</h2>
-            <p className={c.legenda}>
-              Os leads que chegaram no período e tudo o que eles já pagaram, mesmo depois. O saldo da entrega entra quando for pago.
-            </p>
-            <div className={c.rolagem} tabIndex={0} aria-label="Tabela dos clientes">
-              <table className={c.tabela}>
-                <thead>
-                  <tr>
-                    <th scope="col">Criativo</th>
-                    <th scope="col">Gasto</th>
-                    <th scope="col">Leads no CRM</th>
-                    <th scope="col">Clientes</th>
-                    <th scope="col">Entrou</th>
-                    <th scope="col">Cada cliente</th>
-                    <th scope="col" title="dinheiro recebido ÷ gasto">Cada R$ 1</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[...julgaveis]
-                    .sort((x, y) => y.receita - x.receita || y.leads - x.leads || y.gasto - x.gasto)
-                    .map((g) => (
-                      <tr key={g.chave}>
-                        <Nome g={g} />
-                        <td>{reais(g.gasto)}</td>
-                        <td>{n(g.leads)}</td>
-                        <td>{n(g.clientes)}</td>
-                        <td>{g.receita ? reais(g.receita, 0) : "–"}</td>
-                        <td>{g.cac != null ? reais(g.cac, 0) : "–"}</td>
-                        <td className={c.forte} data-nivel={g.retorno == null || !g.receita ? "cinza" : g.retorno >= 1 ? "verde" : "amarelo"}>
-                          {g.receita ? reais(g.retorno) : "–"}
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
-
           {/* 3d. mês a mês, o retrato para o Financeiro */}
           {meses.length ? (
             <section className={a.secao} aria-labelledby="criativos-meses">
               <h2 id="criativos-meses">Mês a mês</h2>
-              <p className={c.legenda}>O gasto real da Meta, sem estimativa, contra o dinheiro que os leads de cada mês trouxeram.</p>
+              <p className={c.legenda}>O gasto real da Meta contra o que os leads de cada mês fizeram depois, em qualquer mês. Sempre a conta inteira, qualquer que seja o período escolhido.</p>
               <div className={c.rolagem} tabIndex={0} aria-label="Tabela mês a mês">
                 <table className={c.tabela}>
                   <thead>
@@ -441,8 +514,11 @@ export default async function PaginaCriativos({ searchParams }: { searchParams: 
                       <th scope="col">Gasto</th>
                       <th scope="col">Formulários</th>
                       <th scope="col">Leads</th>
-                      <th scope="col">Clientes</th>
-                      <th scope="col">Entrou</th>
+                      <th scope="col">Amostra</th>
+                      <th scope="col">Proposta</th>
+                      <th scope="col">Cliente</th>
+                      <th scope="col">Contratado</th>
+                      <th scope="col">Já entrou</th>
                       <th scope="col">Cada R$ 1</th>
                     </tr>
                   </thead>
@@ -455,7 +531,10 @@ export default async function PaginaCriativos({ searchParams }: { searchParams: 
                         <td>{reais(m.gasto)}</td>
                         <td>{n(m.formularios)}</td>
                         <td>{n(m.leads)}</td>
+                        <td>{n(m.amostras)}</td>
+                        <td>{n(m.propostas)}</td>
                         <td>{n(m.clientes)}</td>
+                        <td>{m.contratado ? reais(m.contratado, 0) : "–"}</td>
                         <td>{m.receita ? reais(m.receita, 0) : "–"}</td>
                         <td className={c.forte} data-nivel={!m.receita ? "cinza" : m.receita >= m.gasto ? "verde" : "amarelo"}>
                           {m.gasto && m.receita ? reais(m.receita / m.gasto) : "–"}
@@ -537,12 +616,19 @@ export default async function PaginaCriativos({ searchParams }: { searchParams: 
         </>
       ) : null}
 
+      <p className={a.como}>
+        Para atualizar, no PC: <code>npx tsx scripts/ler-meta.ts --gravar</code> e <code>npx tsx scripts/ler-pagina.ts --gravar</code> (30 dias;{" "}
+        <code>--desde 2026-08-01</code> para mais). Leads e vendas vêm do CRM na hora. Régua da matriz:
+        nada se julga antes de {n(PISO_IMPRESSOES)} impressões; o hook corta o pior terço; o custo por formulário alvo é {reais(CPL_ALVO, 0)} até você
+        decidir outro.
+      </p>
+
       {comGasto.length ? (
         <section aria-label="De onde vêm os números">
           {conta?.lido_em ? (
             <p className={c.rodape}>
               Lido da Meta em {new Date(conta.lido_em).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}.
-              Conta {conta.nome}, {reais(conta.gasto_vida)} gastos desde o começo. Lead e venda do CRM entram aqui na próxima fase.
+              Conta {conta.nome}, {reais(conta.gasto_vida)} gastos desde o começo. Lead, amostra, proposta e contrato vêm do CRM na hora; o que entrou vem do Caixa.
             </p>
           ) : null}
         </section>
