@@ -45,13 +45,14 @@ import {
   diasDoPreco,
   filaDaVez,
   marcaDe,
-  naBlack,
+  blackPorMandar,
   novoContato,
   parado,
   precisaResponder,
   tempoDeEspera,
   type GrupoDaFila,
   type HistoricoAtendimento,
+  type ItemDaFila,
 } from "@/lib/crm/atendimento";
 import type { painelHoje } from "@/lib/crm/dados";
 import { arrobaDe, dataCurta, destinoDoToque, diaEmSP, diasDesde, diasEntre, dinheiro, ehLojaOnline, linkWhatsapp, momentoDoContato, NOME_CAMPO, somarDias } from "@/lib/crm/regras";
@@ -64,7 +65,7 @@ import c from "./atendimento.module.css";
 
 type Props = { painel: Awaited<ReturnType<typeof painelHoje>>; templates: Template[] };
 /* Uma linha da lista. `grupo` nulo é quem veio da busca ou do "Fora da fila". */
-type Linha = { lead: LeadPainel; grupo: GrupoDaFila | null; encerrar: boolean };
+type Linha = { lead: LeadPainel; grupo: GrupoDaFila | null; encerrar: boolean; esfriou?: ItemDaFila["esfriou"] };
 
 const normalizar = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLocaleLowerCase("pt-BR");
 /* O registro que o formulário do site deixa no card ("Preencheu o formulário
@@ -80,24 +81,27 @@ const hora = (s: string) => {
     : d.toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
 };
 const dias = (n: number) => `${n} ${n === 1 ? "dia" : "dias"}`;
-const blackPorMandar = (l: LeadPainel) => naBlack(l) && !l.black_em;
 
 /* O que a linha diz, numa frase: por que esta pessoa está na fila agora. */
-function motivoDe({ lead: l, grupo, encerrar }: Linha, hoje: string, agora: number | null): { texto: string; alto: boolean } {
+function motivoDe({ lead: l, grupo, encerrar, esfriou }: Linha, hoje: string, agora: number | null): { texto: string; alto: boolean } {
   if (grupo === "responder") {
     if (l.quer_no_ar) return { texto: "Quer colocar no ar", alto: true };
+    /* quem esfriou fala baixo (26/11): o vermelho é de quem ainda está quente */
+    if (esfriou === "recusou") return { texto: "Disse que não tem interesse", alto: false };
+    if (esfriou === "tempo") return { texto: `Esfriou: escreveu há ${dias(diasDesde(momentoDoContato(l), hoje))}`, alto: false };
     if (precisaResponder(l)) return { texto: agora ? `Escreveu, ${tempoDeEspera(momentoDoContato(l), agora)}` : "Escreveu por último", alto: true };
     return { texto: marcaDe(l)?.nome ?? "Sua vez", alto: true };
   }
   if (grupo === "novos") return { texto: agora ? tempoDeEspera(momentoDoContato(l), agora) : `Desde ${hora(momentoDoContato(l))}`, alto: true };
+  if (grupo === "black") return { texto: `Black há ${dias(diasDoPreco(l, hoje))}, sem resposta`, alto: false };
   if (grupo === "preco") {
-    if (blackPorMandar(l)) return { texto: "Mandar a Black", alto: false };
+    if (blackPorMandar(l, hoje)) return { texto: "Mandar a Black", alto: false };
     const d = diasDoPreco(l, hoje);
     if (encerrar) return { texto: `Sem resposta há ${dias(d)}: encerrar`, alto: false };
     return { texto: `${l.black_em ? "Black" : "Preço"} há ${dias(d)}, sem resposta`, alto: false };
   }
   if (grupo === "amostra") {
-    if (blackPorMandar(l)) return { texto: "Mandar a Black", alto: false };
+    if (blackPorMandar(l, hoje)) return { texto: "Mandar a Black", alto: false };
     const d = diasDesde(l.ultimo_toque_em ?? l.created_at, hoje);
     return { texto: encerrar ? `Parada há ${dias(d)}: encerrar` : `Amostra há ${dias(d)}, sem reação`, alto: false };
   }
@@ -117,12 +121,15 @@ function sugestaoDe({ lead: l, grupo, encerrar }: Linha, hoje: string) {
   if (l.cobranca && l.cobranca.quando <= hoje && grupo !== "responder") return { titulo: TITULO_COBRANCA, porque: `Tem ${dinheiro(l.cobranca.saldo)} em aberto: a cobrança, com o valor já escrito` };
   /* O preço que saiu por fora do CRM não tem toque: a lista da Black traz
      "(já viu o preço)" no passo, conferido no WhatsApp em 03/11. */
-  if (blackPorMandar(l))
+  if (blackPorMandar(l, hoje))
     return l.preco_em || l.proximo_passo?.includes("já viu o preço")
       ? { titulo: TEMPLATE_BLACK_VIU, porque: "Na lista da Black e já viu o preço: a condição de R$ 799 até 30/11" }
       : { titulo: TEMPLATE_BLACK_AMOSTRA, porque: "Na lista da Black, só com a amostra: o preço pela primeira vez, já com a Black" };
   const marca = marcaDe(l);
   if (marca?.template) return { titulo: marca.template, porque: `${marca.nome}: o resumo pronto pra encaminhar` };
+  /* A última chamada da Black (26/11): vale também para quem está em
+     Proposta ou Negociação, porque o que eles receberam foi a Black. */
+  if (grupo === "black") return { titulo: TITULO_VOLTA_DA_BLACK, porque: `Recebeu a Black há ${dias(diasDoPreco(l, hoje))} e nunca recebeu o retorno: o único, com a data de 30/11` };
   /* A volta depois do preço (10/11). Quem está em Proposta ou Negociação
      fica com a "Proposta sem resposta", que a etapa já sugere. */
   if (grupo === "preco" && !encerrar && !["proposta", "negociacao"].includes(l.estagio)) {
@@ -148,7 +155,9 @@ export function CentralAtendimento({ painel, templates }: Props) {
   const [agora, setAgora] = useState<number | null>(null);
   /* Arquivar: primeiro a lista à vista, depois o clique, e o Desfazer fica
      na tela com o estado de antes de cada um. */
-  const [revisando, setRevisando] = useState(false);
+  /* A revisão serve duas listas (26/11): os parados de fora da fila e os
+     "para encerrar" de um grupo da fila. A lista vai junto, à vista. */
+  const [revisando, setRevisando] = useState<{ leads: LeadPainel[]; titulo: string } | null>(null);
   const [arquivados, setArquivados] = useState<ComoEstava[] | null>(null);
   const [erroArquivo, setErroArquivo] = useState<string | null>(null);
   const [arquivando, comecarArquivo] = useTransition();
@@ -185,7 +194,7 @@ export function CentralAtendimento({ painel, templates }: Props) {
     if (termo) {
       const alvo = normalizar(termo);
       const numero = termo.replace(/\D/g, "");
-      const naFila = new Map(fila.itens.map((i) => [i.lead.id, i]));
+      const naFila = new Map([...fila.itens, ...fila.paraEncerrar].map((i) => [i.lead.id, i]));
       return [...new Map(painel.contatos.map((l) => [l.id, l])).values()]
         .filter((l) => {
           const texto = normalizar([l.nome, l.empresa, l.nicho, l.cidade, l.email, l.instagram, l.whatsapp].filter(Boolean).join(" "));
@@ -193,7 +202,7 @@ export function CentralAtendimento({ painel, templates }: Props) {
         })
         /* Quem está na fila leva o grupo dela para a busca (10/11): o Santana,
            que deve parcela, aparecia como "Ganho · sem retorno marcado". */
-        .map((l) => ({ lead: l, grupo: naFila.get(l.id)?.grupo ?? null, encerrar: naFila.get(l.id)?.encerrar ?? false }));
+        .map((l) => ({ lead: l, grupo: naFila.get(l.id)?.grupo ?? null, encerrar: naFila.get(l.id)?.encerrar ?? false, esfriou: naFila.get(l.id)?.esfriou }));
     }
     if (verFora) return fila.fora.map((l) => ({ lead: l, grupo: null, encerrar: false }));
     return fila.itens;
@@ -224,7 +233,7 @@ export function CentralAtendimento({ painel, templates }: Props) {
       const r = await arquivarParados(ids);
       if (r.ok) {
         setArquivados(r.antes);
-        setRevisando(false);
+        setRevisando(null);
         setSelecionado(proximo);
         router.refresh();
       } else setErroArquivo(r.erro);
@@ -314,7 +323,7 @@ export function CentralAtendimento({ painel, templates }: Props) {
     );
   };
 
-  const NOME_CURTO: Record<string, string> = { novos: "novos", responder: "a responder", preco: "preço", amostra: "amostra", prospeccao: "prospecção", receber: "a receber" };
+  const NOME_CURTO: Record<string, string> = { novos: "novos", responder: "a responder", black: "Black", preco: "preço", amostra: "amostra", prospeccao: "prospecção", receber: "a receber" };
   const composicao = GRUPOS_DA_FILA.map((g) => ({ id: g.id, nome: g.nome, curto: NOME_CURTO[g.id] ?? g.nome, n: fila.itens.filter((i) => i.grupo === g.id).length }));
 
   return (
@@ -359,6 +368,8 @@ export function CentralAtendimento({ painel, templates }: Props) {
             {composicao.filter((p) => p.n).map((p) => (
               <li key={p.id} data-grupo={p.id}><b>{p.n}</b> {p.curto}</li>
             ))}
+            {/* fora do número grande (26/11): encerrar não é atender */}
+            {fila.paraEncerrar.length > 0 && <li data-grupo="encerrar"><b>{fila.paraEncerrar.length}</b> a encerrar</li>}
           </ul>
         </div>
         <div data-luz>
@@ -397,25 +408,25 @@ export function CentralAtendimento({ painel, templates }: Props) {
           <p>
             {parados.length} {parados.length === 1 ? "contato de fora da fila está parado" : "contatos de fora da fila estão parados"} há mais de {DIAS_PARADO} dias. A prospecção não entra nesta conta.
           </p>
-          <button type="button" className={c.botao} onClick={() => setRevisando(true)}>Revisar e arquivar</button>
+          <button type="button" className={c.botao} onClick={() => setRevisando({ leads: parados, titulo: "parados há mais de 30 dias, de fora da fila" })}>Revisar e arquivar</button>
         </div>
       ) : null}
       {revisando && (
         <div className={c.arquivo} data-revisando>
           <p>
-            <b>Arquivar {parados.length} como perdidos, "sumiu, sem resposta"?</b> Saem do Funil, e o retorno marcado de cada um é apagado. O Desfazer devolve tudo como estava.
+            <b>Encerrar {revisando.leads.length} como perdidos, "sumiu, sem resposta"?</b> São os {revisando.titulo}. Saem do Funil, e o retorno marcado de cada um é apagado. O Desfazer devolve tudo como estava.
           </p>
           <ul>
-            {parados.map((l) => (
+            {revisando.leads.map((l) => (
               <li key={l.id}>
                 {l.nome}
-                <span>{NOME_ESTAGIO[l.estagio]} · último movimento {dataCurta(diaEmSP(l.ultimo_toque_em ?? l.created_at))}</span>
+                <span>{NOME_ESTAGIO[l.estagio]} · {l.preco_em ? `${l.black_em ? "Black" : "preço"} em ${dataCurta(diaEmSP(l.preco_em))}, ` : ""}último movimento {dataCurta(diaEmSP(l.ultimo_toque_em ?? l.created_at))}</span>
               </li>
             ))}
           </ul>
           <div className={c.acoes}>
-            <button type="button" className={`${c.botao} ${c.primario}`} disabled={arquivando} onClick={() => arquivar(parados.map((l) => l.id))}>{arquivando ? "Arquivando…" : `Arquivar os ${parados.length}`}</button>
-            <button type="button" className={c.botao} onClick={() => setRevisando(false)}>Cancelar</button>
+            <button type="button" className={`${c.botao} ${c.primario}`} disabled={arquivando} onClick={() => arquivar(revisando.leads.map((l) => l.id))}>{arquivando ? "Encerrando…" : `Encerrar os ${revisando.leads.length}`}</button>
+            <button type="button" className={c.botao} onClick={() => setRevisando(null)}>Cancelar</button>
           </div>
         </div>
       )}
@@ -426,7 +437,7 @@ export function CentralAtendimento({ painel, templates }: Props) {
           {!agrupada && (
             <div className={c.filaCabecalho}>
               <b>{termo ? `${linhas.length} ${linhas.length === 1 ? "encontrado" : "encontrados"}` : `${linhas.length} fora da fila`}</b>
-              <button type="button" className={c.linkBotao} onClick={() => { setBusca(""); setVerFora(false); setRevisando(false); setSelecionado(null); }}>← Voltar para a fila</button>
+              <button type="button" className={c.linkBotao} onClick={() => { setBusca(""); setVerFora(false); setRevisando(null); setSelecionado(null); }}>← Voltar para a fila</button>
             </div>
           )}
           <div className={c.rolagem}>
@@ -434,7 +445,8 @@ export function CentralAtendimento({ painel, templates }: Props) {
               GRUPOS_DA_FILA.map((g) => {
                 const doGrupo = linhas.filter((i) => i.grupo === g.id);
                 const p = g.id === "prospeccao" && fila.prospeccao.nichos.length ? fila.prospeccao : null;
-                return doGrupo.length || p ? (
+                const aEncerrar = fila.paraEncerrar.filter((i) => i.grupo === g.id).map((i) => i.lead);
+                return doGrupo.length || p || aEncerrar.length ? (
                   <div key={g.id} className={c.grupo} data-grupo={g.id}>
                     <h2>
                       {g.nome}
@@ -457,7 +469,22 @@ export function CentralAtendimento({ painel, templates }: Props) {
                         </small>
                       </div>
                     )}
-                    <ul>{doGrupo.map(linha)}</ul>
+                    {doGrupo.length > 0 && <ul>{doGrupo.map(linha)}</ul>}
+                    {/* os "encerrar" numa linha só (26/11): eram 94 itens da
+                        fila, um a um, cada um pedindo o mesmo clique */}
+                    {aEncerrar.length > 0 && (
+                      <button
+                        type="button"
+                        className={c.paraEncerrar}
+                        onClick={() => {
+                          setRevisando({ leads: aEncerrar, titulo: g.id === "preco" ? `que receberam o preço há ${DIAS_PARA_ENCERRAR} dias ou mais, sem resposta` : `com a amostra parada há mais de ${DIAS_PARADO} dias` });
+                          requestAnimationFrame(() => document.querySelector("[data-revisando]")?.scrollIntoView({ block: "start", behavior: "smooth" }));
+                        }}
+                      >
+                        <span><b>{aEncerrar.length}</b> para encerrar</span>
+                        <u>Revisar e encerrar</u>
+                      </button>
+                    )}
                   </div>
                 ) : null;
               })
@@ -558,7 +585,10 @@ function Atendimento({
   aoMandar: () => void;
   aoEncerrar: () => void;
 }) {
-  const { lead, grupo, encerrar } = item;
+  const { lead, grupo, encerrar, esfriou } = item;
+  /* quem esfriou em "Responder agora" (26/11): o rosa fica no Responder se
+     foi só o tempo; se a pessoa disse que não, o primeiro botão é encerrar */
+  const encerrarPrimeiro = encerrar && esfriou !== "tempo";
   const [historico, setHistorico] = useState<HistoricoAtendimento[] | null>(null);
   const [falha, setFalha] = useState<string | null>(null);
   const [tentativa, setTentativa] = useState(0);
@@ -643,7 +673,7 @@ function Atendimento({
      histórico é que diz se o clique já foi dado. */
   const respondeu = precisaResponder(lead) || Boolean(historico?.[0]?.direcao === "entrada" && historico[0].resumo?.startsWith(RESUMO_RESPONDEU));
   const ativo = ehAtivo(lead.estagio);
-  const d = grupo === "preco" ? diasDoPreco(lead, hoje) : diasDesde(lead.ultimo_toque_em ?? lead.created_at, hoje);
+  const d = grupo === "preco" || grupo === "black" ? diasDoPreco(lead, hoje) : diasDesde(lead.ultimo_toque_em ?? lead.created_at, hoje);
 
   /* ============================================================
      A VEZ (10/11/2026, segunda rodada)
@@ -673,12 +703,14 @@ function Atendimento({
           ? { titulo: "Aguardando a sua resposta", detalhe: fala ? undefined : "A resposta foi marcada à mão, sem o texto.", botao: "Responder" }
           : encerrar
             ? { titulo: `Sem resposta há ${dias(d)}`, detalhe: `Pela regra da casa, depois de uns ${DIAS_PARA_ENCERRAR} dias não rolou: encerre e tire a amostra do ar.`, botao: "Enviar mensagem" }
-            : blackPorMandar(lead)
+            : blackPorMandar(lead, hoje)
               ? { titulo: "Black ainda não enviada", detalhe: "R$ 799 à vista até 30/11.", botao: "Enviar a Black" }
               : grupo === "prospeccao"
                 ? { titulo: "Prospecção: primeiro contato", detalhe: "Uma mensagem só. Se o contato responder, sobe para Responder agora; se não, sai da fila.", botao: "Enviar primeira mensagem" }
               : grupo === "novos" || ehNovo
                 ? { titulo: "Novo contato: falta a primeira mensagem", detalhe: ultimaEntrada?.resumo ?? undefined, botao: "Enviar primeira mensagem" }
+                : grupo === "black"
+                  ? { titulo: `Black enviada há ${dias(d)}, sem retorno`, detalhe: "Ainda não recebeu o retorno. A Black vai até 30/11: é a última chamada, uma só. Quem não responder é encerrado em 01/12.", botao: "Enviar a última chamada" }
                 : grupo === "preco"
                   ? { titulo: `${lead.black_em ? "Black enviada" : "Preço enviado"} há ${dias(d)}, sem resposta`, detalhe: "Um retorno só, com a saída aberta. Depois dele o contato sai da fila até o décimo dia.", botao: "Enviar retorno" }
                   : grupo === "amostra"
@@ -713,9 +745,9 @@ function Atendimento({
             diz de onde o contato veio */}
         {fala && respondeu ? <blockquote>{fala}</blockquote> : vez.detalhe && !soFormulario(vez.detalhe) ? <p>{vez.detalhe}</p> : null}
         <div className={c.acoes}>
-          {encerrar && ativo && <button type="button" className={`${c.botao} ${c.primario}`} disabled={encerrando} onClick={aoEncerrar}>{encerrando ? "Encerrando…" : "Encerrar contato"}</button>}
+          {encerrar && ativo && <button type="button" className={`${c.botao} ${encerrarPrimeiro ? c.primario : ""}`} disabled={encerrando} onClick={aoEncerrar}>{encerrando ? "Encerrando…" : "Encerrar contato"}</button>}
           {whatsapp || instagram ? (
-            <button type="button" className={`${c.botao} ${encerrar ? "" : c.vende}`} onClick={aoMandar} data-acao-da-vez>{vez.botao}<kbd className={c.teclaNoBotao} aria-hidden>Enter</kbd></button>
+            <button type="button" className={`${c.botao} ${encerrarPrimeiro ? "" : c.vende}`} onClick={aoMandar} data-acao-da-vez>{vez.botao}<kbd className={c.teclaNoBotao} aria-hidden>Enter</kbd></button>
           ) : (
             <Link className={`${c.botao} ${c.vende}`} href={`/crm/lead/${lead.id}`}>Completar canal de contato</Link>
           )}
@@ -766,7 +798,8 @@ function Atendimento({
         {/* quem escreveu e também deve (25/11): a conversa vem primeiro, e a
             parcela fica dita aqui, com o "Dar baixa no Caixa" ao lado */}
         {cobranca && grupo === "responder" && <small>Parcela em aberto: {dinheiro(cobranca.saldo)} ({cobranca.rotulo}), {atrasoDaParcela > 0 ? `vencida há ${dias(atrasoDaParcela)}` : "vence hoje"}.</small>}
-        {(grupo === "novos" || grupo === "preco" || grupo === "amostra" || grupo === "prospeccao") && !encerrar && <small>Ao enviar, o próximo contato deste grupo abre em seguida.</small>}
+        {esfriou && <small>{esfriou === "recusou" ? "A última mensagem do contato foi uma recusa. Encerre, ou responda se ainda houver conversa." : `Escreveu há ${dias(diasDesde(momentoDoContato(lead), hoje))}: a conversa esfriou. Responda se ainda fizer sentido, ou encerre.`}</small>}
+        {(grupo === "novos" || grupo === "black" || grupo === "preco" || grupo === "amostra" || grupo === "prospeccao") && !encerrar && <small>Ao enviar, o próximo contato deste grupo abre em seguida.</small>}
         {/* o próximo passo mora DENTRO do cartão desde 24/11: "o que fazer
             agora" é um bloco só. Era uma faixa solta entre as pílulas e a
             conversa, a quarta da ficha. */}

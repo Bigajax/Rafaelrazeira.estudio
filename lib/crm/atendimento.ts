@@ -96,6 +96,17 @@ export const TEMPLATE_BLACK_AMOSTRA = "Black R$ 799 até 30/11: só a amostra";
 export const IMAGEM_BLACK = "/assets/crm/black-799.png";
 export const ehToqueDeBlack =(resumo: string | null | undefined) => Boolean(resumo?.startsWith("Black R$ 799"));
 export const naBlack = (l: Pick<LeadPainel, "proximo_passo" | "black_em">) => Boolean(l.black_em) || Boolean(l.proximo_passo?.startsWith("Black:"));
+/* O último dia da Black (26/11/2026). Até aqui o 30/11 só existia nos
+   textos; agora a fila usa a data: depois dela ninguém entra como "Mandar a
+   Black" e o grupo da última chamada some sozinho. */
+export const FIM_DA_BLACK = "2026-11-30";
+export const blackNoAr = (hoje: string) => hoje <= FIM_DA_BLACK;
+/* Na lista da Black e ainda sem a oferta. Pede que o estúdio já tenha falado
+   com a loja (26/11): 12 garimpos com ZERO toques estavam em "Amostra enviada,
+   sem resposta" só por estarem na lista. Quem nunca ouviu de mim é
+   prospecção, não volta. */
+export const blackPorMandar = (l: Pick<LeadPainel, "proximo_passo" | "black_em" | "toques">, hoje: string) =>
+  blackNoAr(hoje) && naBlack(l) && !l.black_em && l.toques > 0;
 
 export const viuOPreco =(l: LeadPainel) => Boolean(l.preco_em) || ["proposta", "negociacao"].includes(l.estagio);
 export type AbaAtendimento = (typeof ABAS_ATENDIMENTO)[number]["id"];
@@ -210,6 +221,13 @@ export const TITULO_COBRANCA = "Cobrança da parcela";
 export const GRUPOS_DA_FILA = [
   { id: "novos", nome: "Novos contatos" },
   { id: "responder", nome: "Responder agora" },
+  /* A ÚLTIMA CHAMADA DA BLACK (26/11/2026). A medição de 26/11 achou 94 dos
+     96 de "Preço enviado" marcados para encerrar: a Black de 06 e 07/11, 22
+     dias sem resposta, e NENHUM tinha recebido a volta dos 3 dias. O Rafael
+     decidiu: a volta que eles nunca tiveram sai agora, com a data de 30/11
+     ("Depois da Black: uma volta, com a data"), e em 01/12 quem não
+     respondeu é encerrado em lote. É a primeira volta, não a segunda. */
+  { id: "black", nome: "Black: última chamada até 30/11" },
   { id: "preco", nome: "Preço enviado, sem resposta" },
   { id: "amostra", nome: "Amostra enviada, sem resposta" },
   { id: "prospeccao", nome: "Prospecção do dia" },
@@ -223,7 +241,36 @@ export const GRUPOS_DA_FILA = [
   { id: "receber", nome: "A receber" },
 ] as const;
 export type GrupoDaFila = (typeof GRUPOS_DA_FILA)[number]["id"];
-export type ItemDaFila = { lead: LeadPainel; grupo: GrupoDaFila; encerrar: boolean };
+/* `esfriou` só existe em "Responder agora": alguém escreveu, mas faz tempo
+   ou foi para dizer não. O item continua à vista, no fim do grupo. */
+export type ItemDaFila = { lead: LeadPainel; grupo: GrupoDaFila; encerrar: boolean; esfriou?: "tempo" | "recusou" };
+
+/* ============================================================
+   A QUALIDADE DE QUEM VEM DEPOIS DOS NOVOS (26/11/2026)
+
+   O Rafael: "quero melhorar a qualidade dos clientes que estão em seguida".
+   A medição de 26/11 (o próprio filaDaVez sobre o banco): 142 "para atender",
+   dos quais 94 eram "encerrar" e 12 garimpos que nunca ouviram de mim.
+   E "Responder agora" abria em quem esperava havia 33 e 23 dias, com quem
+   escreveu ontem e hoje no fim; a Custela, que escreveu "Não tenho
+   interesse, obrigado", estava ali como quem espera resposta.
+
+   - Responder agora: o mais quente primeiro (pedido do Rafael). Até
+     DIAS_QUENTE no topo, do mais recente; depois até DIAS_ESFRIOU, também do
+     mais recente; quem passou disso, ou recusou, vai para o fim com a
+     opção de encerrar. Nada é encerrado sozinho.
+   - Encerrar não é item de fila: sai da lista um a um e da conta do placar,
+     e vira uma linha "N para encerrar" no fim do grupo, com a revisão em
+     lote e o Desfazer (`paraEncerrar`).
+   ============================================================ */
+export const DIAS_QUENTE = 3;
+export const DIAS_ESFRIOU = 14;
+/* A lista é curta e explícita de propósito: só RECOMENDA encerrar. */
+const RECUSAS = ["não tenho interesse", "nao tenho interesse", "sem interesse", "não quero", "nao quero", "não preciso", "nao preciso", "não, obrigad", "nao, obrigad"];
+export const ehRecusa = (resumo: string | null | undefined) => {
+  const t = (resumo ?? "").toLocaleLowerCase("pt-BR");
+  return Boolean(t) && RECUSAS.some((r) => t.includes(r));
+};
 
 type CamposDaEspera = Pick<LeadPainel, "estagio" | "origem" | "toques" | "toques_entrada" | "saidas_seguidas" | "created_at" | "ultimo_toque_em">;
 const escreveuPorUltimo = (l: CamposDaEspera) => ehAtivo(l.estagio) && l.toques !== l.toques_entrada && l.toques_entrada > 0 && l.saidas_seguidas === 0;
@@ -260,23 +307,31 @@ export function filaDaVez(leads: LeadPainel[], hoje: string, nichoEscolhido: str
   const desempate = (a: LeadPainel, b: LeadPainel) => a.id.localeCompare(b.id);
   const itens: ItemDaFila[] = [];
   const usados = new Set<string>();
-  const por = (grupo: GrupoDaFila, lista: LeadPainel[], encerrar: (l: LeadPainel) => boolean = () => false) => {
+  const por = (grupo: GrupoDaFila, lista: LeadPainel[], encerrar: (l: LeadPainel) => boolean = () => false, esfriou: (l: LeadPainel) => ItemDaFila["esfriou"] = () => undefined) => {
     for (const l of lista) {
       if (usados.has(l.id)) continue;
       usados.add(l.id);
-      itens.push({ lead: l, grupo, encerrar: encerrar(l) });
+      const e = esfriou(l);
+      itens.push({ lead: l, grupo, encerrar: encerrar(l), ...(e ? { esfriou: e } : {}) });
     }
   };
   const adiado = (l: LeadPainel) => Boolean(l.proxima_acao_em && l.proxima_acao_em > hoje);
-  const peso = (l: LeadPainel) => (l.quer_no_ar ? 0 : 1);
   /* Já cobrei e estou esperando: não é fila, e também não é "preço sem resposta, encerrar". */
   const cobrancaEsperando = (l: LeadPainel) => Boolean(l.cobranca && l.cobranca.quando <= hoje) && !cobrancaNaVez(l, hoje);
 
+  /* Responder agora, o mais quente primeiro (26/11). Quem pediu para colocar
+     no ar abre; depois a faixa de até DIAS_QUENTE dias, a de até DIAS_ESFRIOU
+     e, no fim, quem esfriou ou recusou. Dentro de cada faixa, o mais recente. */
+  const esfriouNoResponder = (l: LeadPainel): ItemDaFila["esfriou"] =>
+    l.quer_no_ar ? undefined : ehRecusa(l.ultima_entrada) && escreveuPorUltimo(l) ? "recusou" : diasDesde(momentoDoContato(l), hoje) > DIAS_ESFRIOU ? "tempo" : undefined;
+  const faixa = (l: LeadPainel) => (l.quer_no_ar ? 0 : esfriouNoResponder(l) ? 3 : diasDesde(momentoDoContato(l), hoje) <= DIAS_QUENTE ? 1 : 2);
   por(
     "responder",
     todos
       .filter((l) => l.quer_no_ar || escreveuPorUltimo(l) || (ehAtivo(l.estagio) && Boolean(marcaDe(l)) && !adiado(l)))
-      .sort((a, b) => peso(a) - peso(b) || momentoDoContato(a).localeCompare(momentoDoContato(b)) || desempate(a, b)),
+      .sort((a, b) => faixa(a) - faixa(b) || momentoDoContato(b).localeCompare(momentoDoContato(a)) || desempate(a, b)),
+    (l) => Boolean(esfriouNoResponder(l)),
+    esfriouNoResponder,
   );
   /* A cobrança da vez, logo depois de quem escreveu e ANTES dos outros
      grupos: quem deve não pode cair em "preço sem resposta: encerrar". A
@@ -296,18 +351,32 @@ export function filaDaVez(leads: LeadPainel[], hoje: string, nichoEscolhido: str
   /* Quem está na lista da Black e ainda não recebeu a oferta tem uma
      mensagem por mandar, não um silêncio para encerrar. A Vallox viu o preço
      em 14/10, entrou na lista em 03/11 e saía como "encerrar" (10/11). */
-  const blackPorMandar = (l: LeadPainel) => naBlack(l) && !l.black_em;
-  const comPreco = ativos.filter((l) => viuOPreco(l) && (l.saidas_seguidas > 0 || blackPorMandar(l)));
-  const deveEncerrar = (l: LeadPainel) => !blackPorMandar(l) && diasDoPreco(l, hoje) >= DIAS_PARA_ENCERRAR;
+  const porMandar = (l: LeadPainel) => blackPorMandar(l, hoje);
+  const comPreco = ativos.filter((l) => viuOPreco(l) && (l.saidas_seguidas > 0 || porMandar(l)));
+  /* Quem recebeu a Black não é encerrado antes de ela acabar (26/11): a
+     última chamada sai com 22 dias de preço, e sem esta trava o contato ia
+     de "última chamada" direto para "encerrar" no mesmo clique. Em 01/12,
+     todos os que não responderam aparecem juntos para encerrar. */
+  const deveEncerrar = (l: LeadPainel) => !porMandar(l) && !(blackNoAr(hoje) && l.black_em) && diasDoPreco(l, hoje) >= DIAS_PARA_ENCERRAR;
   const jaVoltei = (l: LeadPainel) => Boolean(l.preco_em && l.ultimo_toque_em && Date.parse(l.ultimo_toque_em) - Date.parse(l.preco_em) > 60000);
-  const naVezDoPreco = comPreco.filter((l) => !adiado(l) && (blackPorMandar(l) || deveEncerrar(l) || (!jaVoltei(l) && diasDoPreco(l, hoje) >= DIAS_PARA_VOLTAR)));
-  aguardando += comPreco.length - naVezDoPreco.length;
+
+  /* A última chamada da Black (26/11): recebeu a Black, ficou em silêncio e
+     nunca recebeu a volta. Até FIM_DA_BLACK, ninguém aqui é "encerrar", nem
+     com 22 dias: a volta sai primeiro. A data marcada à mão não adia (o passo
+     "Black: cobrar a resposta" de 06/11 está vencido em todos). Depois de
+     enviada, `jaVoltei` tira o contato daqui e o deixa aguardando; em 01/12
+     o grupo some e quem não respondeu aparece para encerrar. */
+  const ultimaChamada = comPreco.filter((l) => blackNoAr(hoje) && Boolean(l.black_em) && !jaVoltei(l) && diasDoPreco(l, hoje) >= DIAS_PARA_VOLTAR);
+  por("black", ultimaChamada.sort((a, b) => (b.black_em ?? "").localeCompare(a.black_em ?? "") || desempate(a, b)));
+
+  const naVezDoPreco = comPreco.filter((l) => !usados.has(l.id) && !adiado(l) && (porMandar(l) || deveEncerrar(l) || (!jaVoltei(l) && diasDoPreco(l, hoje) >= DIAS_PARA_VOLTAR)));
+  aguardando += comPreco.filter((l) => !usados.has(l.id)).length - naVezDoPreco.length;
   // A volta primeiro, o preço mais recente no topo; quem é para encerrar fica no fim.
   por("preco", naVezDoPreco.sort((a, b) => Number(deveEncerrar(a)) - Number(deveEncerrar(b)) || (b.preco_em ?? "").localeCompare(a.preco_em ?? "") || desempate(a, b)), deveEncerrar);
 
-  const comAmostra = ativos.filter((l) => !usados.has(l.id) && !viuOPreco(l) && (blackPorMandar(l) || ((Boolean(l.previa_url) || l.estagio === "previa") && l.saidas_seguidas > 0)));
-  const paradoDemais = (l: LeadPainel) => !blackPorMandar(l) && diasDesde(l.ultimo_toque_em ?? l.created_at, hoje) > DIAS_PARADO;
-  const naVezDaAmostra = comAmostra.filter((l) => !adiado(l) && (blackPorMandar(l) || diasDesde(l.ultimo_toque_em ?? l.created_at, hoje) >= DIAS_PARA_VOLTAR));
+  const comAmostra = ativos.filter((l) => !usados.has(l.id) && !viuOPreco(l) && (porMandar(l) || ((Boolean(l.previa_url) || l.estagio === "previa") && l.saidas_seguidas > 0)));
+  const paradoDemais = (l: LeadPainel) => !porMandar(l) && diasDesde(l.ultimo_toque_em ?? l.created_at, hoje) > DIAS_PARADO;
+  const naVezDaAmostra = comAmostra.filter((l) => !adiado(l) && (porMandar(l) || diasDesde(l.ultimo_toque_em ?? l.created_at, hoje) >= DIAS_PARA_VOLTAR));
   aguardando += comAmostra.length - naVezDaAmostra.length;
   por("amostra", naVezDaAmostra.sort((a, b) => Number(paradoDemais(a)) - Number(paradoDemais(b)) || (b.ultimo_toque_em ?? "").localeCompare(a.ultimo_toque_em ?? "") || desempate(a, b)), paradoDemais);
 
@@ -331,7 +400,12 @@ export function filaDaVez(leads: LeadPainel[], hoje: string, nichoEscolhido: str
      ordem da tela: é dela que saem o primeiro aberto e o próximo do lote. */
   const lugar = new Map<GrupoDaFila, number>(GRUPOS_DA_FILA.map((g, i) => [g.id, i]));
   itens.sort((a, b) => lugar.get(a.grupo)! - lugar.get(b.grupo)!);
-  return { itens, fora, aguardando, prospeccao };
+  /* Encerrar não é item de fila (26/11): os de preço e amostra saem da lista
+     e da conta, e a tela os mostra numa linha só no fim do grupo, com a
+     revisão em lote. Quem esfriou em "Responder agora" fica: alguém escreveu. */
+  const ehParaEncerrar = (i: ItemDaFila) => i.encerrar && (i.grupo === "preco" || i.grupo === "amostra");
+  const paraEncerrar = itens.filter(ehParaEncerrar);
+  return { itens: itens.filter((i) => !ehParaEncerrar(i)), paraEncerrar, fora, aguardando, prospeccao };
 }
 
 export function tempoDeEspera(instante: string, agora: number): string {

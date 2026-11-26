@@ -531,6 +531,10 @@ export type LeadPainel = Lead & {
   /* A última coisa que a pessoa disse foi "quero colocar no ar" e ninguém
      respondeu ainda (01/11). Fura as filas. */
   quer_no_ar?: boolean;
+  /* O resumo da última ENTRADA (26/11/2026), montado em memória como o
+     quer_no_ar. A fila lê nele a recusa ("Não tenho interesse, obrigado"),
+     para não pôr quem disse não como quem espera resposta. */
+  ultima_entrada?: string | null;
   /* ---------- A COBRANÇA QUE VIAJA COM O LEAD (20/08) ----------
      A parcela vencida deste cliente, quando existe. Ela NÃO vem da view
      `crm_leads_painel` (view congela a lista de colunas no create, e a nota

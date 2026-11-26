@@ -727,3 +727,18 @@
    de "Prospecção do dia"). Sobre o chão liso o vidro não acrescenta nada. */
 .central .grupo h2 { background: #e6f1eb; -webkit-backdrop-filter: none; backdrop-filter: none; }
 :global(html[data-crm-tema="escuro"]) .central .grupo h2 { background: #17221d; }
+
+/* ── A QUALIDADE DA FILA (26/11/2026) ──
+   A última chamada da Black é venda em andamento, mas com prazo: um verde
+   mais escuro que o do preço. Os "encerrar" saem da barra (não são
+   atendimento) e viram uma linha só, em voz baixa, no fim do grupo: na
+   legenda, o quadradinho é só contorno. */
+.central .composicao i[data-grupo="black"],
+.central .legenda li[data-grupo="black"]::before { background: #075c38; }
+.central .legenda li[data-grupo="encerrar"] { color: var(--suave); }
+.central .legenda li[data-grupo="encerrar"] b { color: var(--suave); }
+.central .legenda li[data-grupo="encerrar"]::before { background: transparent; box-shadow: inset 0 0 0 1px currentColor; }
+.central .paraEncerrar { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; width: 100%; padding: 12px 14px 14px; border: 0; border-top: 1px dashed var(--line, #dcdcd8); background: transparent; color: var(--suave); font: 500 13px/1.4 var(--body, Arial, sans-serif); text-align: left; cursor: pointer; }
+.central .paraEncerrar b { font-family: var(--mono, monospace); font-weight: 600; color: var(--texto); font-variant-numeric: tabular-nums; }
+.central .paraEncerrar u { text-underline-offset: 3px; color: var(--texto); }
+.central .paraEncerrar:hover u, .central .paraEncerrar:focus-visible u { text-decoration-thickness: 2px; }

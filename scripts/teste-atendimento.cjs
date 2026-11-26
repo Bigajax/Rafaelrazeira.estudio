@@ -76,7 +76,7 @@ testar("Histórico verifica dono antes de consultar interações e não disfarç
   assert.ok(filtros.some(([k, v]) => k === "owner_id" && v === "dono"));
 });
 /* 11/11/2026: a cobrança que se repetia e a prospecção do dia. */
-const { filaDaVez, cobrancaNaVez } = carregar("lib/crm/atendimento.ts");
+const { filaDaVez, cobrancaNaVez, blackPorMandar } = carregar("lib/crm/atendimento.ts");
 const divida = { parcela_id: "p", rotulo: "Entrada", valor: 199, saldo: 199, vence_em: "2026-10-06", quando: "2026-10-06", metodo_previsto: null, contrato_titulo: "c" };
 const grupoDe = (r, id) => r.itens.find((i) => i.lead.id === id)?.grupo ?? null;
 testar("Cobrança nunca feita fica na fila, mesmo com retorno no futuro", () => {
@@ -137,5 +137,54 @@ testar("Em A receber, a parcela mais antiga vem primeiro", () => {
   const velha = lead("velha", { estagio: "ganho", cobranca: { ...divida, vence_em: "2026-09-26", quando: "2026-09-26" }, toques: 1, saidas_seguidas: 1, ultimo_toque_em: "2026-09-20T12:00:00Z" });
   const r = filaDaVez([nova, velha], hoje);
   assert.deepEqual(r.itens.map((i) => i.lead.id), ["velha", "nova"]);
+});
+/* 26/11/2026: a qualidade de quem vem depois dos novos. */
+const H = "2026-11-26";
+const escreveu = (id, dia, extra = {}) => lead(id, { estagio: "conversa", origem: "trafego_pago", toques: 3, toques_entrada: 2, saidas_seguidas: 0, ultimo_toque_em: dia + "T12:00:00Z", ...extra });
+testar("Responder agora: o mais quente primeiro, e quem esfriou ou recusou no fim", () => {
+  const dados = [escreveu("velho", "2026-10-24"), escreveu("ontem", "2026-11-25"), escreveu("hoje", "2026-11-26"), escreveu("semana", "2026-11-20"), escreveu("recusou", "2026-11-25", { ultima_entrada: "Não tenho interesse, obrigado" })];
+  const r = filaDaVez(dados, H);
+  const resp = r.itens.filter((i) => i.grupo === "responder");
+  assert.deepEqual(resp.map((i) => i.lead.id), ["hoje", "ontem", "semana", "recusou", "velho"]);
+  assert.equal(resp.find((i) => i.lead.id === "velho").esfriou, "tempo");
+  assert.equal(resp.find((i) => i.lead.id === "recusou").esfriou, "recusou");
+  assert.equal(resp.find((i) => i.lead.id === "ontem").encerrar, false);
+  assert.equal(r.paraEncerrar.length, 0);
+});
+testar("Quer colocar no ar abre a fila, mesmo antigo", () => {
+  const r = filaDaVez([escreveu("hoje", "2026-11-26"), escreveu("noar", "2026-10-01", { quer_no_ar: true })], H);
+  assert.equal(r.itens[0].lead.id, "noar");
+  assert.equal(r.itens[0].esfriou, undefined);
+});
+const recebeuBlack = (id, extra = {}) => lead(id, { estagio: "previa", origem: "trafego_pago", toques: 3, toques_entrada: 1, saidas_seguidas: 2, preco_em: "2026-11-04T12:00:00Z", black_em: "2026-11-04T12:00:00Z", ultimo_toque_em: "2026-11-04T12:00:00Z", proximo_passo: "Black: cobrar a resposta", proxima_acao_em: "2026-11-06", ...extra });
+testar("A Black sem retorno é a última chamada até 30/11, não encerrar", () => {
+  const r = filaDaVez([recebeuBlack("b")], H);
+  assert.equal(grupoDe(r, "b"), "black");
+  assert.equal(r.paraEncerrar.length, 0);
+});
+testar("Depois do retorno da Black, aguardando; em 01/12, para encerrar", () => {
+  const voltei = recebeuBlack("v", { ultimo_toque_em: "2026-11-26T15:00:00Z", saidas_seguidas: 3 });
+  const r = filaDaVez([voltei], H);
+  assert.equal(grupoDe(r, "v"), null);
+  assert.equal(r.aguardando, 1);
+  const dez = filaDaVez([recebeuBlack("b")], "2026-12-01");
+  assert.equal(grupoDe(dez, "b"), null);
+  assert.deepEqual(dez.paraEncerrar.map((i) => i.lead.id), ["b"]);
+  assert.equal(dez.fora.length, 0);
+});
+testar("Encerrar sai da lista e da conta, e vai para paraEncerrar", () => {
+  const preco = lead("p", { estagio: "previa", origem: "trafego_pago", toques: 2, toques_entrada: 1, saidas_seguidas: 1, preco_em: "2026-11-01T12:00:00Z", ultimo_toque_em: "2026-11-01T12:00:00Z" });
+  const r = filaDaVez([preco], H);
+  assert.equal(r.itens.length, 0);
+  assert.deepEqual(r.paraEncerrar.map((i) => [i.lead.id, i.grupo]), [["p", "preco"]]);
+});
+testar("Garimpo na lista da Black sem nenhum toque é prospecção, não amostra; depois de 30/11 ninguém é 'Mandar a Black'", () => {
+  const frio = lead("frio", { estagio: "previa", origem: "prospeccao", nicho: "roupas femininas", previa_url: "https://x", proximo_passo: "Black: mandar a oferta de R$ 799" });
+  const falado = lead("falado", { estagio: "previa", origem: "trafego_pago", toques: 2, toques_entrada: 1, saidas_seguidas: 1, previa_url: "https://x", ultimo_toque_em: "2026-11-25T12:00:00Z", proximo_passo: "Black: mandar a oferta de R$ 799" });
+  const r = filaDaVez([frio, falado], H);
+  assert.equal(grupoDe(r, "frio"), "prospeccao");
+  assert.equal(grupoDe(r, "falado"), "amostra");
+  assert.equal(blackPorMandar(falado, H), true);
+  assert.equal(blackPorMandar(falado, "2026-12-01"), false);
 });
 (async () => { let falhas = 0; for (const t of testes) { try { await t.executar(); console.log("OK: " + t.nome); } catch (e) { falhas++; console.error("FALHOU: " + t.nome, e); } } console.log(`${testes.length - falhas}/${testes.length} cenários de atendimento passaram.`); if (falhas) process.exitCode = 1; })();

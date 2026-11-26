@@ -221,6 +221,7 @@ export async function painelHoje() {
     preco_em: precoPorLead.get(l.id) ?? null,
     black_em: blackPorLead.get(l.id) ?? null,
     quer_no_ar: ehPedidoNoAr(ultimaEntrada.get(l.id)?.resumo) && l.saidas_seguidas === 0,
+    ultima_entrada: ultimaEntrada.get(l.id)?.resumo ?? null,
     cobranca: cobrancasPorLead.get(l.id) ?? null,
   }));
 
