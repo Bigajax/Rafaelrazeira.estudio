@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Proposta Outlet Brasil · Rafael Razeira Estúdio</title>
+
+<!-- O cartao do link: a logo RR no preview do WhatsApp (URL absoluta de proposito) -->
+<meta property="og:image" content="https://rafaelrazeira.com.br/assets/og-rr.png?v=2" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Monograma RR do Rafael Razeira Estudio" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Rafael Razeira Estúdio" />
+<meta property="og:title" content="Proposta · Outlet Brasil" />
+<meta property="og:description" content="Rafael Razeira Estúdio: o que está incluso, o investimento e o prazo." />
+<meta property="og:url" content="https://rafaelrazeira.com.br/proposta/outlet-brasil.html" />
+
+
+<!-- ============================================================
+     PROPOSTA COMERCIAL · OUTLET BRASIL (tenis, Quixada-CE, @outletbrasil.import)
+     27/11/2026, no molde da one-tenis.html (o bloco da condicao, o desconto
+     da jk-imports). Fechada pelo Rafael no WhatsApp: R$ 600 no lugar dos
+     R$ 999, motivo: a amostra ja pronta e no ar. Tres pagamentos de R$ 200:
+     esta semana, a semana que vem e a entrega (Pix, ou cartao em ate 4x).
+     Itens em lib/propostas.ts ("outlet-brasil"). Dominio fora.
+     27/11 (tarde): enxugada a pedido do Rafael, sem pranchas: as fotos da
+     vitrine ainda vao mudar. Capa, o que entra, o valor e as tres partes.
+     ============================================================ -->
+<link rel="icon" type="image/png" href="/assets/favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+<link rel="stylesheet" href="/css/proposta-checkout.css" />
+<script src="/js/proposta-checkout.js" defer></script>
+
+<style>
+:root{
+  --emerald:#10B981;
+  --emerald-dark:#065F46;
+  --emerald-light:#D1FAE5;
+  --off-white:#FAFAF7;
+  --black:#0A0A0A;
+  --ink-70:rgba(10,10,10,.70);
+  --ink-55:rgba(10,10,10,.55);
+  --line:rgba(10,10,10,.12);
+  --maxw:1160px;
+  --pad:clamp(16px,5vw,64px);
+  --font-display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --font-body:"Inter",system-ui,-apple-system,sans-serif;
+  --font-mono:"Space Mono",ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--font-body);background:var(--off-white);color:var(--black);line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+b{font-weight:600;color:var(--black)}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--emerald-dark);outline-offset:3px}
+img{display:block;max-width:100%}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--pad)}
+
+/* ——— Cabeçalho ——— */
+.topo{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding-block:24px;border-bottom:1px solid var(--line)}
+.marca{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(15px,4vw,19px);letter-spacing:-.01em;white-space:nowrap}
+.marca small{font-size:1em;font-weight:800;color:var(--ink-55)}
+.topo time{font-family:var(--font-mono);font-size:13px;color:var(--ink-55)}
+
+/* ——— Hero: capa de documento + a vitrine ao vivo ——— */
+.capa{display:grid;gap:clamp(40px,6vw,72px);padding-block:clamp(40px,8vw,88px) clamp(56px,8vw,96px);align-items:center}
+@media(min-width:900px){.capa{grid-template-columns:minmax(0,1.15fr) auto}}
+.capa-para{font-family:var(--font-mono);font-size:14px;color:var(--ink-70)}
+.capa-lede{margin-top:20px;font-size:clamp(1.04rem,4vw,1.18rem);line-height:1.55;color:var(--ink-70);max-width:54ch}
+.capa-lede b{color:var(--black);font-weight:600}
+.capa h1{
+  margin-top:20px;font-family:var(--font-display);font-weight:900;text-transform:uppercase;
+  font-size:clamp(2.6rem,9vw,6.4rem);line-height:.96;letter-spacing:-.04em;max-width:10ch;
+}
+.ficha{margin-top:clamp(32px,5vw,48px);border-top:2px solid var(--black);max-width:520px}
+.ficha div{display:grid;grid-template-columns:130px 1fr;gap:16px;padding-block:13px;border-bottom:1px solid var(--line)}
+.ficha dt{font-family:var(--font-mono);font-size:13px;color:var(--ink-55);padding-top:2px}
+.ficha dd{font-size:clamp(1rem,3.8vw,1.08rem);line-height:1.45}
+.ficha dd a{text-decoration:underline;text-decoration-color:var(--emerald);text-underline-offset:3px;text-decoration-thickness:2px}
+@media(max-width:420px){.ficha div{grid-template-columns:1fr;gap:2px}}
+
+/* O celular: 390x844 escalado. Desktop 0.8, celular 0.66. */
+.aparelho{position:relative;justify-self:center}
+.celular{
+  width:calc(390px * .8 + 20px);height:calc(844px * .8 + 20px);
+  border:10px solid var(--black);border-radius:48px;overflow:hidden;background:var(--black);
+  box-shadow:0 40px 80px -40px rgba(10,10,10,.45);
+}
+.celular iframe{width:390px;height:844px;border:0;transform:scale(.8);transform-origin:0 0;background:#fff;display:block}
+.aparelho-nota{display:flex;gap:10px;align-items:flex-start;margin-top:18px;max-width:330px;font-size:.95rem;color:var(--ink-70);line-height:1.45}
+.aparelho-nota a{font-weight:600;color:var(--black);text-decoration:underline;text-decoration-color:var(--emerald);text-decoration-thickness:2px;text-underline-offset:3px}
+@media(max-width:899px){
+  .celular{width:calc(390px * .66 + 16px);height:calc(844px * .66 + 16px);border-width:8px;border-radius:38px}
+  .celular iframe{transform:scale(.66)}
+}
+/* No toque, rolar dentro do iframe prende a página: fica só o link. */
+.so-toque{display:none}
+@media(hover:none){.celular iframe{pointer-events:none}.so-mouse{display:none}.so-toque{display:inline}}
+
+/* ——— O marcador: a anotação do estúdio ——— */
+.pin{
+  display:inline-grid;place-items:center;flex:none;
+  width:28px;height:28px;border-radius:50%;
+  background:var(--emerald);color:var(--black);
+  font-family:var(--font-mono);font-weight:700;font-size:13px;line-height:1;
+  box-shadow:0 0 0 3px var(--off-white);
+  transition:transform .2s ease-out,background-color .2s;
+}
+.pin.acende{transform:scale(1.3);background:var(--black);color:var(--off-white)}
+@media(prefers-reduced-motion:reduce){.pin{transition:none}}
+
+/* ——— Seções ——— */
+.sec{padding-block:clamp(56px,9vw,112px);border-top:1px solid var(--line)}
+.sec h2{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.9rem,6.5vw,3.4rem);line-height:.95;letter-spacing:-.03em;max-width:16ch}
+.sec-intro{margin-top:18px;max-width:58ch;font-size:clamp(1rem,3.9vw,1.15rem);color:var(--ink-70)}
+
+/* ——— As pranchas ——— */
+.prancha{margin-top:clamp(48px,7vw,80px);display:grid;gap:clamp(20px,3vw,40px);align-items:start}
+@media(min-width:900px){.prancha{grid-template-columns:minmax(0,1.7fr) minmax(0,1fr)}}
+.prancha figure{position:relative;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:#fff}
+.prancha figure img{width:100%;height:auto}
+.prancha figure .pin{position:absolute;transform:translate(-50%,-50%)}
+.prancha figure .pin.acende{transform:translate(-50%,-50%) scale(1.3)}
+.prancha-titulo{font-family:var(--font-mono);font-size:13px;color:var(--ink-55)}
+.prancha-titulo b{font-family:var(--font-display);font-weight:900;font-size:1.35rem;text-transform:uppercase;letter-spacing:-.02em;display:block;color:var(--black);margin-top:4px}
+.notas{list-style:none;margin-top:18px;border-top:2px solid var(--black)}
+.notas li{display:flex;gap:14px;align-items:flex-start;padding-block:14px;border-bottom:1px solid var(--line);font-size:clamp(.98rem,3.8vw,1.04rem);color:var(--ink-70);line-height:1.5;cursor:default}
+@media(min-width:900px){
+  .prancha--inv{grid-template-columns:minmax(0,1fr) minmax(0,1.7fr)}
+  .prancha--inv figure{order:2}
+}
+
+/* O que não aparece na tela: lista corrida em duas colunas, sem cartão */
+.fora-da-tela{margin-top:clamp(56px,8vw,88px);display:grid;gap:clamp(20px,4vw,48px)}
+@media(min-width:900px){.fora-da-tela{grid-template-columns:minmax(0,1fr) minmax(0,1.7fr)}}
+.fora-da-tela h3{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.3rem,4.6vw,1.7rem);line-height:1;letter-spacing:-.02em}
+.fora-da-tela ul{list-style:none;columns:2 280px;column-gap:40px;border-top:2px solid var(--black)}
+.fora-da-tela li{break-inside:avoid;padding-block:12px;border-bottom:1px solid var(--line);color:var(--ink-70)}
+
+/* ——— Investimento: uma tela, com a linha de cota ——— */
+.valor{padding-block:clamp(72px,12vw,140px)}
+.valor-numero{font-family:var(--font-display);font-weight:900;letter-spacing:-.05em;line-height:.85;font-size:clamp(5rem,24vw,15rem);margin-top:clamp(24px,4vw,40px);white-space:nowrap}
+.valor-numero small{font-size:.28em;letter-spacing:-.02em;vertical-align:.95em;margin-right:.08em}
+.cota{position:relative;margin-top:22px;height:14px;border-bottom:2px solid var(--emerald)}
+.cota::before,.cota::after{content:"";position:absolute;bottom:-8px;width:2px;height:16px;background:var(--emerald)}
+.cota::before{left:0}.cota::after{right:0}
+.cota-legenda{margin-top:14px;font-family:var(--font-mono);font-size:clamp(12px,3.4vw,14px);color:var(--emerald-dark)}
+.valor-grade{margin-top:clamp(40px,6vw,64px);display:grid;gap:clamp(28px,4vw,56px)}
+@media(min-width:900px){.valor-grade{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}}
+.valor-grade p{font-size:clamp(1rem,3.9vw,1.12rem);color:var(--ink-70);max-width:52ch}
+.valor-grade p + p{margin-top:14px}
+.garantia{margin-top:24px;padding:20px 22px;border-left:3px solid var(--emerald);background:var(--emerald-light)}
+.garantia p{color:rgba(10,10,10,.78)}
+.pagar{border:2px solid var(--black);border-radius:6px;padding:clamp(20px,4vw,28px);background:#fff;align-self:start}
+.pagar-titulo{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:1.25rem;letter-spacing:-.01em}
+.pagar ul{list-style:none;margin:14px 0 20px}
+.pagar li{padding-block:9px;border-top:1px solid var(--line);font-size:.96rem;color:var(--ink-70)}
+.btn-pay{
+  width:100%;border:none;border-radius:999px;background:var(--emerald);color:var(--black);
+  padding:15px 20px;cursor:pointer;font-family:var(--font-display);font-weight:900;font-size:15px;
+  letter-spacing:.02em;text-transform:uppercase;transition:background-color .2s;
+}
+.btn-pay:hover{background:#0ea371}
+.pagar-rodape{margin-top:12px;font-family:var(--font-mono);font-size:12px;color:var(--ink-55)}
+
+/* ——— Depois da publicação ——— */
+.opcoes{margin-top:clamp(32px,5vw,48px);display:grid;gap:0;border-top:2px solid var(--black)}
+@media(min-width:760px){.opcoes{grid-template-columns:1fr 1fr}.opcao + .opcao{border-left:1px solid var(--line);padding-left:clamp(20px,4vw,40px)}}
+.opcao{padding-block:24px;padding-right:clamp(0px,3vw,32px);border-bottom:1px solid var(--line)}
+.opcao h3{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.2rem,4.4vw,1.5rem);letter-spacing:-.02em;line-height:1}
+.opcao-preco{margin-top:10px;font-family:var(--font-display);font-weight:900;font-size:clamp(1.8rem,6vw,2.4rem);letter-spacing:-.03em;line-height:1}
+.opcao-preco small{font-size:.45em;color:var(--ink-55)}
+.opcao p{margin-top:12px;color:var(--ink-70);max-width:44ch}
+.opcao ul{list-style:none;margin-top:14px}
+.opcao li{padding-block:8px;border-top:1px solid var(--line);font-size:.96rem;color:var(--ink-70)}
+
+/* ——— Prazo e passos ——— */
+.prazo{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.6rem,6vw,2.6rem);letter-spacing:-.025em;line-height:1;margin-top:clamp(24px,4vw,36px)}
+.passos{list-style:none;counter-reset:p;margin-top:clamp(28px,4vw,40px);border-top:2px solid var(--black);max-width:760px}
+.passos li{counter-increment:p;display:flex;gap:16px;padding-block:16px;border-bottom:1px solid var(--line);color:var(--ink-70);font-size:clamp(1rem,3.9vw,1.1rem)}
+.passos li::before{content:counter(p);font-family:var(--font-display);font-weight:900;font-size:1.4rem;line-height:1.1;color:var(--black);min-width:1.2em}
+
+/* ——— Não incluso: nota de rodapé ——— */
+.rodape-nota{padding-block:clamp(40px,6vw,64px);border-top:1px solid var(--line);display:grid;gap:16px}
+@media(min-width:900px){.rodape-nota{grid-template-columns:minmax(0,1fr) minmax(0,1.7fr)}}
+.rodape-nota h2{font-family:var(--font-mono);font-weight:700;font-size:14px;color:var(--ink-55)}
+.rodape-nota ul{list-style:none}
+.rodape-nota li{padding-block:8px;border-bottom:1px solid var(--line);font-size:.95rem;color:var(--ink-70)}
+
+/* ——— Fecho ——— */
+.fecho{padding-block:clamp(64px,10vw,120px);border-top:1px solid var(--line)}
+.fecho h2{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(2.2rem,8vw,4.6rem);line-height:.92;letter-spacing:-.04em;max-width:12ch}
+.fecho a{display:inline-block;margin-top:28px;font-weight:600;font-size:1.1rem;text-decoration:underline;text-decoration-color:var(--emerald);text-decoration-thickness:2px;text-underline-offset:4px}
+.assinatura{padding-block:28px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px 28px;font-family:var(--font-mono);font-size:12px;color:var(--ink-55)}
+
+@page{size:A4;margin:14mm}
+@media print{
+  .aparelho,.btn-pay,.fecho a{display:none}
+  .capa{grid-template-columns:1fr}
+  .sec,.valor{padding-block:28px}
+  .prancha{break-inside:avoid}
+  .pin,.garantia{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
+/* ——— A condição combinada (o molde do desconto da jk-imports) ——— */
+.condicao{margin-top:clamp(32px,5vw,48px);padding:clamp(22px,4vw,36px);background:var(--emerald-light);border-left:3px solid var(--emerald);max-width:760px}
+.condicao-rotulo{font-family:var(--font-mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--emerald-dark)}
+.condicao h3{margin-top:10px;font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1.5rem,6vw,2.2rem);line-height:.98;letter-spacing:-.03em}
+.condicao p{margin-top:14px;font-size:clamp(1rem,3.9vw,1.1rem);color:rgba(10,10,10,.78);max-width:58ch}
+.condicao ul{list-style:none;margin-top:16px}
+.condicao li{padding-block:9px;border-top:1px solid rgba(6,95,70,.18);color:rgba(10,10,10,.78)}
+.valor-numero s{font-size:.2em;letter-spacing:-.01em;color:var(--ink-55);vertical-align:1.6em;margin-left:.15em;font-weight:800}
+@media print{.condicao{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+.pagar-ou{margin-top:22px;padding-top:18px;border-top:2px solid var(--black)}
+.pagar-ou p{font-size:.96rem;color:var(--ink-70)}
+.btn-pay--linha{margin-top:14px;background:transparent;border:2px solid var(--black)}
+.btn-pay--linha:hover{background:var(--black);color:var(--off-white)}
+.btn-pay--linha + .btn-pay--linha{margin-top:10px}
+.pagar-saldo{margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}
+.pagar-titulo--menor{font-size:1rem}
+.pagar-nota{margin-top:8px;font-size:.92rem;color:var(--ink-70)}
+
+/* ——— As tabelas: a entrega e o pagamento ——— */
+.tabela{width:100%;border-collapse:collapse;margin-top:clamp(28px,4vw,40px);border-top:2px solid var(--black)}
+.tabela th,.tabela td{text-align:left;vertical-align:top;padding:16px 16px 16px 0;border-bottom:1px solid var(--line)}
+.tabela thead th{font-family:var(--font-mono);font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-55)}
+.tabela tbody th{font-family:var(--font-display);font-weight:900;text-transform:uppercase;font-size:clamp(1rem,3.6vw,1.15rem);letter-spacing:-.01em;line-height:1.15;width:34%}
+.tabela td{font-size:clamp(.98rem,3.8vw,1.05rem);color:var(--ink-70)}
+.tabela .num{text-align:right;padding-right:0;white-space:nowrap;font-family:var(--font-display);font-weight:900;color:var(--black)}
+.tabela tfoot td,.tabela tfoot th{border-bottom:2px solid var(--black);color:var(--black);font-weight:600}
+.tabela--entrega{max-width:860px}
+@media(max-width:560px){
+  .tabela--entrega thead{display:none}
+  .tabela--entrega tr{display:block;padding-block:14px;border-bottom:1px solid var(--line)}
+  .tabela--entrega th,.tabela--entrega td{display:block;width:auto;border:0;padding:0}
+  .tabela--entrega td{margin-top:4px}
+}
+
+/* ——— A capa comercial ——— */
+.capa-preco{margin-top:28px;display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px}
+.capa-preco strong{font-family:var(--font-display);font-weight:900;font-size:clamp(2rem,7vw,2.8rem);letter-spacing:-.03em;line-height:1}
+.capa-preco s{font-family:var(--font-display);font-weight:800;color:var(--ink-55);font-size:1.15rem}
+.capa-preco span{font-family:var(--font-mono);font-size:13px;color:var(--emerald-dark)}
+.capa-acoes{margin-top:28px;display:flex;flex-wrap:wrap;gap:12px}
+.capa-acoes a{display:inline-block;border-radius:999px;padding:14px 24px;font-family:var(--font-display);font-weight:900;font-size:14px;letter-spacing:.02em;text-transform:uppercase;text-decoration:none}
+.capa-acoes .cheio{background:var(--emerald);color:var(--black)}
+.capa-acoes .linha{border:2px solid var(--black)}
+@media print{.capa-acoes{display:none}}
+</style>
+</head>
+<body data-proposta="outlet-brasil">
+
+<div class="wrap">
+
+  <header class="topo">
+    <div class="marca">Rafael Razeira <small>Estúdio</small></div>
+    <time datetime="2026-11-27">27/11/2026</time>
+  </header>
+
+  <!-- CAPA -->
+  <section class="capa">
+    <div>
+      <p class="capa-para">Proposta comercial · Vitrine digital</p>
+      <h1>A vitrine digital da Outlet Brasil.</h1>
+      <p class="capa-lede">O seu catálogo num site próprio: a cliente escolhe o par e o número, e o pedido chega <b>direto no seu WhatsApp</b>. Já está pronta, com painel para você atualizar pelo celular.</p>
+      <div class="capa-preco">
+        <strong>R$ 600</strong><s>R$ 999</s>
+        <span>em 3 partes de R$ 200, sem mensalidade</span>
+      </div>
+      <div class="capa-acoes">
+        <a class="cheio" href="#investimento">Fechar a vitrine</a>
+        <a class="linha" href="https://outlet-brasil.vercel.app" target="_blank" rel="noopener">Ver a vitrine</a>
+      </div>
+      <dl class="ficha">
+        <div><dt>A vitrine</dt><dd><a href="https://outlet-brasil.vercel.app" target="_blank" rel="noopener">outlet-brasil.vercel.app</a>, já construída</dd></div>
+        <div><dt>No ar em</dt><dd>Até 5 dias úteis depois dos ajustes</dd></div>
+      </dl>
+    </div>
+
+    <div class="aparelho">
+      <div class="celular">
+        <iframe src="https://outlet-brasil.vercel.app" title="A vitrine da Outlet Brasil, ao vivo" loading="lazy"></iframe>
+      </div>
+      <p class="aparelho-nota"><span class="pin" aria-hidden="true">↕</span><span class="so-mouse">Essa é a sua vitrine: role aí dentro. Ou <a href="https://outlet-brasil.vercel.app" target="_blank" rel="noopener">abra numa aba nova</a>.</span><span class="so-toque">Essa é a sua vitrine, ao vivo. <a href="https://outlet-brasil.vercel.app" target="_blank" rel="noopener">Abrir a vitrine</a>.</span></p>
+    </div>
+  </section>
+
+  <!-- O QUE ENTRA -->
+  <section class="sec">
+    <h2>O que eu entrego</h2>
+    <table class="tabela tabela--entrega">
+      <thead><tr><th scope="col">Entrega</th><th scope="col">O que é</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">A vitrine no ar</th><td>O site da Outlet Brasil publicado, com a sua logo e as suas cores</td></tr>
+        <tr><th scope="row">O catálogo</th><td>Os 71 pares da prévia, por categoria, marca e numeração do 34 ao 43, com os ajustes de fotos e pares</td></tr>
+        <tr><th scope="row">O pedido no WhatsApp</th><td>A cliente escolhe o par e o número, e o pedido chega montado no seu WhatsApp</td></tr>
+        <tr><th scope="row">O painel</th><td>Você mesma troca pares, fotos, preço e números pelo celular</td></tr>
+        <tr><th scope="row">Celular e Google</th><td>Feita para abrir no celular, e a loja aparece quando procuram pelo nome</td></tr>
+        <tr><th scope="row">Revisão</th><td>2 rodadas de ajustes com você antes de publicar</td></tr>
+        <tr><th scope="row">Treinamento e suporte</th><td>Eu te ensino a usar o painel, e 30 dias de suporte depois da publicação</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- INVESTIMENTO -->
+  <section class="sec valor" id="investimento" style="scroll-margin-top:24px">
+    <h2>O investimento</h2>
+
+    <aside class="condicao">
+      <p class="condicao-rotulo">Condição combinada no WhatsApp</p>
+      <h3>R$ 600 no lugar dos R$ 999</h3>
+      <p>A sua vitrine <b>já está construída e no ar</b>. É uma condição deste projeto, não uma tabela nova. Sem mensalidade.</p>
+    </aside>
+
+    <p class="valor-numero"><small>R$</small>600<s>R$ 999</s></p>
+    <div class="cota" aria-hidden="true"></div>
+    <p class="cota-legenda">Três de R$ 200: nesta semana, na semana que vem e na entrega.</p>
+
+    <div class="valor-grade">
+      <div>
+        <table class="tabela" style="margin-top:0">
+          <thead><tr><th scope="col">Parte</th><th scope="col">Quando</th><th scope="col" class="num">Valor</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">1ª</th><td>Nesta semana, no Pix. Com ela, eu começo os ajustes</td><td class="num">R$ 200</td></tr>
+            <tr><th scope="row">2ª</th><td>Na semana que vem, no Pix</td><td class="num">R$ 200</td></tr>
+            <tr><th scope="row">3ª</th><td>Na entrega, depois de você aprovar a vitrine no ar. Pix ou cartão em até 4x</td><td class="num">R$ 200</td></tr>
+          </tbody>
+          <tfoot><tr><th scope="row">Total</th><td>Sem mensalidade</td><td class="num">R$ 600</td></tr></tfoot>
+        </table>
+        <div class="garantia">
+          <p>Se a vitrine publicada não for o que você viu, <b>o que você pagou volta inteiro</b>.</p>
+        </div>
+      </div>
+      <div class="pagar">
+        <!-- Um botão por item de lib/propostas.ts; o valor NUNCA vem daqui -->
+        <p class="pagar-titulo pagar-titulo--menor">1ª parte, nesta semana</p>
+        <button class="btn-pay" type="button" data-checkout-item="entrada_pix" style="margin-top:12px">Pagar R$ 200 no Pix</button>
+        <div class="pagar-saldo">
+          <p class="pagar-titulo pagar-titulo--menor">2ª parte, semana que vem</p>
+          <button class="btn-pay btn-pay--linha" type="button" data-checkout-item="parcela2_pix">Pagar R$ 200 no Pix</button>
+        </div>
+        <div id="saldo" style="scroll-margin-top:24px"></div>
+        <div class="pagar-saldo">
+          <p class="pagar-titulo pagar-titulo--menor">3ª parte, na entrega</p>
+          <button class="btn-pay btn-pay--linha" type="button" data-checkout-item="saldo_pix">Pagar R$ 200 no Pix</button>
+          <button class="btn-pay btn-pay--linha" type="button" data-checkout-item="saldo_card">No cartão, em até 4x</button>
+        </div>
+        <p class="pagar-rodape">Pelo Mercado Pago, sem sair desta página. No cartão, os juros aparecem antes de confirmar.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- NÃO INCLUSO -->
+  <section class="rodape-nota">
+    <h2>O que não está incluso</h2>
+    <ul>
+      <li>Domínio próprio: cerca de R$ 40 por ano no Registro.br, no nome da loja; eu configuro</li>
+      <li>Carrinho e pagamento online: o pedido fecha no WhatsApp</li>
+      <li>Frete, estoque e nota fiscal</li>
+    </ul>
+  </section>
+
+  <section class="fecho">
+    <h2>Vamos colocar a Outlet Brasil no ar.</h2>
+    <a href="https://wa.me/5544991246187?text=Ol%C3%A1%20Rafael%2C%20tenho%20uma%20d%C3%BAvida%20sobre%20a%20proposta%20da%20Outlet%20Brasil." target="_blank" rel="noopener">Ficou com dúvida? Me chama no WhatsApp</a>
+  </section>
+
+  <footer class="assinatura">
+    <span>Rafael Razeira Estúdio</span>
+    <span>rafael.rbarbon@gmail.com</span>
+    <span>(44) 99124-6187</span>
+    <span>@rafaelrazeira.estudio</span>
+  </footer>
+
+</div>
+
+
+<script>
+/* A nota acende o número dela na imagem (mouse, foco ou toque). */
+document.querySelectorAll("[data-prancha]").forEach(function (prancha) {
+  prancha.querySelectorAll(".notas li").forEach(function (li) {
+    li.tabIndex = 0;
+    var alvo = prancha.querySelector('figure .pin[data-n="' + li.dataset.n + '"]');
+    if (!alvo) return;
+    var liga = function () { alvo.classList.add("acende"); };
+    var desliga = function () { alvo.classList.remove("acende"); };
+    li.addEventListener("mouseenter", liga);
+    li.addEventListener("mouseleave", desliga);
+    li.addEventListener("focus", liga);
+    li.addEventListener("blur", desliga);
+  });
+});
+</script>
+</body>
+</html>

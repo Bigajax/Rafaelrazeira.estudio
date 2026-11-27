@@ -535,4 +535,21 @@ export const PROPOSTAS: Record<string, Proposta> = {
       saldo_card: { label: "2ª metade: na entrega, no cartão em até 4x", valor: 499, metodo: "card", maxParcelas: 4 },
     },
   },
+  /* A Outlet Brasil (27/11/2026), fechada pelo Rafael no WhatsApp: R$ 600 no
+     lugar dos R$ 999, e o motivo é a amostra já pronta e no ar
+     (outlet-brasil.vercel.app). Três pagamentos de R$ 200: um nesta semana,
+     um na semana que vem e o último na entrega, aprovada. Os dois primeiros
+     só no Pix; o da entrega no Pix ou no cartão em até 4x COM os juros do
+     Mercado Pago (o Brick calcula; nada somado aqui). Cada item é UM
+     recebimento no Caixa. Domínio à parte, sem botão. */
+  "outlet-brasil": {
+    titulo: "Rafael Razeira Estúdio, Vitrine Digital Outlet Brasil",
+    whatsapp: "5544991246187",
+    itens: {
+      entrada_pix: { label: "1ª parcela: nesta semana, no Pix", valor: 200, metodo: "pix" },
+      parcela2_pix: { label: "2ª parcela: na semana que vem, no Pix", valor: 200, metodo: "pix" },
+      saldo_pix: { label: "3ª parcela: na entrega, no Pix", valor: 200, metodo: "pix" },
+      saldo_card: { label: "3ª parcela: na entrega, no cartão em até 4x", valor: 200, metodo: "card", maxParcelas: 4 },
+    },
+  },
 };
